@@ -1,0 +1,21 @@
+nohup: ignoring input
+Epoch 1/10
+Epoch [1/10], Loss: 13.4397, Train Acc: 0.9833, Val Acc: 0.9012
+Epoch 2/10
+Epoch [2/10], Loss: 2.8340, Train Acc: 0.9968, Val Acc: 0.9059
+Epoch 3/10
+Epoch [3/10], Loss: 1.1645, Train Acc: 0.9987, Val Acc: 0.9053
+Epoch 4/10
+Epoch [4/10], Loss: 0.9308, Train Acc: 0.9989, Val Acc: 0.9143
+Epoch 5/10
+Epoch [5/10], Loss: 0.8009, Train Acc: 0.9991, Val Acc: 0.8986
+Epoch 6/10
+Epoch [6/10], Loss: 0.9995, Train Acc: 0.9989, Val Acc: 0.9014
+Epoch 7/10
+Epoch [7/10], Loss: 0.9300, Train Acc: 0.9989, Val Acc: 0.9070
+Epoch 8/10
+Epoch [8/10], Loss: 0.6436, Train Acc: 0.9993, Val Acc: 0.9075
+Epoch 9/10
+Epoch [9/10], Loss: 0.5918, Train Acc: 0.9993, Val Acc: 0.9068
+Epoch 10/10
+Epoch [10/10], Loss: 0.3040, Train Acc: 0.9997, Val Acc: 0.9058

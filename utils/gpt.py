@@ -76,14 +76,34 @@ class ChatBot():
             attribute_list = []
         return attribute_list
 
+    # def chat(self):
+    #     with gr.Blocks() as demo:
+    #         gr.ChatInterface(
+    #             self.respone, 
+    #             title = "Please provide a description of your task.",
+    #             retry_btn= None,
+    #             )
+    #     demo.launch()
     def chat(self):
+        messages = []  # To store the conversation history
+
+        def response_fn(user_input):
+            # Process user input and generate a response
+            messages.append(("User", user_input))
+            response = self.response(user_input)  # Assuming `self.response` generates the AI response
+            messages.append(("AI", response))
+            return messages
+
         with gr.Blocks() as demo:
-            gr.ChatInterface(
-                self.respone, 
-                title = "Please provide a description of your task.",
-                retry_btn= None,
-                )
-        demo.launch()
+            with gr.Row():
+                gr.Markdown("### Please provide a description of your task.")
+            chatbot = gr.Chatbot(label="AI Assistant").style(height=400)
+            user_input = gr.Textbox(
+                show_label=False, placeholder="Type your message here..."
+            )
+            user_input.submit(response_fn, inputs=user_input, outputs=chatbot)
+
+        demo.launch(share=True)
 
 def get_des_question(main_object, attribute):
     question = """

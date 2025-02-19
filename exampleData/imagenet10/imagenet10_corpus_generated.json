@@ -1,0 +1,68 @@
+{
+    "Corpus": {
+        "object color": {
+            "data": [],
+            "word": [
+                "red",
+                "green",
+                "pink",
+                "brown",
+                "white",
+                "blue",
+                "tan",
+                "silver",
+                "orange",
+                "gray",
+                "maroon",
+                "yellow",
+                "multicolored",
+                "purple",
+                "black"
+            ],
+            "prompt": ["A photo of a #1 #LABEL."],
+            "type": "description",
+            "question": "What color is the main object?"
+        },
+        "number of object": {
+            "data": [],
+            "word": ["Yes","No"],
+            "prompt": [""],
+            "question": "How many #LABELs are there in the picture?",
+            "type": "vqa"
+        },
+        "background": {
+            "data": [],
+            "word": [
+                "sky",
+                "trees",
+                "inside a house",
+                "buildings",
+                "grass",
+                "rocks",
+                "bridge",
+                "water",
+                "wall",
+                "house",
+                "street",
+                "wild",
+                "snow"
+            ],
+            "prompt": ["The blackground of this photo is #1"],
+            "type": "description",
+            "question": "What is the background of this photo?"
+        },
+        "human appearance": {
+            "data": [],
+            "word": ["yes","no"],
+            "prompt": [""],
+            "question": "Are there any people in the photo?",
+            "type": "vqa"
+        },
+        "coarse class": {
+            "data": [],
+            "word": ["animal","vehicle"],
+            "prompt": ["a photo of an animal","a photo of a vehicle"],
+            "type": "binary"
+        }
+    }
+}
