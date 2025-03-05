@@ -172,6 +172,48 @@ class ModelDiagnose():
                         self.report.record_correlation_error(attribute, description, label_distribution=distribution, in_failure=True)
                         self.print_output("Suspicous Correlation in failure prediction, when attribute %s is %s, prediction is %s with prob %s"%(attribute, description, str(largest_label), str(distribution[largest_label])))
 
+
+#     def detect_failure_prediction_correlation(self):
+        # for attribute in self.attributes.keys():
+        #     attribute_info = self.attributes[attribute]
+        #     if attribute_info['type'] == 'description' or attribute_info['type'] == 'binary':
+        #         for description in attribute_info['word']:
+
+        #             description_error_valid_idx = [i for i in self.valid_idx if self.attributes[attribute]['data'][i] == description and self.error_binary_list[i]]
+        #             description_success_valid_idx = [i for i in self.valid_idx if self.attributes[attribute]['data'][i] == description and not self.error_binary_list[i]]
+        #             distribution_error = np.zeros(len(self.label_number))
+        #             distribution_success = np.zeros(len(self.label_number))
+
+        #             for idx in description_error_valid_idx:
+        #                 label = self.predictions[idx]
+        #                 distribution_error[label] += 1
+
+        #             for idx in description_success_valid_idx:
+        #                 label = self.predictions[idx]
+        #                 distribution_success[label] += 1
+
+        #             if len(description_error_valid_idx) > 0:
+        #                 distribution_error = distribution_error / len(description_error_valid_idx)
+        #                 largest_label_error = np.argmax(distribution_error)
+
+        #                 if distribution_error[largest_label_error] > DOMINANT_LABEL_IN_FAILURE_THRESHOLD:
+        #                     self.report.record_correlation_error(attribute, description, label_distribution=distribution_error, in_failure=True)
+        #                     self.print_output("Suspicious Correlation in failure prediction, when attribute %s is %s, prediction is %s with prob %s" % (attribute, description, str(largest_label_error), str(distribution_error[largest_label_error])))
+
+        #             if len(description_success_valid_idx) > 0:
+        #                 distribution_success = distribution_success / len(description_success_valid_idx)
+        #                 largest_label_success = np.argmax(distribution_success)
+
+        #                 self.print_output("Successful prediction, when attribute %s is %s, prediction is %s with prob %s" % (attribute, description, str(largest_label_success), str(distribution_success[largest_label_success])))
+
+        #             if len(description_error_valid_idx) > 0:
+        #                 prob_0_error = distribution_error[0] if len(distribution_error) > 0 else 0
+        #                 self.print_output("Suspicious Correlation in failure prediction, when attribute %s is %s, prediction is 0 with prob %s" % (attribute, description, str(prob_0_error)))
+
+        #             if len(description_success_valid_idx) > 0:
+        #                 prob_0_success = distribution_success[0] if len(distribution_success) > 0 else 0
+        #                 self.print_output("Successful prediction, when attribute %s is %s, prediction is 0 with prob %s" % (attribute, description, str(prob_0_success)))
+
     def detect_failure_in_attribute_combination(self, combine_num = 3, label_as_attribute=False, high_cover_combinations=False, label=None):
         attributes = self.attributes
         if label_as_attribute:

@@ -23,7 +23,7 @@ unlabel_idx = np.arange(len(all_datas))[-80000:]
 
 idxs = np.concatenate([train_idx, valid_idx, unlabel_idx], axis=0)
 labels = np.load("exampleData/celebA/labels.npy")[idxs]
-predictions = np.load("exampleData/celebA/predictions.npy")[idxs]
+# predictions = np.load("exampleData/celebA/predictions.npy")[idxs]
 
 all_datas = [all_datas[i] for i in idxs]
 split = (

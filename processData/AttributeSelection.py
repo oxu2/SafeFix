@@ -21,11 +21,6 @@ class AttributeSelection():
             print("Match ",attribute)
             self.attributes_dict[attribute]['data'] = ["" for i in range(self.data_length)]
             self.attributes_dict[attribute]['uncertain_idx'] = []
-            # Add a check for the 'prompt' key
-            if 'prompt' not in self.attributes_dict[attribute]:
-                print(f"Warning: Missing 'prompt' key for attribute '{attribute}'")
-                self.attributes_dict[attribute]['prompt'] = []
-                
             if type(self.attributes_dict[attribute]['prompt']) == str:
                 self.attributes_dict[attribute]['prompt'] = [self.attributes_dict[attribute]['prompt'],]
             # if self.attributes_dict[attribute]["type"] == 'binary':
@@ -112,4 +107,3 @@ class AttributeSelection():
         similarity_sort = np.sort(similarity,axis=1)[:,::-1]
         U = similarity_sort[:, 0] - similarity_sort[:,1]
         return np.where(U<UNCERTAIN_THRESHOLD)
-
