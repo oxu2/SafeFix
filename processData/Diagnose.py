@@ -4,21 +4,24 @@ from processData.report import ReportGenerator
 import json
 from itertools import combinations
 
-ACC_DIFF_THRESHOLD = 0.03
-DISTRIBUTION_DIFF_THRESHOLD = 0.3
-DOMINANT_LABEL_IN_FAILURE_THRESHOLD = 0.8
-DOMINANT_LABEL_IN_PREDICTION_THRESHOLD = 0.8
-RARE_LABEL_THRESHOLD = 0.5
-DOMINANT_ERROR_THRESHOLD = 0.3
-ERROR_COVER_THRESHOLD = 0.9
-TOP_ERROR = 3
+# ACC_DIFF_THRESHOLD = 0.03
+# DISTRIBUTION_DIFF_THRESHOLD = 0.3
+# DOMINANT_LABEL_IN_FAILURE_THRESHOLD = 0.8
+# DOMINANT_LABEL_IN_PREDICTION_THRESHOLD = 0.8
+# RARE_LABEL_THRESHOLD = 0.5
+# DOMINANT_ERROR_THRESHOLD = 0.3
+# ERROR_COVER_THRESHOLD = 0.9
+# TOP_ERROR = 3
 
 class ModelDiagnose():
-    def __init__(self, labels, predictions, split, attribute_dict_path, label_names_dict={}, print = True) -> None:
+    def __init__(self, labels, predictions, split, attribute_dict_path, label_names_dict={}, print=True,
+                 acc_diff_threshold=0.03, distribution_diff_threshold=0.3, dominant_label_in_failure_threshold=0.8,
+                 dominant_label_in_prediction_threshold=0.8, rare_label_threshold=0.5, dominant_error_threshold=0.3,
+                 error_cover_threshold=0.9, top_error=3) -> None:
         self.labels = labels
         self.predictions = predictions
         self._print = print
-        self.label_names_dict = label_names_dict if label_names_dict!={} else {label:str(label) for label in set(labels)}
+        self.label_names_dict = label_names_dict if label_names_dict != {} else {label: str(label) for label in set(labels)}
         if type(attribute_dict_path) == str:
             self.attributes = json.load(open(attribute_dict_path))
         else:
@@ -28,6 +31,16 @@ class ModelDiagnose():
         self.split = split
         self.data_length = len(self.labels)
         self.init_data_static()
+
+        # Initialize thresholds
+        self.acc_diff_threshold = acc_diff_threshold
+        self.distribution_diff_threshold = distribution_diff_threshold
+        self.dominant_label_in_failure_threshold = dominant_label_in_failure_threshold
+        self.dominant_label_in_prediction_threshold = dominant_label_in_prediction_threshold
+        self.rare_label_threshold = rare_label_threshold
+        self.dominant_error_threshold = dominant_error_threshold
+        self.error_cover_threshold = error_cover_threshold
+        self.top_error = top_error
 
     def init_data_static(self):
         # Get train/valid indexs
@@ -100,8 +113,8 @@ class ModelDiagnose():
         for label in self.label_number:
             if self.valid_labels_distribution[label] > 0:
                 class_acc = self.valid_confusion_matrix[label][label]/self.valid_labels_distribution[label]
-                if class_acc < self.valid_acc - ACC_DIFF_THRESHOLD:
-                    if self.train_labels_distribution[label] < RARE_LABEL_THRESHOLD * (len(self.train_idx)/len(self.label_number)):
+                if class_acc < self.valid_acc - self.acc_diff_threshold:
+                    if self.train_labels_distribution[label] < self.rare_label_threshold * (len(self.train_idx)/len(self.label_number)):
                         self.report.record_rare_label_error(label)
                         self.print_output('Rare Class: ',label)
 
@@ -113,8 +126,8 @@ class ModelDiagnose():
                     class_acc = self.valid_confusion_matrix[attribute][attribute]/self.valid_labels_distribution[attribute]
                 for sub_label in attribute_info['word']:
                     sub_acc = self.attributes[attribute]['valid acc'][sub_label]
-                    if sub_acc < class_acc - ACC_DIFF_THRESHOLD and self.attributes[attribute]['distribution'][VALID][sub_label] != 0:
-                        if self.attributes[attribute]['distribution'][TRAIN][sub_label] < RARE_LABEL_THRESHOLD * (len(self.train_labels_distribution[attribute])/len(attribute_info['word'])):
+                    if sub_acc < class_acc - self.acc_diff_threshold and self.attributes[attribute]['distribution'][VALID][sub_label] != 0:
+                        if self.attributes[attribute]['distribution'][TRAIN][sub_label] < self.rare_label_threshold * (len(self.train_labels_distribution[attribute])/len(attribute_info['word'])):
                             self.report.record_rare_case_error(attribute, sub_label, is_label=True)
                             self.print_output('Rare Sub Class: ',sub_label, attribute)
 
@@ -124,14 +137,14 @@ class ModelDiagnose():
             if attribute_info['type'] == 'description' or attribute_info['type'] == 'binary':
                 for description in attribute_info['word']:
                     sub_acc = self.attributes[attribute]['valid acc'][description]
-                    if sub_acc < self.valid_acc - ACC_DIFF_THRESHOLD:
+                    if sub_acc < self.valid_acc - self.acc_diff_threshold:
                         if len(self.train_idx):
                             valid_distribution = self.attributes[attribute]['distribution'][VALID][description] / len(self.valid_idx) if len(self.valid_idx) else 0
                             train_distribution = self.attributes[attribute]['distribution'][TRAIN][description] / len(self.train_idx) if len(self.train_idx) else 0
-                            if valid_distribution - train_distribution > DISTRIBUTION_DIFF_THRESHOLD:
+                            if valid_distribution - train_distribution > self.distribution_diff_threshold:
                                 self.report.record_rare_case_error(attribute, description, distribution_shift=True)
                                 self.print_output('ACC: %f \tDistribution Shift in attribute: "%s", description: %s, train: %f, valid: %f"'%(sub_acc,attribute, description,train_distribution,valid_distribution))
-                            elif train_distribution < RARE_LABEL_THRESHOLD * (1/len(self.attributes[attribute]['word'])):
+                            elif train_distribution < self.rare_label_threshold * (1/len(self.attributes[attribute]['word'])):
                                 self.report.record_rare_case_error(attribute, description, is_rare=True)
                                 self.print_output('ACC: %f \tRare Case: attribute "%s", description %s'%(sub_acc,attribute, description))
                             else:
@@ -147,7 +160,7 @@ class ModelDiagnose():
                         distribution = distribution/len(description_valid_idx)
                         largest_label = np.argmax(distribution)
                         
-                        if distribution[largest_label] > DOMINANT_LABEL_IN_PREDICTION_THRESHOLD:
+                        if distribution[largest_label] > self.dominant_label_in_prediction_threshold:
                             self.report.record_correlation_error(attribute, description,label_distribution=distribution)
                             self.print_output("Suspicous Correlation in prediction, when attribute %s is %s, prediction is %s with prob %s"%(attribute, description, str(largest_label), str(distribution[largest_label])))
                             
@@ -168,70 +181,47 @@ class ModelDiagnose():
                     distribution = distribution/len(description_error_valid_idx)
                     largest_label = np.argmax(distribution)
 
-                    if distribution[largest_label] > DOMINANT_LABEL_IN_FAILURE_THRESHOLD:
+                    if distribution[largest_label] > self.dominant_label_in_failure_threshold:
                         self.report.record_correlation_error(attribute, description, label_distribution=distribution, in_failure=True)
                         self.print_output("Suspicous Correlation in failure prediction, when attribute %s is %s, prediction is %s with prob %s"%(attribute, description, str(largest_label), str(distribution[largest_label])))
 
+                    # Additional code
+                    description_success_valid_idx = [i for i in self.valid_idx if self.attributes[attribute]['data'][i] == description and not self.error_binary_list[i]]
+                    distribution_success = np.zeros(len(self.label_number))
 
-#     def detect_failure_prediction_correlation(self):
-        # for attribute in self.attributes.keys():
-        #     attribute_info = self.attributes[attribute]
-        #     if attribute_info['type'] == 'description' or attribute_info['type'] == 'binary':
-        #         for description in attribute_info['word']:
+                    for idx in description_success_valid_idx:
+                        label = self.predictions[idx]
+                        distribution_success[label] += 1
 
-        #             description_error_valid_idx = [i for i in self.valid_idx if self.attributes[attribute]['data'][i] == description and self.error_binary_list[i]]
-        #             description_success_valid_idx = [i for i in self.valid_idx if self.attributes[attribute]['data'][i] == description and not self.error_binary_list[i]]
-        #             distribution_error = np.zeros(len(self.label_number))
-        #             distribution_success = np.zeros(len(self.label_number))
+                    if len(description_error_valid_idx) > 0:
+                        distribution_error = distribution / len(description_error_valid_idx)
+                        largest_label_error = np.argmax(distribution_error)
 
-        #             for idx in description_error_valid_idx:
-        #                 label = self.predictions[idx]
-        #                 distribution_error[label] += 1
+                        if distribution_error[largest_label_error] > self.dominant_label_in_failure_threshold:
+                            self.report.record_correlation_error(attribute, description, label_distribution=distribution_error, in_failure=True)
+                            self.print_output("Suspicious Correlation in failure prediction, when attribute %s is %s, prediction is %s with prob %s" % (attribute, description, str(largest_label_error), str(distribution_error[largest_label_error])))
+                            # New print statement
+                            self.print_output("Suspicious Correlation in failure prediction, when attribute %s is %s, prediction is %d with prob %s" % (attribute, description, largest_label_error, str(distribution_error[largest_label_error])))
 
-        #             for idx in description_success_valid_idx:
-        #                 label = self.predictions[idx]
-        #                 distribution_success[label] += 1
+                    if len(description_success_valid_idx) > 0:
+                        distribution_success = distribution_success / len(description_success_valid_idx)
+                        largest_label_success = np.argmax(distribution_success)
 
-        #             if len(description_error_valid_idx) > 0:
-        #                 distribution_error = distribution_error / len(description_error_valid_idx)
-        #                 largest_label_error = np.argmax(distribution_error)
+                        self.print_output("Successful prediction, when attribute %s is %s, prediction is %d with prob %s" % (attribute, description, largest_label_success, str(distribution_success[largest_label_success])))
 
-        #                 if distribution_error[largest_label_error] > DOMINANT_LABEL_IN_FAILURE_THRESHOLD:
-        #                     self.report.record_correlation_error(attribute, description, label_distribution=distribution_error, in_failure=True)
-        #                     self.print_output("Suspicious Correlation in failure prediction, when attribute %s is %s, prediction is %s with prob %s" % (attribute, description, str(largest_label_error), str(distribution_error[largest_label_error])))
+                    if len(description_error_valid_idx) > 0:
+                        prob_0_error = distribution_error[0] if len(distribution_error) > 0 else 0
+                        self.print_output("Suspicious Correlation in failure prediction, when attribute %s is %s, prediction is 0 with prob %s" % (attribute, description, str(prob_0_error)))
 
-        #             if len(description_success_valid_idx) > 0:
-        #                 distribution_success = distribution_success / len(description_success_valid_idx)
-        #                 largest_label_success = np.argmax(distribution_success)
+                    if len(description_success_valid_idx) > 0:
+                        prob_0_success = distribution_success[0] if len(distribution_success) > 0 else 0
+                        self.print_output("Successful prediction, when attribute %s is %s, prediction is 0 with prob %s" % (attribute, description, str(prob_0_success)))
+                            
 
-        #                 self.print_output("Successful prediction, when attribute %s is %s, prediction is %s with prob %s" % (attribute, description, str(largest_label_success), str(distribution_success[largest_label_success])))
-
-        #             if len(description_error_valid_idx) > 0:
-        #                 prob_0_error = distribution_error[0] if len(distribution_error) > 0 else 0
-        #                 self.print_output("Suspicious Correlation in failure prediction, when attribute %s is %s, prediction is 0 with prob %s" % (attribute, description, str(prob_0_error)))
-
-        #             if len(description_success_valid_idx) > 0:
-        #                 prob_0_success = distribution_success[0] if len(distribution_success) > 0 else 0
-        #                 self.print_output("Successful prediction, when attribute %s is %s, prediction is 0 with prob %s" % (attribute, description, str(prob_0_success)))
+                    
 
     def detect_failure_in_attribute_combination(self, combine_num = 3, label_as_attribute=False, high_cover_combinations=False, label=None):
         attributes = self.attributes
-        if label_as_attribute:
-            attributes['LABEL'] = {}
-            attributes['LABEL']['data'] = [str(i) for i in self.labels]
-            attributes['LABEL']['word'] = [str(i) for i in self.label_number]
-            
-        if label is None:
-            data_idx = self.valid_idx
-        else:
-            data_idx = [i for i in self.valid_idx if self.labels[i] == label]
-
-        # Generate combinations of "combine_num" attributes
-        combine_num = min(len(attributes.keys()), combine_num)
-        all_attribute_combineation_set = []
-        combinations_list = [i for i in list(combinations(list(attributes.keys()),combine_num))]
-        
-        for a_combination in combinations_list:
             attribute_combineation_set = [[[],[]],]
             for attribute in a_combination:
                 new_set = []
@@ -262,11 +252,11 @@ class ModelDiagnose():
             acc_list.append(1 - error_count/len(a_set[1]))
         self.report.record_combinations(all_attribute_combineation_set, error_cover_list, data_cover, acc_list)
 
-        # Greedy algorithm to find combinations to cover ERROR_COVER_THRESHOLD(90% default) errors
+        # Greedy algorithm to find combinations to cover self.error_cover_threshold(90% default) errors
         if high_cover_combinations:
             combination, index, error_cover, data_cover, acc_list = [],[],[],[],[]
             cover_rate = 0
-            while cover_rate < ERROR_COVER_THRESHOLD:
+            while cover_rate < self.error_cover_threshold:
                 error_cover_list = []
                 new_indexs = []
                 for i, a_set in enumerate(all_attribute_combineation_set):

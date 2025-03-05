@@ -34,10 +34,30 @@ Diagnose the model based on 1. attributes, 2. label, 3. predictions
 """
 # # Diagnose
 from processData.Diagnose import ModelDiagnose
-MD = ModelDiagnose(labels, predictions, split, "exampleData/celebA/attribute.json")
+
+# Define the parameters
+acc_diff_threshold = 0.01
+distribution_diff_threshold = 0.3
+dominant_label_in_failure_threshold = 0.8
+dominant_label_in_prediction_threshold = 0.8
+rare_label_threshold = 0.95
+dominant_error_threshold = 0.3
+error_cover_threshold = 0.9
+top_error = 3
+
+MD = ModelDiagnose(labels, predictions, split, "exampleData/celebA/attribute.json",
+                   acc_diff_threshold=acc_diff_threshold,
+                   distribution_diff_threshold=distribution_diff_threshold,
+                   dominant_label_in_failure_threshold=dominant_label_in_failure_threshold,
+                   dominant_label_in_prediction_threshold=dominant_label_in_prediction_threshold,
+                   rare_label_threshold=rare_label_threshold,
+                   dominant_error_threshold=dominant_error_threshold,
+                   error_cover_threshold=error_cover_threshold,
+                   top_error=top_error)
+
 print("Start detect_failure_by_label\n")
 MD.detect_failure_by_label()
-print("Start detect_failure_by_prediction\n")
+print("Start detect_prediction_correlation\n")
 MD.detect_prediction_correlation()
-print("Start detect_failure_by_attribute\n")
+print("Start detect_failure_prediction_correlation\n")
 MD.detect_failure_prediction_correlation()
