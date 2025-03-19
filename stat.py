@@ -36,11 +36,11 @@ Diagnose the model based on 1. attributes, 2. label, 3. predictions
 from processData.Diagnose import ModelDiagnose
 
 # Define the parameters
-acc_diff_threshold = 0.01
+acc_diff_threshold = 0.006
 distribution_diff_threshold = 0.3
 dominant_label_in_failure_threshold = 0.8
 dominant_label_in_prediction_threshold = 0.8
-rare_label_threshold = 0.95
+rare_label_threshold = 0.93
 dominant_error_threshold = 0.3
 error_cover_threshold = 0.9
 top_error = 3

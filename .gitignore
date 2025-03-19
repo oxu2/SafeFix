@@ -2,3 +2,4 @@
 *.pth
 .DS_Store
 /img_align_celeba
+/pictures
