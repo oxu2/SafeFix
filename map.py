@@ -1,6 +1,6 @@
 import json
 import numpy as np
-def get_original_indices_by_attribute(attribute_name, attr_assigned, attr_data, mapping_data, find_matching=False):
+def get_original_indices_by_attribute(attribute_name, attr_assigned, attr_data, mapping_data, find_matching=False, save_path=None):
     """
     Get the original indices of samples with specific attribute value
     Args:
@@ -9,6 +9,7 @@ def get_original_indices_by_attribute(attribute_name, attr_assigned, attr_data, 
         attr_data: str or dict, path to attribute json file or loaded json data
         mapping_data: str or dict, path to mapping json file or loaded mapping dict
         find_matching: bool, if True find matching attributes, if False find non-matching (default: False)
+        save_path: str, optional path to save indices to txt file
     Returns:
         list: original indices of samples with the specified attribute value
     """
@@ -56,6 +57,16 @@ def get_original_indices_by_attribute(attribute_name, attr_assigned, attr_data, 
     print(f"Number of samples: {len(filtered_indices)}")
     print(f"Original indices (first 10): {original_indices[:10]}...")
     
+    # Save indices to file if save_path is provided
+    if save_path is not None:
+        try:
+            with open(save_path, 'w') as f:
+                for idx in original_indices:
+                    f.write(f"{idx}\n")
+            print(f"Saved indices to {save_path}")
+        except Exception as e:
+            print(f"Error saving indices to file: {e}")
+    
     return original_indices
 
 # Example usage with file paths:
@@ -72,4 +83,13 @@ red_hair_indices = get_original_indices_by_attribute(  # Will find red hair
     "exampleData/celebA/attribute.json",
     "exampleData/celebA/idx_mapping.json",
     find_matching=True
+)
+
+# Example usage with saving to file:
+non_red_hair_indices = get_original_indices_by_attribute(
+    "hair color", 
+    "red",
+    "exampleData/celebA/attribute.json",
+    "exampleData/celebA/idx_mapping.json",
+    save_path="exampleData/celebA/non_red_hair_indices.txt"
 )
