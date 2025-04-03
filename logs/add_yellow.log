@@ -1,0 +1,16 @@
+(hibug) oxx220000@csr-93601:~/HiBug$ python resnet18.py 
+[1]+  Done                    CUDA_VISIBLE_DEVICES=1 nohup python -u filter.py > ./logs/filter.log 2>&1
+Loaded 3 feasible yellow hair images: {'006_yellow': 'yellow', '016_yellow': 'yellow', '007_yellow': 'yellow'}
+Warning: Could not find original image for 006_yellow
+Warning: Could not find original image for 016_yellow
+Warning: Could not find original image for 007_yellow
+Epoch [1/10], Loss: 47.4401, Train Acc: 0.9861, Val Acc: 0.9060
+Epoch [2/10], Loss: 14.5927, Train Acc: 0.9957, Val Acc: 0.9039
+Epoch [3/10], Loss: 10.7333, Train Acc: 0.9970, Val Acc: 0.9054
+Epoch [4/10], Loss: 7.3286, Train Acc: 0.9979, Val Acc: 0.9082
+Epoch [5/10], Loss: 6.0412, Train Acc: 0.9983, Val Acc: 0.9121
+Epoch [6/10], Loss: 5.2685, Train Acc: 0.9985, Val Acc: 0.9106
+Epoch [7/10], Loss: 4.5525, Train Acc: 0.9989, Val Acc: 0.9081
+Epoch [8/10], Loss: 4.0293, Train Acc: 0.9990, Val Acc: 0.9073
+Epoch [9/10], Loss: 3.9301, Train Acc: 0.9989, Val Acc: 0.9070
+Epoch [10/10], Loss: 2.8030, Train Acc: 0.9992, Val Acc: 0.9080

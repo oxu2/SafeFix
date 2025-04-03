@@ -1,6 +1,6 @@
 import json
 import numpy as np
-def get_original_indices_by_attribute(attribute_name, attr_assigned, attr_data, mapping_data, find_matching=False, save_path=None):
+def get_original_indices_by_attribute(attribute_name, attr_assigned, attr_data, mapping_data, find_matching=False, save_path=None, num_display=10):
     """
     Get the original indices of samples with specific attribute value
     Args:
@@ -10,6 +10,7 @@ def get_original_indices_by_attribute(attribute_name, attr_assigned, attr_data, 
         mapping_data: str or dict, path to mapping json file or loaded mapping dict
         find_matching: bool, if True find matching attributes, if False find non-matching (default: False)
         save_path: str, optional path to save indices to txt file
+        num_display: int, number of sample indices to display (default: 10)
     Returns:
         list: original indices of samples with the specified attribute value
     """
@@ -55,7 +56,7 @@ def get_original_indices_by_attribute(attribute_name, attr_assigned, attr_data, 
     match_str = "=" if find_matching else "!="
     print(f"\n{attribute_name}{match_str}{attr_assigned} information:")
     print(f"Number of samples: {len(filtered_indices)}")
-    print(f"Original indices (first 10): {original_indices[:10]}...")
+    print(f"Original indices (first {num_display}): {original_indices[:num_display]}...")
     
     # Save indices to file if save_path is provided
     if save_path is not None:
@@ -69,20 +70,14 @@ def get_original_indices_by_attribute(attribute_name, attr_assigned, attr_data, 
     
     return original_indices
 
-# Example usage with file paths:
-non_red_hair_indices = get_original_indices_by_attribute(  # Will find non-red hair by default
-    "hair color", 
-    "red",
-    "exampleData/celebA/attribute.json",
-    "exampleData/celebA/idx_mapping.json"
-)
 
 red_hair_indices = get_original_indices_by_attribute(  # Will find red hair
     "hair color", 
     "red",
     "exampleData/celebA/attribute.json",
     "exampleData/celebA/idx_mapping.json",
-    find_matching=True
+    find_matching=True,
+    num_display=100  # Display 100 indices
 )
 
 # Example usage with saving to file:
@@ -91,5 +86,7 @@ non_red_hair_indices = get_original_indices_by_attribute(
     "red",
     "exampleData/celebA/attribute.json",
     "exampleData/celebA/idx_mapping.json",
-    save_path="exampleData/celebA/non_red_hair_indices.txt"
+    find_matching=False,  # Finding hair color != red
+    save_path="exampleData/celebA/non_red_hair_indices.txt",
+    num_display=100  # Display 100 indices
 )

@@ -1,0 +1,11 @@
+nohup: ignoring input
+
+
+hair color=red information:
+Number of samples: 5709
+Original indices (first 10): [43, 103, 136, 149, 154, 169, 173, 196, 209, 236]...
+
+hair color!=red information:
+Number of samples: 174291
+Original indices (first 10): [0, 2, 3, 4, 5, 6, 7, 8, 9, 11]...
+Saved indices to exampleData/celebA/non_red_hair_indices.txt

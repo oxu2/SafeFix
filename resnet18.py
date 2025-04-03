@@ -7,10 +7,21 @@ from torch.utils.data import Dataset, DataLoader
 from PIL import Image
 import numpy as np
 import os
+import json
 from utils.defines import *
 
 # Load images, labels, predictions, and splits
 # os.environ['CUDA_VISIBLE_DEVICES'] = '0'
+
+# Load the feasible images (yellow hair images) from feasible.json
+feasible_file = "/people/cs/o/oxx220000/HiBug/feasible.json"
+if os.path.exists(feasible_file):
+    with open(feasible_file, 'r') as f:
+        feasible_images = json.load(f)
+    print(f"Loaded {len(feasible_images)} feasible yellow hair images: {feasible_images}")
+else:
+    feasible_images = {}
+    print("Warning: feasible.json not found. No additional yellow hair images will be added.")
 
 with open("exampleData/celebA/list_attr_celeba.txt") as f:
     lines = [line.strip('\n').split(' ')[0] for line in f.readlines()]
@@ -64,6 +75,40 @@ valid_imgs = [all_datas[i] for i in range(len(all_datas)) if split[i] == VALID]
 
 train_labels = np.array([labels[i] for i in range(len(all_datas)) if split[i] == TRAIN])
 valid_labels = np.array([labels[i] for i in range(len(all_datas)) if split[i] == VALID])
+
+# Add the yellow hair images to the training set
+# These images' labels will be the same as their corresponding original images
+yellow_image_paths = []
+yellow_image_labels = []
+
+for filename, color in feasible_images.items():
+    # Get the image file from the pictures directory
+    image_path = f"/people/cs/o/oxx220000/HiBug/pictures/{filename}.png"
+    
+    # Extract the base image number (e.g., "007" from "007_yellow")
+    base_number = filename.split('_')[0]
+    
+    # Find the corresponding original image in train_imgs by number
+    # We need to find the index of the original image to get its label
+    original_idx = None
+    for i, img_path in enumerate(train_imgs):
+        if f"/{base_number}.jpg" in img_path or f"/{base_number}_" in img_path:
+            original_idx = i
+            break
+    
+    # If we found the original image, add the yellow hair image with the same label
+    if original_idx is not None:
+        yellow_image_paths.append(image_path)
+        yellow_image_labels.append(train_labels[original_idx])
+        print(f"Added {image_path} with label {train_labels[original_idx]}")
+    else:
+        print(f"Warning: Could not find original image for {filename}")
+
+# Extend training set with yellow hair images
+if yellow_image_paths:
+    train_imgs.extend(yellow_image_paths)
+    train_labels = np.append(train_labels, yellow_image_labels, axis=0)
+    print(f"Added {len(yellow_image_paths)} yellow hair images to training set")
 
 train_dataset = CelebADataset(train_imgs, train_labels, transform)
 valid_dataset = CelebADataset(valid_imgs, valid_labels, transform)

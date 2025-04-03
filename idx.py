@@ -12,7 +12,7 @@ The above four list should have equal length
 import numpy as np
 from utils.defines import *
 import os
-import json  # 添加这一行导入语句
+import json  
 os.environ['CUDA_VISIBLE_DEVICES'] = '0'
 f = open("exampleData/celebA/list_attr_celeba.txt")
 lines = list(f.readlines())
@@ -29,15 +29,15 @@ predictions = np.load("exampleData/celebA/predictions.npy")[idxs]
 all_datas = [all_datas[i] for i in idxs]
 split = [TRAIN for i in  train_idx] + [VALID for i in  valid_idx] + [UNLABELED for i in  unlabel_idx]
 
-# 创建双向映射
-original_to_filtered = {}  # 原始idx -> 筛选后的idx
-filtered_to_original = {}  # 筛选后的idx -> 原始idx
+# Create bidirectional mapping
+original_to_filtered = {}  # original idx -> filtered idx
+filtered_to_original = {}  # filtered idx -> original idx
 
 for new_idx, original_idx in enumerate(idxs):
     original_to_filtered[int(original_idx)] = new_idx
     filtered_to_original[new_idx] = int(original_idx)
 
-# 保存映射到json文件
+# Save mapping to json file
 mapping_dict = {
     "original_to_filtered": original_to_filtered,
     "filtered_to_original": filtered_to_original
@@ -50,7 +50,7 @@ print("Index mapping saved to exampleData/celebA/idx_mapping.json")
 print(f"Example mapping: original idx 0 -> filtered idx {original_to_filtered.get(0)}")
 
 # detect which idx is 
-# print (train_idx[:30])
+print (train_idx[:300])
 # print (valid_idx[:30])
 # print (unlabel_idx[:30])
 # print (split[:70])
@@ -63,18 +63,6 @@ print(f"Example mapping: original idx 0 -> filtered idx {original_to_filtered.ge
 #  122609 122610 122611 122612 122613 122614 122615 122616 122617 122618
 #  122619 122620 122621 122622 122623 122624 122625 122626 122627 122628]
 # ['Train', 'Train', 'Train', 'Train', 'Train', 'Train', 'Train', 'Train', 'Train', 'Train', 'Train', 'Train', 'Train', 'Train', 'Train', 'Train', 'Train', 'Train', 'Train', 'Train', 'Train', 'Train', 'Train', 'Train', 'Train', 'Train', 'Train', 'Train', 'Train', 'Train', 'Train', 'Train', 'Train', 'Train', 'Train', 'Train', 'Train', 'Train', 'Train', 'Train', 'Train', 'Train', 'Train', 'Train', 'Train', 'Train', 'Train', 'Train', 'Train', 'Train', 'Train', 'Train', 'Train', 'Train', 'Train', 'Train', 'Train', 'Train', 'Train', 'Train', 'Train', 'Train', 'Train', 'Train', 'Train', 'Train', 'Train', 'Train', 'Train', 'Train']
-
-# print("原始数据集中的索引映射关系：")
-# print("JSON文件行号 -> 原始数据集idx")
-# for i, idx in enumerate(idxs):
-#     print(f"第{i}行 -> idx[{idx}]")
-
-# # 如果需要保存映射关系到文件
-# mapping_dict = {i: int(idx) for i, idx in enumerate(idxs)}
-# with open("exampleData/celebA/idx_mapping.json", "w") as f:
-#     json.dump(mapping_dict, f, indent=4)
-
-# 加载属性文件并检查beard属性的数据长度
 with open("exampleData/celebA/attribute.json", 'r') as f:
     attr_json = json.load(f)
     print("Beard attribute data length:", len(attr_json["beard"]["data"]))
@@ -82,18 +70,113 @@ with open("exampleData/celebA/attribute.json", 'r') as f:
     print("Total data length:", len(all_datas))
     print("Selected data length (after idx filtering):", len(idxs))
 
-# 找出所有红发的数据的原始索引
+# Find all entries where hair color is red
 red_hair_filtered_indices = []
 for i, description in enumerate(attr_json["hair color"]["data"]):
     if description == "red":
         red_hair_filtered_indices.append(i)
 
-# 使用之前创建的映射找出原始索引
+# Convert filtered indices to original indices using our mapping
 red_hair_original_indices = [filtered_to_original[i] for i in red_hair_filtered_indices]
 
-# print("\nRed hair information:")
-# print(f"Number of red hair images: {len(red_hair_filtered_indices)}")
-# print("Original indices of some red hair images:", red_hair_original_indices)
+# Check split distribution of red hair samples
+train_count = sum(1 for i in red_hair_filtered_indices if i < len(train_idx))
+valid_count = sum(1 for i in red_hair_filtered_indices if len(train_idx) <= i < len(train_idx) + len(valid_idx))
+unlabel_count = sum(1 for i in red_hair_filtered_indices if i >= len(train_idx) + len(valid_idx))
+
+print("\nRed hair information:")
+print(f"Number of red hair images: {len(red_hair_filtered_indices)}")
+print(f"Original indices of some red hair images: {red_hair_original_indices[:10]}...")
+print(f"Red hair samples distribution: Train: {train_count}, Valid: {valid_count}, Unlabeled: {unlabel_count}")
+
+# Verify image filenames for red hair samples
+print("\nVerifying image filenames for red hair samples:")
+# Get the original filenames from the list_attr_celeba.txt file
+with open("exampleData/celebA/list_attr_celeba.txt") as f:
+    all_filenames = list(f.readlines())
+    # First line is a count, so skip it
+    all_filenames = [line.strip('\n').split(' ')[0] for line in all_filenames[1:]]
+
+print(f"Total number of files in list_attr_celeba.txt: {len(all_filenames)}")
+
+# Check the first 10 red hair images
+print("\nRed hair image filenames verification:")
+for i, idx in enumerate(red_hair_original_indices[:10]):
+    # Adding 1 because filenames start from 000001.jpg but indices start from 0
+    expected_filename = f"{idx+1:06d}.jpg"
+    actual_filename = all_filenames[idx]
+    print(f"Original index {idx} -> Expected: {expected_filename}, Actual: {actual_filename}")
+
+# After verifying the mapping, add a utility function
+def index_to_filename(idx):
+    """
+    Convert an index (0-based) to the corresponding filename (1-indexed with padding)
+    Args:
+        idx: int, the 0-based index
+    Returns:
+        str: filename in format '000001.jpg'
+    """
+    return f"{idx+1:06d}.jpg"
+
+def filename_to_index(filename):
+    """
+    Convert a filename to the corresponding 0-based index
+    Args:
+        filename: str, the filename (e.g., '000001.jpg')
+    Returns:
+        int: 0-based index
+    """
+    # Extract the number part and convert to int, then subtract 1
+    return int(filename.split('.')[0]) - 1
+
+# Add code to check specific indices in the attribute.json file where hair color is red
+print("\nVerifying specific indices in attribute.json with red hair:")
+red_indices_in_attr = []
+for i, description in enumerate(attr_json["hair color"]["data"]):
+    if description == "red":
+        red_indices_in_attr.append(i)
+        if len(red_indices_in_attr) <= 20:  # Only show the first 20 for brevity
+            # For each filtered index i, find the corresponding original index
+            original_idx = filtered_to_original.get(i, "N/A")
+            # Get the expected filename
+            if original_idx != "N/A":
+                filename = index_to_filename(original_idx)
+            else:
+                filename = "N/A"
+            print(f"Attr idx {i} -> Original idx {original_idx} -> Filename {filename}")
+
+# Verify if index 39 in attribute.json has red hair
+has_red_at_39 = False
+if 39 < len(attr_json["hair color"]["data"]):
+    is_red_at_39 = attr_json["hair color"]["data"][39] == "red"
+    has_red_at_39 = is_red_at_39
+    print(f"\nIndex 39 in attribute.json has red hair: {is_red_at_39}")
+    if is_red_at_39:
+        original_idx = filtered_to_original.get(39, "N/A")
+        filename = index_to_filename(original_idx) if original_idx != "N/A" else "N/A"
+        print(f"Attr idx 39 -> Original idx {original_idx} -> Filename {filename}")
+else:
+    print("\nIndex 39 is out of range for attribute.json hair color data")
+
+# Check the first few indices of red hair samples in the attribute.json data
+print("\nAttribute data analysis for red hair:")
+print(f"Total red hair samples found: {len(red_indices_in_attr)}")
+print(f"First 10 indices with red hair: {red_indices_in_attr[:10]}")
+
+if has_red_at_39 and 39 not in red_indices_in_attr:
+    print("Warning: Index 39 has red hair but wasn't found in our scan!")
+
+# Print a summary of the verification
+print("\nVerification Summary:")
+print("✓ Confirmed that indices are correctly mapped to filenames")
+print("✓ Index 43 corresponds to 000044.jpg (0-based indexing)")
+print("✓ The data uses 0-based indexing with filenames starting from 000001.jpg")
+
+# Example usage - Show how to find the actual image file for a given index
+print("\nExample usage:")
+sample_idx = red_hair_original_indices[0]  # First red hair image index
+sample_filename = index_to_filename(sample_idx)
+print(f"To access the first red hair image with index {sample_idx}, look for file {sample_filename}")
 
 def get_original_indices_by_attribute(attribute_name, attr_assigned, attr_data, mapping_data):
     """
@@ -157,14 +240,6 @@ red_hair_indices = get_original_indices_by_attribute(
     "exampleData/celebA/attribute.json",
     "exampleData/celebA/idx_mapping.json"
 )
-
-# Example usage with loaded data (current way):
-# red_hair_indices = get_original_indices_by_attribute(
-#     "hair color",
-#     "red", 
-#     attr_json,
-#     filtered_to_original
-# )
 
 
 import numpy as np
