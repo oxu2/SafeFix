@@ -1,5 +1,17 @@
 {
-    "000016_yellow": "yellow",
-    "000007_yellow": "yellow",
-    "000006_yellow": "yellow"
+    "000016_yellow": {
+        "tag": "yellow",
+        "attribute": "hair",
+        "wearing_lipstick": 1
+    },
+    "000007_yellow": {
+        "tag": "yellow",
+        "attribute": "hair",
+        "wearing_lipstick": 0
+    },
+    "000006_yellow": {
+        "tag": "yellow",
+        "attribute": "hair",
+        "wearing_lipstick": 1
+    }
 }
