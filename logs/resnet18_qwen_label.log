@@ -1,0 +1,9 @@
+nohup: ignoring input
+Traceback (most recent call last):
+  File "resnet18.py", line 135, in <module>
+    train_labels = np.append(train_labels, color_image_labels, axis=0)
+  File "<__array_function__ internals>", line 6, in append
+  File "/people/cs/o/oxx220000/.conda/envs/hibug/lib/python3.7/site-packages/numpy/lib/function_base.py", line 4817, in append
+    return concatenate((arr, values), axis=axis)
+  File "<__array_function__ internals>", line 6, in concatenate
+ValueError: all the input arrays must have same number of dimensions, but the array at index 0 has 1 dimension(s) and the array at index 1 has 2 dimension(s)

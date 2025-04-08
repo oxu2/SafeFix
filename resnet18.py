@@ -8,20 +8,36 @@ from PIL import Image
 import numpy as np
 import os
 import json
+import argparse
 from utils.defines import *
 
-# Load images, labels, predictions, and splits
-# os.environ['CUDA_VISIBLE_DEVICES'] = '0'
+# Parse command-line arguments
+parser = argparse.ArgumentParser(description='Train ResNet18 model on CelebA dataset')
+parser.add_argument('--verbose', action='store_true', default=False,
+                    help='Enable verbose output')
+parser.add_argument('--feasible-file', type=str, default="red_hair_color_feasible_04080238.json",
+                    help='Path to the feasible images JSON file')
+parser.add_argument('--olabel', action='store_true', default=False,
+                    help='Use original dataset labels. If False, uses labels from feasible_file')
+parser.add_argument('--dir', type=str, default="redhair",
+                    help='Directory containing images')
+args = parser.parse_args()
+verbose = args.verbose
 
-# Load the feasible images (yellow hair images) from feasible.json
-feasible_file = "/people/cs/o/oxx220000/HiBug/feasible.json"
+# Extract tag from the feasible_file name
+feasible_file = args.feasible_file
+tag = feasible_file.split('_')[0] if '_' in feasible_file else "unknown"
+
+# Load the feasible images (color hair images) from feasible.json
 if os.path.exists(feasible_file):
     with open(feasible_file, 'r') as f:
         feasible_images = json.load(f)
-    print(f"Loaded {len(feasible_images)} feasible yellow hair images: {feasible_images}")
+    # if verbose:
+    #     print(f"Loaded {len(feasible_images)} feasible {tag} hair images")
+    print(f"Loaded {len(feasible_images)} feasible {tag} hair images")
 else:
     feasible_images = {}
-    print("Warning: feasible.json not found. No additional yellow hair images will be added.")
+    print(f"Warning: {feasible_file} not found. No additional {tag} hair images will be added.")
 
 with open("exampleData/celebA/list_attr_celeba.txt") as f:
     lines = [line.strip('\n').split(' ')[0] for line in f.readlines()]
@@ -34,7 +50,6 @@ unlabel_idx = np.arange(len(all_datas))[-80000:]
 
 idxs = np.concatenate([train_idx, valid_idx, unlabel_idx], axis=0)
 labels = np.load("exampleData/celebA/labels.npy")[idxs]
-# predictions = np.load("exampleData/celebA/predictions.npy")[idxs]
 
 all_datas = [all_datas[i] for i in idxs]
 split = (
@@ -76,16 +91,17 @@ valid_imgs = [all_datas[i] for i in range(len(all_datas)) if split[i] == VALID]
 train_labels = np.array([labels[i] for i in range(len(all_datas)) if split[i] == TRAIN])
 valid_labels = np.array([labels[i] for i in range(len(all_datas)) if split[i] == VALID])
 
-# Add the yellow hair images to the training set
+# Add the colored hair images to the training set
 # These images' labels will be the same as their corresponding original images
-yellow_image_paths = []
-yellow_image_labels = []
+colored_image_paths = []
+colored_image_labels = []
 
-for filename, color in feasible_images.items():
+for filename in feasible_images.keys():
     # Get the image file from the pictures directory
-    image_path = f"/people/cs/o/oxx220000/HiBug/pictures/{filename}.png"
+    # Use relative path since the script runs from the HiBug directory
+    image_path = f"./{args.dir}/{filename}.jpg"
     
-    # Extract the base image number (e.g., "007" from "007_yellow")
+    # Extract the base image number (e.g., "007" from "007_red")
     base_number = filename.split('_')[0]
     
     # Find the corresponding original image in train_imgs by number
@@ -96,21 +112,33 @@ for filename, color in feasible_images.items():
             original_idx = i
             break
     
-    # If we found the original image, add the yellow hair image with the same label
+    # If we found the original image, add the colored hair image with the same label
     if original_idx is not None:
-        yellow_image_paths.append(image_path)
-        yellow_image_labels.append(train_labels[original_idx])
-        print(f"Added {image_path} with label {train_labels[original_idx]}")
+        colored_image_paths.append(image_path)
+        colored_image_labels.append(train_labels[original_idx])
+        if verbose:
+            print(f"Added {image_path} with label {train_labels[original_idx]}")
     else:
         print(f"Warning: Could not find original image for {filename}")
 
-# Extend training set with yellow hair images
-if yellow_image_paths:
-    train_imgs.extend(yellow_image_paths)
-    train_labels = np.append(train_labels, yellow_image_labels, axis=0)
-    print(f"Added {len(yellow_image_paths)} yellow hair images to training set")
+# Print information about the added images
+print(f"Added {len(colored_image_paths)} generated images, before training set has {len(train_labels)} images, now {len(train_labels) + len(colored_image_labels)}")
 
-train_dataset = CelebADataset(train_imgs, train_labels, transform)
+# Add the colored hair images to the training data
+if colored_image_paths:
+    # Combine original training data with colored hair images
+    all_train_imgs = train_imgs + colored_image_paths
+    all_train_labels = np.concatenate((train_labels, np.array(colored_image_labels)))
+else:
+    all_train_imgs = train_imgs
+    all_train_labels = train_labels
+
+if verbose:
+    print(f"Training images: {len(all_train_imgs)}, Labels: {len(all_train_labels)}")
+    print(f"Validation images: {len(valid_imgs)}, Labels: {len(valid_labels)}")
+    # 84050 20000
+# Create datasets using the combined data
+train_dataset = CelebADataset(all_train_imgs, all_train_labels, transform)
 valid_dataset = CelebADataset(valid_imgs, valid_labels, transform)
 
 train_loader = DataLoader(train_dataset, batch_size=64, shuffle=True, num_workers=4)
@@ -128,7 +156,6 @@ optimizer = optim.Adam(model.parameters(), lr=1e-4)
 # Training loop
 def train_model(model, train_loader, valid_loader, criterion, optimizer, num_epochs=10):
     for epoch in range(num_epochs):
-        # print(f"Epoch {epoch+1}/{num_epochs}")
         model.train()
         total_loss, total_correct = 0, 0
         

@@ -1,0 +1,6 @@
+nohup: ignoring input
+Loaded 4050 feasible red hair images
+Added 4050 generated images, before training set has 80000 images, now 84050
+Epoch [1/10], Loss: 57.7312, Train Acc: 0.9839, Val Acc: 0.9115
+Epoch [2/10], Loss: 19.6191, Train Acc: 0.9944, Val Acc: 0.9146
+Epoch [3/10], Loss: 12.5219, Train Acc: 0.9966, Val Acc: 0.9074
