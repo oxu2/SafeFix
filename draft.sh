@@ -1,3 +1,5 @@
+nohup python -u filter.py  > ./logs/filter.log 2>&1 &
+
 conda activate hibug
 conda activate ad
 
@@ -16,3 +18,6 @@ CUDA_VISIBLE_DEVICES=0,2,3 python filter.py
 CUDA_VISIBLE_DEVICES=1 nohup python -u filter.py  > ./logs/filter.log 2>&1 &
 
 CUDA_VISIBLE_DEVICES=1 nohup python -u map.py  > ./logs/map.log 2>&1 &
+
+# CONDA_ENV=myenv python filter.py --dir /path/to/images --file-type jpg
+CONDA_ENV=control python filter.py

@@ -1,54 +1,1 @@
 nohup: ignoring input
-Switching to conda environment 'ad' (current: hibug)
-Executing: /usr/local/anaconda3/bin/conda run -n ad python /people/cs/o/oxx220000/HiBug/filter.py 
-Loading checkpoint shards:   0%|          | 0/5 [00:00<?, ?it/s]Loading checkpoint shards:  20%|██        | 1/5 [00:01<00:04,  1.00s/it]Loading checkpoint shards:  40%|████      | 2/5 [00:01<00:02,  1.37it/s]Loading checkpoint shards:  60%|██████    | 3/5 [00:02<00:01,  1.55it/s]Loading checkpoint shards:  80%|████████  | 4/5 [00:02<00:00,  1.66it/s]Loading checkpoint shards: 100%|██████████| 5/5 [00:02<00:00,  2.07it/s]Loading checkpoint shards: 100%|██████████| 5/5 [00:02<00:00,  1.73it/s]
-
-Running in correct conda environment: ad
-Using 1 GPUs with 22GiB memory allocation each
-Processing 007_sad.png...
-text: <|im_start|>system
-You are a helpful assistant.<|im_end|>
-<|im_start|>user
-Is the person in this picture in yellow hair?, only 1 or 0 is accepted.<|vision_start|><|image_pad|><|vision_end|><|im_end|>
-<|im_start|>assistant
-
-Processing 007_yellow2.png...
-text: <|im_start|>system
-You are a helpful assistant.<|im_end|>
-<|im_start|>user
-Is the person in this picture in yellow hair?, only 1 or 0 is accepted.<|vision_start|><|image_pad|><|vision_end|><|im_end|>
-<|im_start|>assistant
-
-Processing 006_yellow.png...
-text: <|im_start|>system
-You are a helpful assistant.<|im_end|>
-<|im_start|>user
-Is the person in this picture in yellow hair?, only 1 or 0 is accepted.<|vision_start|><|image_pad|><|vision_end|><|im_end|>
-<|im_start|>assistant
-
-Processing 016_yellow.png...
-text: <|im_start|>system
-You are a helpful assistant.<|im_end|>
-<|im_start|>user
-Is the person in this picture in yellow hair?, only 1 or 0 is accepted.<|vision_start|><|image_pad|><|vision_end|><|im_end|>
-<|im_start|>assistant
-
-Processing 006_sad.png...
-text: <|im_start|>system
-You are a helpful assistant.<|im_end|>
-<|im_start|>user
-Is the person in this picture in yellow hair?, only 1 or 0 is accepted.<|vision_start|><|image_pad|><|vision_end|><|im_end|>
-<|im_start|>assistant
-
-Processing 007_yellow.png...
-text: <|im_start|>system
-You are a helpful assistant.<|im_end|>
-<|im_start|>user
-Is the person in this picture in yellow hair?, only 1 or 0 is accepted.<|vision_start|><|image_pad|><|vision_end|><|im_end|>
-<|im_start|>assistant
-
-Results saved to results.json
-Final results: {'007_sad': 0, '007_yellow2': 0, '006_yellow': 1, '016_yellow': 1, '006_sad': 0, '007_yellow': 1}
-Color mapping for positive results (filenames starting with 0) saved to feasible.json
-Color mapping: {'006_yellow': 'yellow', '016_yellow': 'yellow', '007_yellow': 'yellow'}
-

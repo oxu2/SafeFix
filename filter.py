@@ -2,6 +2,7 @@ import json
 import random
 import sys
 import os
+import datetime  # Add this import to support timestamps
 
 # Check if running in the correct conda environment
 def ensure_conda_env(env_name):
@@ -187,14 +188,23 @@ def process_directory(directory_path, output_json_path="results.json", tag="yell
         extensions = ['.' + ext for ext in file_type.lower().split(',')]
         image_files = [f for f in os.listdir(directory_path) if any(f.endswith(ext) for ext in extensions)]
     
-    print(f"Found {len(image_files)} images with file type(s): {file_type}")
+    # Sort image files by name (alphanumerically)
+    # This will ensure files like "1.jpg" come before "2.jpg"
+    image_files.sort()
+    
+    if verbose:
+        print(f"Found {len(image_files)} images with file type(s): {file_type}")
+        print(f"Processing images in order: {', '.join(image_files[:5])}{'...' if len(image_files) > 5 else ''}")
+    else:
+        print(f"Found {len(image_files)} images with file type(s): {file_type}")
     
     for image_file in image_files:
         image_path = os.path.join(directory_path, image_file)
         # Get filename without extension
         filename = os.path.splitext(image_file)[0]
         
-        # print(f"Processing {image_file}...")
+        if verbose:
+            print(f"Processing {image_file}...")
         result = process_image(image_path, model, processor, tag, attribute, verbose=verbose)
         results[filename] = result
         
@@ -202,7 +212,8 @@ def process_directory(directory_path, output_json_path="results.json", tag="yell
         with open(output_json_path, 'w') as f:
             json.dump(results, f, indent=4)
         
-    # print(f"Results saved to {output_json_path}")
+    if verbose:
+        print(f"Results saved to {output_json_path}")
     return results
 
 # Update function to extract features from results with configurable filtering
@@ -253,11 +264,65 @@ def create_feature_mapping(results_json, output_feature_json="features.json", ta
     # print(f"Feature mapping saved to {output_feature_json} (filtered for {tag}_{attribute_key}=1)")
     return feature_mapping
 
-def main(directory_path="/people/cs/o/oxx220000/HiBug/pictures", 
+def rename_images_with_suffix(directory_path, suffix="_red"):
+    """
+    Rename JPG files that have numeric filenames by adding a suffix before the extension.
+    Example: 123.jpg becomes 123_red.jpg
+    
+    Parameters:
+    - directory_path: Path to directory containing images to rename
+    - suffix: The suffix to add before the extension (default: "_red")
+    
+    Returns:
+    - int: Number of files renamed
+    """
+    # Ensure directory exists
+    if not os.path.isdir(directory_path):
+        print(f"Error: Directory {directory_path} does not exist")
+        return 0
+        
+    renamed_count = 0
+    
+    # Get all jpg files in the directory
+    jpg_files = [f for f in os.listdir(directory_path) if f.lower().endswith('.jpg')]
+    
+    for filename in jpg_files:
+        # Get base name without extension
+        base_name = os.path.splitext(filename)[0]
+        
+        # Skip files that already have the suffix
+        if base_name.endswith(suffix):
+            continue
+            
+        # Only rename files that are numeric (e.g., "123.jpg")
+        if base_name.isdigit():
+            # Create new filename with suffix
+            new_filename = f"{base_name}{suffix}.jpg"
+            
+            # Full paths
+            old_path = os.path.join(directory_path, filename)
+            new_path = os.path.join(directory_path, new_filename)
+            
+            # Rename the file
+            try:
+                os.rename(old_path, new_path)
+                renamed_count += 1
+                print(f"Renamed: {filename} -> {new_filename}")
+            except Exception as e:
+                print(f"Error renaming {filename}: {e}")
+        else:
+            print(f"Skipped non-numeric filename: {filename}")
+    
+    print(f"Successfully renamed {renamed_count} numeric-named files in {directory_path}")
+    return renamed_count
+
+def main(directory_path="./redhair", 
          tag="red", 
          attribute="hair color",
          verbose=False,
-         file_type="png"):
+         file_type="png",
+         rename_files=False,
+         rename_suffix="_red"):
     """
     Main function to process images and create feature mapping.
     
@@ -267,14 +332,25 @@ def main(directory_path="/people/cs/o/oxx220000/HiBug/pictures",
     - attribute: The attribute to detect (e.g., "hair color")
     - verbose: Whether to display detailed processing information
     - file_type: Type of image files to process ("png", "jpg", "png,jpg", "all")
+    - rename_files: Whether to rename files by adding a suffix
+    - rename_suffix: Suffix to add when renaming files (default: "_red")
     
     Returns:
     - Tuple of (results, feature_mapping)
     """
-    # Generate filenames based on tag and attribute
+    # If rename_files is True, rename the files in the directory
+    if rename_files:
+        renamed_count = rename_images_with_suffix(directory_path, rename_suffix)
+        print(f"Renamed {renamed_count} files with suffix '{rename_suffix}'")
+        # Return early if we're only renaming files
+        if not tag or not attribute:
+            return None, None
+    
+    # Generate filenames based on tag and attribute with timestamp
     attribute_key = attribute.replace(" ", "_")
-    results_json_path = f"{tag}_{attribute_key}_results.json"
-    output_feature_json = f"{tag}_{attribute_key}_feasible.json"
+    timestamp = datetime.datetime.now().strftime("%m%d%H%M")  # Format: MMDDHHMM (month, day, hour, minute)
+    results_json_path = f"{tag}_{attribute_key}_results_{timestamp}.json"
+    output_feature_json = f"{tag}_{attribute_key}_feasible_{timestamp}.json"
     
     print(f"Starting image processing for {tag} {attribute}...")
     # print(f"Processing directory: {directory_path}")
@@ -299,18 +375,22 @@ if __name__ == "__main__":
     import shlex
     
     parser = argparse.ArgumentParser(description='Process images for specific attributes')
-    parser.add_argument('--dir', type=str, default="/people/cs/o/oxx220000/HiBug/pictures", 
+    parser.add_argument('--dir', type=str, default="./redhair", 
                         help='Directory containing images')
     parser.add_argument('--tag', type=str, default="red", 
                         help='Tag to detect (e.g., "yellow", "red")')
     parser.add_argument('--attribute', type=str, default="hair color", 
                         help='Attribute to detect (e.g., "hair color", "eyes")')
-    parser.add_argument('--verbose', action='store_true', 
+    parser.add_argument('--verbose', action='store_true', default=False,
                         help='Display detailed processing information')
-    parser.add_argument('--file-type', type=str, default="png", 
+    parser.add_argument('--file-type', type=str, default="jpg", 
                         help='Type of image files to process ("png", "jpg", "png,jpg", "all")')
+    parser.add_argument('--rename-files', action='store_true', default=True,
+                        help='Rename files by adding suffix before extension')
+    parser.add_argument('--rename-suffix', type=str, default="_red",
+                        help='Suffix to add when renaming files (default: "_red")')
     
     args = parser.parse_args()
 
-    
-    main(args.dir, args.tag, args.attribute, args.verbose, args.file_type)
+    main(args.dir, args.tag, args.attribute, args.verbose, args.file_type, 
+         args.rename_files, args.rename_suffix)
