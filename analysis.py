@@ -30,3 +30,7 @@ all_datas = [all_datas[i] for i in idxs]
 split = [TRAIN for i in  train_idx] + [VALID for i in  valid_idx] + [UNLABELED for i in  unlabel_idx]
 
 # print("labels length: ", len(labels)) #labels length:  180000
+print("predictions length: ", len(predictions)) #predictions length:  180000
+# constrat labels and predictions to make accuracy
+acc = np.sum(np.array(labels) == np.array(predictions)) / len(labels)
+print("acc: ", acc) #acc:  0.9380166666666667

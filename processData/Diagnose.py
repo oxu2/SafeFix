@@ -147,6 +147,14 @@ class ModelDiagnose():
                             elif train_distribution < self.rare_label_threshold * (1/len(self.attributes[attribute]['word'])):
                                 self.report.record_rare_case_error(attribute, description, is_rare=True)
                                 self.print_output('ACC: %f \tRare Case: attribute "%s", description %s'%(sub_acc,attribute, description))
+                                
+                                # Add output of indices for this specific attribute and description
+                                if attribute == "hair color" and description == "red":
+                                    description_valid_idx = [i for i in self.valid_idx if self.attributes[attribute]['data'][i] == description]
+                                    self.print_output(f"Indices with {attribute}={description} in validation set: {description_valid_idx[20]}...")
+                                    self.print_output(f"The accuracy {sub_acc} is calculated from validation set samples with this attribute")
+                                    correct_count = sum(1 for idx in description_valid_idx if self.predictions[idx] == self.labels[idx])
+                                    self.print_output(f"Correct predictions: {correct_count}/{len(description_valid_idx)}")
                             else:
                                 self.report.record_rare_case_error(attribute, description)
                                 self.print_output('ACC: %f \tHard case: attribute "%s", description %s'%(sub_acc,attribute, description))

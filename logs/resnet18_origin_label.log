@@ -4,3 +4,10 @@ Added 4050 generated images, before training set has 80000 images, now 84050
 Epoch [1/10], Loss: 57.7312, Train Acc: 0.9839, Val Acc: 0.9115
 Epoch [2/10], Loss: 19.6191, Train Acc: 0.9944, Val Acc: 0.9146
 Epoch [3/10], Loss: 12.5219, Train Acc: 0.9966, Val Acc: 0.9074
+Epoch [4/10], Loss: 9.2862, Train Acc: 0.9974, Val Acc: 0.9074
+Epoch [5/10], Loss: 7.2474, Train Acc: 0.9981, Val Acc: 0.9046
+Epoch [6/10], Loss: 5.9274, Train Acc: 0.9983, Val Acc: 0.9075
+Epoch [7/10], Loss: 5.0597, Train Acc: 0.9986, Val Acc: 0.9056
+Epoch [8/10], Loss: 5.1688, Train Acc: 0.9986, Val Acc: 0.9074
+Epoch [9/10], Loss: 4.1948, Train Acc: 0.9989, Val Acc: 0.9081
+Epoch [10/10], Loss: 3.3833, Train Acc: 0.9991, Val Acc: 0.9033
