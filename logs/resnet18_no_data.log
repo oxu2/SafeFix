@@ -1,0 +1,23 @@
+nohup: ignoring input
+start time: 2025-04-10 13:37:59
+Warning: red_hair_color_feasible_104080238.json not found. No additional red hair color images will be added.
+Added 0 generated red hair color images, before training set has 80000 images, now 80000
+Using resnet18 model with pretrained weights
+Epoch [1/10], Loss: 40.1465, Train Acc: 0.9874, Val Loss: 0.4947, Val Acc: 0.9009
+Epoch [2/10], Loss: 14.7843, Train Acc: 0.9957, Val Loss: 0.5819, Val Acc: 0.8999
+Epoch [3/10], Loss: 10.7373, Train Acc: 0.9967, Val Loss: 0.5435, Val Acc: 0.9059
+Epoch [4/10], Loss: 3.5852, Train Acc: 0.9990, Val Loss: 0.6649, Val Acc: 0.9050
+Epoch [5/10], Loss: 2.5583, Train Acc: 0.9993, Val Loss: 0.7127, Val Acc: 0.9024
+Epoch [6/10], Loss: 2.7780, Train Acc: 0.9991, Val Loss: 0.7875, Val Acc: 0.9010
+Epoch [7/10], Loss: 1.2333, Train Acc: 0.9997, Val Loss: 0.7988, Val Acc: 0.9042
+Epoch [8/10], Loss: 0.6245, Train Acc: 0.9998, Val Loss: 0.7369, Val Acc: 0.9082
+Epoch [9/10], Loss: 0.2471, Train Acc: 1.0000, Val Loss: 0.9379, Val Acc: 0.9087
+Epoch [10/10], Loss: 0.0920, Train Acc: 1.0000, Val Loss: 0.9271, Val Acc: 0.9062
+Generating and saving predictions...
+Train predictions length: 80000
+Validation predictions length: 20000
+
+Combined predictions length: 180000 (should match combined_labels length: 180000)
+Start Time: 2025-04-10 13:37:59
+End Time:   2025-04-10 13:54:53
+Duration:   00:16:54

@@ -24,7 +24,11 @@ unlabel_idx = np.arange(len(all_datas))[-80000:]
 # that means, the 80001 th to 102599 th sample are not used in this example
 idxs = np.concatenate([train_idx, valid_idx, unlabel_idx], axis=0)
 labels = np.load("exampleData/celebA/labels.npy")[idxs]
-predictions = np.load("exampleData/celebA/predictions.npy")[idxs]
+predictions = np.load("combined_predictions_04080238_resnet18.npy")
+# predictions = (lambda p: np.concatenate([p[:100000], p[-80000:]], axis=0))(np.load("/people/cs/o/oxx220000/HiBug/combined_predictions_04080238.npy"))
+predictions_old = np.load("exampleData/celebA/predictions.npy")[idxs]
+print("predictions shape:", predictions.shape)
+print("predictions_old shape:", predictions_old.shape)
 all_datas = [all_datas[i] for i in idxs]
 split = [TRAIN for i in  train_idx] + [VALID for i in  valid_idx] + [UNLABELED for i in  unlabel_idx]
 
@@ -36,7 +40,7 @@ Diagnose the model based on 1. attributes, 2. label, 3. predictions
 from processData.Diagnose import ModelDiagnose
 
 # Define the parameters
-acc_diff_threshold = 0.006
+acc_diff_threshold = 0.01
 distribution_diff_threshold = 0.3
 dominant_label_in_failure_threshold = 0.8
 dominant_label_in_prediction_threshold = 0.8
@@ -45,7 +49,9 @@ dominant_error_threshold = 0.3
 error_cover_threshold = 0.9
 top_error = 3
 
-MD = ModelDiagnose(labels, predictions, split, "exampleData/celebA/attribute.json",
+MD = ModelDiagnose(labels, 
+                   predictions, 
+                   split, "exampleData/celebA/attribute.json",
                    acc_diff_threshold=acc_diff_threshold,
                    distribution_diff_threshold=distribution_diff_threshold,
                    dominant_label_in_failure_threshold=dominant_label_in_failure_threshold,

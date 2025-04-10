@@ -1,0 +1,36 @@
+nohup: ignoring input
+start time: 2025-04-09 03:26:11
+Model Validation ACC: 0.90675
+Start detect_failure_by_label
+
+Start detect_prediction_correlation
+
+ACC: 0.893557 	Hard case: attribute "beard", description No
+ACC: 0.849626 	Hard case: attribute "gender", description female
+Suspicous Correlation in prediction, when attribute gender is female, prediction is 1 with prob 0.8669670180210812
+ACC: 0.880229 	Hard case: attribute "hair color", description blonde
+ACC: 0.899712 	Hard case: attribute "hair color", description brown
+ACC: 0.900161 	Rare Case: attribute "hair color", description red
+Indices with hair color=red in validation set: 80478...
+The accuracy 0.9001610305958132 is calculated from validation set samples with this attribute
+Correct predictions: 559/621
+ACC: 0.889450 	Rare Case: attribute "skin", description brown
+ACC: 0.851711 	Rare Case: attribute "emotion", description sad
+ACC: 0.882006 	Hard case: attribute "emotion", description surprised
+ACC: 0.859833 	Rare Case: attribute "emotion", description pensive
+ACC: 0.897825 	Hard case: attribute "young", description young
+Start detect_failure_prediction_correlation
+
+Suspicous Correlation in failure prediction, when attribute hair color is yellow, prediction is 1 with prob 0.8333333333333334
+While attribute hair color is not yellow, combined prediction is 1 with prob 0.7315761161915008
+Suspicous Correlation in failure prediction, when attribute hair color is blonde, prediction is 1 with prob 0.8197767145135566
+While attribute hair color is not blonde, combined prediction is 1 with prob 0.6873990306946688
+Suspicous Correlation in failure prediction, when attribute emotion is calm, prediction is 1 with prob 0.8163265306122449
+While attribute emotion is not calm, combined prediction is 1 with prob 0.7296255506607929
+Suspicous Correlation in failure prediction, when attribute emotion is happy, prediction is 1 with prob 0.8114035087719298
+While attribute emotion is not happy, combined prediction is 1 with prob 0.7208307880268784
+Suspicous Correlation in failure prediction, when attribute emotion is angry, prediction is 1 with prob 1.0
+While attribute emotion is not angry, combined prediction is 1 with prob 0.7313272434175174
+Start Time: 2025-04-09 03:26:11
+End Time:   2025-04-09 03:26:13
+Duration:   00:00:02

@@ -137,6 +137,12 @@ class ModelDiagnose():
             if attribute_info['type'] == 'description' or attribute_info['type'] == 'binary':
                 for description in attribute_info['word']:
                     sub_acc = self.attributes[attribute]['valid acc'][description]
+                    if attribute == "hair color" and description == "red":
+                                    description_valid_idx = [i for i in self.valid_idx if self.attributes[attribute]['data'][i] == description]
+                                    self.print_output(f"Indices with {attribute}={description} in validation set: {description_valid_idx[20]}...")
+                                    self.print_output(f"The accuracy {sub_acc} is calculated from validation set samples with this attribute")
+                                    correct_count = sum(1 for idx in description_valid_idx if self.predictions[idx] == self.labels[idx])
+                                    self.print_output(f"Correct predictions: {correct_count}/{len(description_valid_idx)}")
                     if sub_acc < self.valid_acc - self.acc_diff_threshold:
                         if len(self.train_idx):
                             valid_distribution = self.attributes[attribute]['distribution'][VALID][description] / len(self.valid_idx) if len(self.valid_idx) else 0
@@ -207,7 +213,7 @@ class ModelDiagnose():
                                         combined_distribution[label] += 1
 
                         combined_distribution = combined_distribution / np.sum(combined_distribution)
-                        self.print_output("While attribute %s is not %s, combined prediction is %s with prob %s"%(attribute, description, str(np.argmax(combined_distribution)), str(np.max(combined_distribution))))
+                        # self.print_output("While attribute %s is not %s, combined prediction is %s with prob %s"%(attribute, description, str(np.argmax(combined_distribution)), str(np.max(combined_distribution))))
 
     def detect_failure_in_attribute_combination(self, combine_num = 3, label_as_attribute=False, high_cover_combinations=False, label=None):
         attributes = self.attributes

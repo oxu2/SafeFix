@@ -1,3 +1,18 @@
 nohup: ignoring input
 Added 4050 generated red hair color images, before training set has 80000 images, now 84050
 Using vit model with pretrained weights
+Epoch [1/10], Loss: 65.2582, Train Acc: 0.9829, Val Acc: 0.8995
+Epoch [2/10], Loss: 37.1393, Train Acc: 0.9894, Val Acc: 0.9069
+Epoch [3/10], Loss: 30.8102, Train Acc: 0.9913, Val Acc: 0.8832
+Epoch [4/10], Loss: 44.2744, Train Acc: 0.9883, Val Acc: 0.9074
+Epoch [5/10], Loss: 37.1738, Train Acc: 0.9898, Val Acc: 0.9007
+Epoch [6/10], Loss: 31.7181, Train Acc: 0.9912, Val Acc: 0.8988
+Epoch [7/10], Loss: 55.8656, Train Acc: 0.9843, Val Acc: 0.9116
+Epoch [8/10], Loss: 47.5302, Train Acc: 0.9873, Val Acc: 0.9060
+Epoch [9/10], Loss: 50.1290, Train Acc: 0.9863, Val Acc: 0.8856
+Epoch [10/10], Loss: 211.1942, Train Acc: 0.9323, Val Acc: 0.8971
+Generating and saving predictions...
+Original train predictions length: 80000
+Modified image predictions length: 4050
+Validation predictions length: 20000
+Combined predictions length: 184050 (should match combined_labels length: 184050)

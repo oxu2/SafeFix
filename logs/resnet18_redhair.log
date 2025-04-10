@@ -1,0 +1,22 @@
+nohup: ignoring input
+start time: 2025-04-10 13:36:17
+Added 4050 generated red hair color images, before training set has 80000 images, now 84050
+Using resnet18 model with pretrained weights
+Epoch [1/10], Loss: 47.4035, Train Acc: 0.9855, Val Loss: 0.3908, Val Acc: 0.9131
+Epoch [2/10], Loss: 18.4134, Train Acc: 0.9946, Val Loss: 0.5125, Val Acc: 0.9056
+Epoch [3/10], Loss: 12.7323, Train Acc: 0.9963, Val Loss: 0.5410, Val Acc: 0.9069
+Epoch [4/10], Loss: 5.2718, Train Acc: 0.9985, Val Loss: 0.6160, Val Acc: 0.9098
+Epoch [5/10], Loss: 2.6988, Train Acc: 0.9992, Val Loss: 0.7355, Val Acc: 0.9065
+Epoch [6/10], Loss: 3.5268, Train Acc: 0.9990, Val Loss: 0.6774, Val Acc: 0.9090
+Epoch [7/10], Loss: 0.8488, Train Acc: 0.9998, Val Loss: 0.9213, Val Acc: 0.9016
+Epoch [8/10], Loss: 0.8255, Train Acc: 0.9998, Val Loss: 0.8581, Val Acc: 0.9073
+Epoch [9/10], Loss: 0.9776, Train Acc: 0.9998, Val Loss: 0.7527, Val Acc: 0.9083
+Epoch [10/10], Loss: 0.4224, Train Acc: 0.9999, Val Loss: 0.9183, Val Acc: 0.9074
+Generating and saving predictions...
+Original train predictions length: 80000
+Modified image predictions length: 4050
+Validation predictions length: 20000
+Combined predictions length: 184050 (should match combined_labels length: 184050)
+Start Time: 2025-04-10 13:36:17
+End Time:   2025-04-10 14:00:48
+Duration:   00:24:31
