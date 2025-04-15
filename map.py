@@ -70,7 +70,8 @@ def get_original_indices_by_attribute(attribute_name, attr_assigned, attr_data, 
     
     return original_indices
 
-
+# Example usage for finding red hair (commented out)
+'''
 red_hair_indices = get_original_indices_by_attribute(  # Will find red hair
     "hair color", 
     "red",
@@ -89,4 +90,76 @@ non_red_hair_indices = get_original_indices_by_attribute(
     find_matching=False,  # Finding hair color != red
     save_path="exampleData/celebA/non_red_hair_indices.txt",
     num_display=100  # Display 100 indices
+)
+'''
+
+# Example usage for finding non-brown skin
+non_brown_skin_indices = get_original_indices_by_attribute(
+    "skin", 
+    "brown",
+    "exampleData/celebA/attribute.json",
+    "exampleData/celebA/idx_mapping.json",
+    find_matching=False,  # Finding skin != brown
+    save_path="exampleData/celebA/non_brown_skin_indices.txt",
+    num_display=100  # Display 100 indices
+)
+
+# Find intersection and differences between non_red_hair and non_brown_skin indices
+def find_intersection_and_differences(file1_path, file2_path, intersection_path, only_in_file1_path, only_in_file2_path):
+    """
+    Find and save the intersection and differences between two sets of indices from text files
+    
+    Args:
+        file1_path: Path to first indices text file
+        file2_path: Path to second indices text file
+        intersection_path: Path to save the intersection indices
+        only_in_file1_path: Path to save indices that appear only in file1
+        only_in_file2_path: Path to save indices that appear only in file2
+    """
+    # Load indices from files
+    with open(file1_path, 'r') as f:
+        set1 = set([int(line.strip()) for line in f if line.strip()])
+    
+    with open(file2_path, 'r') as f:
+        set2 = set([int(line.strip()) for line in f if line.strip()])
+    
+    # Find intersection and differences
+    intersection = set1.intersection(set2)
+    only_in_set1 = set1 - set2
+    only_in_set2 = set2 - set1
+    
+    # Save intersection
+    with open(intersection_path, 'w') as f:
+        for idx in sorted(intersection):
+            f.write(f"{idx}\n")
+    
+    # Save only in file1
+    with open(only_in_file1_path, 'w') as f:
+        for idx in sorted(only_in_set1):
+            f.write(f"{idx}\n")
+    
+    # Save only in file2
+    with open(only_in_file2_path, 'w') as f:
+        for idx in sorted(only_in_set2):
+            f.write(f"{idx}\n")
+    
+    # Print summary
+    file1_name = file1_path.split('/')[-1]
+    file2_name = file2_path.split('/')[-1]
+    print(f"\nComparison summary:")
+    print(f"Total in {file1_name}: {len(set1)}")
+    print(f"Total in {file2_name}: {len(set2)}")
+    print(f"Intersection: {len(intersection)}")
+    print(f"Only in {file1_name}: {len(only_in_set1)}")
+    print(f"Only in {file2_name}: {len(only_in_set2)}")
+    
+    return intersection, only_in_set1, only_in_set2
+
+# Execute the comparison
+find_intersection_and_differences(
+    "exampleData/celebA/non_red_hair_indices.txt",
+    "exampleData/celebA/non_brown_skin_indices.txt",
+    "exampleData/celebA/non_red_hair_and_non_brown_skin.txt",  # Intersection (both conditions)
+    "exampleData/celebA/only_non_red_hair.txt",                # Only in non_red_hair
+    "exampleData/celebA/only_non_brown_skin.txt"               # Only in non_brown_skin
 )
