@@ -15,29 +15,42 @@ import torchvision
 from transformers import ViTModel, ViTFeatureExtractor
 import datetime
 from timm import create_model
+import matplotlib.pyplot as plt
 
 time_now = datetime.datetime.now().strftime("%m%d%H%M")
 print("Current time:", time_now)
+
+def str2bool(v):
+    return v.lower() in ('true', '1', 'yes')
 # Parse command-line arguments
 parser = argparse.ArgumentParser(description='Train model on CelebA dataset')
-parser.add_argument('--verbose', action='store_true', default=False,
-                    help='Enable verbose output')
+parser.add_argument('--verbose', type=str2bool, default=False,
+                    help='Enable verbose output (default: False)')
 parser.add_argument('--feasible-file', type=str, default="red_hair_color_feasible_04080238.json",
                     help='Path to the feasible images JSON file')
-parser.add_argument('--olabel', action='store_true', default=False,
-                    help='Use original dataset labels. If False, uses labels from feasible_file')
+parser.add_argument('--olabel', type=str2bool, default=False,
+                    help='Use original dataset labels (default: False); if False, uses labels from feasible_file')
 parser.add_argument('--image_dir', type=str, default="redhair",
                     help='Directory containing images')
-parser.add_argument('--pretrained', action='store_true', default=True,
+parser.add_argument('--pretrained', type=str2bool, default=True,
                     help='Use pre-trained weights (default: True)')
 parser.add_argument('--lr', type=float, default=1e-4,
                     help='Learning rate (default: 1e-4)')
 parser.add_argument('--attribute', type=str, default="hair color", 
                     help='Attribute to detect (e.g., "hair color", "eyes")')
-parser.add_argument('--model', type=str, default='vit', choices=['resnet18', 'vit'],
+parser.add_argument('--model', type=str, default='resnet18', choices=['resnet18', 'vit'],
                     help='Model architecture to use (default: vit_b_16)')
+parser.add_argument('--plot', type=str2bool, default=True, help='Enable plotting training metrics (default: True)')
+parser.add_argument('--num-epochs', type=int, default=15,
+                    help='Number of training epochs (default: 15)')
 args = parser.parse_args()
 verbose = args.verbose
+
+# Adjust learning rate default for ViT if not manually overridden
+if args.model == 'vit' and args.lr == 1e-4:
+    args.lr = 5e-5
+    if verbose:
+        print(f"Adjusted learning rate for ViT to {args.lr}")
 
 # Extract tag from the feasible_file name
 feasible_file = args.feasible_file
@@ -173,8 +186,8 @@ if modified_image_paths:
     initial_predictions = np.concatenate((train_labels, valid_labels, np.array(modified_image_labels), unlabeled_predictions))
     
     # Save the combined indices and labels with timestamp (skip if files already exist)
-    train_idx_path = f"./combined_train_idx_{timestamp}.npy"
-    labels_path = f"./combined_labels_{timestamp}.npy"
+    train_idx_path = f"./save/train_idx_{timestamp}.npy"
+    labels_path = f"./save/labels_{timestamp}.npy"
 
     if not os.path.exists(train_idx_path):
         np.save(train_idx_path, combined_train_idx)
@@ -184,7 +197,7 @@ if modified_image_paths:
             print(f"{train_idx_path} already exists, skipping save.")
 
     if not os.path.exists(labels_path):
-        np.save(labels_path)
+        np.save(labels_path, combined_labels)
         print(f"Saved combined labels to {labels_path}")
     else:
         if verbose:
@@ -209,19 +222,35 @@ valid_loader = DataLoader(valid_dataset, batch_size=64, shuffle=False, num_worke
 # Define model, loss, and optimizer
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-# Initialize model based on user choice
 if args.model == 'resnet18':
-    model = models.resnet18(pretrained=args.pretrained)
+    # Create a simplified ResNet by removing deeper layers
+    base_model = models.resnet18(pretrained=False)
+    
+    # Remove layers to reduce complexity
+    base_model.layer3 = nn.Identity()
+    base_model.layer4 = nn.Identity()
+    
+    # Replace the standard avgpool with an adaptive version for flexibility
+    base_model.avgpool = nn.AdaptiveAvgPool2d((1,1))
+    
+    model = base_model
+    
+    # Adjust the fully-connected layer; since we removed layer3 and layer4, the output comes from layer2 (128 channels)
     model.fc = nn.Sequential(
-        nn.Dropout(p=0.5),
-        nn.Linear(model.fc.in_features, 1)
-    )  # Adjusting for binary classification
+        nn.Dropout(p=0.7),  # Increased dropout probability for stronger regularization
+        nn.Linear(128, 1)
+    )
+    
+    args.pretrained = False  # Ensure logs reflect that random weights are used
 elif args.model == 'vit':
     # Use the smaller ViT-Base variant with proper import
     model = create_model('vit_base_patch16_224', pretrained=args.pretrained)
-    # Modify the head for binary classification
+    # Modify the head for binary classification, adding dropout for regularization
     num_head_features = model.head.in_features
-    model.head = nn.Linear(num_head_features, 1)
+    model.head = nn.Sequential(
+         nn.Dropout(p=0.7),  # Increased dropout probability for stronger regularization
+         nn.Linear(num_head_features, 1)
+    )
 
 model = model.to(device)
 print(f"Using {args.model} model with {'pretrained' if args.pretrained else 'random'} weights")
@@ -232,11 +261,15 @@ pos_weight = torch.tensor([num_negative / num_positive]).to(device)
 criterion = nn.BCEWithLogitsLoss(pos_weight=pos_weight)
 
 # Use learning rate from command line args with weight decay for L2 regularization
-optimizer = optim.Adam(model.parameters(), lr=args.lr, weight_decay=1e-4)
-# If args.model is 'vit', use cosine annealing scheduler to improve loss behavior; otherwise, use StepLR
+optimizer = optim.Adam(model.parameters(), lr=args.lr, weight_decay=1e-3)
+# If args.model is 'vit', use cosine annealing with warm restarts to prevent early convergence; otherwise, use StepLR
 if args.model == 'vit':
-    # For ViT, use cosine annealing scheduler to improve loss behavior
-    scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=10)
+    # For ViT, use cosine annealing with warm restarts to prevent early convergence
+    scheduler = torch.optim.lr_scheduler.CosineAnnealingWarmRestarts(
+        optimizer,
+        T_0=5,    # restart every 5 epochs
+        T_mult=1
+    )
 else:
     # For ResNet and others, keep the StepLR scheduler
     scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=3, gamma=0.5)
@@ -305,13 +338,18 @@ def save_predictions(model, train_loader, valid_loader):
         ))
     
     print(f"Combined predictions length: {len(combined_preds)} (should match combined_labels length: {len(combined_labels)})")
-    np.save(f"./combined_predictions_{timestamp}_{args.model}_{time_now}.npy", combined_preds)
+    np.save(f"./save/predictions_{timestamp}_{args.model}_{time_now}.npy", combined_preds)
     
     if verbose:
         print(f"Saved predictions to ./combined_predictions_{timestamp}_{args.model}_{time_now}.npy")
 
 # Modify the train_model function to save predictions after training
 def train_model(model, train_loader, valid_loader, criterion, optimizer, scheduler=None, num_epochs=10):
+    train_loss_history = []
+    train_acc_history = []
+    val_loss_history = []
+    val_acc_history = []
+
     for epoch in range(num_epochs):
         model.train()
         total_loss, total_correct = 0, 0
@@ -337,12 +375,44 @@ def train_model(model, train_loader, valid_loader, criterion, optimizer, schedul
             if verbose:
                 print(f"Current learning rate: {scheduler.get_last_lr()[0]}")
         
-        print(f"Epoch [{epoch+1}/{num_epochs}], Loss: {total_loss:.4f}, Train Acc: {train_acc:.4f}, Val Loss: {val_loss:.4f}, Val Acc: {val_acc:.4f}")
+        print(f"Epoch [{epoch+1}/{num_epochs}], Train Loss: {total_loss:.4f}, Train Acc: {train_acc:.4f}, Val Loss: {val_loss:.4f}, Val Acc: {val_acc:.4f}")
+        train_loss_history.append(total_loss)
+        train_acc_history.append(train_acc)
+        val_loss_history.append(val_loss)
+        val_acc_history.append(val_acc)
+
+    if args.plot:
+        epochs = range(1, num_epochs+1)
+        fig, axes = plt.subplots(2, 2, figsize=(10, 8))
+
+        axes[0,0].plot(epochs, train_loss_history, marker='o')
+        axes[0,0].set_title("Train Loss")
+        axes[0,0].set_xlabel("Epoch")
+        axes[0,0].set_ylabel("Loss")
+
+        axes[0,1].plot(epochs, train_acc_history, marker='o')
+        axes[0,1].set_title("Train Accuracy")
+        axes[0,1].set_xlabel("Epoch")
+        axes[0,1].set_ylabel("Accuracy")
+
+        axes[1,0].plot(epochs, val_loss_history, marker='o')
+        axes[1,0].set_title("Validation Loss")
+        axes[1,0].set_xlabel("Epoch")
+        axes[1,0].set_ylabel("Loss")
+
+        axes[1,1].plot(epochs, val_acc_history, marker='o')
+        axes[1,1].set_title("Validation Accuracy")
+        axes[1,1].set_xlabel("Epoch")
+        axes[1,1].set_ylabel("Accuracy")
+
+        plt.tight_layout()
+        plt.savefig(f"./save/plot_{time_now}.png")
+        plt.close()
 
     # Save predictions after training
     save_predictions(model, train_loader, valid_loader)
 
 # Start training with scheduler
 
-train_model(model, train_loader, valid_loader, criterion, optimizer, scheduler, num_epochs=10)
+train_model(model, train_loader, valid_loader, criterion, optimizer, scheduler, num_epochs=args.num_epochs)
 print("Current time:", time_now)

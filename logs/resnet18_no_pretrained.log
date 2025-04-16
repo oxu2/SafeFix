@@ -1,0 +1,24 @@
+nohup: ignoring input
+start time: 2025-04-15 18:33:01
+Current time: 04151833
+Warning: a.txt not found. No additional unknown hair color images will be added.
+Added 0 generated unknown hair color images, before training set has 80000 images, now 80000
+Using resnet18 model with random weights
+Epoch [1/10], Train Loss: 137.4207, Train Acc: 0.9521, Val Loss: 0.3025, Val Acc: 0.9101
+Epoch [2/10], Train Loss: 51.9875, Train Acc: 0.9844, Val Loss: 0.4465, Val Acc: 0.9022
+Epoch [3/10], Train Loss: 36.0333, Train Acc: 0.9891, Val Loss: 0.3496, Val Acc: 0.9124
+Epoch [4/10], Train Loss: 16.4781, Train Acc: 0.9953, Val Loss: 0.5059, Val Acc: 0.9088
+Epoch [5/10], Train Loss: 10.8405, Train Acc: 0.9969, Val Loss: 0.5184, Val Acc: 0.9094
+Epoch [6/10], Train Loss: 7.5457, Train Acc: 0.9980, Val Loss: 0.5249, Val Acc: 0.9094
+Epoch [7/10], Train Loss: 3.0261, Train Acc: 0.9993, Val Loss: 0.6425, Val Acc: 0.9105
+Epoch [8/10], Train Loss: 2.2288, Train Acc: 0.9995, Val Loss: 0.6455, Val Acc: 0.9031
+Epoch [9/10], Train Loss: 2.0127, Train Acc: 0.9994, Val Loss: 0.7641, Val Acc: 0.9044
+Epoch [10/10], Train Loss: 0.9085, Train Acc: 0.9998, Val Loss: 0.7384, Val Acc: 0.9076
+Generating and saving predictions...
+Train predictions length: 80000
+Validation predictions length: 20000
+Combined predictions length: 180000 (should match combined_labels length: 180000)
+Current time: 04151833
+Start Time: 2025-04-15 18:33:01
+End Time:   2025-04-15 18:49:31
+Duration:   00:16:30

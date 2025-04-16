@@ -1,0 +1,6 @@
+nohup: ignoring input
+start time: 2025-04-16 14:02:48
+Current time: 04161402
+Warning: a.txt not found. No additional unknown hair color images will be added.
+Added 0 generated unknown hair color images, before training set has 80000 images, now 80000
+Using vit model with pretrained weights
