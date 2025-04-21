@@ -104,6 +104,17 @@ non_brown_skin_indices = get_original_indices_by_attribute(
     num_display=100  # Display 100 indices
 )
 
+# Example usage for finding non-sad emotion
+non_sad_emotion_indices = get_original_indices_by_attribute(
+    "emotion",
+    "sad",
+    "exampleData/celebA/attribute.json",
+    "exampleData/celebA/idx_mapping.json",
+    find_matching=False,  # Finding emotion != sad
+    save_path="exampleData/celebA/non_sad_emotion_indices.txt",
+    num_display=100  # Display 100 indices
+)
+
 # Find intersection and differences between non_red_hair and non_brown_skin indices
 def find_intersection_and_differences(file1_path, file2_path, intersection_path, only_in_file1_path, only_in_file2_path):
     """
@@ -163,3 +174,36 @@ find_intersection_and_differences(
     "exampleData/celebA/only_non_red_hair.txt",                # Only in non_red_hair
     "exampleData/celebA/only_non_brown_skin.txt"               # Only in non_brown_skin
 )
+
+# Compute intersections involving non-red-hair, non-brown-skin, and non-sad-emotion
+# Load the three sets
+def load_indices(path):
+    with open(path, 'r') as f:
+        return set(int(line.strip()) for line in f if line.strip())
+
+red_hair_set = load_indices("exampleData/celebA/non_red_hair_indices.txt")
+brown_skin_set = load_indices("exampleData/celebA/non_brown_skin_indices.txt")
+sad_emotion_set = load_indices("exampleData/celebA/non_sad_emotion_indices.txt")
+
+# Three-way intersection
+intersection_all = red_hair_set & brown_skin_set & sad_emotion_set
+with open("exampleData/celebA/non_red_hair_and_non_brown_skin_and_non_sad_emotion.txt", 'w') as f:
+    for idx in sorted(intersection_all):
+        f.write(f"{idx}\n")
+
+# Pairwise intersections
+intersection_redhair_sademotion = red_hair_set & sad_emotion_set
+with open("exampleData/celebA/non_red_hair_and_non_sad_emotion.txt", 'w') as f:
+    for idx in sorted(intersection_redhair_sademotion):
+        f.write(f"{idx}\n")
+
+intersection_brownskin_sademotion = brown_skin_set & sad_emotion_set
+with open("exampleData/celebA/non_brown_skin_and_non_sad_emotion.txt", 'w') as f:
+    for idx in sorted(intersection_brownskin_sademotion):
+        f.write(f"{idx}\n")
+
+# Print summary
+print("\nThree-way and additional two-way intersection summary:")
+print(f"non_red_hair ∧ non_brown_skin ∧ non_sad_emotion: {len(intersection_all)} samples")
+print(f"non_red_hair ∧ non_sad_emotion: {len(intersection_redhair_sademotion)} samples")
+print(f"non_brown_skin ∧ non_sad_emotion: {len(intersection_brownskin_sademotion)} samples")
