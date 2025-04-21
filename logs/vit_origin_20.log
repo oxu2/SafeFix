@@ -1,0 +1,34 @@
+nohup: ignoring input
+start time: 2025-04-21 03:09:24
+Current time: 0421030925
+Warning: a.txt not found. No additional unknown hair color images will be added.
+Added 0 generated unknown hair color images, before training set has 80000 images, now 80000
+Using vit model with pretrained weights
+Epoch [1/20], Train Loss: 52.4124, Train Acc: 0.9865, Val Loss: 0.5740, Val Acc: 0.8972
+Epoch [2/20], Train Loss: 36.2801, Train Acc: 0.9894, Val Loss: 0.5965, Val Acc: 0.9027
+Epoch [3/20], Train Loss: 35.0136, Train Acc: 0.9898, Val Loss: 0.5188, Val Acc: 0.9005
+Epoch [4/20], Train Loss: 30.5343, Train Acc: 0.9910, Val Loss: 0.3671, Val Acc: 0.9162
+Epoch [5/20], Train Loss: 25.9817, Train Acc: 0.9923, Val Loss: 0.6316, Val Acc: 0.9047
+Epoch [6/20], Train Loss: 19.4615, Train Acc: 0.9943, Val Loss: 0.5731, Val Acc: 0.9014
+Epoch [7/20], Train Loss: 13.6621, Train Acc: 0.9959, Val Loss: 0.4960, Val Acc: 0.9093
+Epoch [8/20], Train Loss: 7.2714, Train Acc: 0.9978, Val Loss: 0.7801, Val Acc: 0.9061
+Epoch [9/20], Train Loss: 2.4687, Train Acc: 0.9993, Val Loss: 0.9155, Val Acc: 0.9088
+Epoch [10/20], Train Loss: 0.3092, Train Acc: 0.9999, Val Loss: 1.0890, Val Acc: 0.9064
+Epoch [11/20], Train Loss: 0.1129, Train Acc: 1.0000, Val Loss: 1.0890, Val Acc: 0.9064
+Epoch [12/20], Train Loss: 0.4456, Train Acc: 0.9998, Val Loss: 1.0970, Val Acc: 0.9051
+Epoch [13/20], Train Loss: 4.1023, Train Acc: 0.9988, Val Loss: 0.6677, Val Acc: 0.9106
+Epoch [14/20], Train Loss: 8.2975, Train Acc: 0.9975, Val Loss: 0.7245, Val Acc: 0.9103
+Epoch [15/20], Train Loss: 14.6487, Train Acc: 0.9956, Val Loss: 0.4859, Val Acc: 0.9100
+Epoch [16/20], Train Loss: 18.6502, Train Acc: 0.9940, Val Loss: 0.6489, Val Acc: 0.9101
+Epoch [17/20], Train Loss: 24.2816, Train Acc: 0.9924, Val Loss: 0.6389, Val Acc: 0.9020
+Epoch [18/20], Train Loss: 26.8588, Train Acc: 0.9919, Val Loss: 0.5417, Val Acc: 0.8998
+Epoch [19/20], Train Loss: 28.2209, Train Acc: 0.9914, Val Loss: 0.3007, Val Acc: 0.9074
+Epoch [20/20], Train Loss: 30.7268, Train Acc: 0.9905, Val Loss: 0.4204, Val Acc: 0.9067
+Generating and saving predictions...
+Train predictions length: 80000
+Validation predictions length: 20000
+Combined predictions length: 180000 (should match combined_labels length: 180000)
+Current time: 0421030925
+Start Time: 2025-04-21 03:09:24
+End Time:   2025-04-21 06:03:27
+Duration:   02:54:03

@@ -1,0 +1,24 @@
+nohup: ignoring input
+start time: 2025-04-21 02:53:39
+Current time: 0421025340
+Added 4050 generated red hair color images, before training set has 80000 images, now 84050
+Using clip model with random weights
+Epoch [1/10], Train Loss: 394.9508, Train Acc: 0.8461, Val Loss: 0.3520, Val Acc: 0.8809
+Epoch [2/10], Train Loss: 180.3258, Train Acc: 0.9435, Val Loss: 0.3635, Val Acc: 0.8864
+Epoch [3/10], Train Loss: 151.3798, Train Acc: 0.9530, Val Loss: 0.3104, Val Acc: 0.8991
+Epoch [4/10], Train Loss: 132.2785, Train Acc: 0.9592, Val Loss: 0.4436, Val Acc: 0.8771
+Epoch [5/10], Train Loss: 120.5079, Train Acc: 0.9628, Val Loss: 0.3713, Val Acc: 0.8921
+Epoch [6/10], Train Loss: 106.6855, Train Acc: 0.9675, Val Loss: 0.3430, Val Acc: 0.9006
+Epoch [7/10], Train Loss: 96.0484, Train Acc: 0.9709, Val Loss: 0.3378, Val Acc: 0.9025
+Epoch [8/10], Train Loss: 84.3493, Train Acc: 0.9751, Val Loss: 0.4405, Val Acc: 0.8955
+Epoch [9/10], Train Loss: 75.5570, Train Acc: 0.9775, Val Loss: 0.4025, Val Acc: 0.9014
+Epoch [10/10], Train Loss: 68.5623, Train Acc: 0.9803, Val Loss: 0.4026, Val Acc: 0.9023
+Generating and saving predictions...
+Original train predictions length: 80000
+Modified image predictions length: 4050
+Validation predictions length: 20000
+Combined predictions length: 184050 (should match combined_labels length: 184050)
+Current time: 0421025340
+Start Time: 2025-04-21 02:53:39
+End Time:   2025-04-21 03:27:20
+Duration:   00:33:41

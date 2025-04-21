@@ -1,0 +1,33 @@
+start time: 2025-04-21 12:16:50
+Model Validation ACC: 0.911
+Start detect_failure_by_label
+
+Start detect_prediction_correlation
+
+ACC: 0.896920 	Hard case: attribute "beard", description "No"
+ACC: 0.854981 	Hard case: attribute "gender", description "female"
+The accuracy with "hair color" = "white" is 0.9405737704918032
+Correct predictions: 459/488
+The accuracy with "hair color" = "yellow" is 0.9054054054054054
+Correct predictions: 67/74
+The accuracy with "hair color" = "blonde" is 0.879083094555874
+Correct predictions: 4602/5235
+ACC: 0.879083 	Hard case: attribute "hair color", description "blonde"
+The accuracy with "hair color" = "black" is 0.9269433962264151
+Correct predictions: 6141/6625
+The accuracy with "hair color" = "gray" is 0.9774436090225563
+Correct predictions: 1040/1064
+The accuracy with "hair color" = "brown" is 0.9054810792465637
+Correct predictions: 5336/5893
+The accuracy with "hair color" = "red" is 0.9259259259259259
+Correct predictions: 575/621
+ACC: 0.894498 	Rare Case: attribute "skin", description "brown"
+ACC: 0.874525 	Rare Case: attribute "emotion", description "sad"
+ACC: 0.899194 	Rare Case: attribute "emotion", description "calm"
+ACC: 0.898441 	Hard case: attribute "emotion", description "surprised"
+ACC: 0.875523 	Rare Case: attribute "emotion", description "pensive"
+Start detect_failure_prediction_correlation
+
+Start Time: 2025-04-21 12:16:50
+End Time:   2025-04-21 12:16:51
+Duration:   00:00:01

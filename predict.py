@@ -16,35 +16,42 @@ from transformers import ViTModel, ViTFeatureExtractor
 import datetime
 from timm import create_model
 import matplotlib.pyplot as plt
+from transformers import CLIPModel
+from transformers import CLIPConfig
+import random
 
-time_now = datetime.datetime.now().strftime("%m%d%H%M")
-print("Current time:", time_now)
 
-def str2bool(v):
-    return v.lower() in ('true', '1', 'yes')
 # Parse command-line arguments
 parser = argparse.ArgumentParser(description='Train model on CelebA dataset')
 parser.add_argument('--verbose', type=str2bool, default=False,
                     help='Enable verbose output (default: False)')
-parser.add_argument('--feasible-file', type=str, default="red_hair_color_feasible_04080238.json",
+parser.add_argument('--feasible-file', type=str, default="save/feasible_redhair_brownskin.json",
                     help='Path to the feasible images JSON file')
+                    # save/feasible_redhair_brownskin.json
+                    # red_hair_color_feasible_04080238.json
 parser.add_argument('--olabel', type=str2bool, default=False,
                     help='Use original dataset labels (default: False); if False, uses labels from feasible_file')
-parser.add_argument('--image_dir', type=str, default="redhair",
+parser.add_argument('--image_dir', type=str, default="exampleData/redhair_brownskin",
                     help='Directory containing images')
-parser.add_argument('--pretrained', type=str2bool, default=True,
-                    help='Use pre-trained weights (default: True)')
+                    # exampleData/redhair_brownskin
+                    # exampleData/redhair
+parser.add_argument('--pretrained', type=str2bool, default=False,
+                    help='Use pre-trained weights (default: False)')
 parser.add_argument('--lr', type=float, default=1e-4,
                     help='Learning rate (default: 1e-4)')
-parser.add_argument('--attribute', type=str, default="hair color", 
-                    help='Attribute to detect (e.g., "hair color", "eyes")')
-parser.add_argument('--model', type=str, default='resnet18', choices=['resnet18', 'vit'],
-                    help='Model architecture to use (default: vit_b_16)')
+parser.add_argument('--attributes', type=str, default="redhair_brownskin", 
+                    help='attributes to detect (e.g., "hair color", "eyes")')
+parser.add_argument('--model', type=str, default='clip', choices=['resnet', 'vit', 'clip'],
+                    help='Model architecture to use (resnet, vit, or clip)')
 parser.add_argument('--plot', type=str2bool, default=True, help='Enable plotting training metrics (default: True)')
-parser.add_argument('--num-epochs', type=int, default=15,
-                    help='Number of training epochs (default: 15)')
+parser.add_argument('--num-epochs', type=int, default=20,
+                    help='Number of training epochs (default: 20)')
+parser.add_argument('--num-added-img', type=int, default=4000,
+                    help='Number of generated images to add (default: 4000)')
 args = parser.parse_args()
+
 verbose = args.verbose
+attributes = args.attributes
 
 # Adjust learning rate default for ViT if not manually overridden
 if args.model == 'vit' and args.lr == 1e-4:
@@ -52,23 +59,47 @@ if args.model == 'vit' and args.lr == 1e-4:
     if verbose:
         print(f"Adjusted learning rate for ViT to {args.lr}")
 
+if args.model == 'clip':
+    # args.num_epochs = 10
+
+
+# time_now = datetime.datetime.now().strftime("%m%d%H%M")
+time_now = datetime.datetime.now().strftime("%m%d%H%M%S")   
+print("Current time:", time_now)
+
+
+
+class CLIPForBinary(nn.Module):
+    def __init__(self, dropout_rate=0.7):
+        super().__init__()
+        # Load CLIP vision model
+        # Initialize CLIP model with random weights (no pretraining)
+        self.clip = CLIPModel(CLIPConfig())
+        self.dropout = nn.Dropout(p=dropout_rate)
+        self.classifier = nn.Linear(self.clip.config.projection_dim, 1)
+
+    def forward(self, pixel_values):
+        # Get image features and classify
+        feats = self.clip.get_image_features(pixel_values=pixel_values)
+        return self.classifier(self.dropout(feats))
+
 # Extract tag from the feasible_file name
 feasible_file = args.feasible_file
-tag = feasible_file.split('_')[0] if '_' in feasible_file else "unknown"
-# Extract timestamp from feasible_file (assuming format like "red_hair_color_feasible_04080238.json")
-timestamp = feasible_file.split('_')[-1].split('.')[0] if '_' in feasible_file else "unknown"
+# tag = feasible_file.split('_')[0] if '_' in feasible_file else "unknown"
+# Extract attributes from feasible_file (assuming format like "red_hair_color_feasible_04080238.json")
+# timestamp = feasible_file.split('_')[-1].split('.')[0] if '_' in feasible_file else "unknown"
 
 # Load the feasible images (color hair images) from feasible.json
 if os.path.exists(feasible_file):
     with open(feasible_file, 'r') as f:
         feasible_images = json.load(f)
     if verbose:
-        print(f"Loaded {len(feasible_images)} feasible {tag} {args.attribute} images")
-    # print(f"Loaded {len(feasible_images)} feasible {tag} {args.attribute} images")
+        print(f"Loaded {len(feasible_images)} feasible {args.attributes} images")
+    # print(f"Loaded {len(feasible_images)} feasible {tag} {args.attributes} images")
 else:
     feasible_images = {}
-    timestamp = "origin"  # fallback timestamp when feasible_file is missing
-    print(f"Warning: {feasible_file} not found. No additional {tag} {args.attribute} images will be added.")
+    attributes = "origin"  # fallback attributes when feasible_file is missing
+    print(f"Warning: {feasible_file} not found. No additional {args.attributes} images will be added.")
 
 with open("exampleData/celebA/list_attr_celeba.txt") as f:
     lines = [line.strip('\n').split(' ')[0] for line in f.readlines()]
@@ -129,7 +160,14 @@ unlabeled_labels = np.array([labels[i] for i in range(len(all_datas)) if split[i
 modified_image_paths = []
 modified_image_labels = []
 
-for filename in feasible_images.keys():
+# Randomly sample the specified number of images from feasible_images
+sample_keys = list(feasible_images.keys())
+# Warn if fewer images are available than requested
+if len(sample_keys) < args.num_added_img:
+    print(f"Warning: requested {args.num_added_img} generated {args.attributes} images, but only {len(sample_keys)} available.")
+# Perform sampling
+selected_filenames = random.sample(sample_keys, min(args.num_added_img, len(sample_keys)))
+for filename in selected_filenames:
     # Get the image file from the pictures directory
     # Use relative path since the script runs from the HiBug directory
     image_path = f"./{args.image_dir}/{filename}.jpg"
@@ -159,7 +197,7 @@ for filename in feasible_images.keys():
         print(f"Warning: Could not find original image for {filename}")
 
 # Print information about the added images
-print(f"Added {len(modified_image_paths)} generated {tag} {args.attribute} images, before training set has {len(train_labels)} images, now {len(train_labels) + len(modified_image_labels)}")
+print(f"Added {args.num_added_img} generated {args.attributes} images, before training set has {len(train_labels)} images, now {len(train_labels) + len(modified_image_labels)}")
 
 # Load unlabeled predictions - moved outside conditional block
 unlabeled_predictions = np.load("exampleData/celebA/predictions.npy")[idxs]
@@ -185,9 +223,9 @@ if modified_image_paths:
     # (since we don't have actual predictions yet before training)
     initial_predictions = np.concatenate((train_labels, valid_labels, np.array(modified_image_labels), unlabeled_predictions))
     
-    # Save the combined indices and labels with timestamp (skip if files already exist)
-    train_idx_path = f"./save/train_idx_{timestamp}.npy"
-    labels_path = f"./save/labels_{timestamp}.npy"
+    # Save the combined indices and labels with attributes (skip if files already exist)
+    train_idx_path = f"./save/train_idx_{attributes}.npy"
+    labels_path = f"./save/labels_{attributes}.npy"
 
     if not os.path.exists(train_idx_path):
         np.save(train_idx_path, combined_train_idx)
@@ -222,7 +260,7 @@ valid_loader = DataLoader(valid_dataset, batch_size=64, shuffle=False, num_worke
 # Define model, loss, and optimizer
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-if args.model == 'resnet18':
+if args.model == 'resnet':
     # Create a simplified ResNet by removing deeper layers
     base_model = models.resnet18(pretrained=False)
     
@@ -251,6 +289,10 @@ elif args.model == 'vit':
          nn.Dropout(p=0.7),  # Increased dropout probability for stronger regularization
          nn.Linear(num_head_features, 1)
     )
+elif args.model == 'clip':
+    # Use CLIP vision model for binary classification
+    model = CLIPForBinary(dropout_rate=0.7)
+    args.pretrained = False  # ensure downstream logs and prints reflect random weights for CLIP
 
 model = model.to(device)
 print(f"Using {args.model} model with {'pretrained' if args.pretrained else 'random'} weights")
@@ -262,16 +304,11 @@ criterion = nn.BCEWithLogitsLoss(pos_weight=pos_weight)
 
 # Use learning rate from command line args with weight decay for L2 regularization
 optimizer = optim.Adam(model.parameters(), lr=args.lr, weight_decay=1e-3)
-# If args.model is 'vit', use cosine annealing with warm restarts to prevent early convergence; otherwise, use StepLR
-if args.model == 'vit':
-    # For ViT, use cosine annealing with warm restarts to prevent early convergence
-    scheduler = torch.optim.lr_scheduler.CosineAnnealingWarmRestarts(
-        optimizer,
-        T_0=5,    # restart every 5 epochs
-        T_mult=1
-    )
-else:
-    # For ResNet and others, keep the StepLR scheduler
+# Use cosine annealing with warm restarts for ViT and CLIP; otherwise, use StepLR
+if args.model in ('vit', 'clip'):
+    # Use cosine annealing with warm restarts for ViT and CLIP
+    scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=10)
+elif args.model == 'resnet':
     scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=3, gamma=0.5)
 
 def evaluate(model, data_loader, save_preds=False):
@@ -338,10 +375,8 @@ def save_predictions(model, train_loader, valid_loader):
         ))
     
     print(f"Combined predictions length: {len(combined_preds)} (should match combined_labels length: {len(combined_labels)})")
-    np.save(f"./save/predictions_{timestamp}_{args.model}_{time_now}.npy", combined_preds)
+    np.save(f"./save/predictions_{args.model}_{attributes}_{time_now}.npy", combined_preds)
     
-    if verbose:
-        print(f"Saved predictions to ./combined_predictions_{timestamp}_{args.model}_{time_now}.npy")
 
 # Modify the train_model function to save predictions after training
 def train_model(model, train_loader, valid_loader, criterion, optimizer, scheduler=None, num_epochs=10):
@@ -349,7 +384,8 @@ def train_model(model, train_loader, valid_loader, criterion, optimizer, schedul
     train_acc_history = []
     val_loss_history = []
     val_acc_history = []
-
+    # if model == 'clip':
+    #     num_epochs = 10
     for epoch in range(num_epochs):
         model.train()
         total_loss, total_correct = 0, 0
@@ -406,7 +442,7 @@ def train_model(model, train_loader, valid_loader, criterion, optimizer, schedul
         axes[1,1].set_ylabel("Accuracy")
 
         plt.tight_layout()
-        plt.savefig(f"./save/plot_{time_now}.png")
+        plt.savefig(f"./save/plot_{args.model}_{attributes}_{time_now}.png")
         plt.close()
 
     # Save predictions after training

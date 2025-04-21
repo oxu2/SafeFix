@@ -3,7 +3,8 @@ import random
 import sys
 import os
 import datetime  # Add this import to support timestamps
-
+from typing import List
+from utils.defines import *
 # Check if running in the correct conda environment
 def ensure_conda_env(env_name):
     """Ensure script runs in the specified conda environment"""
@@ -151,31 +152,28 @@ model = Qwen2_5_VLForConditionalGeneration.from_pretrained(
 # Use fast processor to avoid warnings
 processor = AutoProcessor.from_pretrained(model_path, use_fast=True)
 
-def process_image(image_path, model, processor, tag="yellow", attribute="hair color", verbose=False):
+def process_image(image_path, model, processor, tags: List[str], attributes: List[str], verbose=False):
     """Process a single image and return the binary results for both features."""
-    # Customize prompt based on tag and attribute
-    prompt = f"Does the person in this picture have {tag} {attribute}? Does the person in this picture wear lipstick? For each question, only answer with 1 (yes) or 0 (no). Format your answer as two numbers separated by a space: [tag_attribute_result] [lipstick_result]"
+    # Construct prompt based on tags and attributes
+    questions = []
+    for t, a in zip(tags, attributes):
+        if a == "lipstick":
+            questions.append("Is the person in this picture wearing lipstick?")
+        else:
+            questions.append(f"Does the person in this picture have {t} {a}?")
+    prompt = " ".join(questions) + " For each question, only answer with 1 (yes) or 0 (no). Provide answers separated by spaces."
     response = inference(image_path, prompt, verbose=verbose)
     
     # Extract the two numbers from the response
     try:
-        # Split the response and find the first two integers
         numbers = [int(s) for s in response.replace(',', ' ').split() if s.isdigit()]
-        if len(numbers) >= 2:
-            tag_attribute_result = numbers[0]
-            lipstick_result = numbers[1]
-            attribute_key = attribute.replace(" ", "_")  # Convert spaces to underscores for keys
-            return {f"{tag}_{attribute_key}": tag_attribute_result, "wearing_lipstick": lipstick_result}
-        else:
-            print(f"Warning: Could not find two numbers in response '{response}' for {image_path}")
-            attribute_key = attribute.replace(" ", "_")
-            return {f"{tag}_{attribute_key}": None, "wearing_lipstick": None}
+        results = {f"{t}_{a.replace(' ', '_')}": num for t, a, num in zip(tags, attributes, numbers)}
+        return results
     except Exception as e:
         print(f"Warning: Error parsing response '{response}' for {image_path}: {e}")
-        attribute_key = attribute.replace(" ", "_")
-        return {f"{tag}_{attribute_key}": None, "wearing_lipstick": None}
+        return {}
 
-def process_directory(directory_path, output_json_path="results.json", tag="yellow", attribute="hair color", verbose=False, file_type="png"):
+def process_directory(directory_path, output_json_path, tags, attributes, verbose=False, file_type="png"):
     """Process all images in directory and save results to JSON."""
     results = {}
     
@@ -205,7 +203,7 @@ def process_directory(directory_path, output_json_path="results.json", tag="yell
         
         if verbose:
             print(f"Processing {image_file}...")
-        result = process_image(image_path, model, processor, tag, attribute, verbose=verbose)
+        result = process_image(image_path, model, processor, tags, attributes, verbose=verbose)
         results[filename] = result
         
         # Save after each image in case of interruption
@@ -217,17 +215,17 @@ def process_directory(directory_path, output_json_path="results.json", tag="yell
     return results
 
 # Update function to extract features from results with configurable filtering
-def create_feature_mapping(results_json, output_feature_json="features.json", tag="yellow", attribute="hair color"):
+def create_feature_mapping(results_json, output_feature_json="features.json", tag="yellow", attribute="hair"):
     """
     Create a JSON file mapping filenames to features for images with specific attributes
-    Example: {"example_image": {"tag": "yellow", "attribute": "hair color", "wearing_lipstick": 0}}
+    Example: {"example_image": {"tag": "yellow", "attribute": "hair", "wearing_lipstick": 0}}
     Only include entries that have tag_attribute=1
     
     Parameters:
     - results_json: Path to results JSON or dictionary of results
     - output_feature_json: Path to save the filtered results
     - tag: The tag to filter for (e.g., "yellow")
-    - attribute: The attribute to filter for (e.g., "hair color")
+    - attribute: The attribute to filter for (e.g., "hair")
     """
     if isinstance(results_json, str):
         # If results_json is a file path
@@ -243,19 +241,19 @@ def create_feature_mapping(results_json, output_feature_json="features.json", ta
     attribute_key = attribute.replace(" ", "_")
     tag_attribute_key = f"{tag}_{attribute_key}"
     
+    # Define keys for red hair, brown skin, and wearing lipstick
+    tags = ["red", "brown", "wearing"]
+    attributes = ["hair", "skin", "lipstick"]
+    key1 = "red_hair"
+    key2 = "brown_skin"
+    key3 = "wearing_lipstick"
+
     for filename, result in results.items():
-        # Check if the result contains the attribute key
-        tag_attribute_result = result.get(tag_attribute_key)
-        wearing_lipstick = result.get("wearing_lipstick")
-        
-        # Only include entries where tag_attribute_result is 1
-        if tag_attribute_result == 1:
-            # Store all features with new structure
-            feature_mapping[filename] = {
-                "tag": tag,
-                "attribute": attribute,
-                "wearing_lipstick": wearing_lipstick
-            }
+        result1 = result.get(key1)
+        result2 = result.get(key2)
+        result3 = result.get(key3)
+        if result1 == 1 and result2 == 1 and result3 == 1:
+            feature_mapping[filename] = { key1: result1, key2: result2, key3: result3 }
     
     # Save the feature mapping to a JSON file
     with open(output_feature_json, 'w') as f:
@@ -317,19 +315,17 @@ def rename_images_with_suffix(directory_path, suffix="_red"):
     return renamed_count
 
 def main(directory_path="./redhair", 
-         tag="red", 
-         attribute="hair color",
-         verbose=False,
-         file_type="png",
-         rename_files=False,
-         rename_suffix="_red"):
+         verbose: bool = False,
+         file_type: str = "png",
+         rename_files: bool = False,
+         rename_suffix: str = "_red"):
     """
     Main function to process images and create feature mapping.
     
     Parameters:
     - directory_path: Path to directory containing images to process
     - tag: The visual feature tag to detect (e.g., "yellow")
-    - attribute: The attribute to detect (e.g., "hair color")
+    - attribute: The attribute to detect (e.g., "hair")
     - verbose: Whether to display detailed processing information
     - file_type: Type of image files to process ("png", "jpg", "png,jpg", "all")
     - rename_files: Whether to rename files by adding a suffix
@@ -343,28 +339,39 @@ def main(directory_path="./redhair",
         renamed_count = rename_images_with_suffix(directory_path, rename_suffix)
         print(f"Renamed {renamed_count} files with suffix '{rename_suffix}'")
         # Return early if we're only renaming files
-        if not tag or not attribute:
-            return None, None
+        # if not tag or not attribute:
+        #     return None, None
     
-    # Generate filenames based on tag and attribute with timestamp
-    attribute_key = attribute.replace(" ", "_")
+    # Fixed feature detection for red hair, brown skin, and lipstick
+    tags = ["red", "brown", "wearing"]
+    attributes = ["hair", "skin", "lipstick"]
+    key1 = "red_hair"
+    key2 = "brown_skin"
+    key3 = "wearing_lipstick"
     timestamp = datetime.datetime.now().strftime("%m%d%H%M")  # Format: MMDDHHMM (month, day, hour, minute)
-    results_json_path = f"{tag}_{attribute_key}_results_{timestamp}.json"
-    output_feature_json = f"{tag}_{attribute_key}_feasible_{timestamp}.json"
+    results_json_path = f"red_hair_brown_skin_results_{timestamp}.json"
+    output_feature_json = f"red_hair_brown_skin_feasible_{timestamp}.json"
     
-    print(f"Starting image processing for {tag} {attribute}...")
+    print("Starting image processing for red hair and brown skin...")
     # print(f"Processing directory: {directory_path}")
     # print(f"Processing file type(s): {file_type}")
     # print(f"Saving results to: {results_json_path}")
     # print(f"Saving filtered features to: {output_feature_json}")
     
     # Process all images in directory
-    results = process_directory(directory_path, results_json_path, tag, attribute, verbose=verbose, file_type=file_type)
+    results = process_directory(
+           directory_path,
+           results_json_path,
+           tags,
+           attributes,
+           verbose=verbose,
+           file_type=file_type
+       )
     print("Image processing using Qwen VL model complete.")
     
     # Create feature mapping for images with specified tag and attribute
-    feature_mapping = create_feature_mapping(results, output_feature_json, tag, attribute)
-    print(f"Feature mapping and filter complete. Found {len(feature_mapping)} images with {tag} {attribute}.")
+    feature_mapping = create_feature_mapping(results, output_feature_json)
+    print(f"Feature mapping and filter complete. Found {len(feature_mapping)} images with red hair and brown skin.")
     
     return results, feature_mapping
 
@@ -375,22 +382,35 @@ if __name__ == "__main__":
     import shlex
     
     parser = argparse.ArgumentParser(description='Process images for specific attributes')
-    parser.add_argument('--dir', type=str, default="./redhair", 
+    parser.add_argument('--dir', type=str, default="./exampleData/redhair_brownskin", 
                         help='Directory containing images')
-    parser.add_argument('--tag', type=str, default="red", 
-                        help='Tag to detect (e.g., "yellow", "red")')
-    parser.add_argument('--attribute', type=str, default="hair color", 
-                        help='Attribute to detect (e.g., "hair color", "eyes")')
-    parser.add_argument('--verbose', action='store_true', default=False,
-                        help='Display detailed processing information')
+    # parser.add_argument('--tag', type=str, default="red", 
+    #                     help='Tag to detect (e.g., "yellow", "red")')
+    # parser.add_argument('--attribute', type=str, default="hair", 
+    #                     help='Attribute to detect (e.g., "hair", "eyes")')
+    parser.add_argument(
+        '--verbose',
+        type=str2bool,
+        default=False,
+        help='Display detailed processing information (true/false)'
+    )
     parser.add_argument('--file-type', type=str, default="jpg", 
                         help='Type of image files to process ("png", "jpg", "png,jpg", "all")')
-    parser.add_argument('--rename-files', action='store_true', default=True,
-                        help='Rename files by adding suffix before extension')
-    parser.add_argument('--rename-suffix', type=str, default="_red",
+    parser.add_argument(
+        '--rename-files',
+        type=str2bool,
+        default=True,
+        help='Rename files by adding suffix before extension (true/false)'
+    )
+    parser.add_argument('--rename-suffix', type=str, default="_redhair_brownskin",
                         help='Suffix to add when renaming files (default: "_red")')
     
     args = parser.parse_args()
 
-    main(args.dir, args.tag, args.attribute, args.verbose, args.file_type, 
-         args.rename_files, args.rename_suffix)
+    main(
+       args.dir,
+       args.verbose,
+       args.file_type,
+       args.rename_files,
+       args.rename_suffix
+    )

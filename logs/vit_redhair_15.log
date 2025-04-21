@@ -1,5 +1,29 @@
 nohup: ignoring input
-start time: 2025-04-16 14:02:49
-Current time: 04161402
+start time: 2025-04-16 14:09:30
+Current time: 0416140931
 Added 4050 generated red hair color images, before training set has 80000 images, now 84050
 Using vit model with pretrained weights
+Epoch [1/15], Train Loss: 60.6889, Train Acc: 0.9841, Val Loss: 0.4888, Val Acc: 0.8991
+Epoch [2/15], Train Loss: 38.7028, Train Acc: 0.9892, Val Loss: 0.5570, Val Acc: 0.9042
+Epoch [3/15], Train Loss: 33.3637, Train Acc: 0.9902, Val Loss: 0.7187, Val Acc: 0.9015
+Epoch [4/15], Train Loss: 20.2324, Train Acc: 0.9939, Val Loss: 0.5859, Val Acc: 0.9068
+Epoch [5/15], Train Loss: 7.0289, Train Acc: 0.9982, Val Loss: 0.7257, Val Acc: 0.9082
+Epoch [6/15], Train Loss: 53.2877, Train Acc: 0.9846, Val Loss: 0.6056, Val Acc: 0.9066
+Epoch [7/15], Train Loss: 41.1073, Train Acc: 0.9879, Val Loss: 0.6768, Val Acc: 0.8890
+Epoch [8/15], Train Loss: 29.7483, Train Acc: 0.9914, Val Loss: 0.4148, Val Acc: 0.9109
+Epoch [9/15], Train Loss: 16.1250, Train Acc: 0.9954, Val Loss: 0.4975, Val Acc: 0.9109
+Epoch [10/15], Train Loss: 5.4205, Train Acc: 0.9985, Val Loss: 0.7512, Val Acc: 0.9069
+Epoch [11/15], Train Loss: 44.7318, Train Acc: 0.9869, Val Loss: 0.2849, Val Acc: 0.9139
+Epoch [12/15], Train Loss: 34.6577, Train Acc: 0.9898, Val Loss: 0.5264, Val Acc: 0.9142
+Epoch [13/15], Train Loss: 27.9445, Train Acc: 0.9921, Val Loss: 0.5505, Val Acc: 0.9065
+Epoch [14/15], Train Loss: 13.8950, Train Acc: 0.9958, Val Loss: 0.5393, Val Acc: 0.9107
+Epoch [15/15], Train Loss: 3.5853, Train Acc: 0.9990, Val Loss: 0.7943, Val Acc: 0.9079
+Generating and saving predictions...
+Original train predictions length: 80000
+Modified image predictions length: 4050
+Validation predictions length: 20000
+Combined predictions length: 184050 (should match combined_labels length: 184050)
+Current time: 0416140931
+Start Time: 2025-04-16 14:09:30
+End Time:   2025-04-16 16:27:08
+Duration:   02:17:38

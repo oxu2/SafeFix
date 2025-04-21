@@ -1,0 +1,29 @@
+nohup: ignoring input
+start time: 2025-04-16 16:38:54
+Current time: 0416163855
+Warning: a.txt not found. No additional unknown hair color images will be added.
+Added 0 generated unknown hair color images, before training set has 80000 images, now 80000
+Using clip model with random weights
+Epoch [1/15], Train Loss: 363.5430, Train Acc: 0.8520, Val Loss: 0.4255, Val Acc: 0.8800
+Epoch [2/15], Train Loss: 156.1201, Train Acc: 0.9489, Val Loss: 0.3601, Val Acc: 0.8840
+Epoch [3/15], Train Loss: 127.5875, Train Acc: 0.9588, Val Loss: 0.3150, Val Acc: 0.8992
+Epoch [4/15], Train Loss: 113.6525, Train Acc: 0.9637, Val Loss: 0.4086, Val Acc: 0.8849
+Epoch [5/15], Train Loss: 101.8575, Train Acc: 0.9668, Val Loss: 0.3440, Val Acc: 0.8976
+Epoch [6/15], Train Loss: 90.7775, Train Acc: 0.9712, Val Loss: 0.3556, Val Acc: 0.8972
+Epoch [7/15], Train Loss: 81.1745, Train Acc: 0.9743, Val Loss: 0.3556, Val Acc: 0.8991
+Epoch [8/15], Train Loss: 72.1473, Train Acc: 0.9780, Val Loss: 0.3898, Val Acc: 0.8996
+Epoch [9/15], Train Loss: 63.7087, Train Acc: 0.9808, Val Loss: 0.4032, Val Acc: 0.9026
+Epoch [10/15], Train Loss: 57.7599, Train Acc: 0.9824, Val Loss: 0.4131, Val Acc: 0.9024
+Epoch [11/15], Train Loss: 56.3700, Train Acc: 0.9833, Val Loss: 0.4131, Val Acc: 0.9024
+Epoch [12/15], Train Loss: 57.0599, Train Acc: 0.9831, Val Loss: 0.4426, Val Acc: 0.9002
+Epoch [13/15], Train Loss: 61.3084, Train Acc: 0.9814, Val Loss: 0.4106, Val Acc: 0.9029
+Epoch [14/15], Train Loss: 67.8152, Train Acc: 0.9792, Val Loss: 0.4066, Val Acc: 0.9011
+Epoch [15/15], Train Loss: 73.9815, Train Acc: 0.9768, Val Loss: 0.3889, Val Acc: 0.9010
+Generating and saving predictions...
+Train predictions length: 80000
+Validation predictions length: 20000
+Combined predictions length: 180000 (should match combined_labels length: 180000)
+Current time: 0416163855
+Start Time: 2025-04-16 16:38:54
+End Time:   2025-04-16 17:26:24
+Duration:   00:47:30

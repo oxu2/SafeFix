@@ -1,0 +1,31 @@
+nohup: ignoring input
+start time: 2025-04-16 16:35:45
+Downloading config.json:   0%|          | 0.00/4.19k [00:00<?, ?B/s]Downloading config.json: 100%|██████████| 4.19k/4.19k [00:00<00:00, 496kB/s]
+Downloading pytorch_model.bin:   0%|          | 0.00/605M [00:00<?, ?B/s]Downloading pytorch_model.bin:   2%|▏         | 10.5M/605M [00:00<00:06, 95.0MB/s]Downloading pytorch_model.bin:   3%|▎         | 21.0M/605M [00:00<00:05, 100MB/s] Downloading pytorch_model.bin:   7%|▋         | 41.9M/605M [00:00<00:05, 108MB/s]Downloading pytorch_model.bin:  10%|█         | 62.9M/605M [00:00<00:04, 112MB/s]Downloading pytorch_model.bin:  14%|█▍        | 83.9M/605M [00:00<00:04, 114MB/s]Downloading pytorch_model.bin:  17%|█▋        | 105M/605M [00:00<00:04, 115MB/s] Downloading pytorch_model.bin:  21%|██        | 126M/605M [00:01<00:04, 116MB/s]Downloading pytorch_model.bin:  24%|██▍       | 147M/605M [00:01<00:03, 116MB/s]Downloading pytorch_model.bin:  28%|██▊       | 168M/605M [00:01<00:03, 116MB/s]Downloading pytorch_model.bin:  31%|███       | 189M/605M [00:01<00:03, 116MB/s]Downloading pytorch_model.bin:  35%|███▍      | 210M/605M [00:01<00:03, 117MB/s]Downloading pytorch_model.bin:  38%|███▊      | 231M/605M [00:02<00:03, 117MB/s]Downloading pytorch_model.bin:  42%|████▏     | 252M/605M [00:02<00:03, 117MB/s]Downloading pytorch_model.bin:  45%|████▌     | 273M/605M [00:02<00:02, 117MB/s]Downloading pytorch_model.bin:  49%|████▊     | 294M/605M [00:02<00:02, 117MB/s]Downloading pytorch_model.bin:  52%|█████▏    | 315M/605M [00:02<00:02, 117MB/s]Downloading pytorch_model.bin:  55%|█████▌    | 336M/605M [00:02<00:02, 117MB/s]Downloading pytorch_model.bin:  59%|█████▉    | 357M/605M [00:03<00:02, 117MB/s]Downloading pytorch_model.bin:  62%|██████▏   | 377M/605M [00:03<00:01, 117MB/s]Downloading pytorch_model.bin:  66%|██████▌   | 398M/605M [00:03<00:01, 117MB/s]Downloading pytorch_model.bin:  69%|██████▉   | 419M/605M [00:03<00:01, 117MB/s]Downloading pytorch_model.bin:  73%|███████▎  | 440M/605M [00:03<00:01, 117MB/s]Downloading pytorch_model.bin:  76%|███████▌  | 461M/605M [00:03<00:01, 117MB/s]Downloading pytorch_model.bin:  80%|███████▉  | 482M/605M [00:04<00:01, 117MB/s]Downloading pytorch_model.bin:  83%|████████▎ | 503M/605M [00:04<00:00, 117MB/s]Downloading pytorch_model.bin:  87%|████████▋ | 524M/605M [00:04<00:00, 117MB/s]Downloading pytorch_model.bin:  90%|█████████ | 545M/605M [00:04<00:00, 117MB/s]Downloading pytorch_model.bin:  94%|█████████▎| 566M/605M [00:04<00:00, 117MB/s]Downloading pytorch_model.bin:  97%|█████████▋| 587M/605M [00:05<00:00, 117MB/s]Downloading pytorch_model.bin: 100%|██████████| 605M/605M [00:05<00:00, 117MB/s]Downloading pytorch_model.bin: 100%|██████████| 605M/605M [00:05<00:00, 116MB/s]Current time: 0416163547
+Warning: a.txt not found. No additional unknown hair color images will be added.
+Added 0 generated unknown hair color images, before training set has 80000 images, now 80000
+Using clip model with pretrained weights
+
+Epoch [1/15], Train Loss: 283.7128, Train Acc: 0.8861, Val Loss: 0.5917, Val Acc: 0.8560
+Epoch [2/15], Train Loss: 133.0738, Train Acc: 0.9574, Val Loss: 0.3680, Val Acc: 0.8917
+Epoch [3/15], Train Loss: 107.9620, Train Acc: 0.9660, Val Loss: 0.3944, Val Acc: 0.8874
+Epoch [4/15], Train Loss: 92.6685, Train Acc: 0.9708, Val Loss: 0.4424, Val Acc: 0.8900
+Epoch [5/15], Train Loss: 81.0156, Train Acc: 0.9748, Val Loss: 0.4339, Val Acc: 0.8909
+Epoch [6/15], Train Loss: 70.6082, Train Acc: 0.9784, Val Loss: 0.3739, Val Acc: 0.9000
+Epoch [7/15], Train Loss: 59.8298, Train Acc: 0.9818, Val Loss: 0.3420, Val Acc: 0.9062
+Epoch [8/15], Train Loss: 50.0098, Train Acc: 0.9850, Val Loss: 0.3883, Val Acc: 0.9058
+Epoch [9/15], Train Loss: 42.1816, Train Acc: 0.9878, Val Loss: 0.4218, Val Acc: 0.9042
+Epoch [10/15], Train Loss: 36.2812, Train Acc: 0.9896, Val Loss: 0.4668, Val Acc: 0.9022
+Epoch [11/15], Train Loss: 34.3056, Train Acc: 0.9905, Val Loss: 0.4668, Val Acc: 0.9022
+Epoch [12/15], Train Loss: 35.2857, Train Acc: 0.9900, Val Loss: 0.4541, Val Acc: 0.9034
+Epoch [13/15], Train Loss: 39.2810, Train Acc: 0.9888, Val Loss: 0.4783, Val Acc: 0.8970
+Epoch [14/15], Train Loss: 44.7094, Train Acc: 0.9868, Val Loss: 0.3776, Val Acc: 0.9036
+Epoch [15/15], Train Loss: 51.2844, Train Acc: 0.9843, Val Loss: 0.4891, Val Acc: 0.8981
+Generating and saving predictions...
+Train predictions length: 80000
+Validation predictions length: 20000
+Combined predictions length: 180000 (should match combined_labels length: 180000)
+Current time: 0416163547
+Start Time: 2025-04-16 16:35:45
+End Time:   2025-04-16 17:23:27
+Duration:   00:47:42

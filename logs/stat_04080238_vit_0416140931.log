@@ -1,0 +1,51 @@
+nohup: ignoring input
+start time: 2025-04-21 01:22:53
+Model Validation ACC: 0.90785
+Start detect_failure_by_label
+
+Start detect_prediction_correlation
+
+ACC: 0.893108 	Hard case: attribute "beard", description No
+ACC: 0.849881 	Hard case: attribute "gender", description female
+Suspicous Correlation in prediction, when attribute gender is female, prediction is 1 with prob 0.9253655219313158
+ACC: 0.875263 	Hard case: attribute "hair color", description blonde
+Indices with hair color=red in validation set: 80478...
+The accuracy 0.9114331723027376 is calculated from validation set samples with this attribute
+Correct predictions: 566/621
+ACC: 0.895507 	Rare Case: attribute "skin", description brown
+ACC: 0.866920 	Rare Case: attribute "emotion", description sad
+ACC: 0.889113 	Rare Case: attribute "emotion", description calm
+ACC: 0.893384 	Hard case: attribute "emotion", description surprised
+ACC: 0.870293 	Rare Case: attribute "emotion", description pensive
+Start detect_failure_prediction_correlation
+
+Suspicous Correlation in failure prediction, when attribute beard is Yes, prediction is 1 with prob 0.9031476997578692
+Suspicous Correlation in failure prediction, when attribute beard is No, prediction is 1 with prob 0.9195804195804196
+Suspicous Correlation in failure prediction, when attribute makeup is Yes, prediction is 1 with prob 0.904
+Suspicous Correlation in failure prediction, when attribute makeup is No, prediction is 1 with prob 0.9189373297002725
+Suspicous Correlation in failure prediction, when attribute gender is female, prediction is 1 with prob 0.9365798414496036
+Suspicous Correlation in failure prediction, when attribute hair color is white, prediction is 1 with prob 0.9393939393939394
+Suspicous Correlation in failure prediction, when attribute hair color is yellow, prediction is 1 with prob 0.8571428571428571
+Suspicous Correlation in failure prediction, when attribute hair color is blonde, prediction is 1 with prob 0.9555895865237366
+Suspicous Correlation in failure prediction, when attribute hair color is black, prediction is 1 with prob 0.8655804480651731
+Suspicous Correlation in failure prediction, when attribute hair color is gray, prediction is 1 with prob 0.8846153846153846
+Suspicous Correlation in failure prediction, when attribute hair color is brown, prediction is 1 with prob 0.9152249134948097
+Suspicous Correlation in failure prediction, when attribute hair color is red, prediction is 1 with prob 0.9090909090909091
+Suspicous Correlation in failure prediction, when attribute skin is white, prediction is 1 with prob 0.9117647058823529
+Suspicous Correlation in failure prediction, when attribute skin is black, prediction is 1 with prob 0.8888888888888888
+Suspicous Correlation in failure prediction, when attribute skin is brown, prediction is 1 with prob 0.9339774557165862
+Suspicous Correlation in failure prediction, when attribute emotion is sad, prediction is 1 with prob 0.9214285714285714
+Suspicous Correlation in failure prediction, when attribute emotion is serious, prediction is 1 with prob 0.9079497907949791
+Suspicous Correlation in failure prediction, when attribute emotion is calm, prediction is 1 with prob 0.9818181818181818
+Suspicous Correlation in failure prediction, when attribute emotion is happy, prediction is 1 with prob 0.9079497907949791
+Suspicous Correlation in failure prediction, when attribute emotion is surprised, prediction is 1 with prob 0.9130434782608695
+Suspicous Correlation in failure prediction, when attribute emotion is neutral, prediction is 1 with prob 0.9253731343283582
+Suspicous Correlation in failure prediction, when attribute emotion is angry, prediction is 1 with prob 1.0
+Suspicous Correlation in failure prediction, when attribute emotion is excited, prediction is 1 with prob 0.9008264462809917
+Suspicous Correlation in failure prediction, when attribute emotion is pensive, prediction is 1 with prob 0.967741935483871
+Suspicous Correlation in failure prediction, when attribute young is young, prediction is 1 with prob 0.9170333123821496
+Suspicous Correlation in failure prediction, when attribute young is middle-aged, prediction is 1 with prob 0.9106145251396648
+Suspicous Correlation in failure prediction, when attribute young is old, prediction is 1 with prob 0.9041095890410958
+Start Time: 2025-04-21 01:22:53
+End Time:   2025-04-21 01:22:54
+Duration:   00:00:01

@@ -1,0 +1,15 @@
+Overall accuracy: 0.906700 -> 0.911000: improved
+beard, No, 0.893183 -> 0.896920: improved
+gender, female, 0.851156 -> 0.854981: improved
+hair color, white, 0.934426 -> 0.940574: improved
+hair color, yellow, 0.891892 -> 0.905405: improved
+hair color, blonde, 0.879274 -> 0.879083: declined
+hair color, black, 0.921660 -> 0.926943: improved
+hair color, gray, 0.976504 -> 0.977444: improved
+hair color, brown, 0.899712 -> 0.905481: improved
+hair color, red, 0.904992 -> 0.925926: improved
+skin, brown, 0.893320 -> 0.894498: improved
+emotion, sad, 0.851711 -> 0.874525: improved
+emotion, calm, 0.885081 -> 0.899194: improved
+emotion, surprised, 0.892962 -> 0.898441: improved
+emotion, pensive, 0.861925 -> 0.875523: improved

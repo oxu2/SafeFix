@@ -1,0 +1,23 @@
+start time: 2025-04-21 14:50:20
+Current time: 0421145021
+Added 4000 generated redhair_brownskin images, before training set has 80000 images, now 84000
+Using resnet model with random weights
+Epoch [1/10], Train Loss: 416.1741, Train Acc: 0.8521, Val Loss: 0.3847, Val Acc: 0.8638
+Epoch [2/10], Train Loss: 193.3429, Train Acc: 0.9423, Val Loss: 0.3797, Val Acc: 0.8767
+Epoch [3/10], Train Loss: 144.3198, Train Acc: 0.9578, Val Loss: 0.2858, Val Acc: 0.9061
+Epoch [4/10], Train Loss: 107.9581, Train Acc: 0.9690, Val Loss: 0.2491, Val Acc: 0.9112
+Epoch [5/10], Train Loss: 98.3018, Train Acc: 0.9727, Val Loss: 0.2261, Val Acc: 0.9127
+Epoch [6/10], Train Loss: 91.0646, Train Acc: 0.9741, Val Loss: 0.4227, Val Acc: 0.8928
+Epoch [7/10], Train Loss: 73.7165, Train Acc: 0.9805, Val Loss: 0.5450, Val Acc: 0.8791
+Epoch [8/10], Train Loss: 71.3892, Train Acc: 0.9806, Val Loss: 0.3563, Val Acc: 0.9043
+Epoch [9/10], Train Loss: 67.1340, Train Acc: 0.9817, Val Loss: 0.5709, Val Acc: 0.8754
+Epoch [10/10], Train Loss: 60.1368, Train Acc: 0.9844, Val Loss: 0.2414, Val Acc: 0.9157
+Generating and saving predictions...
+Original train predictions length: 80000
+Modified image predictions length: 4000
+Validation predictions length: 20000
+Combined predictions length: 184000 (should match combined_labels length: 184000)
+Current time: 0421145021
+Start Time: 2025-04-21 14:50:20
+End Time:   2025-04-21 15:03:34
+Duration:   00:13:14

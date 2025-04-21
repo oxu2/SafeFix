@@ -176,7 +176,7 @@ class ModelDiagnose():
                         
                         if distribution[largest_label] > self.dominant_label_in_prediction_threshold:
                             self.report.record_correlation_error(attribute, description,label_distribution=distribution)
-                            self.print_output("Suspicous Correlation in prediction, when attribute %s is %s, prediction is %s with prob %s"%(attribute, description, str(largest_label), str(distribution[largest_label])))
+                            # self.print_output("Suspicous Correlation in prediction, when attribute %s is %s, prediction is %s with prob %s"%(attribute, description, str(largest_label), str(distribution[largest_label])))
                             
     def detect_failure_prediction_correlation(self):
         for attribute in self.attributes.keys():
@@ -199,7 +199,7 @@ class ModelDiagnose():
                     if distribution[largest_label] > self.dominant_label_in_failure_threshold:
                         self.report.record_correlation_error(attribute, description, label_distribution=distribution, in_failure=True)
                     
-                        self.print_output("Suspicous Correlation in failure prediction, when attribute %s is %s, prediction is %s with prob %s"%(attribute, description, str(largest_label), str(distribution[largest_label])))
+                        # self.print_output("Suspicous Correlation in failure prediction, when attribute %s is %s, prediction is %s with prob %s"%(attribute, description, str(largest_label), str(distribution[largest_label])))
                         # self.print_output(", prediction is %s with prob %s"%(str(1 - largest_label), str(non_largest_label_prob)))
                         
                         combined_distribution = np.zeros(len(self.label_number))
