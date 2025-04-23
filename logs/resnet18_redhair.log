@@ -2,7 +2,7 @@ nohup: ignoring input
 start time: 2025-04-16 02:00:53
 Current time: 04160200
 Added 4050 generated red hair color images, before training set has 80000 images, now 84050
-Saved combined labels to ./save/labels_04080238.npy
+Saved combined labels to save/labels_04080238.npy
 Using resnet18 model with random weights
 Epoch [1/10], Train Loss: 409.4513, Train Acc: 0.8541, Val Loss: 0.2864, Val Acc: 0.8891
 Epoch [2/10], Train Loss: 176.2086, Train Acc: 0.9497, Val Loss: 0.2648, Val Acc: 0.8999

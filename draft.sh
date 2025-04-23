@@ -1,5 +1,12 @@
-
-
+CUDA_VISIBLE_DEVICES=2 nohup bash run.sh predict.py --model vit > logs/vit_redhair_brownskin_20.log 2>&1 < /dev/null &
+CUDA_VISIBLE_DEVICES=3 nohup bash run.sh predict.py --model resnet > logs/resnet_redhair_brownskin_20.log 2>&1 < /dev/null &
+CUDA_VISIBLE_DEVICES=0 nohup bash run.sh predict.py --model clip > logs/clip_redhair_brownskin_20.log 2>&1 < /dev/null &
+nohup ./for.sh > for1000.log 2>&1 &
+nohup ./for.sh > for2000.log 2>&1 &
+nohup ./for.sh > for4000.log 2>&1 &
+CUDA_VISIBLE_DEVICES=2 nohup bash run.sh predict.py --model vit --num_added_img 1000 > logs/vit_redhair_brownskin_20.log 2>&1 < /dev/null &
+CUDA_VISIBLE_DEVICES=3 nohup bash run.sh predict.py --model resnet --num_added_img 1000 > logs/resnet_redhair_brownskin_20.log 2>&1 < /dev/null &
+CUDA_VISIBLE_DEVICES=0 nohup bash run.sh predict.py --model clip > logs/clip_redhair_brownskin_20.log 2>&1 < /dev/null &
 
 CUDA_VISIBLE_DEVICES=2 nohup bash run.sh predict.py --model vit > logs/vit_redhair_brownskin_10.log 2>&1 < /dev/null &
 

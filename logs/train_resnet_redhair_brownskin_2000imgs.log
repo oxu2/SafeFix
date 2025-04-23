@@ -1,0 +1,35 @@
+start time: 2025-04-21 22:56:09
+Current time: 0421225610
+Added 2000 generated redhair_brownskin images, before training set has 80000 images, now 82000
+Saved combined train indices to save/train_idx_redhair_brownskin_2000imgs.npy
+Saved combined labels to save/labels_redhair_brownskin_2000imgs.npy
+Using resnet model with random weights
+Epoch [1/20], Train Loss: 389.7742, Train Acc: 0.8590, Val Loss: 0.3797, Val Acc: 0.8623
+Epoch [2/20], Train Loss: 167.4956, Train Acc: 0.9508, Val Loss: 0.2603, Val Acc: 0.8945
+Epoch [3/20], Train Loss: 124.2152, Train Acc: 0.9640, Val Loss: 0.2616, Val Acc: 0.9086
+Epoch [4/20], Train Loss: 93.3166, Train Acc: 0.9741, Val Loss: 0.2165, Val Acc: 0.9102
+Epoch [5/20], Train Loss: 83.4865, Train Acc: 0.9770, Val Loss: 0.2416, Val Acc: 0.9136
+Epoch [6/20], Train Loss: 74.9283, Train Acc: 0.9790, Val Loss: 0.2548, Val Acc: 0.9105
+Epoch [7/20], Train Loss: 62.5000, Train Acc: 0.9830, Val Loss: 0.4361, Val Acc: 0.8993
+Epoch [8/20], Train Loss: 58.8693, Train Acc: 0.9840, Val Loss: 0.3130, Val Acc: 0.9105
+Epoch [9/20], Train Loss: 57.4067, Train Acc: 0.9847, Val Loss: 0.3005, Val Acc: 0.9089
+Epoch [10/20], Train Loss: 49.2850, Train Acc: 0.9869, Val Loss: 0.4163, Val Acc: 0.9017
+Epoch [11/20], Train Loss: 45.9432, Train Acc: 0.9882, Val Loss: 0.3765, Val Acc: 0.9073
+Epoch [12/20], Train Loss: 45.4022, Train Acc: 0.9887, Val Loss: 0.4884, Val Acc: 0.8978
+Epoch [13/20], Train Loss: 41.5357, Train Acc: 0.9897, Val Loss: 0.3487, Val Acc: 0.9105
+Epoch [14/20], Train Loss: 40.0127, Train Acc: 0.9904, Val Loss: 0.3131, Val Acc: 0.9130
+Epoch [15/20], Train Loss: 38.7391, Train Acc: 0.9907, Val Loss: 0.3398, Val Acc: 0.9080
+Epoch [16/20], Train Loss: 37.7086, Train Acc: 0.9912, Val Loss: 0.3544, Val Acc: 0.9091
+Epoch [17/20], Train Loss: 36.8341, Train Acc: 0.9913, Val Loss: 0.3459, Val Acc: 0.9094
+Epoch [18/20], Train Loss: 36.1524, Train Acc: 0.9914, Val Loss: 0.3679, Val Acc: 0.9088
+Epoch [19/20], Train Loss: 35.6301, Train Acc: 0.9919, Val Loss: 0.3921, Val Acc: 0.9061
+Epoch [20/20], Train Loss: 35.2553, Train Acc: 0.9917, Val Loss: 0.3537, Val Acc: 0.9093
+Generating and saving predictions...
+Original train predictions length: 80000
+Modified image predictions length: 2000
+Validation predictions length: 20000
+Combined predictions length: 182000 (should match combined_labels length: 182000)
+Current time: 0421225610
+Start Time: 2025-04-21 22:56:09
+End Time:   2025-04-21 23:22:00
+Duration:   00:25:51

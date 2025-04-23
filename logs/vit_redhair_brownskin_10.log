@@ -1,8 +1,8 @@
 start time: 2025-04-21 14:49:52
 Current time: 0421144953
 Added 4000 generated redhair_brownskin images, before training set has 80000 images, now 84000
-Saved combined train indices to ./save/train_idx_redhair_brownskin.npy
-Saved combined labels to ./save/labels_redhair_brownskin.npy
+Saved combined train indices to save/train_idx_redhair_brownskin.npy
+Saved combined labels to save/labels_redhair_brownskin.npy
 Using vit model with random weights
 Epoch [1/10], Train Loss: 458.7133, Train Acc: 0.8165, Val Loss: 0.2956, Val Acc: 0.8867
 Epoch [2/10], Train Loss: 198.4235, Train Acc: 0.9358, Val Loss: 0.3164, Val Acc: 0.8907

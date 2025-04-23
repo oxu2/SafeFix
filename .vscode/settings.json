@@ -1,6 +1,0 @@
-{
-    "git.ignoreLimitWarning": true,
-    "git.ignoredRepositories": [
-    "Qwen2.5-VL"
-  ]
-}

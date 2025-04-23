@@ -1,0 +1,33 @@
+start time: 2025-04-21 19:36:07
+Current time: 0421193609
+Added 2000 generated redhair images, before training set has 80000 images, now 82000
+Using vit model with random weights
+Epoch [1/20], Train Loss: 410.5037, Train Acc: 0.8323, Val Loss: 0.3304, Val Acc: 0.8842
+Epoch [2/20], Train Loss: 173.9321, Train Acc: 0.9459, Val Loss: 0.3399, Val Acc: 0.8953
+Epoch [3/20], Train Loss: 142.4125, Train Acc: 0.9553, Val Loss: 0.2995, Val Acc: 0.8998
+Epoch [4/20], Train Loss: 123.5349, Train Acc: 0.9614, Val Loss: 0.3112, Val Acc: 0.9012
+Epoch [5/20], Train Loss: 108.9544, Train Acc: 0.9657, Val Loss: 0.4374, Val Acc: 0.8871
+Epoch [6/20], Train Loss: 97.8202, Train Acc: 0.9687, Val Loss: 0.3307, Val Acc: 0.9014
+Epoch [7/20], Train Loss: 87.6841, Train Acc: 0.9732, Val Loss: 0.4510, Val Acc: 0.8938
+Epoch [8/20], Train Loss: 78.2284, Train Acc: 0.9758, Val Loss: 0.4304, Val Acc: 0.9006
+Epoch [9/20], Train Loss: 68.7723, Train Acc: 0.9790, Val Loss: 0.4647, Val Acc: 0.8968
+Epoch [10/20], Train Loss: 63.6750, Train Acc: 0.9804, Val Loss: 0.4293, Val Acc: 0.9011
+Epoch [11/20], Train Loss: 62.0884, Train Acc: 0.9813, Val Loss: 0.4293, Val Acc: 0.9011
+Epoch [12/20], Train Loss: 62.9578, Train Acc: 0.9809, Val Loss: 0.4157, Val Acc: 0.9043
+Epoch [13/20], Train Loss: 66.4298, Train Acc: 0.9796, Val Loss: 0.3844, Val Acc: 0.9047
+Epoch [14/20], Train Loss: 71.6367, Train Acc: 0.9780, Val Loss: 0.3976, Val Acc: 0.9027
+Epoch [15/20], Train Loss: 78.6299, Train Acc: 0.9755, Val Loss: 0.4254, Val Acc: 0.8992
+Epoch [16/20], Train Loss: 84.4306, Train Acc: 0.9734, Val Loss: 0.4597, Val Acc: 0.8965
+Epoch [17/20], Train Loss: 88.9731, Train Acc: 0.9723, Val Loss: 0.3430, Val Acc: 0.9056
+Epoch [18/20], Train Loss: 97.3468, Train Acc: 0.9692, Val Loss: 0.3881, Val Acc: 0.8998
+Epoch [19/20], Train Loss: 94.7803, Train Acc: 0.9705, Val Loss: 0.3902, Val Acc: 0.9004
+Epoch [20/20], Train Loss: 98.3752, Train Acc: 0.9694, Val Loss: 0.3328, Val Acc: 0.8971
+Generating and saving predictions...
+Original train predictions length: 80000
+Modified image predictions length: 2000
+Validation predictions length: 20000
+Combined predictions length: 182000 (should match combined_labels length: 182000)
+Current time: 0421193609
+Start Time: 2025-04-21 19:36:07
+End Time:   2025-04-21 22:38:11
+Duration:   03:02:04

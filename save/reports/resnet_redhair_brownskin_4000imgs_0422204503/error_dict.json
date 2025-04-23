@@ -1,0 +1,1518 @@
+{
+    "error": {
+        "rare label": [],
+        "rare description": [
+            {
+                "attribute": "makeup",
+                "description": "Yes",
+                "valid distribution": {
+                    "Yes": 5276,
+                    "No": 14724
+                },
+                "valid acc": 0.4586808188021228,
+                "train distribution": 22873
+            },
+            {
+                "attribute": "hair color",
+                "description": "red",
+                "valid distribution": {
+                    "white": 488,
+                    "yellow": 74,
+                    "blonde": 5235,
+                    "black": 6625,
+                    "gray": 1064,
+                    "brown": 5893,
+                    "red": 621
+                },
+                "valid acc": 0.31561996779388085,
+                "train distribution": 2583
+            },
+            {
+                "attribute": "skin",
+                "description": "brown",
+                "valid distribution": {
+                    "white": 10150,
+                    "black": 3907,
+                    "brown": 5943
+                },
+                "valid acc": 0.3651354534746761,
+                "train distribution": 25532
+            },
+            {
+                "attribute": "emotion",
+                "description": "calm",
+                "valid distribution": {
+                    "sad": 1052,
+                    "serious": 7470,
+                    "calm": 496,
+                    "happy": 2573,
+                    "surprised": 2373,
+                    "neutral": 1303,
+                    "angry": 84,
+                    "excited": 3693,
+                    "pensive": 956
+                },
+                "valid acc": 0.4112903225806452,
+                "train distribution": 2138
+            },
+            {
+                "attribute": "emotion",
+                "description": "pensive",
+                "valid distribution": {
+                    "sad": 1052,
+                    "serious": 7470,
+                    "calm": 496,
+                    "happy": 2573,
+                    "surprised": 2373,
+                    "neutral": 1303,
+                    "angry": 84,
+                    "excited": 3693,
+                    "pensive": 956
+                },
+                "valid acc": 0.4571129707112971,
+                "train distribution": 3867
+            }
+        ],
+        "prediction correlation": [],
+        "failure correlation": [
+            {
+                "attribute": "beard",
+                "description": "Yes",
+                "correlated label": 0,
+                "prediction distribution": {
+                    "0": 0.9992690058479532,
+                    "1": 0.0007309941520467836
+                },
+                "valid acc": {
+                    "Yes": 0.5868317728782845,
+                    "No": 0.5020929884885633
+                }
+            },
+            {
+                "attribute": "beard",
+                "description": "No",
+                "correlated label": 0,
+                "prediction distribution": {
+                    "0": 1.0,
+                    "1": 0.0
+                },
+                "valid acc": {
+                    "Yes": 0.5868317728782845,
+                    "No": 0.5020929884885633
+                }
+            },
+            {
+                "attribute": "makeup",
+                "description": "Yes",
+                "correlated label": 0,
+                "prediction distribution": {
+                    "0": 1.0,
+                    "1": 0.0
+                },
+                "valid acc": {
+                    "Yes": 0.4586808188021228,
+                    "No": 0.5557593045368107
+                }
+            },
+            {
+                "attribute": "makeup",
+                "description": "No",
+                "correlated label": 0,
+                "prediction distribution": {
+                    "0": 0.9996942363552973,
+                    "1": 0.00030576364470264486
+                },
+                "valid acc": {
+                    "Yes": 0.4586808188021228,
+                    "No": 0.5557593045368107
+                }
+            },
+            {
+                "attribute": "gender",
+                "description": "female",
+                "correlated label": 0,
+                "prediction distribution": {
+                    "0": 0.9998929679974312,
+                    "1": 0.00010703200256876806
+                },
+                "valid acc": {
+                    "female": 0.20579734784087045,
+                    "male": 0.9934434191355027
+                }
+            },
+            {
+                "attribute": "gender",
+                "description": "male",
+                "correlated label": 0,
+                "prediction distribution": {
+                    "0": 0.9814814814814815,
+                    "1": 0.018518518518518517
+                },
+                "valid acc": {
+                    "female": 0.20579734784087045,
+                    "male": 0.9934434191355027
+                }
+            },
+            {
+                "attribute": "hair color",
+                "description": "white",
+                "correlated label": 0,
+                "prediction distribution": {
+                    "0": 1.0,
+                    "1": 0.0
+                },
+                "valid acc": {
+                    "white": 0.8913934426229508,
+                    "yellow": 0.8513513513513513,
+                    "blonde": 0.38739255014326646,
+                    "black": 0.6073962264150944,
+                    "gray": 0.918233082706767,
+                    "brown": 0.4887154250806041,
+                    "red": 0.31561996779388085
+                }
+            },
+            {
+                "attribute": "hair color",
+                "description": "yellow",
+                "correlated label": 0,
+                "prediction distribution": {
+                    "0": 1.0,
+                    "1": 0.0
+                },
+                "valid acc": {
+                    "white": 0.8913934426229508,
+                    "yellow": 0.8513513513513513,
+                    "blonde": 0.38739255014326646,
+                    "black": 0.6073962264150944,
+                    "gray": 0.918233082706767,
+                    "brown": 0.4887154250806041,
+                    "red": 0.31561996779388085
+                }
+            },
+            {
+                "attribute": "hair color",
+                "description": "blonde",
+                "correlated label": 0,
+                "prediction distribution": {
+                    "0": 0.9996881821016527,
+                    "1": 0.0003118178983473651
+                },
+                "valid acc": {
+                    "white": 0.8913934426229508,
+                    "yellow": 0.8513513513513513,
+                    "blonde": 0.38739255014326646,
+                    "black": 0.6073962264150944,
+                    "gray": 0.918233082706767,
+                    "brown": 0.4887154250806041,
+                    "red": 0.31561996779388085
+                }
+            },
+            {
+                "attribute": "hair color",
+                "description": "black",
+                "correlated label": 0,
+                "prediction distribution": {
+                    "0": 0.9996155324875048,
+                    "1": 0.00038446751249519417
+                },
+                "valid acc": {
+                    "white": 0.8913934426229508,
+                    "yellow": 0.8513513513513513,
+                    "blonde": 0.38739255014326646,
+                    "black": 0.6073962264150944,
+                    "gray": 0.918233082706767,
+                    "brown": 0.4887154250806041,
+                    "red": 0.31561996779388085
+                }
+            },
+            {
+                "attribute": "hair color",
+                "description": "gray",
+                "correlated label": 0,
+                "prediction distribution": {
+                    "0": 1.0,
+                    "1": 0.0
+                },
+                "valid acc": {
+                    "white": 0.8913934426229508,
+                    "yellow": 0.8513513513513513,
+                    "blonde": 0.38739255014326646,
+                    "black": 0.6073962264150944,
+                    "gray": 0.918233082706767,
+                    "brown": 0.4887154250806041,
+                    "red": 0.31561996779388085
+                }
+            },
+            {
+                "attribute": "hair color",
+                "description": "brown",
+                "correlated label": 0,
+                "prediction distribution": {
+                    "0": 1.0,
+                    "1": 0.0
+                },
+                "valid acc": {
+                    "white": 0.8913934426229508,
+                    "yellow": 0.8513513513513513,
+                    "blonde": 0.38739255014326646,
+                    "black": 0.6073962264150944,
+                    "gray": 0.918233082706767,
+                    "brown": 0.4887154250806041,
+                    "red": 0.31561996779388085
+                }
+            },
+            {
+                "attribute": "hair color",
+                "description": "red",
+                "correlated label": 0,
+                "prediction distribution": {
+                    "0": 1.0,
+                    "1": 0.0
+                },
+                "valid acc": {
+                    "white": 0.8913934426229508,
+                    "yellow": 0.8513513513513513,
+                    "blonde": 0.38739255014326646,
+                    "black": 0.6073962264150944,
+                    "gray": 0.918233082706767,
+                    "brown": 0.4887154250806041,
+                    "red": 0.31561996779388085
+                }
+            },
+            {
+                "attribute": "skin",
+                "description": "white",
+                "correlated label": 0,
+                "prediction distribution": {
+                    "0": 0.9995049504950495,
+                    "1": 0.0004950495049504951
+                },
+                "valid acc": {
+                    "white": 0.6019704433497537,
+                    "black": 0.59457384182237,
+                    "brown": 0.3651354534746761
+                }
+            },
+            {
+                "attribute": "skin",
+                "description": "black",
+                "correlated label": 0,
+                "prediction distribution": {
+                    "0": 1.0,
+                    "1": 0.0
+                },
+                "valid acc": {
+                    "white": 0.6019704433497537,
+                    "black": 0.59457384182237,
+                    "brown": 0.3651354534746761
+                }
+            },
+            {
+                "attribute": "skin",
+                "description": "brown",
+                "correlated label": 0,
+                "prediction distribution": {
+                    "0": 1.0,
+                    "1": 0.0
+                },
+                "valid acc": {
+                    "white": 0.6019704433497537,
+                    "black": 0.59457384182237,
+                    "brown": 0.3651354534746761
+                }
+            },
+            {
+                "attribute": "emotion",
+                "description": "sad",
+                "correlated label": 0,
+                "prediction distribution": {
+                    "0": 1.0,
+                    "1": 0.0
+                },
+                "valid acc": {
+                    "sad": 0.5513307984790875,
+                    "serious": 0.6190093708165997,
+                    "calm": 0.4112903225806452,
+                    "happy": 0.49086669257675863,
+                    "surprised": 0.4475347661188369,
+                    "neutral": 0.5610130468150422,
+                    "angry": 0.9523809523809523,
+                    "excited": 0.43920931492011916,
+                    "pensive": 0.4571129707112971
+                }
+            },
+            {
+                "attribute": "emotion",
+                "description": "serious",
+                "correlated label": 0,
+                "prediction distribution": {
+                    "0": 0.999648629655657,
+                    "1": 0.00035137034434293746
+                },
+                "valid acc": {
+                    "sad": 0.5513307984790875,
+                    "serious": 0.6190093708165997,
+                    "calm": 0.4112903225806452,
+                    "happy": 0.49086669257675863,
+                    "surprised": 0.4475347661188369,
+                    "neutral": 0.5610130468150422,
+                    "angry": 0.9523809523809523,
+                    "excited": 0.43920931492011916,
+                    "pensive": 0.4571129707112971
+                }
+            },
+            {
+                "attribute": "emotion",
+                "description": "calm",
+                "correlated label": 0,
+                "prediction distribution": {
+                    "0": 1.0,
+                    "1": 0.0
+                },
+                "valid acc": {
+                    "sad": 0.5513307984790875,
+                    "serious": 0.6190093708165997,
+                    "calm": 0.4112903225806452,
+                    "happy": 0.49086669257675863,
+                    "surprised": 0.4475347661188369,
+                    "neutral": 0.5610130468150422,
+                    "angry": 0.9523809523809523,
+                    "excited": 0.43920931492011916,
+                    "pensive": 0.4571129707112971
+                }
+            },
+            {
+                "attribute": "emotion",
+                "description": "happy",
+                "correlated label": 0,
+                "prediction distribution": {
+                    "0": 1.0,
+                    "1": 0.0
+                },
+                "valid acc": {
+                    "sad": 0.5513307984790875,
+                    "serious": 0.6190093708165997,
+                    "calm": 0.4112903225806452,
+                    "happy": 0.49086669257675863,
+                    "surprised": 0.4475347661188369,
+                    "neutral": 0.5610130468150422,
+                    "angry": 0.9523809523809523,
+                    "excited": 0.43920931492011916,
+                    "pensive": 0.4571129707112971
+                }
+            },
+            {
+                "attribute": "emotion",
+                "description": "surprised",
+                "correlated label": 0,
+                "prediction distribution": {
+                    "0": 1.0,
+                    "1": 0.0
+                },
+                "valid acc": {
+                    "sad": 0.5513307984790875,
+                    "serious": 0.6190093708165997,
+                    "calm": 0.4112903225806452,
+                    "happy": 0.49086669257675863,
+                    "surprised": 0.4475347661188369,
+                    "neutral": 0.5610130468150422,
+                    "angry": 0.9523809523809523,
+                    "excited": 0.43920931492011916,
+                    "pensive": 0.4571129707112971
+                }
+            },
+            {
+                "attribute": "emotion",
+                "description": "neutral",
+                "correlated label": 0,
+                "prediction distribution": {
+                    "0": 1.0,
+                    "1": 0.0
+                },
+                "valid acc": {
+                    "sad": 0.5513307984790875,
+                    "serious": 0.6190093708165997,
+                    "calm": 0.4112903225806452,
+                    "happy": 0.49086669257675863,
+                    "surprised": 0.4475347661188369,
+                    "neutral": 0.5610130468150422,
+                    "angry": 0.9523809523809523,
+                    "excited": 0.43920931492011916,
+                    "pensive": 0.4571129707112971
+                }
+            },
+            {
+                "attribute": "emotion",
+                "description": "angry",
+                "correlated label": 0,
+                "prediction distribution": {
+                    "0": 1.0,
+                    "1": 0.0
+                },
+                "valid acc": {
+                    "sad": 0.5513307984790875,
+                    "serious": 0.6190093708165997,
+                    "calm": 0.4112903225806452,
+                    "happy": 0.49086669257675863,
+                    "surprised": 0.4475347661188369,
+                    "neutral": 0.5610130468150422,
+                    "angry": 0.9523809523809523,
+                    "excited": 0.43920931492011916,
+                    "pensive": 0.4571129707112971
+                }
+            },
+            {
+                "attribute": "emotion",
+                "description": "excited",
+                "correlated label": 0,
+                "prediction distribution": {
+                    "0": 0.9995171414775471,
+                    "1": 0.0004828585224529213
+                },
+                "valid acc": {
+                    "sad": 0.5513307984790875,
+                    "serious": 0.6190093708165997,
+                    "calm": 0.4112903225806452,
+                    "happy": 0.49086669257675863,
+                    "surprised": 0.4475347661188369,
+                    "neutral": 0.5610130468150422,
+                    "angry": 0.9523809523809523,
+                    "excited": 0.43920931492011916,
+                    "pensive": 0.4571129707112971
+                }
+            },
+            {
+                "attribute": "emotion",
+                "description": "pensive",
+                "correlated label": 0,
+                "prediction distribution": {
+                    "0": 1.0,
+                    "1": 0.0
+                },
+                "valid acc": {
+                    "sad": 0.5513307984790875,
+                    "serious": 0.6190093708165997,
+                    "calm": 0.4112903225806452,
+                    "happy": 0.49086669257675863,
+                    "surprised": 0.4475347661188369,
+                    "neutral": 0.5610130468150422,
+                    "angry": 0.9523809523809523,
+                    "excited": 0.43920931492011916,
+                    "pensive": 0.4571129707112971
+                }
+            },
+            {
+                "attribute": "young",
+                "description": "young",
+                "correlated label": 0,
+                "prediction distribution": {
+                    "0": 0.9997556505803299,
+                    "1": 0.0002443494196701283
+                },
+                "valid acc": {
+                    "young": 0.4840844626536401,
+                    "middle-aged": 0.6154136758594635,
+                    "old": 0.8696236559139785
+                }
+            },
+            {
+                "attribute": "young",
+                "description": "middle-aged",
+                "correlated label": 0,
+                "prediction distribution": {
+                    "0": 1.0,
+                    "1": 0.0
+                },
+                "valid acc": {
+                    "young": 0.4840844626536401,
+                    "middle-aged": 0.6154136758594635,
+                    "old": 0.8696236559139785
+                }
+            },
+            {
+                "attribute": "young",
+                "description": "old",
+                "correlated label": 0,
+                "prediction distribution": {
+                    "0": 1.0,
+                    "1": 0.0
+                },
+                "valid acc": {
+                    "young": 0.4840844626536401,
+                    "middle-aged": 0.6154136758594635,
+                    "old": 0.8696236559139785
+                }
+            }
+        ],
+        "distribution shift": [],
+        "hard case": [
+            {
+                "attribute": "beard",
+                "description": "No",
+                "valid distribution": {
+                    "Yes": 6622,
+                    "No": 13378
+                },
+                "valid acc": 0.5020929884885633,
+                "train distribution": 55141
+            },
+            {
+                "attribute": "gender",
+                "description": "female",
+                "valid distribution": {
+                    "female": 11764,
+                    "male": 8236
+                },
+                "valid acc": 0.20579734784087045,
+                "train distribution": 45665
+            },
+            {
+                "attribute": "hair color",
+                "description": "blonde",
+                "valid distribution": {
+                    "white": 488,
+                    "yellow": 74,
+                    "blonde": 5235,
+                    "black": 6625,
+                    "gray": 1064,
+                    "brown": 5893,
+                    "red": 621
+                },
+                "valid acc": 0.38739255014326646,
+                "train distribution": 20584
+            },
+            {
+                "attribute": "hair color",
+                "description": "brown",
+                "valid distribution": {
+                    "white": 488,
+                    "yellow": 74,
+                    "blonde": 5235,
+                    "black": 6625,
+                    "gray": 1064,
+                    "brown": 5893,
+                    "red": 621
+                },
+                "valid acc": 0.4887154250806041,
+                "train distribution": 25570
+            },
+            {
+                "attribute": "emotion",
+                "description": "happy",
+                "valid distribution": {
+                    "sad": 1052,
+                    "serious": 7470,
+                    "calm": 496,
+                    "happy": 2573,
+                    "surprised": 2373,
+                    "neutral": 1303,
+                    "angry": 84,
+                    "excited": 3693,
+                    "pensive": 956
+                },
+                "valid acc": 0.49086669257675863,
+                "train distribution": 11066
+            },
+            {
+                "attribute": "emotion",
+                "description": "surprised",
+                "valid distribution": {
+                    "sad": 1052,
+                    "serious": 7470,
+                    "calm": 496,
+                    "happy": 2573,
+                    "surprised": 2373,
+                    "neutral": 1303,
+                    "angry": 84,
+                    "excited": 3693,
+                    "pensive": 956
+                },
+                "valid acc": 0.4475347661188369,
+                "train distribution": 9603
+            },
+            {
+                "attribute": "emotion",
+                "description": "excited",
+                "valid distribution": {
+                    "sad": 1052,
+                    "serious": 7470,
+                    "calm": 496,
+                    "happy": 2573,
+                    "surprised": 2373,
+                    "neutral": 1303,
+                    "angry": 84,
+                    "excited": 3693,
+                    "pensive": 956
+                },
+                "valid acc": 0.43920931492011916,
+                "train distribution": 16053
+            },
+            {
+                "attribute": "young",
+                "description": "young",
+                "valid distribution": {
+                    "young": 15865,
+                    "middle-aged": 2647,
+                    "old": 1488
+                },
+                "valid acc": 0.4840844626536401,
+                "train distribution": 66873
+            }
+        ]
+    },
+    "info": {
+        "confusion matrix": {
+            "Train": {
+                "0": {
+                    "0": 39689.0,
+                    "1": 21.0
+                },
+                "1": {
+                    "0": 44270.0,
+                    "1": 20.0
+                }
+            },
+            "Valid": {
+                "0": {
+                    "0": 10601.0,
+                    "1": 2.0
+                },
+                "1": {
+                    "0": 9395.0,
+                    "1": 2.0
+                }
+            }
+        },
+        "distribution": {
+            "Train": {
+                "0": 39710.0,
+                "1": 44290.0
+            },
+            "Valid": {
+                "0": 10603.0,
+                "1": 9397.0
+            }
+        },
+        "valid acc": 0.53015,
+        "valid label acc": {
+            "0": 0.9998113741393945,
+            "1": 0.00021283388315419816
+        }
+    },
+    "list": [
+        [
+            9343,
+            "hard case",
+            {
+                "attribute": "gender",
+                "description": "female",
+                "valid distribution": {
+                    "female": 11764,
+                    "male": 8236
+                },
+                "valid acc": 0.20579734784087045,
+                "train distribution": 45665
+            }
+        ],
+        [
+            9342,
+            "failure prediction correlation",
+            {
+                "attribute": "gender",
+                "description": "female",
+                "correlated label": 0,
+                "prediction distribution": {
+                    "0": 0.9998929679974312,
+                    "1": 0.00010703200256876806
+                },
+                "valid acc": {
+                    "female": 0.20579734784087045,
+                    "male": 0.9934434191355027
+                }
+            }
+        ],
+        [
+            8185,
+            "hard case",
+            {
+                "attribute": "young",
+                "description": "young",
+                "valid distribution": {
+                    "young": 15865,
+                    "middle-aged": 2647,
+                    "old": 1488
+                },
+                "valid acc": 0.4840844626536401,
+                "train distribution": 66873
+            }
+        ],
+        [
+            8183,
+            "failure prediction correlation",
+            {
+                "attribute": "young",
+                "description": "young",
+                "correlated label": 0,
+                "prediction distribution": {
+                    "0": 0.9997556505803299,
+                    "1": 0.0002443494196701283
+                },
+                "valid acc": {
+                    "young": 0.4840844626536401,
+                    "middle-aged": 0.6154136758594635,
+                    "old": 0.8696236559139785
+                }
+            }
+        ],
+        [
+            6661,
+            "hard case",
+            {
+                "attribute": "beard",
+                "description": "No",
+                "valid distribution": {
+                    "Yes": 6622,
+                    "No": 13378
+                },
+                "valid acc": 0.5020929884885633,
+                "train distribution": 55141
+            }
+        ],
+        [
+            6661,
+            "failure prediction correlation",
+            {
+                "attribute": "beard",
+                "description": "No",
+                "correlated label": 0,
+                "prediction distribution": {
+                    "0": 1.0,
+                    "1": 0.0
+                },
+                "valid acc": {
+                    "Yes": 0.5868317728782845,
+                    "No": 0.5020929884885633
+                }
+            }
+        ],
+        [
+            6539,
+            "failure prediction correlation",
+            {
+                "attribute": "makeup",
+                "description": "No",
+                "correlated label": 0,
+                "prediction distribution": {
+                    "0": 0.9996942363552973,
+                    "1": 0.00030576364470264486
+                },
+                "valid acc": {
+                    "Yes": 0.4586808188021228,
+                    "No": 0.5557593045368107
+                }
+            }
+        ],
+        [
+            4038,
+            "failure prediction correlation",
+            {
+                "attribute": "skin",
+                "description": "white",
+                "correlated label": 0,
+                "prediction distribution": {
+                    "0": 0.9995049504950495,
+                    "1": 0.0004950495049504951
+                },
+                "valid acc": {
+                    "white": 0.6019704433497537,
+                    "black": 0.59457384182237,
+                    "brown": 0.3651354534746761
+                }
+            }
+        ],
+        [
+            3773,
+            "rare description",
+            {
+                "attribute": "skin",
+                "description": "brown",
+                "valid distribution": {
+                    "white": 10150,
+                    "black": 3907,
+                    "brown": 5943
+                },
+                "valid acc": 0.3651354534746761,
+                "train distribution": 25532
+            }
+        ],
+        [
+            3773,
+            "failure prediction correlation",
+            {
+                "attribute": "skin",
+                "description": "brown",
+                "correlated label": 0,
+                "prediction distribution": {
+                    "0": 1.0,
+                    "1": 0.0
+                },
+                "valid acc": {
+                    "white": 0.6019704433497537,
+                    "black": 0.59457384182237,
+                    "brown": 0.3651354534746761
+                }
+            }
+        ],
+        [
+            3207,
+            "hard case",
+            {
+                "attribute": "hair color",
+                "description": "blonde",
+                "valid distribution": {
+                    "white": 488,
+                    "yellow": 74,
+                    "blonde": 5235,
+                    "black": 6625,
+                    "gray": 1064,
+                    "brown": 5893,
+                    "red": 621
+                },
+                "valid acc": 0.38739255014326646,
+                "train distribution": 20584
+            }
+        ],
+        [
+            3206,
+            "failure prediction correlation",
+            {
+                "attribute": "hair color",
+                "description": "blonde",
+                "correlated label": 0,
+                "prediction distribution": {
+                    "0": 0.9996881821016527,
+                    "1": 0.0003118178983473651
+                },
+                "valid acc": {
+                    "white": 0.8913934426229508,
+                    "yellow": 0.8513513513513513,
+                    "blonde": 0.38739255014326646,
+                    "black": 0.6073962264150944,
+                    "gray": 0.918233082706767,
+                    "brown": 0.4887154250806041,
+                    "red": 0.31561996779388085
+                }
+            }
+        ],
+        [
+            3013,
+            "hard case",
+            {
+                "attribute": "hair color",
+                "description": "brown",
+                "valid distribution": {
+                    "white": 488,
+                    "yellow": 74,
+                    "blonde": 5235,
+                    "black": 6625,
+                    "gray": 1064,
+                    "brown": 5893,
+                    "red": 621
+                },
+                "valid acc": 0.4887154250806041,
+                "train distribution": 25570
+            }
+        ],
+        [
+            3013,
+            "failure prediction correlation",
+            {
+                "attribute": "hair color",
+                "description": "brown",
+                "correlated label": 0,
+                "prediction distribution": {
+                    "0": 1.0,
+                    "1": 0.0
+                },
+                "valid acc": {
+                    "white": 0.8913934426229508,
+                    "yellow": 0.8513513513513513,
+                    "blonde": 0.38739255014326646,
+                    "black": 0.6073962264150944,
+                    "gray": 0.918233082706767,
+                    "brown": 0.4887154250806041,
+                    "red": 0.31561996779388085
+                }
+            }
+        ],
+        [
+            2856,
+            "rare description",
+            {
+                "attribute": "makeup",
+                "description": "Yes",
+                "valid distribution": {
+                    "Yes": 5276,
+                    "No": 14724
+                },
+                "valid acc": 0.4586808188021228,
+                "train distribution": 22873
+            }
+        ],
+        [
+            2856,
+            "failure prediction correlation",
+            {
+                "attribute": "makeup",
+                "description": "Yes",
+                "correlated label": 0,
+                "prediction distribution": {
+                    "0": 1.0,
+                    "1": 0.0
+                },
+                "valid acc": {
+                    "Yes": 0.4586808188021228,
+                    "No": 0.5557593045368107
+                }
+            }
+        ],
+        [
+            2845,
+            "failure prediction correlation",
+            {
+                "attribute": "emotion",
+                "description": "serious",
+                "correlated label": 0,
+                "prediction distribution": {
+                    "0": 0.999648629655657,
+                    "1": 0.00035137034434293746
+                },
+                "valid acc": {
+                    "sad": 0.5513307984790875,
+                    "serious": 0.6190093708165997,
+                    "calm": 0.4112903225806452,
+                    "happy": 0.49086669257675863,
+                    "surprised": 0.4475347661188369,
+                    "neutral": 0.5610130468150422,
+                    "angry": 0.9523809523809523,
+                    "excited": 0.43920931492011916,
+                    "pensive": 0.4571129707112971
+                }
+            }
+        ],
+        [
+            2734,
+            "failure prediction correlation",
+            {
+                "attribute": "beard",
+                "description": "Yes",
+                "correlated label": 0,
+                "prediction distribution": {
+                    "0": 0.9992690058479532,
+                    "1": 0.0007309941520467836
+                },
+                "valid acc": {
+                    "Yes": 0.5868317728782845,
+                    "No": 0.5020929884885633
+                }
+            }
+        ],
+        [
+            2599,
+            "failure prediction correlation",
+            {
+                "attribute": "hair color",
+                "description": "black",
+                "correlated label": 0,
+                "prediction distribution": {
+                    "0": 0.9996155324875048,
+                    "1": 0.00038446751249519417
+                },
+                "valid acc": {
+                    "white": 0.8913934426229508,
+                    "yellow": 0.8513513513513513,
+                    "blonde": 0.38739255014326646,
+                    "black": 0.6073962264150944,
+                    "gray": 0.918233082706767,
+                    "brown": 0.4887154250806041,
+                    "red": 0.31561996779388085
+                }
+            }
+        ],
+        [
+            2071,
+            "hard case",
+            {
+                "attribute": "emotion",
+                "description": "excited",
+                "valid distribution": {
+                    "sad": 1052,
+                    "serious": 7470,
+                    "calm": 496,
+                    "happy": 2573,
+                    "surprised": 2373,
+                    "neutral": 1303,
+                    "angry": 84,
+                    "excited": 3693,
+                    "pensive": 956
+                },
+                "valid acc": 0.43920931492011916,
+                "train distribution": 16053
+            }
+        ],
+        [
+            2070,
+            "failure prediction correlation",
+            {
+                "attribute": "emotion",
+                "description": "excited",
+                "correlated label": 0,
+                "prediction distribution": {
+                    "0": 0.9995171414775471,
+                    "1": 0.0004828585224529213
+                },
+                "valid acc": {
+                    "sad": 0.5513307984790875,
+                    "serious": 0.6190093708165997,
+                    "calm": 0.4112903225806452,
+                    "happy": 0.49086669257675863,
+                    "surprised": 0.4475347661188369,
+                    "neutral": 0.5610130468150422,
+                    "angry": 0.9523809523809523,
+                    "excited": 0.43920931492011916,
+                    "pensive": 0.4571129707112971
+                }
+            }
+        ],
+        [
+            1584,
+            "failure prediction correlation",
+            {
+                "attribute": "skin",
+                "description": "black",
+                "correlated label": 0,
+                "prediction distribution": {
+                    "0": 1.0,
+                    "1": 0.0
+                },
+                "valid acc": {
+                    "white": 0.6019704433497537,
+                    "black": 0.59457384182237,
+                    "brown": 0.3651354534746761
+                }
+            }
+        ],
+        [
+            1311,
+            "hard case",
+            {
+                "attribute": "emotion",
+                "description": "surprised",
+                "valid distribution": {
+                    "sad": 1052,
+                    "serious": 7470,
+                    "calm": 496,
+                    "happy": 2573,
+                    "surprised": 2373,
+                    "neutral": 1303,
+                    "angry": 84,
+                    "excited": 3693,
+                    "pensive": 956
+                },
+                "valid acc": 0.4475347661188369,
+                "train distribution": 9603
+            }
+        ],
+        [
+            1311,
+            "failure prediction correlation",
+            {
+                "attribute": "emotion",
+                "description": "surprised",
+                "correlated label": 0,
+                "prediction distribution": {
+                    "0": 1.0,
+                    "1": 0.0
+                },
+                "valid acc": {
+                    "sad": 0.5513307984790875,
+                    "serious": 0.6190093708165997,
+                    "calm": 0.4112903225806452,
+                    "happy": 0.49086669257675863,
+                    "surprised": 0.4475347661188369,
+                    "neutral": 0.5610130468150422,
+                    "angry": 0.9523809523809523,
+                    "excited": 0.43920931492011916,
+                    "pensive": 0.4571129707112971
+                }
+            }
+        ],
+        [
+            1310,
+            "hard case",
+            {
+                "attribute": "emotion",
+                "description": "happy",
+                "valid distribution": {
+                    "sad": 1052,
+                    "serious": 7470,
+                    "calm": 496,
+                    "happy": 2573,
+                    "surprised": 2373,
+                    "neutral": 1303,
+                    "angry": 84,
+                    "excited": 3693,
+                    "pensive": 956
+                },
+                "valid acc": 0.49086669257675863,
+                "train distribution": 11066
+            }
+        ],
+        [
+            1310,
+            "failure prediction correlation",
+            {
+                "attribute": "emotion",
+                "description": "happy",
+                "correlated label": 0,
+                "prediction distribution": {
+                    "0": 1.0,
+                    "1": 0.0
+                },
+                "valid acc": {
+                    "sad": 0.5513307984790875,
+                    "serious": 0.6190093708165997,
+                    "calm": 0.4112903225806452,
+                    "happy": 0.49086669257675863,
+                    "surprised": 0.4475347661188369,
+                    "neutral": 0.5610130468150422,
+                    "angry": 0.9523809523809523,
+                    "excited": 0.43920931492011916,
+                    "pensive": 0.4571129707112971
+                }
+            }
+        ],
+        [
+            1018,
+            "failure prediction correlation",
+            {
+                "attribute": "young",
+                "description": "middle-aged",
+                "correlated label": 0,
+                "prediction distribution": {
+                    "0": 1.0,
+                    "1": 0.0
+                },
+                "valid acc": {
+                    "young": 0.4840844626536401,
+                    "middle-aged": 0.6154136758594635,
+                    "old": 0.8696236559139785
+                }
+            }
+        ],
+        [
+            572,
+            "failure prediction correlation",
+            {
+                "attribute": "emotion",
+                "description": "neutral",
+                "correlated label": 0,
+                "prediction distribution": {
+                    "0": 1.0,
+                    "1": 0.0
+                },
+                "valid acc": {
+                    "sad": 0.5513307984790875,
+                    "serious": 0.6190093708165997,
+                    "calm": 0.4112903225806452,
+                    "happy": 0.49086669257675863,
+                    "surprised": 0.4475347661188369,
+                    "neutral": 0.5610130468150422,
+                    "angry": 0.9523809523809523,
+                    "excited": 0.43920931492011916,
+                    "pensive": 0.4571129707112971
+                }
+            }
+        ],
+        [
+            519,
+            "rare description",
+            {
+                "attribute": "emotion",
+                "description": "pensive",
+                "valid distribution": {
+                    "sad": 1052,
+                    "serious": 7470,
+                    "calm": 496,
+                    "happy": 2573,
+                    "surprised": 2373,
+                    "neutral": 1303,
+                    "angry": 84,
+                    "excited": 3693,
+                    "pensive": 956
+                },
+                "valid acc": 0.4571129707112971,
+                "train distribution": 3867
+            }
+        ],
+        [
+            519,
+            "failure prediction correlation",
+            {
+                "attribute": "emotion",
+                "description": "pensive",
+                "correlated label": 0,
+                "prediction distribution": {
+                    "0": 1.0,
+                    "1": 0.0
+                },
+                "valid acc": {
+                    "sad": 0.5513307984790875,
+                    "serious": 0.6190093708165997,
+                    "calm": 0.4112903225806452,
+                    "happy": 0.49086669257675863,
+                    "surprised": 0.4475347661188369,
+                    "neutral": 0.5610130468150422,
+                    "angry": 0.9523809523809523,
+                    "excited": 0.43920931492011916,
+                    "pensive": 0.4571129707112971
+                }
+            }
+        ],
+        [
+            471,
+            "failure prediction correlation",
+            {
+                "attribute": "emotion",
+                "description": "sad",
+                "correlated label": 0,
+                "prediction distribution": {
+                    "0": 1.0,
+                    "1": 0.0
+                },
+                "valid acc": {
+                    "sad": 0.5513307984790875,
+                    "serious": 0.6190093708165997,
+                    "calm": 0.4112903225806452,
+                    "happy": 0.49086669257675863,
+                    "surprised": 0.4475347661188369,
+                    "neutral": 0.5610130468150422,
+                    "angry": 0.9523809523809523,
+                    "excited": 0.43920931492011916,
+                    "pensive": 0.4571129707112971
+                }
+            }
+        ],
+        [
+            424,
+            "rare description",
+            {
+                "attribute": "hair color",
+                "description": "red",
+                "valid distribution": {
+                    "white": 488,
+                    "yellow": 74,
+                    "blonde": 5235,
+                    "black": 6625,
+                    "gray": 1064,
+                    "brown": 5893,
+                    "red": 621
+                },
+                "valid acc": 0.31561996779388085,
+                "train distribution": 2583
+            }
+        ],
+        [
+            424,
+            "failure prediction correlation",
+            {
+                "attribute": "hair color",
+                "description": "red",
+                "correlated label": 0,
+                "prediction distribution": {
+                    "0": 1.0,
+                    "1": 0.0
+                },
+                "valid acc": {
+                    "white": 0.8913934426229508,
+                    "yellow": 0.8513513513513513,
+                    "blonde": 0.38739255014326646,
+                    "black": 0.6073962264150944,
+                    "gray": 0.918233082706767,
+                    "brown": 0.4887154250806041,
+                    "red": 0.31561996779388085
+                }
+            }
+        ],
+        [
+            291,
+            "rare description",
+            {
+                "attribute": "emotion",
+                "description": "calm",
+                "valid distribution": {
+                    "sad": 1052,
+                    "serious": 7470,
+                    "calm": 496,
+                    "happy": 2573,
+                    "surprised": 2373,
+                    "neutral": 1303,
+                    "angry": 84,
+                    "excited": 3693,
+                    "pensive": 956
+                },
+                "valid acc": 0.4112903225806452,
+                "train distribution": 2138
+            }
+        ],
+        [
+            291,
+            "failure prediction correlation",
+            {
+                "attribute": "emotion",
+                "description": "calm",
+                "correlated label": 0,
+                "prediction distribution": {
+                    "0": 1.0,
+                    "1": 0.0
+                },
+                "valid acc": {
+                    "sad": 0.5513307984790875,
+                    "serious": 0.6190093708165997,
+                    "calm": 0.4112903225806452,
+                    "happy": 0.49086669257675863,
+                    "surprised": 0.4475347661188369,
+                    "neutral": 0.5610130468150422,
+                    "angry": 0.9523809523809523,
+                    "excited": 0.43920931492011916,
+                    "pensive": 0.4571129707112971
+                }
+            }
+        ],
+        [
+            194,
+            "failure prediction correlation",
+            {
+                "attribute": "young",
+                "description": "old",
+                "correlated label": 0,
+                "prediction distribution": {
+                    "0": 1.0,
+                    "1": 0.0
+                },
+                "valid acc": {
+                    "young": 0.4840844626536401,
+                    "middle-aged": 0.6154136758594635,
+                    "old": 0.8696236559139785
+                }
+            }
+        ],
+        [
+            86,
+            "failure prediction correlation",
+            {
+                "attribute": "hair color",
+                "description": "gray",
+                "correlated label": 0,
+                "prediction distribution": {
+                    "0": 1.0,
+                    "1": 0.0
+                },
+                "valid acc": {
+                    "white": 0.8913934426229508,
+                    "yellow": 0.8513513513513513,
+                    "blonde": 0.38739255014326646,
+                    "black": 0.6073962264150944,
+                    "gray": 0.918233082706767,
+                    "brown": 0.4887154250806041,
+                    "red": 0.31561996779388085
+                }
+            }
+        ],
+        [
+            52,
+            "failure prediction correlation",
+            {
+                "attribute": "gender",
+                "description": "male",
+                "correlated label": 0,
+                "prediction distribution": {
+                    "0": 0.9814814814814815,
+                    "1": 0.018518518518518517
+                },
+                "valid acc": {
+                    "female": 0.20579734784087045,
+                    "male": 0.9934434191355027
+                }
+            }
+        ],
+        [
+            52,
+            "failure prediction correlation",
+            {
+                "attribute": "hair color",
+                "description": "white",
+                "correlated label": 0,
+                "prediction distribution": {
+                    "0": 1.0,
+                    "1": 0.0
+                },
+                "valid acc": {
+                    "white": 0.8913934426229508,
+                    "yellow": 0.8513513513513513,
+                    "blonde": 0.38739255014326646,
+                    "black": 0.6073962264150944,
+                    "gray": 0.918233082706767,
+                    "brown": 0.4887154250806041,
+                    "red": 0.31561996779388085
+                }
+            }
+        ],
+        [
+            11,
+            "failure prediction correlation",
+            {
+                "attribute": "hair color",
+                "description": "yellow",
+                "correlated label": 0,
+                "prediction distribution": {
+                    "0": 1.0,
+                    "1": 0.0
+                },
+                "valid acc": {
+                    "white": 0.8913934426229508,
+                    "yellow": 0.8513513513513513,
+                    "blonde": 0.38739255014326646,
+                    "black": 0.6073962264150944,
+                    "gray": 0.918233082706767,
+                    "brown": 0.4887154250806041,
+                    "red": 0.31561996779388085
+                }
+            }
+        ],
+        [
+            4,
+            "failure prediction correlation",
+            {
+                "attribute": "emotion",
+                "description": "angry",
+                "correlated label": 0,
+                "prediction distribution": {
+                    "0": 1.0,
+                    "1": 0.0
+                },
+                "valid acc": {
+                    "sad": 0.5513307984790875,
+                    "serious": 0.6190093708165997,
+                    "calm": 0.4112903225806452,
+                    "happy": 0.49086669257675863,
+                    "surprised": 0.4475347661188369,
+                    "neutral": 0.5610130468150422,
+                    "angry": 0.9523809523809523,
+                    "excited": 0.43920931492011916,
+                    "pensive": 0.4571129707112971
+                }
+            }
+        ]
+    ]
+}

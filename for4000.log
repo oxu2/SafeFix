@@ -1,0 +1,9 @@
+nohup: ignoring input
+=== Starting clip (logs -> logs/train_clip_redhair_4000imgs.log) ===
+=== Finished clip ===
+
+=== Starting vit (logs -> logs/train_vit_redhair_4000imgs.log) ===
+=== Finished vit ===
+
+./for.sh: line 42: unexpected EOF while looking for matching `"'
+./for.sh: line 43: syntax error: unexpected end of file
