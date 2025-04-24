@@ -1,15 +1,27 @@
 #!/usr/bin/env bash
 #
 # Sequentially run predict.py for resnet, clip, and vit models
-# Usage: chmod +x for.sh && ./for.sh
+# Usage: chmod +x for.sh && ./for.sh [-n num_added_img] [-a attributes] [-d cuda_devices]
 
-# Configuration
+# Configuration defaults
+# Configuration defaults
 CUDA_DEVICES=1
 ATTRIBUTES="redhair_brownskin"
 NUM_ADDED_IMG=1000
+
+# Parse short options: -n for NUM_ADDED_IMG, -a for ATTRIBUTES, -d for CUDA_DEVICES
+while getopts "n:a:d:" opt; do
+  case $opt in
+    n) NUM_ADDED_IMG="$OPTARG" ;;
+    a) ATTRIBUTES="$OPTARG" ;;
+    d) CUDA_DEVICES="$OPTARG" ;;
+    *) echo "Usage: $(basename "$0") [-n num_added_img] [-a attributes] [-d cuda_devices]"; exit 1 ;;
+  esac
+done
+shift $((OPTIND - 1))
 # Optional: override epochs if you like
 # NUM_EPOCHS=20
-RUN_SCRIPT="run.sh"
+RUN_SCRIPT="time_run.sh"
 PREDICT_SCRIPT="predict.py"
 LOG_DIR="logs"
 

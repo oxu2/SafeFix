@@ -26,6 +26,8 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--predictions', type=str, required=True, help='Path to predictions .npy file')
     parser.add_argument('--verbose', type=str2bool, default=False, help='Enable verbose output')
+    parser.add_argument('--skip_train_unlabeled', type=str2bool, default=True,
+                        help='If True, skip processing TRAIN and UNLABELED data; only use VALID split')
     args = parser.parse_args()
 
     f = open("exampleData/celebA/list_attr_celeba.txt")

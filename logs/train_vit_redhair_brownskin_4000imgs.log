@@ -1,0 +1,92 @@
+start time: 2025-04-22 23:06:20
+Current time: 0422230622
+Added 4000 generated redhair_brownskin images, before training set has 80000 images, now 84000
+Using vit model with random weights
+Epoch [1/20], Train Loss: 417.4096, Train Acc: 0.8372, Val Loss: 0.2958, Val Acc: 0.8832
+Epoch [2/20], Train Loss: 201.1193, Train Acc: 0.9340, Val Loss: 0.3360, Val Acc: 0.8930
+Epoch [3/20], Train Loss: 167.0316, Train Acc: 0.9470, Val Loss: 0.3834, Val Acc: 0.8888
+Epoch [4/20], Train Loss: 145.6273, Train Acc: 0.9543, Val Loss: 0.3332, Val Acc: 0.8964
+Epoch [5/20], Train Loss: 130.6992, Train Acc: 0.9579, Val Loss: 0.3591, Val Acc: 0.8986
+Epoch [6/20], Train Loss: 115.9942, Train Acc: 0.9636, Val Loss: 0.4103, Val Acc: 0.8952
+Epoch [7/20], Train Loss: 102.7511, Train Acc: 0.9681, Val Loss: 0.3638, Val Acc: 0.8981
+Epoch [8/20], Train Loss: 91.6225, Train Acc: 0.9715, Val Loss: 0.5138, Val Acc: 0.8869
+Epoch [9/20], Train Loss: 82.3563, Train Acc: 0.9745, Val Loss: 0.4102, Val Acc: 0.8969
+Epoch [10/20], Train Loss: 75.9310, Train Acc: 0.9763, Val Loss: 0.4348, Val Acc: 0.8982
+Epoch [11/20], Train Loss: 74.2002, Train Acc: 0.9773, Val Loss: 0.4348, Val Acc: 0.8982
+Epoch [12/20], Train Loss: 75.3404, Train Acc: 0.9766, Val Loss: 0.4271, Val Acc: 0.8998
+Epoch [13/20], Train Loss: 79.7282, Train Acc: 0.9754, Val Loss: 0.4024, Val Acc: 0.9026
+Epoch [14/20], Train Loss: 85.2664, Train Acc: 0.9737, Val Loss: 0.3643, Val Acc: 0.9022
+Epoch [15/20], Train Loss: 93.2051, Train Acc: 0.9710, Val Loss: 0.4050, Val Acc: 0.8986
+Epoch [16/20], Train Loss: 97.3091, Train Acc: 0.9694, Val Loss: 0.4767, Val Acc: 0.8897
+Epoch [17/20], Train Loss: 104.1229, Train Acc: 0.9678, Val Loss: 0.4136, Val Acc: 0.8893
+Epoch [18/20], Train Loss: 108.7307, Train Acc: 0.9660, Val Loss: 0.3953, Val Acc: 0.8945
+Epoch [19/20], Train Loss: 108.6221, Train Acc: 0.9666, Val Loss: 0.2847, Val Acc: 0.9040
+Epoch [20/20], Train Loss: 110.7804, Train Acc: 0.9659, Val Loss: 0.2963, Val Acc: 0.8955
+Generating and saving predictions...
+Original train predictions length: 80000
+Modified image predictions length: 4000
+Validation predictions length: 20000
+Combined predictions length: 184000 (should match combined_labels length: 184000)
+Current time: 0422230622
+
+Running model diagnostics on generated predictions...
+Model Validation ACC: 0.89555
+Start detect_failure_by_label
+
+Start detect_prediction_correlation
+
+ACC: 0.882568 	Hard case: attribute "beard", description "No"
+ACC: 0.829990 	Hard case: attribute "gender", description "female"
+The accuracy with "hair color" = "white" is 0.9159836065573771
+Correct predictions: 447/488
+The accuracy with "hair color" = "yellow" is 0.918918918918919
+Correct predictions: 68/74
+The accuracy with "hair color" = "blonde" is 0.8689589302769819
+Correct predictions: 4549/5235
+ACC: 0.868959 	Hard case: attribute "hair color", description "blonde"
+The accuracy with "hair color" = "black" is 0.9074716981132075
+Correct predictions: 6012/6625
+The accuracy with "hair color" = "gray" is 0.9699248120300752
+Correct predictions: 1032/1064
+The accuracy with "hair color" = "brown" is 0.8941116578992024
+Correct predictions: 5269/5893
+The accuracy with "hair color" = "red" is 0.8599033816425121
+Correct predictions: 534/621
+ACC: 0.859903 	Rare Case: attribute "hair color", description "red"
+The accuracy with "skin" = "white" is 0.8989162561576355
+Correct predictions: 9124/10150
+The accuracy with "skin" = "black" is 0.9040184284617353
+Correct predictions: 3532/3907
+The accuracy with "skin" = "brown" is 0.8842335520780751
+Correct predictions: 5255/5943
+ACC: 0.884234 	Rare Case: attribute "skin", description "brown"
+ACC: 0.846008 	Rare Case: attribute "emotion", description "sad"
+ACC: 0.865992 	Hard case: attribute "emotion", description "surprised"
+ACC: 0.841004 	Rare Case: attribute "emotion", description "pensive"
+Start detect_failure_prediction_correlation
+
+Model diagnostics complete.
+
+Comparing accuracy with log file: logs/compare/stat_origin_vit_compare.log
+Overall accuracy: 0.902900 -> 0.895550: declined
+
+Attribute-specific accuracy comparison:
+beard, No, 0.887950 -> 0.882568: declined
+gender, female, 0.843761 -> 0.829990: declined
+hair color, white, 0.924180 -> 0.915984: declined
+hair color, yellow, 0.905405 -> 0.918919: improved
+hair color, blonde, 0.871251 -> 0.868959: declined
+hair color, black, 0.920755 -> 0.907472: declined
+hair color, gray, 0.968985 -> 0.969925: improved
+hair color, brown, 0.897506 -> 0.894112: declined
+hair color, red, 0.900161 -> 0.859903: declined
+skin, brown, 0.889618 -> 0.884234: declined
+emotion, sad, 0.851711 -> 0.846008: declined
+emotion, calm, 0.879032 -> 0.889113: improved
+emotion, surprised, 0.889591 -> 0.865992: declined
+emotion, pensive, 0.858787 -> 0.841004: declined
+
+Compared 14 attribute-specific accuracies.
+Start Time: 2025-04-22 23:06:20
+End Time:   2025-04-23 04:21:35
+Duration:   05:15:15

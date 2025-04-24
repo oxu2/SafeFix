@@ -122,35 +122,23 @@ def get_available_gpus():
     return list(range(torch.cuda.device_count()))
 
 # Configure memory based on available GPUs
-def configure_gpu_memory(available_gpus):
-    """Configure memory allocation based on available GPUs"""
+def configure_gpu_memory(available_gpus, max_memory_per_gpu_gb=22):
+    """Configure memory allocation based on available GPUs."""
     max_memory = {}
+    # Format the memory string
+    max_memory_str = f"{max_memory_per_gpu_gb}GiB"
+
     for i, gpu_id in enumerate(available_gpus):
         # Use local device ID (0-indexed)
-        max_memory[i] = "22GiB"  # Increased from 20GiB to 22GiB
-    
+        max_memory[i] = max_memory_str  # Use the formatted string
+
     # If no GPUs specified, default to CPU
     if not max_memory:
         print("Warning: No GPUs available. Using CPU.")
         return "cpu"
-    
-    print(f"Using {len(max_memory)} GPUs with 22GiB memory allocation each")
+
+    print(f"Using {len(max_memory)} GPUs with {max_memory_str} memory allocation each")
     return max_memory
-
-# Get available GPUs and configure memory
-available_gpus = get_available_gpus()
-device_memory = configure_gpu_memory(available_gpus)
-
-# Load model with dynamic device configuration
-model = Qwen2_5_VLForConditionalGeneration.from_pretrained(
-    model_path,
-    torch_dtype=torch.bfloat16,
-    device_map="auto",
-    max_memory=device_memory
-)
-
-# Use fast processor to avoid warnings
-processor = AutoProcessor.from_pretrained(model_path, use_fast=True)
 
 def process_image(image_path, model, processor, tags: List[str], attributes: List[str], verbose=False):
     """Process a single image and return the binary results for both features."""
@@ -175,6 +163,11 @@ def process_image(image_path, model, processor, tags: List[str], attributes: Lis
 
 def process_directory(directory_path, output_json_path, tags, attributes, verbose=False, file_type="png"):
     """Process all images in directory and save results to JSON."""
+    # Ensure the save/json directory exists
+    save_dir = "save/json"
+    os.makedirs(save_dir, exist_ok=True)
+    output_json_path = os.path.join(save_dir, os.path.basename(output_json_path))  # Fix duplicate path issue
+
     results = {}
     
     # Get image files based on the specified file type
@@ -190,13 +183,15 @@ def process_directory(directory_path, output_json_path, tags, attributes, verbos
     # This will ensure files like "1.jpg" come before "2.jpg"
     image_files.sort()
     
+    total_images = len(image_files)
+
     if verbose:
-        print(f"Found {len(image_files)} images with file type(s): {file_type}")
+        print(f"Found {total_images} images with file type(s): {file_type}")
         print(f"Processing images in order: {', '.join(image_files[:5])}{'...' if len(image_files) > 5 else ''}")
     else:
-        print(f"Found {len(image_files)} images with file type(s): {file_type}")
+        print(f"Found {total_images} images with file type(s): {file_type}")
     
-    for image_file in image_files:
+    for idx, image_file in enumerate(image_files):
         image_path = os.path.join(directory_path, image_file)
         # Get filename without extension
         filename = os.path.splitext(image_file)[0]
@@ -210,12 +205,16 @@ def process_directory(directory_path, output_json_path, tags, attributes, verbos
         with open(output_json_path, 'w') as f:
             json.dump(results, f, indent=4)
         
+        # Progress indicator
+        if (idx + 1) % 100 == 0:
+            print(f"[{idx + 1}/{total_images}]")
+        
     if verbose:
         print(f"Results saved to {output_json_path}")
-    return results
+    return results, total_images
 
 # Update function to extract features from results with configurable filtering
-def create_feature_mapping(results_json, output_feature_json="features.json", tag="yellow", attribute="hair"):
+def create_feature_mapping(results_json, feasible_json="features.json", tag="yellow", attribute="hair"):
     """
     Create a JSON file mapping filenames to features for images with specific attributes
     Example: {"example_image": {"tag": "yellow", "attribute": "hair", "wearing_lipstick": 0}}
@@ -223,10 +222,15 @@ def create_feature_mapping(results_json, output_feature_json="features.json", ta
     
     Parameters:
     - results_json: Path to results JSON or dictionary of results
-    - output_feature_json: Path to save the filtered results
+    - feasible_json: Path to save the filtered results
     - tag: The tag to filter for (e.g., "yellow")
     - attribute: The attribute to filter for (e.g., "hair")
     """
+    # Ensure the save/json directory exists
+    save_dir = "save/json"
+    os.makedirs(save_dir, exist_ok=True)
+    feasible_json = os.path.join(save_dir, os.path.basename(feasible_json))  # Fix duplicate path issue
+
     if isinstance(results_json, str):
         # If results_json is a file path
         with open(results_json, 'r') as f:
@@ -256,13 +260,13 @@ def create_feature_mapping(results_json, output_feature_json="features.json", ta
             feature_mapping[filename] = { key1: result1, key2: result2, key3: result3 }
     
     # Save the feature mapping to a JSON file
-    with open(output_feature_json, 'w') as f:
+    with open(feasible_json, 'w') as f:
         json.dump(feature_mapping, f, indent=4)
     
-    # print(f"Feature mapping saved to {output_feature_json} (filtered for {tag}_{attribute_key}=1)")
+    # print(f"Feature mapping saved to {feasible_json} (filtered for {tag}_{attribute_key}=1)")
     return feature_mapping
 
-def rename_images_with_suffix(directory_path, suffix="_red"):
+def rename_images_with_suffix(directory_path, suffix="_red", verbose=False):
     """
     Rename JPG files that have numeric filenames by adding a suffix before the extension.
     Example: 123.jpg becomes 123_red.jpg
@@ -270,6 +274,7 @@ def rename_images_with_suffix(directory_path, suffix="_red"):
     Parameters:
     - directory_path: Path to directory containing images to rename
     - suffix: The suffix to add before the extension (default: "_red")
+    - verbose: Whether to print detailed renaming information
     
     Returns:
     - int: Number of files renamed
@@ -305,61 +310,91 @@ def rename_images_with_suffix(directory_path, suffix="_red"):
             try:
                 os.rename(old_path, new_path)
                 renamed_count += 1
-                print(f"Renamed: {filename} -> {new_filename}")
+                if verbose:
+                    print(f"Renamed: {filename} -> {new_filename}")
             except Exception as e:
                 print(f"Error renaming {filename}: {e}")
-        else:
+        elif verbose:
             print(f"Skipped non-numeric filename: {filename}")
     
-    print(f"Successfully renamed {renamed_count} numeric-named files in {directory_path}")
+    if verbose:
+        print(f"Successfully renamed {renamed_count} numeric-named files in {directory_path}")
     return renamed_count
 
 def main(directory_path="./redhair", 
          verbose: bool = False,
          file_type: str = "png",
          rename_files: bool = False,
-         rename_suffix: str = "_red"):
+         attributes_str: str = "redhair_brownskin",
+         rename_suffix: str = None,
+         max_memory_per_gpu: int = 22):
     """
     Main function to process images and create feature mapping.
     
     Parameters:
     - directory_path: Path to directory containing images to process
-    - tag: The visual feature tag to detect (e.g., "yellow")
-    - attribute: The attribute to detect (e.g., "hair")
     - verbose: Whether to display detailed processing information
     - file_type: Type of image files to process ("png", "jpg", "png,jpg", "all")
     - rename_files: Whether to rename files by adding a suffix
     - rename_suffix: Suffix to add when renaming files (default: "_red")
+    - max_memory_per_gpu: Max memory per GPU in GiB (e.g., 22)
     
     Returns:
     - Tuple of (results, feature_mapping)
     """
+    # Configure GPU memory first using the passed argument
+    available_gpus = get_available_gpus()
+    device_memory = configure_gpu_memory(available_gpus, max_memory_per_gpu)
+
+    # Load model and processor here, after configuring memory
+    global model, processor
+    model = Qwen2_5_VLForConditionalGeneration.from_pretrained(
+        model_path,
+        torch_dtype=torch.bfloat16,
+        device_map="auto",
+        max_memory=device_memory
+    )
+    processor = AutoProcessor.from_pretrained(model_path, use_fast=True)
+
     # If rename_files is True, rename the files in the directory
     if rename_files:
-        renamed_count = rename_images_with_suffix(directory_path, rename_suffix)
-        print(f"Renamed {renamed_count} files with suffix '{rename_suffix}'")
-        # Return early if we're only renaming files
-        # if not tag or not attribute:
-        #     return None, None
+        renamed_count = rename_images_with_suffix(directory_path, rename_suffix, verbose=verbose)
+        if verbose:
+            print(f"Renamed {renamed_count} files with suffix '{rename_suffix}'")
     
-    # Fixed feature detection for red hair, brown skin, and lipstick
-    tags = ["red", "brown", "wearing"]
-    attributes = ["hair", "skin", "lipstick"]
-    key1 = "red_hair"
-    key2 = "brown_skin"
-    key3 = "wearing_lipstick"
-    timestamp = datetime.datetime.now().strftime("%m%d%H%M")  # Format: MMDDHHMM (month, day, hour, minute)
-    results_json_path = f"red_hair_brown_skin_results_{timestamp}.json"
-    output_feature_json = f"red_hair_brown_skin_feasible_{timestamp}.json"
+    # Parse attribute string into list
+    attr_list = attributes_str.split('_')
+    tags = []
+    attrs = []
+    for attr in attr_list:
+        if attr.endswith('hair'):
+            tags.append(attr[:-4])
+            attrs.append('hair')
+        elif attr.endswith('skin'):
+            tags.append(attr[:-4])
+            attrs.append('skin')
+        else:
+            tags.append(attr)
+            attrs.append(attr)
+    # Always include lipstick
+    tags.append('wearing')
+    attrs.append('lipstick')
+
+    # Build timestamped file paths
+    timestamp = datetime.datetime.now().strftime("%m%d%H%M")
+    results_json_path = f"{attributes_str}_results_{timestamp}.json"
+    feasible_json = f"{attributes_str}_feasible_{timestamp}.json"
+
+    # Ensure the save/json directory exists
+    save_dir = "save/json"
+    os.makedirs(save_dir, exist_ok=True)
+    results_json_path = os.path.join(save_dir, results_json_path)
+    feasible_json = os.path.join(save_dir, feasible_json)
     
-    print("Starting image processing for red hair and brown skin...")
-    # print(f"Processing directory: {directory_path}")
-    # print(f"Processing file type(s): {file_type}")
-    # print(f"Saving results to: {results_json_path}")
-    # print(f"Saving filtered features to: {output_feature_json}")
+    print(f"Starting image processing for attributes: {attributes_str}...")
     
     # Process all images in directory
-    results = process_directory(
+    results, total_images_processed = process_directory(
            directory_path,
            results_json_path,
            tags,
@@ -370,8 +405,8 @@ def main(directory_path="./redhair",
     print("Image processing using Qwen VL model complete.")
     
     # Create feature mapping for images with specified tag and attribute
-    feature_mapping = create_feature_mapping(results, output_feature_json)
-    print(f"Feature mapping and filter complete. Found {len(feature_mapping)} images with red hair and brown skin.")
+    feature_mapping = create_feature_mapping(results, feasible_json)
+    print(f"Feature mapping and filter complete. Found {len(feature_mapping)} images with red hair and brown skin out of {total_images_processed} processed images. Saved to {feasible_json}")
     
     return results, feature_mapping
 
@@ -382,19 +417,15 @@ if __name__ == "__main__":
     import shlex
     
     parser = argparse.ArgumentParser(description='Process images for specific attributes')
-    parser.add_argument('--dir', type=str, default="./exampleData/redhair_brownskin", 
+    parser.add_argument('--dir', type=str, default="exampleData/test", 
                         help='Directory containing images')
-    # parser.add_argument('--tag', type=str, default="red", 
-    #                     help='Tag to detect (e.g., "yellow", "red")')
-    # parser.add_argument('--attribute', type=str, default="hair", 
-    #                     help='Attribute to detect (e.g., "hair", "eyes")')
     parser.add_argument(
         '--verbose',
         type=str2bool,
         default=False,
         help='Display detailed processing information (true/false)'
     )
-    parser.add_argument('--file-type', type=str, default="jpg", 
+    parser.add_argument('--file_type', type=str, default="jpg", 
                         help='Type of image files to process ("png", "jpg", "png,jpg", "all")')
     parser.add_argument(
         '--rename-files',
@@ -402,15 +433,24 @@ if __name__ == "__main__":
         default=True,
         help='Rename files by adding suffix before extension (true/false)'
     )
-    parser.add_argument('--rename-suffix', type=str, default="_redhair_brownskin",
+    parser.add_argument('--attributes', type=str, default="redhair_brownskin",
+                        help='attributes to detect, e.g. redhair_brownskin, redhair, etc.')
+    parser.add_argument('--rename_suffix', type=str, default=None,
                         help='Suffix to add when renaming files (default: "_red")')
+    parser.add_argument('--max_memory', type=int, default=22, 
+                        help='Maximum memory allocation per GPU in GiB (default: 22)')
     
     args = parser.parse_args()
+
+    if args.rename_suffix is None:
+        args.rename_suffix = "_" + args.attributes
 
     main(
        args.dir,
        args.verbose,
        args.file_type,
        args.rename_files,
-       args.rename_suffix
+       args.attributes,
+       args.rename_suffix,
+       args.max_memory
     )

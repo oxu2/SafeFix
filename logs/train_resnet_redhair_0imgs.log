@@ -1,0 +1,43 @@
+start time: 2025-04-23 04:26:03
+Current time: 0423042606
+Added 0 generated redhair images, before training set has 80000 images, now 80000
+Using resnet model with random weights
+Epoch [1/20], Train Loss: 357.9009, Train Acc: 0.8699, Val Loss: 0.4964, Val Acc: 0.7429
+Epoch [2/20], Train Loss: 153.5129, Train Acc: 0.9552, Val Loss: 0.2324, Val Acc: 0.8931
+Epoch [3/20], Train Loss: 108.9271, Train Acc: 0.9683, Val Loss: 0.3182, Val Acc: 0.9016
+Epoch [4/20], Train Loss: 80.9448, Train Acc: 0.9772, Val Loss: 0.4855, Val Acc: 0.8752
+Epoch [5/20], Train Loss: 71.5968, Train Acc: 0.9801, Val Loss: 0.2580, Val Acc: 0.8845
+Epoch [6/20], Train Loss: 66.0142, Train Acc: 0.9815, Val Loss: 0.2274, Val Acc: 0.9151
+Epoch [7/20], Train Loss: 52.3849, Train Acc: 0.9864, Val Loss: 0.3747, Val Acc: 0.8991
+Epoch [8/20], Train Loss: 50.8688, Train Acc: 0.9867, Val Loss: 0.4743, Val Acc: 0.8896
+Epoch [9/20], Train Loss: 47.7675, Train Acc: 0.9875, Val Loss: 0.2451, Val Acc: 0.9159
+Epoch [10/20], Train Loss: 41.3889, Train Acc: 0.9893, Val Loss: 0.3367, Val Acc: 0.9103
+Epoch [11/20], Train Loss: 40.7678, Train Acc: 0.9896, Val Loss: 0.2732, Val Acc: 0.9158
+Epoch [12/20], Train Loss: 38.8834, Train Acc: 0.9901, Val Loss: 0.3748, Val Acc: 0.9075
+Epoch [13/20], Train Loss: 35.2243, Train Acc: 0.9912, Val Loss: 0.3368, Val Acc: 0.9107
+Epoch [14/20], Train Loss: 33.9475, Train Acc: 0.9918, Val Loss: 0.3704, Val Acc: 0.9083
+Epoch [15/20], Train Loss: 34.3315, Train Acc: 0.9917, Val Loss: 0.3407, Val Acc: 0.9083
+Epoch [16/20], Train Loss: 32.2317, Train Acc: 0.9925, Val Loss: 0.3974, Val Acc: 0.9063
+Epoch [17/20], Train Loss: 30.8317, Train Acc: 0.9927, Val Loss: 0.3758, Val Acc: 0.9071
+Epoch [18/20], Train Loss: 31.6261, Train Acc: 0.9923, Val Loss: 0.3130, Val Acc: 0.9137
+Epoch [19/20], Train Loss: 30.0878, Train Acc: 0.9929, Val Loss: 0.3985, Val Acc: 0.9049
+Epoch [20/20], Train Loss: 30.0283, Train Acc: 0.9932, Val Loss: 0.3667, Val Acc: 0.9086
+Generating and saving predictions...
+Train predictions length: 80000
+Validation predictions length: 20000
+Combined predictions length: 180000 (should match combined_labels length: 180000)
+Current time: 0423042606
+
+Running model diagnostics on generated predictions...
+Model Validation ACC: 0.90865
+Traceback (most recent call last):
+  File "/people/cs/o/oxx220000/HiBug/predict.py", line 595, in <module>
+    MD = ModelDiagnose(labels=diag_labels,
+  File "/people/cs/o/oxx220000/HiBug/utils/stat.py", line 112, in __init__
+    self.init_data_static()
+  File "/people/cs/o/oxx220000/HiBug/utils/stat.py", line 162, in init_data_static
+    if self.split[i] == TRAIN:
+IndexError: list index out of range
+Start Time: 2025-04-23 04:26:03
+End Time:   2025-04-23 04:55:11
+Duration:   00:29:08

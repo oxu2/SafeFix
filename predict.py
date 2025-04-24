@@ -11,7 +11,8 @@ import json
 import argparse
 from utils.defines import *
 import torchvision
-# print(torchvision.__version__) #0.11.1+cu113
+# print(torchvision.__version__) 
+#0.14.1+cu117g
 from torchvision.models import ResNet18_Weights
 from transformers import ViTModel, ViTFeatureExtractor
 import datetime
@@ -21,11 +22,6 @@ from transformers import CLIPModel
 from transformers import CLIPConfig
 import random
 import re  # Added for log parsing
-# Import ModelDiagnose from stat.py
-# Ensure local modules (like stat.py) in this directory are imported first
-# import os
-# import sys
-# sys.path.insert(0, os.path.dirname(__file__))
 from utils.stat import ModelDiagnose  # Import ModelDiagnose from local stat.py
 from itertools import combinations
 from processData.report import ReportGenerator
@@ -48,7 +44,7 @@ parser.add_argument('--attributes', type=str, default="redhair_brownskin",
                     help='attributes to detect, e.g. redhair_brownskin, redhair, etc.')
 parser.add_argument('--model', type=str, default='clip', choices=['resnet', 'vit', 'clip'],
                     help='Model architecture to use (resnet, vit, or clip)')
-parser.add_argument('--plot', type=str2bool, default=True, help='Enable plotting training metrics (default: True)')
+parser.add_argument('--plot', type=str2bool, default=False, help='Enable plotting training metrics')
 parser.add_argument('--num_epochs', type=int, default=20,
                     help='Number of training epochs (default: 20)')
 parser.add_argument('--num_added_img', type=int, default=4000,
@@ -58,6 +54,12 @@ parser.add_argument('--attribute_file', type=str, default="exampleData/celebA/at
                     help='Path to the attribute JSON file (default: exampleData/celebA/attribute.json)')
 parser.add_argument('--gpu', type=int, default=0,
                     help='Index of the CUDA GPU to use (default: 0)')
+parser.add_argument('--save_report', type=str2bool, default=False,
+                    help='Generate and save diagnostic report (default: False)')
+parser.add_argument('--gen_only', type=str2bool, default=False,
+                    help='Use only generated images for training (default: False)')
+parser.add_argument('--skip_train_unlabeled', type=str2bool, default=False,
+                    help='Skip processing TRAIN and UNLABELED splits in diagnostics')
 args = parser.parse_args()
 attributes = args.attributes
 
@@ -82,29 +84,31 @@ print("Current time:", time_now)
 # Determine the comparison log file based on the model
 compare_log_path = None
 if args.model == 'resnet':
-    compare_log_path = 'logs/stat_origin_resnet18_old.log'
+    compare_log_path = 'logs/compare/stat_origin_resnet_compare.log'
 elif args.model == 'vit':
-    compare_log_path = 'logs/stat_origin_vit_04161402.log'
+    compare_log_path = 'logs/compare/stat_origin_vit_compare.log'
 elif args.model == 'clip':
-    compare_log_path = 'logs/stat_origin_clip_0417121952.log'
+    compare_log_path = 'logs/compare/stat_origin_clip_compare.log'
 
 if compare_log_path and not os.path.exists(compare_log_path):
      print(f"Warning: Default comparison log file for {args.model} not found at {compare_log_path}")
      compare_log_path = None # Set to None if file doesn't exist
 
 class CLIPForBinary(nn.Module):
-    def __init__(self, dropout_rate=0.7):
+    def __init__(self, dropout_rate=0.5):
         super().__init__()
-        # Load CLIP vision model
-        # Initialize CLIP model with random weights (no pretraining)
+        # Initialize CLIP with random weights
         self.clip = CLIPModel(CLIPConfig())
         self.dropout = nn.Dropout(p=dropout_rate)
+        self.dropout2 = nn.Dropout(p=dropout_rate)
         self.classifier = nn.Linear(self.clip.config.projection_dim, 1)
 
     def forward(self, pixel_values):
         # Get image features and classify
         feats = self.clip.get_image_features(pixel_values=pixel_values)
-        return self.classifier(self.dropout(feats))
+        feats = self.dropout(feats)
+        feats = self.dropout2(feats)
+        return self.classifier(feats)
 
 # Load the feasible images (color hair images) from feasible.json
 if os.path.exists(args.feasible_file):
@@ -157,7 +161,9 @@ class CelebADataset(Dataset):
 
 # Define transformations
 transform = transforms.Compose([
-    transforms.Resize((224, 224)),  # Resize to 224x224 which is common for both ResNet and ViT
+    transforms.RandomResizedCrop(224, scale=(0.8, 1.0)),
+    transforms.RandomHorizontalFlip(p=0.5),
+    transforms.ColorJitter(brightness=0.2, contrast=0.2, saturation=0.2),
     transforms.ToTensor(),
     transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5])
 ])
@@ -213,54 +219,58 @@ for filename in selected_filenames:
         print(f"Warning: Could not find original image for {filename}")
 
 # Print information about the added images
-print(f"Added {args.num_added_img} generated {args.attributes} images, before training set has {len(train_labels)} images, now {len(train_labels) + len(modified_image_labels)}")
-
+# Print information about the added images
+if args.gen_only:
+    # In gen_only mode, we’re only ever using the generated set
+    print(f"Using only generated images: total training images = {len(modified_image_labels)}")
+else:
+    print(f"Added {args.num_added_img} generated {attributes} images, "
+          f"before training set has {len(train_labels)} images, "
+          f"now {len(train_labels) + len(modified_image_labels)}")
+          
 # Load unlabeled predictions - moved outside conditional block
 unlabeled_predictions = np.load("exampleData/celebA/predictions.npy")[idxs]
 unlabeled_predictions = np.array([unlabeled_predictions[i] for i in range(len(all_datas)) if split[i] == UNLABELED])
 if verbose:
     print(f"Unlabeled predictions length: {len(unlabeled_predictions)}")
 
-# Add the modified images to the training data
-if modified_image_paths:
+# Construct training data based on gen_only flag
+if args.gen_only:
+    # Use only generated images for training
+    all_train_imgs = modified_image_paths
+    all_train_labels = np.array(modified_image_labels)
+    combined_labels = np.concatenate((all_train_labels, valid_labels, unlabeled_labels))
+elif modified_image_paths:
     # Combine original training data with modified images
     all_train_imgs = train_imgs + modified_image_paths
     all_train_labels = np.concatenate((train_labels, np.array(modified_image_labels)))
-    
-    # Create combined_train_idx including the original train indices and modified image filenames
-    modified_filenames = [os.path.basename(path).split('.')[0] for path in modified_image_paths]
-    combined_train_idx = np.array([*train_idx, *modified_filenames], dtype=object)
-    
-    # Create combined_labels including train, valid, modified, and unlabeled labels
     combined_labels = np.concatenate((train_labels, valid_labels, np.array(modified_image_labels), unlabeled_labels))
-    
-    # Create combined predictions (train, valid, modified, unlabeled)
-    # For the train and modified images, we'll use their actual labels as the predictions
-    # (since we don't have actual predictions yet before training)
-    initial_predictions = np.concatenate((train_labels, valid_labels, np.array(modified_image_labels), unlabeled_predictions))
-    
-    # Save the combined indices and labels with attributes (skip if files already exist)
-    train_idx_path = f"./save/train_idx_{attributes}_{args.num_added_img}imgs.npy"
-    labels_path = f"./save/labels_{attributes}_{args.num_added_img}imgs.npy"
+else:
+    all_train_imgs = train_imgs
+    all_train_labels = train_labels
+    combined_labels = np.concatenate((train_labels, valid_labels, unlabeled_labels))
 
+# Save combined indices and labels when using generated images
+if modified_image_paths:
+    modified_filenames = [os.path.basename(path).split('.')[0] for path in modified_image_paths]
+    if args.gen_only:
+        combined_train_idx = np.array(modified_filenames, dtype=object)
+    else:
+        combined_train_idx = np.array([*train_idx, *modified_filenames], dtype=object)
+    train_idx_path = f"save/idx/train_idx_{attributes}_{args.num_added_img}imgs.npy"
+    labels_path = f"save/labels/labels_{attributes}_{args.num_added_img}imgs.npy"
     if not os.path.exists(train_idx_path):
         np.save(train_idx_path, combined_train_idx)
         print(f"Saved combined train indices to {train_idx_path}")
     else:
         if verbose:
             print(f"{train_idx_path} already exists, skipping save.")
-
     if not os.path.exists(labels_path):
         np.save(labels_path, combined_labels)
         print(f"Saved combined labels to {labels_path}")
     else:
         if verbose:
             print(f"{labels_path} already exists, skipping save.")
-else:
-    all_train_imgs = train_imgs
-    all_train_labels = train_labels
-    # Define combined_labels here to be available for save_predictions function
-    combined_labels = np.concatenate((train_labels, valid_labels, unlabeled_labels))
 
 if verbose:
     print(f"Training images: {len(all_train_imgs)}, Labels: {len(all_train_labels)}")
@@ -315,7 +325,7 @@ elif args.model == 'vit':
     )
 elif args.model == 'clip':
     # Use CLIP vision model for binary classification
-    model = CLIPForBinary(dropout_rate=0.7)
+    model = CLIPForBinary(dropout_rate=0.5)
     args.pretrained = False  # ensure downstream logs and prints reflect random weights for CLIP
 
 model = model.to(device)
@@ -326,14 +336,26 @@ num_positive = (all_train_labels == 1).sum()
 pos_weight = torch.tensor([num_negative / num_positive]).to(device)
 criterion = nn.BCEWithLogitsLoss(pos_weight=pos_weight)
 
-# Use learning rate from command line args with weight decay for L2 regularization
-optimizer = optim.Adam(model.parameters(), lr=args.lr, weight_decay=1e-3)
-# Use cosine annealing with warm restarts for ViT and CLIP; otherwise, use StepLR
-if args.model in ('vit', 'clip'):
-    # Use cosine annealing with warm restarts for ViT and CLIP
+# Optimize all model parameters for all architectures
+if args.model == 'clip':
+    optimizer = torch.optim.AdamW(model.parameters(), lr=args.lr, weight_decay=0.01)
+else:
+    optimizer = optim.Adam(model.parameters(), lr=args.lr, weight_decay=1e-3)
+
+# Use OneCycleLR scheduler for CLIP, CosineAnnealingLR for ViT, StepLR for resnet
+if args.model == 'clip':
+    scheduler = torch.optim.lr_scheduler.OneCycleLR(
+        optimizer,
+        max_lr=args.lr * 10,
+        steps_per_epoch=len(train_loader),
+        epochs=args.num_epochs,
+        pct_start=0.3,
+        anneal_strategy='cos'
+    )
+elif args.model == 'vit':
     scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=10)
-elif args.model == 'resnet':
-    scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=3, gamma=0.5)
+else:  # resnet
+    scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=3, gamma=0.5)
 
 def evaluate(model, data_loader, save_preds=False):
     model.eval()
@@ -386,20 +408,23 @@ def save_predictions(model, train_loader, valid_loader):
     # Create combined predictions with correct handling for both cases
     if len(modified_image_paths) > 0:
         combined_preds = np.concatenate((
-            original_train_preds.flatten(),  # original train predictions
-            valid_preds.flatten(),          # validation predictions
-            modified_preds.flatten(),       # modified image predictions
-            unlabeled_predictions           # existing unlabeled predictions
+            original_train_preds.flatten(),
+            valid_preds.flatten(),
+            modified_preds.flatten(),
+            unlabeled_predictions
         ))
     else:
+        # Original + validation + unlabeled
         combined_preds = np.concatenate((
-            original_train_preds.flatten(),  # original train predictions
-            valid_preds.flatten(),          # validation predictions
-            unlabeled_predictions           # existing unlabeled predictions
+            original_train_preds.flatten(),
+            valid_preds.flatten(),
+            unlabeled_predictions
         ))
     
     print(f"Combined predictions length: {len(combined_preds)} (should match combined_labels length: {len(combined_labels)})")
-    np.save(f"./save/predictions_{args.model}_{attributes}_{args.num_added_img}imgs_{time_now}.npy", combined_preds)
+    # Determine filename suffix based on gen_only flag
+    suffix = "_g" if args.gen_only else ""
+    np.save(f"save/pred/predictions_{args.model}_{attributes}_{args.num_added_img}imgs{suffix}_{time_now}.npy", combined_preds)
     
 
 # Modify the train_model function to save predictions after training
@@ -419,6 +444,9 @@ def train_model(model, train_loader, valid_loader, criterion, optimizer, schedul
             outputs = model(images)
             loss = criterion(outputs, labels)
             loss.backward()
+            # Apply gradient clipping only for CLIP and ViT models
+            if args.model in ('clip', 'vit'):
+                torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
             optimizer.step()
 
             total_loss += loss.item()
@@ -464,11 +492,13 @@ def train_model(model, train_loader, valid_loader, criterion, optimizer, schedul
         axes[1,1].set_ylabel("Accuracy")
 
         plt.tight_layout()
-        plt.savefig(f"./save/plot_{args.model}_{attributes}_{args.num_added_img}imgs_{time_now}.png")
+        plt.savefig(f"save/plot/plot_{args.model}_{attributes}_{args.num_added_img}imgs_{time_now}.png")
         plt.close()
 
     # Save predictions after training
     save_predictions(model, train_loader, valid_loader)
+    # Return training history for external use
+    return train_loss_history, train_acc_history, val_loss_history, val_acc_history
 
 # Function to parse log file (adapted from compare_acc.py)
 def parse_log(log_path):
@@ -519,7 +549,10 @@ def parse_log(log_path):
     return results, overall_acc
 
 # Start training with scheduler
-train_model(model, train_loader, valid_loader, criterion, optimizer, scheduler, num_epochs=args.num_epochs)
+ # Train the model and capture history for diagnostics
+train_loss_history, train_acc_history, val_loss_history, val_acc_history = train_model(
+    model, train_loader, valid_loader, criterion, optimizer, scheduler, num_epochs=args.num_epochs
+)
 print("Current time:", time_now)
 
 
@@ -536,8 +569,10 @@ dominant_error_threshold = 0.3
 error_cover_threshold = 0.9
 top_error = 3
 
+# Determine filename suffix based on gen_only flag
+suffix = "_g" if args.gen_only else ""
 # Load the predictions we just saved
-prediction_file = f"./save/predictions_{args.model}_{attributes}_{args.num_added_img}imgs_{time_now}.npy"
+prediction_file = f"save/pred/predictions_{args.model}_{attributes}_{args.num_added_img}imgs{suffix}_{time_now}.npy"
 predictions = np.load(prediction_file)
 
 # Adjust split to match combined_labels (including modified images in the training split)
@@ -548,98 +583,112 @@ split = (
     [UNLABELED] * len(unlabeled_labels)
 )
 
-# Initialize ModelDiagnose with our predictions and the attribute file
-MD = ModelDiagnose(labels=combined_labels, 
-                  predictions=predictions, 
-                  split=split, 
-                  attribute_dict_path=args.attribute_file,
-                  print=args.verbose,
-                  acc_diff_threshold=acc_diff_threshold,
-                  distribution_diff_threshold=distribution_diff_threshold,
-                  dominant_label_in_failure_threshold=dominant_label_in_failure_threshold,
-                  dominant_label_in_prediction_threshold=dominant_label_in_prediction_threshold,
-                  rare_label_threshold=rare_label_threshold,
-                  dominant_error_threshold=dominant_error_threshold,
-                  error_cover_threshold=error_cover_threshold,
-                  top_error=top_error)
 
-print("Start detect_failure_by_label\n")
-MD.detect_failure_by_label()
-print("Start detect_prediction_correlation\n")
-MD.detect_prediction_correlation()
-print("Start detect_failure_prediction_correlation\n")
-MD.detect_failure_prediction_correlation()
-print("Model diagnostics complete.")
+if not args.gen_only:
+    # Initialize diagnostics only if not gen_only
+    MD = ModelDiagnose(labels=combined_labels,
+                       predictions=predictions,
+                       split=split,
+                       attribute_dict_path=args.attribute_file,
+                       print=args.verbose,
+                       acc_diff_threshold=acc_diff_threshold,
+                       distribution_diff_threshold=distribution_diff_threshold,
+                       dominant_label_in_failure_threshold=dominant_label_in_failure_threshold,
+                       dominant_label_in_prediction_threshold=dominant_label_in_prediction_threshold,
+                       rare_label_threshold=rare_label_threshold,
+                       dominant_error_threshold=dominant_error_threshold,
+                       error_cover_threshold=error_cover_threshold,
+                       top_error=top_error)
 
-# Generate and save report
-report_dir = "./save/reports"
-os.makedirs(report_dir, exist_ok=True)
-MD.generate_report(f"{report_dir}/{args.model}_{attributes}_{args.num_added_img}imgs_{time_now}")
-print(f"Diagnostic report saved to {report_dir}/{args.model}_{attributes}_{args.num_added_img}imgs_{time_now}")
+    print("Start detect_failure_by_label\n")
+    MD.detect_failure_by_label()
+    print("Start detect_prediction_correlation\n")
+    MD.detect_prediction_correlation()
+    print("Start detect_failure_prediction_correlation\n")
+    MD.detect_failure_prediction_correlation()
+    print("Model diagnostics complete.")
+
+    # Generate and save report if requested
+    if args.save_report:
+        report_dir = "save/reports"
+        os.makedirs(report_dir, exist_ok=True)
+        MD.generate_report(f"{report_dir}/{args.model}_{attributes}_{args.num_added_img}imgs{suffix}_{time_now}")
+        print(f"Diagnostic report saved to {report_dir}/{args.model}_{attributes}_{args.num_added_img}imgs{suffix}_{time_now}")
+else:
+    print("Skipping model diagnostics because gen_only=True")
+    # Emphasize final epoch's Train Acc if diagnostics are skipped
+    if len(train_acc_history) > 0:
+        final_train_acc = train_acc_history[-1]
+        print("\n" + "="*60)
+        print(f"Final Epoch Train Accuracy (gen_only=True): {final_train_acc:.4f}")
+        print("="*60 + "\n")
 
 # --- Accuracy Comparison Logic ---
-# Use the determined compare_log_path instead of args.compare_log
-if compare_log_path:
-    print(f"\nComparing accuracy with log file: {compare_log_path}")
-    orig_entries, orig_overall = parse_log(compare_log_path)
-
-    if orig_entries is not None:
-        # Build lookup map for original accuracies
-        orig_map = {(e['attribute'], e['description']): e['accuracy'] for e in orig_entries}
-
-        # Get current overall accuracy from MD
-        current_overall = MD.valid_acc
-
-        # Compare overall accuracy
-        if orig_overall is not None and current_overall is not None:
-            if current_overall > orig_overall:
-                overall_status = 'improved'
-            elif current_overall < orig_overall:
-                overall_status = 'declined'
-            else:
-                overall_status = 'same'
-            print(f'Overall accuracy: {orig_overall:.6f} -> {current_overall:.6f}: {overall_status}')
-        elif current_overall is not None:
-             print(f'Current overall accuracy: {current_overall:.6f} (Original overall accuracy not found in log)')
-        else:
-             print(f'Original overall accuracy: {orig_overall:.6f} (Current overall accuracy not available)')
-
-
-        # Compare attribute-specific accuracies
-        print("\nAttribute-specific accuracy comparison:")
-        current_compared_count = 0
-        for (attribute, description), orig_acc in orig_map.items():
-            # Retrieve current accuracy from MD.attributes
-            current_acc = None
-            if attribute in MD.attributes and description in MD.attributes[attribute]['valid acc']:
-                current_acc = MD.attributes[attribute]['valid acc'][description]
-
-            if current_acc is None:
-                # print(f'{attribute}, {description}: not found in current run results') # Optional: uncomment to see missing ones
-                continue
-
-            # Determine status
-            if current_acc > orig_acc:
-                status = 'improved'
-            elif current_acc < orig_acc:
-                status = 'declined'
-            else:
-                status = 'same'
-            print(f'{attribute}, {description}, {orig_acc:.6f} -> {current_acc:.6f}: {status}')
-            current_compared_count += 1
-
-        print(f"\nCompared {current_compared_count} attribute-specific accuracies.")
-
-        # Check for entries present in current run but not in the original log (optional)
-        # print("\nAccuracies present in current run but not in original log:")
-        # for attribute, attr_data in MD.attributes.items():
-        #     if 'valid acc' in attr_data:
-        #         for description, current_acc in attr_data['valid acc'].items():
-        #             if (attribute, description) not in orig_map:
-        #                 print(f'{attribute}, {description}: {current_acc:.6f} (new)')
-
-    else:
-        # Use compare_log_path in the warning message
-        print(f"Could not parse or find the comparison log file: {compare_log_path}")
+if args.gen_only:
+    print("Skipping accuracy comparison due to gen_only flag being True")
 else:
-    print("\nSkipping accuracy comparison: No comparison log file specified for the selected model or file not found.")
+    # Use the determined compare_log_path instead of args.compare_log
+    if compare_log_path:
+        print(f"\nComparing accuracy with log file: {compare_log_path}")
+        orig_entries, orig_overall = parse_log(compare_log_path)
+
+        if orig_entries is not None:
+            # Build lookup map for original accuracies
+            orig_map = {(e['attribute'], e['description']): e['accuracy'] for e in orig_entries}
+
+            # Get current overall accuracy from MD
+            current_overall = MD.valid_acc
+
+            # Compare overall accuracy
+            if orig_overall is not None and current_overall is not None:
+                if current_overall > orig_overall:
+                    overall_status = 'improved'
+                elif current_overall < orig_overall:
+                    overall_status = 'declined'
+                else:
+                    overall_status = 'same'
+                print(f'Overall accuracy: {orig_overall:.6f} -> {current_overall:.6f}: {overall_status}')
+            elif current_overall is not None:
+                 print(f'Current overall accuracy: {current_overall:.6f} (Original overall accuracy not found in log)')
+            else:
+                 print(f'Original overall accuracy: {orig_overall:.6f} (Current overall accuracy not available)')
+
+
+            # Compare attribute-specific accuracies
+            print("\nAttribute-specific accuracy comparison:")
+            current_compared_count = 0
+            for (attribute, description), orig_acc in orig_map.items():
+                # Retrieve current accuracy from MD.attributes
+                current_acc = None
+                if attribute in MD.attributes and description in MD.attributes[attribute]['valid acc']:
+                    current_acc = MD.attributes[attribute]['valid acc'][description]
+
+                if current_acc is None:
+                    # print(f'{attribute}, {description}: not found in current run results') # Optional: uncomment to see missing ones
+                    continue
+
+                # Determine status
+                if current_acc > orig_acc:
+                    status = 'improved'
+                elif current_acc < orig_acc:
+                    status = 'declined'
+                else:
+                    status = 'same'
+                print(f'{attribute}, {description}, {orig_acc:.6f} -> {current_acc:.6f}: {status}')
+                current_compared_count += 1
+
+            print(f"\nCompared {current_compared_count} attribute-specific accuracies.")
+
+            # Check for entries present in current run but not in the original log (optional)
+            # print("\nAccuracies present in current run but not in original log:")
+            # for attribute, attr_data in MD.attributes.items():
+            #     if 'valid acc' in attr_data:
+            #         for description, current_acc in attr_data['valid acc'].items():
+            #             if (attribute, description) not in orig_map:
+            #                 print(f'{attribute}, {description}: {current_acc:.6f} (new)')
+
+        else:
+            # Use compare_log_path in the warning message
+            print(f"Could not parse or find the comparison log file: {compare_log_path}")
+    else:
+        print("\nSkipping accuracy comparison: No comparison log file specified for the selected model or file not found.")

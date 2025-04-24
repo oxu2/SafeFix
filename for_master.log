@@ -1,7 +1,0 @@
-nohup: ignoring input
-=== Starting clip (logs -> logs/train_clip_redhair_1000imgs.log) ===
-=== Finished clip ===
-
-
-./for.sh: line 39: syntax error near unexpected token `done'
-./for.sh: line 39: `done'

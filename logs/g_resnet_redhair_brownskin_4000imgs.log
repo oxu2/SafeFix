@@ -1,0 +1,42 @@
+start time: 2025-04-23 04:29:00
+Current time: 0423042903
+Using only generated images: total training images = 4000
+Using resnet model with random weights
+Epoch [1/20], Train Loss: 40.7915, Train Acc: 0.6400, Val Loss: 0.7459, Val Acc: 0.5779
+Epoch [2/20], Train Loss: 33.9601, Train Acc: 0.7395, Val Loss: 1.1272, Val Acc: 0.5837
+Epoch [3/20], Train Loss: 29.9890, Train Acc: 0.7830, Val Loss: 0.8494, Val Acc: 0.6200
+Epoch [4/20], Train Loss: 27.4132, Train Acc: 0.8010, Val Loss: 1.1745, Val Acc: 0.5920
+Epoch [5/20], Train Loss: 26.4135, Train Acc: 0.8133, Val Loss: 0.9242, Val Acc: 0.6028
+Epoch [6/20], Train Loss: 25.5706, Train Acc: 0.8215, Val Loss: 0.7156, Val Acc: 0.6370
+Epoch [7/20], Train Loss: 23.9724, Train Acc: 0.8345, Val Loss: 0.7468, Val Acc: 0.6387
+Epoch [8/20], Train Loss: 23.0610, Train Acc: 0.8438, Val Loss: 0.8491, Val Acc: 0.6113
+Epoch [9/20], Train Loss: 22.7208, Train Acc: 0.8435, Val Loss: 0.8059, Val Acc: 0.6362
+Epoch [10/20], Train Loss: 22.1010, Train Acc: 0.8572, Val Loss: 0.7532, Val Acc: 0.6361
+Epoch [11/20], Train Loss: 22.1921, Train Acc: 0.8538, Val Loss: 0.7777, Val Acc: 0.6381
+Epoch [12/20], Train Loss: 21.7938, Train Acc: 0.8610, Val Loss: 0.7478, Val Acc: 0.6431
+Epoch [13/20], Train Loss: 21.3423, Train Acc: 0.8620, Val Loss: 0.7482, Val Acc: 0.6490
+Epoch [14/20], Train Loss: 21.2359, Train Acc: 0.8630, Val Loss: 0.7506, Val Acc: 0.6421
+Epoch [15/20], Train Loss: 21.2914, Train Acc: 0.8652, Val Loss: 0.7114, Val Acc: 0.6556
+Epoch [16/20], Train Loss: 21.0860, Train Acc: 0.8620, Val Loss: 0.7341, Val Acc: 0.6518
+Epoch [17/20], Train Loss: 20.6854, Train Acc: 0.8692, Val Loss: 0.7379, Val Acc: 0.6532
+Epoch [18/20], Train Loss: 20.9045, Train Acc: 0.8655, Val Loss: 0.7258, Val Acc: 0.6527
+Epoch [19/20], Train Loss: 20.3716, Train Acc: 0.8700, Val Loss: 0.7318, Val Acc: 0.6506
+Epoch [20/20], Train Loss: 20.4623, Train Acc: 0.8672, Val Loss: 0.7289, Val Acc: 0.6515
+Generating and saving predictions...
+Original train predictions length: 0
+Modified image predictions length: 4000
+Validation predictions length: 20000
+Combined predictions length: 104000 (should match combined_labels length: 104000)
+Current time: 0423042903
+
+Running model diagnostics on generated predictions...
+Skipping model diagnostics because gen_only=True
+
+============================================================
+Final Epoch Train Accuracy (gen_only=True): 0.8672
+============================================================
+
+Skipping accuracy comparison due to gen_only flag being True
+Start Time: 2025-04-23 04:29:00
+End Time:   2025-04-23 04:35:56
+Duration:   00:06:56

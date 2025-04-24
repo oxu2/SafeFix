@@ -1,0 +1,12 @@
+nohup: ignoring input
+=== Starting resnet (logs -> logs/train_resnet_redhair_brownskin_1000imgs.log) ===
+=== Finished resnet ===
+
+=== Starting clip (logs -> logs/train_clip_redhair_brownskin_1000imgs.log) ===
+=== Finished clip ===
+
+=== Starting vit (logs -> logs/train_vit_redhair_brownskin_1000imgs.log) ===
+=== Finished vit ===
+
+./for.sh: line 50: syntax error near unexpected token `done'
+./for.sh: line 50: `done'
