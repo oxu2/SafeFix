@@ -26,6 +26,23 @@ from utils.stat import ModelDiagnose  # Import ModelDiagnose from local stat.py
 from itertools import combinations
 from processData.report import ReportGenerator
 
+import torch.nn.functional as F
+
+# Custom loss for smoothed BCE with logits
+class SmoothBCEWithLogitsLoss(nn.Module):
+    """
+    Binary cross-entropy loss with logits and manual label smoothing.
+    """
+    def __init__(self, pos_weight=None, smoothing=0.1):
+        super().__init__()
+        self.pos_weight = pos_weight
+        self.smoothing = smoothing
+
+    def forward(self, logits, targets):
+        # Smooth targets: positive labels -> 1 - smoothing/2, negatives -> smoothing/2
+        smoothed = targets * (1 - self.smoothing) + 0.5 * self.smoothing
+        return F.binary_cross_entropy_with_logits(logits, smoothed, pos_weight=self.pos_weight)
+
 # Parse command-line arguments
 parser = argparse.ArgumentParser(description='Train model on CelebA dataset')
 parser.add_argument('--verbose', type=str2bool, default=False,
@@ -182,13 +199,37 @@ unlabeled_labels = np.array([labels[i] for i in range(len(all_datas)) if split[i
 modified_image_paths = []
 modified_image_labels = []
 
-# Randomly sample the specified number of images from feasible_images
-sample_keys = list(feasible_images.keys())
-# Warn if fewer images are available than requested
+#
+# Prepare sample keys from JSON
+json_keys = list(feasible_images.keys())
+
+# If user requests more images than JSON entries, sample from all generated files instead
+if args.num_added_img > len(json_keys):
+    # List all .jpg files in the generated images directory and use their basenames
+    all_files = os.listdir(args.gen_image_dir)
+    file_keys = [os.path.splitext(f)[0] for f in all_files if f.lower().endswith('.jpg')]
+    print(f"Warning: requested {args.num_added_img} generated {args.attributes} images, "
+          f"but only {len(json_keys)} feasible. Sampling from all {len(file_keys)} files instead.")
+    sample_keys = file_keys
+else:
+    sample_keys = json_keys
+
+# Warn if fewer images are available than requested in the chosen sample_keys
 if len(sample_keys) < args.num_added_img:
-    print(f"Warning: requested {args.num_added_img} generated {args.attributes} images, but only {len(sample_keys)} available.")
+    print(f"Warning: requested {args.num_added_img} generated {args.attributes} images, "
+          f"but only {len(sample_keys)} available.")
+
 # Perform sampling
+print("Perform sampling for generated images")
+# 
 selected_filenames = random.sample(sample_keys, min(args.num_added_img, len(sample_keys)))
+print(f"Selected {len(selected_filenames)} filenames for sampling")
+# Build a map from base image number to label for quick lookup
+base_to_label = {}
+for img_path, lbl in zip(train_imgs, train_labels):
+    # Extract numeric basename without extension
+    base = os.path.splitext(os.path.basename(img_path))[0]
+    base_to_label[base] = lbl
 for filename in selected_filenames:
     # Get the image file from the pictures directory
     # Use relative path since the script runs from the HiBug directory
@@ -198,27 +239,18 @@ for filename in selected_filenames:
         print(f"Warning: Modified image {image_path} not found.")
         continue
     
-    # Extract the base image number (e.g., "007" from "007_red")
-    base_number = filename.split('_')[0]
-    
-    # Find the corresponding original image in train_imgs by number
-    # We need to find the index of the original image to get its label
-    original_idx = None
-    for i, img_path in enumerate(train_imgs):
-        if f"/{base_number}.jpg" in img_path or f"/{base_number}_" in img_path:
-            original_idx = i
-            break
-    
-    # If we found the original image, add the modified image with the same label
-    if original_idx is not None:
+    # Lookup label by base image number
+    base = filename.split('_')[0]
+    lbl = base_to_label.get(base)
+    if lbl is not None:
         modified_image_paths.append(image_path)
-        modified_image_labels.append(train_labels[original_idx])
+        modified_image_labels.append(lbl)
         if verbose:
-            print(f"Added {image_path} with label {train_labels[original_idx]}")
+            print(f"Added {image_path} with label {lbl}")
     else:
         print(f"Warning: Could not find original image for {filename}")
+print("Finish sampling for generated images")
 
-# Print information about the added images
 # Print information about the added images
 if args.gen_only:
     # In gen_only mode, we’re only ever using the generated set
@@ -315,8 +347,14 @@ if args.model == 'resnet':
         nn.Linear(128, 1)
     )
 elif args.model == 'vit':
-    # Use the smaller ViT-Base variant with proper import
-    model = create_model('vit_base_patch16_224', pretrained=args.pretrained)
+    # Initialize ViT with internal dropout and stochastic depth for regularization
+    model = create_model(
+        'vit_base_patch16_224',
+        pretrained=args.pretrained,
+        drop_rate=0.1,
+        attn_drop_rate=0.1,
+        drop_path_rate=0.1
+    )
     # Modify the head for binary classification, adding dropout for regularization
     num_head_features = model.head.in_features
     model.head = nn.Sequential(
@@ -334,7 +372,8 @@ print(f"Using {args.model} model with {'pretrained' if args.pretrained else 'ran
 num_negative = (all_train_labels == 0).sum()
 num_positive = (all_train_labels == 1).sum()
 pos_weight = torch.tensor([num_negative / num_positive]).to(device)
-criterion = nn.BCEWithLogitsLoss(pos_weight=pos_weight)
+# Use smoothed BCE loss since label_smoothing param is unavailable
+criterion = SmoothBCEWithLogitsLoss(pos_weight=pos_weight, smoothing=0.1)
 
 # Optimize all model parameters for all architectures
 if args.model == 'clip':

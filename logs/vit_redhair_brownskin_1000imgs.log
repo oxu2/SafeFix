@@ -1,0 +1,34 @@
+start time: 2025-04-24 02:41:05
+Current time: 0424024108
+Added 1000 generated redhair_brownskin images, before training set has 80000 images, now 81000
+Using vit model with random weights
+Traceback (most recent call last):
+  File "/people/cs/o/oxx220000/HiBug/predict.py", line 577, in <module>
+    train_loss_history, train_acc_history, val_loss_history, val_acc_history = train_model(
+  File "/people/cs/o/oxx220000/HiBug/predict.py", line 464, in train_model
+    for images, labels in train_loader:
+  File "/people/cs/o/oxx220000/.conda/envs/ad/lib/python3.9/site-packages/torch/utils/data/dataloader.py", line 628, in __next__
+    data = self._next_data()
+  File "/people/cs/o/oxx220000/.conda/envs/ad/lib/python3.9/site-packages/torch/utils/data/dataloader.py", line 1333, in _next_data
+    return self._process_data(data)
+  File "/people/cs/o/oxx220000/.conda/envs/ad/lib/python3.9/site-packages/torch/utils/data/dataloader.py", line 1359, in _process_data
+    data.reraise()
+  File "/people/cs/o/oxx220000/.conda/envs/ad/lib/python3.9/site-packages/torch/_utils.py", line 543, in reraise
+    raise exception
+FileNotFoundError: Caught FileNotFoundError in DataLoader worker process 1.
+Original Traceback (most recent call last):
+  File "/people/cs/o/oxx220000/.conda/envs/ad/lib/python3.9/site-packages/torch/utils/data/_utils/worker.py", line 302, in _worker_loop
+    data = fetcher.fetch(index)
+  File "/people/cs/o/oxx220000/.conda/envs/ad/lib/python3.9/site-packages/torch/utils/data/_utils/fetch.py", line 58, in fetch
+    data = [self.dataset[idx] for idx in possibly_batched_index]
+  File "/people/cs/o/oxx220000/.conda/envs/ad/lib/python3.9/site-packages/torch/utils/data/_utils/fetch.py", line 58, in <listcomp>
+    data = [self.dataset[idx] for idx in possibly_batched_index]
+  File "/people/cs/o/oxx220000/HiBug/predict.py", line 171, in __getitem__
+    img = Image.open(self.img_paths[idx]).convert("RGB")
+  File "/people/cs/o/oxx220000/.conda/envs/ad/lib/python3.9/site-packages/PIL/Image.py", line 3469, in open
+    fp = builtins.open(filename, "rb")
+FileNotFoundError: [Errno 2] No such file or directory: '/people/cs/o/oxx220000/HiBug/exampleData/redhair_brownskin/003639_redhair_brownskin.jpg'
+
+Start Time: 2025-04-24 02:41:05
+End Time:   2025-04-24 02:51:06
+Duration:   00:10:01

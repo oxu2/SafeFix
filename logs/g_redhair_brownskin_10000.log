@@ -1,0 +1,5 @@
+nohup: ignoring input
+=== Starting resnet (logs -> logs/g_train_resnet_redhair_brownskin_10000imgs.log) ===
+=== Finished resnet ===
+
+=== Starting clip (logs -> logs/g_train_clip_redhair_brownskin_10000imgs.log) ===

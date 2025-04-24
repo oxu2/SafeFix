@@ -1,0 +1,10 @@
+start time: 2025-04-24 03:03:24
+Current time: 0424030326
+Warning: requested 12340 generated redhair_brownskin images, but only 7826 available.
+Added 12340 generated redhair_brownskin images, before training set has 80000 images, now 87826
+Using resnet model with random weights
+Epoch [1/20], Train Loss: 599.4172, Train Acc: 0.8265, Val Loss: 0.4515, Val Acc: 0.8507
+time_run.sh: line 18: 1779835 Killed                  python "$SCRIPT" "${ARGS[@]}"
+Start Time: 2025-04-24 03:03:24
+End Time:   2025-04-24 03:05:19
+Duration:   00:01:55

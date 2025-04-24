@@ -1,0 +1,11 @@
+start time: 2025-04-24 03:46:10
+Current time: 0424034612
+Perform sampling for generated images
+Selected 5000 filenames for sampling
+Finish sampling for generated images
+Using only generated images: total training images = 5000
+Using clip model with random weights
+time_run.sh: line 18: 1812177 Killed                  python "$SCRIPT" "${ARGS[@]}"
+Start Time: 2025-04-24 03:46:10
+End Time:   2025-04-24 03:46:30
+Duration:   00:00:20

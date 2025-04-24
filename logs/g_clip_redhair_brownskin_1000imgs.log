@@ -1,0 +1,12 @@
+start time: 2025-04-24 03:44:01
+Current time: 0424034403
+Perform sampling for generated images
+Selected 1000 filenames for sampling
+Finish sampling for generated images
+Using only generated images: total training images = 1000
+Using clip model with random weights
+Epoch [1/20], Train Loss: 15.7004, Train Acc: 0.4940, Val Loss: 0.6763, Val Acc: 0.5572
+time_run.sh: line 18: 1804084 Killed                  python "$SCRIPT" "${ARGS[@]}"
+Start Time: 2025-04-24 03:44:01
+End Time:   2025-04-24 03:46:10
+Duration:   00:02:09

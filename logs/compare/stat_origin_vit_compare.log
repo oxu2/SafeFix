@@ -1,34 +1,39 @@
 nohup: ignoring input
 start time: 2025-04-21 02:41:24
-Model Validation ACC: 0.9029
+Model Validation ACC: 0.85065
 Start detect_failure_by_label
 
 Start detect_prediction_correlation
 
-ACC: 0.887950 	Hard case: attribute "beard", description "No"
-ACC: 0.843761 	Hard case: attribute "gender", description "female"
-The accuracy with "hair color" = "white" is 0.9241803278688525
-Correct predictions: 451/488
+ACC: 0.836448 	Hard case: attribute "beard", description "No"
+ACC: 0.838893 	Rare Case: attribute "makeup", description "Yes"
+ACC: 0.768786 	Hard case: attribute "gender", description "female"
+The accuracy with "hair color" = "white" is 0.9057377049180327
+Correct predictions: 442/488
 The accuracy with "hair color" = "yellow" is 0.9054054054054054
 Correct predictions: 67/74
-The accuracy with "hair color" = "blonde" is 0.871251193887297
-Correct predictions: 4561/5235
-ACC: 0.871251 	Hard case: attribute "hair color", description "blonde"
-The accuracy with "hair color" = "black" is 0.9207547169811321
-Correct predictions: 6100/6625
-The accuracy with "hair color" = "gray" is 0.9689849624060151
-Correct predictions: 1031/1064
-The accuracy with "hair color" = "brown" is 0.8975055150178177
-Correct predictions: 5289/5893
-The accuracy with "hair color" = "red" is 0.9001610305958132
-Correct predictions: 559/621
-ACC: 0.889618 	Rare Case: attribute "skin", description "brown"
-ACC: 0.851711 	Rare Case: attribute "emotion", description "sad"
-ACC: 0.879032 	Rare Case: attribute "emotion", description "calm"
-ACC: 0.889591 	Hard case: attribute "emotion", description "surprised"
-ACC: 0.858787 	Rare Case: attribute "emotion", description "pensive"
+The accuracy with "hair color" = "blonde" is 0.8410697230181471
+Correct predictions: 4403/5235
+The accuracy with "hair color" = "black" is 0.84
+Correct predictions: 5565/6625
+ACC: 0.840000 	Hard case: attribute "hair color", description "black"
+The accuracy with "hair color" = "gray" is 0.9530075187969925
+Correct predictions: 1014/1064
+The accuracy with "hair color" = "brown" is 0.8499915153572034
+Correct predictions: 5009/5893
+The accuracy with "hair color" = "red" is 0.8260869565217391
+Correct predictions: 513/621
+ACC: 0.826087 	Rare Case: attribute "hair color", description "red"
+The accuracy with "skin" = "white" is 0.8657142857142858
+Correct predictions: 8787/10150
+The accuracy with "skin" = "black" is 0.8318402866649603
+Correct predictions: 3250/3907
+ACC: 0.831840 	Rare Case: attribute "skin", description "black"
+The accuracy with "skin" = "brown" is 0.8372875652027596
+Correct predictions: 4976/5943
+ACC: 0.837288 	Rare Case: attribute "skin", description "brown"
+ACC: 0.806084 	Rare Case: attribute "emotion", description "sad"
+ACC: 0.812895 	Hard case: attribute "emotion", description "surprised"
+ACC: 0.775105 	Rare Case: attribute "emotion", description "pensive"
+ACC: 0.838260 	Hard case: attribute "young", description "young"
 Start detect_failure_prediction_correlation
-
-Start Time: 2025-04-21 02:41:24
-End Time:   2025-04-21 02:41:26
-Duration:   00:00:02

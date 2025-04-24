@@ -1,0 +1,14 @@
+start time: 2025-04-24 02:37:11
+Current time: 0424023713
+Warning: requested 10000 generated redhair_brownskin images, but only 7826 available.
+Added 10000 generated redhair_brownskin images, before training set has 80000 images, now 87826
+Saved combined train indices to save/idx/train_idx_redhair_brownskin_10000imgs.npy
+Saved combined labels to save/labels/labels_redhair_brownskin_10000imgs.npy
+Using vit model with random weights
+Traceback (most recent call last):
+  File "/people/cs/o/oxx220000/HiBug/predict.py", line 344, in <module>
+    criterion = nn.BCEWithLogitsLoss(pos_weight=pos_weight, label_smoothing=0.1)
+TypeError: __init__() got an unexpected keyword argument 'label_smoothing'
+Start Time: 2025-04-24 02:37:11
+End Time:   2025-04-24 02:37:26
+Duration:   00:00:15

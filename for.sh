@@ -8,13 +8,15 @@
 CUDA_DEVICES=1
 ATTRIBUTES="redhair_brownskin"
 NUM_ADDED_IMG=1000
+GEN_ONLY=false
 
 # Parse short options: -n for NUM_ADDED_IMG, -a for ATTRIBUTES, -d for CUDA_DEVICES
-while getopts "n:a:d:" opt; do
+while getopts "n:a:d:g" opt; do
   case $opt in
     n) NUM_ADDED_IMG="$OPTARG" ;;
     a) ATTRIBUTES="$OPTARG" ;;
     d) CUDA_DEVICES="$OPTARG" ;;
+    g) GEN_ONLY=true ;;
     *) echo "Usage: $(basename "$0") [-n num_added_img] [-a attributes] [-d cuda_devices]"; exit 1 ;;
   esac
 done
@@ -28,8 +30,15 @@ LOG_DIR="logs"
 # Ensure log directory exists
 mkdir -p "${LOG_DIR}"
 
+# Determine log prefix if gen_only is enabled
+if [[ "${GEN_ONLY}" == true ]]; then
+  SUFFIX="g_"
+else
+  SUFFIX=""
+fi
+
 for MODEL in resnet clip vit; do
-  LOG_FILE="${LOG_DIR}/train_${MODEL}_${ATTRIBUTES}_${NUM_ADDED_IMG}imgs.log"
+  LOG_FILE="${LOG_DIR}/${SUFFIX}train_${MODEL}_${ATTRIBUTES}_${NUM_ADDED_IMG}imgs.log"
   echo "=== Starting ${MODEL} (logs -> ${LOG_FILE}) ==="
 
   CUDA_VISIBLE_DEVICES=${CUDA_DEVICES} \
@@ -37,6 +46,7 @@ for MODEL in resnet clip vit; do
       --attributes "${ATTRIBUTES}" \
       --model "${MODEL}" \
       --num_added_img "${NUM_ADDED_IMG}" \
+      --gen_only "${GEN_ONLY}" \
       > "${LOG_FILE}" 2>&1
 
   if [ $? -ne 0 ]; then

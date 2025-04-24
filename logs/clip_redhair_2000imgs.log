@@ -1,0 +1,11 @@
+start time: 2025-04-24 03:44:42
+Current time: 0424034444
+Perform sampling for generated images
+Selected 2000 filenames for sampling
+Finish sampling for generated images
+Added 2000 generated redhair images, before training set has 80000 images, now 82000
+Using clip model with random weights
+time_run.sh: line 18: 1806920 Killed                  python "$SCRIPT" "${ARGS[@]}"
+Start Time: 2025-04-24 03:44:42
+End Time:   2025-04-24 03:45:15
+Duration:   00:00:33

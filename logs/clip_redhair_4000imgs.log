@@ -1,0 +1,8 @@
+start time: 2025-04-24 03:45:15
+Current time: 0424034518
+Perform sampling for generated images
+Selected 4000 filenames for sampling
+Finish sampling for generated images
+Added 4000 generated redhair images, before training set has 80000 images, now 84000
+Using clip model with random weights
+Epoch [1/20], Train Loss: 703.5249, Train Acc: 0.7281, Val Loss: 0.4885, Val Acc: 0.7871

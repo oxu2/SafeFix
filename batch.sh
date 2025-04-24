@@ -38,7 +38,7 @@ LOG_DIR="logs"
 mkdir -p "${LOG_DIR}"
 
 
-for NUM_ADDED_IMG in 1000 2000 4000; do
+for NUM_ADDED_IMG in 1000 5000 10000; do
   if [[ "${GEN_ONLY}" == true ]]; then
     SUFFIX="g_"
   else
