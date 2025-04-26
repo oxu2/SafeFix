@@ -161,60 +161,104 @@ def process_image(image_path, model, processor, tags: List[str], attributes: Lis
         print(f"Warning: Error parsing response '{response}' for {image_path}: {e}")
         return {}
 
-def process_directory(directory_path, output_json_path, tags, attributes, verbose=False, file_type="png"):
-    """Process all images in directory and save results to JSON."""
+def process_directory(directory_path, output_json_path, tags, attributes, verbose=False, file_type="png", stop_at=None, stop_suffix=None):
+    """
+    Process images in directory and save results to JSON.
+    Stops processing *before* encountering an image file whose base number
+    is greater than or equal to stop_at.
+    """
     # Ensure the save/json directory exists
     save_dir = "save/json"
     os.makedirs(save_dir, exist_ok=True)
-    output_json_path = os.path.join(save_dir, os.path.basename(output_json_path))  # Fix duplicate path issue
+    output_json_path = os.path.join(save_dir, os.path.basename(output_json_path))
 
     results = {}
-    
+    stopped_early = False
+    stop_filename = None # The file that triggered the stop (will not be processed)
+    processed_count = 0
+    stop_at_num = None
+    if stop_at:
+        try:
+            stop_at_num = int(stop_at)
+        except ValueError:
+            print(f"Warning: Invalid --stop_at value '{stop_at}'. It should be a number. Ignoring stop condition.")
+            stop_at = None # Disable stopping if value is invalid
+
     # Get image files based on the specified file type
     if file_type.lower() == "all":
-        # Process both PNG and JPG files
-        image_files = [f for f in os.listdir(directory_path) if (f.endswith('.png') or f.endswith('.jpg') or f.endswith('.jpeg'))]
+        image_files = [f for f in os.listdir(directory_path) if (f.lower().endswith('.png') or f.lower().endswith('.jpg') or f.lower().endswith('.jpeg'))]
     else:
-        # Process only files of the specified type
-        extensions = ['.' + ext for ext in file_type.lower().split(',')]
-        image_files = [f for f in os.listdir(directory_path) if any(f.endswith(ext) for ext in extensions)]
-    
-    # Sort image files by name (alphanumerically)
-    # This will ensure files like "1.jpg" come before "2.jpg"
-    image_files.sort()
-    
+        extensions = ['.' + ext.lower() for ext in file_type.lower().split(',')]
+        image_files = [f for f in os.listdir(directory_path) if any(f.lower().endswith(ext) for ext in extensions)]
+
+    # Sort image files alphanumerically based on the numeric part
+    # Handles names like '001.jpg', '002_suffix.jpg', '10.jpg' correctly
+    def get_numeric_part(filename):
+        base = os.path.splitext(filename)[0]
+        numeric_str = base.split('_')[0]
+        try:
+            return int(numeric_str)
+        except ValueError:
+            return float('inf') # Place non-numeric filenames at the end
+
+    image_files.sort(key=get_numeric_part)
+
     total_images = len(image_files)
 
     if verbose:
         print(f"Found {total_images} images with file type(s): {file_type}")
-        print(f"Processing images in order: {', '.join(image_files[:5])}{'...' if len(image_files) > 5 else ''}")
+        print(f"Processing images in sorted order: {', '.join(image_files[:5])}{'...' if len(image_files) > 5 else ''}")
+        if stop_at_num is not None:
+            print(f"Will stop processing before any image with base number >= {stop_at}.")
     else:
         print(f"Found {total_images} images with file type(s): {file_type}")
-    
+        if stop_at_num is not None:
+             print(f"Stop condition active: Stop before base number >= {stop_at}.")
+
+
+    processed_count = 0
     for idx, image_file in enumerate(image_files):
+        base_name = os.path.splitext(image_file)[0]
+        numeric_part_str = base_name.split('_')[0]
+
+        # Check for stopping condition based on numeric part
+        if stop_at_num is not None:
+            try:
+                current_num = int(numeric_part_str)
+                if current_num >= stop_at_num:
+                    stopped_early = True
+                    stop_filename = image_file
+                    processed_count = idx
+                    print(f"\nStopping before processing file: {stop_filename} (base number {current_num} >= stop_at {stop_at_num})")
+                    break
+            except ValueError:
+                pass
+
         image_path = os.path.join(directory_path, image_file)
-        # Get filename without extension
-        filename = os.path.splitext(image_file)[0]
-        
+        filename = base_name
+
         if verbose:
             print(f"Processing {image_file}...")
         result = process_image(image_path, model, processor, tags, attributes, verbose=verbose)
-        results[filename] = result
-        
-        # Save after each image in case of interruption
+        if result:
+            results[filename] = result
+
         with open(output_json_path, 'w') as f:
             json.dump(results, f, indent=4)
-        
-        # Progress indicator
-        if (idx + 1) % 100 == 0:
-            print(f"[{idx + 1}/{total_images}]")
-        
+
+        if (idx + 1) % 1000 == 0:
+             print(f"[{idx + 1}/{total_images}] Processed...")
+
+    if not stopped_early:
+        processed_count = len(results)
+
     if verbose:
         print(f"Results saved to {output_json_path}")
-    return results, total_images
+
+    return results, processed_count, stopped_early, stop_filename
 
 # Update function to extract features from results with configurable filtering
-def create_feature_mapping(results_json, feasible_json="features.json", tag="yellow", attribute="hair"):
+def create_feature_mapping(results_json, feasible_json="features.json", attributes: str = "redhair_brownskin"):
     """
     Create a JSON file mapping filenames to features for images with specific attributes
     Example: {"example_image": {"tag": "yellow", "attribute": "hair", "wearing_lipstick": 0}}
@@ -223,8 +267,6 @@ def create_feature_mapping(results_json, feasible_json="features.json", tag="yel
     Parameters:
     - results_json: Path to results JSON or dictionary of results
     - feasible_json: Path to save the filtered results
-    - tag: The tag to filter for (e.g., "yellow")
-    - attribute: The attribute to filter for (e.g., "hair")
     """
     # Ensure the save/json directory exists
     save_dir = "save/json"
@@ -238,32 +280,36 @@ def create_feature_mapping(results_json, feasible_json="features.json", tag="yel
     else:
         # If results_json is already a dictionary
         results = results_json
-        
-    feature_mapping = {}
-    
-    # Construct the key based on tag and attribute
-    attribute_key = attribute.replace(" ", "_")
-    tag_attribute_key = f"{tag}_{attribute_key}"
-    
-    # Define keys for red hair, brown skin, and wearing lipstick
-    tags = ["red", "brown", "wearing"]
-    attributes = ["hair", "skin", "lipstick"]
-    key1 = "red_hair"
-    key2 = "brown_skin"
-    key3 = "wearing_lipstick"
+    # Parse the attributes string into keys
+    attr_list = attributes.split('_')
+    # Build tags and attributes lists
+    tags = []
+    attrs = []
+    for attr in attr_list:
+        if attr.endswith('hair'):
+            tags.append(attr[:-4])
+            attrs.append('hair')
+        elif attr.endswith('skin'):
+            tags.append(attr[:-4])
+            attrs.append('skin')
+        else:
+            tags.append(attr)
+            attrs.append(attr)
+    # Derive feature keys
+    keys = [f"{t}_{a}" for t, a in zip(tags, attrs)]
 
+    feature_mapping = {}
     for filename, result in results.items():
-        result1 = result.get(key1)
-        result2 = result.get(key2)
-        result3 = result.get(key3)
-        if result1 == 1 and result2 == 1 and result3 == 1:
-            feature_mapping[filename] = { key1: result1, key2: result2, key3: result3 }
-    
+        # Include if all specified keys have value 1
+        if all(result.get(key, 0) == 1 for key in keys):
+            # Build mapping entry for these keys
+            mapping_entry = { key: result.get(key, 0) for key in keys }
+            feature_mapping[filename] = mapping_entry
+
     # Save the feature mapping to a JSON file
     with open(feasible_json, 'w') as f:
         json.dump(feature_mapping, f, indent=4)
-    
-    # print(f"Feature mapping saved to {feasible_json} (filtered for {tag}_{attribute_key}=1)")
+
     return feature_mapping
 
 def rename_images_with_suffix(directory_path, suffix="_red", verbose=False):
@@ -325,9 +371,10 @@ def main(directory_path="./redhair",
          verbose: bool = False,
          file_type: str = "png",
          rename_files: bool = False,
-         attributes_str: str = "redhair_brownskin",
+         attributes: str = "redhair_brownskin",
          rename_suffix: str = None,
-         max_memory_per_gpu: int = 22):
+         max_memory_per_gpu: int = 22,
+         stop_at: str = None):
     """
     Main function to process images and create feature mapping.
     
@@ -338,6 +385,7 @@ def main(directory_path="./redhair",
     - rename_files: Whether to rename files by adding a suffix
     - rename_suffix: Suffix to add when renaming files (default: "_red")
     - max_memory_per_gpu: Max memory per GPU in GiB (e.g., 22)
+    - stop_at: Base filename number to stop processing at (e.g., "077000")
     
     Returns:
     - Tuple of (results, feature_mapping)
@@ -363,7 +411,7 @@ def main(directory_path="./redhair",
             print(f"Renamed {renamed_count} files with suffix '{rename_suffix}'")
     
     # Parse attribute string into list
-    attr_list = attributes_str.split('_')
+    attr_list = attributes.split('_')
     tags = []
     attrs = []
     for attr in attr_list:
@@ -382,8 +430,8 @@ def main(directory_path="./redhair",
 
     # Build timestamped file paths
     timestamp = datetime.datetime.now().strftime("%m%d%H%M")
-    results_json_path = f"{attributes_str}_results_{timestamp}.json"
-    feasible_json = f"{attributes_str}_feasible_{timestamp}.json"
+    results_json_path = f"{attributes}_results_{timestamp}.json"
+    feasible_json = f"{attributes}_feasible_{timestamp}.json"
 
     # Ensure the save/json directory exists
     save_dir = "save/json"
@@ -391,22 +439,35 @@ def main(directory_path="./redhair",
     results_json_path = os.path.join(save_dir, results_json_path)
     feasible_json = os.path.join(save_dir, feasible_json)
     
-    print(f"Starting image processing for attributes: {attributes_str}...")
+    print(f"Starting image processing for attributes: {attributes}...")
+    if stop_at:
+        print(f"Processing will stop if file '{stop_at}{rename_suffix}.jpg' (or similar) is found.")
     
     # Process all images in directory
-    results, total_images_processed = process_directory(
+    results, processed_count, stopped_early, stop_filename = process_directory(
            directory_path,
            results_json_path,
            tags,
-           attributes,
+           attrs,
            verbose=verbose,
-           file_type=file_type
+           file_type=file_type,
+           stop_at=stop_at,
+           stop_suffix=rename_suffix
        )
     print("Image processing using Qwen VL model complete.")
     
-    # Create feature mapping for images with specified tag and attribute
-    feature_mapping = create_feature_mapping(results, feasible_json)
-    print(f"Feature mapping and filter complete. Found {len(feature_mapping)} images with red hair and brown skin out of {total_images_processed} processed images. Saved to {feasible_json}")
+    # Create feature mapping for images with specified attributes
+    feature_mapping = create_feature_mapping(results, feasible_json, attributes)
+    print("\n--- Processing Summary ---")
+    if stopped_early:
+        print(f"Processing stopped at file: {stop_filename}")
+        print(f"Total images processed before stopping: {processed_count}")
+    else:
+        print(f"Processed all {processed_count} found images.")
+    print(f"Found {len(feature_mapping)} feasible images matching the criteria.")
+    print(f"Results saved to: {results_json_path}")
+    print(f"Feasible mapping saved to: {feasible_json}")
+    print("--------------------------")
     
     return results, feature_mapping
 
@@ -439,6 +500,8 @@ if __name__ == "__main__":
                         help='Suffix to add when renaming files (default: "_red")')
     parser.add_argument('--max_memory', type=int, default=22, 
                         help='Maximum memory allocation per GPU in GiB (default: 22)')
+    parser.add_argument('--stop_at', type=str, default="020000",
+                        help='Base image number (e.g., "077000") to stop processing at. Processing stops *before* encountering any file whose base number is greater than or equal to this value.')
     
     args = parser.parse_args()
 
@@ -452,5 +515,6 @@ if __name__ == "__main__":
        args.rename_files,
        args.attributes,
        args.rename_suffix,
-       args.max_memory
+       args.max_memory,
+       args.stop_at
     )

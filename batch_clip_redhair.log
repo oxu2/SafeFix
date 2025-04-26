@@ -1,8 +1,0 @@
-=== [1000 imgs] Starting clip -> logs/batch/clip_redhair_1000imgs.log ===
-=== [1000 imgs] Finished clip ===
-
-=== [2000 imgs] Starting clip -> logs/batch/clip_redhair_2000imgs.log ===
-=== [2000 imgs] Finished clip ===
-
-=== [4000 imgs] Starting clip -> logs/batch/clip_redhair_4000imgs.log ===
-!!! [4000 imgs] clip failed (exit code 0). See logs/batch/clip_redhair_4000imgs.log

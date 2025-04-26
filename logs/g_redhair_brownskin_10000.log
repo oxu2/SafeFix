@@ -3,3 +3,9 @@ nohup: ignoring input
 === Finished resnet ===
 
 === Starting clip (logs -> logs/g_train_clip_redhair_brownskin_10000imgs.log) ===
+=== Finished clip ===
+
+=== Starting vit (logs -> logs/g_train_vit_redhair_brownskin_10000imgs.log) ===
+=== Finished vit ===
+
+All models completed successfully.

@@ -1,2 +1,11 @@
 nohup: ignoring input
 === Starting resnet (logs -> logs/train_resnet_redhair_brownskin_10000imgs.log) ===
+=== Finished resnet ===
+
+=== Starting clip (logs -> logs/train_clip_redhair_brownskin_10000imgs.log) ===
+=== Finished clip ===
+
+=== Starting vit (logs -> logs/train_vit_redhair_brownskin_10000imgs.log) ===
+=== Finished vit ===
+
+All models completed successfully.

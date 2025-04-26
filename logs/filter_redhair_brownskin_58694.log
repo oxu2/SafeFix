@@ -1,0 +1,6 @@
+Running in conda environment: ad
+usage: filter.py [-h] [--dir DIR] [--verbose VERBOSE] [--file_type FILE_TYPE]
+                 [--rename-files RENAME_FILES] [--attributes ATTRIBUTES]
+                 [--rename_suffix RENAME_SUFFIX] [--max_memory MAX_MEMORY]
+                 [--stop_at STOP_AT]
+filter.py: error: argument --max_memory: invalid int value: '23GiB'

@@ -1,5 +1,0 @@
-=== [1000 imgs] Starting vit -> logs/train_vit_redhair_1000imgs.log ===
-=== [1000 imgs] Finished vit ===
-
-=== [2000 imgs] Starting vit -> logs/train_vit_redhair_2000imgs.log ===
-!!! [2000 imgs] vit failed (exit code 0). See logs/train_vit_redhair_2000imgs.log

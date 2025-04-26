@@ -1,0 +1,7 @@
+Running in conda environment: ad
+Using 1 GPUs with 23GiB memory allocation each
+Loading checkpoint shards:   0%|          | 0/5 [00:00<?, ?it/s]Loading checkpoint shards:  20%|██        | 1/5 [00:01<00:04,  1.02s/it]Loading checkpoint shards:  40%|████      | 2/5 [00:01<00:02,  1.33it/s]Loading checkpoint shards:  60%|██████    | 3/5 [00:02<00:01,  1.50it/s]Loading checkpoint shards:  80%|████████  | 4/5 [00:02<00:00,  1.60it/s]Loading checkpoint shards: 100%|██████████| 5/5 [00:02<00:00,  1.99it/s]Loading checkpoint shards: 100%|██████████| 5/5 [00:02<00:00,  1.67it/s]
+Starting image processing for attributes: redhair_brownskin...
+Processing will stop if file '020000_redhair_brownskin.jpg' (or similar) is found.
+Found 46703 images with file type(s): jpg
+Stop condition active: Stop before base number >= 020000.

@@ -15,6 +15,23 @@ def install_gdown():
 def download_from_gdrive(url, output_dir=None):
     """Download files from Google Drive folder."""
     import gdown
+
+    # Handle single-file URLs
+    if "/file/d/" in url:
+        # Extract the file ID from the URL
+        file_id = url.split("/file/d/")[1].split("/")[0]
+        # Determine output directory
+        if output_dir is None:
+            output_dir = os.getcwd()
+        os.makedirs(output_dir, exist_ok=True)
+        # Construct direct download URL
+        download_url = f"https://drive.google.com/uc?export=download&id={file_id}"
+        # Set output filename
+        output_path = os.path.join(output_dir, "redhair.zip")
+        print(f"Downloading file with ID: {file_id} to {output_path}...")
+        gdown.download(download_url, output_path, quiet=False)
+        print("File downloaded successfully.")
+        return True
     
     # Extract the folder ID from the URL
     if "folders" in url:

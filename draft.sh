@@ -1,8 +1,23 @@
+CUDA_VISIBLE_DEVICES=2 nohup python -u filter.py \
+  --max_memory 23 \
+  --dir exampleData/redhair_brownskin \
+  --attributes redhair_brownskin \
+  > logs/filter_redhair_brownskin_2000.log 2>&1 < /dev/null &
+CUDA_VISIBLE_DEVICES=0 nohup python -u filter.py \
+  --max_memory 23 \
+  --dir exampleData/redhair \
+  --attributes redhair \
+  --stop_at 20000 \
+  > logs/filter_redhair_20000.log 2>&1 < /dev/null &
+nohup ./batch.sh -m clip -a redhair -d 3 > logs/batch_clip_redhair.log 2>&1 < /dev/null &
+
 nohup ./batch.sh -m vit -a redhair_brownskin -d 3 > logs/batch_vit_redhair_brownskin.log 2>&1 < /dev/null &
 nohup ./for.sh -n 10000 -a redhair_brownskin -d 0 > logs/for_redhair_brownskin_10000.log 2>&1 &
 nohup ./for.sh -n 10000 -a redhair_brownskin -d 1 -g > logs/g_redhair_brownskin_10000.log 2>&1 &
 nohup ./batch.sh -m clip -a redhair_brownskin -d 2 -g > logs/g_batch_vit_redhair_brownskin.log 2>&1 < /dev/null &
 CUDA_VISIBLE_DEVICES=0 nohup bash time_run.sh predict.py --model resnet --num_added_img 12340 > logs/resnet_12340.log 2>&1 < /dev/null &
+
+CUDA_VISIBLE_DEVICES=0 nohup python -u filter.py --max_memory 23 --dir exampleData/redhair --attributes redhair > logs/filter_redhair_20000.log 2>&1 < /dev/null &
 
 CUDA_VISIBLE_DEVICES=3 nohup bash time_run.sh predict.py --model clip --num_added_img 0 --plot 1 > logs/clip_0imgs.log 2>&1 < /dev/null &
 CUDA_VISIBLE_DEVICES=0 nohup bash time_run.sh predict.py --model resnet --num_added_img 0 > logs/resnet_0.log 2>&1 < /dev/null &
