@@ -1,8 +1,40 @@
+nohup ./for.sh -n 10000 -a redhair_brownskin -d 1 -g > logs/g_redhair_brownskin_10000.log 2>&1 &
+nohup ./for.sh -n 10000 -a redhair_brownskin -d 2 > logs/for_redhair_brownskin_10000.log 2>&1 &
+
+nohup ./for.sh -n 10000 -a redhair_brownskin -d 1 -g > logs/g_redhair_brownskin_10000.log 2>&1 &
+nohup ./for.sh -n 10000 -a redhair_brownskin -d 2 > logs/for_redhair_brownskin_10000.log 2>&1 &
+
+CUDA_VISIBLE_DEVICES=3 nohup python -u filter.py \
+  --dir exampleData/redhair_brownskin \
+  --attributes redhair_brownskin \
+  --max_memory 23 \
+  --feasible_only \
+  --results_file save/json/redhair_brownskin_results_04260045.json \
+  > logs/filter_redhairb_feasible.log 2>&1 < /dev/null &
+
+
+CUDA_VISIBLE_DEVICES=3 nohup python -u filter.py \
+  --dir exampleData/redhair \
+  --attributes redhair \
+  --max_memory 23 \
+  --feasible_only \
+  --results_file save/json/redhair_results_04260005.json \
+  > logs/filter_redhair_feasible.log 2>&1 < /dev/null &
+
 CUDA_VISIBLE_DEVICES=2 nohup python -u filter.py \
   --max_memory 23 \
   --dir exampleData/redhair_brownskin \
   --attributes redhair_brownskin \
-  > logs/filter_redhair_brownskin_2000.log 2>&1 < /dev/null &
+  --stop_at 15000 \
+  > logs/filter_redhair_brownskin_15000.log 2>&1 < /dev/null &
+
+
+CUDA_VISIBLE_DEVICES=2 nohup python -u filter.py \
+  --max_memory 23 \
+  --dir exampleData/redhair_brownskin \
+  --attributes redhair_brownskin \
+  --stop_at 21111 \
+  > logs/filter_redhair_brownskin_21111.log 2>&1 < /dev/null &
 CUDA_VISIBLE_DEVICES=0 nohup python -u filter.py \
   --max_memory 23 \
   --dir exampleData/redhair \

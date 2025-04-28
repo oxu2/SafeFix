@@ -5,26 +5,26 @@ import os
 import datetime  # Add this import to support timestamps
 from typing import List
 from utils.defines import *
-# Check if running in the correct conda environment
-def ensure_conda_env(env_name):
-    """Ensure script runs in the specified conda environment"""
-    current_env = os.environ.get('CONDA_DEFAULT_ENV')
-    if current_env != env_name:
-        # print(f"Switching to conda environment '{env_name}' (current: {current_env or 'None'})")
-        # Construct the conda run command
-        conda_path = os.environ.get('CONDA_EXE', 'conda')
-        script_path = os.path.abspath(sys.argv[0])
-        args = ' '.join(sys.argv[1:])
-        cmd = f"{conda_path} run -n {env_name} python {script_path} {args}"
-        # print(f"Executing: {cmd}")
-        os.system(cmd)
-        sys.exit(0)
-    else:
-        print(f"Running in conda environment: {env_name}")
-
-# Make the conda environment configurable
-conda_env = os.environ.get('CONDA_ENV', 'ad')  # Default to 'ad' but allow override via environment variable
-ensure_conda_env(conda_env)
+# # Check if running in the correct conda environment
+# def ensure_conda_env(env_name):
+#     """Ensure script runs in the specified conda environment"""
+#     current_env = os.environ.get('CONDA_DEFAULT_ENV')
+#     if current_env != env_name:
+#         # print(f"Switching to conda environment '{env_name}' (current: {current_env or 'None'})")
+#         # Construct the conda run command
+#         conda_path = os.environ.get('CONDA_EXE', 'conda')
+#         script_path = os.path.abspath(sys.argv[0])
+#         args = ' '.join(sys.argv[1:])
+#         cmd = f"{conda_path} run -n {env_name} python {script_path} {args}"
+#         # print(f"Executing: {cmd}")
+#         os.system(cmd)
+#         sys.exit(0)
+#     else:
+#         print(f"Running in conda environment: {env_name}")
+#
+# # Make the conda environment configurable
+# conda_env = os.environ.get('CONDA_ENV', 'ad')  # Default to 'ad' but allow override via environment variable
+# ensure_conda_env(conda_env)
 
 from PIL import Image, ImageDraw, ImageFont
 from openai import OpenAI
@@ -161,7 +161,7 @@ def process_image(image_path, model, processor, tags: List[str], attributes: Lis
         print(f"Warning: Error parsing response '{response}' for {image_path}: {e}")
         return {}
 
-def process_directory(directory_path, output_json_path, tags, attributes, verbose=False, file_type="png", stop_at=None, stop_suffix=None):
+def process_directory(directory_path, output_json_path, tags, attributes, verbose=False, file_type="png", stop_at: int = 15000, stop_suffix=None):
     """
     Process images in directory and save results to JSON.
     Stops processing *before* encountering an image file whose base number
@@ -176,13 +176,8 @@ def process_directory(directory_path, output_json_path, tags, attributes, verbos
     stopped_early = False
     stop_filename = None # The file that triggered the stop (will not be processed)
     processed_count = 0
-    stop_at_num = None
     if stop_at:
-        try:
-            stop_at_num = int(stop_at)
-        except ValueError:
-            print(f"Warning: Invalid --stop_at value '{stop_at}'. It should be a number. Ignoring stop condition.")
-            stop_at = None # Disable stopping if value is invalid
+        print(f"Stop condition active: stop after processing {stop_at} images.")
 
     # Get image files based on the specified file type
     if file_type.lower() == "all":
@@ -208,32 +203,13 @@ def process_directory(directory_path, output_json_path, tags, attributes, verbos
     if verbose:
         print(f"Found {total_images} images with file type(s): {file_type}")
         print(f"Processing images in sorted order: {', '.join(image_files[:5])}{'...' if len(image_files) > 5 else ''}")
-        if stop_at_num is not None:
-            print(f"Will stop processing before any image with base number >= {stop_at}.")
     else:
         print(f"Found {total_images} images with file type(s): {file_type}")
-        if stop_at_num is not None:
-             print(f"Stop condition active: Stop before base number >= {stop_at}.")
 
 
     processed_count = 0
     for idx, image_file in enumerate(image_files):
         base_name = os.path.splitext(image_file)[0]
-        numeric_part_str = base_name.split('_')[0]
-
-        # Check for stopping condition based on numeric part
-        if stop_at_num is not None:
-            try:
-                current_num = int(numeric_part_str)
-                if current_num >= stop_at_num:
-                    stopped_early = True
-                    stop_filename = image_file
-                    processed_count = idx
-                    print(f"\nStopping before processing file: {stop_filename} (base number {current_num} >= stop_at {stop_at_num})")
-                    break
-            except ValueError:
-                pass
-
         image_path = os.path.join(directory_path, image_file)
         filename = base_name
 
@@ -245,6 +221,13 @@ def process_directory(directory_path, output_json_path, tags, attributes, verbos
 
         with open(output_json_path, 'w') as f:
             json.dump(results, f, indent=4)
+
+        # Check stop-after-images condition
+        processed_count = len(results)
+        if stop_at is not None and processed_count >= stop_at:
+            stopped_early = True
+            print(f"\nStopping after processing {processed_count} images (stop_at={stop_at})")
+            break
 
         if (idx + 1) % 1000 == 0:
              print(f"[{idx + 1}/{total_images}] Processed...")
@@ -297,13 +280,18 @@ def create_feature_mapping(results_json, feasible_json="features.json", attribut
             attrs.append(attr)
     # Derive feature keys
     keys = [f"{t}_{a}" for t, a in zip(tags, attrs)]
+    # Retain these attribute keys for filtering; ensure we always include lipstick feature in output
+    attr_keys = keys[:]
+    output_keys = attr_keys + ["wearing_lipstick"]
 
     feature_mapping = {}
     for filename, result in results.items():
-        # Include if all specified keys have value 1
-        if all(result.get(key, 0) == 1 for key in keys):
-            # Build mapping entry for these keys
-            mapping_entry = { key: result.get(key, 0) for key in keys }
+        # Require all specified attribute keys be positive
+        if all(result.get(key, 0) == 1 for key in attr_keys):
+            # Build mapping entry: include attribute keys and lipstick feature
+            mapping_entry = {key: result.get(key, 0) for key in attr_keys}
+            # Always include lipstick result (0 or 1)
+            mapping_entry["wearing_lipstick"] = result.get("wearing_lipstick", 0)
             feature_mapping[filename] = mapping_entry
 
     # Save the feature mapping to a JSON file
@@ -374,7 +362,9 @@ def main(directory_path="./redhair",
          attributes: str = "redhair_brownskin",
          rename_suffix: str = None,
          max_memory_per_gpu: int = 22,
-         stop_at: str = None):
+         stop_at: int = 15000,
+         feasible_only: bool = False,
+         results_file: str = None):
     """
     Main function to process images and create feature mapping.
     
@@ -440,8 +430,19 @@ def main(directory_path="./redhair",
     feasible_json = os.path.join(save_dir, feasible_json)
     
     print(f"Starting image processing for attributes: {attributes}...")
-    if stop_at:
-        print(f"Processing will stop if file '{stop_at}{rename_suffix}.jpg' (or similar) is found.")
+
+    # Feasible-only mode: skip inference, load existing results JSON
+    if feasible_only:
+        rf = results_file if results_file else results_json_path
+        print(f"Feasible-only mode: loading results from {rf}")
+        with open(rf, 'r') as f:
+            results = json.load(f)
+        feature_mapping = create_feature_mapping(results, feasible_json, attributes)
+        print(f"Found {len(feature_mapping)} feasible images.")
+        print(f"Feasible mapping saved to: {feasible_json}")
+        return results, feature_mapping
+
+    # (Removed file-based stop message)
     
     # Process all images in directory
     results, processed_count, stopped_early, stop_filename = process_directory(
@@ -500,8 +501,12 @@ if __name__ == "__main__":
                         help='Suffix to add when renaming files (default: "_red")')
     parser.add_argument('--max_memory', type=int, default=22, 
                         help='Maximum memory allocation per GPU in GiB (default: 22)')
-    parser.add_argument('--stop_at', type=str, default="020000",
-                        help='Base image number (e.g., "077000") to stop processing at. Processing stops *before* encountering any file whose base number is greater than or equal to this value.')
+    parser.add_argument('--stop_at', type=int, default=15000,
+                        help='Number of images to process before stopping (default: 15000)')
+    parser.add_argument('--feasible_only', action='store_true',
+                        help='Only perform feasible mapping from existing results JSON.')
+    parser.add_argument('--results_file', type=str, default=None,
+                        help='Path to existing results JSON file (used with --feasible_only).')
     
     args = parser.parse_args()
 
@@ -516,5 +521,7 @@ if __name__ == "__main__":
        args.attributes,
        args.rename_suffix,
        args.max_memory,
-       args.stop_at
+       args.stop_at,
+       args.feasible_only,
+       args.results_file
     )
