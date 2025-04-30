@@ -77,6 +77,8 @@ parser.add_argument('--gen_only', type=str2bool, default=False,
                     help='Use only generated images for training (default: False)')
 parser.add_argument('--skip_train_unlabeled', type=str2bool, default=False,
                     help='Skip processing TRAIN and UNLABELED splits in diagnostics')
+parser.add_argument('--hibug', type=str2bool, default=False,
+                    help='Use images from hibug_<attributes> directory (default: False)')
 args = parser.parse_args()
 attributes = args.attributes
 
@@ -84,7 +86,11 @@ attributes = args.attributes
 if args.feasible_file is None:
     args.feasible_file = f"save/feasible_{attributes}.json"
 # Set default gen_image_dir based on attributes if not provided
-if args.gen_image_dir is None:
+# Modify gen_image_dir if hibug is True
+if args.hibug:
+    args.gen_image_dir = f"hibug_{attributes}"
+    print(f"Hibug mode enabled: using image directory {args.gen_image_dir}")
+elif args.gen_image_dir is None:
     args.gen_image_dir = f"exampleData/{attributes}"
 
 verbose = args.verbose
@@ -128,15 +134,22 @@ class CLIPForBinary(nn.Module):
         return self.classifier(feats)
 
 # Load the feasible images (color hair images) from feasible.json
-if os.path.exists(args.feasible_file):
-    with open(args.feasible_file, 'r') as f:
-        feasible_images = json.load(f)
-    if verbose:
-        print(f"Loaded {len(feasible_images)} feasible {args.attributes} images")
+# Skip loading feasible_images if hibug is True
+if not args.hibug:
+    if os.path.exists(args.feasible_file):
+        with open(args.feasible_file, 'r') as f:
+            feasible_images = json.load(f)
+        if verbose:
+            print(f"Loaded {len(feasible_images)} feasible {args.attributes} images")
+    else:
+        feasible_images = {}
+        # Keep original attributes if feasible file not found, but print warning
+        print(f"Warning: {args.feasible_file} not found. No additional {args.attributes} images will be added based on feasibility.")
 else:
-    feasible_images = {}
-    attributes = "origin"  # fallback attributes when feasible_file is missing
-    print(f"Warning: {args.feasible_file} not found. No additional {args.attributes} images will be added.")
+    feasible_images = {} # Not used in hibug mode
+    if verbose:
+        print("Hibug mode: Skipping feasible image loading.")
+
 
 with open("exampleData/celebA/list_attr_celeba.txt") as f:
     lines = [line.strip('\n').split(' ')[0] for line in f.readlines()]
@@ -200,19 +213,31 @@ modified_image_paths = []
 modified_image_labels = []
 
 #
-# Prepare sample keys from JSON
-json_keys = list(feasible_images.keys())
+# Prepare sample keys from JSON or list files if hibug is True
+if args.hibug:
+    # In hibug mode, list all .png files directly
+    if not os.path.isdir(args.gen_image_dir):
+         print(f"Error: Hibug image directory {args.gen_image_dir} not found.")
+         sample_keys = []
+    else:
+        all_files = os.listdir(args.gen_image_dir)
+        # Filter for .png files and extract basename without extension
+        sample_keys = [os.path.splitext(f)[0] for f in all_files if f.lower().endswith('.png')]
+        print(f"Hibug mode: Found {len(sample_keys)} images in {args.gen_image_dir}")
 
-# If user requests more images than JSON entries, sample from all generated files instead
-if args.num_added_img > len(json_keys):
-    # List all .jpg files in the generated images directory and use their basenames
-    all_files = os.listdir(args.gen_image_dir)
-    file_keys = [os.path.splitext(f)[0] for f in all_files if f.lower().endswith('.jpg')]
-    print(f"Warning: requested {args.num_added_img} generated {args.attributes} images, "
-          f"but only {len(json_keys)} feasible. Sampling from all {len(file_keys)} files instead.")
-    sample_keys = file_keys
-else:
-    sample_keys = json_keys
+# Sample from all generated image files in the directory, ignoring JSON-based feasible_images
+if not args.hibug:
+    if not os.path.isdir(args.gen_image_dir):
+        print(f"Error: Generated image directory {args.gen_image_dir} not found.")
+        sample_keys = []
+    else:
+        all_files = os.listdir(args.gen_image_dir)
+        # Only include files ending with the attribute suffix (e.g., "_redhair.jpg")
+        suffix = f"_{attributes}.jpg"
+        file_keys = [os.path.splitext(f)[0] for f in all_files if f.lower().endswith(suffix)]
+        if len(file_keys) < args.num_added_img:
+            print(f"Warning: requested {args.num_added_img} generated {args.attributes} images, but only {len(file_keys)} available.")
+        sample_keys = file_keys
 
 # Warn if fewer images are available than requested in the chosen sample_keys
 if len(sample_keys) < args.num_added_img:
@@ -220,7 +245,8 @@ if len(sample_keys) < args.num_added_img:
           f"but only {len(sample_keys)} available.")
 
 # Perform sampling
-print("Perform sampling for generated images")
+if verbose:
+    print("Perform sampling for generated images")
 # 
 selected_filenames = random.sample(sample_keys, min(args.num_added_img, len(sample_keys)))
 print(f"Selected {len(selected_filenames)} filenames for sampling")
@@ -230,17 +256,46 @@ for img_path, lbl in zip(train_imgs, train_labels):
     # Extract numeric basename without extension
     base = os.path.splitext(os.path.basename(img_path))[0]
     base_to_label[base] = lbl
+
+# --- Debug Prints Start ---
+print(f"Populated base_to_label dictionary with {len(base_to_label)} entries.")
+example_keys = list(base_to_label.keys())[:5] # Show first 5 keys
+if verbose:
+    print(f"Example keys in base_to_label: {example_keys}")
+# --- Debug Prints End ---
+
 for filename in selected_filenames:
+    # Determine the correct extension based on hibug flag
+    extension = ".png" if args.hibug else ".jpg"
     # Get the image file from the pictures directory
     # Use relative path since the script runs from the HiBug directory
-    image_path = f"./{args.gen_image_dir}/{filename}.jpg"
+    image_path = f"./{args.gen_image_dir}/{filename}{extension}"
     
     if not os.path.exists(image_path):
         print(f"Warning: Modified image {image_path} not found.")
         continue
     
     # Lookup label by base image number
-    base = filename.split('_')[0]
+    # Adjust base extraction for hibug filenames (e.g., redhair_000003 -> 000003)
+    base = None # Initialize base
+    if args.hibug:
+        # Assuming format like 'attribute_basenumber'
+        parts = filename.split('_')
+        if len(parts) > 1 and parts[-1].isdigit():
+            base = parts[-1]
+        else:
+            print(f"Warning: Could not extract base number from hibug filename {filename}")
+            continue # Skip if format is unexpected
+    else:
+        # Original logic for non-hibug filenames
+        base = filename.split('_')[0]
+
+    # --- Debug Print for Base ---
+    if args.hibug and base is None: # Should not happen if the previous check works
+         print(f"Debug: Hibug filename {filename} resulted in base=None")
+         continue
+    # --- Debug Print End ---
+
     lbl = base_to_label.get(base)
     if lbl is not None:
         modified_image_paths.append(image_path)
@@ -248,17 +303,27 @@ for filename in selected_filenames:
         if verbose:
             print(f"Added {image_path} with label {lbl}")
     else:
-        print(f"Warning: Could not find original image for {filename}")
-print("Finish sampling for generated images")
+        # Add more specific warning for hibug case
+        if args.hibug:
+             # --- Debug Print for Failed Lookup ---
+             print(f"Debug: Failed lookup for hibug file '{filename}'. Extracted base='{base}'. Key not in base_to_label.")
+             # --- Debug Print End ---
+             print(f"Warning: Could not find original image label for base number {base} (from hibug file {filename})")
+        else:
+             print(f"Warning: Could not find original image for {filename}")
+
+if verbose:             
+    print("Finish sampling for generated images")
 
 # Print information about the added images
 if args.gen_only:
     # In gen_only mode, we’re only ever using the generated set
     print(f"Using only generated images: total training images = {len(modified_image_labels)}")
 else:
-    print(f"Added {args.num_added_img} generated {attributes} images, "
+    added_count = len(modified_image_labels)
+    print(f"Added {added_count} generated {attributes} images, "
           f"before training set has {len(train_labels)} images, "
-          f"now {len(train_labels) + len(modified_image_labels)}")
+          f"now {len(train_labels) + added_count}")
           
 # Load unlabeled predictions - moved outside conditional block
 unlabeled_predictions = np.load("exampleData/celebA/predictions.npy")[idxs]
@@ -461,8 +526,13 @@ def save_predictions(model, train_loader, valid_loader):
         ))
     
     print(f"Combined predictions length: {len(combined_preds)} (should match combined_labels length: {len(combined_labels)})")
-    # Determine filename suffix based on gen_only flag
-    suffix = "_g" if args.gen_only else ""
+    # Determine filename suffix based on gen_only flag and hibug flag
+    suffix = ""
+    if args.gen_only:
+        suffix += "_g"
+    if args.hibug:
+        suffix += "_h" # Add 'h' for hibug
+
     np.save(f"save/pred/predictions_{args.model}_{attributes}_{args.num_added_img}imgs{suffix}_{time_now}.npy", combined_preds)
     
 
@@ -608,8 +678,13 @@ dominant_error_threshold = 0.3
 error_cover_threshold = 0.9
 top_error = 3
 
-# Determine filename suffix based on gen_only flag
-suffix = "_g" if args.gen_only else ""
+# Determine filename suffix based on gen_only flag and hibug flag
+suffix = ""
+if args.gen_only:
+    suffix += "_g"
+if args.hibug:
+    suffix += "_h" # Add 'h' for hibug
+
 # Load the predictions we just saved
 prediction_file = f"save/pred/predictions_{args.model}_{attributes}_{args.num_added_img}imgs{suffix}_{time_now}.npy"
 predictions = np.load(prediction_file)
@@ -651,6 +726,12 @@ if not args.gen_only:
     if args.save_report:
         report_dir = "save/reports"
         os.makedirs(report_dir, exist_ok=True)
+        # Determine filename suffix based on gen_only flag and hibug flag
+        suffix = ""
+        if args.gen_only:
+            suffix += "_g"
+        if args.hibug:
+            suffix += "_h" # Add 'h' for hibug
         MD.generate_report(f"{report_dir}/{args.model}_{attributes}_{args.num_added_img}imgs{suffix}_{time_now}")
         print(f"Diagnostic report saved to {report_dir}/{args.model}_{attributes}_{args.num_added_img}imgs{suffix}_{time_now}")
 else:

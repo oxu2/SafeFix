@@ -1,0 +1,95 @@
+start time: 2025-04-30 04:07:37
+Hibug mode enabled: using image directory hibug_redhair_brownskin
+Current time: 0430040739
+Hibug mode: Found 10925 images in hibug_redhair_brownskin
+Selected 10000 filenames for sampling
+Populated base_to_label dictionary with 80000 entries.
+Added 10000 generated redhair_brownskin images, before training set has 80000 images, now 90000
+Using resnet model with random weights
+Epoch [1/20], Train Loss: 676.3528, Train Acc: 0.7827, Val Loss: 0.3945, Val Acc: 0.8710
+Epoch [2/20], Train Loss: 501.9231, Train Acc: 0.8889, Val Loss: 0.3903, Val Acc: 0.8708
+Epoch [3/20], Train Loss: 455.5027, Train Acc: 0.9103, Val Loss: 0.3509, Val Acc: 0.9028
+Epoch [4/20], Train Loss: 427.6140, Train Acc: 0.9208, Val Loss: 0.3528, Val Acc: 0.8951
+Epoch [5/20], Train Loss: 420.9434, Train Acc: 0.9218, Val Loss: 0.3452, Val Acc: 0.9113
+Epoch [6/20], Train Loss: 414.8487, Train Acc: 0.9247, Val Loss: 0.3452, Val Acc: 0.9091
+Epoch [7/20], Train Loss: 404.6684, Train Acc: 0.9277, Val Loss: 0.3573, Val Acc: 0.9095
+Epoch [8/20], Train Loss: 402.3854, Train Acc: 0.9282, Val Loss: 0.3285, Val Acc: 0.9153
+Epoch [9/20], Train Loss: 399.9853, Train Acc: 0.9306, Val Loss: 0.3432, Val Acc: 0.9107
+Epoch [10/20], Train Loss: 394.2420, Train Acc: 0.9319, Val Loss: 0.3730, Val Acc: 0.9045
+Epoch [11/20], Train Loss: 392.6352, Train Acc: 0.9330, Val Loss: 0.3273, Val Acc: 0.9174
+Epoch [12/20], Train Loss: 392.5085, Train Acc: 0.9325, Val Loss: 0.3352, Val Acc: 0.9123
+Epoch [13/20], Train Loss: 389.1265, Train Acc: 0.9344, Val Loss: 0.3707, Val Acc: 0.9035
+Epoch [14/20], Train Loss: 388.5395, Train Acc: 0.9355, Val Loss: 0.3505, Val Acc: 0.9109
+Epoch [15/20], Train Loss: 387.8603, Train Acc: 0.9346, Val Loss: 0.3300, Val Acc: 0.9166
+Epoch [16/20], Train Loss: 386.1334, Train Acc: 0.9349, Val Loss: 0.3734, Val Acc: 0.9070
+Epoch [17/20], Train Loss: 385.6915, Train Acc: 0.9361, Val Loss: 0.3297, Val Acc: 0.9145
+Epoch [18/20], Train Loss: 386.0752, Train Acc: 0.9363, Val Loss: 0.3517, Val Acc: 0.9110
+Epoch [19/20], Train Loss: 385.2125, Train Acc: 0.9360, Val Loss: 0.3570, Val Acc: 0.9101
+Epoch [20/20], Train Loss: 384.5412, Train Acc: 0.9365, Val Loss: 0.3558, Val Acc: 0.9103
+Generating and saving predictions...
+Original train predictions length: 80000
+Modified image predictions length: 10000
+Validation predictions length: 20000
+Combined predictions length: 190000 (should match combined_labels length: 190000)
+Current time: 0430040739
+
+Running model diagnostics on generated predictions...
+Model Validation ACC: 0.9099
+Start detect_failure_by_label
+
+Start detect_prediction_correlation
+
+ACC: 0.895575 	Hard case: attribute "beard", description "No"
+ACC: 0.853706 	Hard case: attribute "gender", description "female"
+The accuracy with "hair color" = "white" is 0.930327868852459
+Correct predictions: 454/488
+The accuracy with "hair color" = "yellow" is 0.9459459459459459
+Correct predictions: 70/74
+The accuracy with "hair color" = "blonde" is 0.8788920725883477
+Correct predictions: 4601/5235
+ACC: 0.878892 	Hard case: attribute "hair color", description "blonde"
+The accuracy with "hair color" = "black" is 0.9272452830188679
+Correct predictions: 6143/6625
+The accuracy with "hair color" = "gray" is 0.9765037593984962
+Correct predictions: 1039/1064
+The accuracy with "hair color" = "brown" is 0.9034447649753945
+Correct predictions: 5324/5893
+The accuracy with "hair color" = "red" is 0.9130434782608695
+Correct predictions: 567/621
+The accuracy with "skin" = "white" is 0.9072906403940887
+Correct predictions: 9209/10150
+The accuracy with "skin" = "black" is 0.9334527770668032
+Correct predictions: 3647/3907
+The accuracy with "skin" = "brown" is 0.8988726232542487
+Correct predictions: 5342/5943
+ACC: 0.898873 	Rare Case: attribute "skin", description "brown"
+ACC: 0.862167 	Rare Case: attribute "emotion", description "sad"
+ACC: 0.887097 	Rare Case: attribute "emotion", description "calm"
+ACC: 0.896755 	Hard case: attribute "emotion", description "surprised"
+ACC: 0.864017 	Rare Case: attribute "emotion", description "pensive"
+Start detect_failure_prediction_correlation
+
+Model diagnostics complete.
+
+Comparing accuracy with log file: logs/compare/stat_origin_resnet_compare.log
+Overall accuracy: 0.906750 -> 0.909900: improved
+
+Attribute-specific accuracy comparison:
+beard, No, 0.893557 -> 0.895575: improved
+gender, female, 0.849626 -> 0.853706: improved
+hair color, white, 0.930328 -> 0.930328: same
+hair color, yellow, 0.918919 -> 0.945946: improved
+hair color, blonde, 0.880229 -> 0.878892: declined
+hair color, black, 0.921358 -> 0.927245: improved
+hair color, gray, 0.977444 -> 0.976504: declined
+hair color, brown, 0.899712 -> 0.903445: improved
+hair color, red, 0.900161 -> 0.913043: improved
+skin, brown, 0.889450 -> 0.898873: improved
+emotion, sad, 0.851711 -> 0.862167: improved
+emotion, surprised, 0.882006 -> 0.896755: improved
+emotion, pensive, 0.859833 -> 0.864017: improved
+
+Compared 13 attribute-specific accuracies.
+Start Time: 2025-04-30 04:07:37
+End Time:   2025-04-30 05:02:30
+Duration:   00:54:53

@@ -1,0 +1,12 @@
+start time: 2025-04-30 02:18:18
+Hibug mode enabled: using image directory hibug_redhair
+Current time: 0430021821
+Hibug mode: Found 10173 images in hibug_redhair
+Selected 4000 filenames for sampling
+Populated base_to_label dictionary with 80000 entries.
+Added 4000 generated redhair images, before training set has 80000 images, now 84000
+Using resnet model with random weights
+time_run.sh: line 18: 3417047 Killed                  python "$SCRIPT" "${ARGS[@]}"
+Start Time: 2025-04-30 02:18:18
+End Time:   2025-04-30 02:19:27
+Duration:   00:01:09

@@ -9,19 +9,26 @@ CUDA_DEVICES=0
 MODEL=""
 ATTRIBUTES=""
 GEN_ONLY=false
+HIBUG=false
+
+# Default list of num_added_img values; can be overridden with -n
+NUM_LIST="1000 5000 10000"
 
 RUN_SCRIPT="time_run.sh"
 PREDICT_SCRIPT="predict.py"
-
+LOG_DIR="logs"
+mkdir -p "${LOG_DIR}"
 # -m model, -a attributes, -d cuda_devices, -g gen_only
-while getopts "m:a:d:g" opt; do
+while getopts "m:a:d:n:gu" opt; do
   case $opt in
     m) MODEL="$OPTARG" ;;
     a) ATTRIBUTES="$OPTARG" ;;
     d) CUDA_DEVICES="$OPTARG" ;;
     g) GEN_ONLY=true ;;
+    u) HIBUG=true ;;
+    n) NUM_LIST="$OPTARG" ;;
     *)
-      echo "Usage: $(basename "$0") -m model -a attributes -d cuda_devices [-g]"
+      echo "Usage: $(basename "$0") -m model -a attributes -d cuda_devices [-g] [-n num_list]"
       exit 1
       ;;
   esac
@@ -34,15 +41,15 @@ if [[ -z "$MODEL" || -z "$ATTRIBUTES" ]]; then
   exit 1
 fi
 
-LOG_DIR="logs"
-mkdir -p "${LOG_DIR}"
-
-
-for NUM_ADDED_IMG in 1000 5000 10000; do
+# Determine filename prefix based on hibug and gen_only flags
+for NUM_ADDED_IMG in ${NUM_LIST}; do
+  # Compute filename prefix
+  SUFFIX=""
+  if [[ "${HIBUG}" == true ]]; then
+    SUFFIX="hibug_"
+  fi
   if [[ "${GEN_ONLY}" == true ]]; then
-    SUFFIX="g_"
-  else
-    SUFFIX=""
+    SUFFIX="${SUFFIX}g_"
   fi
   LOG_FILE="${LOG_DIR}/${SUFFIX}${MODEL}_${ATTRIBUTES}_${NUM_ADDED_IMG}imgs.log"
   echo "=== [${NUM_ADDED_IMG} imgs] Starting ${MODEL} -> ${LOG_FILE} ==="
@@ -53,6 +60,7 @@ for NUM_ADDED_IMG in 1000 5000 10000; do
       --attributes "${ATTRIBUTES}" \
       --num_added_img "${NUM_ADDED_IMG}" \
       --gen_only "${GEN_ONLY}" \
+      --hibug "${HIBUG}" \
       > "${LOG_FILE}" 2>&1
 
   if [[ $? -ne 0 ]]; then

@@ -1,5 +1,59 @@
-nohup ./for.sh -n 10000 -a redhair_brownskin -d 1 -g > logs/g_redhair_brownskin_10000.log 2>&1 &
-nohup ./for.sh -n 10000 -a redhair_brownskin -d 2 > logs/for_redhair_brownskin_10000.log 2>&1 &
+nohup ./batch.sh -m resnet -a redhair_brownskin -d 3 \
+  > logs/resnet_redhair.log 2>&1 < /dev/null &
+
+CUDA_VISIBLE_DEVICES=3 python predict.py --model resnet --num_added_img 1000 --attributes redhair 
+
+CUDA_VISIBLE_DEVICES=2 python -u predict.py --model resnet --num_added_img 1000 --attributes redhair  > logs/test.log 2>&1 < /dev/null &
+
+
+CUDA_VISIBLE_DEVICES=0 nohup python -u filter.py \
+  --dir exampleData/sad \
+  --attributes sademotion \
+  > logs/filter_sad.log 2>&1 < /dev/null &
+
+CUDA_VISIBLE_DEVICES=0  python filter.py --max_memory 23 --dir exampleData/redhair --attributes redhair
+CUDA_VISIBLE_DEVICES=0  python filter.py --max_memory 23 --dir exampleData/sad --attributes sademotion
+
+CUDA_VISIBLE_DEVICES=3 nohup bash time_run.sh sd15.py --attributes yellowhair --num_added_img 12340 > logs/sd_yellowhair_12340.log 2>&1 < /dev/null &
+
+nohup ./batch.sh -m vit -a redhair -d 1 -u \
+  > logs/hibug_vit_redhair.log 2>&1 < /dev/null &
+
+nohup ./batch.sh -m vit -a redhair_brownskin -d 2 -u true \
+  > logs/hibug_vit_redhair.log 2>&1 < /dev/null &
+
+CUDA_VISIBLE_DEVICES=2 python -u predict.py --model resnet --num_added_img 1000 --hibug true --attributes redhair  > logs/test.log 2>&1 < /dev/null &
+
+python filter_hibug_images.py --attributes redhair
+
+CUDA_VISIBLE_DEVICES=2 nohup python -u predict.py  > logs/resnet18_no_data_added.log 2>&1 < /dev/null &
+
+nohup ./batch.sh -m resnet -a redhair -d 1 -u \
+  > logs/hibug_resnet_redhair.log 2>&1 < /dev/null &
+
+nohup ./batch.sh -m resnet -a redhair_brownskin -d 2 -u true \
+  > logs/hibug_resnet_redhair.log 2>&1 < /dev/null &
+
+CUDA_VISIBLE_DEVICES=2 nohup python -u filter.py \
+  --max_memory 23 \
+  --dir hibug_redhair_brownskin \
+  --attributes redhair_brownskin \
+  --stop_at 15000 \
+  > logs/filter_hibug_redhair_brownskin_15000.log 2>&1 < /dev/null &
+
+CUDA_VISIBLE_DEVICES=1 nohup python -u filter.py \
+  --max_memory 23 \
+  --dir hibug_redhair \
+  --attributes redhair \
+  --stop_at 15000 \
+  > logs/filter_hibug_redhair_12340.log 2>&1 < /dev/null &
+
+
+CUDA_VISIBLE_DEVICES=2 nohup bash time_run.sh sd15.py --attributes brownskin --num_added_img 12340 > logs/sd_brownskin_12340.log 2>&1 < /dev/null &
+
+nohup ./batch.sh -m resnet -a redhair_brownskin -d 1 > logs/batch_redhair_brownskin_100000.log 2>&1 < /dev/null &
+
+nohup ./for.sh -n 10000 -a redhair -d 3 > logs/for_redhair_10000.log 2>&1 &
 
 nohup ./for.sh -n 10000 -a redhair_brownskin -d 1 -g > logs/g_redhair_brownskin_10000.log 2>&1 &
 nohup ./for.sh -n 10000 -a redhair_brownskin -d 2 > logs/for_redhair_brownskin_10000.log 2>&1 &

@@ -80,40 +80,50 @@ def get_original_indices_by_attribute(attribute_name, attr_assigned, attr_data, 
 #     num_display=100  # Display 100 indices
 # )
 
-# Example usage with saving to file:
-non_yellow_hair_indices = get_original_indices_by_attribute(
-    "hair color", 
-    "yellow",
+non_redhair_indices = get_original_indices_by_attribute(
+    "hair color",
+    "red",
     "exampleData/celebA/attribute.json",
     "exampleData/celebA/idx_mapping.json",
-    find_matching=False,  # Finding hair color != yellow
-    save_path="exampleData/celebA/non_yellow_hair_indices.txt",
-    num_display=100  # Display 100 indices
+    find_matching=False,  # Finding hair color != red
+    save_path="exampleData/celebA/non_redhair_indices.txt",
+    num_display=100
 )
+
+# Example usage with saving to file:
+# non_yellow_hair_indices = get_original_indices_by_attribute(
+#     "hair color", 
+#     "yellow",
+#     "exampleData/celebA/attribute.json",
+#     "exampleData/celebA/idx_mapping.json",
+#     find_matching=False,  # Finding hair color != yellow
+#     save_path="exampleData/celebA/non_yellowhair_indices.txt",
+#     num_display=100  # Display 100 indices
+# )
 
 # Example usage for finding non-brown skin
-non_brown_skin_indices = get_original_indices_by_attribute(
-    "skin", 
-    "brown",
-    "exampleData/celebA/attribute.json",
-    "exampleData/celebA/idx_mapping.json",
-    find_matching=False,  # Finding skin != brown
-    save_path="exampleData/celebA/non_brown_skin_indices.txt",
-    num_display=100  # Display 100 indices
-)
+# non_brown_skin_indices = get_original_indices_by_attribute(
+#     "skin", 
+#     "brown",
+#     "exampleData/celebA/attribute.json",
+#     "exampleData/celebA/idx_mapping.json",
+#     find_matching=False,  # Finding skin != brown
+#     save_path="exampleData/celebA/non_brownskin_indices.txt",
+#     num_display=100  # Display 100 indices
+# )
 
 # Example usage for finding non-sad emotion
-non_sad_emotion_indices = get_original_indices_by_attribute(
-    "emotion",
-    "sad",
-    "exampleData/celebA/attribute.json",
-    "exampleData/celebA/idx_mapping.json",
-    find_matching=False,  # Finding emotion != sad
-    save_path="exampleData/celebA/non_sad_emotion_indices.txt",
-    num_display=100  # Display 100 indices
-)
+# non_sad_emotion_indices = get_original_indices_by_attribute(
+#     "emotion",
+#     "sad",
+#     "exampleData/celebA/attribute.json",
+#     "exampleData/celebA/idx_mapping.json",
+#     find_matching=False,  # Finding emotion != sad
+#     save_path="exampleData/celebA/non_sademotion_indices.txt",
+#     num_display=100  # Display 100 indices
+# )
 
-# Find intersection and differences between non_red_hair and non_brown_skin indices
+# Find intersection and differences between non_redhair and non_brown_skin indices
 def find_intersection_and_differences(file1_path, file2_path, intersection_path, only_in_file1_path, only_in_file2_path):
     """
     Find and save the intersection and differences between two sets of indices from text files
@@ -166,53 +176,53 @@ def find_intersection_and_differences(file1_path, file2_path, intersection_path,
 
 # Execute the comparison
 find_intersection_and_differences(
-    "exampleData/celebA/non_red_hair_indices.txt",
-    "exampleData/celebA/non_brown_skin_indices.txt",
-    "exampleData/celebA/non_red_hair_and_non_brown_skin.txt",  # Intersection (both conditions)
-    "exampleData/celebA/only_non_red_hair.txt",                # Only in non_red_hair
-    "exampleData/celebA/only_non_brown_skin.txt"               # Only in non_brown_skin
+    "exampleData/celebA/non_redhair_indices.txt",
+    "exampleData/celebA/non_brownskin_indices.txt",
+    "exampleData/celebA/non_redhair_brownskin_indices.txt",  # Intersection (both conditions)
+    "exampleData/celebA/only_non_redhair_indices.txt",                # Only in non_redhair
+    "exampleData/celebA/only_non_brownskin_indices.txt"               # Only in non_brown_skin
 )
 
-# Compute intersections involving non-red-hair, non-brown-skin, and non-sad-emotion
+# Compute intersections involving non-redhair, non-brown-skin, and non-sad-emotion
 # Load the three sets
 def load_indices(path):
     with open(path, 'r') as f:
         return set(int(line.strip()) for line in f if line.strip())
 
-brown_skin_set = load_indices("exampleData/celebA/non_brown_skin_indices.txt")
-sad_emotion_set = load_indices("exampleData/celebA/non_sad_emotion_indices.txt")
+brown_skin_set = load_indices("exampleData/celebA/non_brownskin_indices.txt")
+sad_emotion_set = load_indices("exampleData/celebA/non_sademotion_indices.txt")
 
 # Replace red_hair_set with yellow_hair_set and update file path
-yellow_hair_set = load_indices("exampleData/celebA/non_yellow_hair_indices.txt")
-brown_skin_set = load_indices("exampleData/celebA/non_brown_skin_indices.txt")
-sad_emotion_set = load_indices("exampleData/celebA/non_sad_emotion_indices.txt")
+yellow_hair_set = load_indices("exampleData/celebA/non_yellowhair_indices.txt")
+brown_skin_set = load_indices("exampleData/celebA/non_brownskin_indices.txt")
+sad_emotion_set = load_indices("exampleData/celebA/non_sademotion_indices.txt")
 
-# Three-way intersection
-intersection_all = yellow_hair_set & brown_skin_set & sad_emotion_set
-with open("exampleData/celebA/non_yellow_hair_and_non_brown_skin_and_non_sad_emotion.txt", 'w') as f:
-    for idx in sorted(intersection_all):
-        f.write(f"{idx}\n")
+# # Three-way intersection
+# intersection_all = yellow_hair_set & brown_skin_set & sad_emotion_set
+# with open("exampleData/celebA/non_yellowhair_brownskin_sademotion_indices.txt", 'w') as f:
+#     for idx in sorted(intersection_all):
+#         f.write(f"{idx}\n")
 
-# Pairwise intersection: non_yellow_hair ∧ non_brown_skin
+# # Pairwise intersection: non_yellow_hair ∧ non_brown_skin
 intersection_yellowhair_brownskin = yellow_hair_set & brown_skin_set
-with open("exampleData/celebA/non_yellow_hair_and_non_brown_skin.txt", 'w') as f:
+with open("exampleData/celebA/non_yellowhair_brownskin_indices.txt", 'w') as f:
     for idx in sorted(intersection_yellowhair_brownskin):
         f.write(f"{idx}\n")
 
-# Pairwise intersections
-intersection_yellowhair_sademotion = yellow_hair_set & sad_emotion_set
-with open("exampleData/celebA/non_yellow_hair_and_non_sad_emotion.txt", 'w') as f:
-    for idx in sorted(intersection_yellowhair_sademotion):
-        f.write(f"{idx}\n")
+# # Pairwise intersections
+# intersection_yellowhair_sademotion = yellow_hair_set & sad_emotion_set
+# with open("exampleData/celebA/non_yellowhair_sademotion_indices.txt", 'w') as f:
+#     for idx in sorted(intersection_yellowhair_sademotion):
+#         f.write(f"{idx}\n")
 
-intersection_brownskin_sademotion = brown_skin_set & sad_emotion_set
-with open("exampleData/celebA/non_brown_skin_and_non_sad_emotion.txt", 'w') as f:
-    for idx in sorted(intersection_brownskin_sademotion):
-        f.write(f"{idx}\n")
+# intersection_brownskin_sademotion = brown_skin_set & sad_emotion_set
+# with open("exampleData/celebA/non_brownskin_sademotion_indices.txt", 'w') as f:
+#     for idx in sorted(intersection_brownskin_sademotion):
+#         f.write(f"{idx}\n")
 
-# Print summary
-print("\nThree-way and additional two-way intersection summary:")
-print(f"non_yellow_hair ∧ non_brown_skin: {len(intersection_yellowhair_brownskin)} samples")
-print(f"non_yellow_hair ∧ non_brown_skin ∧ non_sad_emotion: {len(intersection_all)} samples")
-print(f"non_yellow_hair ∧ non_sad_emotion: {len(intersection_yellowhair_sademotion)} samples")
-print(f"non_brown_skin ∧ non_sad_emotion: {len(intersection_brownskin_sademotion)} samples")
+# # Print summary
+# print("\nThree-way and additional two-way intersection summary:")
+# print(f"non_yellow_hair ∧ non_brown_skin: {len(intersection_yellowhair_brownskin)} samples")
+# print(f"non_yellow_hair ∧ non_brown_skin ∧ non_sad_emotion: {len(intersection_all)} samples")
+# print(f"non_yellow_hair ∧ non_sad_emotion: {len(intersection_yellowhair_sademotion)} samples")
+# print(f"non_brown_skin ∧ non_sad_emotion: {len(intersection_brownskin_sademotion)} samples")

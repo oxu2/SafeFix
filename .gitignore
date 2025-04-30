@@ -3,6 +3,7 @@
 .DS_Store
 /img_align_celeba
 /pictures
-
+save/
 exampleData
 downloaded_data
+/hibug_*

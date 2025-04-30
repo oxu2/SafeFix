@@ -1,0 +1,13 @@
+start time: 2025-04-30 13:43:59
+Hibug mode enabled: using image directory hibug_redhair
+Current time: 0430134402
+Hibug mode: Found 10173 images in hibug_redhair
+Selected 10000 filenames for sampling
+Populated base_to_label dictionary with 80000 entries.
+Added 10000 generated redhair images, before training set has 80000 images, now 90000
+Using vit model with random weights
+Epoch [1/20], Train Loss: 807.0713, Train Acc: 0.6894, Val Loss: 0.5208, Val Acc: 0.7732
+Epoch [2/20], Train Loss: 663.7806, Train Acc: 0.7907, Val Loss: 0.4613, Val Acc: 0.8033
+Epoch [3/20], Train Loss: 612.9030, Train Acc: 0.8162, Val Loss: 0.4605, Val Acc: 0.8046
+Epoch [4/20], Train Loss: 587.5641, Train Acc: 0.8301, Val Loss: 0.4235, Val Acc: 0.8442
+Epoch [5/20], Train Loss: 562.9231, Train Acc: 0.8416, Val Loss: 0.4199, Val Acc: 0.8421

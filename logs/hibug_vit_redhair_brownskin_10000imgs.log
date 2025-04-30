@@ -1,0 +1,12 @@
+start time: 2025-04-30 13:53:17
+Hibug mode enabled: using image directory hibug_redhair_brownskin
+Current time: 0430135319
+Hibug mode: Found 10925 images in hibug_redhair_brownskin
+Selected 10000 filenames for sampling
+Populated base_to_label dictionary with 80000 entries.
+Added 10000 generated redhair_brownskin images, before training set has 80000 images, now 90000
+Using vit model with random weights
+Epoch [1/20], Train Loss: 816.4316, Train Acc: 0.6875, Val Loss: 0.5035, Val Acc: 0.7738
+Epoch [2/20], Train Loss: 675.3374, Train Acc: 0.7830, Val Loss: 0.5145, Val Acc: 0.7760
+Epoch [3/20], Train Loss: 624.4305, Train Acc: 0.8118, Val Loss: 0.4501, Val Acc: 0.8248
+Epoch [4/20], Train Loss: 597.7386, Train Acc: 0.8257, Val Loss: 0.6272, Val Acc: 0.7453

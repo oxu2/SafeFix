@@ -8,3 +8,21 @@ Using resnet model with random weights
 Epoch [1/20], Train Loss: 622.5097, Train Acc: 0.8234, Val Loss: 0.4044, Val Acc: 0.8772
 Epoch [2/20], Train Loss: 440.6524, Train Acc: 0.9333, Val Loss: 0.3578, Val Acc: 0.9009
 Epoch [3/20], Train Loss: 407.2932, Train Acc: 0.9495, Val Loss: 0.3821, Val Acc: 0.8933
+Epoch [4/20], Train Loss: 380.1995, Train Acc: 0.9612, Val Loss: 0.3830, Val Acc: 0.9000
+Epoch [5/20], Train Loss: 372.8432, Train Acc: 0.9643, Val Loss: 0.3244, Val Acc: 0.9129
+Epoch [6/20], Train Loss: 365.8625, Train Acc: 0.9669, Val Loss: 0.3406, Val Acc: 0.9083
+Epoch [7/20], Train Loss: 354.9661, Train Acc: 0.9722, Val Loss: 0.3399, Val Acc: 0.9117
+Epoch [8/20], Train Loss: 352.3136, Train Acc: 0.9732, Val Loss: 0.3798, Val Acc: 0.9021
+Epoch [9/20], Train Loss: 349.8759, Train Acc: 0.9737, Val Loss: 0.3901, Val Acc: 0.9064
+Epoch [10/20], Train Loss: 343.8997, Train Acc: 0.9767, Val Loss: 0.3527, Val Acc: 0.9142
+Epoch [11/20], Train Loss: 342.0493, Train Acc: 0.9776, Val Loss: 0.3812, Val Acc: 0.9031
+Epoch [12/20], Train Loss: 340.7627, Train Acc: 0.9774, Val Loss: 0.3521, Val Acc: 0.9130
+Epoch [13/20], Train Loss: 338.6856, Train Acc: 0.9786, Val Loss: 0.3706, Val Acc: 0.9080
+Epoch [14/20], Train Loss: 336.7371, Train Acc: 0.9801, Val Loss: 0.3703, Val Acc: 0.9056
+Epoch [15/20], Train Loss: 336.3453, Train Acc: 0.9796, Val Loss: 0.3633, Val Acc: 0.9103
+Epoch [16/20], Train Loss: 335.2729, Train Acc: 0.9799, Val Loss: 0.3673, Val Acc: 0.9074
+Epoch [17/20], Train Loss: 334.4795, Train Acc: 0.9805, Val Loss: 0.3416, Val Acc: 0.9139
+Terminated
+Start Time: 2025-04-28 18:43:19
+End Time:   2025-04-28 19:11:49
+Duration:   00:28:30

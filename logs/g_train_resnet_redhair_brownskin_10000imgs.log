@@ -18,3 +18,28 @@ Epoch [10/20], Train Loss: 68.7399, Train Acc: 0.8668, Val Loss: 1.0094, Val Acc
 Epoch [11/20], Train Loss: 68.2026, Train Acc: 0.8697, Val Loss: 0.7558, Val Acc: 0.6078
 Epoch [12/20], Train Loss: 68.0439, Train Acc: 0.8711, Val Loss: 0.8450, Val Acc: 0.5792
 Epoch [13/20], Train Loss: 67.6882, Train Acc: 0.8703, Val Loss: 0.8084, Val Acc: 0.5972
+Epoch [14/20], Train Loss: 67.4091, Train Acc: 0.8737, Val Loss: 0.9227, Val Acc: 0.5707
+Epoch [15/20], Train Loss: 67.8505, Train Acc: 0.8721, Val Loss: 0.8008, Val Acc: 0.5994
+Epoch [16/20], Train Loss: 67.3347, Train Acc: 0.8736, Val Loss: 0.8382, Val Acc: 0.5815
+Epoch [17/20], Train Loss: 67.8011, Train Acc: 0.8717, Val Loss: 0.7984, Val Acc: 0.5972
+Epoch [18/20], Train Loss: 66.8136, Train Acc: 0.8733, Val Loss: 0.7625, Val Acc: 0.6129
+Epoch [19/20], Train Loss: 67.0947, Train Acc: 0.8743, Val Loss: 0.7927, Val Acc: 0.6038
+Epoch [20/20], Train Loss: 66.0727, Train Acc: 0.8808, Val Loss: 0.8279, Val Acc: 0.5909
+Generating and saving predictions...
+Original train predictions length: 0
+Modified image predictions length: 10000
+Validation predictions length: 20000
+Combined predictions length: 110000 (should match combined_labels length: 110000)
+Current time: 0428184237
+
+Running model diagnostics on generated predictions...
+Skipping model diagnostics because gen_only=True
+
+============================================================
+Final Epoch Train Accuracy (gen_only=True): 0.8808
+============================================================
+
+Skipping accuracy comparison due to gen_only flag being True
+Start Time: 2025-04-28 18:42:34
+End Time:   2025-04-28 18:53:36
+Duration:   00:11:02

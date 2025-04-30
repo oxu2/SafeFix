@@ -1,0 +1,15 @@
+Using 1 GPUs with 23GiB memory allocation each
+Loading checkpoint shards:   0%|          | 0/5 [00:00<?, ?it/s]Loading checkpoint shards:  20%|██        | 1/5 [00:01<00:04,  1.14s/it]Loading checkpoint shards:  40%|████      | 2/5 [00:01<00:02,  1.20it/s]Loading checkpoint shards:  60%|██████    | 3/5 [00:02<00:01,  1.35it/s]Loading checkpoint shards:  80%|████████  | 4/5 [00:03<00:00,  1.42it/s]Loading checkpoint shards: 100%|██████████| 5/5 [00:03<00:00,  1.76it/s]Loading checkpoint shards: 100%|██████████| 5/5 [00:03<00:00,  1.48it/s]
+Starting image processing for attributes: sademotion...
+Stop condition active: stop after processing 15000 images.
+Found 2118 images with file type(s): jpg
+[1000/2118] Processed...
+[2000/2118] Processed...
+Image processing using Qwen VL model complete.
+
+--- Processing Summary ---
+Processed all 2118 found images.
+Found 0 feasible images matching the criteria.
+Results saved to: save/json/sademotion_results_04300254.json
+Feasible mapping saved to: save/json/sademotion_feasible_04300254.json
+--------------------------

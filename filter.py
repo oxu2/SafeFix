@@ -122,7 +122,7 @@ def get_available_gpus():
     return list(range(torch.cuda.device_count()))
 
 # Configure memory based on available GPUs
-def configure_gpu_memory(available_gpus, max_memory_per_gpu_gb=22):
+def configure_gpu_memory(available_gpus, max_memory_per_gpu_gb=23):
     """Configure memory allocation based on available GPUs."""
     max_memory = {}
     # Format the memory string
@@ -147,19 +147,39 @@ def process_image(image_path, model, processor, tags: List[str], attributes: Lis
     for t, a in zip(tags, attributes):
         if a == "lipstick":
             questions.append("Is the person in this picture wearing lipstick?")
+        elif a == "emotion":
+            questions.append(
+                f"If you see any hint of {t} emotion in this picture, answer 1; "
+                "only answer 0 if you are completely sure there is no such emotion."
+            )
         else:
             questions.append(f"Does the person in this picture have {t} {a}?")
     prompt = " ".join(questions) + " For each question, only answer with 1 (yes) or 0 (no). Provide answers separated by spaces."
     response = inference(image_path, prompt, verbose=verbose)
+    # Debug: print Qwen's raw response for sad emotion detection
+    # if 'emotion' in attributes:
+    # if True:
+    #     print(f"Debug: {image_path} emotion raw response: {response}")
     
     # Extract the two numbers from the response
     try:
         numbers = [int(s) for s in response.replace(',', ' ').split() if s.isdigit()]
         results = {f"{t}_{a.replace(' ', '_')}": num for t, a, num in zip(tags, attributes, numbers)}
+        # Fallback for emotion attributes: if inference missing or ambiguous, default to positive (1)
+        for t, a in zip(tags, attributes):
+            if a == "emotion":
+                key = f"{t}_{a.replace(' ', '_')}"
+                if key not in results:
+                    results[key] = 1
         return results
     except Exception as e:
         print(f"Warning: Error parsing response '{response}' for {image_path}: {e}")
-        return {}
+        # If parsing fails, at least return positive for emotion attributes
+        fallback_results = {}
+        for t, a in zip(tags, attributes):
+            if a == "emotion":
+                fallback_results[f"{t}_{a.replace(' ', '_')}"] = 1
+        return fallback_results
 
 def process_directory(directory_path, output_json_path, tags, attributes, verbose=False, file_type="png", stop_at: int = 15000, stop_suffix=None):
     """
@@ -275,6 +295,9 @@ def create_feature_mapping(results_json, feasible_json="features.json", attribut
         elif attr.endswith('skin'):
             tags.append(attr[:-4])
             attrs.append('skin')
+        elif attr.endswith('emotion'):
+            tags.append(attr[:-7])
+            attrs.append('emotion')
         else:
             tags.append(attr)
             attrs.append(attr)
@@ -361,7 +384,7 @@ def main(directory_path="./redhair",
          rename_files: bool = False,
          attributes: str = "redhair_brownskin",
          rename_suffix: str = None,
-         max_memory_per_gpu: int = 22,
+         max_memory_per_gpu: int = 23,
          stop_at: int = 15000,
          feasible_only: bool = False,
          results_file: str = None):
@@ -374,7 +397,7 @@ def main(directory_path="./redhair",
     - file_type: Type of image files to process ("png", "jpg", "png,jpg", "all")
     - rename_files: Whether to rename files by adding a suffix
     - rename_suffix: Suffix to add when renaming files (default: "_red")
-    - max_memory_per_gpu: Max memory per GPU in GiB (e.g., 22)
+    - max_memory_per_gpu: Max memory per GPU in GiB (e.g., 23)
     - stop_at: Base filename number to stop processing at (e.g., "077000")
     
     Returns:
@@ -499,8 +522,8 @@ if __name__ == "__main__":
                         help='attributes to detect, e.g. redhair_brownskin, redhair, etc.')
     parser.add_argument('--rename_suffix', type=str, default=None,
                         help='Suffix to add when renaming files (default: "_red")')
-    parser.add_argument('--max_memory', type=int, default=22, 
-                        help='Maximum memory allocation per GPU in GiB (default: 22)')
+    parser.add_argument('--max_memory', type=int, default=23, 
+                        help='Maximum memory allocation per GPU in GiB (default: 23)')
     parser.add_argument('--stop_at', type=int, default=15000,
                         help='Number of images to process before stopping (default: 15000)')
     parser.add_argument('--feasible_only', action='store_true',
