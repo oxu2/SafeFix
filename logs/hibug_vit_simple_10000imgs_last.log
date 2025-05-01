@@ -1,0 +1,8 @@
+start time: 2025-05-01 15:57:43
+Hibug mode enabled: using image directory hibug_simple
+Current time: 0501155746
+Simple hibug mode: Found 15176 images in hibug_simple
+Selected 10000 filenames for sampling
+Added 10000 generated simple images, before training set has 80000 images, now 90000
+Using vit model with random weights
+Epoch [1/20], Train Loss: 821.2848, Train Acc: 0.7523, Val Loss: 0.6047, Val Acc: 0.7627

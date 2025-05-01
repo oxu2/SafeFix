@@ -1,0 +1,11 @@
+=== [1000 imgs] Starting resnet -> logs/hibug_resnet_simple_1000imgs.log ===
+=== [1000 imgs] Finished resnet ===
+
+=== [5000 imgs] Starting resnet -> logs/hibug_resnet_simple_5000imgs.log ===
+=== [5000 imgs] Finished resnet ===
+
+=== [10000 imgs] Starting resnet -> logs/hibug_resnet_simple_10000imgs.log ===
+=== [10000 imgs] Finished resnet ===
+
+./batch.sh: line 74: syntax error near unexpected token `done'
+./batch.sh: line 74: `done'

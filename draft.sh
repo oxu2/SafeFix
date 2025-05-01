@@ -1,5 +1,46 @@
+nohup ./batch.sh -m vit -a redhair_brownskin -d 3 \
+  > logs/batch_vit_redhair_brownskin.log 2>&1 < /dev/null &
+nohup ./batch.sh -m vit -a redhair -d 2 \
+  > logs/batch_vit_redhair.log 2>&1 < /dev/null &
+  
+python compare_logs.py
+
+nohup ./batch.sh -m vit -a simple -d 1 -u true \
+  > logs/hibug_vit_simple.log 2>&1 < /dev/null &
+
+nohup ./batch.sh -m vit -a simple -d 0 -u true \
+  > logs/hibug_vit_simple_last.log 2>&1 < /dev/null &
+
+nohup ./batch.sh -m resnet -a simple -d 0 -u true \
+  > logs/hibug_resnet_simple.log 2>&1 < /dev/null &
+
+nohup ./batch.sh -m resnet -a simple -d 2 -u true \
+  > logs/hibug_resnet_simple_last.log 2>&1 < /dev/null &
+
+CUDA_VISIBLE_DEVICES=3 nohup bash time_run.sh sd15.py --num_added_img 12340 > logs/sd_simple_12340.log 2>&1 < /dev/null &
+
+CUDA_VISIBLE_DEVICES=2 nohup bash time_run.sh sd15.py --num_added_img 11111 > logs/sd_simple_11111.log 2>&1 < /dev/null &
+
+nohup ./batch.sh -m resnet -a redhair_brownskin -d 3 -n 10000 \
+  > logs/10000_resnet_redhair_brownskin.log 2>&1 < /dev/null &
+
+nohup ./batch.sh -m resnet -a redhair_brownskin -d 2 -n 5000 \
+  > logs/5000_resnet_redhair_brownskin.log 2>&1 < /dev/null &
+
+nohup ./batch.sh -m resnet -a redhair -d 0 -n 10000 \
+  > logs/10000_resnet_redhair.log 2>&1 < /dev/null &
+
+
+nohup ./batch.sh -m resnet -a redhair -d 0 -u true \
+  > logs/hibug_resnet_redhair.log 2>&1 < /dev/null &
+
+nohup ./batch.sh -m resnet -a redhair_brownskin -d 3 -u true \
+  > logs/hibug_resnet_redhair_brownskin.log 2>&1 < /dev/null &
+
+nohup ./batch.sh -m resnet -a redhair -d 0 \
+  > logs/batch_resnet_redhair.log 2>&1 < /dev/null &
 nohup ./batch.sh -m resnet -a redhair_brownskin -d 3 \
-  > logs/resnet_redhair.log 2>&1 < /dev/null &
+  > logs/batch_resnet_redhair_brownskin.log 2>&1 < /dev/null &
 
 CUDA_VISIBLE_DEVICES=3 python predict.py --model resnet --num_added_img 1000 --attributes redhair 
 

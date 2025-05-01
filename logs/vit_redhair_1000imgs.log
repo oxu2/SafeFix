@@ -1,0 +1,14 @@
+start time: 2025-05-01 14:21:39
+Current time: 0501142141
+Selected 1000 filenames for sampling
+Populated base_to_label dictionary with 80000 entries.
+Added 1000 generated redhair images, before training set has 80000 images, now 81000
+Using vit model with random weights
+Epoch [1/20], Train Loss: 682.3671, Train Acc: 0.7311, Val Loss: 0.4980, Val Acc: 0.7829
+Epoch [2/20], Train Loss: 534.6743, Train Acc: 0.8394, Val Loss: 0.5477, Val Acc: 0.7788
+Epoch [3/20], Train Loss: 487.9747, Train Acc: 0.8691, Val Loss: 0.4268, Val Acc: 0.8439
+Epoch [4/20], Train Loss: 450.7765, Train Acc: 0.8884, Val Loss: 0.4316, Val Acc: 0.8434
+Epoch [5/20], Train Loss: 433.6266, Train Acc: 0.8977, Val Loss: 0.4001, Val Acc: 0.8591
+Epoch [6/20], Train Loss: 416.5234, Train Acc: 0.9058, Val Loss: 0.4159, Val Acc: 0.8573
+Epoch [7/20], Train Loss: 402.7235, Train Acc: 0.9141, Val Loss: 0.4074, Val Acc: 0.8668
+Epoch [8/20], Train Loss: 390.5474, Train Acc: 0.9202, Val Loss: 0.4107, Val Acc: 0.8673

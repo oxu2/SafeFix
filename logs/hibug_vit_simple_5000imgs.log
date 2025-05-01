@@ -1,0 +1,98 @@
+start time: 2025-05-01 09:17:05
+Hibug mode enabled: using image directory hibug_simple
+Current time: 0501091707
+Simple hibug mode: Found 15176 images in hibug_simple
+Selected 5000 filenames for sampling
+Added 5000 generated simple images, before training set has 80000 images, now 85000
+Using vit model with random weights
+Epoch [1/20], Train Loss: 789.8996, Train Acc: 0.7140, Val Loss: 0.5575, Val Acc: 0.7595
+Epoch [2/20], Train Loss: 629.7402, Train Acc: 0.8229, Val Loss: 0.4993, Val Acc: 0.8145
+Epoch [3/20], Train Loss: 559.6055, Train Acc: 0.8598, Val Loss: 0.4522, Val Acc: 0.8365
+Epoch [4/20], Train Loss: 520.2064, Train Acc: 0.8799, Val Loss: 0.4762, Val Acc: 0.8287
+Epoch [5/20], Train Loss: 496.9365, Train Acc: 0.8908, Val Loss: 0.4814, Val Acc: 0.8354
+Epoch [6/20], Train Loss: 474.5288, Train Acc: 0.9028, Val Loss: 0.4343, Val Acc: 0.8548
+Epoch [7/20], Train Loss: 456.6065, Train Acc: 0.9107, Val Loss: 0.4807, Val Acc: 0.8358
+Epoch [8/20], Train Loss: 440.8399, Train Acc: 0.9193, Val Loss: 0.4370, Val Acc: 0.8662
+Epoch [9/20], Train Loss: 429.7704, Train Acc: 0.9240, Val Loss: 0.4199, Val Acc: 0.8728
+Epoch [10/20], Train Loss: 422.9467, Train Acc: 0.9276, Val Loss: 0.4288, Val Acc: 0.8682
+Epoch [11/20], Train Loss: 421.1596, Train Acc: 0.9280, Val Loss: 0.4263, Val Acc: 0.8700
+Epoch [12/20], Train Loss: 420.7114, Train Acc: 0.9282, Val Loss: 0.4206, Val Acc: 0.8709
+Epoch [13/20], Train Loss: 428.2249, Train Acc: 0.9255, Val Loss: 0.4101, Val Acc: 0.8748
+Epoch [14/20], Train Loss: 439.7654, Train Acc: 0.9186, Val Loss: 0.4343, Val Acc: 0.8650
+Epoch [15/20], Train Loss: 446.4114, Train Acc: 0.9158, Val Loss: 0.4177, Val Acc: 0.8700
+Epoch [16/20], Train Loss: 462.8266, Train Acc: 0.9085, Val Loss: 0.4533, Val Acc: 0.8565
+Epoch [17/20], Train Loss: 469.8824, Train Acc: 0.9043, Val Loss: 0.4392, Val Acc: 0.8579
+Epoch [18/20], Train Loss: 479.8386, Train Acc: 0.8997, Val Loss: 0.4403, Val Acc: 0.8622
+Epoch [19/20], Train Loss: 480.3140, Train Acc: 0.8996, Val Loss: 0.4516, Val Acc: 0.8536
+Epoch [20/20], Train Loss: 480.2893, Train Acc: 0.8998, Val Loss: 0.4471, Val Acc: 0.8580
+Generating and saving predictions...
+Original train predictions length: 80000
+Modified image predictions length: 5000
+Validation predictions length: 20000
+Combined predictions length: 185000 (should match combined_labels length: 185000)
+Current time: 0501091707
+
+Running model diagnostics on generated predictions...
+Model Validation ACC: 0.86005
+Start detect_failure_by_label
+
+Start detect_prediction_correlation
+
+ACC: 0.845567 	Hard case: attribute "beard", description "No"
+ACC: 0.794458 	Hard case: attribute "gender", description "female"
+The accuracy with "hair color" = "white" is 0.9139344262295082
+Correct predictions: 446/488
+The accuracy with "hair color" = "yellow" is 0.9324324324324325
+Correct predictions: 69/74
+The accuracy with "hair color" = "blonde" is 0.8347659980897804
+Correct predictions: 4370/5235
+ACC: 0.834766 	Hard case: attribute "hair color", description "blonde"
+The accuracy with "hair color" = "black" is 0.8635471698113207
+Correct predictions: 5721/6625
+The accuracy with "hair color" = "gray" is 0.9511278195488722
+Correct predictions: 1012/1064
+The accuracy with "hair color" = "brown" is 0.8600033938571187
+Correct predictions: 5068/5893
+The accuracy with "hair color" = "red" is 0.8293075684380032
+Correct predictions: 515/621
+ACC: 0.829308 	Rare Case: attribute "hair color", description "red"
+The accuracy with "skin" = "white" is 0.8641379310344828
+Correct predictions: 8771/10150
+The accuracy with "skin" = "black" is 0.8612746352700281
+Correct predictions: 3365/3907
+The accuracy with "skin" = "brown" is 0.8522631667507993
+Correct predictions: 5065/5943
+ACC: 0.807985 	Rare Case: attribute "emotion", description "sad"
+ACC: 0.825537 	Hard case: attribute "emotion", description "surprised"
+ACC: 0.791841 	Rare Case: attribute "emotion", description "pensive"
+ACC: 0.848787 	Hard case: attribute "young", description "young"
+Start detect_failure_prediction_correlation
+
+Model diagnostics complete.
+
+Comparing accuracy with log file: logs/compare/stat_origin_vit_compare.log
+Overall accuracy: 0.850650 -> 0.860050: improved
+
+Attribute-specific accuracy comparison:
+beard, No, 0.836448 -> 0.845567: improved
+makeup, Yes, 0.838893 -> 0.863154: improved
+gender, female, 0.768786 -> 0.794458: improved
+hair color, white, 0.905738 -> 0.913934: improved
+hair color, yellow, 0.905405 -> 0.932432: improved
+hair color, blonde, 0.841070 -> 0.834766: declined
+hair color, black, 0.840000 -> 0.863547: improved
+hair color, gray, 0.953008 -> 0.951128: declined
+hair color, brown, 0.849992 -> 0.860003: improved
+hair color, red, 0.826087 -> 0.829308: improved
+skin, white, 0.865714 -> 0.864138: declined
+skin, black, 0.831840 -> 0.861275: improved
+skin, brown, 0.837288 -> 0.852263: improved
+emotion, sad, 0.806084 -> 0.807985: improved
+emotion, surprised, 0.812895 -> 0.825537: improved
+emotion, pensive, 0.775105 -> 0.791841: improved
+young, young, 0.838260 -> 0.848787: improved
+
+Compared 17 attribute-specific accuracies.
+Start Time: 2025-05-01 09:17:05
+End Time:   2025-05-01 14:31:01
+Duration:   05:13:56

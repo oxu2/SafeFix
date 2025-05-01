@@ -22,6 +22,7 @@ from transformers import CLIPModel
 from transformers import CLIPConfig
 import random
 import re  # Added for log parsing
+import copy  # Added for saving best model state
 from utils.stat import ModelDiagnose  # Import ModelDiagnose from local stat.py
 from itertools import combinations
 from processData.report import ReportGenerator
@@ -58,13 +59,13 @@ parser.add_argument('--pretrained', type=str2bool, default=False,
 parser.add_argument('--lr', type=float, default=1e-4,
                     help='Learning rate (default: 1e-4)')
 parser.add_argument('--attributes', type=str, default="redhair_brownskin", 
-                    help='attributes to detect, e.g. redhair_brownskin, redhair, etc.')
-parser.add_argument('--model', type=str, default='clip', choices=['resnet', 'vit', 'clip'],
+                    help='attributes to detect, e.g. redhair_sademotion, redhair_brownskin, redhair, brownskin, yellowhair, sademotion, etc.')
+parser.add_argument('--model', type=str, default='resnet', choices=['resnet', 'vit', 'clip'],
                     help='Model architecture to use (resnet, vit, or clip)')
 parser.add_argument('--plot', type=str2bool, default=False, help='Enable plotting training metrics')
 parser.add_argument('--num_epochs', type=int, default=20,
                     help='Number of training epochs (default: 20)')
-parser.add_argument('--num_added_img', type=int, default=4000,
+parser.add_argument('--num_added_img', type=int, default=1000,
                     help='Number of generated images to add (default: 4000)')
 # Add argument for attribute file path
 parser.add_argument('--attribute_file', type=str, default="exampleData/celebA/attribute.json",
@@ -73,12 +74,23 @@ parser.add_argument('--gpu', type=int, default=0,
                     help='Index of the CUDA GPU to use (default: 0)')
 parser.add_argument('--save_report', type=str2bool, default=False,
                     help='Generate and save diagnostic report (default: False)')
+parser.add_argument(
+    '--save_pred_model',
+    type=str,
+    choices=['best', 'last'],
+    default='best',
+    help='Which model to use for saving predictions: best (default) or last'
+)
 parser.add_argument('--gen_only', type=str2bool, default=False,
                     help='Use only generated images for training (default: False)')
 parser.add_argument('--skip_train_unlabeled', type=str2bool, default=False,
                     help='Skip processing TRAIN and UNLABELED splits in diagnostics')
 parser.add_argument('--hibug', type=str2bool, default=False,
                     help='Use images from hibug_<attributes> directory (default: False)')
+parser.add_argument(
+    '--simple', type=str2bool, default=True,
+    help='Use simple hibug mode: load from hibug_simple folder and infer labels from filename prefix (default: True).'
+)
 args = parser.parse_args()
 attributes = args.attributes
 
@@ -213,17 +225,24 @@ modified_image_paths = []
 modified_image_labels = []
 
 #
-# Prepare sample keys from JSON or list files if hibug is True
+# Prepare sample keys for hibug mode
 if args.hibug:
-    # In hibug mode, list all .png files directly
-    if not os.path.isdir(args.gen_image_dir):
-         print(f"Error: Hibug image directory {args.gen_image_dir} not found.")
-         sample_keys = []
+    if args.simple:
+        # Simple mode: read all PNGs from hibug_simple folder
+        args.gen_image_dir = "hibug_simple"
+        files = os.listdir(args.gen_image_dir)
+        sample_keys = [os.path.splitext(f)[0] for f in files if f.lower().endswith('.png')]
+        print(f"Simple hibug mode: Found {len(sample_keys)} images in {args.gen_image_dir}")
     else:
-        all_files = os.listdir(args.gen_image_dir)
-        # Filter for .png files and extract basename without extension
-        sample_keys = [os.path.splitext(f)[0] for f in all_files if f.lower().endswith('.png')]
-        print(f"Hibug mode: Found {len(sample_keys)} images in {args.gen_image_dir}")
+        # Existing hibug behavior: read from hibug_<attributes> folder
+        args.gen_image_dir = f"hibug_{attributes}"
+        if not os.path.isdir(args.gen_image_dir):
+            print(f"Error: Hibug image directory {args.gen_image_dir} not found.")
+            sample_keys = []
+        else:
+            all_files = os.listdir(args.gen_image_dir)
+            sample_keys = [os.path.splitext(f)[0] for f in all_files if f.lower().endswith('.png')]
+            print(f"Hibug mode: Found {len(sample_keys)} images in {args.gen_image_dir}")
 
 # Sample from all generated image files in the directory, ignoring JSON-based feasible_images
 if not args.hibug:
@@ -247,55 +266,56 @@ if len(sample_keys) < args.num_added_img:
 # Perform sampling
 if verbose:
     print("Perform sampling for generated images")
-# 
 selected_filenames = random.sample(sample_keys, min(args.num_added_img, len(sample_keys)))
 print(f"Selected {len(selected_filenames)} filenames for sampling")
-# Build a map from base image number to label for quick lookup
-base_to_label = {}
-for img_path, lbl in zip(train_imgs, train_labels):
-    # Extract numeric basename without extension
-    base = os.path.splitext(os.path.basename(img_path))[0]
-    base_to_label[base] = lbl
 
-# --- Debug Prints Start ---
-print(f"Populated base_to_label dictionary with {len(base_to_label)} entries.")
-example_keys = list(base_to_label.keys())[:5] # Show first 5 keys
-if verbose:
-    print(f"Example keys in base_to_label: {example_keys}")
-# --- Debug Prints End ---
+# Build a map from base image number to label for quick lookup (not needed for simple hibug mode)
+if not (args.hibug and args.simple):
+    base_to_label = {}
+    for img_path, lbl in zip(train_imgs, train_labels):
+        # Extract numeric basename without extension
+        base = os.path.splitext(os.path.basename(img_path))[0]
+        base_to_label[base] = lbl
+    # --- Debug Prints Start ---
+    print(f"Populated base_to_label dictionary with {len(base_to_label)} entries.")
+    example_keys = list(base_to_label.keys())[:5] # Show first 5 keys
+    if verbose:
+        print(f"Example keys in base_to_label: {example_keys}")
+    # --- Debug Prints End ---
 
+# Sampling loop
 for filename in selected_filenames:
-    # Determine the correct extension based on hibug flag
     extension = ".png" if args.hibug else ".jpg"
-    # Get the image file from the pictures directory
-    # Use relative path since the script runs from the HiBug directory
+    if args.hibug and args.simple:
+        # In simple hibug mode, infer label from filename prefix: 'yes'->1, 'no'->0
+        prefix = filename.split('_')[0].lower()
+        lbl = 1 if prefix == 'yes' else 0
+        image_path = f"./{args.gen_image_dir}/{filename}{extension}"
+        modified_image_paths.append(image_path)
+        modified_image_labels.append(lbl)
+        if verbose:
+            print(f"Added {image_path} with label {lbl}")
+        continue
+    # Existing hibug or non-hibug logic follows...
+    # Determine the correct extension based on hibug flag
+    # Get the image file path...
     image_path = f"./{args.gen_image_dir}/{filename}{extension}"
-    
     if not os.path.exists(image_path):
         print(f"Warning: Modified image {image_path} not found.")
         continue
-    
-    # Lookup label by base image number
-    # Adjust base extraction for hibug filenames (e.g., redhair_000003 -> 000003)
-    base = None # Initialize base
+    base = None
     if args.hibug:
-        # Assuming format like 'attribute_basenumber'
         parts = filename.split('_')
         if len(parts) > 1 and parts[-1].isdigit():
             base = parts[-1]
         else:
             print(f"Warning: Could not extract base number from hibug filename {filename}")
-            continue # Skip if format is unexpected
+            continue
     else:
-        # Original logic for non-hibug filenames
         base = filename.split('_')[0]
-
-    # --- Debug Print for Base ---
-    if args.hibug and base is None: # Should not happen if the previous check works
-         print(f"Debug: Hibug filename {filename} resulted in base=None")
-         continue
-    # --- Debug Print End ---
-
+    if args.hibug and base is None:
+        print(f"Debug: Hibug filename {filename} resulted in base=None")
+        continue
     lbl = base_to_label.get(base)
     if lbl is not None:
         modified_image_paths.append(image_path)
@@ -303,16 +323,13 @@ for filename in selected_filenames:
         if verbose:
             print(f"Added {image_path} with label {lbl}")
     else:
-        # Add more specific warning for hibug case
         if args.hibug:
-             # --- Debug Print for Failed Lookup ---
-             print(f"Debug: Failed lookup for hibug file '{filename}'. Extracted base='{base}'. Key not in base_to_label.")
-             # --- Debug Print End ---
-             print(f"Warning: Could not find original image label for base number {base} (from hibug file {filename})")
+            print(f"Debug: Failed lookup for hibug file '{filename}'. Extracted base='{base}'. Key not in base_to_label.")
+            print(f"Warning: Could not find original image label for base number {base} (from hibug file {filename})")
         else:
-             print(f"Warning: Could not find original image for {filename}")
+            print(f"Warning: Could not find original image for {filename}")
 
-if verbose:             
+if verbose:
     print("Finish sampling for generated images")
 
 # Print information about the added images
@@ -354,20 +371,23 @@ if modified_image_paths:
         combined_train_idx = np.array(modified_filenames, dtype=object)
     else:
         combined_train_idx = np.array([*train_idx, *modified_filenames], dtype=object)
-    train_idx_path = f"save/idx/train_idx_{attributes}_{args.num_added_img}imgs.npy"
-    labels_path = f"save/labels/labels_{attributes}_{args.num_added_img}imgs.npy"
-    if not os.path.exists(train_idx_path):
-        np.save(train_idx_path, combined_train_idx)
-        print(f"Saved combined train indices to {train_idx_path}")
-    else:
-        if verbose:
-            print(f"{train_idx_path} already exists, skipping save.")
-    if not os.path.exists(labels_path):
-        np.save(labels_path, combined_labels)
-        print(f"Saved combined labels to {labels_path}")
-    else:
-        if verbose:
-            print(f"{labels_path} already exists, skipping save.")
+    # Determine naming for simple vs attribute-based cases
+    name_key = "simple" if args.hibug and args.simple else attributes
+    if verbose:
+        train_idx_path = f"save/idx/train_idx_{name_key}_{args.num_added_img}imgs.npy"
+        labels_path    = f"save/labels/labels_{name_key}_{args.num_added_img}imgs.npy"
+        if not os.path.exists(train_idx_path):
+            np.save(train_idx_path, combined_train_idx)
+            print(f"Saved combined train indices to {train_idx_path}")
+        else:
+            if verbose:
+                print(f"{train_idx_path} already exists, skipping save.")
+        if not os.path.exists(labels_path):
+            np.save(labels_path, combined_labels)
+            print(f"Saved combined labels to {labels_path}")
+        else:
+            if verbose:
+                print(f"{labels_path} already exists, skipping save.")
 
 if verbose:
     print(f"Training images: {len(all_train_imgs)}, Labels: {len(all_train_labels)}")
@@ -533,11 +553,18 @@ def save_predictions(model, train_loader, valid_loader):
     if args.hibug:
         suffix += "_h" # Add 'h' for hibug
 
-    np.save(f"save/pred/predictions_{args.model}_{attributes}_{args.num_added_img}imgs{suffix}_{time_now}.npy", combined_preds)
-    
+    # Use simple naming if in simple hibug mode
+    pred_key = "simple" if args.hibug and args.simple else attributes
+    np.save(
+        f"save/pred/predictions_{args.model}_{pred_key}_{args.num_added_img}imgs{suffix}_{time_now}.npy",
+        combined_preds
+    )
 
 # Modify the train_model function to save predictions after training
 def train_model(model, train_loader, valid_loader, criterion, optimizer, scheduler=None, num_epochs=20):
+    # Track best validation performance
+    best_val_acc = 0.0
+    best_model_state = None
     train_loss_history = []
     train_acc_history = []
     val_loss_history = []
@@ -563,6 +590,10 @@ def train_model(model, train_loader, valid_loader, criterion, optimizer, schedul
 
         train_acc = total_correct / len(train_dataset)
         val_acc, val_loss = evaluate(model, valid_loader)
+        # Update best model if this epoch's validation accuracy is higher
+        if val_acc > best_val_acc:
+            best_val_acc = val_acc
+            best_model_state = copy.deepcopy(model.state_dict())
         
         # Step the learning rate scheduler if provided
         if scheduler:
@@ -604,6 +635,9 @@ def train_model(model, train_loader, valid_loader, criterion, optimizer, schedul
         plt.savefig(f"save/plot/plot_{args.model}_{attributes}_{args.num_added_img}imgs_{time_now}.png")
         plt.close()
 
+    # Load best or last model before saving predictions
+    if args.save_pred_model == 'best' and best_model_state is not None:
+        model.load_state_dict(best_model_state)
     # Save predictions after training
     save_predictions(model, train_loader, valid_loader)
     # Return training history for external use

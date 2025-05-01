@@ -1,0 +1,10 @@
+=== [1000 imgs] Starting resnet -> logs/hibug_resnet_redhair_brownskin_1000imgs.log ===
+=== [1000 imgs] Finished resnet ===
+
+=== [5000 imgs] Starting resnet -> logs/hibug_resnet_redhair_brownskin_5000imgs.log ===
+=== [5000 imgs] Finished resnet ===
+
+=== [10000 imgs] Starting resnet -> logs/hibug_resnet_redhair_brownskin_10000imgs.log ===
+=== [10000 imgs] Finished resnet ===
+
+All batches completed successfully.
