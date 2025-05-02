@@ -1,3 +1,21 @@
+nohup ./batch.sh -m resnet -a redhair_brownskin -d 2 -g -n 10000 \
+  > logs/g_resnet_redhair_brownskin.log 2>&1 < /dev/null &
+
+nohup ./batch.sh -m resnet -a redhair -d 3 -g -n 10000 \
+  > logs/g_resnet_redhair.log 2>&1 < /dev/null &
+
+
+nohup ./batch.sh -m resnet -a redhair_brownskin -d 2 -g -s \
+  > logs/g_simple_resnet_redhair_brownskin.log 2>&1 < /dev/null &
+
+nohup ./batch.sh -m resnet -a redhair -d 3 -g -s \
+  > logs/g_simple_resnet_redhair.log 2>&1 < /dev/null &
+
+nohup ./batch.sh -m resnet -a redhair_brownskin -d 2 -g \
+  > logs/g_resnet_redhair_brownskin.log 2>&1 < /dev/null &
+
+nohup ./batch.sh -m resnet -a redhair -d 3 -g \
+  > logs/g_resnet_redhair.log 2>&1 < /dev/null &
 
 nohup ./batch.sh -m vit -a redhair_brownskin -d 1 \
   > logs/batch_vit_redhair_brownskin_best.log 2>&1 < /dev/null &

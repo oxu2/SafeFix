@@ -1,8 +1,19 @@
-start time: 2025-05-02 13:01:26
-Traceback (most recent call last):
-  File "/people/cs/o/oxx220000/HiBug/predict.py", line 17, in <module>
-    from transformers import ViTModel, ViTFeatureExtractor
-ModuleNotFoundError: No module named 'transformers'
-Start Time: 2025-05-02 13:01:26
-End Time:   2025-05-02 13:01:27
-Duration:   00:00:01
+start time: 2025-05-02 16:22:40
+Current time: 0502162243
+Selected 10000 filenames for sampling
+Populated base_to_label dictionary with 80000 entries.
+Added 10000 generated redhair_brownskin images, before training set has 80000 images, now 90000
+Using clip model with random weights
+Epoch [1/20], Train Loss: 0.5615, Train Acc: 0.7239, Val Loss: 0.5594, Val Acc: 0.7468
+Epoch [2/20], Train Loss: 0.4349, Train Acc: 0.8340, Val Loss: 0.5176, Val Acc: 0.8077
+Epoch [3/20], Train Loss: 0.3902, Train Acc: 0.8669, Val Loss: 0.4287, Val Acc: 0.8509
+Epoch [4/20], Train Loss: 0.3513, Train Acc: 0.8939, Val Loss: 0.4317, Val Acc: 0.8581
+Epoch [5/20], Train Loss: 0.3347, Train Acc: 0.9053, Val Loss: 0.4160, Val Acc: 0.8711
+Epoch [6/20], Train Loss: 0.3200, Train Acc: 0.9165, Val Loss: 0.3986, Val Acc: 0.8765
+Epoch [7/20], Train Loss: 0.3086, Train Acc: 0.9239, Val Loss: 0.3874, Val Acc: 0.8850
+Epoch [8/20], Train Loss: 0.3000, Train Acc: 0.9299, Val Loss: 0.4139, Val Acc: 0.8795
+Epoch [9/20], Train Loss: 0.2951, Train Acc: 0.9331, Val Loss: 0.4064, Val Acc: 0.8853
+Epoch [10/20], Train Loss: 0.2903, Train Acc: 0.9371, Val Loss: 0.3886, Val Acc: 0.8923
+Epoch [11/20], Train Loss: 0.2878, Train Acc: 0.9386, Val Loss: 0.3717, Val Acc: 0.8900
+Epoch [12/20], Train Loss: 0.2846, Train Acc: 0.9409, Val Loss: 0.4155, Val Acc: 0.8857
+Epoch [13/20], Train Loss: 0.2831, Train Acc: 0.9416, Val Loss: 0.3842, Val Acc: 0.8932

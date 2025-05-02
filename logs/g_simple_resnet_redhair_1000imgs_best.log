@@ -1,0 +1,44 @@
+start time: 2025-05-02 17:07:19
+Current time: 0502170722
+Selected 1000 filenames for sampling
+Populated base_to_label dictionary with 80000 entries.
+Using only generated images: total training images = 1000
+Using resnet model with random weights
+Epoch [1/20], Train Loss: 0.5966, Train Acc: 0.5813, Val Loss: 0.5664, Val Acc: 0.5250
+Epoch [2/20], Train Loss: 0.5502, Train Acc: 0.6425, Val Loss: 0.5241, Val Acc: 0.6400
+Epoch [3/20], Train Loss: 0.5059, Train Acc: 0.7000, Val Loss: 0.4991, Val Acc: 0.7200
+Epoch [4/20], Train Loss: 0.4962, Train Acc: 0.7200, Val Loss: 0.4315, Val Acc: 0.7450
+Epoch [5/20], Train Loss: 0.4748, Train Acc: 0.7488, Val Loss: 0.4516, Val Acc: 0.7400
+Epoch [6/20], Train Loss: 0.4742, Train Acc: 0.7425, Val Loss: 0.4376, Val Acc: 0.7500
+Epoch [7/20], Train Loss: 0.4724, Train Acc: 0.7550, Val Loss: 0.4195, Val Acc: 0.7750
+Epoch [8/20], Train Loss: 0.4843, Train Acc: 0.7375, Val Loss: 0.4328, Val Acc: 0.7750
+Epoch [9/20], Train Loss: 0.4644, Train Acc: 0.7650, Val Loss: 0.4149, Val Acc: 0.7650
+Epoch [10/20], Train Loss: 0.4579, Train Acc: 0.7575, Val Loss: 0.4207, Val Acc: 0.7950
+Epoch [11/20], Train Loss: 0.4620, Train Acc: 0.7650, Val Loss: 0.4350, Val Acc: 0.7700
+Epoch [12/20], Train Loss: 0.4523, Train Acc: 0.7525, Val Loss: 0.4218, Val Acc: 0.7900
+Epoch [13/20], Train Loss: 0.4478, Train Acc: 0.7812, Val Loss: 0.4148, Val Acc: 0.7550
+Epoch [14/20], Train Loss: 0.4542, Train Acc: 0.7550, Val Loss: 0.4212, Val Acc: 0.7600
+Epoch [15/20], Train Loss: 0.4680, Train Acc: 0.7462, Val Loss: 0.4289, Val Acc: 0.7550
+Epoch [16/20], Train Loss: 0.4440, Train Acc: 0.7875, Val Loss: 0.4012, Val Acc: 0.8100
+Epoch [17/20], Train Loss: 0.4429, Train Acc: 0.7850, Val Loss: 0.4129, Val Acc: 0.7650
+Epoch [18/20], Train Loss: 0.4648, Train Acc: 0.7525, Val Loss: 0.4200, Val Acc: 0.7750
+Epoch [19/20], Train Loss: 0.4567, Train Acc: 0.7562, Val Loss: 0.4120, Val Acc: 0.7750
+Epoch [20/20], Train Loss: 0.4394, Train Acc: 0.7987, Val Loss: 0.4165, Val Acc: 0.7750
+Generating and saving predictions...
+Original train predictions length: 0
+Modified image predictions length: 800
+Validation predictions length: 200
+Combined predictions length: 81000
+Current time: 0502170722
+
+Running model diagnostics on generated predictions...
+Skipping model diagnostics because gen_only=True
+
+============================================================
+Final Epoch Train Accuracy (gen_only=True): 0.7987
+============================================================
+
+Skipping accuracy comparison due to gen_only flag being True
+Start Time: 2025-05-02 17:07:19
+End Time:   2025-05-02 17:08:19
+Duration:   00:01:00

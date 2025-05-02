@@ -1,0 +1,11 @@
+=== [1000 imgs] Starting resnet -> logs/g_resnet_redhair_1000imgs_best.log ===
+=== [1000 imgs] Finished resnet ===
+
+=== [5000 imgs] Starting resnet -> logs/g_resnet_redhair_5000imgs_best.log ===
+=== [5000 imgs] Finished resnet ===
+
+=== [10000 imgs] Starting resnet -> logs/g_resnet_redhair_10000imgs_best.log ===
+=== [10000 imgs] Finished resnet ===
+
+./batch.sh: line 74: syntax error near unexpected token `.'
+./batch.sh: line 74: ` (exit code $?). See ${LOG_FILE}"'

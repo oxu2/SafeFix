@@ -353,10 +353,17 @@ if verbose:
 
 # Construct training data based on gen_only flag
 if args.gen_only:
-    # Use only generated images for training
-    all_train_imgs = modified_image_paths
-    all_train_labels = np.array(modified_image_labels)
-    combined_labels = np.concatenate((all_train_labels, valid_labels, unlabeled_labels))
+    # Use only generated images: split into 80:20 train/validation sets
+    indices = list(range(len(modified_image_paths)))
+    random.shuffle(indices)
+    split_idx = int(0.8 * len(indices))
+    train_indices = indices[:split_idx]
+    val_indices = indices[split_idx:]
+    all_train_imgs = [modified_image_paths[i] for i in train_indices]
+    all_train_labels = np.array(modified_image_labels)[train_indices]
+    # Override valid set to use generated images
+    valid_imgs = [modified_image_paths[i] for i in val_indices]
+    valid_labels = np.array(modified_image_labels)[val_indices]
 elif modified_image_paths:
     # Combine original training data with modified images
     all_train_imgs = train_imgs + modified_image_paths
@@ -549,7 +556,10 @@ def save_predictions(model, train_loader, valid_loader):
             unlabeled_predictions
         ))
     
-    print(f"Combined predictions length: {len(combined_preds)} (should match combined_labels length: {len(combined_labels)})")
+    try:
+        print(f"Combined predictions length: {len(combined_preds)} (should match combined_labels length: {len(combined_labels)})")
+    except NameError:
+        print(f"Combined predictions length: {len(combined_preds)}")
     # Determine filename suffix based on gen_only flag and hibug flag
     suffix = ""
     if args.gen_only:
