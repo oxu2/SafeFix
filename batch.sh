@@ -51,7 +51,7 @@ for NUM_ADDED_IMG in ${NUM_LIST}; do
   if [[ "${GEN_ONLY}" == true ]]; then
     SUFFIX="${SUFFIX}g_"
   fi
-  LOG_FILE="${LOG_DIR}/${SUFFIX}${MODEL}_${ATTRIBUTES}_${NUM_ADDED_IMG}imgs.log"
+  LOG_FILE="${LOG_DIR}/${SUFFIX}${MODEL}_${ATTRIBUTES}_${NUM_ADDED_IMG}imgs_best.log"
   echo "=== [${NUM_ADDED_IMG} imgs] Starting ${MODEL} -> ${LOG_FILE} ==="
 
   CUDA_VISIBLE_DEVICES=${CUDA_DEVICES} \

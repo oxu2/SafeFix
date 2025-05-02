@@ -604,9 +604,11 @@ def train_model(model, train_loader, valid_loader, criterion, optimizer, schedul
             scheduler.step()
             if verbose:
                 print(f"Current learning rate: {scheduler.get_last_lr()[0]}")
-        
-        print(f"Epoch [{epoch+1}/{num_epochs}], Train Loss: {total_loss:.4f}, Train Acc: {train_acc:.4f}, Val Loss: {val_loss:.4f}, Val Acc: {val_acc:.4f}")
-        train_loss_history.append(total_loss)
+
+        # Compute average training loss
+        avg_train_loss = total_loss / len(train_loader)
+        print(f"Epoch [{epoch+1}/{num_epochs}], Train Loss: {avg_train_loss:.4f}, Train Acc: {train_acc:.4f}, Val Loss: {val_loss:.4f}, Val Acc: {val_acc:.4f}")
+        train_loss_history.append(avg_train_loss)
         train_acc_history.append(train_acc)
         val_loss_history.append(val_loss)
         val_acc_history.append(val_acc)

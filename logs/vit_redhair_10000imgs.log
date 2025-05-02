@@ -10,3 +10,4 @@ Epoch [3/15], Train Loss: 594.1575, Train Acc: 0.8388, Val Loss: 0.4546, Val Acc
 Epoch [4/15], Train Loss: 558.2039, Train Acc: 0.8592, Val Loss: 0.4933, Val Acc: 0.7990
 Epoch [5/15], Train Loss: 535.6198, Train Acc: 0.8708, Val Loss: 0.4221, Val Acc: 0.8396
 Epoch [6/15], Train Loss: 520.7363, Train Acc: 0.8784, Val Loss: 0.4189, Val Acc: 0.8437
+Epoch [7/15], Train Loss: 504.4515, Train Acc: 0.8853, Val Loss: 0.4370, Val Acc: 0.8288
