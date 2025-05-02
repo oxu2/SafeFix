@@ -1,0 +1,8 @@
+start time: 2025-05-02 13:01:25
+Traceback (most recent call last):
+  File "/people/cs/o/oxx220000/HiBug/predict.py", line 17, in <module>
+    from transformers import ViTModel, ViTFeatureExtractor
+ModuleNotFoundError: No module named 'transformers'
+Start Time: 2025-05-02 13:01:25
+End Time:   2025-05-02 13:01:26
+Duration:   00:00:01

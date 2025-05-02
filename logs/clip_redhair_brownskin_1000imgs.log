@@ -1,0 +1,9 @@
+start time: 2025-05-02 13:02:10
+Current time: 0502130213
+Selected 1000 filenames for sampling
+Populated base_to_label dictionary with 80000 entries.
+Added 1000 generated redhair_brownskin images, before training set has 80000 images, now 81000
+Using clip model with random weights
+Epoch [1/20], Train Loss: 696.4677, Train Acc: 0.7235, Val Loss: 0.4810, Val Acc: 0.7893
+Epoch [2/20], Train Loss: 517.1821, Train Acc: 0.8484, Val Loss: 0.4289, Val Acc: 0.8337
+Epoch [3/20], Train Loss: 446.3987, Train Acc: 0.8908, Val Loss: 0.4390, Val Acc: 0.8498

@@ -1,0 +1,6 @@
+start time: 2025-05-02 13:16:21
+Current time: 0502131624
+Selected 1000 filenames for sampling
+Populated base_to_label dictionary with 80000 entries.
+Added 1000 generated redhair_brownskin images, before training set has 80000 images, now 81000
+Using vit model with random weights

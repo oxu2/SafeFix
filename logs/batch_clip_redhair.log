@@ -1,10 +1,10 @@
 === [1000 imgs] Starting clip -> logs/clip_redhair_1000imgs.log ===
 === [1000 imgs] Finished clip ===
 
-=== [2000 imgs] Starting clip -> logs/clip_redhair_2000imgs.log ===
-=== [2000 imgs] Finished clip ===
+=== [5000 imgs] Starting clip -> logs/clip_redhair_5000imgs.log ===
+=== [5000 imgs] Finished clip ===
 
-=== [4000 imgs] Starting clip -> logs/clip_redhair_4000imgs.log ===
-=== [4000 imgs] Finished clip ===
+=== [10000 imgs] Starting clip -> logs/clip_redhair_10000imgs.log ===
+=== [10000 imgs] Finished clip ===
 
 All batches completed successfully.

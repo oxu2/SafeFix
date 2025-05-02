@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 CUDA_VISIBLE_DEVICES=1 nohup python -u filter.py \
   --max_memory 33 \
   --attributes sademotion \
@@ -26,6 +27,16 @@ CUDA_VISIBLE_DEVICES=1 nohup python -u filter.py \
   > logs/filter_brownskin2.log 2>&1 < /dev/null &
 
 python compare_logs.py
+=======
+
+nohup ./batch.sh -m vit -a redhair_brownskin -d 1 \
+  > logs/batch_vit_redhair_brownskin_best.log 2>&1 < /dev/null &
+
+nohup ./batch.sh -m clip -a redhair_brownskin -d 0 \
+  > logs/batch_clip_redhair_brownskin.log 2>&1 < /dev/null &
+nohup ./batch.sh -m clip -a redhair -d 1 \
+  > logs/batch_clip_redhair.log 2>&1 < /dev/null &
+>>>>>>> ca357647a3ed07cd750c91b446ede09c6cd834f3
 
 nohup ./batch.sh -m vit -a redhair_brownskin -d 3 \
   > logs/batch_vit_redhair_brownskin.log 2>&1 < /dev/null &

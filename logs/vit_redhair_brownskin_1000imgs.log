@@ -1,57 +1,93 @@
-start time: 2025-05-01 14:20:55
-Current time: 0501142057
+start time: 2025-05-02 03:18:13
+Current time: 0502031815
 Selected 1000 filenames for sampling
 Populated base_to_label dictionary with 80000 entries.
 Added 1000 generated redhair_brownskin images, before training set has 80000 images, now 81000
 Using vit model with random weights
-Epoch [1/20], Train Loss: 703.5824, Train Acc: 0.7151, Val Loss: 0.4900, Val Acc: 0.7804
-Epoch [2/20], Train Loss: 559.9782, Train Acc: 0.8231, Val Loss: 0.6265, Val Acc: 0.7413
-Epoch [3/20], Train Loss: 508.5003, Train Acc: 0.8544, Val Loss: 0.4390, Val Acc: 0.8387
-Epoch [4/20], Train Loss: 475.4092, Train Acc: 0.8737, Val Loss: 0.4252, Val Acc: 0.8407
-Epoch [5/20], Train Loss: 455.8808, Train Acc: 0.8839, Val Loss: 0.4248, Val Acc: 0.8400
-Epoch [6/20], Train Loss: 437.0429, Train Acc: 0.8943, Val Loss: 0.4105, Val Acc: 0.8540
-Epoch [7/20], Train Loss: 420.7118, Train Acc: 0.9040, Val Loss: 0.4063, Val Acc: 0.8591
-Epoch [8/20], Train Loss: 407.2521, Train Acc: 0.9114, Val Loss: 0.3951, Val Acc: 0.8672
-Epoch [9/20], Train Loss: 398.0095, Train Acc: 0.9166, Val Loss: 0.4101, Val Acc: 0.8628
-Epoch [10/20], Train Loss: 391.3120, Train Acc: 0.9193, Val Loss: 0.4077, Val Acc: 0.8671
-Epoch [11/20], Train Loss: 389.1370, Train Acc: 0.9206, Val Loss: 0.4075, Val Acc: 0.8679
-Epoch [12/20], Train Loss: 391.3060, Train Acc: 0.9190, Val Loss: 0.4056, Val Acc: 0.8696
-Epoch [13/20], Train Loss: 395.6947, Train Acc: 0.9179, Val Loss: 0.4124, Val Acc: 0.8659
-Epoch [14/20], Train Loss: 403.3483, Train Acc: 0.9138, Val Loss: 0.3911, Val Acc: 0.8721
-Epoch [15/20], Train Loss: 411.0729, Train Acc: 0.9095, Val Loss: 0.3962, Val Acc: 0.8648
-Epoch [16/20], Train Loss: 421.4990, Train Acc: 0.9035, Val Loss: 0.3939, Val Acc: 0.8661
-Traceback (most recent call last):
-  File "/people/cs/o/oxx220000/.conda/envs/ad/lib/python3.9/multiprocessing/queues.py", line 244, in _feed
-    obj = _ForkingPickler.dumps(obj)
-  File "/people/cs/o/oxx220000/.conda/envs/ad/lib/python3.9/multiprocessing/reduction.py", line 51, in dumps
-    cls(buf, protocol).dump(obj)
-  File "/people/cs/o/oxx220000/.conda/envs/ad/lib/python3.9/site-packages/torch/multiprocessing/reductions.py", line 367, in reduce_storage
-    df = multiprocessing.reduction.DupFd(fd)
-  File "/people/cs/o/oxx220000/.conda/envs/ad/lib/python3.9/multiprocessing/reduction.py", line 198, in DupFd
-    return resource_sharer.DupFd(fd)
-  File "/people/cs/o/oxx220000/.conda/envs/ad/lib/python3.9/multiprocessing/resource_sharer.py", line 53, in __init__
-    self._id = _resource_sharer.register(send, close)
-  File "/people/cs/o/oxx220000/.conda/envs/ad/lib/python3.9/multiprocessing/resource_sharer.py", line 76, in register
-    self._start()
-  File "/people/cs/o/oxx220000/.conda/envs/ad/lib/python3.9/multiprocessing/resource_sharer.py", line 126, in _start
-    self._listener = Listener(authkey=process.current_process().authkey)
-  File "/people/cs/o/oxx220000/.conda/envs/ad/lib/python3.9/multiprocessing/connection.py", line 442, in __init__
-    address = address or arbitrary_address(family)
-  File "/people/cs/o/oxx220000/.conda/envs/ad/lib/python3.9/multiprocessing/connection.py", line 76, in arbitrary_address
-    return tempfile.mktemp(prefix='listener-', dir=util.get_temp_dir())
-  File "/people/cs/o/oxx220000/.conda/envs/ad/lib/python3.9/multiprocessing/util.py", line 146, in get_temp_dir
-    tempdir = tempfile.mkdtemp(prefix='pymp-')
-  File "/people/cs/o/oxx220000/.conda/envs/ad/lib/python3.9/tempfile.py", line 379, in mkdtemp
-    _os.mkdir(file, 0o700)
-OSError: [Errno 28] No space left on device: '/tmp/pymp-85iwskhe'
-Traceback (most recent call last):
-  File "/people/cs/o/oxx220000/.conda/envs/ad/lib/python3.9/multiprocessing/queues.py", line 244, in _feed
-    obj = _ForkingPickler.dumps(obj)
-  File "/people/cs/o/oxx220000/.conda/envs/ad/lib/python3.9/multiprocessing/reduction.py", line 51, in dumps
-    cls(buf, protocol).dump(obj)
-  File "/people/cs/o/oxx220000/.conda/envs/ad/lib/python3.9/site-packages/torch/multiprocessing/reductions.py", line 367, in reduce_storage
-    df = multiprocessing.reduction.DupFd(fd)
-  File "/people/cs/o/oTerminated
-Start Time: 2025-05-01 14:20:55
-End Time:   2025-05-02 02:12:18
-Duration:   11:51:23
+Epoch [1/15], Train Loss: 686.7798, Train Acc: 0.7265, Val Loss: 0.5269, Val Acc: 0.7721
+Epoch [2/15], Train Loss: 544.1960, Train Acc: 0.8350, Val Loss: 0.4731, Val Acc: 0.8152
+Epoch [3/15], Train Loss: 496.1290, Train Acc: 0.8617, Val Loss: 0.4460, Val Acc: 0.8327
+Epoch [4/15], Train Loss: 467.8998, Train Acc: 0.8775, Val Loss: 0.4069, Val Acc: 0.8496
+Epoch [5/15], Train Loss: 446.6167, Train Acc: 0.8904, Val Loss: 0.4329, Val Acc: 0.8559
+Epoch [6/15], Train Loss: 434.4557, Train Acc: 0.8967, Val Loss: 0.4276, Val Acc: 0.8538
+Epoch [7/15], Train Loss: 420.1803, Train Acc: 0.9056, Val Loss: 0.4071, Val Acc: 0.8580
+Epoch [8/15], Train Loss: 412.0852, Train Acc: 0.9095, Val Loss: 0.4064, Val Acc: 0.8600
+Epoch [9/15], Train Loss: 404.6631, Train Acc: 0.9129, Val Loss: 0.4077, Val Acc: 0.8690
+Epoch [10/15], Train Loss: 394.1987, Train Acc: 0.9186, Val Loss: 0.4449, Val Acc: 0.8504
+Epoch [11/15], Train Loss: 387.4870, Train Acc: 0.9225, Val Loss: 0.3899, Val Acc: 0.8705
+Epoch [12/15], Train Loss: 380.8965, Train Acc: 0.9253, Val Loss: 0.4106, Val Acc: 0.8638
+Epoch [13/15], Train Loss: 376.0398, Train Acc: 0.9284, Val Loss: 0.3950, Val Acc: 0.8747
+Epoch [14/15], Train Loss: 370.0650, Train Acc: 0.9315, Val Loss: 0.3955, Val Acc: 0.8771
+Epoch [15/15], Train Loss: 365.6918, Train Acc: 0.9343, Val Loss: 0.3968, Val Acc: 0.8742
+Generating and saving predictions...
+Original train predictions length: 80000
+Modified image predictions length: 1000
+Validation predictions length: 20000
+Combined predictions length: 181000 (should match combined_labels length: 181000)
+Current time: 0502031815
+
+Running model diagnostics on generated predictions...
+Model Validation ACC: 0.87555
+Start detect_failure_by_label
+
+Start detect_prediction_correlation
+
+ACC: 0.860891 	Hard case: attribute "beard", description "No"
+ACC: 0.826930 	Hard case: attribute "gender", description "female"
+The accuracy with "hair color" = "white" is 0.8995901639344263
+Correct predictions: 439/488
+The accuracy with "hair color" = "yellow" is 0.8513513513513513
+Correct predictions: 63/74
+ACC: 0.851351 	Rare Case: attribute "hair color", description "yellow"
+The accuracy with "hair color" = "blonde" is 0.8492836676217765
+Correct predictions: 4446/5235
+ACC: 0.849284 	Hard case: attribute "hair color", description "blonde"
+The accuracy with "hair color" = "black" is 0.887245283018868
+Correct predictions: 5878/6625
+The accuracy with "hair color" = "gray" is 0.9530075187969925
+Correct predictions: 1014/1064
+The accuracy with "hair color" = "brown" is 0.870524350924826
+Correct predictions: 5130/5893
+The accuracy with "hair color" = "red" is 0.8711755233494364
+Correct predictions: 541/621
+The accuracy with "skin" = "white" is 0.8761576354679803
+Correct predictions: 8893/10150
+The accuracy with "skin" = "black" is 0.8894292295879191
+Correct predictions: 3475/3907
+The accuracy with "skin" = "brown" is 0.8653878512535756
+Correct predictions: 5143/5943
+ACC: 0.865388 	Rare Case: attribute "skin", description "brown"
+ACC: 0.826046 	Rare Case: attribute "emotion", description "sad"
+ACC: 0.860887 	Rare Case: attribute "emotion", description "calm"
+ACC: 0.854614 	Hard case: attribute "emotion", description "surprised"
+ACC: 0.817992 	Rare Case: attribute "emotion", description "pensive"
+Start detect_failure_prediction_correlation
+
+Model diagnostics complete.
+
+Comparing accuracy with log file: logs/compare/stat_origin_vit_compare.log
+Overall accuracy: 0.850650 -> 0.875550: improved
+
+Attribute-specific accuracy comparison:
+beard, No, 0.836448 -> 0.860891: improved
+makeup, Yes, 0.838893 -> 0.887794: improved
+gender, female, 0.768786 -> 0.826930: improved
+hair color, white, 0.905738 -> 0.899590: declined
+hair color, yellow, 0.905405 -> 0.851351: declined
+hair color, blonde, 0.841070 -> 0.849284: improved
+hair color, black, 0.840000 -> 0.887245: improved
+hair color, gray, 0.953008 -> 0.953008: same
+hair color, brown, 0.849992 -> 0.870524: improved
+hair color, red, 0.826087 -> 0.871176: improved
+skin, white, 0.865714 -> 0.876158: improved
+skin, black, 0.831840 -> 0.889429: improved
+skin, brown, 0.837288 -> 0.865388: improved
+emotion, sad, 0.806084 -> 0.826046: improved
+emotion, surprised, 0.812895 -> 0.854614: improved
+emotion, pensive, 0.775105 -> 0.817992: improved
+young, young, 0.838260 -> 0.866436: improved
+
+Compared 17 attribute-specific accuracies.
+Start Time: 2025-05-02 03:18:13
+End Time:   2025-05-02 07:08:21
+Duration:   03:50:08
