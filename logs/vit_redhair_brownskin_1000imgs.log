@@ -12,3 +12,46 @@ Epoch [5/20], Train Loss: 455.8808, Train Acc: 0.8839, Val Loss: 0.4248, Val Acc
 Epoch [6/20], Train Loss: 437.0429, Train Acc: 0.8943, Val Loss: 0.4105, Val Acc: 0.8540
 Epoch [7/20], Train Loss: 420.7118, Train Acc: 0.9040, Val Loss: 0.4063, Val Acc: 0.8591
 Epoch [8/20], Train Loss: 407.2521, Train Acc: 0.9114, Val Loss: 0.3951, Val Acc: 0.8672
+Epoch [9/20], Train Loss: 398.0095, Train Acc: 0.9166, Val Loss: 0.4101, Val Acc: 0.8628
+Epoch [10/20], Train Loss: 391.3120, Train Acc: 0.9193, Val Loss: 0.4077, Val Acc: 0.8671
+Epoch [11/20], Train Loss: 389.1370, Train Acc: 0.9206, Val Loss: 0.4075, Val Acc: 0.8679
+Epoch [12/20], Train Loss: 391.3060, Train Acc: 0.9190, Val Loss: 0.4056, Val Acc: 0.8696
+Epoch [13/20], Train Loss: 395.6947, Train Acc: 0.9179, Val Loss: 0.4124, Val Acc: 0.8659
+Epoch [14/20], Train Loss: 403.3483, Train Acc: 0.9138, Val Loss: 0.3911, Val Acc: 0.8721
+Epoch [15/20], Train Loss: 411.0729, Train Acc: 0.9095, Val Loss: 0.3962, Val Acc: 0.8648
+Epoch [16/20], Train Loss: 421.4990, Train Acc: 0.9035, Val Loss: 0.3939, Val Acc: 0.8661
+Traceback (most recent call last):
+  File "/people/cs/o/oxx220000/.conda/envs/ad/lib/python3.9/multiprocessing/queues.py", line 244, in _feed
+    obj = _ForkingPickler.dumps(obj)
+  File "/people/cs/o/oxx220000/.conda/envs/ad/lib/python3.9/multiprocessing/reduction.py", line 51, in dumps
+    cls(buf, protocol).dump(obj)
+  File "/people/cs/o/oxx220000/.conda/envs/ad/lib/python3.9/site-packages/torch/multiprocessing/reductions.py", line 367, in reduce_storage
+    df = multiprocessing.reduction.DupFd(fd)
+  File "/people/cs/o/oxx220000/.conda/envs/ad/lib/python3.9/multiprocessing/reduction.py", line 198, in DupFd
+    return resource_sharer.DupFd(fd)
+  File "/people/cs/o/oxx220000/.conda/envs/ad/lib/python3.9/multiprocessing/resource_sharer.py", line 53, in __init__
+    self._id = _resource_sharer.register(send, close)
+  File "/people/cs/o/oxx220000/.conda/envs/ad/lib/python3.9/multiprocessing/resource_sharer.py", line 76, in register
+    self._start()
+  File "/people/cs/o/oxx220000/.conda/envs/ad/lib/python3.9/multiprocessing/resource_sharer.py", line 126, in _start
+    self._listener = Listener(authkey=process.current_process().authkey)
+  File "/people/cs/o/oxx220000/.conda/envs/ad/lib/python3.9/multiprocessing/connection.py", line 442, in __init__
+    address = address or arbitrary_address(family)
+  File "/people/cs/o/oxx220000/.conda/envs/ad/lib/python3.9/multiprocessing/connection.py", line 76, in arbitrary_address
+    return tempfile.mktemp(prefix='listener-', dir=util.get_temp_dir())
+  File "/people/cs/o/oxx220000/.conda/envs/ad/lib/python3.9/multiprocessing/util.py", line 146, in get_temp_dir
+    tempdir = tempfile.mkdtemp(prefix='pymp-')
+  File "/people/cs/o/oxx220000/.conda/envs/ad/lib/python3.9/tempfile.py", line 379, in mkdtemp
+    _os.mkdir(file, 0o700)
+OSError: [Errno 28] No space left on device: '/tmp/pymp-85iwskhe'
+Traceback (most recent call last):
+  File "/people/cs/o/oxx220000/.conda/envs/ad/lib/python3.9/multiprocessing/queues.py", line 244, in _feed
+    obj = _ForkingPickler.dumps(obj)
+  File "/people/cs/o/oxx220000/.conda/envs/ad/lib/python3.9/multiprocessing/reduction.py", line 51, in dumps
+    cls(buf, protocol).dump(obj)
+  File "/people/cs/o/oxx220000/.conda/envs/ad/lib/python3.9/site-packages/torch/multiprocessing/reductions.py", line 367, in reduce_storage
+    df = multiprocessing.reduction.DupFd(fd)
+  File "/people/cs/o/oTerminated
+Start Time: 2025-05-01 14:20:55
+End Time:   2025-05-02 02:12:18
+Duration:   11:51:23

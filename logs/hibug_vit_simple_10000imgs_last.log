@@ -6,3 +6,54 @@ Selected 10000 filenames for sampling
 Added 10000 generated simple images, before training set has 80000 images, now 90000
 Using vit model with random weights
 Epoch [1/20], Train Loss: 821.2848, Train Acc: 0.7523, Val Loss: 0.6047, Val Acc: 0.7627
+Epoch [2/20], Train Loss: 657.9295, Train Acc: 0.8449, Val Loss: 0.5837, Val Acc: 0.7706
+Epoch [3/20], Train Loss: 607.8308, Train Acc: 0.8667, Val Loss: 0.4991, Val Acc: 0.8257
+Epoch [4/20], Train Loss: 571.7407, Train Acc: 0.8837, Val Loss: 0.4659, Val Acc: 0.8456
+Epoch [5/20], Train Loss: 545.8117, Train Acc: 0.8962, Val Loss: 0.4702, Val Acc: 0.8450
+Epoch [6/20], Train Loss: 525.8797, Train Acc: 0.9043, Val Loss: 0.4844, Val Acc: 0.8421
+Epoch [7/20], Train Loss: 512.4194, Train Acc: 0.9096, Val Loss: 0.4650, Val Acc: 0.8551
+Epoch [8/20], Train Loss: 498.1966, Train Acc: 0.9172, Val Loss: 0.4535, Val Acc: 0.8626
+Traceback (most recent call last):
+  File "/people/cs/o/oxx220000/.conda/envs/ad/lib/python3.9/multiprocessing/queues.py", line 244, in _feed
+    obj = _ForkingPickler.dumps(obj)
+Traceback (most recent call last):
+  File "/people/cs/o/oxx220000/.conda/envs/ad/lib/python3.9/multiprocessing/reduction.py", line 51, in dumps
+    cls(buf, protocol).dump(obj)
+  File "/people/cs/o/oxx220000/.conda/envs/ad/lib/python3.9/site-packages/torch/multiprocessing/reductions.py", line 367, in reduce_storage
+    df = multiprocessing.reduction.DupFd(fd)
+  File "/people/cs/o/oxx220000/.conda/envs/ad/lib/python3.9/multiprocessing/reduction.py", line 198, in DupFd
+    return resource_sharer.DupFd(fd)
+  File "/people/cs/o/oxx220000/.conda/envs/ad/lib/python3.9/multiprocessing/queues.py", line 244, in _feed
+    obj = _ForkingPickler.dumps(obj)
+  File "/people/cs/o/oxx220000/.conda/envs/ad/lib/python3.9/multiprocessing/reduction.py", line 51, in dumps
+    cls(buf, protocol).dump(obj)
+  File "/people/cs/o/oxx220000/.conda/envs/ad/lib/python3.9/site-packages/torch/multiprocessing/reductions.py", line 367, in reduce_storage
+    df = multiprocessing.reduction.DupFd(fd)
+  File "/people/cs/o/oxx220000/.conda/envs/ad/lib/python3.9/multiprocessing/reduction.py", line 198, in DupFd
+    return resource_sharer.DupFd(fd)
+  File "/people/cs/o/oxx220000/.conda/envs/ad/lib/python3.9/multiprocessing/resource_sharer.py", line 53, in __init__
+    self._id = _resource_sharer.register(send, close)
+  File "/people/cs/o/oxx220000/.conda/envs/ad/lib/python3.9/multiprocessing/resource_sharer.py", line 76, in register
+    self._start()
+  File "/people/cs/o/oxx220000/.conda/envs/ad/lib/python3.9/multiprocessing/resource_sharer.py", line 126, in _start
+    self._listener = Listener(authkey=process.current_process().authkey)
+  File "/people/cs/o/oxx220000/.conda/envs/ad/lib/python3.9/multiprocessing/connection.py", line 442, in __init__
+    address = address or arbitrary_address(family)
+  File "/people/cs/o/oxx220000/.conda/envs/ad/lib/python3.9/multiprocessing/connection.py", line 76, in arbitrary_address
+    return tempfile.mktemp(prefix='listener-', dir=util.get_temp_dir())
+  File "/people/cs/o/oxx220000/.conda/envs/ad/lib/python3.9/multiprocessing/util.py", line 146, in get_temp_dir
+    tempdir = tempfile.mkdtemp(prefix='pymp-')
+  File "/people/cs/o/oxx220000/.conda/envs/ad/lib/python3.9/tempfile.py", line 379, in mkdtemp
+    _os.mkdir(file, 0o700)
+Traceback (most recent call last):
+OSError: [Errno 28] No space left on device: '/tmp/pymp-5gvcjnfz'
+  File "/people/cs/o/oxx220000/.conda/envs/ad/lib/python3.9/multiprocessing/queues.py", line 244, in _feed
+    obj = _ForkingPickler.dumps(obj)
+  File "/people/cs/o/oxx220000/.conda/envs/ad/lib/python3.9/multiprocessing/reduction.py", line 51, in dumps
+    cls(buf, protocol).dump(obj)
+  File "/people/cs/o/oxx220000/.conda/envs/ad/lib/python3.9/site-packages/torch/multiprocessing/reductions.py", line 367, in reduce_storage
+    df = multiprocessing.reduction.DupFd(fd)
+  File "/people/cs/o/oxx220000/.conda/envs/Terminated
+Start Time: 2025-05-01 15:57:43
+End Time:   2025-05-02 02:12:19
+Duration:   10:14:36

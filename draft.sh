@@ -1,9 +1,10 @@
+  
+python compare_logs.py
+
 nohup ./batch.sh -m vit -a redhair_brownskin -d 3 \
   > logs/batch_vit_redhair_brownskin.log 2>&1 < /dev/null &
 nohup ./batch.sh -m vit -a redhair -d 2 \
   > logs/batch_vit_redhair.log 2>&1 < /dev/null &
-  
-python compare_logs.py
 
 nohup ./batch.sh -m vit -a simple -d 1 -u true \
   > logs/hibug_vit_simple.log 2>&1 < /dev/null &

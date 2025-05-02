@@ -78,7 +78,7 @@ parser.add_argument(
     '--save_pred_model',
     type=str,
     choices=['best', 'last'],
-    default='best',
+    default='last',
     help='Which model to use for saving predictions: best (default) or last'
 )
 parser.add_argument('--gen_only', type=str2bool, default=False,

@@ -5,3 +5,6 @@
 === [5000 imgs] Finished vit ===
 
 === [10000 imgs] Starting vit -> logs/hibug_vit_simple_10000imgs_last.log ===
+=== [10000 imgs] Finished vit ===
+
+./batch.sh: line 74: All batches completed successfully.: command not found
