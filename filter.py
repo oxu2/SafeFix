@@ -3,6 +3,7 @@ import random
 import sys
 import os
 import datetime  # Add this import to support timestamps
+import shutil
 from typing import List
 from utils.defines import *
 # # Check if running in the correct conda environment
@@ -156,7 +157,7 @@ def process_image(image_path, model, processor, tags: List[str], attributes: Lis
             questions.append(f"Does the person in this picture have {t} {a}?")
     prompt = " ".join(questions) + " For each question, only answer with 1 (yes) or 0 (no). Provide answers separated by spaces."
     response = inference(image_path, prompt, verbose=verbose)
-    # Debug: print Qwen's raw response for sad emotion detection
+    # Debug: print Qwen's raw response for emotion detection
     # if 'emotion' in attributes:
     # if True:
     #     print(f"Debug: {image_path} emotion raw response: {response}")
@@ -192,7 +193,16 @@ def process_directory(directory_path, output_json_path, tags, attributes, verbos
     os.makedirs(save_dir, exist_ok=True)
     output_json_path = os.path.join(save_dir, os.path.basename(output_json_path))
 
-    results = {}
+    # Load existing results if present, so new runs only process newly added images
+    if os.path.exists(output_json_path):
+        with open(output_json_path, 'r') as f:
+            results = json.load(f)
+        processed_set = set(results.keys())
+        if verbose:
+            print(f"Found {len(processed_set)} previously processed images, skipping them.")
+    else:
+        results = {}
+        processed_set = set()
     stopped_early = False
     stop_filename = None # The file that triggered the stop (will not be processed)
     processed_count = 0
@@ -206,17 +216,13 @@ def process_directory(directory_path, output_json_path, tags, attributes, verbos
         extensions = ['.' + ext.lower() for ext in file_type.lower().split(',')]
         image_files = [f for f in os.listdir(directory_path) if any(f.lower().endswith(ext) for ext in extensions)]
 
-    # Sort image files alphanumerically based on the numeric part
-    # Handles names like '001.jpg', '002_suffix.jpg', '10.jpg' correctly
-    def get_numeric_part(filename):
-        base = os.path.splitext(filename)[0]
-        numeric_str = base.split('_')[0]
-        try:
-            return int(numeric_str)
-        except ValueError:
-            return float('inf') # Place non-numeric filenames at the end
+    # Sort files in ascending order by filename
+    image_files.sort()
 
-    image_files.sort(key=get_numeric_part)
+    # Filter out files already processed
+    image_files = [f for f in image_files if os.path.splitext(f)[0] not in processed_set]
+    if verbose:
+        print(f"{len(image_files)} new images to process after filtering out existing ones.")
 
     total_images = len(image_files)
 
@@ -378,16 +384,18 @@ def rename_images_with_suffix(directory_path, suffix="_red", verbose=False):
         print(f"Successfully renamed {renamed_count} numeric-named files in {directory_path}")
     return renamed_count
 
-def main(directory_path="./redhair", 
+def main(directory_path="/home/jovyan/ouyang/sad", 
          verbose: bool = False,
          file_type: str = "png",
          rename_files: bool = False,
-         attributes: str = "redhair_brownskin",
+         attributes: str = "brownskin",
          rename_suffix: str = None,
          max_memory_per_gpu: int = 23,
          stop_at: int = 15000,
          feasible_only: bool = False,
-         results_file: str = None):
+         results_file: str = None,
+         copy_only: bool = False,
+         feasible_json: str = None):
     """
     Main function to process images and create feature mapping.
     
@@ -403,6 +411,27 @@ def main(directory_path="./redhair",
     Returns:
     - Tuple of (results, feature_mapping)
     """
+    # Copy-only mode: use existing feasible JSON to copy images, skip processing
+    if copy_only:
+        if feasible_json is None:
+            print("Error: --feasible_json must be provided when using --copy_only")
+            return {}, {}
+        # Load feature mapping from provided JSON
+        with open(feasible_json, 'r') as f:
+            feature_mapping = json.load(f)
+        # Copy feasible images
+        feasible_count = len(feature_mapping)
+        dest_dir = os.path.join(os.getcwd(), f"{attributes}_{feasible_count}")
+        os.makedirs(dest_dir, exist_ok=True)
+        for filename in feature_mapping:
+            for ext in ['.png', '.jpg', '.jpeg']:
+                src_path = os.path.join(directory_path, filename + ext)
+                if os.path.exists(src_path):
+                    shutil.copy2(src_path, os.path.join(dest_dir, filename + ext))
+                    break
+        print(f"Copied {feasible_count} feasible images to {dest_dir}")
+        return {}, feature_mapping
+
     # Configure GPU memory first using the passed argument
     available_gpus = get_available_gpus()
     device_memory = configure_gpu_memory(available_gpus, max_memory_per_gpu)
@@ -418,7 +447,7 @@ def main(directory_path="./redhair",
     processor = AutoProcessor.from_pretrained(model_path, use_fast=True)
 
     # If rename_files is True, rename the files in the directory
-    if rename_files:
+    if rename_files and rename_suffix:
         renamed_count = rename_images_with_suffix(directory_path, rename_suffix, verbose=verbose)
         if verbose:
             print(f"Renamed {renamed_count} files with suffix '{rename_suffix}'")
@@ -434,6 +463,9 @@ def main(directory_path="./redhair",
         elif attr.endswith('skin'):
             tags.append(attr[:-4])
             attrs.append('skin')
+        elif attr.endswith('emotion'):
+            tags.append(attr[:-7])
+            attrs.append('emotion')
         else:
             tags.append(attr)
             attrs.append(attr)
@@ -492,7 +524,18 @@ def main(directory_path="./redhair",
     print(f"Results saved to: {results_json_path}")
     print(f"Feasible mapping saved to: {feasible_json}")
     print("--------------------------")
-    
+    # Filter and copy feasible images from the original dataset
+    feasible_count = len(feature_mapping)
+    dest_dir = os.path.join(os.getcwd(), f"{attributes}_{feasible_count}")
+    os.makedirs(dest_dir, exist_ok=True)
+    for filename in feature_mapping:
+        # Attempt common image extensions
+        for ext in ['.png', '.jpg', '.jpeg']:
+            src_path = os.path.join(directory_path, filename + ext)
+            if os.path.exists(src_path):
+                shutil.copy2(src_path, os.path.join(dest_dir, filename + ext))
+                break
+    print(f"Copied {feasible_count} feasible images to {dest_dir}")
     return results, feature_mapping
 
 # Execute the main function with default parameters
@@ -502,8 +545,12 @@ if __name__ == "__main__":
     import shlex
     
     parser = argparse.ArgumentParser(description='Process images for specific attributes')
-    parser.add_argument('--dir', type=str, default="exampleData/test", 
-                        help='Directory containing images')
+    parser.add_argument(
+        '--image_dir',
+        type=str,
+        default="/home/jovyan/ouyang/sad",
+        help='Directory containing images'
+    )
     parser.add_argument(
         '--verbose',
         type=str2bool,
@@ -513,12 +560,12 @@ if __name__ == "__main__":
     parser.add_argument('--file_type', type=str, default="jpg", 
                         help='Type of image files to process ("png", "jpg", "png,jpg", "all")')
     parser.add_argument(
-        '--rename-files',
+        '--rename_files',
         type=str2bool,
-        default=True,
+        default=False,
         help='Rename files by adding suffix before extension (true/false)'
     )
-    parser.add_argument('--attributes', type=str, default="redhair_brownskin",
+    parser.add_argument('--attributes', type=str, default="brownskin",
                         help='attributes to detect, e.g. redhair_brownskin, redhair, etc.')
     parser.add_argument('--rename_suffix', type=str, default=None,
                         help='Suffix to add when renaming files (default: "_red")')
@@ -530,6 +577,10 @@ if __name__ == "__main__":
                         help='Only perform feasible mapping from existing results JSON.')
     parser.add_argument('--results_file', type=str, default=None,
                         help='Path to existing results JSON file (used with --feasible_only).')
+    parser.add_argument('--copy_only', action='store_true',
+                        help='Only copy feasible images using an existing feasible JSON (skip processing).')
+    parser.add_argument('--feasible_json', type=str, default=None,
+                        help='Path to existing feasible JSON file for copying images.')
     
     args = parser.parse_args()
 
@@ -537,7 +588,7 @@ if __name__ == "__main__":
         args.rename_suffix = "_" + args.attributes
 
     main(
-       args.dir,
+       args.image_dir,
        args.verbose,
        args.file_type,
        args.rename_files,
@@ -546,5 +597,7 @@ if __name__ == "__main__":
        args.max_memory,
        args.stop_at,
        args.feasible_only,
-       args.results_file
+       args.results_file,
+       args.copy_only,
+       args.feasible_json
     )

@@ -3,7 +3,11 @@
 .DS_Store
 /img_align_celeba
 /pictures
-save/
 exampleData
 downloaded_data
 /hibug_*
+# Ignore all files and directories under save/...
+/save/*
+# ...but keep top-level JSON files in save/
+!/save/*.json
+yellowhair*
