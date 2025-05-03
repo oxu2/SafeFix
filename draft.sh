@@ -88,6 +88,38 @@ nohup ./batch.sh -m resnet -a redhair_brownskin -d 2 -g \
 nohup ./batch.sh -m resnet -a redhair -d 3 -g \
   > logs/g_resnet_redhair.log 2>&1 < /dev/null &
 
+CUDA_VISIBLE_DEVICES=1 nohup python -u controlnet.py > logs/control_redhair_sademotion.log 2>&1 < /dev/null &
+
+
+CUDA_VISIBLE_DEVICES=1 nohup python -u filter.py \
+  --max_memory 33 \
+  --attributes sademotion \
+  > logs/filter_sademotion.log 2>&1 < /dev/null &
+
+❯ CUDA_VISIBLE_DEVICES=1 nohup python -u filter.py \
+  --max_memory 33 \
+  --attributes brownskin \
+  > logs/filter_brownskin2.log 2>&1 < /dev/null &
+[1] 2528585
+❯ CUDA_VISIBLE_DEVICES=1 nohup python -u filter.py \
+  --max_memory 33 \
+  --attributes sademotion \
+  > logs/filter_sademotion.log 2>&1 < /dev/null &
+[2] 2529199
+
+
+CUDA_VISIBLE_DEVICES=1 nohup python -u filter.py \
+  --max_memory 33 \
+  --attributes yellowhair \
+  > logs/filter_yellowhair.log 2>&1 < /dev/null &
+
+CUDA_VISIBLE_DEVICES=1 nohup python -u filter.py \
+  --max_memory 33 \
+  --attributes brownskin \
+  > logs/filter_brownskin2.log 2>&1 < /dev/null &
+
+python compare_logs.py
+
 nohup ./batch.sh -m vit -a redhair_brownskin -d 1 \
   > logs/batch_vit_redhair_brownskin_best.log 2>&1 < /dev/null &
 
