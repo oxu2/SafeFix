@@ -11,3 +11,6 @@ downloaded_data
 # ...but keep top-level JSON files in save/
 !/save/*.json
 yellowhair*
+redhair_sademotion*
+
+.vscode

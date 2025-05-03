@@ -26,11 +26,11 @@ Found 14505 images with file type(s): jpg
 [14000/14505] Processed...
 Image processing using Qwen VL model complete.
 
+find /home/jovyan/ouyang/sad -type f -iname '*.jpg' | wc -l
+
 --- Processing Summary ---
 Processed all 14505 found images.
 Found 10020 feasible images matching the criteria.
 Results saved to: save/json/yellowhair_results_05020824.json
 Feasible mapping saved to: save/json/yellowhair_feasible_05020824.json
 --------------------------
-
-find /home/jovyan/ouyang/sad -type f -iname '*.jpg' | wc -l
