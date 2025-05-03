@@ -1,0 +1,96 @@
+start time: 2025-05-03 03:51:24
+/people/cs/o/oxx220000/.conda/envs/ad/lib/python3.9/site-packages/transformers/models/clip/feature_extraction_clip.py:28: FutureWarning: The class CLIPFeatureExtractor is deprecated and will be removed in version 5 of Transformers. Please use CLIPImageProcessor instead.
+  warnings.warn(
+Current time: 0503035127
+Warning: save/feasible_brownskin.json not found. No additional brownskin images will be added based on feasibility.
+Selected 5000 filenames for sampling
+Populated base_to_label dictionary with 80000 entries.
+Added 5000 generated brownskin images, before training set has 80000 images, now 85000
+Using resnet model with random weights
+Epoch [1/20], Train Loss: 0.4328, Train Acc: 0.8318, Val Loss: 0.5726, Val Acc: 0.8133
+Epoch [2/20], Train Loss: 0.3042, Train Acc: 0.9396, Val Loss: 0.3885, Val Acc: 0.8939
+Epoch [3/20], Train Loss: 0.2781, Train Acc: 0.9569, Val Loss: 0.3787, Val Acc: 0.8928
+Epoch [4/20], Train Loss: 0.2604, Train Acc: 0.9681, Val Loss: 0.4509, Val Acc: 0.8741
+Epoch [5/20], Train Loss: 0.2555, Train Acc: 0.9717, Val Loss: 0.3436, Val Acc: 0.9091
+Epoch [6/20], Train Loss: 0.2502, Train Acc: 0.9744, Val Loss: 0.3900, Val Acc: 0.9082
+Epoch [7/20], Train Loss: 0.2440, Train Acc: 0.9774, Val Loss: 0.3266, Val Acc: 0.9136
+Epoch [8/20], Train Loss: 0.2426, Train Acc: 0.9776, Val Loss: 0.3424, Val Acc: 0.9150
+Epoch [9/20], Train Loss: 0.2409, Train Acc: 0.9794, Val Loss: 0.3262, Val Acc: 0.9161
+Epoch [10/20], Train Loss: 0.2374, Train Acc: 0.9809, Val Loss: 0.3604, Val Acc: 0.9095
+Epoch [11/20], Train Loss: 0.2358, Train Acc: 0.9823, Val Loss: 0.3660, Val Acc: 0.9081
+Epoch [12/20], Train Loss: 0.2348, Train Acc: 0.9824, Val Loss: 0.3454, Val Acc: 0.9153
+Epoch [13/20], Train Loss: 0.2331, Train Acc: 0.9837, Val Loss: 0.3273, Val Acc: 0.9185
+Epoch [14/20], Train Loss: 0.2330, Train Acc: 0.9834, Val Loss: 0.3335, Val Acc: 0.9159
+Epoch [15/20], Train Loss: 0.2326, Train Acc: 0.9837, Val Loss: 0.3750, Val Acc: 0.9052
+Epoch [16/20], Train Loss: 0.2306, Train Acc: 0.9850, Val Loss: 0.3802, Val Acc: 0.9046
+Epoch [17/20], Train Loss: 0.2312, Train Acc: 0.9844, Val Loss: 0.3640, Val Acc: 0.9104
+Epoch [18/20], Train Loss: 0.2309, Train Acc: 0.9844, Val Loss: 0.3477, Val Acc: 0.9121
+Epoch [19/20], Train Loss: 0.2302, Train Acc: 0.9847, Val Loss: 0.3703, Val Acc: 0.9083
+Epoch [20/20], Train Loss: 0.2297, Train Acc: 0.9853, Val Loss: 0.3590, Val Acc: 0.9097
+Generating and saving predictions...
+Original train predictions length: 80000
+Modified image predictions length: 5000
+Validation predictions length: 20000
+Combined predictions length: 185000 (should match combined_labels length: 185000)
+Current time: 0503035127
+
+Running model diagnostics on generated predictions...
+Model Validation ACC: 0.91755
+Start detect_failure_by_label
+
+Start detect_prediction_correlation
+
+ACC: 0.906339 	Hard case: attribute "beard", description "No"
+ACC: 0.865182 	Hard case: attribute "gender", description "female"
+The accuracy with "hair color" = "white" is 0.9467213114754098
+Correct predictions: 462/488
+The accuracy with "hair color" = "yellow" is 0.9324324324324325
+Correct predictions: 69/74
+The accuracy with "hair color" = "blonde" is 0.8926456542502388
+Correct predictions: 4673/5235
+ACC: 0.892646 	Hard case: attribute "hair color", description "blonde"
+The accuracy with "hair color" = "black" is 0.9322264150943397
+Correct predictions: 6176/6625
+The accuracy with "hair color" = "gray" is 0.9793233082706767
+Correct predictions: 1042/1064
+The accuracy with "hair color" = "brown" is 0.9093840149329713
+Correct predictions: 5359/5893
+The accuracy with "hair color" = "red" is 0.9178743961352657
+Correct predictions: 570/621
+The accuracy with "skin" = "white" is 0.9186206896551724
+Correct predictions: 9324/10150
+The accuracy with "skin" = "black" is 0.9372920399283338
+Correct predictions: 3662/3907
+The accuracy with "skin" = "brown" is 0.9027427225307084
+Correct predictions: 5365/5943
+ACC: 0.902743 	Rare Case: attribute "skin", description "brown"
+ACC: 0.876426 	Rare Case: attribute "emotion", description "sad"
+ACC: 0.899194 	Rare Case: attribute "emotion", description "calm"
+ACC: 0.900969 	Hard case: attribute "emotion", description "surprised"
+ACC: 0.882845 	Rare Case: attribute "emotion", description "pensive"
+Start detect_failure_prediction_correlation
+
+Model diagnostics complete.
+
+Comparing accuracy with log file: logs/compare/stat_origin_resnet_compare.log
+Overall accuracy: 0.906750 -> 0.917550: improved
+
+Attribute-specific accuracy comparison:
+beard, No, 0.893557 -> 0.906339: improved
+gender, female, 0.849626 -> 0.865182: improved
+hair color, white, 0.930328 -> 0.946721: improved
+hair color, yellow, 0.918919 -> 0.932432: improved
+hair color, blonde, 0.880229 -> 0.892646: improved
+hair color, black, 0.921358 -> 0.932226: improved
+hair color, gray, 0.977444 -> 0.979323: improved
+hair color, brown, 0.899712 -> 0.909384: improved
+hair color, red, 0.900161 -> 0.917874: improved
+skin, brown, 0.889450 -> 0.902743: improved
+emotion, sad, 0.851711 -> 0.876426: improved
+emotion, surprised, 0.882006 -> 0.900969: improved
+emotion, pensive, 0.859833 -> 0.882845: improved
+
+Compared 13 attribute-specific accuracies.
+Start Time: 2025-05-03 03:51:24
+End Time:   2025-05-03 04:41:31
+Duration:   00:50:07

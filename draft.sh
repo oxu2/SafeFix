@@ -1,22 +1,32 @@
+
+  "class_texture_map": {
+    "n03001627 chair":          ["plastic", "metallic", "wooden", "fabric", "leather"],
+    "n03063599 coffee_mug":     ["ceramic", "glass", "plastic", "metallic"],
+    "n02871525 bookcase":       ["wooden", "plastic", "metallic"],
+    "n03085013 electric_guitar": ["wooden", "plastic", "metallic"],
+    "n03179701 desk":           ["wooden", "plastic", "metallic", "glass"],
+
+
+
 nohup ./batch.sh -m clip -a brownskin -d 0 \
-  > logs/batch_clip_brownskin.log 2>&1 < /dev/null &
+  > logs/batch/batch_clip_brownskin.log 2>&1 < /dev/null &
 nohup ./batch.sh -m resnet -a brownskin -d 0 \
-  > logs/batch_resnet_brownskin.log 2>&1 < /dev/null &
+  > logs/batch/batch_resnet_brownskin.log 2>&1 < /dev/null &
 nohup ./batch.sh -m vit -a brownskin -d 1 \
-  > logs/batch_vit_brownskin.log 2>&1 < /dev/null &
+  > logs/batch/batch_vit_brownskin.log 2>&1 < /dev/null &
 
 
 nohup ./batch.sh -m clip -a sademotion -d 2 \
-  > logs/batch_clip_sademotion.log 2>&1 < /dev/null &
+  > logs/batch/batch_clip_sademotion.log 2>&1 < /dev/null &
 
 nohup ./batch.sh -m resnet -a sademotion -d 0 \
-  > logs/batch_resnet_sademotion.log 2>&1 < /dev/null &
+  > logs/batch/batch_resnet_sademotion.log 2>&1 < /dev/null &
 
 nohup ./batch.sh -m vit -a sademotion -d 3 \
-  > logs/batch_vit_sademotion.log 2>&1 < /dev/null &
+  > logs/batch/batch_vit_sademotion.log 2>&1 < /dev/null &
 
 nohup ./batch.sh -m resnet -a sademotion -d 3 \
-  > logs/batch_resnet_sademotion.log 2>&1 < /dev/null &
+  > logs/batch/batch_resnet_sademotion.log 2>&1 < /dev/null &
 
 nohup ./batch.sh -m clip -a redhair -d 2 -g \
   > logs/g_clip_redhair.log 2>&1 < /dev/null &
@@ -121,17 +131,17 @@ CUDA_VISIBLE_DEVICES=1 nohup python -u filter.py \
 python compare_logs.py
 
 nohup ./batch.sh -m vit -a redhair_brownskin -d 1 \
-  > logs/batch_vit_redhair_brownskin_best.log 2>&1 < /dev/null &
+  > logs/batch/batch_vit_redhair_brownskin_best.log 2>&1 < /dev/null &
 
 nohup ./batch.sh -m clip -a redhair_brownskin -d 0 \
-  > logs/batch_clip_redhair_brownskin.log 2>&1 < /dev/null &
+  > logs/batch/batch_clip_redhair_brownskin.log 2>&1 < /dev/null &
 nohup ./batch.sh -m clip -a redhair -d 1 \
-  > logs/batch_clip_redhair.log 2>&1 < /dev/null &
+  > logs/batch/batch_clip_redhair.log 2>&1 < /dev/null &
 
 nohup ./batch.sh -m vit -a redhair_brownskin -d 3 \
-  > logs/batch_vit_redhair_brownskin.log 2>&1 < /dev/null &
+  > logs/batch/batch_vit_redhair_brownskin.log 2>&1 < /dev/null &
 nohup ./batch.sh -m vit -a redhair -d 2 \
-  > logs/batch_vit_redhair.log 2>&1 < /dev/null &
+  > logs/batch/batch_vit_redhair.log 2>&1 < /dev/null &
 
 nohup ./batch.sh -m vit -a simple -d 1 -u true \
   > logs/hibug_vit_simple.log 2>&1 < /dev/null &
@@ -166,9 +176,9 @@ nohup ./batch.sh -m resnet -a redhair_brownskin -d 3 -u true \
   > logs/hibug_resnet_redhair_brownskin.log 2>&1 < /dev/null &
 
 nohup ./batch.sh -m resnet -a redhair -d 0 \
-  > logs/batch_resnet_redhair.log 2>&1 < /dev/null &
+  > logs/batch/batch_resnet_redhair.log 2>&1 < /dev/null &
 nohup ./batch.sh -m resnet -a redhair_brownskin -d 3 \
-  > logs/batch_resnet_redhair_brownskin.log 2>&1 < /dev/null &
+  > logs/batch/batch_resnet_redhair_brownskin.log 2>&1 < /dev/null &
 
 CUDA_VISIBLE_DEVICES=3 python predict.py --model resnet --num_added_img 1000 --attributes redhair 
 
@@ -220,7 +230,7 @@ CUDA_VISIBLE_DEVICES=1 nohup python -u filter.py \
 
 CUDA_VISIBLE_DEVICES=2 nohup bash time_run.sh sd15.py --attributes brownskin --num_added_img 12340 > logs/sd_brownskin_12340.log 2>&1 < /dev/null &
 
-nohup ./batch.sh -m resnet -a redhair_brownskin -d 1 > logs/batch_redhair_brownskin_100000.log 2>&1 < /dev/null &
+nohup ./batch.sh -m resnet -a redhair_brownskin -d 1 > logs/batch/batch_redhair_brownskin_100000.log 2>&1 < /dev/null &
 
 nohup ./for.sh -n 10000 -a redhair -d 3 > logs/for_redhair_10000.log 2>&1 &
 
@@ -264,9 +274,9 @@ CUDA_VISIBLE_DEVICES=0 nohup python -u filter.py \
   --attributes redhair \
   --stop_at 20000 \
   > logs/filter_redhair_20000.log 2>&1 < /dev/null &
-nohup ./batch.sh -m clip -a redhair -d 3 > logs/batch_clip_redhair.log 2>&1 < /dev/null &
+nohup ./batch.sh -m clip -a redhair -d 3 > logs/batch/batch_clip_redhair.log 2>&1 < /dev/null &
 
-nohup ./batch.sh -m vit -a redhair_brownskin -d 3 > logs/batch_vit_redhair_brownskin.log 2>&1 < /dev/null &
+nohup ./batch.sh -m vit -a redhair_brownskin -d 3 > logs/batch/batch_vit_redhair_brownskin.log 2>&1 < /dev/null &
 nohup ./for.sh -n 10000 -a redhair_brownskin -d 0 > logs/for_redhair_brownskin_10000.log 2>&1 &
 nohup ./for.sh -n 10000 -a redhair_brownskin -d 1 -g > logs/g_redhair_brownskin_10000.log 2>&1 &
 nohup ./batch.sh -m clip -a redhair_brownskin -d 2 -g > logs/g_batch_vit_redhair_brownskin.log 2>&1 < /dev/null &
@@ -284,16 +294,16 @@ nohup ./for.sh -n 0 -a redhair_brownskin -d 3 > logs/for_redhair_brownskin_0.log
 nohup ./for.sh -n 0 -a redhair -d 2 > logs/for_redhair_0.log 2>&1 &
 CUDA_VISIBLE_DEVICES=0,2,3 nohup python -u filter.py --max_memory 11GiB --dir exampleData/redhair_brownskin_46703 > logs/filter_redhair_brownskin_46703.log 2>&1 < /dev/null &
 
-nohup ./batch.sh -m clip -a redhair -d 1 > logs/batch_clip_redhair.log 2>&1 < /dev/null &
-nohup ./batch.sh -m vit -a redhair -d 1 > logs/batch_vit_redhair.log 2>&1 < /dev/null &
-nohup ./batch.sh -m resnet -a redhair -d 1 -g > logs/batch_resnet_redhair_g.log 2>&1 < /dev/null &
+nohup ./batch.sh -m clip -a redhair -d 1 > logs/batch/batch_clip_redhair.log 2>&1 < /dev/null &
+nohup ./batch.sh -m vit -a redhair -d 1 > logs/batch/batch_vit_redhair.log 2>&1 < /dev/null &
+nohup ./batch.sh -m resnet -a redhair -d 1 -g > logs/batch/batch_resnet_redhair_g.log 2>&1 < /dev/null &
 
 nohup ./batch.sh -m resnet -a redhair_brownskin -d 2 -g > logs/resnet_redhair_brownskin_g.log 2>&1 < /dev/null &
 
-nohup ./batch.sh -m clip -a redhair -d 2 > logs/batch_clip_redhair.log 2>&1 < /dev/null &
-nohup ./batch.sh -m clip -a redhair -d 1 > logs/batch_clip_redhair.log 2>&1 < /dev/null &
-nohup ./batch.sh -m vit -a redhair -d 1 > logs/batch_vit_redhair.log 2>&1 < /dev/null &
-nohup ./batch.sh -m resnet -a redhair -d 1 > logs/batch__redhair.log 2>&1 < /dev/null &
+nohup ./batch.sh -m clip -a redhair -d 2 > logs/batch/batch_clip_redhair.log 2>&1 < /dev/null &
+nohup ./batch.sh -m clip -a redhair -d 1 > logs/batch/batch_clip_redhair.log 2>&1 < /dev/null &
+nohup ./batch.sh -m vit -a redhair -d 1 > logs/batch/batch_vit_redhair.log 2>&1 < /dev/null &
+nohup ./batch.sh -m resnet -a redhair -d 1 > logs/batch/batch__redhair.log 2>&1 < /dev/null &
 
 nohup ./for.sh -n 1000 -a redhair_brownskin -d 0 > logs/for_redhair_brownskin_1000.log 2>&1 &
 nohup ./for.sh -n 2000 -a redhair_brownskin -d 2 > logs/for_redhair_brownskin_2000.log 2>&1 &
