@@ -1,7 +1,78 @@
+nohup ./batch.sh -m clip -a brownskin -d 0 \
+  > logs/batch_clip_brownskin.log 2>&1 < /dev/null &
+nohup ./batch.sh -m resnet -a brownskin -d 0 \
+  > logs/batch_resnet_brownskin.log 2>&1 < /dev/null &
+nohup ./batch.sh -m vit -a brownskin -d 1 \
+  > logs/batch_vit_brownskin.log 2>&1 < /dev/null &
+
+
+nohup ./batch.sh -m clip -a sademotion -d 2 \
+  > logs/batch_clip_sademotion.log 2>&1 < /dev/null &
+
+nohup ./batch.sh -m resnet -a sademotion -d 0 \
+  > logs/batch_resnet_sademotion.log 2>&1 < /dev/null &
+
+nohup ./batch.sh -m vit -a sademotion -d 3 \
+  > logs/batch_vit_sademotion.log 2>&1 < /dev/null &
+
+nohup ./batch.sh -m resnet -a sademotion -d 3 \
+  > logs/batch_resnet_sademotion.log 2>&1 < /dev/null &
+
+nohup ./batch.sh -m clip -a redhair -d 2 -g \
+  > logs/g_clip_redhair.log 2>&1 < /dev/null &
+nohup ./batch.sh -m clip -a redhair_brownskin -d 0 -g \
+  > logs/g_clip_redhair_brownskin.log 2>&1 < /dev/null &
+
+python g_log_compare.py    \
+  --prefix g_simple \
+  --model clip \
+  --attributes redhair
+
+python g_log_compare.py    \
+  --prefix g_simple \
+  --model clip \
+  --attributes redhair_brownskin
+
+CUDA_VISIBLE_DEVICES=0 python predict.py \
+  --attributes sademotion \
+  --model resnet 
+
+nohup bash -c 'CUDA_VISIBLE_DEVICES=1 python -u predict.py \
+  --attributes sademotion \
+  --model resnet' \
+  > logs/train_sademotion_resnet.log 2>&1 &
+nohup ./batch.sh -m clip -a redhair_brownskin -d 2 -g -s \
+  > logs/g_simple_clip_redhair_brownskin.log 2>&1 < /dev/null &
+nohup ./batch.sh -m clip -a redhair -d 3 -g -s \
+  > logs/g_simple_clip_redhair.log 2>&1 < /dev/null &
+nohup ./batch.sh -m clip -a redhair_brownskin -d 2 -g \
+  > logs/g_clip_redhair_brownskin.log 2>&1 < /dev/null &
+nohup ./batch.sh -m clip -a redhair -d 3 -g \
+  > logs/g_clip_redhair.log 2>&1 < /dev/null &
+
+nohup ./batch.sh -m resnet -a redhair_brownskin -d 2 -g -s \
+  > logs/g_simple_resnet_redhair_brownskin.log 2>&1 < /dev/null &
+
+nohup ./batch.sh -m resnet -a redhair -d 3 -g -s \
+  > logs/g_simple_resnet_redhair.log 2>&1 < /dev/null &
+
+nohup ./batch.sh -m resnet -a redhair_brownskin -d 2 -g \
+  > logs/g_resnet_redhair_brownskin.log 2>&1 < /dev/null &
+
+nohup ./batch.sh -m resnet -a redhair -d 3 -g \
+  > logs/g_resnet_redhair.log 2>&1 < /dev/null &
+
+
 nohup ./batch.sh -m resnet -a redhair_brownskin -d 2 -g -n 10000 \
   > logs/g_resnet_redhair_brownskin.log 2>&1 < /dev/null &
 
 nohup ./batch.sh -m resnet -a redhair -d 3 -g -n 10000 \
+  > logs/g_resnet_redhair.log 2>&1 < /dev/null &
+
+nohup ./batch.sh -m resnet -a redhair_brownskin -d 2 -g -n 10000 -s \
+  > logs/g_resnet_redhair_brownskin.log 2>&1 < /dev/null &
+
+nohup ./batch.sh -m resnet -a redhair -d 3 -g -n 10000 -s \
   > logs/g_resnet_redhair.log 2>&1 < /dev/null &
 
 
