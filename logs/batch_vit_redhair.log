@@ -5,3 +5,7 @@
 === [5000 imgs] Finished vit ===
 
 === [10000 imgs] Starting vit -> logs/vit_redhair_10000imgs.log ===
+=== [10000 imgs] Finished vit ===
+
+./batch.sh: line 74: syntax error near unexpected token `done'
+./batch.sh: line 74: `done'

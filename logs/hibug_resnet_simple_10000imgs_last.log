@@ -76,18 +76,18 @@ Comparing accuracy with log file: logs/compare/stat_origin_resnet_compare.log
 Overall accuracy: 0.906750 -> 0.907550: improved
 
 Attribute-specific accuracy comparison:
-beard, No, 0.893557 -> 0.892211: declined
-gender, female, 0.849626 -> 0.851751: improved
-hair color, white, 0.930328 -> 0.932377: improved
-hair color, yellow, 0.918919 -> 0.932432: improved
-hair color, blonde, 0.880229 -> 0.877364: declined
-hair color, black, 0.921358 -> 0.924528: improved
-hair color, gray, 0.977444 -> 0.977444: same
-hair color, brown, 0.899712 -> 0.899372: declined
-hair color, red, 0.900161 -> 0.916264: improved
-skin, brown, 0.889450 -> 0.895339: improved
-emotion, sad, 0.851711 -> 0.856464: improved
-emotion, surprised, 0.882006 -> 0.892541: improved
+beard, No, 0.893557 -> 0.891314: declined
+gender, female, 0.849626 -> 0.849201: declined
+hair color, white, 0.930328 -> 0.936475: improved
+hair color, yellow, 0.918919 -> 0.918919: same
+hair color, blonde, 0.880229 -> 0.876409: declined
+hair color, black, 0.921358 -> 0.923170: improved
+hair color, gray, 0.977444 -> 0.973684: declined
+hair color, brown, 0.899712 -> 0.899881: improved
+hair color, red, 0.900161 -> 0.911433: improved
+skin, brown, 0.889450 -> 0.894161: improved
+emotion, sad, 0.851711 -> 0.866920: improved
+emotion, surprised, 0.882006 -> 0.888748: improved
 emotion, pensive, 0.859833 -> 0.859833: declined
 
 Compared 13 attribute-specific accuracies.
