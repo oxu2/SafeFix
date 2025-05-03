@@ -1,0 +1,46 @@
+start time: 2025-05-02 19:00:33
+/people/cs/o/oxx220000/.conda/envs/ad/lib/python3.9/site-packages/transformers/models/clip/feature_extraction_clip.py:28: FutureWarning: The class CLIPFeatureExtractor is deprecated and will be removed in version 5 of Transformers. Please use CLIPImageProcessor instead.
+  warnings.warn(
+Current time: 0502190036
+Selected 1000 filenames for sampling
+Populated base_to_label dictionary with 80000 entries.
+Using only generated images: total training images = 1000
+Using clip model with random weights
+Epoch [1/20], Train Loss: 0.7562, Train Acc: 0.5537, Val Loss: 0.6049, Val Acc: 0.5950
+Epoch [2/20], Train Loss: 0.6774, Train Acc: 0.5800, Val Loss: 0.6360, Val Acc: 0.5200
+Epoch [3/20], Train Loss: 0.6635, Train Acc: 0.6012, Val Loss: 0.6538, Val Acc: 0.5200
+Epoch [4/20], Train Loss: 0.6548, Train Acc: 0.6162, Val Loss: 0.5600, Val Acc: 0.6800
+Epoch [5/20], Train Loss: 0.6319, Train Acc: 0.6212, Val Loss: 0.5135, Val Acc: 0.7150
+Epoch [6/20], Train Loss: 0.6053, Train Acc: 0.6562, Val Loss: 0.5110, Val Acc: 0.6950
+Epoch [7/20], Train Loss: 0.5666, Train Acc: 0.6800, Val Loss: 0.4932, Val Acc: 0.6950
+Epoch [8/20], Train Loss: 0.5726, Train Acc: 0.6850, Val Loss: 0.4771, Val Acc: 0.7200
+Epoch [9/20], Train Loss: 0.5185, Train Acc: 0.7375, Val Loss: 0.4804, Val Acc: 0.7850
+Epoch [10/20], Train Loss: 0.5174, Train Acc: 0.7538, Val Loss: 0.4894, Val Acc: 0.7650
+Epoch [11/20], Train Loss: 0.4872, Train Acc: 0.7900, Val Loss: 0.4737, Val Acc: 0.7450
+Epoch [12/20], Train Loss: 0.4787, Train Acc: 0.8050, Val Loss: 0.4535, Val Acc: 0.7600
+Epoch [13/20], Train Loss: 0.4688, Train Acc: 0.7900, Val Loss: 0.4530, Val Acc: 0.7650
+Epoch [14/20], Train Loss: 0.4567, Train Acc: 0.8000, Val Loss: 0.4638, Val Acc: 0.7650
+Epoch [15/20], Train Loss: 0.4675, Train Acc: 0.7863, Val Loss: 0.4524, Val Acc: 0.7850
+Epoch [16/20], Train Loss: 0.4561, Train Acc: 0.8013, Val Loss: 0.5022, Val Acc: 0.7650
+Epoch [17/20], Train Loss: 0.4448, Train Acc: 0.8163, Val Loss: 0.4450, Val Acc: 0.7900
+Epoch [18/20], Train Loss: 0.4348, Train Acc: 0.8225, Val Loss: 0.4605, Val Acc: 0.7850
+Epoch [19/20], Train Loss: 0.4393, Train Acc: 0.8175, Val Loss: 0.4568, Val Acc: 0.7850
+Epoch [20/20], Train Loss: 0.4310, Train Acc: 0.8263, Val Loss: 0.4533, Val Acc: 0.7900
+Generating and saving predictions...
+Original train predictions length: 0
+Modified image predictions length: 800
+Validation predictions length: 200
+Combined predictions length: 81000
+Current time: 0502190036
+
+Running model diagnostics on generated predictions...
+Skipping model diagnostics because gen_only=True
+
+============================================================
+Final Epoch Train Accuracy (gen_only=True): 0.8263
+============================================================
+
+Skipping accuracy comparison due to gen_only flag being True
+Start Time: 2025-05-02 19:00:33
+End Time:   2025-05-02 19:02:10
+Duration:   00:01:37

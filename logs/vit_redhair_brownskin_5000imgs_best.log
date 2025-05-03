@@ -7,3 +7,32 @@ Added 5000 generated redhair_brownskin images, before training set has 80000 ima
 Using vit model with random weights
 Epoch [1/15], Train Loss: 0.5771, Train Acc: 0.7288, Val Loss: 0.5331, Val Acc: 0.7739
 Epoch [2/15], Train Loss: 0.4513, Train Acc: 0.8388, Val Loss: 0.4623, Val Acc: 0.8289
+Epoch [3/15], Train Loss: 0.4028, Train Acc: 0.8722, Val Loss: 0.5148, Val Acc: 0.8218
+Epoch [4/15], Train Loss: 0.3784, Train Acc: 0.8878, Val Loss: 0.4383, Val Acc: 0.8478
+Epoch [5/15], Train Loss: 0.3676, Train Acc: 0.8954, Val Loss: 0.4191, Val Acc: 0.8631
+Epoch [6/15], Train Loss: 0.3558, Train Acc: 0.9029, Val Loss: 0.4308, Val Acc: 0.8606
+Epoch [7/15], Train Loss: 0.3478, Train Acc: 0.9089, Val Loss: 0.4301, Val Acc: 0.8634
+Epoch [8/15], Train Loss: 0.3377, Train Acc: 0.9146, Val Loss: 0.4178, Val Acc: 0.8679
+Epoch [9/15], Train Loss: 0.3318, Train Acc: 0.9183, Val Loss: 0.4144, Val Acc: 0.8707
+Epoch [10/15], Train Loss: 0.3255, Train Acc: 0.9221, Val Loss: 0.4207, Val Acc: 0.8718
+Epoch [11/15], Train Loss: 0.3195, Train Acc: 0.9258, Val Loss: 0.4197, Val Acc: 0.8691
+Epoch [12/15], Train Loss: 0.3134, Train Acc: 0.9304, Val Loss: 0.4325, Val Acc: 0.8694
+Epoch [13/15], Train Loss: 0.3069, Train Acc: 0.9344, Val Loss: 0.4302, Val Acc: 0.8716
+Epoch [14/15], Train Loss: 0.3030, Train Acc: 0.9371, Val Loss: 0.4084, Val Acc: 0.8783
+Epoch [15/15], Train Loss: 0.3004, Train Acc: 0.9383, Val Loss: 0.4238, Val Acc: 0.8749
+Generating and saving predictions...
+Original train predictions length: 80000
+Modified image predictions length: 5000
+Validation predictions length: 20000
+Combined predictions length: 185000 (should match combined_labels length: 185000)
+Current time: 0502170311
+
+Running model diagnostics on generated predictions...
+Traceback (most recent call last):
+  File "/people/cs/o/oxx220000/HiBug/predict.py", line 745, in <module>
+  File "/people/cs/o/oxx220000/.conda/envs/ad/lib/python3.9/site-packages/numpy/lib/npyio.py", line 427, in load
+    fid = stack.enter_context(open(os_fspath(file), "rb"))
+FileNotFoundError: [Errno 2] No such file or directory: 'save/pred/predictions_vit_redhair_brownskin_5000imgs_h_0502170311.npy'
+Start Time: 2025-05-02 17:03:08
+End Time:   2025-05-02 21:19:32
+Duration:   04:16:24

@@ -56,7 +56,7 @@ for NUM_ADDED_IMG in ${NUM_LIST}; do
   if [[ "${HIBUG}" == true ]]; then
     SUFFIX+="hibug_"
   fi
-  LOG_FILE="${LOG_DIR}/${SUFFIX}${MODEL}_${ATTRIBUTES}_${NUM_ADDED_IMG}imgs_best.log"
+  LOG_FILE="${LOG_DIR}/${SUFFIX}${MODEL}_${ATTRIBUTES}_${NUM_ADDED_IMG}imgs.log"
   echo "=== [${NUM_ADDED_IMG} imgs] Starting ${MODEL} -> ${LOG_FILE} ==="
 
   CUDA_VISIBLE_DEVICES=${CUDA_DEVICES} \

@@ -5,3 +5,7 @@
 === [5000 imgs] Finished clip ===
 
 === [10000 imgs] Starting clip -> logs/clip_redhair_brownskin_10000imgs.log ===
+=== [10000 imgs] Finished clip ===
+
+./batch.sh: line 74: syntax error near unexpected token `exit'
+./batch.sh: line 74: `ailed (exit code $?). See ${LOG_FILE}"'

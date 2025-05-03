@@ -1,46 +1,44 @@
-start time: 2025-05-02 16:58:24
-/people/cs/o/oxx220000/HiBug/predict.py:474: RuntimeWarning: divide by zero encountered in scalar divide
-  pos_weight = torch.tensor([num_negative / num_positive]).to(device)
-Hibug mode enabled: using image directory hibug_redhair
-Current time: 0502165826
-Simple hibug mode: Found 33270 images in hibug_simple
+start time: 2025-05-02 17:39:04
+Current time: 0502173907
 Selected 10000 filenames for sampling
+Populated base_to_label dictionary with 80000 entries.
 Using only generated images: total training images = 10000
 Using resnet model with random weights
-Epoch [1/20], Train Loss: nan, Train Acc: 0.9939, Val Loss: nan, Val Acc: 1.0000
-Epoch [2/20], Train Loss: nan, Train Acc: 1.0000, Val Loss: nan, Val Acc: 1.0000
-Epoch [3/20], Train Loss: nan, Train Acc: 1.0000, Val Loss: nan, Val Acc: 1.0000
-Epoch [4/20], Train Loss: nan, Train Acc: 1.0000, Val Loss: nan, Val Acc: 1.0000
-Epoch [5/20], Train Loss: nan, Train Acc: 1.0000, Val Loss: nan, Val Acc: 1.0000
-Epoch [6/20], Train Loss: nan, Train Acc: 1.0000, Val Loss: nan, Val Acc: 1.0000
-Epoch [7/20], Train Loss: nan, Train Acc: 1.0000, Val Loss: nan, Val Acc: 1.0000
-Epoch [8/20], Train Loss: nan, Train Acc: 1.0000, Val Loss: nan, Val Acc: 1.0000
-Epoch [9/20], Train Loss: nan, Train Acc: 1.0000, Val Loss: nan, Val Acc: 1.0000
-Epoch [10/20], Train Loss: nan, Train Acc: 1.0000, Val Loss: nan, Val Acc: 1.0000
-Epoch [11/20], Train Loss: nan, Train Acc: 1.0000, Val Loss: nan, Val Acc: 1.0000
-Epoch [12/20], Train Loss: nan, Train Acc: 1.0000, Val Loss: nan, Val Acc: 1.0000
-Epoch [13/20], Train Loss: nan, Train Acc: 1.0000, Val Loss: nan, Val Acc: 1.0000
-Epoch [14/20], Train Loss: nan, Train Acc: 1.0000, Val Loss: nan, Val Acc: 1.0000
-Epoch [15/20], Train Loss: nan, Train Acc: 1.0000, Val Loss: nan, Val Acc: 1.0000
-Epoch [16/20], Train Loss: nan, Train Acc: 1.0000, Val Loss: nan, Val Acc: 1.0000
-Epoch [17/20], Train Loss: nan, Train Acc: 1.0000, Val Loss: nan, Val Acc: 1.0000
-Epoch [18/20], Train Loss: nan, Train Acc: 1.0000, Val Loss: nan, Val Acc: 1.0000
-Epoch [19/20], Train Loss: nan, Train Acc: 1.0000, Val Loss: nan, Val Acc: 1.0000
-Epoch [20/20], Train Loss: nan, Train Acc: 1.0000, Val Loss: nan, Val Acc: 1.0000
+Epoch [1/20], Train Loss: 0.5730, Train Acc: 0.7063, Val Loss: 0.4981, Val Acc: 0.7715
+Epoch [2/20], Train Loss: 0.4675, Train Acc: 0.8070, Val Loss: 0.8837, Val Acc: 0.5640
+Epoch [3/20], Train Loss: 0.4188, Train Acc: 0.8436, Val Loss: 0.4077, Val Acc: 0.8450
+Epoch [4/20], Train Loss: 0.3829, Train Acc: 0.8781, Val Loss: 0.4174, Val Acc: 0.8455
+Epoch [5/20], Train Loss: 0.3729, Train Acc: 0.8841, Val Loss: 0.3407, Val Acc: 0.9125
+Epoch [6/20], Train Loss: 0.3636, Train Acc: 0.8922, Val Loss: 0.3341, Val Acc: 0.9090
+Epoch [7/20], Train Loss: 0.3506, Train Acc: 0.9038, Val Loss: 0.3376, Val Acc: 0.9090
+Epoch [8/20], Train Loss: 0.3501, Train Acc: 0.9040, Val Loss: 0.3223, Val Acc: 0.9215
+Epoch [9/20], Train Loss: 0.3441, Train Acc: 0.9056, Val Loss: 0.3721, Val Acc: 0.8815
+Epoch [10/20], Train Loss: 0.3434, Train Acc: 0.9065, Val Loss: 0.3233, Val Acc: 0.9220
+Epoch [11/20], Train Loss: 0.3358, Train Acc: 0.9150, Val Loss: 0.3140, Val Acc: 0.9255
+Epoch [12/20], Train Loss: 0.3369, Train Acc: 0.9153, Val Loss: 0.3304, Val Acc: 0.9060
+Epoch [13/20], Train Loss: 0.3377, Train Acc: 0.9136, Val Loss: 0.3083, Val Acc: 0.9285
+Epoch [14/20], Train Loss: 0.3315, Train Acc: 0.9145, Val Loss: 0.3083, Val Acc: 0.9295
+Epoch [15/20], Train Loss: 0.3323, Train Acc: 0.9184, Val Loss: 0.3106, Val Acc: 0.9295
+Epoch [16/20], Train Loss: 0.3314, Train Acc: 0.9184, Val Loss: 0.3082, Val Acc: 0.9310
+Epoch [17/20], Train Loss: 0.3304, Train Acc: 0.9190, Val Loss: 0.3096, Val Acc: 0.9305
+Epoch [18/20], Train Loss: 0.3319, Train Acc: 0.9166, Val Loss: 0.3162, Val Acc: 0.9245
+Epoch [19/20], Train Loss: 0.3307, Train Acc: 0.9201, Val Loss: 0.3090, Val Acc: 0.9345
+Epoch [20/20], Train Loss: 0.3283, Train Acc: 0.9150, Val Loss: 0.3089, Val Acc: 0.9250
 Generating and saving predictions...
 Original train predictions length: 0
 Modified image predictions length: 8000
 Validation predictions length: 2000
 Combined predictions length: 90000
-Current time: 0502165826
+Current time: 0502173907
 
 Running model diagnostics on generated predictions...
-Traceback (most recent call last):
-  File "/people/cs/o/oxx220000/HiBug/predict.py", line 745, in <module>
-    [VALID] * len(valid_labels) +
-  File "/people/cs/o/oxx220000/.conda/envs/ad/lib/python3.9/site-packages/numpy/lib/npyio.py", line 427, in load
-    fid = stack.enter_context(open(os_fspath(file), "rb"))
-FileNotFoundError: [Errno 2] No such file or directory: 'save/pred/predictions_resnet_redhair_10000imgs_g_h_0502165826.npy'
-Start Time: 2025-05-02 16:58:24
-End Time:   2025-05-02 17:06:17
-Duration:   00:07:53
+Skipping model diagnostics because gen_only=True
+
+============================================================
+Final Epoch Train Accuracy (gen_only=True): 0.9150
+============================================================
+
+Skipping accuracy comparison due to gen_only flag being True
+Start Time: 2025-05-02 17:39:04
+End Time:   2025-05-02 17:43:22
+Duration:   00:04:18

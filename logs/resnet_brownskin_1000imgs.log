@@ -1,0 +1,9 @@
+start time: 2025-05-03 03:03:32
+/people/cs/o/oxx220000/.conda/envs/ad/lib/python3.9/site-packages/transformers/models/clip/feature_extraction_clip.py:28: FutureWarning: The class CLIPFeatureExtractor is deprecated and will be removed in version 5 of Transformers. Please use CLIPImageProcessor instead.
+  warnings.warn(
+Current time: 0503030335
+Warning: save/feasible_brownskin.json not found. No additional brownskin images will be added based on feasibility.
+Selected 1000 filenames for sampling
+Populated base_to_label dictionary with 80000 entries.
+Added 1000 generated brownskin images, before training set has 80000 images, now 81000
+Using resnet model with random weights

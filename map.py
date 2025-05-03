@@ -226,3 +226,12 @@ with open("exampleData/celebA/non_yellowhair_brownskin_indices.txt", 'w') as f:
 # print(f"non_yellow_hair ∧ non_brown_skin ∧ non_sad_emotion: {len(intersection_all)} samples")
 # print(f"non_yellow_hair ∧ non_sad_emotion: {len(intersection_yellowhair_sademotion)} samples")
 # print(f"non_brown_skin ∧ non_sad_emotion: {len(intersection_brownskin_sademotion)} samples")
+
+# Example usage: find indices for samples that are non-redhair AND non-sad emotion
+find_intersection_and_differences(
+    "exampleData/celebA/non_redhair_indices.txt",
+    "exampleData/celebA/non_sademotion_indices.txt",
+    "exampleData/celebA/non_redhair_sademotion_indices.txt",
+    "exampleData/celebA/only_non_redhair_indices.txt",
+    "exampleData/celebA/only_non_sademotion_indices.txt"
+)

@@ -2,3 +2,10 @@
 === [1000 imgs] Finished vit ===
 
 === [5000 imgs] Starting vit -> logs/vit_redhair_brownskin_5000imgs_best.log ===
+=== [5000 imgs] Finished vit ===
+
+=== [10000 imgs] Starting vit -> logs/vit_redhair_brownskin_10000imgs_best.log ===
+=== [10000 imgs] Finished vit ===
+
+./batch.sh: line 74: syntax error near unexpected token `)'
+./batch.sh: line 74: `t code $?). See ${LOG_FILE}"'

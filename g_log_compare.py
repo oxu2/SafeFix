@@ -83,8 +83,11 @@ for attributes in attr_sets:
                 return float('nan')
             base_acc = extract_train_acc(base_log)
             ours_acc = extract_train_acc(ours_log)
-            print(f"\n=== Final Epoch Train Accuracy ({args.prefix} vs {args.base_prefix}) for '{attributes}' with {num} added images ===")
-            print(f"{args.base_prefix} = {base_acc:.4f}, {args.prefix} = {ours_acc:.4f}")
+            # Rename labels for clarity
+            base_label = "g_ours"
+            prefix_label = "g_hibug_simple" if args.prefix == "g_simple" else args.prefix
+            print(f"\n=== Final Epoch Train Accuracy ({prefix_label} vs {base_label}) for '{attributes}' with {num} added images ===")
+            print(f"{base_label} = {base_acc:.4f}, {prefix_label} = {ours_acc:.4f}")
             continue
 
         if args.only_attr:

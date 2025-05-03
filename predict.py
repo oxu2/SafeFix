@@ -15,6 +15,7 @@ import torchvision
 #0.14.1+cu117g
 from torchvision.models import ResNet18_Weights
 from transformers import ViTModel, ViTFeatureExtractor
+from transformers import CLIPFeatureExtractor
 import datetime
 from timm import create_model
 import matplotlib.pyplot as plt
@@ -87,6 +88,8 @@ parser.add_argument('--skip_train_unlabeled', type=str2bool, default=False,
                     help='Skip processing TRAIN and UNLABELED splits in diagnostics')
 parser.add_argument('--hibug', type=str2bool, default=False,
                     help='Use images from hibug_<attributes> directory (default: False)')
+parser.add_argument('--skip_feasible', type=str2bool, default=False,
+                    help='Skip loading feasible JSON for any attributes (default: False)')
 parser.add_argument(
     '--simple', type=str2bool, default=True,
     help='Use simple hibug mode: load from hibug_simple folder and infer labels from filename prefix (default: True).'
@@ -115,6 +118,10 @@ if args.model == 'vit' and args.lr == 1e-4:
     args.lr = 5e-5
     if verbose:
         print(f"Adjusted learning rate for ViT to {args.lr}")
+elif args.model == 'clip' and args.lr == 1e-4 and not args.pretrained: # Only lower LR if not pretrained
+    args.lr = 1e-5
+    if verbose:
+        print(f"Lowered lr for random-init CLIP to {args.lr}")
 
 time_now = datetime.datetime.now().strftime("%m%d%H%M%S")   
 print("Current time:", time_now)
@@ -133,10 +140,13 @@ if compare_log_path and not os.path.exists(compare_log_path):
      compare_log_path = None # Set to None if file doesn't exist
 
 class CLIPForBinary(nn.Module):
-    def __init__(self, dropout_rate=0.5):
+    def __init__(self, dropout_rate=0.5, pretrained=False):
         super().__init__()
-        # Initialize CLIP with random weights
-        self.clip = CLIPModel(CLIPConfig())
+        # Initialize CLIP with or without pre-trained weights
+        if pretrained:
+            self.clip = CLIPModel.from_pretrained("openai/clip-vit-base-patch32")
+        else:
+            self.clip = CLIPModel(CLIPConfig())
         self.dropout = nn.Dropout(p=dropout_rate)
         self.dropout2 = nn.Dropout(p=dropout_rate)
         self.classifier = nn.Linear(self.clip.config.projection_dim, 1)
@@ -148,20 +158,23 @@ class CLIPForBinary(nn.Module):
         feats = self.dropout2(feats)
         return self.classifier(feats)
 
-# Load the feasible images (color hair images) from feasible.json
-# Skip loading feasible_images if hibug is True
+# Load the feasible images from feasible.json unless skip_feasible is True
 if not args.hibug:
-    if os.path.exists(args.feasible_file):
-        with open(args.feasible_file, 'r') as f:
-            feasible_images = json.load(f)
-        if verbose:
-            print(f"Loaded {len(feasible_images)} feasible {args.attributes} images")
-    else:
+    if args.skip_feasible:
         feasible_images = {}
-        # Keep original attributes if feasible file not found, but print warning
-        print(f"Warning: {args.feasible_file} not found. No additional {args.attributes} images will be added based on feasibility.")
+        if verbose:
+            print(f"skip_feasible flag is True; skipping feasible JSON loading for {args.attributes}.")
+    else:
+        if os.path.exists(args.feasible_file):
+            with open(args.feasible_file, 'r') as f:
+                feasible_images = json.load(f)
+            if verbose:
+                print(f"Loaded {len(feasible_images)} feasible {args.attributes} images")
+        else:
+            feasible_images = {}
+            print(f"Warning: {args.feasible_file} not found. No additional {args.attributes} images will be added based on feasibility.")
 else:
-    feasible_images = {} # Not used in hibug mode
+    feasible_images = {}  # Not used in hibug mode
     if verbose:
         print("Hibug mode: Skipping feasible image loading.")
 
@@ -204,14 +217,21 @@ class CelebADataset(Dataset):
 
         return img, label
 
+# Initialize CLIP feature extractor
+feature_extractor = CLIPFeatureExtractor.from_pretrained("openai/clip-vit-base-patch32")
+
 # Define transformations
-transform = transforms.Compose([
-    transforms.RandomResizedCrop(224, scale=(0.8, 1.0)),
-    transforms.RandomHorizontalFlip(p=0.5),
-    transforms.ColorJitter(brightness=0.2, contrast=0.2, saturation=0.2),
-    transforms.ToTensor(),
-    transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5])
-])
+if args.model == 'clip':
+    # Use CLIP feature extractor to obtain pixel_values tensor
+    transform = lambda img: feature_extractor(images=img, return_tensors="pt")["pixel_values"].squeeze(0)
+else:
+    transform = transforms.Compose([
+        transforms.RandomResizedCrop(224, scale=(0.8, 1.0)),
+        transforms.RandomHorizontalFlip(p=0.5),
+        transforms.ColorJitter(brightness=0.2, contrast=0.2, saturation=0.2),
+        transforms.ToTensor(),
+        transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5])
+    ])
 
 # Create Datasets and Loaders
 train_imgs = [all_datas[i] for i in range(len(all_datas)) if split[i] == TRAIN]
@@ -457,9 +477,8 @@ elif args.model == 'vit':
          nn.Linear(num_head_features, 1)
     )
 elif args.model == 'clip':
-    # Use CLIP vision model for binary classification
-    model = CLIPForBinary(dropout_rate=0.5)
-    args.pretrained = False  # ensure downstream logs and prints reflect random weights for CLIP
+    # Use CLIP vision model for binary classification, passing pretrained flag
+    model = CLIPForBinary(dropout_rate=0.5, pretrained=args.pretrained)
 
 model = model.to(device)
 print(f"Using {args.model} model with {'pretrained' if args.pretrained else 'random'} weights")
@@ -478,13 +497,10 @@ else:
 
 # Use OneCycleLR scheduler for CLIP, CosineAnnealingLR for ViT, StepLR for resnet
 if args.model == 'clip':
-    scheduler = torch.optim.lr_scheduler.OneCycleLR(
+    # Use CosineAnnealingLR for CLIP, especially when training from scratch
+    scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
         optimizer,
-        max_lr=args.lr * 20,
-        steps_per_epoch=len(train_loader),
-        epochs=args.num_epochs,
-        pct_start=0.1,
-        anneal_strategy='cos'
+        T_max=args.num_epochs # T_max should match the number of epochs
     )
 elif args.model == 'vit':
     # Align T_max with the actual number of epochs for ViT

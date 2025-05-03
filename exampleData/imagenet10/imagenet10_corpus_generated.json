@@ -47,7 +47,7 @@
                 "wild",
                 "snow"
             ],
-            "prompt": ["The blackground of this photo is #1"],
+            "prompt": ["The background of this photo is #1"],
             "type": "description",
             "question": "What is the background of this photo?"
         },
