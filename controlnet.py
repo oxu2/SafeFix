@@ -37,11 +37,34 @@ from cldm.model import create_model, load_state_dict
 from cldm.ddim_hacked import DDIMSampler
 import os
 import re
+import argparse
+
+# Parse command-line arguments
+parser = argparse.ArgumentParser(description="ControlNet batch inference")
+parser.add_argument('--attributes', type=str, default='redhair_brownskin_sademotion',
+                    help="Attributes for generation, e.g., redhair_sademotion or redhair_brownskin")
+args = parser.parse_args()
+
+# Build prompt text from attributes
+attr_tokens = args.attributes.split('_')
+token_map = {
+    'redhair': 'vibrant red hair',
+    'brownskin': 'brown skin',
+    'sademotion': 'sad emotion'
+}
+mapped = [token_map.get(tok, tok) for tok in attr_tokens]
+prompt_text = 'a person with ' + ', '.join(mapped) + ', high detail, natural lighting'
 
 apply_hed = HEDdetector()
 
-model = create_model('/home/jovyan/ouyang/ControlNet/models/cldm_v15.yaml').cpu()
-model.load_state_dict(load_state_dict('/home/jovyan/ouyang/ControlNet/models/control_sd15_hed.pth', location='cuda'))
+# Determine model config and weights paths, with fallback
+config_path = '/home/jovyan/ouyang/ControlNet/models/cldm_v15.yaml'
+weights_path = '/home/jovyan/ouyang/ControlNet/models/control_sd15_hed.pth'
+if not os.path.exists(config_path):
+    config_path = 'model_controlnet/models/cldm_v15.yaml'
+    weights_path = 'model_controlnet/models/control_sd15_hed.pth'
+model = create_model(config_path).cpu()
+model.load_state_dict(load_state_dict(weights_path, location='cuda'))
 model = model.cuda()
 ddim_sampler = DDIMSampler(model)
 
@@ -132,22 +155,27 @@ def inference(image_path, prompt,
     return gen_paths
 
 
-# Example usage:
-# results = inference(
-#     image_path='/home/jovyan/ouyang/ControlNet/test_imgs/bird.png',
-#     prompt='please change hair color to red',
-#     seed=42,
-#     num_samples=1,
-#     image_resolution=512,
-#     save_dir='/home/jovyan/ouyang/ControlNet/test_results',
-# )
 
-input_dir = '/home/jovyan/ouyang/dataset/img_align_celeba'       # Folder with 000001.jpg, 000002.jpg, etc.
-output_dir = './redhair_sademotion'   # Folder to save generated images
+# Determine input directory, try primary then fallback
+if os.path.exists('/home/jovyan/ouyang/dataset/img_align_celeba'):
+    input_dir = '/home/jovyan/ouyang/dataset/img_align_celeba'
+else:
+    input_dir = '/data/oxx220000/img_align_celeba'
+# Output directory based on attributes
+output_dir = f'./{args.attributes}'
+
 os.makedirs(output_dir, exist_ok=True)
 
-# read indices from file
-with open('/home/jovyan/ouyang/HiBug/non_redhair_brownskin_indices.txt', 'r') as f:
+# Determine indices file path with fallback
+primary_indices = f'/home/jovyan/ouyang/HiBug/non_{args.attributes}_indices.txt'
+fallback_indices = f'exampleData/celebA/non_{args.attributes}_indices.txt'
+if os.path.exists(primary_indices):
+    indices_file = primary_indices
+elif os.path.exists(fallback_indices):
+    indices_file = fallback_indices
+else:
+    raise FileNotFoundError(f"Indices file not found: {primary_indices} or {fallback_indices}")
+with open(indices_file, 'r') as f:
     indices = [int(line.strip()) for line in f if line.strip()]
 
 image_files = [f"{idx + 1:06d}.jpg" for idx in indices]
@@ -165,10 +193,7 @@ for idx, filename in enumerate(image_files, start=1):
     # Run your process (one image per input)
     results = process(
         input_image=input_image,
-        # prompt='a person with vibrant red hair, brown skin, high detail, natural lighting',
-        # prompt='a person with brown skin, high detail, natural lighting',
-        # prompt='a person with sad emotion, not change previous color, high detail, natural lighting',
-        prompt='a person with vibrant red hair, with sad emotion, not change other previous color, high detail, natural lighting',
+        prompt=prompt_text,
         a_prompt='best quality, extremely detailed',
         n_prompt='lowres, bad anatomy, bad hands',
         num_samples=1,
@@ -186,7 +211,7 @@ for idx, filename in enumerate(image_files, start=1):
 
     # Save result with modified filename
     base = os.path.splitext(filename)[0]
-    new_name = f"{base}_redhair_sademotion.jpg"
+    new_name = f"{base}_{args.attributes}.jpg"
     save_path = os.path.join(output_dir, new_name)
     Image.fromarray(generated_image).save(save_path)
 

@@ -228,6 +228,7 @@ with open("exampleData/celebA/non_yellowhair_brownskin_indices.txt", 'w') as f:
 # print(f"non_brown_skin ∧ non_sad_emotion: {len(intersection_brownskin_sademotion)} samples")
 
 # Example usage: find indices for samples that are non-redhair AND non-sad emotion
+
 find_intersection_and_differences(
     "exampleData/celebA/non_redhair_indices.txt",
     "exampleData/celebA/non_sademotion_indices.txt",
@@ -235,3 +236,15 @@ find_intersection_and_differences(
     "exampleData/celebA/only_non_redhair_indices.txt",
     "exampleData/celebA/only_non_sademotion_indices.txt"
 )
+
+# Compute three-way intersection: samples that are non-redhair, non-brownskin, AND non-sad emotion
+redhair_set = load_indices("exampleData/celebA/non_redhair_indices.txt")
+brownskin_set = load_indices("exampleData/celebA/non_brownskin_indices.txt")
+sademotion_set = load_indices("exampleData/celebA/non_sademotion_indices.txt")
+
+intersection_all = redhair_set & brownskin_set & sademotion_set
+output_path = "exampleData/celebA/non_redhair_brownskin_sademotion_indices.txt"
+with open(output_path, 'w') as f:
+    for idx in sorted(intersection_all):
+        f.write(f"{idx}\n")
+print(f"Saved three-way intersection (non_redhair_brownskin_sademotion) to {output_path}, total samples: {len(intersection_all)}")
