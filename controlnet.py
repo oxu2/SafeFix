@@ -37,6 +37,11 @@ import logging
 logging.getLogger("pytorch_lightning").setLevel(logging.ERROR)
 
 from pytorch_lightning import seed_everything
+<<<<<<< HEAD
+# Disable tqdm progress bars if output is non-interactive (such as nohup)
+import functools, tqdm
+tqdm.tqdm = functools.partial(tqdm.tqdm, disable=not sys.stdout.isatty())
+=======
 # Ensure the local 'annotator' package in this repo is on the import path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'annotator'))
 from annotator.util import resize_image, HWC3
