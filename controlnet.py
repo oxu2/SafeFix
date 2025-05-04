@@ -3,27 +3,6 @@ import sys
 import contextlib
 import io
 
-<<<<<<< HEAD
-# Filter out PyTorch Lightning seed prints
-import builtins
-_orig_print = builtins.print
-def _filtered_print(*args, **kwargs):
-    # Suppress PyTorch Lightning seed notices
-    if args and isinstance(args[0], str) and args[0].startswith("Global seed set to"):
-        return
-    _orig_print(*args, **kwargs)
-# Override the built-in print function everywhere
-builtins.print = _filtered_print
-
-# Ensure this script runs in the 'control' conda environment
-if os.environ.get('CONDA_DEFAULT_ENV') != 'control':
-    sys.stderr.write("Info: Switching to the 'control' conda environment and re-running...\n")
-    sys.execvp(
-        'conda',
-        ['conda', 'run', '-n', 'control', 'python'] + sys.argv
-    )
-print("Info: Now running in the 'control' conda environment.")
-=======
 
 # Ensure this script runs in the 'control' conda environment
 # if os.environ.get('CONDA_DEFAULT_ENV') != 'control':
@@ -33,7 +12,6 @@ print("Info: Now running in the 'control' conda environment.")
 #         ['conda', 'run', '-n', 'control', 'python'] + sys.argv
 #     )
 # print("Info: Now running in the 'control' conda environment.")
->>>>>>> 3244635c69e061408f5c9a77ea8767938902aeac
 
 import cv2
 import numpy as np

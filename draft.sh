@@ -1,10 +1,8 @@
-<<<<<<< HEAD
 
 find /home/jovyan/ouyang/HiBug/redhair_sademotion -type f -iname '*.jpg' | wc -l
 6422 as of 1PM 05/03/2025
 
 
-=======
 CUDA_VISIBLE_DEVICES=0 nohup python -u filter.py \
   --max_memory 23 \
   --attributes redhair_brownskin_sademotion \
@@ -50,7 +48,6 @@ CUDA_VISIBLE_DEVICES=1 nohup python -u filter.py \
   --attributes redhair_sademotion \
   > logs/filter/filter_redhair_sademotion.log 2>&1 < /dev/null &
 
->>>>>>> 3244635c69e061408f5c9a77ea8767938902aeac
 nohup ./batch.sh -m clip -a brownskin -d 0 \
   > logs/batch/batch_clip_brownskin.log 2>&1 < /dev/null &
 nohup ./batch.sh -m resnet -a brownskin -d 0 \

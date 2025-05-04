@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-name: control
-=======
 name: controlnet
->>>>>>> 3244635c69e061408f5c9a77ea8767938902aeac
 channels:
   - pytorch
   - conda-forge
