@@ -521,6 +521,9 @@ def main(directory_path="",
     else:
         print(f"Processed all {processed_count} found images.")
     print(f"Found {len(feature_mapping)} feasible images matching the criteria.")
+    # Print the ratio of feasible to processed images
+    ratio = len(feature_mapping) / processed_count * 100 if processed_count > 0 else 0
+    print(f"Feasible images ratio: {len(feature_mapping)}/{processed_count} ({ratio:.2f}%)")
     print(f"Results saved to: {results_json_path}")
     print(f"Feasible mapping saved to: {feasible_json}")
     print("--------------------------")

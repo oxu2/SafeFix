@@ -1,10 +1,25 @@
-nohup ./batch.sh -m clip -a redhair_sademotion -d 0 \
+CUDA_VISIBLE_DEVICES=0 nohup python -u filter.py \
+  --max_memory 23 \
+  --attributes redhair_brownskin_sademotion \
+  > logs/filter/filter_redhair_brownskin_sademotion.log 2>&1 < /dev/null &
+
+conda activate controlnet
+CUDA_VISIBLE_DEVICES=2 nohup python -u controlnet.py --attributes yellowhair_brownskin > logs/control_yellowhair_brownskin.log 2>&1 < /dev/null &
+
+
+nohup ./batch.sh -m blip -a redhair -d 1 \
+  > logs/batch/batch_blip_redhair.log 2>&1 < /dev/null &
+
+
+
+nohup ./batch.sh -m clip -a redhair_sademotion -d 2 \
   > logs/batch/batch_clip_redhair_sademotion.log 2>&1 < /dev/null &
-nohup ./batch.sh -m resnet -a redhair_sademotion -d 2 \
+nohup ./batch.sh -m resnet -a redhair_sademotion -d 1 \
   > logs/batch/batch_resnet_redhair_sademotion.log 2>&1 < /dev/null &
-nohup ./batch.sh -m vit -a redhair_sademotion -d 1 \
+nohup ./batch.sh -m vit -a redhair_sademotion -d 3 \
   > logs/batch/batch_vit_redhair_sademotion.log 2>&1 < /dev/null &
 
+CUDA_VISIBLE_DEVICES=0 python predict.py --dataset imagenet --model blip --num_added_img 0  --save_pred_model last --num_epochs 40
 
 CUDA_VISIBLE_DEVICES=1 nohup  python -u blip.py > logs/blip.log 2>&1 < /dev/null &
 

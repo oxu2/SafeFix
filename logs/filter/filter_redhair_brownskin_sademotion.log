@@ -1,0 +1,38 @@
+Using 1 GPUs with 23GiB memory allocation each
+Loading checkpoint shards:   0%|          | 0/5 [00:00<?, ?it/s]Loading checkpoint shards:  20%|██        | 1/5 [00:01<00:04,  1.15s/it]Loading checkpoint shards:  40%|████      | 2/5 [00:01<00:02,  1.20it/s]Loading checkpoint shards:  60%|██████    | 3/5 [00:02<00:01,  1.34it/s]Loading checkpoint shards:  80%|████████  | 4/5 [00:03<00:00,  1.45it/s]Loading checkpoint shards: 100%|██████████| 5/5 [00:03<00:00,  1.81it/s]Loading checkpoint shards: 100%|██████████| 5/5 [00:03<00:00,  1.51it/s]
+Starting image processing for attributes: redhair_brownskin_sademotion...
+Stop condition active: stop after processing 15000 images.
+Found 3341 images with file type(s): jpg
+[1000/3341] Processed...
+Traceback (most recent call last):
+  File "/people/cs/o/oxx220000/HiBug/filter.py", line 599, in <module>
+    main(
+  File "/people/cs/o/oxx220000/HiBug/filter.py", line 503, in main
+    results, processed_count, stopped_early, stop_filename = process_directory(
+  File "/people/cs/o/oxx220000/HiBug/filter.py", line 244, in process_directory
+    result = process_image(image_path, model, processor, tags, attributes, verbose=verbose)
+  File "/people/cs/o/oxx220000/HiBug/filter.py", line 159, in process_image
+    response = inference(image_path, prompt, verbose=verbose)
+  File "/people/cs/o/oxx220000/HiBug/filter.py", line 58, in inference
+    inputs = processor(text=[text], images=[image], padding=True, return_tensors="pt")
+  File "/people/cs/o/oxx220000/.conda/envs/ad/lib/python3.9/site-packages/transformers/models/qwen2_5_vl/processing_qwen2_5_vl.py", line 123, in __call__
+    image_inputs = self.image_processor(images=images, videos=None, **output_kwargs["images_kwargs"])
+  File "/people/cs/o/oxx220000/.conda/envs/ad/lib/python3.9/site-packages/transformers/image_processing_utils.py", line 42, in __call__
+    return self.preprocess(images, **kwargs)
+  File "/people/cs/o/oxx220000/.conda/envs/ad/lib/python3.9/site-packages/transformers/models/qwen2_vl/image_processing_qwen2_vl_fast.py", line 341, in preprocess
+    patches, image_grid_thw = self._preprocess(
+  File "/people/cs/o/oxx220000/.conda/envs/ad/lib/python3.9/site-packages/transformers/models/qwen2_vl/image_processing_qwen2_vl_fast.py", line 163, in _preprocess
+    images = self._prepare_input_images(
+  File "/people/cs/o/oxx220000/.conda/envs/ad/lib/python3.9/site-packages/transformers/image_processing_utils_fast.py", line 502, in _prepare_input_images
+    processed_images.append(process_image_fn(image))
+  File "/people/cs/o/oxx220000/.conda/envs/ad/lib/python3.9/site-packages/transformers/image_processing_utils_fast.py", line 463, in _process_image
+    image = F.pil_to_tensor(image)
+  File "/people/cs/o/oxx220000/.local/lib/python3.9/site-packages/torchvision/transforms/functional.py", line 204, in pil_to_tensor
+    img = torch.as_tensor(np.array(pic, copy=True))
+  File "/people/cs/o/oxx220000/.conda/envs/ad/lib/python3.9/site-packages/PIL/Image.py", line 756, in __array_interface__
+    new["data"] = self.tobytes()
+  File "/people/cs/o/oxx220000/.conda/envs/ad/lib/python3.9/site-packages/PIL/Image.py", line 805, in tobytes
+    self.load()
+  File "/people/cs/o/oxx220000/.conda/envs/ad/lib/python3.9/site-packages/PIL/ImageFile.py", line 297, in load
+    raise OSError(msg)
+OSError: image file is truncated (24 bytes not processed)

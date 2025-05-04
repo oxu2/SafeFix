@@ -1,8 +1,16 @@
-start time: 2025-05-04 01:23:53
-Traceback (most recent call last):
-  File "/people/cs/o/oxx220000/HiBug/predict.py", line 123, in <module>
-    if verbose:
-NameError: name 'verbose' is not defined
-Start Time: 2025-05-04 01:23:53
-End Time:   2025-05-04 01:23:56
-Duration:   00:00:03
+start time: 2025-05-04 10:25:15
+Current time: 0504102518
+Selected 10000 filenames for sampling
+Populated base_to_label dictionary with 80000 entries.
+Added 10000 generated redhair_sademotion images, before training set has 80000 images, now 90000
+Using vit model with random weights
+Epoch [1/15], Train Loss: 0.5595, Train Acc: 0.7143, Val Loss: 0.5447, Val Acc: 0.7715
+Epoch [2/15], Train Loss: 0.4642, Train Acc: 0.8075, Val Loss: 0.4782, Val Acc: 0.8041
+Epoch [3/15], Train Loss: 0.4399, Train Acc: 0.8283, Val Loss: 0.4694, Val Acc: 0.8119
+Epoch [4/15], Train Loss: 0.4113, Train Acc: 0.8483, Val Loss: 0.4668, Val Acc: 0.8091
+Epoch [5/15], Train Loss: 0.3900, Train Acc: 0.8647, Val Loss: 0.4504, Val Acc: 0.8165
+Epoch [6/15], Train Loss: 0.3752, Train Acc: 0.8741, Val Loss: 0.4837, Val Acc: 0.8233
+Epoch [7/15], Train Loss: 0.3682, Train Acc: 0.8785, Val Loss: 0.4072, Val Acc: 0.8561
+Epoch [8/15], Train Loss: 0.3546, Train Acc: 0.8893, Val Loss: 0.4193, Val Acc: 0.8520
+Epoch [9/15], Train Loss: 0.3466, Train Acc: 0.8929, Val Loss: 0.4281, Val Acc: 0.8518
+Epoch [10/15], Train Loss: 0.3394, Train Acc: 0.8996, Val Loss: 0.4045, Val Acc: 0.8625

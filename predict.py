@@ -16,6 +16,7 @@ import torchvision
 from torchvision.models import ResNet18_Weights
 from transformers import ViTModel, ViTFeatureExtractor
 from transformers import CLIPImageProcessor
+from transformers import BlipProcessor, BlipModel, BlipConfig
 import datetime
 from timm import create_model
 import matplotlib.pyplot as plt
@@ -62,8 +63,8 @@ parser.add_argument('--verbose', type=str2bool, default=False,
                     help='Enable verbose output (default: False)')
 parser.add_argument('--feasible_file', type=str, default=None,
                     help='(Optional) Path to the feasible images JSON file. Defaults to save/feasible_<attributes>.json')
-parser.add_argument('--olabel', type=str2bool, default=False,
-                    help='Use original dataset labels (default: False); if False, uses labels from feasible_file')
+# parser.add_argument('--olabel', type=str2bool, default=False,
+#                     help='Use original dataset labels (default: False); if False, uses labels from feasible_file')
 parser.add_argument('--gen_image_dir', type=str, default=None,
                     help='(Optional) Directory containing generated images. Defaults to exampleData/<attributes>')
 parser.add_argument('--pretrained', type=str2bool, default=False,
@@ -72,9 +73,9 @@ parser.add_argument('--lr', type=float, default=1e-4,
                     help='Learning rate (default: 1e-4)')
 parser.add_argument('--attributes', type=str, default="redhair_brownskin", 
                     help='attributes to detect, e.g. redhair_sademotion, redhair_brownskin, redhair, brownskin, yellowhair, sademotion, etc.')
-parser.add_argument('--model', type=str, default='resnet', choices=['resnet', 'vit', 'clip'],
-                    help='Model architecture to use (resnet, vit, or clip)')
-parser.add_argument('--plot', type=str2bool, default=True, help='Enable plotting training metrics')
+parser.add_argument('--model', type=str, default='resnet', choices=['resnet', 'vit', 'clip', 'blip'],
+                    help='Model architecture to use (resnet, vit, clip, or blip)')
+parser.add_argument('--plot', type=str2bool, default=False, help='Enable plotting training metrics')
 parser.add_argument('--num_epochs', type=int, default=20,
                     help='Number of training epochs (default: 20)')
 parser.add_argument('--num_added_img', type=int, default=1000,
@@ -108,9 +109,17 @@ parser.add_argument(
 parser.add_argument(
     '--dataset',
     choices=['imagenet', 'celeba'],
-    default='imagenet',
+    default='celeba',
     help='Which dataset to use: imagenet (default) or celeba')
+# Add batch_size argument here
+parser.add_argument('--batch_size', type=int, default=64,
+                    help='Mini‑batch size for training and validation (default: 64)')
 args = parser.parse_args()
+# Dynamically lower batch size for memory‑intensive backbones to avoid CUDA OOM
+if args.model == 'blip' and args.batch_size > 32:
+    args.batch_size = 32
+    if args.verbose:
+        print(f"Adjusted batch size for BLIP model to {args.batch_size} to fit GPU memory.")
 # If the attribute list includes "emotion", automatically skip feasible loading
 if "emotion" in args.attributes.lower():
     args.skip_feasible = True
@@ -195,6 +204,29 @@ class CLIPForBinary(nn.Module):
         feats = self.dropout2(feats)
         return self.classifier(feats)
 
+# BLIP backbone + linear classification head
+class BlipClassifier(nn.Module):
+    """
+    BLIP backbone + linear classification head.
+    Works for both binary and multiclass tasks.
+    """
+    def __init__(self, num_classes=1, dropout_rate=0.5, pretrained=False):
+        super().__init__()
+        if pretrained:
+            self.blip = BlipModel.from_pretrained("Salesforce/blip-image-captioning-base")
+        else:
+            self.blip = BlipModel(BlipConfig())
+        self.dropout = nn.Dropout(dropout_rate)
+        # Use the BLIP image-projection dimension for the classification head
+        feat_dim = getattr(self.blip.config.vision_config, "projection_dim",
+                           self.blip.config.vision_config.hidden_size)
+        self.classifier = nn.Linear(feat_dim, num_classes)
+
+    def forward(self, pixel_values):
+        feats = self.blip.get_image_features(pixel_values=pixel_values)
+        feats = self.dropout(feats)
+        return self.classifier(feats)
+
 # Load the feasible images from feasible.json unless skip_feasible is True
 if not args.no_controlnet:
     if args.skip_feasible:
@@ -218,10 +250,17 @@ else:
 if args.dataset == 'imagenet':
     # Load ImageNet subset from folders
     data_dir = Path("./imagenet_subset")
-    # Use same transform as for non-clip models
+    # Use same transform as for non-clip/blip models
     feature_extractor = CLIPImageProcessor.from_pretrained("openai/clip-vit-base-patch32")
     if args.model == 'clip':
         transform = lambda img: feature_extractor(images=img, return_tensors="pt")["pixel_values"].squeeze(0)
+    elif args.model == 'blip':
+        # Use BLIPProcessor to prepare pixel_values (offline mode)
+        processor = BlipProcessor.from_pretrained(
+            "Salesforce/blip-image-captioning-base",
+            local_files_only=True
+        )
+        transform = lambda img: processor(images=img, return_tensors="pt")["pixel_values"].squeeze(0)
     else:
         transform = transforms.Compose([
             transforms.RandomResizedCrop(224, scale=(0.8, 1.0)),
@@ -239,10 +278,10 @@ if args.dataset == 'imagenet':
         ds, [train_size, val_size],
         generator=torch.Generator().manual_seed(42))
     train_loader = DataLoader(
-        train_ds, batch_size=args.batch_size if hasattr(args, "batch_size") else 64,
+        train_ds, batch_size=args.batch_size,
         shuffle=True, num_workers=args.workers if hasattr(args, "workers") else 4, pin_memory=True)
     valid_loader = DataLoader(
-        val_ds, batch_size=args.batch_size if hasattr(args, "batch_size") else 64,
+        val_ds, batch_size=args.batch_size,
         shuffle=False, num_workers=args.workers if hasattr(args, "workers") else 4, pin_memory=True)
     num_classes = len(ds.classes)
     # print(f'Classes ({num_classes}): {ds.classes}')
@@ -508,10 +547,11 @@ else:
     train_dataset = CelebADataset(all_train_imgs, all_train_labels, transform)
     valid_dataset = CelebADataset(valid_imgs, valid_labels, transform)
 
-    train_loader = DataLoader(train_dataset, batch_size=64, shuffle=True, num_workers=4)
-    valid_loader = DataLoader(valid_dataset, batch_size=64, shuffle=False, num_workers=4)
+    train_loader = DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True, num_workers=4)
+    valid_loader = DataLoader(valid_dataset, batch_size=args.batch_size, shuffle=False, num_workers=4)
     num_classes = 2
 
+#
 # Define model, loss, and optimizer
 if torch.cuda.is_available():
     torch.cuda.set_device(args.gpu)
@@ -566,6 +606,13 @@ elif args.model == 'clip':
         dropout_rate=0.5,
         pretrained=args.pretrained,
         num_classes=num_classes if args.dataset=='imagenet' else 1
+    )
+elif args.model == 'blip':
+    # Initialize BLIP backbone + linear head
+    model = BlipClassifier(
+        num_classes=num_classes if args.dataset == 'imagenet' else 1,
+        dropout_rate=0.5,
+        pretrained=args.pretrained
     )
 
 model = model.to(device)
