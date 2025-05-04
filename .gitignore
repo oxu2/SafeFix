@@ -13,7 +13,14 @@ downloaded_data
 !/save/plot/*.png
 yellowhair*
 redhair_sademotion*
+redhair_brownskin_sademotion
+.vscode
 
+<<<<<<< HEAD
+*.tar.gz
+
+imagenet_subset
+=======
 .vscode
 
 /imagenet*
@@ -22,3 +29,4 @@ redhair_sademotion*
 !exampleData/celebA/*.txt
 
 !exampleData/celebA/non_yellowhair_sademotion_indices.txt
+>>>>>>> 3244635c69e061408f5c9a77ea8767938902aeac

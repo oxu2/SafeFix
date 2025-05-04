@@ -31,9 +31,20 @@ import numpy as np
 import torch
 import random
 
+# ---------- Quiet mode tweaks ----------
+import logging
+# Suppress PyTorch Lightning info such as "Global seed set to ..."
+logging.getLogger("pytorch_lightning").setLevel(logging.ERROR)
+
 from pytorch_lightning import seed_everything
+<<<<<<< HEAD
+# Disable tqdm progress bars if output is non-interactive (such as nohup)
+import functools, tqdm
+tqdm.tqdm = functools.partial(tqdm.tqdm, disable=not sys.stdout.isatty())
+=======
 # Ensure the local 'annotator' package in this repo is on the import path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'annotator'))
+>>>>>>> 3244635c69e061408f5c9a77ea8767938902aeac
 from annotator.util import resize_image, HWC3
 from annotator.hed import HEDdetector
 from cldm.model import create_model, load_state_dict
@@ -46,6 +57,8 @@ import argparse
 parser = argparse.ArgumentParser(description="ControlNet batch inference")
 parser.add_argument('--attributes', type=str, default='redhair_brownskin_sademotion',
                     help="Attributes for generation, e.g., redhair_sademotion or redhair_brownskin")
+parser.add_argument('--stop_at', type=int, default=10234,
+                    help="Maximum total images to generate (including existing JPEGs in output_dir)")
 args = parser.parse_args()
 
 # Build prompt text from attributes
@@ -92,7 +105,7 @@ def process(input_image, prompt, a_prompt, n_prompt, num_samples, image_resoluti
         # Suppress verbose output from seed setting and sampling
         f = io.StringIO()
         with contextlib.redirect_stdout(f), contextlib.redirect_stderr(f):
-            seed_everything(seed)
+            seed_everything(seed, workers=True)
             if config.save_memory:
                 model.low_vram_shift(is_diffusing=False)
             cond = {"c_concat": [control], "c_crossattn": [model.get_learned_conditioning([prompt + ', ' + a_prompt] * num_samples)]}
@@ -168,6 +181,9 @@ else:
 output_dir = f'./{args.attributes}'
 
 os.makedirs(output_dir, exist_ok=True)
+# Count existing JPEGs to know where to stop
+existing_files = [f for f in os.listdir(output_dir) if f.lower().endswith('.jpg')]
+generated_count = len(existing_files)
 
 # Determine indices file path with fallback
 primary_indices = f'/home/jovyan/ouyang/HiBug/non_{args.attributes}_indices.txt'
@@ -189,9 +205,16 @@ image_files = [f"{idx + 1:06d}.jpg" for idx in indices]
 
 # Loop through each file
 for idx, filename in enumerate(image_files, start=1):
+    # Stop if we've reached the limit
+    if generated_count >= args.stop_at:
+        print(f"Reached stop_at limit of {args.stop_at} images. Exiting.")
+        break
     input_path = os.path.join(input_dir, filename)
     input_image = cv2.imread(input_path)
     input_image = cv2.cvtColor(input_image, cv2.COLOR_BGR2RGB)
+
+    # Use a unique random seed for each image to vary outputs
+    img_seed = random.randint(0, 65535)
 
     # Run your process (one image per input)
     results = process(
@@ -206,17 +229,25 @@ for idx, filename in enumerate(image_files, start=1):
         guess_mode=False,
         strength=1.0,
         scale=9.0,
-        seed=42,
+        seed=img_seed,
         eta=0.0
     )
 
     generated_image = results[1]  # Index 0 is the HED map
 
-    # Save result with modified filename
+    # Save result, avoiding name collisions
     base = os.path.splitext(filename)[0]
-    new_name = f"{base}_{args.attributes}.jpg"
-    save_path = os.path.join(output_dir, new_name)
+    stem = f"{base}_{args.attributes}_{img_seed}"
+    save_path = os.path.join(output_dir, f"{stem}.jpg")
+    counter = 2
+    while os.path.exists(save_path):
+        save_path = os.path.join(output_dir, f"{stem}_{counter}.jpg")
+        counter += 1
     Image.fromarray(generated_image).save(save_path)
+    # Update count and print every 1000 images
+    generated_count += 1
+    if generated_count % 1000 == 0:
+        print(f"{generated_count} images generated so far (including existing).")
 
     # Print status every 500 images
     if idx % 500 == 0:

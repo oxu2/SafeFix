@@ -1,3 +1,8 @@
+
+find /home/jovyan/ouyang/HiBug/redhair_sademotion -type f -iname '*.jpg' | wc -l
+6422 as of 1PM 05/03/2025
+
+
 CUDA_VISIBLE_DEVICES=0 nohup python -u filter.py \
   --max_memory 23 \
   --attributes redhair_brownskin_sademotion \
