@@ -938,6 +938,7 @@ else:
                            split=split,
                            attribute_dict_path=args.attribute_file,
                            print=args.verbose,
+                           dataset=args.dataset,
                            acc_diff_threshold=acc_diff_threshold,
                            distribution_diff_threshold=distribution_diff_threshold,
                            dominant_label_in_failure_threshold=dominant_label_in_failure_threshold,

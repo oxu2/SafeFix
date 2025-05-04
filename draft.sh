@@ -5,7 +5,7 @@ CUDA_VISIBLE_DEVICES=0 nohup python -u filter.py \
 
 conda activate controlnet
 CUDA_VISIBLE_DEVICES=2 nohup python -u controlnet.py --attributes yellowhair_brownskin > logs/control_yellowhair_brownskin.log 2>&1 < /dev/null &
-
+find yellowhair_brownskin -type f -iname '*.jpg' | wc -l  
 
 nohup ./batch.sh -m blip -a redhair -d 1 \
   > logs/batch/batch_blip_redhair.log 2>&1 < /dev/null &

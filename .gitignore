@@ -18,3 +18,7 @@ redhair_sademotion*
 
 /imagenet*
 
+# except .txt in exampleData/CelebA
+!exampleData/celebA/*.txt
+
+!exampleData/celebA/non_yellowhair_sademotion_indices.txt

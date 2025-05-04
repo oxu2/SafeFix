@@ -248,3 +248,47 @@ with open(output_path, 'w') as f:
     for idx in sorted(intersection_all):
         f.write(f"{idx}\n")
 print(f"Saved three-way intersection (non_redhair_brownskin_sademotion) to {output_path}, total samples: {len(intersection_all)}")
+
+# Example usage: find samples with yellow hair AND brown skin AND sad emotion
+yellow_hair_indices = get_original_indices_by_attribute(
+    "hair color",
+    "yellow",
+    "exampleData/celebA/attribute.json",
+    "exampleData/celebA/idx_mapping.json",
+    find_matching=True,
+    save_path="exampleData/celebA/yellowhair_indices.txt",
+    num_display=100
+)
+brown_skin_indices = get_original_indices_by_attribute(
+    "skin",
+    "brown",
+    "exampleData/celebA/attribute.json",
+    "exampleData/celebA/idx_mapping.json",
+    find_matching=True,
+    save_path="exampleData/celebA/brownskin_indices.txt",
+    num_display=100
+)
+sad_emotion_indices = get_original_indices_by_attribute(
+    "emotion",
+    "sad",
+    "exampleData/celebA/attribute.json",
+    "exampleData/celebA/idx_mapping.json",
+    find_matching=True,
+    save_path="exampleData/celebA/sademotion_indices.txt",
+    num_display=100
+)
+
+# Compute three-way intersection for yellow hair, brown skin, and sad emotion
+yellow_set = load_indices("exampleData/celebA/yellowhair_indices.txt")
+brown_set = load_indices("exampleData/celebA/brownskin_indices.txt")
+sad_set = load_indices("exampleData/celebA/sademotion_indices.txt")
+
+intersection_yellow_brown_sad = yellow_set & brown_set & sad_set
+output_path = "exampleData/celebA/yellowhair_brownskin_sademotion_indices.txt"
+with open(output_path, 'w') as f:
+    for idx in sorted(intersection_yellow_brown_sad):
+        f.write(f"{idx}\n")
+print(f"Saved three-way intersection (yellowhair_brownskin_sademotion) to {output_path}, total samples: {len(intersection_yellow_brown_sad)}")
+
+
+with open("exampleData/celebA/non_yellowhair_sademotion_indices.txt","w") as f: f.write("\n".join(map(str,sorted(set(get_original_indices_by_attribute("hair color","yellow","exampleData/celebA/attribute.json","exampleData/celebA/idx_mapping.json",find_matching=False)) & set(get_original_indices_by_attribute("emotion","sad","exampleData/celebA/attribute.json","exampleData/celebA/idx_mapping.json",find_matching=True)))) )+"\n")

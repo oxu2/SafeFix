@@ -21,7 +21,7 @@ from matplotlib import pyplot as plt
 # Ensure local modules are importable
 sys.path.insert(0, os.path.dirname(__file__))
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'ControlNet')))
-from share import *
+from utils.share import *
 import config
 
 import cv2
