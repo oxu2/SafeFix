@@ -10,11 +10,19 @@ downloaded_data
 /save/*
 # ...but keep top-level JSON files in save/
 !/save/*.json
+!/save/plot/*.png
 yellowhair*
 redhair_sademotion*
 redhair_brownskin_sademotion
 .vscode
 
+<<<<<<< HEAD
 *.tar.gz
 
 imagenet_subset
+=======
+.vscode
+
+/imagenet*
+
+>>>>>>> 3244635c69e061408f5c9a77ea8767938902aeac

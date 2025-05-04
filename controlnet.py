@@ -3,6 +3,7 @@ import sys
 import contextlib
 import io
 
+<<<<<<< HEAD
 # Filter out PyTorch Lightning seed prints
 import builtins
 _orig_print = builtins.print
@@ -22,6 +23,17 @@ if os.environ.get('CONDA_DEFAULT_ENV') != 'control':
         ['conda', 'run', '-n', 'control', 'python'] + sys.argv
     )
 print("Info: Now running in the 'control' conda environment.")
+=======
+
+# Ensure this script runs in the 'control' conda environment
+# if os.environ.get('CONDA_DEFAULT_ENV') != 'control':
+#     sys.stderr.write("Info: Switching to the 'control' conda environment and re-running...\n")
+#     os.execvp(
+#         'conda',
+#         ['conda', 'run', '-n', 'control', 'python'] + sys.argv
+#     )
+# print("Info: Now running in the 'control' conda environment.")
+>>>>>>> 3244635c69e061408f5c9a77ea8767938902aeac
 
 import cv2
 import numpy as np
@@ -47,9 +59,14 @@ import logging
 logging.getLogger("pytorch_lightning").setLevel(logging.ERROR)
 
 from pytorch_lightning import seed_everything
+<<<<<<< HEAD
 # Disable tqdm progress bars if output is non-interactive (such as nohup)
 import functools, tqdm
 tqdm.tqdm = functools.partial(tqdm.tqdm, disable=not sys.stdout.isatty())
+=======
+# Ensure the local 'annotator' package in this repo is on the import path
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'annotator'))
+>>>>>>> 3244635c69e061408f5c9a77ea8767938902aeac
 from annotator.util import resize_image, HWC3
 from annotator.hed import HEDdetector
 from cldm.model import create_model, load_state_dict
@@ -82,8 +99,8 @@ apply_hed = HEDdetector()
 config_path = '/home/jovyan/ouyang/ControlNet/models/cldm_v15.yaml'
 weights_path = '/home/jovyan/ouyang/ControlNet/models/control_sd15_hed.pth'
 if not os.path.exists(config_path):
-    config_path = 'model_controlnet/models/cldm_v15.yaml'
-    weights_path = 'model_controlnet/models/control_sd15_hed.pth'
+    config_path = 'model_controlnet/cldm_v15.yaml'
+    weights_path = 'model_controlnet/control_sd15_hed.pth'
 model = create_model(config_path).cpu()
 model.load_state_dict(load_state_dict(weights_path, location='cuda'))
 model = model.cuda()

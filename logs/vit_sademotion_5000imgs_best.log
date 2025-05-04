@@ -16,3 +16,82 @@ Epoch [6/15], Train Loss: 0.3501, Train Acc: 0.8899, Val Loss: 0.4077, Val Acc: 
 Epoch [7/15], Train Loss: 0.3386, Train Acc: 0.8980, Val Loss: 0.4376, Val Acc: 0.8534
 Epoch [8/15], Train Loss: 0.3303, Train Acc: 0.9051, Val Loss: 0.3950, Val Acc: 0.8616
 Epoch [9/15], Train Loss: 0.3233, Train Acc: 0.9086, Val Loss: 0.4960, Val Acc: 0.8239
+Epoch [10/15], Train Loss: 0.3187, Train Acc: 0.9122, Val Loss: 0.3991, Val Acc: 0.8652
+Epoch [11/15], Train Loss: 0.3112, Train Acc: 0.9180, Val Loss: 0.3858, Val Acc: 0.8714
+Epoch [12/15], Train Loss: 0.3038, Train Acc: 0.9223, Val Loss: 0.4112, Val Acc: 0.8700
+Epoch [13/15], Train Loss: 0.2996, Train Acc: 0.9261, Val Loss: 0.3859, Val Acc: 0.8761
+Epoch [14/15], Train Loss: 0.2970, Train Acc: 0.9278, Val Loss: 0.4077, Val Acc: 0.8735
+Epoch [15/15], Train Loss: 0.2936, Train Acc: 0.9288, Val Loss: 0.4029, Val Acc: 0.8745
+Generating and saving predictions...
+Original train predictions length: 80000
+Modified image predictions length: 5000
+Validation predictions length: 20000
+Combined predictions length: 185000 (should match combined_labels length: 185000)
+Current time: 0503003537
+
+Running model diagnostics on generated predictions...
+Model Validation ACC: 0.8787
+Start detect_failure_by_label
+
+Start detect_prediction_correlation
+
+ACC: 0.865226 	Hard case: attribute "beard", description "No"
+ACC: 0.821234 	Hard case: attribute "gender", description "female"
+The accuracy with "hair color" = "white" is 0.9159836065573771
+Correct predictions: 447/488
+The accuracy with "hair color" = "yellow" is 0.8378378378378378
+Correct predictions: 62/74
+ACC: 0.837838 	Rare Case: attribute "hair color", description "yellow"
+The accuracy with "hair color" = "blonde" is 0.8511938872970392
+Correct predictions: 4456/5235
+ACC: 0.851194 	Hard case: attribute "hair color", description "blonde"
+The accuracy with "hair color" = "black" is 0.8905660377358491
+Correct predictions: 5900/6625
+The accuracy with "hair color" = "gray" is 0.9633458646616542
+Correct predictions: 1025/1064
+The accuracy with "hair color" = "brown" is 0.8766332937383337
+Correct predictions: 5166/5893
+The accuracy with "hair color" = "red" is 0.8341384863123994
+Correct predictions: 518/621
+ACC: 0.834138 	Rare Case: attribute "hair color", description "red"
+The accuracy with "skin" = "white" is 0.8805911330049261
+Correct predictions: 8938/10150
+The accuracy with "skin" = "black" is 0.8960839518812388
+Correct predictions: 3501/3907
+The accuracy with "skin" = "brown" is 0.8640417297661114
+Correct predictions: 5135/5943
+ACC: 0.864042 	Rare Case: attribute "skin", description "brown"
+ACC: 0.812738 	Rare Case: attribute "emotion", description "sad"
+ACC: 0.856855 	Rare Case: attribute "emotion", description "calm"
+ACC: 0.853772 	Hard case: attribute "emotion", description "surprised"
+ACC: 0.829498 	Rare Case: attribute "emotion", description "pensive"
+Start detect_failure_prediction_correlation
+
+Model diagnostics complete.
+
+Comparing accuracy with log file: logs/compare/stat_origin_vit_compare.log
+Overall accuracy: 0.850650 -> 0.878700: improved
+
+Attribute-specific accuracy comparison:
+beard, No, 0.836448 -> 0.865226: improved
+makeup, Yes, 0.838893 -> 0.882676: improved
+gender, female, 0.768786 -> 0.821234: improved
+hair color, white, 0.905738 -> 0.915984: improved
+hair color, yellow, 0.905405 -> 0.837838: declined
+hair color, blonde, 0.841070 -> 0.851194: improved
+hair color, black, 0.840000 -> 0.890566: improved
+hair color, gray, 0.953008 -> 0.963346: improved
+hair color, brown, 0.849992 -> 0.876633: improved
+hair color, red, 0.826087 -> 0.834138: improved
+skin, white, 0.865714 -> 0.880591: improved
+skin, black, 0.831840 -> 0.896084: improved
+skin, brown, 0.837288 -> 0.864042: improved
+emotion, sad, 0.806084 -> 0.812738: improved
+emotion, surprised, 0.812895 -> 0.853772: improved
+emotion, pensive, 0.775105 -> 0.829498: improved
+young, young, 0.838260 -> 0.869776: improved
+
+Compared 17 attribute-specific accuracies.
+Start Time: 2025-05-03 00:35:34
+End Time:   2025-05-03 04:35:26
+Duration:   03:59:52

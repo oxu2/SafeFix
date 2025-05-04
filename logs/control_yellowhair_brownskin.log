@@ -1,0 +1,31 @@
+logging improved.
+No module 'xformers'. Proceeding without it.
+ControlLDM: Running in eps-prediction mode
+DiffusionWrapper has 859.52 M params.
+making attention of type 'vanilla' with 512 in_channels
+Working with z of shape (1, 4, 32, 32) = 4096 dimensions.
+making attention of type 'vanilla' with 512 in_channels
+Loaded model config from [model_controlnet/cldm_v15.yaml]
+Loaded state_dict from [model_controlnet/control_sd15_hed.pth]
+Global seed set to 42
+Global seed set to 42
+Global seed set to 42
+Global seed set to 42
+Global seed set to 42
+Global seed set to 42
+Global seed set to 42
+Global seed set to 42
+Global seed set to 42
+Global seed set to 42
+Global seed set to 42
+Global seed set to 42
+Global seed set to 42
+Global seed set to 42
+Global seed set to 42
+Global seed set to 42
+Global seed set to 42
+Global seed set to 42
+Global seed set to 42
+Global seed set to 42
+Global seed set to 42
+Global seed set to 42

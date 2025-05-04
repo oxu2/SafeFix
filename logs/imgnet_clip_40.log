@@ -1,0 +1,48 @@
+Current time: 0504003524
+Using clip model with random weights
+Epoch [1/40], Train Loss: 2.3671, Train Acc: 0.1523, Val Loss: 2.1722, Val Acc: 0.2412
+Epoch [2/40], Train Loss: 2.2244, Train Acc: 0.1891, Val Loss: 2.1148, Val Acc: 0.2546
+Epoch [3/40], Train Loss: 2.1279, Train Acc: 0.2425, Val Loss: 2.0025, Val Acc: 0.2912
+Epoch [4/40], Train Loss: 2.0212, Train Acc: 0.2770, Val Loss: 1.9118, Val Acc: 0.3212
+Epoch [5/40], Train Loss: 1.9679, Train Acc: 0.3042, Val Loss: 1.9182, Val Acc: 0.3235
+Epoch [6/40], Train Loss: 1.9168, Train Acc: 0.3206, Val Loss: 1.8384, Val Acc: 0.3538
+Epoch [7/40], Train Loss: 1.8699, Train Acc: 0.3348, Val Loss: 1.8171, Val Acc: 0.3662
+Epoch [8/40], Train Loss: 1.8303, Train Acc: 0.3628, Val Loss: 1.7948, Val Acc: 0.3681
+Epoch [9/40], Train Loss: 1.7806, Train Acc: 0.3764, Val Loss: 1.7797, Val Acc: 0.3796
+Epoch [10/40], Train Loss: 1.7341, Train Acc: 0.3931, Val Loss: 1.7262, Val Acc: 0.4038
+Epoch [11/40], Train Loss: 1.6928, Train Acc: 0.4208, Val Loss: 1.7299, Val Acc: 0.3996
+Epoch [12/40], Train Loss: 1.6303, Train Acc: 0.4380, Val Loss: 1.6956, Val Acc: 0.4069
+Epoch [13/40], Train Loss: 1.5543, Train Acc: 0.4597, Val Loss: 1.6601, Val Acc: 0.4215
+Epoch [14/40], Train Loss: 1.4817, Train Acc: 0.4977, Val Loss: 1.6500, Val Acc: 0.4265
+Epoch [15/40], Train Loss: 1.4067, Train Acc: 0.5212, Val Loss: 1.6737, Val Acc: 0.4273
+Epoch [16/40], Train Loss: 1.3151, Train Acc: 0.5541, Val Loss: 1.7348, Val Acc: 0.4115
+Epoch [17/40], Train Loss: 1.2156, Train Acc: 0.5861, Val Loss: 1.7031, Val Acc: 0.4300
+Epoch [18/40], Train Loss: 1.1045, Train Acc: 0.6275, Val Loss: 1.7864, Val Acc: 0.4296
+Epoch [19/40], Train Loss: 1.0001, Train Acc: 0.6580, Val Loss: 1.8245, Val Acc: 0.4296
+Epoch [20/40], Train Loss: 0.8875, Train Acc: 0.6984, Val Loss: 1.9047, Val Acc: 0.4358
+Epoch [21/40], Train Loss: 0.7667, Train Acc: 0.7417, Val Loss: 2.0081, Val Acc: 0.4346
+Epoch [22/40], Train Loss: 0.6472, Train Acc: 0.7820, Val Loss: 2.1315, Val Acc: 0.4327
+Epoch [23/40], Train Loss: 0.5515, Train Acc: 0.8153, Val Loss: 2.2444, Val Acc: 0.4215
+Epoch [24/40], Train Loss: 0.4492, Train Acc: 0.8524, Val Loss: 2.3678, Val Acc: 0.4250
+Epoch [25/40], Train Loss: 0.3691, Train Acc: 0.8764, Val Loss: 2.5096, Val Acc: 0.4088
+Epoch [26/40], Train Loss: 0.3027, Train Acc: 0.9047, Val Loss: 2.5976, Val Acc: 0.4142
+Epoch [27/40], Train Loss: 0.2534, Train Acc: 0.9212, Val Loss: 2.6546, Val Acc: 0.4146
+Epoch [28/40], Train Loss: 0.2148, Train Acc: 0.9379, Val Loss: 2.7782, Val Acc: 0.4100
+Epoch [29/40], Train Loss: 0.1692, Train Acc: 0.9534, Val Loss: 2.8449, Val Acc: 0.4023
+Epoch [30/40], Train Loss: 0.1393, Train Acc: 0.9623, Val Loss: 2.9205, Val Acc: 0.4123
+Epoch [31/40], Train Loss: 0.1181, Train Acc: 0.9690, Val Loss: 2.9664, Val Acc: 0.4158
+Epoch [32/40], Train Loss: 0.0998, Train Acc: 0.9775, Val Loss: 2.9887, Val Acc: 0.4173
+Epoch [33/40], Train Loss: 0.0854, Train Acc: 0.9831, Val Loss: 3.0413, Val Acc: 0.4173
+Epoch [34/40], Train Loss: 0.0728, Train Acc: 0.9858, Val Loss: 3.0827, Val Acc: 0.4042
+Epoch [35/40], Train Loss: 0.0673, Train Acc: 0.9874, Val Loss: 3.1177, Val Acc: 0.4054
+Epoch [36/40], Train Loss: 0.0611, Train Acc: 0.9883, Val Loss: 3.1202, Val Acc: 0.4081
+Epoch [37/40], Train Loss: 0.0571, Train Acc: 0.9911, Val Loss: 3.1320, Val Acc: 0.4058
+Epoch [38/40], Train Loss: 0.0543, Train Acc: 0.9904, Val Loss: 3.1414, Val Acc: 0.4108
+Epoch [39/40], Train Loss: 0.0503, Train Acc: 0.9926, Val Loss: 3.1396, Val Acc: 0.4096
+Epoch [40/40], Train Loss: 0.0506, Train Acc: 0.9929, Val Loss: 3.1429, Val Acc: 0.4112
+Generating and saving predictions...
+Train predictions length: 10400
+Validation predictions length: 2600
+Combined predictions length: 13000
+Current time: 0504003524
+Skipping model diagnostics for ImageNet dataset.
