@@ -12,5 +12,9 @@ downloaded_data
 !/save/*.json
 yellowhair*
 redhair_sademotion*
-
+redhair_brownskin_sademotion
 .vscode
+
+*.tar.gz
+
+imagenet_subset

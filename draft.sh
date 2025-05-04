@@ -1,3 +1,8 @@
+
+find /home/jovyan/ouyang/HiBug/redhair_sademotion -type f -iname '*.jpg' | wc -l
+6422 as of 1PM 05/03/2025
+
+
 nohup ./batch.sh -m clip -a brownskin -d 0 \
   > logs/batch_clip_brownskin.log 2>&1 < /dev/null &
 nohup ./batch.sh -m resnet -a brownskin -d 0 \
