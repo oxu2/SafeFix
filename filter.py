@@ -384,7 +384,7 @@ def rename_images_with_suffix(directory_path, suffix="_red", verbose=False):
         print(f"Successfully renamed {renamed_count} numeric-named files in {directory_path}")
     return renamed_count
 
-def main(directory_path="/home/jovyan/ouyang/sad", 
+def main(directory_path="", 
          verbose: bool = False,
          file_type: str = "png",
          rename_files: bool = False,
@@ -548,7 +548,7 @@ if __name__ == "__main__":
     parser.add_argument(
         '--image_dir',
         type=str,
-        default="/home/jovyan/ouyang/sad",
+        default="",
         help='Directory containing images'
     )
     parser.add_argument(
@@ -582,22 +582,28 @@ if __name__ == "__main__":
     parser.add_argument('--feasible_json', type=str, default=None,
                         help='Path to existing feasible JSON file for copying images.')
     
-    args = parser.parse_args()
+args = parser.parse_args()
 
-    if args.rename_suffix is None:
-        args.rename_suffix = "_" + args.attributes
+# If no image_dir provided, default to exampleData/{attributes}
+if not args.image_dir:
+    args.image_dir = os.path.join("exampleData", args.attributes)
+    if args.verbose:
+        print(f"No --image_dir provided, using default: {args.image_dir}")
 
-    main(
-       args.image_dir,
-       args.verbose,
-       args.file_type,
-       args.rename_files,
-       args.attributes,
-       args.rename_suffix,
-       args.max_memory,
-       args.stop_at,
-       args.feasible_only,
-       args.results_file,
-       args.copy_only,
-       args.feasible_json
-    )
+if args.rename_suffix is None:
+    args.rename_suffix = "_" + args.attributes
+
+main(
+   args.image_dir,
+   args.verbose,
+   args.file_type,
+   args.rename_files,
+   args.attributes,
+   args.rename_suffix,
+   args.max_memory,
+   args.stop_at,
+   args.feasible_only,
+   args.results_file,
+   args.copy_only,
+   args.feasible_json
+)

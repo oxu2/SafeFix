@@ -1,0 +1,6 @@
+start time: 2025-05-04 01:23:47
+Current time: 0504012350
+Using clip model with random weights
+Epoch [1/40], Train Loss: 2.3877, Train Acc: 0.1437, Val Loss: 2.1819, Val Acc: 0.2300
+Epoch [2/40], Train Loss: 2.2282, Train Acc: 0.1955, Val Loss: 2.1295, Val Acc: 0.2388
+Epoch [3/40], Train Loss: 2.1427, Train Acc: 0.2299, Val Loss: 2.0077, Val Acc: 0.2938

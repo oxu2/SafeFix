@@ -7,7 +7,7 @@
 # Configuration defaults
 CUDA_DEVICES=1
 ATTRIBUTES="redhair_brownskin"
-NUM_ADDED_IMG=1000
+NUM_ADDED_IMG=0
 GEN_ONLY=false
 
 # Parse short options: -n for NUM_ADDED_IMG, -a for ATTRIBUTES, -d for CUDA_DEVICES

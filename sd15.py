@@ -190,14 +190,14 @@ if __name__ == "__main__":
             # use lipstick label to name files
             lip_flag = lipstick_flags[i]
             lip_label = "yes" if lip_flag == 1 else "no"
-            output_prefix = f"hibug_simple2/{lip_label}"
+            output_prefix = f"exampleData/hibug_simple/{lip_label}"
             # Ensure output directory exists
             output_dir = os.path.dirname(output_prefix)
             os.makedirs(output_dir, exist_ok=True)
             generate_images(user_prompt, num_images=args.batch, output_prefix=output_prefix)
         else:
             original_idx = selected_indices[i]
-            output_prefix = f"hibug_{args.attributes}/{args.attributes}_{original_idx:06d}"
+            output_prefix = f"exampleData/hibug_{args.attributes}/{args.attributes}_{original_idx:06d}"
             # Ensure output directory exists
             output_dir = os.path.dirname(output_prefix)
             os.makedirs(output_dir, exist_ok=True)

@@ -15,7 +15,7 @@ import torchvision
 #0.14.1+cu117g
 from torchvision.models import ResNet18_Weights
 from transformers import ViTModel, ViTFeatureExtractor
-from transformers import CLIPFeatureExtractor
+from transformers import CLIPImageProcessor
 import datetime
 from timm import create_model
 import matplotlib.pyplot as plt
@@ -27,8 +27,19 @@ import copy  # Added for saving best model state
 from utils.stat import ModelDiagnose  # Import ModelDiagnose from local stat.py
 from itertools import combinations
 from processData.report import ReportGenerator
+from torchvision.datasets import ImageFolder
+from torch.utils.data import random_split
+from pathlib import Path
 
 import torch.nn.functional as F
+
+# Suppress the CLIPFeatureExtractor deprecation warning
+import warnings
+warnings.filterwarnings(
+    "ignore",
+    "The class CLIPFeatureExtractor is deprecated and will be removed in version 5 of Transformers",
+    FutureWarning
+)
 
 # Custom loss for smoothed BCE with logits
 class SmoothBCEWithLogitsLoss(nn.Module):
@@ -63,7 +74,7 @@ parser.add_argument('--attributes', type=str, default="redhair_brownskin",
                     help='attributes to detect, e.g. redhair_sademotion, redhair_brownskin, redhair, brownskin, yellowhair, sademotion, etc.')
 parser.add_argument('--model', type=str, default='resnet', choices=['resnet', 'vit', 'clip'],
                     help='Model architecture to use (resnet, vit, or clip)')
-parser.add_argument('--plot', type=str2bool, default=False, help='Enable plotting training metrics')
+parser.add_argument('--plot', type=str2bool, default=True, help='Enable plotting training metrics')
 parser.add_argument('--num_epochs', type=int, default=20,
                     help='Number of training epochs (default: 20)')
 parser.add_argument('--num_added_img', type=int, default=1000,
@@ -86,28 +97,47 @@ parser.add_argument('--gen_only', type=str2bool, default=False,
                     help='Use only generated images for training (default: False)')
 parser.add_argument('--skip_train_unlabeled', type=str2bool, default=False,
                     help='Skip processing TRAIN and UNLABELED splits in diagnostics')
-parser.add_argument('--hibug', type=str2bool, default=False,
-                    help='Use images from hibug_<attributes> directory (default: False)')
+parser.add_argument('--no_controlnet', type=str2bool, default=False,
+                    help='Ablation flag: disable ControlNet-based augmentation (default: False)')
 parser.add_argument('--skip_feasible', type=str2bool, default=False,
                     help='Skip loading feasible JSON for any attributes (default: False)')
 parser.add_argument(
-    '--simple', type=str2bool, default=True,
-    help='Use simple hibug mode: load from hibug_simple folder and infer labels from filename prefix (default: True).'
+    '--simple', type=str2bool, default=False,
+    help='Simple mode: disable ControlNet and attribute editing (original HiBug behavior) (default: True).'
 )
+parser.add_argument(
+    '--dataset',
+    choices=['imagenet', 'celeba'],
+    default='imagenet',
+    help='Which dataset to use: imagenet (default) or celeba')
 args = parser.parse_args()
+# If the attribute list includes "emotion", automatically skip feasible loading
+if "emotion" in args.attributes.lower():
+    args.skip_feasible = True
+    if args.verbose:
+        print(f"'emotion' detected in attributes; setting skip_feasible=True")
+
 # If using ViT, reduce epochs to 15 for faster training
 if args.model == 'vit' and args.num_epochs == 20:
     args.num_epochs = 15
+    if args.verbose:
+        print(f"Adjusted number of epochs for ViT model to {args.num_epochs}")
+
+# Adjust number of epochs default for ImageNet subset
+if args.dataset == 'imagenet' and args.num_epochs == 20:
+    args.num_epochs = 40
+    if 'verbose' in locals() and verbose:
+        print(f"Adjusted number of epochs for ImageNet dataset to {args.num_epochs}")
 attributes = args.attributes
 
 # Set default feasible_file based on attributes if not provided
 if args.feasible_file is None:
     args.feasible_file = f"save/feasible_{attributes}.json"
 # Set default gen_image_dir based on attributes if not provided
-# Modify gen_image_dir if hibug is True
-if args.hibug:
-    args.gen_image_dir = f"hibug_{attributes}"
-    print(f"Hibug mode enabled: using image directory {args.gen_image_dir}")
+# Ablation: disable ControlNet-based augmentation if no_controlnet is True
+if args.no_controlnet:
+    args.gen_image_dir = f"no_controlnet_{attributes}"
+    print(f"Ablation mode enabled (ControlNet disabled): using image directory {args.gen_image_dir}")
 elif args.gen_image_dir is None:
     args.gen_image_dir = f"exampleData/{attributes}"
 
@@ -122,6 +152,12 @@ elif args.model == 'clip' and args.lr == 1e-4 and not args.pretrained: # Only lo
     args.lr = 1e-5
     if verbose:
         print(f"Lowered lr for random-init CLIP to {args.lr}")
+
+# Adjust learning rate default for ImageNet subset if not manually overridden
+if args.dataset == 'imagenet' and args.lr == 1e-4:
+    args.lr = 1e-3
+    if verbose:
+        print(f"Adjusted learning rate for ImageNet dataset to {args.lr}")
 
 time_now = datetime.datetime.now().strftime("%m%d%H%M%S")   
 print("Current time:", time_now)
@@ -140,7 +176,7 @@ if compare_log_path and not os.path.exists(compare_log_path):
      compare_log_path = None # Set to None if file doesn't exist
 
 class CLIPForBinary(nn.Module):
-    def __init__(self, dropout_rate=0.5, pretrained=False):
+    def __init__(self, dropout_rate=0.5, pretrained=False, num_classes=1):
         super().__init__()
         # Initialize CLIP with or without pre-trained weights
         if pretrained:
@@ -149,7 +185,8 @@ class CLIPForBinary(nn.Module):
             self.clip = CLIPModel(CLIPConfig())
         self.dropout = nn.Dropout(p=dropout_rate)
         self.dropout2 = nn.Dropout(p=dropout_rate)
-        self.classifier = nn.Linear(self.clip.config.projection_dim, 1)
+        # Replace classifier to handle multiclass if needed
+        self.classifier = nn.Linear(self.clip.config.projection_dim, num_classes)
 
     def forward(self, pixel_values):
         # Get image features and classify
@@ -159,7 +196,7 @@ class CLIPForBinary(nn.Module):
         return self.classifier(feats)
 
 # Load the feasible images from feasible.json unless skip_feasible is True
-if not args.hibug:
+if not args.no_controlnet:
     if args.skip_feasible:
         feasible_images = {}
         if verbose:
@@ -174,261 +211,306 @@ if not args.hibug:
             feasible_images = {}
             print(f"Warning: {args.feasible_file} not found. No additional {args.attributes} images will be added based on feasibility.")
 else:
-    feasible_images = {}  # Not used in hibug mode
+    feasible_images = {}  # Not used in ablation mode
     if verbose:
-        print("Hibug mode: Skipping feasible image loading.")
+        print("Ablation (no_controlnet) mode: Skipping feasible image loading.")
 
-
-with open("exampleData/celebA/list_attr_celeba.txt") as f:
-    lines = [line.strip('\n').split(' ')[0] for line in f.readlines()]
-    
-all_datas = ['/data/oxx220000/img_align_celeba/' + line for line in lines][1:]
-
-train_idx = np.load("exampleData/celebA/train_idx.npy")[:80000]
-valid_idx = np.arange(len(all_datas))[-100000:-80000]
-unlabel_idx = np.arange(len(all_datas))[-80000:]
-
-idxs = np.concatenate([train_idx, valid_idx, unlabel_idx], axis=0)
-labels = np.load("exampleData/celebA/labels.npy")[idxs]
-
-all_datas = [all_datas[i] for i in idxs]
-split = (
-    [TRAIN for _ in train_idx] + 
-    [VALID for _ in valid_idx] + 
-    [UNLABELED for _ in unlabel_idx]
-)
-
-# Define Dataset
-class CelebADataset(Dataset):
-    def __init__(self, img_paths, labels, transform=None):
-        self.img_paths = img_paths
-        self.labels = labels
-        self.transform = transform
-
-    def __len__(self):
-        return len(self.img_paths)
-
-    def __getitem__(self, idx):
-        img = Image.open(self.img_paths[idx]).convert("RGB")
-        label = torch.tensor(self.labels[idx], dtype=torch.float32)
-
-        if self.transform:
-            img = self.transform(img)
-
-        return img, label
-
-# Initialize CLIP feature extractor
-feature_extractor = CLIPFeatureExtractor.from_pretrained("openai/clip-vit-base-patch32")
-
-# Define transformations
-if args.model == 'clip':
-    # Use CLIP feature extractor to obtain pixel_values tensor
-    transform = lambda img: feature_extractor(images=img, return_tensors="pt")["pixel_values"].squeeze(0)
-else:
-    transform = transforms.Compose([
-        transforms.RandomResizedCrop(224, scale=(0.8, 1.0)),
-        transforms.RandomHorizontalFlip(p=0.5),
-        transforms.ColorJitter(brightness=0.2, contrast=0.2, saturation=0.2),
-        transforms.ToTensor(),
-        transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5])
-    ])
-
-# Create Datasets and Loaders
-train_imgs = [all_datas[i] for i in range(len(all_datas)) if split[i] == TRAIN]
-valid_imgs = [all_datas[i] for i in range(len(all_datas)) if split[i] == VALID]
-unlabeled_imgs = [all_datas[i] for i in range(len(all_datas)) if split[i] == UNLABELED]
-
-train_labels = np.array([labels[i] for i in range(len(all_datas)) if split[i] == TRAIN])
-valid_labels = np.array([labels[i] for i in range(len(all_datas)) if split[i] == VALID])
-unlabeled_labels = np.array([labels[i] for i in range(len(all_datas)) if split[i] == UNLABELED])
-
-# Add the modified hair images to the training set
-# These images' labels will be the same as their corresponding original images
-modified_image_paths = []
-modified_image_labels = []
-
-#
-# Prepare sample keys for hibug mode
-if args.hibug:
-    if args.simple:
-        # Simple mode: read all PNGs from hibug_simple folder
-        args.gen_image_dir = "hibug_simple"
-        files = os.listdir(args.gen_image_dir)
-        sample_keys = [os.path.splitext(f)[0] for f in files if f.lower().endswith('.png')]
-        print(f"Simple hibug mode: Found {len(sample_keys)} images in {args.gen_image_dir}")
+if args.dataset == 'imagenet':
+    # Load ImageNet subset from folders
+    data_dir = Path("./imagenet_subset")
+    # Use same transform as for non-clip models
+    feature_extractor = CLIPImageProcessor.from_pretrained("openai/clip-vit-base-patch32")
+    if args.model == 'clip':
+        transform = lambda img: feature_extractor(images=img, return_tensors="pt")["pixel_values"].squeeze(0)
     else:
-        # Existing hibug behavior: read from hibug_<attributes> folder
-        args.gen_image_dir = f"hibug_{attributes}"
+        transform = transforms.Compose([
+            transforms.RandomResizedCrop(224, scale=(0.8, 1.0)),
+            transforms.RandomHorizontalFlip(p=0.5),
+            transforms.ColorJitter(brightness=0.2, contrast=0.2, saturation=0.2),
+            transforms.ToTensor(),
+            transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5])
+        ])
+    ds = ImageFolder(data_dir, transform=transform)
+    # 80/20 train/val split
+    total = len(ds)
+    train_size = int(0.8 * total)
+    val_size = total - train_size
+    train_ds, val_ds = random_split(
+        ds, [train_size, val_size],
+        generator=torch.Generator().manual_seed(42))
+    train_loader = DataLoader(
+        train_ds, batch_size=args.batch_size if hasattr(args, "batch_size") else 64,
+        shuffle=True, num_workers=args.workers if hasattr(args, "workers") else 4, pin_memory=True)
+    valid_loader = DataLoader(
+        val_ds, batch_size=args.batch_size if hasattr(args, "batch_size") else 64,
+        shuffle=False, num_workers=args.workers if hasattr(args, "workers") else 4, pin_memory=True)
+    num_classes = len(ds.classes)
+    # print(f'Classes ({num_classes}): {ds.classes}')
+    # Expose datasets for training loop compatibility
+    train_dataset = train_ds
+    valid_dataset = val_ds
+    # Skip CelebA loading
+    all_train_imgs = None  # placeholder
+    valid_imgs = None
+    train_labels = None
+    valid_labels = None
+    modified_image_paths = []
+    modified_image_labels = []
+    import numpy as np
+    unlabeled_predictions = np.array([])
+    # Jump to model setup
+else:
+    with open("exampleData/celebA/list_attr_celeba.txt") as f:
+        lines = [line.strip('\n').split(' ')[0] for line in f.readlines()]
+        
+    all_datas = ['/data/oxx220000/img_align_celeba/' + line for line in lines][1:]
+
+    train_idx = np.load("exampleData/celebA/train_idx.npy")[:80000]
+    valid_idx = np.arange(len(all_datas))[-100000:-80000]
+    unlabel_idx = np.arange(len(all_datas))[-80000:]
+
+    idxs = np.concatenate([train_idx, valid_idx, unlabel_idx], axis=0)
+    labels = np.load("exampleData/celebA/labels.npy")[idxs]
+
+    all_datas = [all_datas[i] for i in idxs]
+    split = (
+        [TRAIN for _ in train_idx] + 
+        [VALID for _ in valid_idx] + 
+        [UNLABELED for _ in unlabel_idx]
+    )
+
+    # Define Dataset
+    class CelebADataset(Dataset):
+        def __init__(self, img_paths, labels, transform=None):
+            self.img_paths = img_paths
+            self.labels = labels
+            self.transform = transform
+
+        def __len__(self):
+            return len(self.img_paths)
+
+        def __getitem__(self, idx):
+            img = Image.open(self.img_paths[idx]).convert("RGB")
+            label = torch.tensor(self.labels[idx], dtype=torch.float32)
+
+            if self.transform:
+                img = self.transform(img)
+
+            return img, label
+
+    # Initialize CLIP feature extractor
+    feature_extractor = CLIPImageProcessor.from_pretrained("openai/clip-vit-base-patch32")
+
+    # Define transformations
+    if args.model == 'clip':
+        # Use CLIP feature extractor to obtain pixel_values tensor
+        transform = lambda img: feature_extractor(images=img, return_tensors="pt")["pixel_values"].squeeze(0)
+    else:
+        transform = transforms.Compose([
+            transforms.RandomResizedCrop(224, scale=(0.8, 1.0)),
+            transforms.RandomHorizontalFlip(p=0.5),
+            transforms.ColorJitter(brightness=0.2, contrast=0.2, saturation=0.2),
+            transforms.ToTensor(),
+            transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5])
+        ])
+
+    # Create Datasets and Loaders
+    train_imgs = [all_datas[i] for i in range(len(all_datas)) if split[i] == TRAIN]
+    valid_imgs = [all_datas[i] for i in range(len(all_datas)) if split[i] == VALID]
+    unlabeled_imgs = [all_datas[i] for i in range(len(all_datas)) if split[i] == UNLABELED]
+
+    train_labels = np.array([labels[i] for i in range(len(all_datas)) if split[i] == TRAIN])
+    valid_labels = np.array([labels[i] for i in range(len(all_datas)) if split[i] == VALID])
+    unlabeled_labels = np.array([labels[i] for i in range(len(all_datas)) if split[i] == UNLABELED])
+
+    # Add the modified hair images to the training set
+    # These images' labels will be the same as their corresponding original images
+    modified_image_paths = []
+    modified_image_labels = []
+
+    #
+    # Prepare sample keys for ablation mode (was hibug mode)
+    if args.no_controlnet:
+        if args.simple:
+            # Simple mode: read all PNGs from hibug_simple folder
+            args.gen_image_dir = "hibug_simple"
+            files = os.listdir(args.gen_image_dir)
+            sample_keys = [os.path.splitext(f)[0] for f in files if f.lower().endswith('.png')]
+            print(f"Simple ablation (no_controlnet) mode: Found {len(sample_keys)} images in {args.gen_image_dir}")
+        else:
+            # Existing ablation behavior: read from no_controlnet_<attributes> folder
+            args.gen_image_dir = f"no_controlnet_{attributes}"
+            if not os.path.isdir(args.gen_image_dir):
+                print(f"Error: Ablation image directory {args.gen_image_dir} not found.")
+                sample_keys = []
+            else:
+                all_files = os.listdir(args.gen_image_dir)
+                sample_keys = [os.path.splitext(f)[0] for f in all_files if f.lower().endswith('.png')]
+                print(f"Ablation (no_controlnet) mode: Found {len(sample_keys)} images in {args.gen_image_dir}")
+
+    # Sample from all generated image files in the directory, ignoring JSON-based feasible_images
+    if not args.no_controlnet:
         if not os.path.isdir(args.gen_image_dir):
-            print(f"Error: Hibug image directory {args.gen_image_dir} not found.")
+            print(f"Error: Generated image directory {args.gen_image_dir} not found.")
             sample_keys = []
         else:
             all_files = os.listdir(args.gen_image_dir)
-            sample_keys = [os.path.splitext(f)[0] for f in all_files if f.lower().endswith('.png')]
-            print(f"Hibug mode: Found {len(sample_keys)} images in {args.gen_image_dir}")
+            # Only include files ending with the attribute suffix (e.g., "_redhair.jpg")
+            suffix = f"_{attributes}.jpg"
+            file_keys = [os.path.splitext(f)[0] for f in all_files if f.lower().endswith(suffix)]
+            if len(file_keys) < args.num_added_img:
+                print(f"Warning: requested {args.num_added_img} generated {args.attributes} images, but only {len(file_keys)} available.")
+            sample_keys = file_keys
 
-# Sample from all generated image files in the directory, ignoring JSON-based feasible_images
-if not args.hibug:
-    if not os.path.isdir(args.gen_image_dir):
-        print(f"Error: Generated image directory {args.gen_image_dir} not found.")
-        sample_keys = []
-    else:
-        all_files = os.listdir(args.gen_image_dir)
-        # Only include files ending with the attribute suffix (e.g., "_redhair.jpg")
-        suffix = f"_{attributes}.jpg"
-        file_keys = [os.path.splitext(f)[0] for f in all_files if f.lower().endswith(suffix)]
-        if len(file_keys) < args.num_added_img:
-            print(f"Warning: requested {args.num_added_img} generated {args.attributes} images, but only {len(file_keys)} available.")
-        sample_keys = file_keys
+    # Warn if fewer images are available than requested in the chosen sample_keys
+    if len(sample_keys) < args.num_added_img:
+        print(f"Warning: requested {args.num_added_img} generated {args.attributes} images, "
+              f"but only {len(sample_keys)} available.")
 
-# Warn if fewer images are available than requested in the chosen sample_keys
-if len(sample_keys) < args.num_added_img:
-    print(f"Warning: requested {args.num_added_img} generated {args.attributes} images, "
-          f"but only {len(sample_keys)} available.")
-
-# Perform sampling
-if verbose:
-    print("Perform sampling for generated images")
-selected_filenames = random.sample(sample_keys, min(args.num_added_img, len(sample_keys)))
-print(f"Selected {len(selected_filenames)} filenames for sampling")
-
-# Build a map from base image number to label for quick lookup (not needed for simple hibug mode)
-if not (args.hibug and args.simple):
-    base_to_label = {}
-    for img_path, lbl in zip(train_imgs, train_labels):
-        # Extract numeric basename without extension
-        base = os.path.splitext(os.path.basename(img_path))[0]
-        base_to_label[base] = lbl
-    # --- Debug Prints Start ---
-    print(f"Populated base_to_label dictionary with {len(base_to_label)} entries.")
-    example_keys = list(base_to_label.keys())[:5] # Show first 5 keys
+    # Perform sampling
     if verbose:
-        print(f"Example keys in base_to_label: {example_keys}")
-    # --- Debug Prints End ---
+        print("Perform sampling for generated images")
+    selected_filenames = random.sample(sample_keys, min(args.num_added_img, len(sample_keys)))
+    print(f"Selected {len(selected_filenames)} filenames for sampling")
 
-# Sampling loop
-for filename in selected_filenames:
-    extension = ".png" if args.hibug else ".jpg"
-    if args.hibug and args.simple:
-        # In simple hibug mode, infer label from filename prefix: 'yes'->1, 'no'->0
-        prefix = filename.split('_')[0].lower()
-        lbl = 1 if prefix == 'yes' else 0
-        image_path = f"./{args.gen_image_dir}/{filename}{extension}"
-        modified_image_paths.append(image_path)
-        modified_image_labels.append(lbl)
+    # Build a map from base image number to label for quick lookup (not needed for simple ablation mode)
+    if not (args.no_controlnet and args.simple):
+        base_to_label = {}
+        for img_path, lbl in zip(train_imgs, train_labels):
+            # Extract numeric basename without extension
+            base = os.path.splitext(os.path.basename(img_path))[0]
+            base_to_label[base] = lbl
+        # --- Debug Prints Start ---
+        print(f"Populated base_to_label dictionary with {len(base_to_label)} entries.")
+        example_keys = list(base_to_label.keys())[:5] # Show first 5 keys
         if verbose:
-            print(f"Added {image_path} with label {lbl}")
-        continue
-    # Existing hibug or non-hibug logic follows...
-    # Determine the correct extension based on hibug flag
-    # Get the image file path...
-    image_path = f"./{args.gen_image_dir}/{filename}{extension}"
-    if not os.path.exists(image_path):
-        print(f"Warning: Modified image {image_path} not found.")
-        continue
-    base = None
-    if args.hibug:
-        parts = filename.split('_')
-        if len(parts) > 1 and parts[-1].isdigit():
-            base = parts[-1]
-        else:
-            print(f"Warning: Could not extract base number from hibug filename {filename}")
+            print(f"Example keys in base_to_label: {example_keys}")
+        # --- Debug Prints End ---
+
+    # Sampling loop
+    for filename in selected_filenames:
+        extension = ".png" if args.no_controlnet else ".jpg"
+        if args.no_controlnet and args.simple:
+            # In simple ablation mode, infer label from filename prefix: 'yes'->1, 'no'->0
+            prefix = filename.split('_')[0].lower()
+            lbl = 1 if prefix == 'yes' else 0
+            image_path = f"./{args.gen_image_dir}/{filename}{extension}"
+            modified_image_paths.append(image_path)
+            modified_image_labels.append(lbl)
+            if verbose:
+                print(f"Added {image_path} with label {lbl}")
             continue
-    else:
-        base = filename.split('_')[0]
-    if args.hibug and base is None:
-        print(f"Debug: Hibug filename {filename} resulted in base=None")
-        continue
-    lbl = base_to_label.get(base)
-    if lbl is not None:
-        modified_image_paths.append(image_path)
-        modified_image_labels.append(lbl)
-        if verbose:
-            print(f"Added {image_path} with label {lbl}")
-    else:
-        if args.hibug:
-            print(f"Debug: Failed lookup for hibug file '{filename}'. Extracted base='{base}'. Key not in base_to_label.")
-            print(f"Warning: Could not find original image label for base number {base} (from hibug file {filename})")
+        # Existing ablation or non-ablation logic follows...
+        # Determine the correct extension based on ablation flag
+        # Get the image file path...
+        image_path = f"./{args.gen_image_dir}/{filename}{extension}"
+        if not os.path.exists(image_path):
+            print(f"Warning: Modified image {image_path} not found.")
+            continue
+        base = None
+        if args.no_controlnet:
+            parts = filename.split('_')
+            if len(parts) > 1 and parts[-1].isdigit():
+                base = parts[-1]
+            else:
+                print(f"Warning: Could not extract base number from ablation filename {filename}")
+                continue
         else:
-            print(f"Warning: Could not find original image for {filename}")
+            base = filename.split('_')[0]
+        if args.no_controlnet and base is None:
+            print(f"Debug: Ablation filename {filename} resulted in base=None")
+            continue
+        lbl = base_to_label.get(base)
+        if lbl is not None:
+            modified_image_paths.append(image_path)
+            modified_image_labels.append(lbl)
+            if verbose:
+                print(f"Added {image_path} with label {lbl}")
+        else:
+            if args.no_controlnet:
+                print(f"Debug: Failed lookup for ablation file '{filename}'. Extracted base='{base}'. Key not in base_to_label.")
+                print(f"Warning: Could not find original image label for base number {base} (from ablation file {filename})")
+            else:
+                print(f"Warning: Could not find original image for {filename}")
 
-if verbose:
-    print("Finish sampling for generated images")
-
-# Print information about the added images
-if args.gen_only:
-    # In gen_only mode, we’re only ever using the generated set
-    print(f"Using only generated images: total training images = {len(modified_image_labels)}")
-else:
-    added_count = len(modified_image_labels)
-    print(f"Added {added_count} generated {attributes} images, "
-          f"before training set has {len(train_labels)} images, "
-          f"now {len(train_labels) + added_count}")
-          
-# Load unlabeled predictions - moved outside conditional block
-unlabeled_predictions = np.load("exampleData/celebA/predictions.npy")[idxs]
-unlabeled_predictions = np.array([unlabeled_predictions[i] for i in range(len(all_datas)) if split[i] == UNLABELED])
-if verbose:
-    print(f"Unlabeled predictions length: {len(unlabeled_predictions)}")
-
-# Construct training data based on gen_only flag
-if args.gen_only:
-    # Use only generated images: split into 80:20 train/validation sets
-    indices = list(range(len(modified_image_paths)))
-    random.shuffle(indices)
-    split_idx = int(0.8 * len(indices))
-    train_indices = indices[:split_idx]
-    val_indices = indices[split_idx:]
-    all_train_imgs = [modified_image_paths[i] for i in train_indices]
-    all_train_labels = np.array(modified_image_labels)[train_indices]
-    # Override valid set to use generated images
-    valid_imgs = [modified_image_paths[i] for i in val_indices]
-    valid_labels = np.array(modified_image_labels)[val_indices]
-elif modified_image_paths:
-    # Combine original training data with modified images
-    all_train_imgs = train_imgs + modified_image_paths
-    all_train_labels = np.concatenate((train_labels, np.array(modified_image_labels)))
-    combined_labels = np.concatenate((train_labels, valid_labels, np.array(modified_image_labels), unlabeled_labels))
-else:
-    all_train_imgs = train_imgs
-    all_train_labels = train_labels
-    combined_labels = np.concatenate((train_labels, valid_labels, unlabeled_labels))
-
-# Save combined indices and labels when using generated images
-if modified_image_paths:
-    modified_filenames = [os.path.basename(path).split('.')[0] for path in modified_image_paths]
-    if args.gen_only:
-        combined_train_idx = np.array(modified_filenames, dtype=object)
-    else:
-        combined_train_idx = np.array([*train_idx, *modified_filenames], dtype=object)
-    # Determine naming for simple vs attribute-based cases
-    name_key = "simple" if args.hibug and args.simple else attributes
     if verbose:
-        train_idx_path = f"save/idx/train_idx_{name_key}_{args.num_added_img}imgs.npy"
-        labels_path    = f"save/labels/labels_{name_key}_{args.num_added_img}imgs.npy"
-        if not os.path.exists(train_idx_path):
-            np.save(train_idx_path, combined_train_idx)
-            print(f"Saved combined train indices to {train_idx_path}")
-        else:
-            if verbose:
-                print(f"{train_idx_path} already exists, skipping save.")
-        if not os.path.exists(labels_path):
-            np.save(labels_path, combined_labels)
-            print(f"Saved combined labels to {labels_path}")
-        else:
-            if verbose:
-                print(f"{labels_path} already exists, skipping save.")
+        print("Finish sampling for generated images")
 
-if verbose:
-    print(f"Training images: {len(all_train_imgs)}, Labels: {len(all_train_labels)}")
-    print(f"Validation images: {len(valid_imgs)}, Labels: {len(valid_labels)}")
-    # 84050 20000
-# Create datasets using the combined data
-train_dataset = CelebADataset(all_train_imgs, all_train_labels, transform)
-valid_dataset = CelebADataset(valid_imgs, valid_labels, transform)
+    # Print information about the added images
+    if args.gen_only:
+        # In gen_only mode, we’re only ever using the generated set
+        print(f"Using only generated images: total training images = {len(modified_image_labels)}")
+    else:
+        added_count = len(modified_image_labels)
+        print(f"Added {added_count} generated {attributes} images, "
+              f"before training set has {len(train_labels)} images, "
+              f"now {len(train_labels) + added_count}")
+            
+    # Load unlabeled predictions - moved outside conditional block
+    unlabeled_predictions = np.load("exampleData/celebA/predictions.npy")[idxs]
+    unlabeled_predictions = np.array([unlabeled_predictions[i] for i in range(len(all_datas)) if split[i] == UNLABELED])
+    if verbose:
+        print(f"Unlabeled predictions length: {len(unlabeled_predictions)}")
 
-train_loader = DataLoader(train_dataset, batch_size=64, shuffle=True, num_workers=4)
-valid_loader = DataLoader(valid_dataset, batch_size=64, shuffle=False, num_workers=4)
+    # Construct training data based on gen_only flag
+    if args.gen_only:
+        # Use only generated images: split into 80:20 train/validation sets
+        indices = list(range(len(modified_image_paths)))
+        random.shuffle(indices)
+        split_idx = int(0.8 * len(indices))
+        train_indices = indices[:split_idx]
+        val_indices = indices[split_idx:]
+        all_train_imgs = [modified_image_paths[i] for i in train_indices]
+        all_train_labels = np.array(modified_image_labels)[train_indices]
+        # Override valid set to use generated images
+        valid_imgs = [modified_image_paths[i] for i in val_indices]
+        valid_labels = np.array(modified_image_labels)[val_indices]
+    elif modified_image_paths:
+        # Combine original training data with modified images
+        all_train_imgs = train_imgs + modified_image_paths
+        all_train_labels = np.concatenate((train_labels, np.array(modified_image_labels)))
+        combined_labels = np.concatenate((train_labels, valid_labels, np.array(modified_image_labels), unlabeled_labels))
+    else:
+        all_train_imgs = train_imgs
+        all_train_labels = train_labels
+        combined_labels = np.concatenate((train_labels, valid_labels, unlabeled_labels))
+
+    # Save combined indices and labels when using generated images
+    if modified_image_paths:
+        modified_filenames = [os.path.basename(path).split('.')[0] for path in modified_image_paths]
+        if args.gen_only:
+            combined_train_idx = np.array(modified_filenames, dtype=object)
+        else:
+            combined_train_idx = np.array([*train_idx, *modified_filenames], dtype=object)
+        # Determine naming for simple vs attribute-based cases
+        name_key = "simple" if args.no_controlnet and args.simple else attributes
+        if verbose:
+            train_idx_path = f"save/idx/train_idx_{name_key}_{args.num_added_img}imgs.npy"
+            labels_path    = f"save/labels/labels_{name_key}_{args.num_added_img}imgs.npy"
+            if not os.path.exists(train_idx_path):
+                np.save(train_idx_path, combined_train_idx)
+                print(f"Saved combined train indices to {train_idx_path}")
+            else:
+                if verbose:
+                    print(f"{train_idx_path} already exists, skipping save.")
+            if not os.path.exists(labels_path):
+                np.save(labels_path, combined_labels)
+                print(f"Saved combined labels to {labels_path}")
+            else:
+                if verbose:
+                    print(f"{labels_path} already exists, skipping save.")
+
+    if verbose:
+        print(f"Training images: {len(all_train_imgs)}, Labels: {len(all_train_labels)}")
+        print(f"Validation images: {len(valid_imgs)}, Labels: {len(valid_labels)}")
+        # 84050 20000
+    # Create datasets using the combined data
+    train_dataset = CelebADataset(all_train_imgs, all_train_labels, transform)
+    valid_dataset = CelebADataset(valid_imgs, valid_labels, transform)
+
+    train_loader = DataLoader(train_dataset, batch_size=64, shuffle=True, num_workers=4)
+    valid_loader = DataLoader(valid_dataset, batch_size=64, shuffle=False, num_workers=4)
+    num_classes = 2
 
 # Define model, loss, and optimizer
 if torch.cuda.is_available():
@@ -440,29 +522,27 @@ if verbose and device.type == "cuda":
     print(f"Using GPU {args.gpu}: {torch.cuda.get_device_name(args.gpu)}")
 
 if args.model == 'resnet':
-    # Create a simplified ResNet by removing deeper layers
-    # Select resnet18 weights via new `weights` API
-    if args.pretrained:
-        base_model = models.resnet18(weights=ResNet18_Weights.IMAGENET1K_V1)
+    # Use full ResNet-18 for multiclass ImageNet, simplified version for binary tasks (CelebA)
+    if args.dataset == 'imagenet':
+        # Load randomly initialized ResNet-18 and adjust final layer for multiclass
+        model = models.resnet18(weights=None)
+        model.fc = nn.Linear(model.fc.in_features, num_classes)
     else:
-        base_model = models.resnet18(weights=None)
-    
-    # Remove layers to reduce complexity
-    base_model.layer3 = nn.Identity()
-    base_model.layer4 = nn.Identity()
-    
-    # Replace the standard avgpool with an adaptive version for flexibility
-    base_model.avgpool = nn.AdaptiveAvgPool2d((1,1))
-    
-    model = base_model
-    
-    # Adjust the fully-connected layer; since we removed layer3 and layer4, the output comes from layer2 (128 channels)
-    model.fc = nn.Sequential(
-        nn.Dropout(p=0.7),  # Increased dropout probability for stronger regularization
-        nn.Linear(128, 1)
-    )
+        # Simplified ResNet for binary classification
+        if args.pretrained:
+            base_model = models.resnet18(weights=ResNet18_Weights.IMAGENET1K_V1)
+        else:
+            base_model = models.resnet18(weights=None)
+        base_model.layer3 = nn.Identity()
+        base_model.layer4 = nn.Identity()
+        base_model.avgpool = nn.AdaptiveAvgPool2d((1,1))
+        model = base_model
+        model.fc = nn.Sequential(
+            nn.Dropout(p=0.7),
+            nn.Linear(128, 1)
+        )
 elif args.model == 'vit':
-    # Initialize ViT with internal dropout and stochastic depth for regularization
+    # Initialize ViT base model
     model = create_model(
         'vit_base_patch16_224',
         pretrained=args.pretrained,
@@ -470,24 +550,37 @@ elif args.model == 'vit':
         attn_drop_rate=0.1,
         drop_path_rate=0.1
     )
-    # Modify the head for binary classification, adding dropout for regularization
     num_head_features = model.head.in_features
-    model.head = nn.Sequential(
-         nn.Dropout(p=0.7),  # Increased dropout probability for stronger regularization
-         nn.Linear(num_head_features, 1)
-    )
+    if args.dataset == 'imagenet':
+        # Multiclass head for ImageNet subset
+        model.head = nn.Linear(num_head_features, num_classes)
+    else:
+        # Binary classification head for CelebA
+        model.head = nn.Sequential(
+            nn.Dropout(p=0.7),
+            nn.Linear(num_head_features, 1)
+        )
 elif args.model == 'clip':
-    # Use CLIP vision model for binary classification, passing pretrained flag
-    model = CLIPForBinary(dropout_rate=0.5, pretrained=args.pretrained)
+    # Initialize CLIP-based classifier with appropriate output size
+    model = CLIPForBinary(
+        dropout_rate=0.5,
+        pretrained=args.pretrained,
+        num_classes=num_classes if args.dataset=='imagenet' else 1
+    )
 
 model = model.to(device)
 print(f"Using {args.model} model with {'pretrained' if args.pretrained else 'random'} weights")
 
-num_negative = (all_train_labels == 0).sum()
-num_positive = (all_train_labels == 1).sum()
-pos_weight = torch.tensor([num_negative / num_positive]).to(device)
-# Use smoothed BCE loss since label_smoothing param is unavailable
-criterion = SmoothBCEWithLogitsLoss(pos_weight=pos_weight, smoothing=0.1)
+# For consistency, handle pos_weight and loss for both datasets
+if args.dataset == 'imagenet':
+    # Multi-class classification: use CrossEntropyLoss
+    criterion = nn.CrossEntropyLoss()
+else:
+    num_negative = (all_train_labels == 0).sum()
+    num_positive = (all_train_labels == 1).sum()
+    pos_weight = torch.tensor([num_negative / num_positive]).to(device)
+    # Use smoothed BCE loss since label_smoothing param is unavailable
+    criterion = SmoothBCEWithLogitsLoss(pos_weight=pos_weight, smoothing=0.1)
 
 # Optimize all model parameters for all architectures
 if args.model == 'clip':
@@ -517,16 +610,26 @@ def evaluate(model, data_loader, save_preds=False):
 
     with torch.no_grad():
         for images, labels in data_loader:
-            images, labels = images.to(device), labels.to(device).unsqueeze(1)
-            outputs = model(images)
-            loss = criterion(outputs, labels)
-            total_loss += loss.item()
-            preds = (torch.sigmoid(outputs) > 0.5).int()
-            total_correct += (preds == labels.int()).sum().item()
-
-            if save_preds:
-                all_preds.extend(preds.cpu().numpy())
-                all_labels.extend(labels.cpu().numpy())
+            if args.dataset == 'imagenet':
+                images, labels = images.to(device), labels.to(device)
+                outputs = model(images)
+                loss = criterion(outputs, labels)
+                total_loss += loss.item()
+                preds = outputs.argmax(dim=1)
+                total_correct += (preds == labels).sum().item()
+                if save_preds:
+                    all_preds.extend(preds.cpu().numpy())
+                    all_labels.extend(labels.cpu().numpy())
+            else:
+                images, labels = images.to(device), labels.to(device).unsqueeze(1)
+                outputs = model(images)
+                loss = criterion(outputs, labels)
+                total_loss += loss.item()
+                preds = (torch.sigmoid(outputs) > 0.5).int()
+                total_correct += (preds == labels.int()).sum().item()
+                if save_preds:
+                    all_preds.extend(preds.cpu().numpy())
+                    all_labels.extend(labels.cpu().numpy())
 
     acc = total_correct / len(data_loader.dataset)
     avg_loss = total_loss / len(data_loader)
@@ -576,17 +679,17 @@ def save_predictions(model, train_loader, valid_loader):
         print(f"Combined predictions length: {len(combined_preds)} (should match combined_labels length: {len(combined_labels)})")
     except NameError:
         print(f"Combined predictions length: {len(combined_preds)}")
-    # Determine filename suffix based on gen_only flag and hibug flag
+    # Determine filename suffix based on gen_only flag and ablation flag
     suffix = ""
     if args.gen_only:
         suffix += "_g"
-    if args.hibug:
-        suffix += "_h" # Add 'h' for hibug
+    if args.no_controlnet:
+        suffix += "_h" # Add 'h' for ablation/no_controlnet
 
-    # Use simple naming if in simple hibug mode
-    pred_key = "simple" if args.hibug and args.simple else attributes
+    # Use simple naming if in simple ablation mode
+    pred_key = "simple" if args.no_controlnet and args.simple else attributes
     np.save(
-        f"save/pred/predictions_{args.model}_{pred_key}_{args.num_added_img}imgs{suffix}_{time_now}.npy",
+        f"save/pred/predictions_{args.dataset}_{args.model}_{pred_key}_{args.num_added_img}imgs{suffix}_{time_now}.npy",
         combined_preds
     )
 
@@ -604,19 +707,31 @@ def train_model(model, train_loader, valid_loader, criterion, optimizer, schedul
         total_loss, total_correct = 0, 0
         
         for images, labels in train_loader:
-            images, labels = images.to(device), labels.to(device).unsqueeze(1)
-
-            optimizer.zero_grad()
-            outputs = model(images)
-            loss = criterion(outputs, labels)
-            loss.backward()
-            # Apply gradient clipping only for CLIP and ViT models
-            if args.model in ('clip', 'vit'):
-                torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
-            optimizer.step()
-
-            total_loss += loss.item()
-            total_correct += ((torch.sigmoid(outputs) > 0.5).int() == labels.int()).sum().item()
+            if args.dataset == 'imagenet':
+                images, labels = images.to(device), labels.to(device)
+                optimizer.zero_grad()
+                outputs = model(images)
+                loss = criterion(outputs, labels)
+                loss.backward()
+                # Apply gradient clipping only for CLIP and ViT models
+                if args.model in ('clip', 'vit'):
+                    torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
+                optimizer.step()
+                total_loss += loss.item()
+                preds = outputs.argmax(dim=1)
+                total_correct += (preds == labels).sum().item()
+            else:
+                images, labels = images.to(device), labels.to(device).unsqueeze(1)
+                optimizer.zero_grad()
+                outputs = model(images)
+                loss = criterion(outputs, labels)
+                loss.backward()
+                # Apply gradient clipping only for CLIP and ViT models
+                if args.model in ('clip', 'vit'):
+                    torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
+                optimizer.step()
+                total_loss += loss.item()
+                total_correct += ((torch.sigmoid(outputs) > 0.5).int() == labels.int()).sum().item()
 
         train_acc = total_correct / len(train_dataset)
         val_acc, val_loss = evaluate(model, valid_loader)
@@ -665,6 +780,8 @@ def train_model(model, train_loader, valid_loader, criterion, optimizer, schedul
 
         plt.tight_layout()
         plt.savefig(f"save/plot/plot_{args.model}_{attributes}_{args.num_added_img}imgs_{time_now}.png")
+        if args.dataset == 'imagenet':
+            plt.savefig(f"./plot_{args.dataset}_{args.model}_{attributes}_{args.num_added_img}imgs_{time_now}.png")
         plt.close()
 
     # Load best or last model before saving predictions
@@ -732,149 +849,152 @@ print("Current time:", time_now)
 
 
 # Run the model diagnostics after predictions are saved
-print("\nRunning model diagnostics on generated predictions...")
 
-# Define the parameters for diagnostics
-acc_diff_threshold = 0.01
-distribution_diff_threshold = 0.3
-dominant_label_in_failure_threshold = 0.8
-dominant_label_in_prediction_threshold = 0.8
-rare_label_threshold = 0.93
-dominant_error_threshold = 0.3
-error_cover_threshold = 0.9
-top_error = 3
-
-# Determine filename suffix based on gen_only flag and hibug flag
-suffix = ""
-if args.gen_only:
-    suffix += "_g"
-if args.hibug:
-    suffix += "_h" # Add 'h' for hibug
-
-# Load the predictions we just saved
-prediction_file = f"save/pred/predictions_{args.model}_{attributes}_{args.num_added_img}imgs{suffix}_{time_now}.npy"
-predictions = np.load(prediction_file)
-
-# Adjust split to match combined_labels (including modified images in the training split)
-split = (
-    [TRAIN] * len(train_labels) +
-    [VALID] * len(valid_labels) +
-    [TRAIN] * len(modified_image_labels) +
-    [UNLABELED] * len(unlabeled_labels)
-)
-
-
-if not args.gen_only:
-    # Initialize diagnostics only if not gen_only
-    MD = ModelDiagnose(labels=combined_labels,
-                       predictions=predictions,
-                       split=split,
-                       attribute_dict_path=args.attribute_file,
-                       print=args.verbose,
-                       acc_diff_threshold=acc_diff_threshold,
-                       distribution_diff_threshold=distribution_diff_threshold,
-                       dominant_label_in_failure_threshold=dominant_label_in_failure_threshold,
-                       dominant_label_in_prediction_threshold=dominant_label_in_prediction_threshold,
-                       rare_label_threshold=rare_label_threshold,
-                       dominant_error_threshold=dominant_error_threshold,
-                       error_cover_threshold=error_cover_threshold,
-                       top_error=top_error)
-
-    print("Start detect_failure_by_label\n")
-    MD.detect_failure_by_label()
-    print("Start detect_prediction_correlation\n")
-    MD.detect_prediction_correlation()
-    print("Start detect_failure_prediction_correlation\n")
-    MD.detect_failure_prediction_correlation()
-    print("Model diagnostics complete.")
-
-    # Generate and save report if requested
-    if args.save_report:
-        report_dir = "save/reports"
-        os.makedirs(report_dir, exist_ok=True)
-        # Determine filename suffix based on gen_only flag and hibug flag
-        suffix = ""
-        if args.gen_only:
-            suffix += "_g"
-        if args.hibug:
-            suffix += "_h" # Add 'h' for hibug
-        MD.generate_report(f"{report_dir}/{args.model}_{attributes}_{args.num_added_img}imgs{suffix}_{time_now}")
-        print(f"Diagnostic report saved to {report_dir}/{args.model}_{attributes}_{args.num_added_img}imgs{suffix}_{time_now}")
+if args.dataset == 'imagenet':
+    print("Skipping model diagnostics for ImageNet dataset.")
 else:
-    print("Skipping model diagnostics because gen_only=True")
-    # Emphasize final epoch's Train Acc if diagnostics are skipped
-    if len(train_acc_history) > 0:
-        final_train_acc = train_acc_history[-1]
-        print("\n" + "="*60)
-        print(f"Final Epoch Train Accuracy (gen_only=True): {final_train_acc:.4f}")
-        print("="*60 + "\n")
+    print("\nRunning model diagnostics on generated predictions...")
 
-# --- Accuracy Comparison Logic ---
-if args.gen_only:
-    print("Skipping accuracy comparison due to gen_only flag being True")
-else:
-    # Use the determined compare_log_path instead of args.compare_log
-    if compare_log_path:
-        print(f"\nComparing accuracy with log file: {compare_log_path}")
-        orig_entries, orig_overall = parse_log(compare_log_path)
+    # Define the parameters for diagnostics
+    acc_diff_threshold = 0.01
+    distribution_diff_threshold = 0.3
+    dominant_label_in_failure_threshold = 0.8
+    dominant_label_in_prediction_threshold = 0.8
+    rare_label_threshold = 0.93
+    dominant_error_threshold = 0.3
+    error_cover_threshold = 0.9
+    top_error = 3
 
-        if orig_entries is not None:
-            # Build lookup map for original accuracies
-            orig_map = {(e['attribute'], e['description']): e['accuracy'] for e in orig_entries}
+    # Determine filename suffix based on gen_only flag and ablation flag
+    suffix = ""
+    if args.gen_only:
+        suffix += "_g"
+    if args.no_controlnet:
+        suffix += "_h" # Add 'h' for ablation/no_controlnet
 
-            # Get current overall accuracy from MD
-            current_overall = MD.valid_acc
+    # Load the predictions we just saved
+    prediction_file = f"save/pred/predictions_{args.dataset}_{args.model}_{attributes}_{args.num_added_img}imgs{suffix}_{time_now}.npy"
+    predictions = np.load(prediction_file)
 
-            # Compare overall accuracy
-            if orig_overall is not None and current_overall is not None:
-                if current_overall > orig_overall:
-                    overall_status = 'improved'
-                elif current_overall < orig_overall:
-                    overall_status = 'declined'
-                else:
-                    overall_status = 'same'
-                print(f'Overall accuracy: {orig_overall:.6f} -> {current_overall:.6f}: {overall_status}')
-            elif current_overall is not None:
-                 print(f'Current overall accuracy: {current_overall:.6f} (Original overall accuracy not found in log)')
-            else:
-                 print(f'Original overall accuracy: {orig_overall:.6f} (Current overall accuracy not available)')
+    # Adjust split to match combined_labels (including modified images in the training split)
+    split = (
+        [TRAIN] * len(train_labels) +
+        [VALID] * len(valid_labels) +
+        [TRAIN] * len(modified_image_labels) +
+        [UNLABELED] * len(unlabeled_labels)
+    )
 
+    if not args.gen_only:
+        # Initialize diagnostics only if not gen_only
+        MD = ModelDiagnose(labels=combined_labels,
+                           predictions=predictions,
+                           split=split,
+                           attribute_dict_path=args.attribute_file,
+                           print=args.verbose,
+                           acc_diff_threshold=acc_diff_threshold,
+                           distribution_diff_threshold=distribution_diff_threshold,
+                           dominant_label_in_failure_threshold=dominant_label_in_failure_threshold,
+                           dominant_label_in_prediction_threshold=dominant_label_in_prediction_threshold,
+                           rare_label_threshold=rare_label_threshold,
+                           dominant_error_threshold=dominant_error_threshold,
+                           error_cover_threshold=error_cover_threshold,
+                           top_error=top_error)
 
-            # Compare attribute-specific accuracies
-            print("\nAttribute-specific accuracy comparison:")
-            current_compared_count = 0
-            for (attribute, description), orig_acc in orig_map.items():
-                # Retrieve current accuracy from MD.attributes
-                current_acc = None
-                if attribute in MD.attributes and description in MD.attributes[attribute]['valid acc']:
-                    current_acc = MD.attributes[attribute]['valid acc'][description]
+        print("Start detect_failure_by_label\n")
+        MD.detect_failure_by_label()
+        print("Start detect_prediction_correlation\n")
+        MD.detect_prediction_correlation()
+        print("Start detect_failure_prediction_correlation\n")
+        MD.detect_failure_prediction_correlation()
+        print("Model diagnostics complete.")
 
-                if current_acc is None:
-                    # print(f'{attribute}, {description}: not found in current run results') # Optional: uncomment to see missing ones
-                    continue
-
-                # Determine status
-                if current_acc > orig_acc:
-                    status = 'improved'
-                elif current_acc < orig_acc:
-                    status = 'declined'
-                else:
-                    status = 'same'
-                print(f'{attribute}, {description}, {orig_acc:.6f} -> {current_acc:.6f}: {status}')
-                current_compared_count += 1
-
-            print(f"\nCompared {current_compared_count} attribute-specific accuracies.")
-
-            # Check for entries present in current run but not in the original log (optional)
-            # print("\nAccuracies present in current run but not in original log:")
-            # for attribute, attr_data in MD.attributes.items():
-            #     if 'valid acc' in attr_data:
-            #         for description, current_acc in attr_data['valid acc'].items():
-            #             if (attribute, description) not in orig_map:
-            #                 print(f'{attribute}, {description}: {current_acc:.6f} (new)')
-
-        else:
-            # Use compare_log_path in the warning message
-            print(f"Could not parse or find the comparison log file: {compare_log_path}")
+        # Generate and save report if requested
+        if args.save_report:
+            report_dir = "save/reports"
+            os.makedirs(report_dir, exist_ok=True)
+            # Determine filename suffix based on gen_only flag and ablation flag
+            suffix = ""
+            if args.gen_only:
+                suffix += "_g"
+            if args.no_controlnet:
+                suffix += "_h" # Add 'h' for ablation/no_controlnet
+            MD.generate_report(f"{report_dir}/{args.dataset}_{args.model}_{attributes}_{args.num_added_img}imgs{suffix}_{time_now}")
+            print(f"Diagnostic report saved to {report_dir}/{args.dataset}_{args.model}_{attributes}_{args.num_added_img}imgs{suffix}_{time_now}")
     else:
-        print("\nSkipping accuracy comparison: No comparison log file specified for the selected model or file not found.")
+        print("Skipping model diagnostics because gen_only=True")
+        # Emphasize final epoch's Train Acc if diagnostics are skipped
+        if len(train_acc_history) > 0:
+            final_train_acc = train_acc_history[-1]
+            print("\n" + "="*60)
+            print(f"Final Epoch Train Accuracy (gen_only=True): {final_train_acc:.4f}")
+            print("="*60 + "\n")
+
+    # --- Accuracy Comparison Logic ---
+    if args.gen_only:
+        print("Skipping accuracy comparison due to gen_only flag being True")
+    else:
+        # Use the determined compare_log_path instead of args.compare_log
+        if compare_log_path:
+            print(f"\nComparing accuracy with log file: {compare_log_path}")
+            orig_entries, orig_overall = parse_log(compare_log_path)
+
+            if orig_entries is not None:
+                # Build lookup map for original accuracies
+                orig_map = {(e['attribute'], e['description']): e['accuracy'] for e in orig_entries}
+
+                # Get current overall accuracy from MD
+                current_overall = MD.valid_acc
+
+                # Compare overall accuracy
+                if orig_overall is not None and current_overall is not None:
+                    if current_overall > orig_overall:
+                        overall_status = 'improved'
+                    elif current_overall < orig_overall:
+                        overall_status = 'declined'
+                    else:
+                        overall_status = 'same'
+                    print(f'Overall accuracy: {orig_overall:.6f} -> {current_overall:.6f}: {overall_status}')
+                elif current_overall is not None:
+                     print(f'Current overall accuracy: {current_overall:.6f} (Original overall accuracy not found in log)')
+                else:
+                     print(f'Original overall accuracy: {orig_overall:.6f} (Current overall accuracy not available)')
+
+
+                # Compare attribute-specific accuracies
+                print("\nAttribute-specific accuracy comparison:")
+                current_compared_count = 0
+                for (attribute, description), orig_acc in orig_map.items():
+                    # Retrieve current accuracy from MD.attributes
+                    current_acc = None
+                    if attribute in MD.attributes and description in MD.attributes[attribute]['valid acc']:
+                        current_acc = MD.attributes[attribute]['valid acc'][description]
+
+                    if current_acc is None:
+                        # print(f'{attribute}, {description}: not found in current run results') # Optional: uncomment to see missing ones
+                        continue
+
+                    # Determine status
+                    if current_acc > orig_acc:
+                        status = 'improved'
+                    elif current_acc < orig_acc:
+                        status = 'declined'
+                    else:
+                        status = 'same'
+                    print(f'{attribute}, {description}, {orig_acc:.6f} -> {current_acc:.6f}: {status}')
+                    current_compared_count += 1
+
+                print(f"\nCompared {current_compared_count} attribute-specific accuracies.")
+
+                # Check for entries present in current run but not in the original log (optional)
+                # print("\nAccuracies present in current run but not in original log:")
+                # for attribute, attr_data in MD.attributes.items():
+                #     if 'valid acc' in attr_data:
+                #         for description, current_acc in attr_data['valid acc'].items():
+                #             if (attribute, description) not in orig_map:
+                #                 print(f'{attribute}, {description}: {current_acc:.6f} (new)')
+
+            else:
+                # Use compare_log_path in the warning message
+                print(f"Could not parse or find the comparison log file: {compare_log_path}")
+        else:
+            print("\nSkipping accuracy comparison: No comparison log file specified for the selected model or file not found.")

@@ -1,0 +1,12 @@
+start time: 2025-05-04 01:23:47
+Current time: 0504012350
+Using resnet model with random weights
+Epoch [1/40], Train Loss: 2.0001, Train Acc: 0.2968, Val Loss: 1.9762, Val Acc: 0.3212
+Epoch [2/40], Train Loss: 1.7533, Train Acc: 0.3907, Val Loss: 1.7259, Val Acc: 0.4092
+Epoch [3/40], Train Loss: 1.6250, Train Acc: 0.4511, Val Loss: 1.8798, Val Acc: 0.3762
+Epoch [4/40], Train Loss: 1.4084, Train Acc: 0.5248, Val Loss: 1.5343, Val Acc: 0.4873
+Epoch [5/40], Train Loss: 1.3118, Train Acc: 0.5602, Val Loss: 1.6552, Val Acc: 0.4881
+Epoch [6/40], Train Loss: 1.2317, Train Acc: 0.5884, Val Loss: 1.2876, Val Acc: 0.5635
+Epoch [7/40], Train Loss: 1.0476, Train Acc: 0.6572, Val Loss: 1.2199, Val Acc: 0.5981
+Epoch [8/40], Train Loss: 0.9774, Train Acc: 0.6744, Val Loss: 1.1451, Val Acc: 0.6154
+Epoch [9/40], Train Loss: 0.9325, Train Acc: 0.6878, Val Loss: 1.2051, Val Acc: 0.6088

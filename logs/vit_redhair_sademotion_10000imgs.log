@@ -1,0 +1,8 @@
+start time: 2025-05-04 01:23:53
+Traceback (most recent call last):
+  File "/people/cs/o/oxx220000/HiBug/predict.py", line 123, in <module>
+    if verbose:
+NameError: name 'verbose' is not defined
+Start Time: 2025-05-04 01:23:53
+End Time:   2025-05-04 01:23:56
+Duration:   00:00:03

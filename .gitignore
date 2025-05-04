@@ -10,7 +10,10 @@ downloaded_data
 /save/*
 # ...but keep top-level JSON files in save/
 !/save/*.json
+!/save/plot/*.png
 yellowhair*
 redhair_sademotion*
 
 .vscode
+
+imagenet*

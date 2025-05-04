@@ -9,7 +9,7 @@ CUDA_DEVICES=0
 MODEL=""
 ATTRIBUTES=""
 GEN_ONLY=false
-HIBUG=false
+NO_CONTROLNET=false
 SIMPLE=false
 
 # Default list of num_added_img values; can be overridden with -n
@@ -26,8 +26,8 @@ while getopts "m:a:d:n:gus" opt; do
     a) ATTRIBUTES="$OPTARG" ;;
     d) CUDA_DEVICES="$OPTARG" ;;
     g) GEN_ONLY=true ;;
-    u) HIBUG=true ;;
-    s) SIMPLE=true ;;
+    u) NO_CONTROLNET=true ;;
+    s) SIMPLE=false ;;
     n) NUM_LIST="$OPTARG" ;;
     *)
       echo "Usage: $(basename "$0") -m model -a attributes -d cuda_devices [-g] [-n num_list]"
@@ -53,8 +53,8 @@ for NUM_ADDED_IMG in ${NUM_LIST}; do
   if [[ "${SIMPLE}" == true ]]; then
     SUFFIX+="simple_"
   fi
-  if [[ "${HIBUG}" == true ]]; then
-    SUFFIX+="hibug_"
+  if [[ "${NO_CONTROLNET}" == true ]]; then
+    SUFFIX+="no_controlnet_"
   fi
   LOG_FILE="${LOG_DIR}/${SUFFIX}${MODEL}_${ATTRIBUTES}_${NUM_ADDED_IMG}imgs.log"
   echo "=== [${NUM_ADDED_IMG} imgs] Starting ${MODEL} -> ${LOG_FILE} ==="
@@ -65,7 +65,7 @@ for NUM_ADDED_IMG in ${NUM_LIST}; do
       --attributes "${ATTRIBUTES}" \
       --num_added_img "${NUM_ADDED_IMG}" \
       --gen_only "${GEN_ONLY}" \
-      --hibug "${HIBUG}" \
+      --no_controlnet "${NO_CONTROLNET}" \
       --simple "${SIMPLE}" \
       > "${LOG_FILE}" 2>&1
 

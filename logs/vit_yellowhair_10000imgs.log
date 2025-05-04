@@ -1,0 +1,17 @@
+start time: 2025-05-03 20:37:15
+usage: predict.py [-h] [--verbose VERBOSE] [--feasible_file FEASIBLE_FILE]
+                  [--olabel OLABEL] [--gen_image_dir GEN_IMAGE_DIR]
+                  [--pretrained PRETRAINED] [--lr LR]
+                  [--attributes ATTRIBUTES] [--model {resnet,vit,clip}]
+                  [--plot PLOT] [--num_epochs NUM_EPOCHS]
+                  [--num_added_img NUM_ADDED_IMG]
+                  [--attribute_file ATTRIBUTE_FILE] [--gpu GPU]
+                  [--save_report SAVE_REPORT] [--save_pred_model {best,last}]
+                  [--gen_only GEN_ONLY]
+                  [--skip_train_unlabeled SKIP_TRAIN_UNLABELED]
+                  [--no_controlnet NO_CONTROLNET]
+                  [--skip_feasible SKIP_FEASIBLE] [--simple SIMPLE]
+predict.py: error: unrecognized arguments: --hibug false
+Start Time: 2025-05-03 20:37:15
+End Time:   2025-05-03 20:37:19
+Duration:   00:00:04
