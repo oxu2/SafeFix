@@ -1,25 +1,10 @@
-
-TODO:
-01. Yellowhair filter then train
-2. hibug simple method, run to get some results
-
-
-
-CUDA_VISIBLE_DEVICES=0 nohup python -u predict.py --model resnet --num_added_img 9310  --save_pred_model best --num_epochs 1 --attributes yellowhair_sademotion > logs/yellowhair_sademotion.log 2>&1 < /dev/null &
-
-nohup ./batch.sh -m clip -a yellowhair_sademotion -d 0 \
-  > logs/batch/batch_clip_yellowhair_sademotion.log 2>&1 < /dev/null &
-nohup ./batch.sh -m resnet -a yellowhair_sademotion -d 1 \
-  > logs/batch/batch_resnet_yellowhair_sademotion.log 2>&1 < /dev/null &
-nohup ./batch.sh -m vit -a yellowhair_sademotion -d 2 \
-  > logs/batch/batch_vit_yellowhair_sademotion.log 2>&1 < /dev/null &
-
-
 CUDA_VISIBLE_DEVICES=1 nohup  python -u predict.py --dataset imagenet --model resnet --num_added_img 0  --save_pred_model last --num_epochs 30 > logs/imagenet_resnet.log 2>&1 < /dev/null &
 
 CUDA_VISIBLE_DEVICES=0 nohup  python -u predict.py --dataset imagenet --model resnet --num_added_img 0  --save_pred_model last --num_epochs 40 > logs/imagenet_resnet_40.log 2>&1 < /dev/null &
 
 CUDA_VISIBLE_DEVICES=0 nohup python -u predict.py --model resnet --num_added_img 10  --save_pred_model best --num_epochs 1 --attributes redhair_brownskin_sademotion > logs/1_resnet.log 2>&1 < /dev/null &
+
+CUDA_VISIBLE_DEVICES=0 nohup python -u predict.py --model resnet --num_added_img 5230  --save_pred_model best --num_epochs 1 --attributes yellowhair --gen_image_dir exampleData/yellowhair > logs/y.log 2>&1 < /dev/null &
 
 nohup ./batch.sh -m clip -a redhair_brownskin_sademotion -d 0 \
   > logs/batch/batch_clip_redhair_brownskin_sademotion.log 2>&1 < /dev/null &

@@ -1,3 +1,19 @@
 start time: 2025-05-05 16:54:27
 /opt/conda/envs/ad/lib/python3.9/site-packages/huggingface_hub/file_download.py:797: FutureWarning: `resume_download` is deprecated and will be removed in version 1.0.0. Downloads always resume when possible. If you want to force a new download, use `force_download=True`.
   warnings.warn(
+Current time: 0505165429
+Selected 1000 filenames for sampling
+Populated base_to_label dictionary with 80000 entries.
+Added 1000 generated redhair_brownskin_sademotion images, before training set has 80000 images, now 81000
+Using vit model with random weights
+Epoch [1/15], Train Loss: 0.5469, Train Acc: 0.7222, Val Loss: 0.5347, Val Acc: 0.7590
+Epoch [2/15], Train Loss: 0.4257, Train Acc: 0.8375, Val Loss: 0.4570, Val Acc: 0.8229
+Epoch [3/15], Train Loss: 0.3873, Train Acc: 0.8666, Val Loss: 0.4484, Val Acc: 0.8358
+Epoch [4/15], Train Loss: 0.3664, Train Acc: 0.8814, Val Loss: 0.4742, Val Acc: 0.8378
+Epoch [5/15], Train Loss: 0.3562, Train Acc: 0.8876, Val Loss: 0.4426, Val Acc: 0.8237
+Epoch [6/15], Train Loss: 0.3449, Train Acc: 0.8963, Val Loss: 0.4212, Val Acc: 0.8508
+Epoch [7/15], Train Loss: 0.3366, Train Acc: 0.9011, Val Loss: 0.4206, Val Acc: 0.8521
+Epoch [8/15], Train Loss: 0.3288, Train Acc: 0.9067, Val Loss: 0.3966, Val Acc: 0.8641
+Epoch [9/15], Train Loss: 0.3185, Train Acc: 0.9135, Val Loss: 0.4144, Val Acc: 0.8627
+Epoch [10/15], Train Loss: 0.3149, Train Acc: 0.9157, Val Loss: 0.3937, Val Acc: 0.8730
+Epoch [11/15], Train Loss: 0.3068, Train Acc: 0.9217, Val Loss: 0.4073, Val Acc: 0.8660

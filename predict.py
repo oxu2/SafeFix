@@ -40,6 +40,12 @@ warnings.filterwarnings(
     "The class CLIPFeatureExtractor is deprecated and will be removed in version 5 of Transformers",
     FutureWarning
 )
+# Suppress the resume_download deprecation warning
+warnings.filterwarnings(
+    "ignore",
+    "`resume_download` is deprecated and will be removed in version 1.0.0",
+    FutureWarning
+)
 
 # Custom loss for smoothed BCE with logits
 class SmoothBCEWithLogitsLoss(nn.Module):
@@ -307,8 +313,15 @@ else:
     with open("exampleData/celebA/list_attr_celeba.txt") as f:
         lines = [line.strip('\n').split(' ')[0] for line in f.readlines()]
         
-    if os.path.exists('/home/jovyan/ouyang/dataset/img_align_celeba/'):
-        input_dir = '/home/jovyan/ouyang/dataset/img_align_celeba/'
+    # Determine base directory for CelebA images
+    celeba_dir_candidates = [
+        "/data/oxx220000/img_align_celeba/",
+        "/home/jovyan/ouyang/dataset/img_align_celeba/"
+    ]
+    for dir_path in celeba_dir_candidates:
+        if os.path.isdir(dir_path):
+            base_dir = dir_path
+            break
     else:
         input_dir = '/data/oxx220000/img_align_celeba/'    
     all_datas = [input_dir + line for line in lines][1:]
@@ -402,11 +415,11 @@ else:
             print(f"Error: Generated image directory {args.gen_image_dir} not found.")
             sample_keys = []
         else:
+            import re  # ensure this import is at the top of the file
             all_files = os.listdir(args.gen_image_dir)
-            # Match <base>_<attributes> with optional _<seed>
-            regex = re.compile(rf'^\d+_{attributes}(?:_\d+)?$')
-            file_keys = [os.path.splitext(f)[0] for f in all_files
-                         if regex.match(os.path.splitext(f)[0])]
+            # Match any generated file containing the attribute and a seed suffix, ignore seed numbers
+            pattern = f"_{attributes}_"
+            file_keys = [os.path.splitext(f)[0] for f in all_files if pattern in f]
             sample_keys = file_keys
 
     # Warn if fewer images are available than requested in the chosen sample_keys
@@ -423,18 +436,17 @@ else:
     # Build a map from base image number to label for quick lookup (not needed for simple ablation mode)
     if not (args.no_controlnet and args.simple):
         base_to_label = {}
-        # Include all original images (train, validation, unlabeled) for label lookup
-        all_original_imgs = train_imgs + valid_imgs + unlabeled_imgs
-        all_original_labels = np.concatenate([train_labels, valid_labels, unlabeled_labels])
-        for img_path, lbl in zip(all_original_imgs, all_original_labels):
+        for img_path, lbl in zip(train_imgs, train_labels):
+            # Extract numeric basename without extension
             base = os.path.splitext(os.path.basename(img_path))[0]
             base_to_label[base] = lbl
         # --- Debug Prints Start ---
         print(f"Populated base_to_label dictionary with {len(base_to_label)} entries.")
-        example_keys = list(base_to_label.keys())[:5]  # Show first 5 keys
+        example_keys = list(base_to_label.keys())[:5] # Show first 5 keys
         if verbose:
+            print(f"Populated base_to_label dictionary with {len(base_to_label)} entries.")
+            example_keys = list(base_to_label.keys())[:5]
             print(f"Example keys in base_to_label: {example_keys}")
-        # --- Debug Prints End ---
 
     # Sampling loop
     for filename in selected_filenames:
