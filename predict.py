@@ -307,7 +307,20 @@ else:
     with open("exampleData/celebA/list_attr_celeba.txt") as f:
         lines = [line.strip('\n').split(' ')[0] for line in f.readlines()]
         
-    all_datas = ['/data/oxx220000/img_align_celeba/' + line for line in lines][1:]
+    # Determine base directory for CelebA images
+    celeba_dir_candidates = [
+        "/data/oxx220000/img_align_celeba/",
+        "/home/jovyan/ouyang/dataset/img_align_celeba/"
+    ]
+    for dir_path in celeba_dir_candidates:
+        if os.path.isdir(dir_path):
+            base_dir = dir_path
+            break
+    else:
+        raise FileNotFoundError(f"No CelebA image directory found among {celeba_dir_candidates}")
+
+    # Build list of image file paths
+    all_datas = [os.path.join(base_dir, line) for line in lines][1:]
 
     train_idx = np.load("exampleData/celebA/train_idx.npy")[:80000]
     valid_idx = np.arange(len(all_datas))[-100000:-80000]
