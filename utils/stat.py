@@ -26,28 +26,115 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--predictions', type=str, required=True, help='Path to predictions .npy file')
     parser.add_argument('--verbose', type=str2bool, default=False, help='Enable verbose output')
-    parser.add_argument('--skip_train_unlabeled', type=str2bool, default=True,
-                        help='If True, skip processing TRAIN and UNLABELED data; only use VALID split')
+    parser.add_argument(
+        '--dataset',
+        choices=['celeba', 'imagenet'],
+        default='celeba',
+        help='Which dataset to process: celeba (default) or imagenet'
+    )
     args = parser.parse_args()
 
-    f = open("exampleData/celebA/list_attr_celeba.txt")
-    lines = list(f.readlines())
-    lines = [line.strip('\n').split(' ')[0] for line in lines]
-    all_datas = ['/data/oxx220000/img_align_celeba/' + line for line in lines][1:]
-    train_idx = np.load("exampleData/celebA/train_idx.npy")[:80000]
-    valid_idx = np.arange(len(all_datas))[-100000:-80000]
-    unlabel_idx = np.arange(len(all_datas))[-80000:]
-    # print(len(all_datas), len(train_idx), len(valid_idx), len(unlabel_idx))
-    # that means, the 80001 th to 102599 th sample are not used in this example
-    idxs = np.concatenate([train_idx, valid_idx, unlabel_idx], axis=0)
-    labels = np.load("exampleData/celebA/labels.npy")[idxs]
-    predictions = np.load(os.path.join("./save", args.predictions))
-    # predictions = (lambda p: np.concatenate([p[:100000], p[-80000:]], axis=0))(np.load("/people/cs/o/oxx220000/HiBug/combined_predictions_04080238.npy"))
-    # predictions = np.load("exampleData/celebA/predictions.npy")[idxs]
-    # print("predictions shape:", predictions.shape)
-    # print("predictions_old shape:", predictions_old.shape)
-    all_datas = [all_datas[i] for i in idxs]
-    split = [TRAIN for i in  train_idx] + [VALID for i in  valid_idx] + [UNLABELED for i in  unlabel_idx]
+    dataset = args.dataset
+    attribute_file = "" # Initialize attribute file path
+
+    if dataset == 'celeba':
+        f = open("exampleData/celebA/list_attr_celeba.txt")
+        lines = list(f.readlines())
+        lines = [line.strip('\n').split(' ')[0] for line in lines]
+        all_datas = ['/data/oxx220000/img_align_celeba/' + line for line in lines][1:]
+        train_idx = np.load("exampleData/celebA/train_idx.npy")[:80000]
+        valid_idx = np.arange(len(all_datas))[-100000:-80000]
+        unlabel_idx = np.arange(len(all_datas))[-80000:]
+# print(len(all_datas), len(train_idx), len(valid_idx), len(unlabel_idx))
+        # that means, the 80001 th to 102599 th sample are not used in this example
+# print(len(all_datas), len(train_idx), len(valid_idx), len(unlabel_idx))
+        # that means, the 80001 th to 102599 th sample are not used in this example
+        idxs = np.concatenate([train_idx, valid_idx, unlabel_idx], axis=0)
+        labels = np.load("exampleData/celebA/labels.npy")[idxs]
+        predictions = np.load(os.path.join("./save", args.predictions))
+        # predictions = (lambda p: np.concatenate([p[:100000], p[-80000:]], axis=0))(np.load("/people/cs/o/oxx220000/HiBug/combined_predictions_04080238.npy"))
+        # predictions = np.load("exampleData/celebA/predictions.npy")[idxs]
+        # print("predictions shape:", predictions.shape)
+        # print("predictions_old shape:", predictions_old.shape)
+        all_datas = [all_datas[i] for i in idxs]
+        split = [TRAIN for i in  train_idx] + [VALID for i in  valid_idx] + [UNLABELED for i in  unlabel_idx]
+        attribute_file = "exampleData/celebA/attribute.json"
+    elif dataset == 'imagenet':
+        print("Loading ImageNet data...")
+        # Load pre-split indices
+        try:
+            train_idx = np.load('train_idx_imagenet.npy')
+            valid_idx = np.load('val_idx_imagenet.npy')
+            # ImageNet doesn't have a predefined unlabeled set in this context
+            unlabel_idx = np.array([], dtype=int)
+            # print(f"Loaded ImageNet indices: {len(train_idx)} train, {len(valid_idx)} validation.")
+        except FileNotFoundError:
+            print("Error: train_idx_imagenet.npy or val_idx_imagenet.npy not found.")
+            print("Please run blip.py first to generate the index files.")
+            exit()
+
+        # Load labels
+        try:
+            # Assuming labels10.npy corresponds to the full dataset before splitting
+            all_labels_raw = np.load('labels10.npy')
+            # Map string labels to integers (assuming classes are sorted alphabetically as in blip.py)
+            class_names = sorted(np.unique(all_labels_raw))
+            label_map = {name: i for i, name in enumerate(class_names)}
+            all_labels_int = np.array([label_map[lbl] for lbl in all_labels_raw])
+
+            # Select labels based on loaded indices
+            labels = np.concatenate([all_labels_int[train_idx], all_labels_int[valid_idx]])
+            print(f"Loaded and processed {len(labels)} ImageNet labels.")
+            print(f"Class names: {class_names}")
+            print(f"Label map: {label_map}")
+
+        except FileNotFoundError:
+            print("Error: labels10.npy not found. Please run blip.py.")
+            exit()
+        except Exception as e:
+             print(f"Error processing labels: {e}")
+             exit()
+
+
+        # Load predictions
+        try:
+            # Predictions should correspond to the concatenated train+valid indices order
+            predictions = np.load(os.path.join("./save", args.predictions))
+            # Ensure predictions match the number of labels
+            if len(predictions) != len(labels):
+                 print(f"Warning: Number of predictions ({len(predictions)}) does not match number of labels ({len(labels)}). Ensure the prediction file corresponds to the train+validation set.")
+                 # Attempt to slice if predictions seem to cover more data (e.g., including unlabeled)
+                 if len(predictions) > len(labels):
+                     print(f"Attempting to use the first {len(labels)} predictions.")
+                     predictions = predictions[:len(labels)]
+                 else:
+                     print("Cannot proceed with mismatched prediction/label counts.")
+                     exit()
+
+            print(f"Loaded {len(predictions)} predictions from {args.predictions}")
+        except FileNotFoundError:
+            print(f"Error: Prediction file {args.predictions} not found in ./save/")
+            exit()
+        except Exception as e:
+            print(f"Error loading predictions: {e}")
+            exit()
+
+
+        # Create split list corresponding to the order of 'labels' and 'predictions'
+        split = [TRAIN] * len(train_idx) + [VALID] * len(valid_idx)
+        print(f"Created split list: {len(split)} entries ({split.count(TRAIN)} TRAIN, {split.count(VALID)} VALID)")
+
+        # Define attribute file for ImageNet
+        attribute_file = "attribute10.json"
+        if not os.path.exists(attribute_file):
+             print(f"Warning: ImageNet attribute file '{attribute_file}' not found. Run blip.py with --with_attribute_selection.")
+             # Decide if you want to exit or continue without attributes
+             # exit()
+             attribute_file = {} # Use empty dict if file not found
+
+    else:
+        print(f"Error: Unknown dataset '{dataset}'")
+        exit()
 
     # Define the parameters
     acc_diff_threshold = 0.01
@@ -61,7 +148,8 @@ def main():
 
     MD = ModelDiagnose(labels,
                        predictions,
-                       split, "exampleData/celebA/attribute.json",
+                       split, attribute_file, # Use the determined attribute file
+                       dataset=dataset, # Pass the dataset type
                        print=args.verbose,
                        acc_diff_threshold=acc_diff_threshold,
                        distribution_diff_threshold=distribution_diff_threshold,
@@ -88,11 +176,12 @@ Diagnose the model based on 1. attributes, 2. label, 3. predictions
 
 # Insert the ModelDiagnose class definition here
 class ModelDiagnose():
-    def __init__(self, labels, predictions, split, attribute_dict_path, label_names_dict={}, print=True,
+    def __init__(self, labels, predictions, split, attribute_dict_path, dataset='celeba', label_names_dict={}, print=True,
                  acc_diff_threshold=0.03, distribution_diff_threshold=0.3, dominant_label_in_failure_threshold=0.8,
                  dominant_label_in_prediction_threshold=0.8, rare_label_threshold=0.5, dominant_error_threshold=0.3,
                  error_cover_threshold=0.9, top_error=3) -> None:
         self.labels = labels
+        self.dataset = dataset
         self.predictions = predictions
         self._print = print
         self.label_names_dict = label_names_dict if label_names_dict != {} else {label: str(label) for label in set(labels)}

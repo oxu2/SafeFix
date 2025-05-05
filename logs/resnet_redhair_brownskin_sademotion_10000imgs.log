@@ -1,0 +1,43 @@
+start time: 2025-05-04 16:47:07
+Current time: 0504164709
+Warning: requested 10000 generated redhair_brownskin_sademotion images, but only 7 available.
+Warning: requested 10000 generated redhair_brownskin_sademotion images, but only 7 available.
+Selected 7 filenames for sampling
+Populated base_to_label dictionary with 80000 entries.
+Added 7 generated redhair_brownskin_sademotion images, before training set has 80000 images, now 80007
+Using resnet model with random weights
+Epoch [1/20], Train Loss: 0.4193, Train Acc: 0.8397, Val Loss: 0.4491, Val Acc: 0.8517
+Epoch [2/20], Train Loss: 0.2881, Train Acc: 0.9508, Val Loss: 0.3416, Val Acc: 0.8996
+Epoch [3/20], Train Loss: 0.2656, Train Acc: 0.9644, Val Loss: 0.4524, Val Acc: 0.8780
+Epoch [4/20], Train Loss: 0.2484, Train Acc: 0.9745, Val Loss: 0.3233, Val Acc: 0.9077
+Epoch [5/20], Train Loss: 0.2436, Train Acc: 0.9763, Val Loss: 0.3286, Val Acc: 0.9135
+Epoch [6/20], Train Loss: 0.2396, Train Acc: 0.9794, Val Loss: 0.3876, Val Acc: 0.9136
+Epoch [7/20], Train Loss: 0.2331, Train Acc: 0.9831, Val Loss: 0.3564, Val Acc: 0.9094
+Epoch [8/20], Train Loss: 0.2322, Train Acc: 0.9835, Val Loss: 0.3426, Val Acc: 0.9095
+Epoch [9/20], Train Loss: 0.2306, Train Acc: 0.9843, Val Loss: 0.3272, Val Acc: 0.9159
+Epoch [10/20], Train Loss: 0.2272, Train Acc: 0.9858, Val Loss: 0.3666, Val Acc: 0.9052
+Epoch [11/20], Train Loss: 0.2262, Train Acc: 0.9867, Val Loss: 0.3714, Val Acc: 0.9054
+Epoch [12/20], Train Loss: 0.2251, Train Acc: 0.9872, Val Loss: 0.3399, Val Acc: 0.9133
+Epoch [13/20], Train Loss: 0.2238, Train Acc: 0.9876, Val Loss: 0.3249, Val Acc: 0.9172
+Epoch [14/20], Train Loss: 0.2232, Train Acc: 0.9881, Val Loss: 0.3455, Val Acc: 0.9122
+Epoch [15/20], Train Loss: 0.2232, Train Acc: 0.9880, Val Loss: 0.3726, Val Acc: 0.9084
+Epoch [16/20], Train Loss: 0.2222, Train Acc: 0.9886, Val Loss: 0.3599, Val Acc: 0.9085
+Epoch [17/20], Train Loss: 0.2221, Train Acc: 0.9885, Val Loss: 0.3677, Val Acc: 0.9065
+Epoch [18/20], Train Loss: 0.2221, Train Acc: 0.9884, Val Loss: 0.3562, Val Acc: 0.9106
+Epoch [19/20], Train Loss: 0.2214, Train Acc: 0.9893, Val Loss: 0.3423, Val Acc: 0.9137
+Epoch [20/20], Train Loss: 0.2209, Train Acc: 0.9894, Val Loss: 0.3669, Val Acc: 0.9080
+Generating and saving predictions...
+Original train predictions length: 80000
+Modified image predictions length: 7
+Validation predictions length: 20000
+Combined predictions length: 180007 (should match combined_labels length: 180007)
+Current time: 0504164709
+
+Running model diagnostics on generated predictions...
+Traceback (most recent call last):
+  File "/people/cs/o/oxx220000/HiBug/predict.py", line 941, in <module>
+    MD = ModelDiagnose(labels=combined_labels,
+TypeError: __init__() got an unexpected keyword argument 'dataset'
+Start Time: 2025-05-04 16:47:07
+End Time:   2025-05-04 17:16:52
+Duration:   00:29:45
