@@ -6,9 +6,9 @@ CUDA_VISIBLE_DEVICES=0 nohup python -u predict.py --model resnet --num_added_img
 
 nohup ./batch.sh -m clip -a redhair_brownskin_sademotion -d 0 \
   > logs/batch/batch_clip_redhair_brownskin_sademotion.log 2>&1 < /dev/null &
-nohup ./batch.sh -m resnet -a redhair_brownskin_sademotion -d 1 \
+nohup ./batch.sh -m resnet -a redhair_brownskin_sademotion -d 0 \
   > logs/batch/batch_resnet_redhair_brownskin_sademotion.log 2>&1 < /dev/null &
-nohup ./batch.sh -m vit -a redhair_brownskin_sademotion -d 3 \
+nohup ./batch.sh -m vit -a redhair_brownskin_sademotion -d 1 \
   > logs/batch/batch_vit_redhair_brownskin_sademotion.log 2>&1 < /dev/null &
 
 
