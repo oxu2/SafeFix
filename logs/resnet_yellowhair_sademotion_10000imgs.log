@@ -1,8 +1,12 @@
-start time: 2025-05-05 16:58:32
-Traceback (most recent call last):
-  File "predict.py", line 16, in <module>
-    from torchvision.models import ResNet18_Weights
-ImportError: cannot import name 'ResNet18_Weights' from 'torchvision.models' (/people/cs/o/oxx220000/.conda/envs/hibug/lib/python3.7/site-packages/torchvision/models/__init__.py)
-Start Time: 2025-05-05 16:58:32
-End Time:   2025-05-05 16:58:32
-Duration:   00:00:00
+start time: 2025-05-05 18:42:43
+Current time: 0505184245
+Warning: requested 10000 generated yellowhair_sademotion images, but only 9036 available.
+Selected 9036 filenames for sampling
+Populated base_to_label dictionary with 180000 entries.
+Added 9036 generated yellowhair_sademotion images, before training set has 80000 images, now 89036
+Using resnet model with random weights
+Epoch [1/20], Train Loss: 0.4369, Train Acc: 0.8249, Val Loss: 0.4908, Val Acc: 0.8317
+Epoch [2/20], Train Loss: 0.3151, Train Acc: 0.9302, Val Loss: 0.7322, Val Acc: 0.7368
+Epoch [3/20], Train Loss: 0.2897, Train Acc: 0.9481, Val Loss: 0.3311, Val Acc: 0.9065
+Epoch [4/20], Train Loss: 0.2718, Train Acc: 0.9588, Val Loss: 0.3238, Val Acc: 0.9131
+Epoch [5/20], Train Loss: 0.2668, Train Acc: 0.9619, Val Loss: 0.3510, Val Acc: 0.8967

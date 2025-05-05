@@ -6,3 +6,4 @@ Added 1000 generated yellowhair_sademotion images, before training set has 80000
 Using vit model with random weights
 Epoch [1/15], Train Loss: 0.5564, Train Acc: 0.7143, Val Loss: 0.5014, Val Acc: 0.7831
 Epoch [2/15], Train Loss: 0.4643, Train Acc: 0.8072, Val Loss: 0.5037, Val Acc: 0.7908
+Epoch [3/15], Train Loss: 0.4380, Train Acc: 0.8286, Val Loss: 0.5311, Val Acc: 0.7843

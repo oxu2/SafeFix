@@ -1,6 +1,8 @@
 
 TODO:
-1. Yellowhair filter then train
+01. Yellowhair filter then train
+2. hibug simple method, run to get some results
+
 
 
 CUDA_VISIBLE_DEVICES=0 nohup python -u predict.py --model resnet --num_added_img 9310  --save_pred_model best --num_epochs 1 --attributes yellowhair_sademotion > logs/yellowhair_sademotion.log 2>&1 < /dev/null &
