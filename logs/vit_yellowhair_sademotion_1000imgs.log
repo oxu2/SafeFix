@@ -1,0 +1,8 @@
+start time: 2025-05-05 17:15:58
+Current time: 0505171601
+Selected 1000 filenames for sampling
+Populated base_to_label dictionary with 180000 entries.
+Added 1000 generated yellowhair_sademotion images, before training set has 80000 images, now 81000
+Using vit model with random weights
+Epoch [1/15], Train Loss: 0.5564, Train Acc: 0.7143, Val Loss: 0.5014, Val Acc: 0.7831
+Epoch [2/15], Train Loss: 0.4643, Train Acc: 0.8072, Val Loss: 0.5037, Val Acc: 0.7908

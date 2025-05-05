@@ -1,0 +1,8 @@
+start time: 2025-05-05 16:58:32
+Traceback (most recent call last):
+  File "predict.py", line 16, in <module>
+    from torchvision.models import ResNet18_Weights
+ImportError: cannot import name 'ResNet18_Weights' from 'torchvision.models' (/people/cs/o/oxx220000/.conda/envs/hibug/lib/python3.7/site-packages/torchvision/models/__init__.py)
+Start Time: 2025-05-05 16:58:32
+End Time:   2025-05-05 16:58:32
+Duration:   00:00:00

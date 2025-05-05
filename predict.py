@@ -307,7 +307,11 @@ else:
     with open("exampleData/celebA/list_attr_celeba.txt") as f:
         lines = [line.strip('\n').split(' ')[0] for line in f.readlines()]
         
-    all_datas = ['/data/oxx220000/img_align_celeba/' + line for line in lines][1:]
+    if os.path.exists('/home/jovyan/ouyang/dataset/img_align_celeba/'):
+        input_dir = '/home/jovyan/ouyang/dataset/img_align_celeba/'
+    else:
+        input_dir = '/data/oxx220000/img_align_celeba/'    
+    all_datas = [input_dir + line for line in lines][1:]
 
     train_idx = np.load("exampleData/celebA/train_idx.npy")[:80000]
     valid_idx = np.arange(len(all_datas))[-100000:-80000]
@@ -399,9 +403,10 @@ else:
             sample_keys = []
         else:
             all_files = os.listdir(args.gen_image_dir)
-            # Match any generated file containing the attribute and a seed suffix, ignore seed numbers
-            pattern = f"_{attributes}_"
-            file_keys = [os.path.splitext(f)[0] for f in all_files if pattern in f]
+            # Match <base>_<attributes> with optional _<seed>
+            regex = re.compile(rf'^\d+_{attributes}(?:_\d+)?$')
+            file_keys = [os.path.splitext(f)[0] for f in all_files
+                         if regex.match(os.path.splitext(f)[0])]
             sample_keys = file_keys
 
     # Warn if fewer images are available than requested in the chosen sample_keys
@@ -418,13 +423,15 @@ else:
     # Build a map from base image number to label for quick lookup (not needed for simple ablation mode)
     if not (args.no_controlnet and args.simple):
         base_to_label = {}
-        for img_path, lbl in zip(train_imgs, train_labels):
-            # Extract numeric basename without extension
+        # Include all original images (train, validation, unlabeled) for label lookup
+        all_original_imgs = train_imgs + valid_imgs + unlabeled_imgs
+        all_original_labels = np.concatenate([train_labels, valid_labels, unlabeled_labels])
+        for img_path, lbl in zip(all_original_imgs, all_original_labels):
             base = os.path.splitext(os.path.basename(img_path))[0]
             base_to_label[base] = lbl
         # --- Debug Prints Start ---
         print(f"Populated base_to_label dictionary with {len(base_to_label)} entries.")
-        example_keys = list(base_to_label.keys())[:5] # Show first 5 keys
+        example_keys = list(base_to_label.keys())[:5]  # Show first 5 keys
         if verbose:
             print(f"Example keys in base_to_label: {example_keys}")
         # --- Debug Prints End ---

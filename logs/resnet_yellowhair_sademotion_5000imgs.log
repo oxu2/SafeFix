@@ -1,0 +1,23 @@
+start time: 2025-05-05 17:58:29
+Current time: 0505175832
+Selected 5000 filenames for sampling
+Populated base_to_label dictionary with 180000 entries.
+Added 5000 generated yellowhair_sademotion images, before training set has 80000 images, now 85000
+Using resnet model with random weights
+Epoch [1/20], Train Loss: 0.4318, Train Acc: 0.8281, Val Loss: 0.3919, Val Acc: 0.8808
+Epoch [2/20], Train Loss: 0.3055, Train Acc: 0.9368, Val Loss: 0.3837, Val Acc: 0.8800
+Epoch [3/20], Train Loss: 0.2813, Train Acc: 0.9532, Val Loss: 0.3362, Val Acc: 0.9110
+Epoch [4/20], Train Loss: 0.2636, Train Acc: 0.9637, Val Loss: 0.3343, Val Acc: 0.9146
+Epoch [5/20], Train Loss: 0.2575, Train Acc: 0.9671, Val Loss: 0.4986, Val Acc: 0.8621
+Epoch [6/20], Train Loss: 0.2538, Train Acc: 0.9699, Val Loss: 0.4212, Val Acc: 0.8578
+Epoch [7/20], Train Loss: 0.2460, Train Acc: 0.9743, Val Loss: 0.3425, Val Acc: 0.9131
+Epoch [8/20], Train Loss: 0.2436, Train Acc: 0.9757, Val Loss: 0.3189, Val Acc: 0.9182
+Epoch [9/20], Train Loss: 0.2430, Train Acc: 0.9753, Val Loss: 0.3266, Val Acc: 0.9177
+Epoch [10/20], Train Loss: 0.2390, Train Acc: 0.9781, Val Loss: 0.3751, Val Acc: 0.9048
+Epoch [11/20], Train Loss: 0.2386, Train Acc: 0.9780, Val Loss: 0.3339, Val Acc: 0.9181
+Epoch [12/20], Train Loss: 0.2373, Train Acc: 0.9785, Val Loss: 0.3393, Val Acc: 0.9157
+Epoch [13/20], Train Loss: 0.2359, Train Acc: 0.9798, Val Loss: 0.3849, Val Acc: 0.9061
+Epoch [14/20], Train Loss: 0.2353, Train Acc: 0.9806, Val Loss: 0.3282, Val Acc: 0.9195
+Epoch [15/20], Train Loss: 0.2343, Train Acc: 0.9806, Val Loss: 0.3431, Val Acc: 0.9131
+Epoch [16/20], Train Loss: 0.2335, Train Acc: 0.9811, Val Loss: 0.3418, Val Acc: 0.9140
+Epoch [17/20], Train Loss: 0.2333, Train Acc: 0.9809, Val Loss: 0.3782, Val Acc: 0.9044
