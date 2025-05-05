@@ -3,7 +3,7 @@ import torch.nn as nn
 import torch.optim as optim
 import torchvision.transforms as transforms
 from torchvision import models
-from torch.utils.data import Dataset, DataLoader
+from torch.utils.data import Dataset, DataLoader, Subset
 from PIL import Image
 import numpy as np
 import os
@@ -29,7 +29,6 @@ from utils.stat import ModelDiagnose  # Import ModelDiagnose from local stat.py
 from itertools import combinations
 from processData.report import ReportGenerator
 from torchvision.datasets import ImageFolder
-from torch.utils.data import random_split
 from pathlib import Path
 
 import torch.nn.functional as F
@@ -270,13 +269,19 @@ if args.dataset == 'imagenet':
             transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5])
         ])
     ds = ImageFolder(data_dir, transform=transform)
-    # 80/20 train/val split
-    total = len(ds)
-    train_size = int(0.8 * total)
-    val_size = total - train_size
-    train_ds, val_ds = random_split(
-        ds, [train_size, val_size],
-        generator=torch.Generator().manual_seed(42))
+    # Load pre-defined train/val indices
+    try:
+        train_idx = np.load('train_idx_imagenet.npy')
+        val_idx = np.load('val_idx_imagenet.npy')
+        print(f"Loaded pre-split ImageNet10 indices: {len(train_idx)} train, {len(val_idx)} validation.")
+        # Create Subset datasets using the loaded indices
+        train_ds = Subset(ds, train_idx)
+        val_ds = Subset(ds, val_idx)
+    except FileNotFoundError:
+        print("Error: train_idx_imagenet.npy or val_idx_imagenet.npy not found.")
+        print("Please run blip.py first to generate the index files.")
+        exit() # Exit if index files are missing
+
     train_loader = DataLoader(
         train_ds, batch_size=args.batch_size,
         shuffle=True, num_workers=args.workers if hasattr(args, "workers") else 4, pin_memory=True)
@@ -394,11 +399,9 @@ else:
             sample_keys = []
         else:
             all_files = os.listdir(args.gen_image_dir)
-            # Only include files ending with the attribute suffix (e.g., "_redhair.jpg")
-            suffix = f"_{attributes}.jpg"
-            file_keys = [os.path.splitext(f)[0] for f in all_files if f.lower().endswith(suffix)]
-            if len(file_keys) < args.num_added_img:
-                print(f"Warning: requested {args.num_added_img} generated {args.attributes} images, but only {len(file_keys)} available.")
+            # Match any generated file containing the attribute and a seed suffix, ignore seed numbers
+            pattern = f"_{attributes}_"
+            file_keys = [os.path.splitext(f)[0] for f in all_files if pattern in f]
             sample_keys = file_keys
 
     # Warn if fewer images are available than requested in the chosen sample_keys
@@ -695,16 +698,16 @@ def save_predictions(model, train_loader, valid_loader):
     if len(modified_image_paths) > 0:
         original_train_preds = train_preds[:-len(modified_image_labels)]  # Separate original train predictions
         modified_preds = train_preds[-len(modified_image_labels):]  # Get modified image predictions
-        print(f"Original train predictions length: {len(original_train_preds)}")
-        print(f"Modified image predictions length: {len(modified_preds)}")
+        # print(f"Original train predictions length: {len(original_train_preds)}")
+        # print(f"Modified image predictions length: {len(modified_preds)}")
     else:
         original_train_preds = train_preds
         modified_preds = np.array([])  # Empty array if no modified images
-        print(f"Train predictions length: {len(original_train_preds)}")
+        # print(f"Train predictions length: {len(original_train_preds)}")
     
     # Get predictions for validation set
     _, valid_preds, _ = evaluate(model, valid_loader, save_preds=True)
-    print(f"Validation predictions length: {len(valid_preds)}")
+    # print(f"Validation predictions length: {len(valid_preds)}")
     
     # Create combined predictions with correct handling for both cases
     if len(modified_image_paths) > 0:

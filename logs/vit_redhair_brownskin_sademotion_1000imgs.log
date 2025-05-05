@@ -1,0 +1,38 @@
+start time: 2025-05-04 15:52:42
+Current time: 0504155244
+Warning: requested 1000 generated redhair_brownskin_sademotion images, but only 7 available.
+Warning: requested 1000 generated redhair_brownskin_sademotion images, but only 7 available.
+Selected 7 filenames for sampling
+Populated base_to_label dictionary with 80000 entries.
+Added 7 generated redhair_brownskin_sademotion images, before training set has 80000 images, now 80007
+Using vit model with random weights
+Epoch [1/15], Train Loss: 0.5668, Train Acc: 0.7028, Val Loss: 0.5426, Val Acc: 0.7357
+Epoch [2/15], Train Loss: 0.4656, Train Acc: 0.8072, Val Loss: 0.4677, Val Acc: 0.8070
+Epoch [3/15], Train Loss: 0.4163, Train Acc: 0.8449, Val Loss: 0.4693, Val Acc: 0.8123
+Epoch [4/15], Train Loss: 0.3899, Train Acc: 0.8629, Val Loss: 0.4372, Val Acc: 0.8359
+Epoch [5/15], Train Loss: 0.3704, Train Acc: 0.8773, Val Loss: 0.4155, Val Acc: 0.8447
+Epoch [6/15], Train Loss: 0.3585, Train Acc: 0.8851, Val Loss: 0.5755, Val Acc: 0.7752
+Epoch [7/15], Train Loss: 0.3496, Train Acc: 0.8914, Val Loss: 0.4428, Val Acc: 0.8441
+Epoch [8/15], Train Loss: 0.3383, Train Acc: 0.8990, Val Loss: 0.4010, Val Acc: 0.8604
+Epoch [9/15], Train Loss: 0.3301, Train Acc: 0.9050, Val Loss: 0.4400, Val Acc: 0.8473
+Epoch [10/15], Train Loss: 0.3214, Train Acc: 0.9107, Val Loss: 0.4578, Val Acc: 0.8442
+Epoch [11/15], Train Loss: 0.3142, Train Acc: 0.9162, Val Loss: 0.4146, Val Acc: 0.8660
+Epoch [12/15], Train Loss: 0.3084, Train Acc: 0.9198, Val Loss: 0.4077, Val Acc: 0.8700
+Epoch [13/15], Train Loss: 0.3025, Train Acc: 0.9252, Val Loss: 0.3900, Val Acc: 0.8710
+Epoch [14/15], Train Loss: 0.2989, Train Acc: 0.9274, Val Loss: 0.3961, Val Acc: 0.8728
+Epoch [15/15], Train Loss: 0.2958, Train Acc: 0.9299, Val Loss: 0.4046, Val Acc: 0.8690
+Generating and saving predictions...
+Original train predictions length: 80000
+Modified image predictions length: 7
+Validation predictions length: 20000
+Combined predictions length: 180007 (should match combined_labels length: 180007)
+Current time: 0504155244
+
+Running model diagnostics on generated predictions...
+Traceback (most recent call last):
+  File "/people/cs/o/oxx220000/HiBug/predict.py", line 936, in <module>
+    [UNLABELED] * len(unlabeled_labels)
+TypeError: __init__() got an unexpected keyword argument 'dataset'
+Start Time: 2025-05-04 15:52:42
+End Time:   2025-05-04 19:39:51
+Duration:   03:47:09
