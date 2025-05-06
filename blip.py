@@ -10,12 +10,19 @@ parser.add_argument(
     action="store_true",
     help="Enable attribute selection step (default: False)"
 )
+parser.add_argument('--text_labels', action='store_true', default=False,
+                    help='If set, also save text labels to label10_txt.npy')
 
 args = parser.parse_args()
 
 # Output filename for labels
 root_dir = 'imagenet_subset'
 output_file = 'labels10.npy'
+
+# Build mapping from class names to numeric labels (0–9)
+classes = sorted([d for d in os.listdir(root_dir) if os.path.isdir(os.path.join(root_dir, d))])
+class_to_idx = {cls: idx for idx, cls in enumerate(classes)}
+print("Class to index mapping:", class_to_idx)
 
 # Prepare lists for labels and image paths
 all_datas = []
@@ -30,14 +37,24 @@ for class_name in sorted(os.listdir(root_dir)):
     for fname in os.listdir(class_dir):
         # Optionally filter by image extensions
         if fname.lower().endswith(('.jpg', '.jpeg', '.png', '.bmp', '.tiff')):
-            labels.append(class_name)
+            labels.append(class_to_idx[class_name])
             all_datas.append(os.path.join(class_dir, fname))
 
 # Convert to a NumPy array and save
 labels_array = np.array(labels)
 np.save(output_file, labels_array)
+
+# Optionally also save text labels
+if args.text_labels:
+    # Build reverse mapping from index to class name
+    idx_to_class = {idx: cls for cls, idx in class_to_idx.items()}
+    # Create array of class name strings
+    text_labels_array = np.array([idx_to_class[label] for label in labels], dtype=object)
+    np.save('label10_txt.npy', text_labels_array)
+    print(f'Saved {text_labels_array.shape[0]} text labels to label10_txt.npy')
+
 # Print labels array for inspection
- # Count number of samples per class in labels10
+# Count number of samples per class in labels10
 classes, counts = np.unique(labels_array, return_counts=True)
 print("Sample counts per class:")
 for cls, cnt in zip(classes, counts):
@@ -158,7 +175,7 @@ if args.with_attribute_selection:
                 json.dump(self.attributes_dict, f, indent=4)
 
     # Run attribute selection
-    corpus_path = 'imagenet10_corpus.json'
+    corpus_path = 'corpus10.json'
     AS = AttributeSelection(all_datas, labels, corpus_path)
     AS.match_description_to_data()
     AS.save_attributes('attribute10.json')

@@ -9,6 +9,7 @@ predictions: a list of predictions
 split: a list of tags, tag can be {TRAIN, VALID, UNLABELED}
 The above four list should have equal length
 """
+
 import argparse
 import numpy as np
 from utils.defines import *
@@ -18,13 +19,18 @@ import json
 from itertools import combinations
 from processData.report import ReportGenerator # Assuming ReportGenerator is needed
 from utils.defines import *
-# os.environ['CUDA_VISIBLE_DEVICES'] = '0'
 
-
+# Dummy report to disable ReportGenerator on ImageNet
+class DummyReport:
+    def __getattr__(self, name):
+        # All report methods become no-ops
+        def method(*args, **kwargs):
+            return None
+        return method
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--predictions', type=str, required=True, help='Path to predictions .npy file')
+    parser.add_argument('--predictions', default = "save/pred/predictions_imagenet_resnet_redhair_brownskin_234imgs_0506013043.npy", type=str, required=True, help='Path to predictions .npy file')
     parser.add_argument('--verbose', type=str2bool, default=False, help='Enable verbose output')
     parser.add_argument(
         '--dataset',
@@ -61,40 +67,23 @@ def main():
         attribute_file = "exampleData/celebA/attribute.json"
     elif dataset == 'imagenet':
         print("Loading ImageNet data...")
-        # Load pre-split indices
-        try:
-            train_idx = np.load('train_idx_imagenet.npy')
-            valid_idx = np.load('val_idx_imagenet.npy')
-            # ImageNet doesn't have a predefined unlabeled set in this context
-            unlabel_idx = np.array([], dtype=int)
-            # print(f"Loaded ImageNet indices: {len(train_idx)} train, {len(valid_idx)} validation.")
-        except FileNotFoundError:
-            print("Error: train_idx_imagenet.npy or val_idx_imagenet.npy not found.")
-            print("Please run blip.py first to generate the index files.")
-            exit()
+        # Load pre-split ImageNet indices
+        train_idx = np.load('train_idx_imagenet.npy')
+        valid_idx = np.load('val_idx_imagenet.npy')
+        # ImageNet doesn't have a predefined unlabeled set in this context
+        unlabel_idx = np.array([], dtype=int)
 
-        # Load labels
-        try:
-            # Assuming labels10.npy corresponds to the full dataset before splitting
-            all_labels_raw = np.load('labels10.npy')
-            # Map string labels to integers (assuming classes are sorted alphabetically as in blip.py)
-            class_names = sorted(np.unique(all_labels_raw))
-            label_map = {name: i for i, name in enumerate(class_names)}
-            all_labels_int = np.array([label_map[lbl] for lbl in all_labels_raw])
-
-            # Select labels based on loaded indices
-            labels = np.concatenate([all_labels_int[train_idx], all_labels_int[valid_idx]])
-            print(f"Loaded and processed {len(labels)} ImageNet labels.")
-            print(f"Class names: {class_names}")
-            print(f"Label map: {label_map}")
-
-        except FileNotFoundError:
-            print("Error: labels10.npy not found. Please run blip.py.")
-            exit()
-        except Exception as e:
-             print(f"Error processing labels: {e}")
-             exit()
-
+        # Load provided labels for ImageNet subset
+        all_labels_full = np.load('labels10.npy')
+        # Concatenate labels for train and validation sets based on provided labels
+        labels = np.concatenate([all_labels_full[train_idx], all_labels_full[valid_idx]])
+        # Build mapping from numeric labels to folder names
+        import os as _os  # alias to avoid shadowing
+        folder_path = 'imagenet_subset'
+        class_names = sorted([d for d in _os.listdir(folder_path) if _os.path.isdir(_os.path.join(folder_path, d))])
+        label_names_dict = {i: class_names[i] for i in range(len(class_names))}
+        print(f"Loaded and processed {len(labels)} ImageNet labels from labels10.npy.")
+        print(f"Class names: {class_names}")
 
         # Load predictions
         try:
@@ -146,26 +135,51 @@ def main():
     error_cover_threshold = 0.9
     top_error = 3
 
-    MD = ModelDiagnose(labels,
-                       predictions,
-                       split, attribute_file, # Use the determined attribute file
-                       dataset=dataset, # Pass the dataset type
-                       print=args.verbose,
-                       acc_diff_threshold=acc_diff_threshold,
-                       distribution_diff_threshold=distribution_diff_threshold,
-                       dominant_label_in_failure_threshold=dominant_label_in_failure_threshold,
-                       dominant_label_in_prediction_threshold=dominant_label_in_prediction_threshold,
-                       rare_label_threshold=rare_label_threshold,
-                       dominant_error_threshold=dominant_error_threshold,
-                       error_cover_threshold=error_cover_threshold,
-                       top_error=top_error)
+    # Pass label_names_dict for imagenet, otherwise default empty dict
+    if dataset == 'imagenet':
+        # Convert any string labels to numeric indices using label_names_dict
+        if args.dataset == 'imagenet':
+            str2idx = {v: k for k, v in label_names_dict.items()}
+            labels = np.array([
+                str2idx[lbl] if isinstance(lbl, str) else int(lbl)
+                for lbl in labels
+            ], dtype=int)
+        MD = ModelDiagnose(labels,
+                           predictions,
+                           split,
+                           attribute_file,
+                           dataset=dataset,
+                           label_names_dict=label_names_dict,
+                           print=args.verbose,
+                           acc_diff_threshold=acc_diff_threshold,
+                           distribution_diff_threshold=distribution_diff_threshold,
+                           dominant_label_in_failure_threshold=dominant_label_in_failure_threshold,
+                           dominant_label_in_prediction_threshold=dominant_label_in_prediction_threshold,
+                           rare_label_threshold=rare_label_threshold,
+                           dominant_error_threshold=dominant_error_threshold,
+                           error_cover_threshold=error_cover_threshold,
+                           top_error=top_error)
+    else:
+        MD = ModelDiagnose(labels,
+                           predictions,
+                           split, attribute_file,
+                           dataset=dataset,
+                           print=args.verbose,
+                           acc_diff_threshold=acc_diff_threshold,
+                           distribution_diff_threshold=distribution_diff_threshold,
+                           dominant_label_in_failure_threshold=dominant_label_in_failure_threshold,
+                           dominant_label_in_prediction_threshold=dominant_label_in_prediction_threshold,
+                           rare_label_threshold=rare_label_threshold,
+                           dominant_error_threshold=dominant_error_threshold,
+                           error_cover_threshold=error_cover_threshold,
+                           top_error=top_error)
 
     print("Start detect_failure_by_label\n")
     MD.detect_failure_by_label()
     print("Start detect_prediction_correlation\n")
     MD.detect_prediction_correlation()
-    print("Start detect_failure_prediction_correlation\n")
-    MD.detect_failure_prediction_correlation()
+    # print("Start detect_failure_prediction_correlation\n")
+    # MD.detect_failure_prediction_correlation()
 
 
 """
@@ -189,7 +203,19 @@ class ModelDiagnose():
             self.attributes = json.load(open(attribute_dict_path))
         else:
             self.attributes = attribute_dict_path
-        self.label_number = [int(label) for label in list(self.label_names_dict.keys())]
+        # Determine numeric label indices, ignoring non-numeric keys
+        self.label_number = []
+        for key in self.label_names_dict.keys():
+            if isinstance(key, int):
+                self.label_number.append(key)
+            else:
+                try:
+                    # convert numeric strings to int, skip others
+                    num = int(key)
+                    self.label_number.append(num)
+                except ValueError:
+                    # skip non-numeric keys like class names
+                    continue
         self.report = {}
         self.split = split
         self.data_length = len(self.labels)
@@ -220,14 +246,18 @@ class ModelDiagnose():
         self.valid_labels_distribution = np.zeros(len(self.label_number))
 
         # Train distribution
-        for label,prediction in zip(self.labels[self.train_idx],self.predictions[self.train_idx]):
-            self.train_confusion_matrix[label][prediction] += 1
-            self.train_labels_distribution[label] += 1
+        for label, prediction in zip(self.labels[self.train_idx], self.predictions[self.train_idx]):
+            l = int(label)
+            p = int(prediction)
+            self.train_confusion_matrix[l][p] += 1
+            self.train_labels_distribution[l] += 1
 
         # Valid distribution
-        for label,prediction in zip(self.labels[self.valid_idx],self.predictions[self.valid_idx]):
-            self.valid_confusion_matrix[label][prediction] += 1
-            self.valid_labels_distribution[label] += 1
+        for label, prediction in zip(self.labels[self.valid_idx], self.predictions[self.valid_idx]):
+            l = int(label)
+            p = int(prediction)
+            self.valid_confusion_matrix[l][p] += 1
+            self.valid_labels_distribution[l] += 1
 
         # Error list
         self.error_binary_list = np.zeros(self.data_length)
@@ -263,7 +293,11 @@ class ModelDiagnose():
         for label in self.label_number:
             correct += self.valid_confusion_matrix[label][label]
         self.valid_acc = correct/len(self.valid_idx) if len(self.valid_idx) > 0 else 0 # Avoid division by zero
-        self.report = ReportGenerator(self.attributes, self.train_labels_distribution, self.valid_labels_distribution, self.train_confusion_matrix, self.valid_confusion_matrix, self.valid_acc, self.label_names_dict)
+        # Use DummyReport for ImageNet to skip report logic
+        if self.dataset == 'imagenet':
+            self.report = DummyReport()
+        else:
+            self.report = ReportGenerator(self.attributes, self.train_labels_distribution, self.valid_labels_distribution, self.train_confusion_matrix, self.valid_confusion_matrix, self.valid_acc, self.label_names_dict)
 
     def generate_report(self, dir="./"):
         self.report.save_report(dir)
@@ -372,11 +406,14 @@ class ModelDiagnose():
                         distribution = np.zeros(len(self.label_number))
 
                         for idx in description_error_valid_idx:
-                            # No need to check self.error_binary_list[idx] again, it's already filtered
-                            label = self.predictions[idx]
-                            # Ensure label index is within bounds
-                            if 0 <= label < len(distribution):
-                                distribution[label] += 1
+                            raw_label = self.predictions[idx]
+                            # Cast to integer index, skip if invalid
+                            try:
+                                label_int = int(raw_label)
+                            except (ValueError, TypeError):
+                                continue
+                            if 0 <= label_int < len(distribution):
+                                distribution[label_int] += 1
 
                         distribution = distribution/len(description_error_valid_idx)
                         largest_label = np.argmax(distribution)
@@ -395,11 +432,13 @@ class ModelDiagnose():
 
                             if len(other_error_indices) > 0: # Avoid division by zero if no errors in other descriptions
                                 for idx in other_error_indices:
-                                    # No need to check self.error_binary_list[idx] again
-                                    label = self.predictions[idx]
-                                    # Ensure label index is within bounds
-                                    if 0 <= label < len(combined_distribution):
-                                        combined_distribution[label] += 1
+                                    raw_label = self.predictions[idx]
+                                    try:
+                                        label_int = int(raw_label)
+                                    except (ValueError, TypeError):
+                                        continue
+                                    if 0 <= label_int < len(combined_distribution):
+                                        combined_distribution[label_int] += 1
 
                                 combined_distribution = combined_distribution / np.sum(combined_distribution) # Normalization happens here
                                 # self.print_output("While attribute %s is not %s, combined prediction is %s with prob %s"%(attribute, description, str(np.argmax(combined_distribution)), str(np.max(combined_distribution))))

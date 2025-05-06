@@ -18,3 +18,73 @@ Epoch [11/15], Train Loss: 0.3223, Train Acc: 0.9100, Val Loss: 0.3957, Val Acc:
 Epoch [12/15], Train Loss: 0.3156, Train Acc: 0.9152, Val Loss: 0.4077, Val Acc: 0.8657
 Epoch [13/15], Train Loss: 0.3116, Train Acc: 0.9170, Val Loss: 0.3961, Val Acc: 0.8709
 Epoch [14/15], Train Loss: 0.3075, Train Acc: 0.9211, Val Loss: 0.4075, Val Acc: 0.8658
+Epoch [15/15], Train Loss: 0.3059, Train Acc: 0.9222, Val Loss: 0.4056, Val Acc: 0.8664
+Generating and saving predictions...
+Combined predictions length: 181000 (should match combined_labels length: 181000)
+Current time: 0505171601
+
+Running model diagnostics on generated predictions...
+Model Validation ACC: 0.86745
+Start detect_failure_by_label
+
+Start detect_prediction_correlation
+
+ACC: 0.853117 	Hard case: attribute "beard", description "No"
+ACC: 0.817324 	Hard case: attribute "gender", description "female"
+The accuracy with "hair color" = "white" is 0.8975409836065574
+Correct predictions: 438/488
+The accuracy with "hair color" = "yellow" is 0.8918918918918919
+Correct predictions: 66/74
+The accuracy with "hair color" = "blonde" is 0.8464183381088826
+Correct predictions: 4431/5235
+ACC: 0.846418 	Hard case: attribute "hair color", description "blonde"
+The accuracy with "hair color" = "black" is 0.8784905660377359
+Correct predictions: 5820/6625
+The accuracy with "hair color" = "gray" is 0.9454887218045113
+Correct predictions: 1006/1064
+The accuracy with "hair color" = "brown" is 0.8627184795520109
+Correct predictions: 5084/5893
+The accuracy with "hair color" = "red" is 0.8115942028985508
+Correct predictions: 504/621
+ACC: 0.811594 	Rare Case: attribute "hair color", description "red"
+The accuracy with "skin" = "white" is 0.8691625615763546
+Correct predictions: 8822/10150
+The accuracy with "skin" = "black" is 0.881750703864858
+Correct predictions: 3445/3907
+The accuracy with "skin" = "brown" is 0.8551236749116607
+Correct predictions: 5082/5943
+ACC: 0.855124 	Rare Case: attribute "skin", description "brown"
+ACC: 0.805133 	Rare Case: attribute "emotion", description "sad"
+ACC: 0.850400 	Hard case: attribute "emotion", description "surprised"
+ACC: 0.857143 	Rare Case: attribute "emotion", description "angry"
+ACC: 0.805439 	Rare Case: attribute "emotion", description "pensive"
+Start detect_failure_prediction_correlation
+
+Model diagnostics complete.
+
+Comparing accuracy with log file: logs/compare/stat_origin_vit_compare.log
+Overall accuracy: 0.850650 -> 0.867450: improved
+
+Attribute-specific accuracy comparison:
+beard, No, 0.836448 -> 0.853117: improved
+makeup, Yes, 0.838893 -> 0.879833: improved
+gender, female, 0.768786 -> 0.817324: improved
+hair color, white, 0.905738 -> 0.897541: declined
+hair color, yellow, 0.905405 -> 0.891892: declined
+hair color, blonde, 0.841070 -> 0.846418: improved
+hair color, black, 0.840000 -> 0.878491: improved
+hair color, gray, 0.953008 -> 0.945489: declined
+hair color, brown, 0.849992 -> 0.862718: improved
+hair color, red, 0.826087 -> 0.811594: declined
+skin, white, 0.865714 -> 0.869163: improved
+skin, black, 0.831840 -> 0.881751: improved
+skin, brown, 0.837288 -> 0.855124: improved
+emotion, sad, 0.806084 -> 0.805133: declined
+emotion, surprised, 0.812895 -> 0.850400: improved
+emotion, pensive, 0.775105 -> 0.805439: improved
+young, young, 0.838260 -> 0.858809: improved
+
+Compared 17 attribute-specific accuracies.
+Start Time: 2025-05-05 17:15:58
+End Time:   2025-05-06 01:10:25
+Duration:   07:54:27

@@ -119,7 +119,36 @@ parser.add_argument(
 # Add batch_size argument here
 parser.add_argument('--batch_size', type=int, default=64,
                     help='Mini‑batch size for training and validation (default: 64)')
+# Add workers argument here
+parser.add_argument('--workers', type=int, default=4,
+                    help='Number of DataLoader workers (default: 4)')
+# Add random seed argument for reproducibility
+parser.add_argument('--seed', type=int, default=42,
+                    help='Random seed for reproducibility (default: 42)')
+# Parse arguments
 args = parser.parse_args()
+
+# Set random seed for reproducibility
+import random
+import numpy as _np
+import torch as _torch
+
+random.seed(args.seed)
+_np.random.seed(args.seed)
+if _torch.cuda.is_available():
+    _torch.manual_seed(args.seed)
+    _torch.cuda.manual_seed_all(args.seed)
+else:
+    _torch.manual_seed(args.seed)
+# Enforce deterministic algorithms
+_torch.backends.cudnn.deterministic = True
+_torch.backends.cudnn.benchmark = False
+
+if getattr(args, 'verbose', False):
+    print(f"Random seed set to {args.seed}")
+# Override attribute file for ImageNet dataset
+if args.dataset == 'imagenet':
+    args.attribute_file = 'attribute10.json'
 # Dynamically lower batch size for memory‑intensive backbones to avoid CUDA OOM
 if args.model == 'blip' and args.batch_size > 32:
     args.batch_size = 32
@@ -276,24 +305,20 @@ if args.dataset == 'imagenet':
         ])
     ds = ImageFolder(data_dir, transform=transform)
     # Load pre-defined train/val indices
-    try:
-        train_idx = np.load('train_idx_imagenet.npy')
-        val_idx = np.load('val_idx_imagenet.npy')
-        print(f"Loaded pre-split ImageNet10 indices: {len(train_idx)} train, {len(val_idx)} validation.")
-        # Create Subset datasets using the loaded indices
-        train_ds = Subset(ds, train_idx)
-        val_ds = Subset(ds, val_idx)
-    except FileNotFoundError:
-        print("Error: train_idx_imagenet.npy or val_idx_imagenet.npy not found.")
-        print("Please run blip.py first to generate the index files.")
-        exit() # Exit if index files are missing
+    train_idx = np.load('train_idx_imagenet.npy')
+    val_idx = np.load('val_idx_imagenet.npy')
+    valid_idx = val_idx  # alias for diagnostics compatibility
+    print(f"Loaded pre-split ImageNet10 indices: {len(train_idx)} train, {len(val_idx)} validation.")
+    # Create Subset datasets using the loaded indices
+    train_ds = Subset(ds, train_idx)
+    val_ds = Subset(ds, val_idx)
 
     train_loader = DataLoader(
         train_ds, batch_size=args.batch_size,
-        shuffle=True, num_workers=args.workers if hasattr(args, "workers") else 4, pin_memory=True)
+        shuffle=True, num_workers=args.workers, pin_memory=True)
     valid_loader = DataLoader(
         val_ds, batch_size=args.batch_size,
-        shuffle=False, num_workers=args.workers if hasattr(args, "workers") else 4, pin_memory=True)
+        shuffle=False, num_workers=args.workers, pin_memory=True)
     num_classes = len(ds.classes)
     # print(f'Classes ({num_classes}): {ds.classes}')
     # Expose datasets for training loop compatibility
@@ -916,34 +941,36 @@ print("Current time:", time_now)
 
 
 # Run the model diagnostics after predictions are saved
+import numpy as np  # Ensure numpy is imported for diagnostics
+print("\nRunning model diagnostics on generated predictions...")
+# Define thresholds for diagnostics
+acc_diff_threshold = 0.01
+distribution_diff_threshold = 0.3
+dominant_label_in_failure_threshold = 0.8
+dominant_label_in_prediction_threshold = 0.8
+rare_label_threshold = 0.93
+dominant_error_threshold = 0.3
+error_cover_threshold = 0.9
+top_error = 3
 
+# Determine filename suffix for predictions
+suffix = ""
+if args.gen_only:
+    suffix += "_g"
+if args.no_controlnet:
+    suffix += "_h"
+# Load the predictions we just saved
+prediction_file = f"save/pred/predictions_{args.dataset}_{args.model}_{attributes}_{args.num_added_img}imgs{suffix}_{time_now}.npy"
+predictions = np.load(prediction_file)
+
+# Prepare labels and split for diagnostics
 if args.dataset == 'imagenet':
-    print("Skipping model diagnostics for ImageNet dataset.")
+    # For ImageNet subset: load labels10.npy and use only train/val
+    labels_to_diagnose = np.load('labels10.npy')
+    split = [TRAIN] * len(train_idx) + [VALID] * len(valid_idx)
 else:
-    print("\nRunning model diagnostics on generated predictions...")
-
-    # Define the parameters for diagnostics
-    acc_diff_threshold = 0.01
-    distribution_diff_threshold = 0.3
-    dominant_label_in_failure_threshold = 0.8
-    dominant_label_in_prediction_threshold = 0.8
-    rare_label_threshold = 0.93
-    dominant_error_threshold = 0.3
-    error_cover_threshold = 0.9
-    top_error = 3
-
-    # Determine filename suffix based on gen_only flag and ablation flag
-    suffix = ""
-    if args.gen_only:
-        suffix += "_g"
-    if args.no_controlnet:
-        suffix += "_h" # Add 'h' for ablation/no_controlnet
-
-    # Load the predictions we just saved
-    prediction_file = f"save/pred/predictions_{args.dataset}_{args.model}_{attributes}_{args.num_added_img}imgs{suffix}_{time_now}.npy"
-    predictions = np.load(prediction_file)
-
-    # Adjust split to match combined_labels (including modified images in the training split)
+    # For CelebA: use combined_labels and include unlabeled
+    labels_to_diagnose = np.array(combined_labels)
     split = (
         [TRAIN] * len(train_labels) +
         [VALID] * len(valid_labels) +
@@ -951,118 +978,34 @@ else:
         [UNLABELED] * len(unlabeled_labels)
     )
 
-    if not args.gen_only:
-        # Initialize diagnostics only if not gen_only
-        MD = ModelDiagnose(labels=combined_labels,
-                           predictions=predictions,
-                           split=split,
-                           attribute_dict_path=args.attribute_file,
-                           print=args.verbose,
-                           dataset=args.dataset,
-                           acc_diff_threshold=acc_diff_threshold,
-                           distribution_diff_threshold=distribution_diff_threshold,
-                           dominant_label_in_failure_threshold=dominant_label_in_failure_threshold,
-                           dominant_label_in_prediction_threshold=dominant_label_in_prediction_threshold,
-                           rare_label_threshold=rare_label_threshold,
-                           dominant_error_threshold=dominant_error_threshold,
-                           error_cover_threshold=error_cover_threshold,
-                           top_error=top_error)
+# Instantiate ModelDiagnose and run diagnostics
+MD = ModelDiagnose(
+    labels=labels_to_diagnose,
+    predictions=predictions,
+    split=split,
+    attribute_dict_path=args.attribute_file,
+    print=args.verbose,
+    dataset=args.dataset,
+    acc_diff_threshold=acc_diff_threshold,
+    distribution_diff_threshold=distribution_diff_threshold,
+    dominant_label_in_failure_threshold=dominant_label_in_failure_threshold,
+    dominant_label_in_prediction_threshold=dominant_label_in_prediction_threshold,
+    rare_label_threshold=rare_label_threshold,
+    dominant_error_threshold=dominant_error_threshold,
+    error_cover_threshold=error_cover_threshold,
+    top_error=top_error
+)
 
-        print("Start detect_failure_by_label\n")
-        MD.detect_failure_by_label()
-        print("Start detect_prediction_correlation\n")
-        MD.detect_prediction_correlation()
-        print("Start detect_failure_prediction_correlation\n")
-        MD.detect_failure_prediction_correlation()
-        print("Model diagnostics complete.")
+print("Start detect_failure_by_label\n")
+MD.detect_failure_by_label()
+print("Start detect_prediction_correlation\n")
+MD.detect_prediction_correlation()
+print("Start detect_failure_prediction_correlation\n")
+MD.detect_failure_prediction_correlation()
 
-        # Generate and save report if requested
-        if args.save_report:
-            report_dir = "save/reports"
-            os.makedirs(report_dir, exist_ok=True)
-            # Determine filename suffix based on gen_only flag and ablation flag
-            suffix = ""
-            if args.gen_only:
-                suffix += "_g"
-            if args.no_controlnet:
-                suffix += "_h" # Add 'h' for ablation/no_controlnet
-            MD.generate_report(f"{report_dir}/{args.dataset}_{args.model}_{attributes}_{args.num_added_img}imgs{suffix}_{time_now}")
-            print(f"Diagnostic report saved to {report_dir}/{args.dataset}_{args.model}_{attributes}_{args.num_added_img}imgs{suffix}_{time_now}")
-    else:
-        print("Skipping model diagnostics because gen_only=True")
-        # Emphasize final epoch's Train Acc if diagnostics are skipped
-        if len(train_acc_history) > 0:
-            final_train_acc = train_acc_history[-1]
-            print("\n" + "="*60)
-            print(f"Final Epoch Train Accuracy (gen_only=True): {final_train_acc:.4f}")
-            print("="*60 + "\n")
-
-    # --- Accuracy Comparison Logic ---
-    if args.gen_only:
-        print("Skipping accuracy comparison due to gen_only flag being True")
-    else:
-        # Use the determined compare_log_path instead of args.compare_log
-        if compare_log_path:
-            print(f"\nComparing accuracy with log file: {compare_log_path}")
-            orig_entries, orig_overall = parse_log(compare_log_path)
-
-            if orig_entries is not None:
-                # Build lookup map for original accuracies
-                orig_map = {(e['attribute'], e['description']): e['accuracy'] for e in orig_entries}
-
-                # Get current overall accuracy from MD
-                current_overall = MD.valid_acc
-
-                # Compare overall accuracy
-                if orig_overall is not None and current_overall is not None:
-                    if current_overall > orig_overall:
-                        overall_status = 'improved'
-                    elif current_overall < orig_overall:
-                        overall_status = 'declined'
-                    else:
-                        overall_status = 'same'
-                    print(f'Overall accuracy: {orig_overall:.6f} -> {current_overall:.6f}: {overall_status}')
-                elif current_overall is not None:
-                     print(f'Current overall accuracy: {current_overall:.6f} (Original overall accuracy not found in log)')
-                else:
-                     print(f'Original overall accuracy: {orig_overall:.6f} (Current overall accuracy not available)')
-
-
-                # Compare attribute-specific accuracies
-                print("\nAttribute-specific accuracy comparison:")
-                current_compared_count = 0
-                for (attribute, description), orig_acc in orig_map.items():
-                    # Retrieve current accuracy from MD.attributes
-                    current_acc = None
-                    if attribute in MD.attributes and description in MD.attributes[attribute]['valid acc']:
-                        current_acc = MD.attributes[attribute]['valid acc'][description]
-
-                    if current_acc is None:
-                        # print(f'{attribute}, {description}: not found in current run results') # Optional: uncomment to see missing ones
-                        continue
-
-                    # Determine status
-                    if current_acc > orig_acc:
-                        status = 'improved'
-                    elif current_acc < orig_acc:
-                        status = 'declined'
-                    else:
-                        status = 'same'
-                    print(f'{attribute}, {description}, {orig_acc:.6f} -> {current_acc:.6f}: {status}')
-                    current_compared_count += 1
-
-                print(f"\nCompared {current_compared_count} attribute-specific accuracies.")
-
-                # Check for entries present in current run but not in the original log (optional)
-                # print("\nAccuracies present in current run but not in original log:")
-                # for attribute, attr_data in MD.attributes.items():
-                #     if 'valid acc' in attr_data:
-                #         for description, current_acc in attr_data['valid acc'].items():
-                #             if (attribute, description) not in orig_map:
-                #                 print(f'{attribute}, {description}: {current_acc:.6f} (new)')
-
-            else:
-                # Use compare_log_path in the warning message
-                print(f"Could not parse or find the comparison log file: {compare_log_path}")
-        else:
-            print("\nSkipping accuracy comparison: No comparison log file specified for the selected model or file not found.")
+# Optionally save a report
+if args.save_report:
+    report_dir = "save/reports"
+    os.makedirs(report_dir, exist_ok=True)
+    MD.generate_report(f"{report_dir}/{args.dataset}_{args.model}_{attributes}_{args.num_added_img}imgs{suffix}_{time_now}")
+    print(f"Diagnostic report saved to {report_dir}/{args.dataset}_{args.model}_{attributes}_{args.num_added_img}imgs{suffix}_{time_now}")

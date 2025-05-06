@@ -1,5 +1,20 @@
 
 
+CUDA_VISIBLE_DEVICES=0 nohup  python -u predict.py --dataset imagenet --model vit --num_added_img 0  --save_pred_model last --num_epochs 30 > logs/vit.log 2>&1 < /dev/null &
+
+CUDA_VISIBLE_DEVICES=1 nohup  python -u predict.py --dataset imagenet --model resnet --num_added_img 0  --save_pred_model last --num_epochs 30 > logs/imgnet_resnt.log 2>&1 < /dev/null &
+
+CUDA_VISIBLE_DEVICES=2 nohup  python -u predict.py --dataset imagenet --model clip --num_added_img 0  --save_pred_model last --num_epochs 40 > logs/imgnet_clip_40.log 2>&1 < /dev/null &
+
+TODO:
+
+change labels to 0, 1, 2, 3 in blip.py
+
+
+nohup ./batch.sh -m clip -a yellowhair_brownskin -d 0 -n 10000 \
+  > logs/batch/test.log 2>&1 < /dev/null &
+
+
 nohup ./batch.sh -m clip -a simple -d 0 -s \
   > logs/hibug_clip_simple.log 2>&1 < /dev/null &
 

@@ -1,8 +1,64 @@
-start time: 2025-05-05 16:58:32
-Traceback (most recent call last):
-  File "predict.py", line 16, in <module>
-    from torchvision.models import ResNet18_Weights
-ImportError: cannot import name 'ResNet18_Weights' from 'torchvision.models' (/people/cs/o/oxx220000/.conda/envs/hibug/lib/python3.7/site-packages/torchvision/models/__init__.py)
-Start Time: 2025-05-05 16:58:32
-End Time:   2025-05-05 16:58:33
-Duration:   00:00:01
+start time: 2025-05-06 09:24:35
+Current time: 0506092437
+Warning: requested 10000 generated yellowhair_sademotion images, but only 9036 available.
+Selected 9036 filenames for sampling
+Added 9036 generated yellowhair_sademotion images, before training set has 80000 images, now 89036
+Using vit model with random weights
+Epoch [1/15], Train Loss: 0.5775, Train Acc: 0.6910, Val Loss: 0.5077, Val Acc: 0.7743
+Epoch [2/15], Train Loss: 0.4743, Train Acc: 0.7955, Val Loss: 0.5233, Val Acc: 0.7431
+Epoch [3/15], Train Loss: 0.4334, Train Acc: 0.8274, Val Loss: 0.5302, Val Acc: 0.7889
+Epoch [4/15], Train Loss: 0.4111, Train Acc: 0.8462, Val Loss: 0.4329, Val Acc: 0.8384
+Epoch [5/15], Train Loss: 0.3934, Train Acc: 0.8587, Val Loss: 0.4436, Val Acc: 0.8374
+Epoch [6/15], Train Loss: 0.3819, Train Acc: 0.8671, Val Loss: 0.4152, Val Acc: 0.8546
+Epoch [7/15], Train Loss: 0.3710, Train Acc: 0.8746, Val Loss: 0.4193, Val Acc: 0.8511
+Epoch [8/15], Train Loss: 0.3645, Train Acc: 0.8794, Val Loss: 0.4674, Val Acc: 0.8179
+Epoch [9/15], Train Loss: 0.3557, Train Acc: 0.8853, Val Loss: 0.4852, Val Acc: 0.8240
+Epoch [10/15], Train Loss: 0.3470, Train Acc: 0.8919, Val Loss: 0.4065, Val Acc: 0.8636
+Epoch [11/15], Train Loss: 0.3417, Train Acc: 0.8953, Val Loss: 0.4144, Val Acc: 0.8622
+Epoch [12/15], Train Loss: 0.3348, Train Acc: 0.9001, Val Loss: 0.4652, Val Acc: 0.8420
+Epoch [13/15], Train Loss: 0.3327, Train Acc: 0.9016, Val Loss: 0.4037, Val Acc: 0.8694
+Epoch [14/15], Train Loss: 0.3281, Train Acc: 0.9059, Val Loss: 0.4058, Val Acc: 0.8687
+Epoch [15/15], Train Loss: 0.3246, Train Acc: 0.9080, Val Loss: 0.3976, Val Acc: 0.8749
+Generating and saving predictions...
+Combined predictions length: 189036 (should match combined_labels length: 189036)
+Current time: 0506092437
+
+Running model diagnostics on generated predictions...
+Model Validation ACC: 0.8722
+Start detect_failure_by_label
+
+Start detect_prediction_correlation
+
+ACC: 0.857976 	Hard case: attribute "beard", description "No"
+ACC: 0.822934 	Hard case: attribute "gender", description "female"
+The accuracy with "hair color" = "white" is 0.8872950819672131
+Correct predictions: 433/488
+The accuracy with "hair color" = "yellow" is 0.8513513513513513
+Correct predictions: 63/74
+ACC: 0.851351 	Rare Case: attribute "hair color", description "yellow"
+The accuracy with "hair color" = "blonde" is 0.8448901623686724
+Correct predictions: 4423/5235
+ACC: 0.844890 	Hard case: attribute "hair color", description "blonde"
+The accuracy with "hair color" = "black" is 0.8815094339622641
+Correct predictions: 5840/6625
+The accuracy with "hair color" = "gray" is 0.9483082706766918
+Correct predictions: 1009/1064
+The accuracy with "hair color" = "brown" is 0.8737485151875106
+Correct predictions: 5149/5893
+The accuracy with "hair color" = "red" is 0.8486312399355878
+Correct predictions: 527/621
+ACC: 0.848631 	Rare Case: attribute "hair color", description "red"
+The accuracy with "skin" = "white" is 0.8707389162561576
+Correct predictions: 8838/10150
+The accuracy with "skin" = "black" is 0.8894292295879191
+Correct predictions: 3475/3907
+The accuracy with "skin" = "brown" is 0.8633686690223793
+Correct predictions: 5131/5943
+ACC: 0.804183 	Rare Case: attribute "emotion", description "sad"
+ACC: 0.845343 	Hard case: attribute "emotion", description "surprised"
+ACC: 0.819038 	Rare Case: attribute "emotion", description "pensive"
+Start detect_failure_prediction_correlation
+
+Start Time: 2025-05-06 09:24:35
+End Time:   2025-05-06 18:00:13
+Duration:   08:35:38
