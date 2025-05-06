@@ -3,3 +3,85 @@ Current time: 0506003435
 Selected 5000 filenames for sampling
 Added 5000 generated yellowhair images, before training set has 80000 images, now 85000
 Using vit model with random weights
+Epoch [1/15], Train Loss: 0.5530, Train Acc: 0.7154, Val Loss: 0.4834, Val Acc: 0.7889
+Epoch [2/15], Train Loss: 0.4277, Train Acc: 0.8347, Val Loss: 0.4401, Val Acc: 0.8204
+Epoch [3/15], Train Loss: 0.3924, Train Acc: 0.8616, Val Loss: 0.4521, Val Acc: 0.8258
+Epoch [4/15], Train Loss: 0.3722, Train Acc: 0.8769, Val Loss: 0.4824, Val Acc: 0.8086
+Epoch [5/15], Train Loss: 0.3587, Train Acc: 0.8859, Val Loss: 0.4148, Val Acc: 0.8381
+Epoch [6/15], Train Loss: 0.3467, Train Acc: 0.8939, Val Loss: 0.4383, Val Acc: 0.8460
+Epoch [7/15], Train Loss: 0.3383, Train Acc: 0.9004, Val Loss: 0.4112, Val Acc: 0.8572
+Epoch [8/15], Train Loss: 0.3306, Train Acc: 0.9048, Val Loss: 0.4063, Val Acc: 0.8599
+Epoch [9/15], Train Loss: 0.3255, Train Acc: 0.9076, Val Loss: 0.4286, Val Acc: 0.8560
+Epoch [10/15], Train Loss: 0.3178, Train Acc: 0.9131, Val Loss: 0.4036, Val Acc: 0.8653
+Epoch [11/15], Train Loss: 0.3099, Train Acc: 0.9196, Val Loss: 0.4230, Val Acc: 0.8665
+Epoch [12/15], Train Loss: 0.3043, Train Acc: 0.9230, Val Loss: 0.4246, Val Acc: 0.8663
+Epoch [13/15], Train Loss: 0.3006, Train Acc: 0.9250, Val Loss: 0.3811, Val Acc: 0.8771
+Epoch [14/15], Train Loss: 0.2980, Train Acc: 0.9272, Val Loss: 0.3894, Val Acc: 0.8789
+Epoch [15/15], Train Loss: 0.2938, Train Acc: 0.9302, Val Loss: 0.3945, Val Acc: 0.8779
+Generating and saving predictions...
+Combined predictions length: 185000 (should match combined_labels length: 185000)
+Current time: 0506003435
+
+Running model diagnostics on generated predictions...
+Model Validation ACC: 0.87825
+Start detect_failure_by_label
+
+Start detect_prediction_correlation
+
+ACC: 0.866796 	Hard case: attribute "beard", description "No"
+ACC: 0.826760 	Hard case: attribute "gender", description "female"
+The accuracy with "hair color" = "white" is 0.9057377049180327
+Correct predictions: 442/488
+The accuracy with "hair color" = "yellow" is 0.8783783783783784
+Correct predictions: 65/74
+The accuracy with "hair color" = "blonde" is 0.8521489971346705
+Correct predictions: 4461/5235
+ACC: 0.852149 	Hard case: attribute "hair color", description "blonde"
+The accuracy with "hair color" = "black" is 0.8889056603773585
+Correct predictions: 5889/6625
+The accuracy with "hair color" = "gray" is 0.9539473684210527
+Correct predictions: 1015/1064
+The accuracy with "hair color" = "brown" is 0.8759545223146106
+Correct predictions: 5162/5893
+The accuracy with "hair color" = "red" is 0.855072463768116
+Correct predictions: 531/621
+ACC: 0.855072 	Rare Case: attribute "hair color", description "red"
+The accuracy with "skin" = "white" is 0.8795073891625615
+Correct predictions: 8927/10150
+The accuracy with "skin" = "black" is 0.8848221141540824
+Correct predictions: 3457/3907
+The accuracy with "skin" = "brown" is 0.8717819283190308
+Correct predictions: 5181/5943
+ACC: 0.834601 	Rare Case: attribute "emotion", description "sad"
+ACC: 0.860093 	Hard case: attribute "emotion", description "surprised"
+ACC: 0.823222 	Rare Case: attribute "emotion", description "pensive"
+Start detect_failure_prediction_correlation
+
+Model diagnostics complete.
+
+Comparing accuracy with log file: logs/compare/stat_origin_vit_compare.log
+Overall accuracy: 0.850650 -> 0.878250: improved
+
+Attribute-specific accuracy comparison:
+beard, No, 0.836448 -> 0.866796: improved
+makeup, Yes, 0.838893 -> 0.888931: improved
+gender, female, 0.768786 -> 0.826760: improved
+hair color, white, 0.905738 -> 0.905738: same
+hair color, yellow, 0.905405 -> 0.878378: declined
+hair color, blonde, 0.841070 -> 0.852149: improved
+hair color, black, 0.840000 -> 0.888906: improved
+hair color, gray, 0.953008 -> 0.953947: improved
+hair color, brown, 0.849992 -> 0.875955: improved
+hair color, red, 0.826087 -> 0.855072: improved
+skin, white, 0.865714 -> 0.879507: improved
+skin, black, 0.831840 -> 0.884822: improved
+skin, brown, 0.837288 -> 0.871782: improved
+emotion, sad, 0.806084 -> 0.834601: improved
+emotion, surprised, 0.812895 -> 0.860093: improved
+emotion, pensive, 0.775105 -> 0.823222: improved
+young, young, 0.838260 -> 0.870154: improved
+
+Compared 17 attribute-specific accuracies.
+Start Time: 2025-05-06 00:34:33
+End Time:   2025-05-06 06:34:31
+Duration:   05:59:58
