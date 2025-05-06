@@ -1,0 +1,11 @@
+start time: 2025-05-05 20:37:58
+Current time: 0505203801
+Traceback (most recent call last):
+  File "/people/cs/o/oxx220000/HiBug/predict.py", line 327, in <module>
+    all_datas = [input_dir + line for line in lines][1:]
+  File "/people/cs/o/oxx220000/HiBug/predict.py", line 327, in <listcomp>
+    all_datas = [input_dir + line for line in lines][1:]
+NameError: name 'input_dir' is not defined
+Start Time: 2025-05-05 20:37:58
+End Time:   2025-05-05 20:38:02
+Duration:   00:00:04
