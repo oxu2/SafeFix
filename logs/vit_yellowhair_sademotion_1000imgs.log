@@ -7,3 +7,14 @@ Using vit model with random weights
 Epoch [1/15], Train Loss: 0.5564, Train Acc: 0.7143, Val Loss: 0.5014, Val Acc: 0.7831
 Epoch [2/15], Train Loss: 0.4643, Train Acc: 0.8072, Val Loss: 0.5037, Val Acc: 0.7908
 Epoch [3/15], Train Loss: 0.4380, Train Acc: 0.8286, Val Loss: 0.5311, Val Acc: 0.7843
+Epoch [4/15], Train Loss: 0.4022, Train Acc: 0.8553, Val Loss: 0.4374, Val Acc: 0.8305
+Epoch [5/15], Train Loss: 0.3781, Train Acc: 0.8713, Val Loss: 0.4347, Val Acc: 0.8405
+Epoch [6/15], Train Loss: 0.3668, Train Acc: 0.8788, Val Loss: 0.4362, Val Acc: 0.8411
+Epoch [7/15], Train Loss: 0.3541, Train Acc: 0.8866, Val Loss: 0.4187, Val Acc: 0.8479
+Epoch [8/15], Train Loss: 0.3449, Train Acc: 0.8950, Val Loss: 0.4624, Val Acc: 0.8308
+Epoch [9/15], Train Loss: 0.3358, Train Acc: 0.9010, Val Loss: 0.4081, Val Acc: 0.8547
+Epoch [10/15], Train Loss: 0.3282, Train Acc: 0.9059, Val Loss: 0.4232, Val Acc: 0.8545
+Epoch [11/15], Train Loss: 0.3223, Train Acc: 0.9100, Val Loss: 0.3957, Val Acc: 0.8645
+Epoch [12/15], Train Loss: 0.3156, Train Acc: 0.9152, Val Loss: 0.4077, Val Acc: 0.8657
+Epoch [13/15], Train Loss: 0.3116, Train Acc: 0.9170, Val Loss: 0.3961, Val Acc: 0.8709
+Epoch [14/15], Train Loss: 0.3075, Train Acc: 0.9211, Val Loss: 0.4075, Val Acc: 0.8658

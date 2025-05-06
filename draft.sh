@@ -1,3 +1,13 @@
+
+
+nohup ./batch.sh -m clip -a simple -d 0 -s \
+  > logs/hibug_clip_simple.log 2>&1 < /dev/null &
+
+
+nohup ./batch.sh -m clip -a redhair_brownskin -d 2 -g -s \
+  > logs/g_simple_clip_redhair_brownskin.log 2>&1 < /dev/null &
+
+
 CUDA_VISIBLE_DEVICES=1 nohup  python -u predict.py --dataset imagenet --model resnet --num_added_img 0  --save_pred_model last --num_epochs 30 > logs/imagenet_resnet.log 2>&1 < /dev/null &
 
 CUDA_VISIBLE_DEVICES=0 nohup  python -u predict.py --dataset imagenet --model resnet --num_added_img 0  --save_pred_model last --num_epochs 40 > logs/imagenet_resnet_40.log 2>&1 < /dev/null &
@@ -12,10 +22,6 @@ nohup ./batch.sh -m resnet -a redhair_brownskin_sademotion -d 0 \
   > logs/batch/batch_resnet_redhair_brownskin_sademotion.log 2>&1 < /dev/null &
 nohup ./batch.sh -m vit -a redhair_brownskin_sademotion -d 1 \
   > logs/batch/batch_vit_redhair_brownskin_sademotion.log 2>&1 < /dev/null &
-
-
-find /home/jovyan/ouyang/HiBug/redhair_sademotion -type f -iname '*.jpg' | wc -l
-6422 as of 1PM 05/03/2025
 
 
 CUDA_VISIBLE_DEVICES=0 nohup python -u filter.py \

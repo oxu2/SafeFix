@@ -1,8 +1,8 @@
 *.pyc
 *.pth
 .DS_Store
-/img_align_celeba
-/pictures
+img_align_celeba
+pictures
 exampleData
 downloaded_data
 /hibug_*
@@ -21,7 +21,7 @@ redhair_brownskin_sademotion
 imagenet_subset
 .vscode
 
-/imagenet*
+imagenet*
 
 # except .txt in exampleData/CelebA
 !exampleData/celebA/*.txt
