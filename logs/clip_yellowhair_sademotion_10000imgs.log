@@ -1,11 +1,92 @@
-start time: 2025-05-05 20:37:58
-Current time: 0505203801
-Traceback (most recent call last):
-  File "/people/cs/o/oxx220000/HiBug/predict.py", line 327, in <module>
-    all_datas = [input_dir + line for line in lines][1:]
-  File "/people/cs/o/oxx220000/HiBug/predict.py", line 327, in <listcomp>
-    all_datas = [input_dir + line for line in lines][1:]
-NameError: name 'input_dir' is not defined
-Start Time: 2025-05-05 20:37:58
-End Time:   2025-05-05 20:38:02
-Duration:   00:00:04
+start time: 2025-05-06 00:54:08
+Current time: 0506005411
+Warning: requested 10000 generated yellowhair_sademotion images, but only 9036 available.
+Selected 9036 filenames for sampling
+Added 9036 generated yellowhair_sademotion images, before training set has 80000 images, now 89036
+Using clip model with random weights
+Epoch [1/20], Train Loss: 0.4541, Train Acc: 0.7994, Val Loss: 0.4185, Val Acc: 0.8704
+Epoch [2/20], Train Loss: 0.3021, Train Acc: 0.9288, Val Loss: 0.4084, Val Acc: 0.8868
+Epoch [3/20], Train Loss: 0.2749, Train Acc: 0.9468, Val Loss: 0.3851, Val Acc: 0.8968
+Epoch [4/20], Train Loss: 0.2593, Train Acc: 0.9566, Val Loss: 0.3937, Val Acc: 0.8962
+Epoch [5/20], Train Loss: 0.2494, Train Acc: 0.9633, Val Loss: 0.3762, Val Acc: 0.9018
+Epoch [6/20], Train Loss: 0.2410, Train Acc: 0.9693, Val Loss: 0.3772, Val Acc: 0.9052
+Epoch [7/20], Train Loss: 0.2336, Train Acc: 0.9738, Val Loss: 0.3849, Val Acc: 0.9048
+Epoch [8/20], Train Loss: 0.2267, Train Acc: 0.9781, Val Loss: 0.3900, Val Acc: 0.9042
+Epoch [9/20], Train Loss: 0.2209, Train Acc: 0.9820, Val Loss: 0.4035, Val Acc: 0.9009
+Epoch [10/20], Train Loss: 0.2138, Train Acc: 0.9864, Val Loss: 0.4159, Val Acc: 0.9026
+Epoch [11/20], Train Loss: 0.2091, Train Acc: 0.9892, Val Loss: 0.4151, Val Acc: 0.9018
+Epoch [12/20], Train Loss: 0.2045, Train Acc: 0.9921, Val Loss: 0.4336, Val Acc: 0.8955
+Epoch [13/20], Train Loss: 0.2004, Train Acc: 0.9946, Val Loss: 0.4306, Val Acc: 0.8960
+Epoch [14/20], Train Loss: 0.1975, Train Acc: 0.9962, Val Loss: 0.4205, Val Acc: 0.9003
+Epoch [15/20], Train Loss: 0.1952, Train Acc: 0.9975, Val Loss: 0.4190, Val Acc: 0.9036
+Epoch [16/20], Train Loss: 0.1942, Train Acc: 0.9980, Val Loss: 0.4350, Val Acc: 0.8982
+Epoch [17/20], Train Loss: 0.1932, Train Acc: 0.9985, Val Loss: 0.4224, Val Acc: 0.9035
+Epoch [18/20], Train Loss: 0.1926, Train Acc: 0.9988, Val Loss: 0.4262, Val Acc: 0.9028
+Epoch [19/20], Train Loss: 0.1922, Train Acc: 0.9990, Val Loss: 0.4281, Val Acc: 0.9008
+Epoch [20/20], Train Loss: 0.1920, Train Acc: 0.9990, Val Loss: 0.4261, Val Acc: 0.9021
+Generating and saving predictions...
+Combined predictions length: 189036 (should match combined_labels length: 189036)
+Current time: 0506005411
+
+Running model diagnostics on generated predictions...
+Model Validation ACC: 0.90515
+Start detect_failure_by_label
+
+Start detect_prediction_correlation
+
+ACC: 0.892435 	Hard case: attribute "beard", description "No"
+ACC: 0.848946 	Hard case: attribute "gender", description "female"
+The accuracy with "hair color" = "white" is 0.9139344262295082
+Correct predictions: 446/488
+The accuracy with "hair color" = "yellow" is 0.918918918918919
+Correct predictions: 68/74
+The accuracy with "hair color" = "blonde" is 0.8802292263610315
+Correct predictions: 4608/5235
+ACC: 0.880229 	Hard case: attribute "hair color", description "blonde"
+The accuracy with "hair color" = "black" is 0.9165283018867925
+Correct predictions: 6072/6625
+The accuracy with "hair color" = "gray" is 0.9718045112781954
+Correct predictions: 1034/1064
+The accuracy with "hair color" = "brown" is 0.9020872221279485
+Correct predictions: 5316/5893
+The accuracy with "hair color" = "red" is 0.9001610305958132
+Correct predictions: 559/621
+The accuracy with "skin" = "white" is 0.906896551724138
+Correct predictions: 9205/10150
+The accuracy with "skin" = "black" is 0.921679037624776
+Correct predictions: 3601/3907
+The accuracy with "skin" = "brown" is 0.8913006898872623
+Correct predictions: 5297/5943
+ACC: 0.891301 	Rare Case: attribute "skin", description "brown"
+ACC: 0.862167 	Rare Case: attribute "emotion", description "sad"
+ACC: 0.883065 	Rare Case: attribute "emotion", description "calm"
+ACC: 0.885799 	Hard case: attribute "emotion", description "surprised"
+ACC: 0.892857 	Rare Case: attribute "emotion", description "angry"
+ACC: 0.871339 	Rare Case: attribute "emotion", description "pensive"
+Start detect_failure_prediction_correlation
+
+Model diagnostics complete.
+
+Comparing accuracy with log file: logs/compare/stat_origin_clip_compare.log
+Overall accuracy: 0.898500 -> 0.905150: improved
+
+Attribute-specific accuracy comparison:
+beard, No, 0.884362 -> 0.892435: improved
+gender, female, 0.840360 -> 0.848946: improved
+hair color, white, 0.920082 -> 0.913934: declined
+hair color, yellow, 0.878378 -> 0.918919: improved
+hair color, blonde, 0.875836 -> 0.880229: improved
+hair color, black, 0.908075 -> 0.916528: improved
+hair color, gray, 0.972744 -> 0.971805: declined
+hair color, brown, 0.892754 -> 0.902087: improved
+hair color, red, 0.900161 -> 0.900161: same
+skin, brown, 0.885580 -> 0.891301: improved
+emotion, sad, 0.853612 -> 0.862167: improved
+emotion, calm, 0.877016 -> 0.883065: improved
+emotion, surprised, 0.879056 -> 0.885799: improved
+emotion, pensive, 0.860879 -> 0.871339: improved
+
+Compared 14 attribute-specific accuracies.
+Start Time: 2025-05-06 00:54:08
+End Time:   2025-05-06 02:53:25
+Duration:   01:59:17
