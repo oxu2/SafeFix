@@ -5,3 +5,4 @@ Added 1000 generated yellowhair images, before training set has 80000 images, no
 Using resnet model with random weights
 Epoch [1/20], Train Loss: 0.4251, Train Acc: 0.8337, Val Loss: 0.4874, Val Acc: 0.8298
 Epoch [2/20], Train Loss: 0.2941, Train Acc: 0.9458, Val Loss: 0.8523, Val Acc: 0.6872
+Epoch [3/20], Train Loss: 0.2688, Train Acc: 0.9619, Val Loss: 0.4227, Val Acc: 0.8767

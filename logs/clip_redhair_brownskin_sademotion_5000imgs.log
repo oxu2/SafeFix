@@ -8,3 +8,4 @@ Added 5000 generated redhair_brownskin_sademotion images, before training set ha
 Using clip model with random weights
 Epoch [1/20], Train Loss: 0.4407, Train Acc: 0.8130, Val Loss: 0.3947, Val Acc: 0.8818
 Epoch [2/20], Train Loss: 0.2914, Train Acc: 0.9379, Val Loss: 0.3727, Val Acc: 0.8940
+Epoch [3/20], Train Loss: 0.2679, Train Acc: 0.9530, Val Loss: 0.3781, Val Acc: 0.8977
