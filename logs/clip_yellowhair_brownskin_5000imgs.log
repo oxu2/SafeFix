@@ -1,0 +1,15 @@
+start time: 2025-05-06 20:05:53
+Current time: 0506200556
+Selected 5000 filenames for sampling
+Added 5000 generated yellowhair_brownskin images, before training set has 80000 images, now 85000
+Using clip model with random weights
+Epoch [1/20], Train Loss: 0.4289, Train Acc: 0.8245, Val Loss: 0.4322, Val Acc: 0.8623
+Epoch [2/20], Train Loss: 0.2815, Train Acc: 0.9463, Val Loss: 0.3782, Val Acc: 0.8936
+Epoch [3/20], Train Loss: 0.2596, Train Acc: 0.9588, Val Loss: 0.3746, Val Acc: 0.8974
+Epoch [4/20], Train Loss: 0.2460, Train Acc: 0.9673, Val Loss: 0.4258, Val Acc: 0.8954
+Epoch [5/20], Train Loss: 0.2383, Train Acc: 0.9720, Val Loss: 0.3776, Val Acc: 0.9039
+Epoch [6/20], Train Loss: 0.2292, Train Acc: 0.9777, Val Loss: 0.3871, Val Acc: 0.9033
+Epoch [7/20], Train Loss: 0.2226, Train Acc: 0.9818, Val Loss: 0.4464, Val Acc: 0.8864
+Epoch [8/20], Train Loss: 0.2165, Train Acc: 0.9857, Val Loss: 0.4160, Val Acc: 0.8998
+Epoch [9/20], Train Loss: 0.2120, Train Acc: 0.9881, Val Loss: 0.4008, Val Acc: 0.8992
+Epoch [10/20], Train Loss: 0.2070, Train Acc: 0.9911, Val Loss: 0.4103, Val Acc: 0.8983

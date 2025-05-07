@@ -33,6 +33,10 @@ from pathlib import Path
 
 import torch.nn.functional as F
 
+from torchvision.datasets import ImageFolder
+
+
+
 # Suppress the CLIPFeatureExtractor deprecation warning
 import warnings
 warnings.filterwarnings(
@@ -275,7 +279,8 @@ if not args.no_controlnet:
                 print(f"Loaded {len(feasible_images)} feasible {args.attributes} images")
         else:
             feasible_images = {}
-            print(f"Warning: {args.feasible_file} not found. No additional {args.attributes} images will be added based on feasibility.")
+            if args.verbose:
+                print(f"Feasible file '{args.feasible_file}' not found; skipping feasible JSON loading for '{args.attributes}'.")
 else:
     feasible_images = {}  # Not used in ablation mode
     if verbose:
@@ -284,43 +289,46 @@ else:
 if args.dataset == 'imagenet':
     # Load ImageNet subset from folders
     data_dir = Path("./imagenet_subset")
-    # Use same transform as for non-clip/blip models
     feature_extractor = CLIPImageProcessor.from_pretrained("openai/clip-vit-base-patch32")
     if args.model == 'clip':
-        transform = lambda img: feature_extractor(images=img, return_tensors="pt")["pixel_values"].squeeze(0)
+        train_transform = lambda img: feature_extractor(images=img, return_tensors="pt")["pixel_values"].squeeze(0)
+        val_transform   = train_transform
     elif args.model == 'blip':
-        # Use BLIPProcessor to prepare pixel_values (offline mode)
         processor = BlipProcessor.from_pretrained(
             "Salesforce/blip-image-captioning-base",
             local_files_only=True
         )
-        transform = lambda img: processor(images=img, return_tensors="pt")["pixel_values"].squeeze(0)
+        train_transform = lambda img: processor(images=img, return_tensors="pt")["pixel_values"].squeeze(0)
+        val_transform   = train_transform
     else:
-        transform = transforms.Compose([
+        train_transform = transforms.Compose([
             transforms.RandomResizedCrop(224, scale=(0.8, 1.0)),
             transforms.RandomHorizontalFlip(p=0.5),
             transforms.ColorJitter(brightness=0.2, contrast=0.2, saturation=0.2),
             transforms.ToTensor(),
-            transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5])
+            transforms.Normalize(mean=[0.5,0.5,0.5], std=[0.5,0.5,0.5]),
         ])
-    ds = ImageFolder(data_dir, transform=transform)
-    # Load pre-defined train/val indices
+        val_transform = transforms.Compose([
+            transforms.Resize(256),
+            transforms.CenterCrop(224),
+            transforms.ToTensor(),
+            transforms.Normalize(mean=[0.5,0.5,0.5], std=[0.5,0.5,0.5]),
+        ])
+    # Use no transform for index mapping, then create train/val datasets with correct transforms
+    full_ds = ImageFolder(data_dir)
     train_idx = np.load('train_idx_imagenet.npy')
     val_idx = np.load('val_idx_imagenet.npy')
     valid_idx = val_idx  # alias for diagnostics compatibility
     print(f"Loaded pre-split ImageNet10 indices: {len(train_idx)} train, {len(val_idx)} validation.")
-    # Create Subset datasets using the loaded indices
-    train_ds = Subset(ds, train_idx)
-    val_ds = Subset(ds, val_idx)
-
+    train_ds = Subset(ImageFolder(data_dir, transform=train_transform), train_idx)
+    val_ds   = Subset(ImageFolder(data_dir, transform=val_transform), val_idx)
     train_loader = DataLoader(
         train_ds, batch_size=args.batch_size,
         shuffle=True, num_workers=args.workers, pin_memory=True)
     valid_loader = DataLoader(
         val_ds, batch_size=args.batch_size,
         shuffle=False, num_workers=args.workers, pin_memory=True)
-    num_classes = len(ds.classes)
-    # print(f'Classes ({num_classes}): {ds.classes}')
+    num_classes = len(full_ds.classes)
     # Expose datasets for training loop compatibility
     train_dataset = train_ds
     valid_dataset = val_ds
@@ -331,7 +339,6 @@ if args.dataset == 'imagenet':
     valid_labels = None
     modified_image_paths = []
     modified_image_labels = []
-    import numpy as np
     unlabeled_predictions = np.array([])
     # Jump to model setup
 else:
@@ -380,18 +387,29 @@ else:
 
     # Initialize CLIP feature extractor
     feature_extractor = CLIPImageProcessor.from_pretrained("openai/clip-vit-base-patch32")
-
-    # Define transformations
     if args.model == 'clip':
-        # Use CLIP feature extractor to obtain pixel_values tensor
-        transform = lambda img: feature_extractor(images=img, return_tensors="pt")["pixel_values"].squeeze(0)
+        train_transform = lambda img: feature_extractor(images=img, return_tensors="pt")["pixel_values"].squeeze(0)
+        val_transform   = train_transform
+    elif args.model == 'blip':
+        processor = BlipProcessor.from_pretrained(
+            "Salesforce/blip-image-captioning-base",
+            local_files_only=True
+        )
+        train_transform = lambda img: processor(images=img, return_tensors="pt")["pixel_values"].squeeze(0)
+        val_transform   = train_transform
     else:
-        transform = transforms.Compose([
+        train_transform = transforms.Compose([
             transforms.RandomResizedCrop(224, scale=(0.8, 1.0)),
             transforms.RandomHorizontalFlip(p=0.5),
             transforms.ColorJitter(brightness=0.2, contrast=0.2, saturation=0.2),
             transforms.ToTensor(),
-            transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5])
+            transforms.Normalize(mean=[0.5,0.5,0.5], std=[0.5,0.5,0.5]),
+        ])
+        val_transform = transforms.Compose([
+            transforms.Resize(256),
+            transforms.CenterCrop(224),
+            transforms.ToTensor(),
+            transforms.Normalize(mean=[0.5,0.5,0.5], std=[0.5,0.5,0.5]),
         ])
 
     # Create Datasets and Loaders
@@ -589,8 +607,8 @@ else:
         print(f"Validation images: {len(valid_imgs)}, Labels: {len(valid_labels)}")
         # 84050 20000
     # Create datasets using the combined data
-    train_dataset = CelebADataset(all_train_imgs, all_train_labels, transform)
-    valid_dataset = CelebADataset(valid_imgs, valid_labels, transform)
+    train_dataset = CelebADataset(all_train_imgs, all_train_labels, train_transform)
+    valid_dataset = CelebADataset(valid_imgs, valid_labels, val_transform)
 
     train_loader = DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True, num_workers=4)
     valid_loader = DataLoader(valid_dataset, batch_size=args.batch_size, shuffle=False, num_workers=4)
@@ -937,11 +955,12 @@ def parse_log(log_path):
 train_loss_history, train_acc_history, val_loss_history, val_acc_history = train_model(
     model, train_loader, valid_loader, criterion, optimizer, scheduler, num_epochs=args.num_epochs
 )
-print("Current time:", time_now)
+
 
 
 # Run the model diagnostics after predictions are saved
-import numpy as np  # Ensure numpy is imported for diagnostics
+# Add import for ImageFolder at the top if not present
+from torchvision.datasets import ImageFolder
 print("\nRunning model diagnostics on generated predictions...")
 # Define thresholds for diagnostics
 acc_diff_threshold = 0.01
@@ -965,9 +984,14 @@ predictions = np.load(prediction_file)
 
 # Prepare labels and split for diagnostics
 if args.dataset == 'imagenet':
-    # For ImageNet subset: load labels10.npy and use only train/val
-    labels_to_diagnose = np.load('labels10.npy')
-    split = [TRAIN] * len(train_idx) + [VALID] * len(valid_idx)
+    # Derive ground-truth labels from the ImageFolder ordering
+    from pathlib import Path
+    data_dir = Path("./imagenet_subset")
+    full_ds = ImageFolder(data_dir)
+    labels_all = np.array(full_ds.targets)
+    # Build labels for train and validation splits
+    labels_to_diagnose = np.concatenate([labels_all[train_idx], labels_all[val_idx]])
+    split = [TRAIN] * len(train_idx) + [VALID] * len(val_idx)
 else:
     # For CelebA: use combined_labels and include unlabeled
     labels_to_diagnose = np.array(combined_labels)
@@ -996,12 +1020,12 @@ MD = ModelDiagnose(
     top_error=top_error
 )
 
-print("Start detect_failure_by_label\n")
-MD.detect_failure_by_label()
+# print("Start detect_failure_by_label\n")
+# MD.detect_failure_by_label()
 print("Start detect_prediction_correlation\n")
 MD.detect_prediction_correlation()
-print("Start detect_failure_prediction_correlation\n")
-MD.detect_failure_prediction_correlation()
+# print("Start detect_failure_prediction_correlation\n")
+# MD.detect_failure_prediction_correlation()
 
 # Optionally save a report
 if args.save_report:
@@ -1009,3 +1033,5 @@ if args.save_report:
     os.makedirs(report_dir, exist_ok=True)
     MD.generate_report(f"{report_dir}/{args.dataset}_{args.model}_{attributes}_{args.num_added_img}imgs{suffix}_{time_now}")
     print(f"Diagnostic report saved to {report_dir}/{args.dataset}_{args.model}_{attributes}_{args.num_added_img}imgs{suffix}_{time_now}")
+
+print("Current time:", time_now)
