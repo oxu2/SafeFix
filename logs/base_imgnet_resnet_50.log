@@ -1,0 +1,24 @@
+Current time: 0507063053
+Loaded pre-split ImageNet10 indices: 10400 train, 2600 validation.
+Using resnet model with random weights
+Epoch [1/50], Train Loss: 1.9364, Train Acc: 0.3144, Val Loss: 1.8387, Val Acc: 0.3538
+Epoch [2/50], Train Loss: 1.6230, Train Acc: 0.4329, Val Loss: 1.7416, Val Acc: 0.3977
+Epoch [3/50], Train Loss: 1.4506, Train Acc: 0.5054, Val Loss: 1.7726, Val Acc: 0.4000
+Epoch [4/50], Train Loss: 1.2414, Train Acc: 0.5795, Val Loss: 1.3712, Val Acc: 0.5469
+Epoch [5/50], Train Loss: 1.1432, Train Acc: 0.6162, Val Loss: 1.3315, Val Acc: 0.5546
+Epoch [6/50], Train Loss: 1.0670, Train Acc: 0.6427, Val Loss: 1.4499, Val Acc: 0.5223
+Epoch [7/50], Train Loss: 0.9389, Train Acc: 0.6913, Val Loss: 1.2161, Val Acc: 0.5938
+Epoch [8/50], Train Loss: 0.9075, Train Acc: 0.6996, Val Loss: 1.2445, Val Acc: 0.5946
+Epoch [9/50], Train Loss: 0.8572, Train Acc: 0.7132, Val Loss: 1.2196, Val Acc: 0.5912
+Epoch [10/50], Train Loss: 0.7825, Train Acc: 0.7474, Val Loss: 1.1549, Val Acc: 0.6177
+Epoch [11/50], Train Loss: 0.7727, Train Acc: 0.7507, Val Loss: 1.1618, Val Acc: 0.6223
+Epoch [12/50], Train Loss: 0.7414, Train Acc: 0.7636, Val Loss: 1.1267, Val Acc: 0.6262
+Epoch [13/50], Train Loss: 0.7143, Train Acc: 0.7746, Val Loss: 1.1299, Val Acc: 0.6281
+Epoch [14/50], Train Loss: 0.6986, Train Acc: 0.7750, Val Loss: 1.1120, Val Acc: 0.6285
+Epoch [15/50], Train Loss: 0.6886, Train Acc: 0.7790, Val Loss: 1.1296, Val Acc: 0.6269
+Epoch [16/50], Train Loss: 0.6715, Train Acc: 0.7895, Val Loss: 1.1166, Val Acc: 0.6219
+Epoch [17/50], Train Loss: 0.6638, Train Acc: 0.7920, Val Loss: 1.1183, Val Acc: 0.6304
+Epoch [18/50], Train Loss: 0.6640, Train Acc: 0.7922, Val Loss: 1.1246, Val Acc: 0.6281
+Epoch [19/50], Train Loss: 0.6532, Train Acc: 0.7935, Val Loss: 1.1149, Val Acc: 0.6296
+Epoch [20/50], Train Loss: 0.6470, Train Acc: 0.7965, Val Loss: 1.1205, Val Acc: 0.6262
+Epoch [21/50], Train Loss: 0.6449, Train Acc: 0.7991, Val Loss: 1.1171, Val Acc: 0.6319

@@ -1,16 +1,5 @@
-start time: 2025-05-06 18:27:45
-Current time: 0506182747
-Warning: save/feasible_yellowhair_brownskin.json not found. No additional yellowhair_brownskin images will be added based on feasibility.
+start time: 2025-05-07 06:28:39
+Current time: 0507062841
 Selected 1000 filenames for sampling
 Added 1000 generated yellowhair_brownskin images, before training set has 80000 images, now 81000
 Using vit model with random weights
-Epoch [1/15], Train Loss: 0.5369, Train Acc: 0.7356, Val Loss: 0.4825, Val Acc: 0.7886
-Epoch [2/15], Train Loss: 0.4329, Train Acc: 0.8310, Val Loss: 0.4425, Val Acc: 0.8205
-Epoch [3/15], Train Loss: 0.3958, Train Acc: 0.8588, Val Loss: 0.4235, Val Acc: 0.8334
-Epoch [4/15], Train Loss: 0.3742, Train Acc: 0.8748, Val Loss: 0.4190, Val Acc: 0.8455
-Epoch [5/15], Train Loss: 0.3600, Train Acc: 0.8846, Val Loss: 0.4542, Val Acc: 0.8348
-Epoch [6/15], Train Loss: 0.3463, Train Acc: 0.8943, Val Loss: 0.3980, Val Acc: 0.8589
-Epoch [7/15], Train Loss: 0.3375, Train Acc: 0.9004, Val Loss: 0.4144, Val Acc: 0.8608
-Epoch [8/15], Train Loss: 0.3285, Train Acc: 0.9066, Val Loss: 0.4476, Val Acc: 0.8408
-Epoch [9/15], Train Loss: 0.3201, Train Acc: 0.9122, Val Loss: 0.3970, Val Acc: 0.8716
-Epoch [10/15], Train Loss: 0.3117, Train Acc: 0.9177, Val Loss: 0.4125, Val Acc: 0.8672

@@ -1,6 +1,6 @@
 import json
 import numpy as np
-def get_original_indices_by_attribute(attribute_name, attr_assigned, attr_data, mapping_data, find_matching=False, save_path=None, num_display=10):
+def get_original_indices_by_attribute(attribute_name, attr_assigned, attr_data, mapping_data=None, find_matching=False, save_path=None, num_display=10):
     """
     Get the original indices of samples with specific attribute value
     Args:
@@ -25,17 +25,22 @@ def get_original_indices_by_attribute(attribute_name, attr_assigned, attr_data, 
     else:
         attr_json = attr_data
 
-    # Load mapping data if path is provided
-    if isinstance(mapping_data, str):
+    # Load mapping data if path is provided and exists, otherwise skip mapping
+    if mapping_data is None:
+        filtered_to_original = None
+    elif isinstance(mapping_data, str):
         try:
             with open(mapping_data, 'r') as f:
                 mapping_dict = json.load(f)
-                filtered_to_original = mapping_dict["filtered_to_original"]
+                filtered_to_original = mapping_dict.get("filtered_to_original")
+        except FileNotFoundError:
+            print(f"Mapping file {mapping_data} not found, skipping mapping.")
+            filtered_to_original = None
         except Exception as e:
             print(f"Error loading mapping file: {e}")
             return []
     else:
-        filtered_to_original = mapping_data.get("filtered_to_original", mapping_data)
+        filtered_to_original = mapping_data.get("filtered_to_original")
 
     # Verify attribute exists
     if attribute_name not in attr_json:
@@ -49,9 +54,12 @@ def get_original_indices_by_attribute(attribute_name, attr_assigned, attr_data, 
         if (description == attr_assigned) == find_matching:  # Changed logic to use find_matching parameter
             filtered_indices.append(i)
     
-    # Convert to original indices
-    filtered_to_original = {int(k): v for k, v in filtered_to_original.items()}
-    original_indices = [filtered_to_original[i] for i in filtered_indices if i in filtered_to_original]
+    # Convert to original indices if mapping is provided, otherwise use filtered indices directly
+    if filtered_to_original:
+        filtered_to_original = {int(k): v for k, v in filtered_to_original.items()}
+        original_indices = [filtered_to_original[i] for i in filtered_indices if i in filtered_to_original]
+    else:
+        original_indices = filtered_indices
     
     match_str = "=" if find_matching else "!="
     print(f"\n{attribute_name}{match_str}{attr_assigned} information:")
@@ -292,3 +300,36 @@ print(f"Saved three-way intersection (yellowhair_brownskin_sademotion) to {outpu
 
 
 with open("exampleData/celebA/non_yellowhair_sademotion_indices.txt","w") as f: f.write("\n".join(map(str,sorted(set(get_original_indices_by_attribute("hair color","yellow","exampleData/celebA/attribute.json","exampleData/celebA/idx_mapping.json",find_matching=False)) & set(get_original_indices_by_attribute("emotion","sad","exampleData/celebA/attribute.json","exampleData/celebA/idx_mapping.json",find_matching=True)))) )+"\n")
+
+# Example usage for finding non-pink color in a 10-class attribute dataset without mapping
+non_pinkcolor_indices = get_original_indices_by_attribute(
+    "color",
+    "pink",
+    "attribute10.json",
+    None,
+    find_matching=False,
+    save_path="non_pinkcolor_indices.txt",
+    num_display=100
+)
+
+
+non_yellowcolor_indices = get_original_indices_by_attribute(
+    "color",
+    "yellow",
+    "attribute10.json",
+    None,
+    find_matching=False,
+    save_path="non_yellowcolor_indices.txt",
+    num_display=100
+)
+
+
+non_fabrictexture_indices = get_original_indices_by_attribute(
+    "texture",
+    "fabric",
+    "attribute10.json",
+    None,
+    find_matching=False,
+    save_path="non_fabrictexture_indices.txt",
+    num_display=100
+)

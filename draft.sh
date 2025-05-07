@@ -1,4 +1,14 @@
-nohup ./batch.sh -m clip -a yellowhair_brownskin -d 0 \
+CUDA_VISIBLE_DEVICES=3 nohup  python -u predict.py --dataset imagenet --model resnet --num_added_img 0  --save_pred_model last --num_epochs 50 --plot 1  > logs/base_imgnet_resnet_50.log 2>&1 < /dev/null &
+
+CUDA_VISIBLE_DEVICES=0 nohup  python -u predict.py --dataset imagenet --model clip --num_added_img 0  --save_pred_model last --num_epochs 70 --plot 1  > logs/base_imgnet_clip_5e-3_70.log 2>&1 < /dev/null &
+
+CUDA_VISIBLE_DEVICES=0 nohup  python -u predict.py --dataset imagenet --model clip --num_added_img 0  --save_pred_model last --num_epochs 30 --plot 1  > logs/base_imgnet_clip_1e-3.log 2>&1 < /dev/null &
+
+CUDA_VISIBLE_DEVICES=0 nohup  python -u predict.py --dataset imagenet --model clip --num_added_img 0  --save_pred_model last --num_epochs 30 --plot 1  > logs/base_imgnet_clip_3e-6.log 2>&1 < /dev/null &
+
+CUDA_VISIBLE_DEVICES=3 nohup  python -u predict.py --dataset imagenet --model clip --num_added_img 0  --save_pred_model last --num_epochs 30 --plot 1 --pretrained 1 > logs/base_imgnet_clip_pretrain.log 2>&1 < /dev/null &
+
+nohup ./batch.sh -m clip -a yellowhair_brownskin -d 2 \
   > logs/batch/batch_clip_yellowhair_brownskin.log 2>&1 < /dev/null &
 nohup ./batch.sh -m resnet -a yellowhair_brownskin -d 3 \
   > logs/batch/batch_resnet_yellowhair_brownskin.log 2>&1 < /dev/null &

@@ -1,68 +1,10 @@
-start time: 2025-05-06 18:27:45
-Current time: 0506182747
-Warning: save/feasible_yellowhair_brownskin.json not found. No additional yellowhair_brownskin images will be added based on feasibility.
+start time: 2025-05-07 06:28:39
+Current time: 0507062841
 Selected 1000 filenames for sampling
 Added 1000 generated yellowhair_brownskin images, before training set has 80000 images, now 81000
 Using resnet model with random weights
-Epoch [1/20], Train Loss: 0.4240, Train Acc: 0.8355, Val Loss: 0.3944, Val Acc: 0.8792
-Epoch [2/20], Train Loss: 0.2981, Train Acc: 0.9431, Val Loss: 0.3540, Val Acc: 0.8980
-Epoch [3/20], Train Loss: 0.2731, Train Acc: 0.9602, Val Loss: 0.4519, Val Acc: 0.8701
-Epoch [4/20], Train Loss: 0.2535, Train Acc: 0.9720, Val Loss: 0.3373, Val Acc: 0.9126
-Epoch [5/20], Train Loss: 0.2480, Train Acc: 0.9744, Val Loss: 0.3705, Val Acc: 0.9014
-Epoch [6/20], Train Loss: 0.2434, Train Acc: 0.9772, Val Loss: 0.3296, Val Acc: 0.9152
-Epoch [7/20], Train Loss: 0.2366, Train Acc: 0.9813, Val Loss: 0.3165, Val Acc: 0.9162
-Epoch [8/20], Train Loss: 0.2351, Train Acc: 0.9816, Val Loss: 0.3659, Val Acc: 0.9063
-Epoch [9/20], Train Loss: 0.2337, Train Acc: 0.9827, Val Loss: 0.3543, Val Acc: 0.9070
-Epoch [10/20], Train Loss: 0.2303, Train Acc: 0.9842, Val Loss: 0.3564, Val Acc: 0.9128
-Epoch [11/20], Train Loss: 0.2287, Train Acc: 0.9852, Val Loss: 0.3280, Val Acc: 0.9134
-Epoch [12/20], Train Loss: 0.2282, Train Acc: 0.9856, Val Loss: 0.4224, Val Acc: 0.8942
-Epoch [13/20], Train Loss: 0.2270, Train Acc: 0.9864, Val Loss: 0.3778, Val Acc: 0.9060
-Epoch [14/20], Train Loss: 0.2258, Train Acc: 0.9866, Val Loss: 0.3956, Val Acc: 0.8976
-Epoch [15/20], Train Loss: 0.2253, Train Acc: 0.9865, Val Loss: 0.3625, Val Acc: 0.9086
-Epoch [16/20], Train Loss: 0.2248, Train Acc: 0.9872, Val Loss: 0.3585, Val Acc: 0.9109
-Epoch [17/20], Train Loss: 0.2243, Train Acc: 0.9874, Val Loss: 0.3513, Val Acc: 0.9109
-Epoch [18/20], Train Loss: 0.2243, Train Acc: 0.9875, Val Loss: 0.3541, Val Acc: 0.9115
-Epoch [19/20], Train Loss: 0.2237, Train Acc: 0.9879, Val Loss: 0.3540, Val Acc: 0.9117
-Epoch [20/20], Train Loss: 0.2237, Train Acc: 0.9877, Val Loss: 0.3596, Val Acc: 0.9113
-Generating and saving predictions...
-Combined predictions length: 181000 (should match combined_labels length: 181000)
-Current time: 0506182747
-
-Running model diagnostics on generated predictions...
-Model Validation ACC: 0.9171
-Start detect_failure_by_label
-
-Start detect_prediction_correlation
-
-ACC: 0.905068 	Hard case: attribute "beard", description "No"
-ACC: 0.863737 	Hard case: attribute "gender", description "female"
-The accuracy with "hair color" = "white" is 0.9364754098360656
-Correct predictions: 457/488
-The accuracy with "hair color" = "yellow" is 0.9459459459459459
-Correct predictions: 70/74
-The accuracy with "hair color" = "blonde" is 0.8953199617956065
-Correct predictions: 4687/5235
-ACC: 0.895320 	Hard case: attribute "hair color", description "blonde"
-The accuracy with "hair color" = "black" is 0.9292075471698114
-Correct predictions: 6156/6625
-The accuracy with "hair color" = "gray" is 0.981203007518797
-Correct predictions: 1044/1064
-The accuracy with "hair color" = "brown" is 0.9097234006448328
-Correct predictions: 5361/5893
-The accuracy with "hair color" = "red" is 0.9130434782608695
-Correct predictions: 567/621
-The accuracy with "skin" = "white" is 0.9211822660098522
-Correct predictions: 9350/10150
-The accuracy with "skin" = "black" is 0.9270540056309189
-Correct predictions: 3622/3907
-The accuracy with "skin" = "brown" is 0.9035840484603735
-Correct predictions: 5370/5943
-ACC: 0.903584 	Rare Case: attribute "skin", description "brown"
-ACC: 0.874525 	Rare Case: attribute "emotion", description "sad"
-ACC: 0.897177 	Hard case: attribute "emotion", description "surprised"
-ACC: 0.881799 	Rare Case: attribute "emotion", description "pensive"
-Start detect_failure_prediction_correlation
-
-Start Time: 2025-05-06 18:27:45
-End Time:   2025-05-06 18:55:22
-Duration:   00:27:37
+Epoch [1/20], Train Loss: 0.4240, Train Acc: 0.8355, Val Loss: 0.4390, Val Acc: 0.8507
+Epoch [2/20], Train Loss: 0.2981, Train Acc: 0.9431, Val Loss: 0.3748, Val Acc: 0.8907
+Epoch [3/20], Train Loss: 0.2731, Train Acc: 0.9602, Val Loss: 0.4819, Val Acc: 0.8546
+Epoch [4/20], Train Loss: 0.2535, Train Acc: 0.9720, Val Loss: 0.3478, Val Acc: 0.9100
+Epoch [5/20], Train Loss: 0.2480, Train Acc: 0.9744, Val Loss: 0.3790, Val Acc: 0.8958

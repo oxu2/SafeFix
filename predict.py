@@ -129,6 +129,11 @@ parser.add_argument('--workers', type=int, default=4,
 # Add random seed argument for reproducibility
 parser.add_argument('--seed', type=int, default=42,
                     help='Random seed for reproducibility (default: 42)')
+# Separate learning rates for CLIP head and backbone (for scratch mode)
+parser.add_argument('--lr_head', type=float, default=None,
+                    help='Learning rate for CLIP classification head (scratch mode)')
+parser.add_argument('--lr_backbone', type=float, default=None,
+                    help='Learning rate for CLIP backbone (scratch mode)')
 # Parse arguments
 args = parser.parse_args()
 
@@ -195,16 +200,19 @@ if args.model == 'vit' and args.lr == 1e-4:
     args.lr = 5e-5
     if verbose:
         print(f"Adjusted learning rate for ViT to {args.lr}")
-elif args.model == 'clip' and args.lr == 1e-4 and not args.pretrained: # Only lower LR if not pretrained
-    args.lr = 1e-5
-    if verbose:
-        print(f"Lowered lr for random-init CLIP to {args.lr}")
-
-# Adjust learning rate default for ImageNet subset if not manually overridden
-if args.dataset == 'imagenet' and args.lr == 1e-4:
-    args.lr = 1e-3
-    if verbose:
-        print(f"Adjusted learning rate for ImageNet dataset to {args.lr}")
+# Adjust LR for CLIP on ImageNet based on pretrained flag
+elif args.dataset == 'imagenet' and args.model == 'clip' and args.lr == 1e-4:
+    if args.pretrained:
+        args.lr = 1e-5
+        if verbose:
+            print(f"Set lr for pretrained ImageNet CLIP to {args.lr}")
+    else:
+        # Scratch CLIP: define separate head and backbone LRs
+        args.lr_head = 5e-3
+        args.lr_backbone = 5e-4
+        if verbose:
+            print(f"Scratch CLIP: head lr={args.lr_head}, backbone lr={args.lr_backbone}")
+# Leave non-CLIP/ImageNet default unchanged for other cases
 
 time_now = datetime.datetime.now().strftime("%m%d%H%M%S")   
 print("Current time:", time_now)
@@ -291,8 +299,25 @@ if args.dataset == 'imagenet':
     data_dir = Path("./imagenet_subset")
     feature_extractor = CLIPImageProcessor.from_pretrained("openai/clip-vit-base-patch32")
     if args.model == 'clip':
-        train_transform = lambda img: feature_extractor(images=img, return_tensors="pt")["pixel_values"].squeeze(0)
-        val_transform   = train_transform
+        if args.pretrained:
+            # Use CLIP’s standard preprocessing when fine-tuning
+            train_transform = lambda img: feature_extractor(images=img, return_tensors="pt")["pixel_values"].squeeze(0)
+            val_transform   = train_transform
+        else:
+            # Strong augmentation for scratch CLIP
+            train_transform = transforms.Compose([
+                transforms.RandomResizedCrop(224, scale=(0.2, 1.0)),
+                transforms.RandomHorizontalFlip(p=0.5),
+                transforms.ColorJitter(brightness=0.4, contrast=0.4, saturation=0.4),
+                transforms.ToTensor(),
+                transforms.Normalize(mean=[0.5,0.5,0.5], std=[0.5,0.5,0.5]),
+            ])
+            val_transform = transforms.Compose([
+                transforms.Resize(256),
+                transforms.CenterCrop(224),
+                transforms.ToTensor(),
+                transforms.Normalize(mean=[0.5,0.5,0.5], std=[0.5,0.5,0.5]),
+            ])
     elif args.model == 'blip':
         processor = BlipProcessor.from_pretrained(
             "Salesforce/blip-image-captioning-base",
@@ -388,8 +413,25 @@ else:
     # Initialize CLIP feature extractor
     feature_extractor = CLIPImageProcessor.from_pretrained("openai/clip-vit-base-patch32")
     if args.model == 'clip':
-        train_transform = lambda img: feature_extractor(images=img, return_tensors="pt")["pixel_values"].squeeze(0)
-        val_transform   = train_transform
+        if args.pretrained:
+            # Use CLIP’s standard preprocessing when fine-tuning
+            train_transform = lambda img: feature_extractor(images=img, return_tensors="pt")["pixel_values"].squeeze(0)
+            val_transform   = train_transform
+        else:
+            # Strong augmentation for scratch CLIP
+            train_transform = transforms.Compose([
+                transforms.RandomResizedCrop(224, scale=(0.2, 1.0)),
+                transforms.RandomHorizontalFlip(p=0.5),
+                transforms.ColorJitter(brightness=0.4, contrast=0.4, saturation=0.4),
+                transforms.ToTensor(),
+                transforms.Normalize(mean=[0.5,0.5,0.5], std=[0.5,0.5,0.5]),
+            ])
+            val_transform = transforms.Compose([
+                transforms.Resize(256),
+                transforms.CenterCrop(224),
+                transforms.ToTensor(),
+                transforms.Normalize(mean=[0.5,0.5,0.5], std=[0.5,0.5,0.5]),
+            ])
     elif args.model == 'blip':
         processor = BlipProcessor.from_pretrained(
             "Salesforce/blip-image-captioning-base",
@@ -614,7 +656,7 @@ else:
     valid_loader = DataLoader(valid_dataset, batch_size=args.batch_size, shuffle=False, num_workers=4)
     num_classes = 2
 
-#
+
 # Define model, loss, and optimizer
 if torch.cuda.is_available():
     torch.cuda.set_device(args.gpu)
@@ -693,18 +735,35 @@ else:
     criterion = SmoothBCEWithLogitsLoss(pos_weight=pos_weight, smoothing=0.1)
 
 # Optimize all model parameters for all architectures
-if args.model == 'clip':
+if args.model == 'clip' and args.dataset == 'imagenet' and not args.pretrained:
+    optimizer = torch.optim.AdamW([
+        {'params': model.classifier.parameters(), 'lr': args.lr_head},
+        {'params': model.clip.parameters(),       'lr': args.lr_backbone},
+    ], weight_decay=0.01)
+elif args.model == 'clip':
     optimizer = torch.optim.AdamW(model.parameters(), lr=args.lr, weight_decay=0.01)
 else:
     optimizer = optim.Adam(model.parameters(), lr=args.lr, weight_decay=1e-3)
 
-# Use OneCycleLR scheduler for CLIP, CosineAnnealingLR for ViT, StepLR for resnet
+# Use OneCycleLR scheduler for CLIP+ImageNet, CosineAnnealingLR for CelebA+CLIP/VIT, StepLR for resnet
 if args.model == 'clip':
-    # Use CosineAnnealingLR for CLIP, especially when training from scratch
-    scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
-        optimizer,
-        T_max=args.num_epochs # T_max should match the number of epochs
-    )
+    if args.dataset == 'imagenet':
+        # OneCycleLR for ImageNet+CLIP
+        total_steps = args.num_epochs * len(train_loader)
+        scheduler = torch.optim.lr_scheduler.OneCycleLR(
+            optimizer,
+            max_lr=args.lr,
+            total_steps=total_steps,
+            pct_start=0.05,
+            anneal_strategy='cos',
+            div_factor=25.0
+        )
+    else:
+        # Keep CosineAnnealingLR for CelebA+CLIP
+        scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
+            optimizer,
+            T_max=args.num_epochs
+        )
 elif args.model == 'vit':
     # Align T_max with the actual number of epochs for ViT
     scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=args.num_epochs)
@@ -812,7 +871,19 @@ def train_model(model, train_loader, valid_loader, criterion, optimizer, schedul
     train_acc_history = []
     val_loss_history = []
     val_acc_history = []
+    # For scratch CLIP on ImageNet, freeze backbone for first 5 epochs
+    if args.model == 'clip' and args.dataset == 'imagenet' and not args.pretrained:
+        for param in model.clip.parameters():
+            param.requires_grad = False
+        if verbose:
+            print("Froze CLIP backbone parameters for initial 5 epochs")
     for epoch in range(num_epochs):
+        # Unfreeze at epoch 5 for scratch CLIP on ImageNet
+        if epoch == 5 and args.model == 'clip' and args.dataset == 'imagenet' and not args.pretrained:
+            for param in model.clip.parameters():
+                param.requires_grad = True
+            if verbose:
+                print("Unfroze CLIP backbone parameters; now fine-tuning entire model")
         model.train()
         total_loss, total_correct = 0, 0
         
@@ -961,29 +1032,30 @@ train_loss_history, train_acc_history, val_loss_history, val_acc_history = train
 # Run the model diagnostics after predictions are saved
 # Add import for ImageFolder at the top if not present
 from torchvision.datasets import ImageFolder
-print("\nRunning model diagnostics on generated predictions...")
-# Define thresholds for diagnostics
-acc_diff_threshold = 0.01
-distribution_diff_threshold = 0.3
-dominant_label_in_failure_threshold = 0.8
-dominant_label_in_prediction_threshold = 0.8
-rare_label_threshold = 0.93
-dominant_error_threshold = 0.3
-error_cover_threshold = 0.9
-top_error = 3
 
-# Determine filename suffix for predictions
-suffix = ""
-if args.gen_only:
-    suffix += "_g"
-if args.no_controlnet:
-    suffix += "_h"
-# Load the predictions we just saved
-prediction_file = f"save/pred/predictions_{args.dataset}_{args.model}_{attributes}_{args.num_added_img}imgs{suffix}_{time_now}.npy"
-predictions = np.load(prediction_file)
-
-# Prepare labels and split for diagnostics
 if args.dataset == 'imagenet':
+    print("\nRunning model diagnostics on generated predictions...")
+    # Define thresholds for diagnostics
+    acc_diff_threshold = 0.01
+    distribution_diff_threshold = 0.3
+    dominant_label_in_failure_threshold = 0.8
+    dominant_label_in_prediction_threshold = 0.8
+    rare_label_threshold = 0.93
+    dominant_error_threshold = 0.3
+    error_cover_threshold = 0.9
+    top_error = 3
+
+    # Determine filename suffix for predictions
+    suffix = ""
+    if args.gen_only:
+        suffix += "_g"
+    if args.no_controlnet:
+        suffix += "_h"
+    # Load the predictions we just saved
+    prediction_file = f"save/pred/predictions_{args.dataset}_{args.model}_{attributes}_{args.num_added_img}imgs{suffix}_{time_now}.npy"
+    predictions = np.load(prediction_file)
+
+    # Prepare labels and split for diagnostics
     # Derive ground-truth labels from the ImageFolder ordering
     from pathlib import Path
     data_dir = Path("./imagenet_subset")
@@ -992,9 +1064,64 @@ if args.dataset == 'imagenet':
     # Build labels for train and validation splits
     labels_to_diagnose = np.concatenate([labels_all[train_idx], labels_all[val_idx]])
     split = [TRAIN] * len(train_idx) + [VALID] * len(val_idx)
-else:
-    # For CelebA: use combined_labels and include unlabeled
-    labels_to_diagnose = np.array(combined_labels)
+
+    # Instantiate ModelDiagnose and run diagnostics
+    MD = ModelDiagnose(
+        labels=labels_to_diagnose,
+        predictions=predictions,
+        split=split,
+        attribute_dict_path=args.attribute_file,
+        print=args.verbose,
+        dataset=args.dataset,
+        acc_diff_threshold=acc_diff_threshold,
+        distribution_diff_threshold=distribution_diff_threshold,
+        dominant_label_in_failure_threshold=dominant_label_in_failure_threshold,
+        dominant_label_in_prediction_threshold=dominant_label_in_prediction_threshold,
+        rare_label_threshold=rare_label_threshold,
+        dominant_error_threshold=dominant_error_threshold,
+        error_cover_threshold=error_cover_threshold,
+        top_error=top_error
+    )
+
+    # print("Start detect_failure_by_label\n")
+    # MD.detect_failure_by_label()
+    print("Start detect_prediction_correlation\n")
+    MD.detect_prediction_correlation()
+    # print("Start detect_failure_prediction_correlation\n")
+    # MD.detect_failure_prediction_correlation()
+
+    # Optionally save a report
+    if args.save_report:
+        report_dir = "save/reports"
+        os.makedirs(report_dir, exist_ok=True)
+        MD.generate_report(f"{report_dir}/{args.dataset}_{args.model}_{attributes}_{args.num_added_img}imgs{suffix}_{time_now}")
+        print(f"Diagnostic report saved to {report_dir}/{args.dataset}_{args.model}_{attributes}_{args.num_added_img}imgs{suffix}_{time_now}")
+
+elif args.dataset == 'celeba':
+    print("\nRunning model diagnostics on generated predictions...")
+
+    # Define the parameters for diagnostics
+    acc_diff_threshold = 0.01
+    distribution_diff_threshold = 0.3
+    dominant_label_in_failure_threshold = 0.8
+    dominant_label_in_prediction_threshold = 0.8
+    rare_label_threshold = 0.93
+    dominant_error_threshold = 0.3
+    error_cover_threshold = 0.9
+    top_error = 3
+
+    # Determine filename suffix based on gen_only flag and ablation flag
+    suffix = ""
+    if args.gen_only:
+        suffix += "_g"
+    if args.no_controlnet:
+        suffix += "_h"  # Add 'h' for ablation/no_controlnet
+
+    # Load the predictions we just saved
+    prediction_file = f"save/pred/predictions_{args.dataset}_{args.model}_{attributes}_{args.num_added_img}imgs{suffix}_{time_now}.npy"
+    predictions = np.load(prediction_file)
+
+    # Adjust split to match combined_labels (including modified images in the training split)
     split = (
         [TRAIN] * len(train_labels) +
         [VALID] * len(valid_labels) +
@@ -1002,36 +1129,88 @@ else:
         [UNLABELED] * len(unlabeled_labels)
     )
 
-# Instantiate ModelDiagnose and run diagnostics
-MD = ModelDiagnose(
-    labels=labels_to_diagnose,
-    predictions=predictions,
-    split=split,
-    attribute_dict_path=args.attribute_file,
-    print=args.verbose,
-    dataset=args.dataset,
-    acc_diff_threshold=acc_diff_threshold,
-    distribution_diff_threshold=distribution_diff_threshold,
-    dominant_label_in_failure_threshold=dominant_label_in_failure_threshold,
-    dominant_label_in_prediction_threshold=dominant_label_in_prediction_threshold,
-    rare_label_threshold=rare_label_threshold,
-    dominant_error_threshold=dominant_error_threshold,
-    error_cover_threshold=error_cover_threshold,
-    top_error=top_error
-)
+    if not args.gen_only:
+        MD = ModelDiagnose(labels=combined_labels,
+                           predictions=predictions,
+                           split=split,
+                           attribute_dict_path=args.attribute_file,
+                           print=args.verbose,
+                           dataset=args.dataset,
+                           acc_diff_threshold=acc_diff_threshold,
+                           distribution_diff_threshold=distribution_diff_threshold,
+                           dominant_label_in_failure_threshold=dominant_label_in_failure_threshold,
+                           dominant_label_in_prediction_threshold=dominant_label_in_prediction_threshold,
+                           rare_label_threshold=rare_label_threshold,
+                           dominant_error_threshold=dominant_error_threshold,
+                           error_cover_threshold=error_cover_threshold,
+                           top_error=top_error)
 
-# print("Start detect_failure_by_label\n")
-# MD.detect_failure_by_label()
-print("Start detect_prediction_correlation\n")
-MD.detect_prediction_correlation()
-# print("Start detect_failure_prediction_correlation\n")
-# MD.detect_failure_prediction_correlation()
+        print("Start detect_failure_by_label\n")
+        MD.detect_failure_by_label()
+        print("Start detect_prediction_correlation\n")
+        MD.detect_prediction_correlation()
+        print("Start detect_failure_prediction_correlation\n")
+        MD.detect_failure_prediction_correlation()
+        print("Model diagnostics complete.")
 
-# Optionally save a report
-if args.save_report:
-    report_dir = "save/reports"
-    os.makedirs(report_dir, exist_ok=True)
-    MD.generate_report(f"{report_dir}/{args.dataset}_{args.model}_{attributes}_{args.num_added_img}imgs{suffix}_{time_now}")
-    print(f"Diagnostic report saved to {report_dir}/{args.dataset}_{args.model}_{attributes}_{args.num_added_img}imgs{suffix}_{time_now}")
+        if args.save_report:
+            report_dir = "save/reports"
+            os.makedirs(report_dir, exist_ok=True)
+            MD.generate_report(f"{report_dir}/{args.dataset}_{args.model}_{attributes}_{args.num_added_img}imgs{suffix}_{time_now}")
+            print(f"Diagnostic report saved to {report_dir}/{args.dataset}_{args.model}_{attributes}_{args.num_added_img}imgs{suffix}_{time_now}")
+    else:
+        print("Skipping model diagnostics because gen_only=True")
+        if len(train_acc_history) > 0:
+            final_train_acc = train_acc_history[-1]
+            print("\n" + "="*60)
+            print(f"Final Epoch Train Accuracy (gen_only=True): {final_train_acc:.4f}")
+            print("="*60 + "\n")
+
+    # --- Accuracy Comparison Logic ---
+    if args.gen_only:
+        print("Skipping accuracy comparison due to gen_only flag being True")
+    else:
+        if compare_log_path:
+            print(f"\nComparing accuracy with log file: {compare_log_path}")
+            orig_entries, orig_overall = parse_log(compare_log_path)
+
+            if orig_entries is not None:
+                orig_map = {(e['attribute'], e['description']): e['accuracy'] for e in orig_entries}
+                current_overall = MD.valid_acc
+                if orig_overall is not None and current_overall is not None:
+                    if current_overall > orig_overall:
+                        overall_status = 'improved'
+                    elif current_overall < orig_overall:
+                        overall_status = 'declined'
+                    else:
+                        overall_status = 'same'
+                    print(f'Overall accuracy: {orig_overall:.6f} -> {current_overall:.6f}: {overall_status}')
+                elif current_overall is not None:
+                     print(f'Current overall accuracy: {current_overall:.6f} (Original overall accuracy not found in log)')
+                else:
+                     print(f'Original overall accuracy: {orig_overall:.6f} (Current overall accuracy not available)')
+
+                print("\nAttribute-specific accuracy comparison:")
+                current_compared_count = 0
+                for (attribute, description), orig_acc in orig_map.items():
+                    current_acc = None
+                    if attribute in MD.attributes and description in MD.attributes[attribute]['valid acc']:
+                        current_acc = MD.attributes[attribute]['valid acc'][description]
+                    if current_acc is None:
+                        continue
+                    if current_acc > orig_acc:
+                        status = 'improved'
+                    elif current_acc < orig_acc:
+                        status = 'declined'
+                    else:
+                        status = 'same'
+                    print(f'{attribute}, {description}, {orig_acc:.6f} -> {current_acc:.6f}: {status}')
+                    current_compared_count += 1
+
+                print(f"\nCompared {current_compared_count} attribute-specific accuracies.")
+            else:
+                print(f"Could not parse or find the comparison log file: {compare_log_path}")
+        else:
+            print("\nSkipping accuracy comparison: No comparison log file specified for the selected model or file not found.")
 
 print("Current time:", time_now)
