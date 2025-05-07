@@ -13,3 +13,35 @@ Epoch [9/30], Train Loss: 0.0095, Train Acc: 0.9975, Val Loss: 0.4526, Val Acc: 
 Epoch [10/30], Train Loss: 0.0053, Train Acc: 0.9986, Val Loss: 0.5050, Val Acc: 0.9258
 Epoch [11/30], Train Loss: 0.0068, Train Acc: 0.9986, Val Loss: 0.4666, Val Acc: 0.9346
 Epoch [12/30], Train Loss: 0.0010, Train Acc: 0.9998, Val Loss: 0.4373, Val Acc: 0.9342
+Epoch [13/30], Train Loss: 0.0018, Train Acc: 0.9996, Val Loss: 0.4585, Val Acc: 0.9365
+Epoch [14/30], Train Loss: 0.0007, Train Acc: 0.9998, Val Loss: 0.4568, Val Acc: 0.9373
+Epoch [15/30], Train Loss: 0.0005, Train Acc: 0.9998, Val Loss: 0.4659, Val Acc: 0.9396
+Epoch [16/30], Train Loss: 0.0004, Train Acc: 0.9999, Val Loss: 0.4809, Val Acc: 0.9404
+Epoch [17/30], Train Loss: 0.0004, Train Acc: 0.9999, Val Loss: 0.4776, Val Acc: 0.9404
+Epoch [18/30], Train Loss: 0.0005, Train Acc: 0.9998, Val Loss: 0.4786, Val Acc: 0.9404
+Epoch [19/30], Train Loss: 0.0004, Train Acc: 0.9999, Val Loss: 0.4861, Val Acc: 0.9388
+Epoch [20/30], Train Loss: 0.0004, Train Acc: 0.9999, Val Loss: 0.4821, Val Acc: 0.9408
+Epoch [21/30], Train Loss: 0.0004, Train Acc: 0.9998, Val Loss: 0.4863, Val Acc: 0.9412
+Epoch [22/30], Train Loss: 0.0003, Train Acc: 0.9999, Val Loss: 0.4881, Val Acc: 0.9404
+Epoch [23/30], Train Loss: 0.0003, Train Acc: 0.9998, Val Loss: 0.4891, Val Acc: 0.9404
+Epoch [24/30], Train Loss: 0.0003, Train Acc: 0.9999, Val Loss: 0.4904, Val Acc: 0.9400
+Epoch [25/30], Train Loss: 0.0002, Train Acc: 0.9999, Val Loss: 0.4904, Val Acc: 0.9404
+Epoch [26/30], Train Loss: 0.0002, Train Acc: 1.0000, Val Loss: 0.4914, Val Acc: 0.9400
+Epoch [27/30], Train Loss: 0.0003, Train Acc: 0.9998, Val Loss: 0.4917, Val Acc: 0.9400
+Epoch [28/30], Train Loss: 0.0004, Train Acc: 0.9998, Val Loss: 0.4917, Val Acc: 0.9400
+Epoch [29/30], Train Loss: 0.0003, Train Acc: 0.9999, Val Loss: 0.4919, Val Acc: 0.9400
+Epoch [30/30], Train Loss: 0.0002, Train Acc: 0.9999, Val Loss: 0.4919, Val Acc: 0.9400
+Generating and saving predictions...
+Combined predictions length: 13000
+
+Running model diagnostics on generated predictions...
+Model Validation ACC: 0.94
+Start detect_prediction_correlation
+
+ACC: 0.900000 	Rare Case: attribute "color", description "orange"
+ACC: 0.922222 	Rare Case: attribute "color", description "yellow"
+ACC: 0.913223 	Hard case: attribute "color", description "black"
+ACC: 0.917808 	Rare Case: attribute "background", description "sky"
+ACC: 0.929006 	Hard case: attribute "background", description "inside a house"
+ACC: 0.914634 	Rare Case: attribute "texture", description "fabric"
+Current time: 0507135648

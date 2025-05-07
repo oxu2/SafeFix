@@ -3,3 +3,4 @@ Current time: 0507135929
 Selected 1000 filenames for sampling
 Added 1000 generated yellowhair_brownskin images, before training set has 80000 images, now 81000
 Using vit model with random weights
+Epoch [1/15], Train Loss: 0.5369, Train Acc: 0.7356, Val Loss: 0.5029, Val Acc: 0.7777
