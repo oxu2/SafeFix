@@ -1,5 +1,5 @@
-start time: 2025-05-06 22:14:11
-Current time: 0506221413
+start time: 2025-05-07 10:14:23
+Current time: 0507101426
 Selected 5000 filenames for sampling
 Added 5000 generated yellowhair_brownskin images, before training set has 80000 images, now 85000
 Using vit model with random weights
@@ -19,43 +19,3 @@ Epoch [13/15], Train Loss: 0.3059, Train Acc: 0.9230, Val Loss: 0.5056, Val Acc:
 Epoch [14/15], Train Loss: 0.3024, Train Acc: 0.9264, Val Loss: 0.4830, Val Acc: 0.8396
 Epoch [15/15], Train Loss: 0.3003, Train Acc: 0.9278, Val Loss: 0.5018, Val Acc: 0.8297
 Generating and saving predictions...
-Combined predictions length: 185000 (should match combined_labels length: 185000)
-
-Running model diagnostics on generated predictions...
-Model Validation ACC: 0.83985
-Start detect_prediction_correlation
-
-ACC: 0.825983 	Hard case: attribute "beard", description "No"
-ACC: 0.828036 	Hard case: attribute "makeup", description "No"
-ACC: 0.828460 	Hard case: attribute "gender", description "female"
-The accuracy with "hair color" = "white" is 0.8483606557377049
-Correct predictions: 414/488
-The accuracy with "hair color" = "yellow" is 0.7837837837837838
-Correct predictions: 58/74
-ACC: 0.783784 	Rare Case: attribute "hair color", description "yellow"
-The accuracy with "hair color" = "blonde" is 0.8103151862464183
-Correct predictions: 4242/5235
-ACC: 0.810315 	Hard case: attribute "hair color", description "blonde"
-The accuracy with "hair color" = "black" is 0.8584150943396226
-Correct predictions: 5687/6625
-The accuracy with "hair color" = "gray" is 0.9041353383458647
-Correct predictions: 962/1064
-The accuracy with "hair color" = "brown" is 0.8331919226200577
-Correct predictions: 4910/5893
-The accuracy with "hair color" = "red" is 0.8438003220611916
-Correct predictions: 524/621
-The accuracy with "skin" = "white" is 0.8245320197044335
-Correct predictions: 8369/10150
-ACC: 0.824532 	Hard case: attribute "skin", description "white"
-The accuracy with "skin" = "black" is 0.8738162272843614
-Correct predictions: 3414/3907
-The accuracy with "skin" = "brown" is 0.8436816422682147
-Correct predictions: 5014/5943
-ACC: 0.797529 	Rare Case: attribute "emotion", description "sad"
-ACC: 0.826273 	Hard case: attribute "emotion", description "happy"
-ACC: 0.821429 	Rare Case: attribute "emotion", description "angry"
-ACC: 0.806485 	Rare Case: attribute "emotion", description "pensive"
-Current time: 0506221413
-Start Time: 2025-05-06 22:14:11
-End Time:   2025-05-07 02:09:56
-Duration:   03:55:45

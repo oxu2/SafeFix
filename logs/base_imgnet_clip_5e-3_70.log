@@ -22,3 +22,74 @@ Epoch [18/70], Train Loss: 2.0670, Train Acc: 0.2587, Val Loss: 1.9545, Val Acc:
 Epoch [19/70], Train Loss: 2.0543, Train Acc: 0.2684, Val Loss: 1.9328, Val Acc: 0.3208
 Epoch [20/70], Train Loss: 2.0425, Train Acc: 0.2643, Val Loss: 1.9296, Val Acc: 0.3342
 Epoch [21/70], Train Loss: 2.0338, Train Acc: 0.2724, Val Loss: 1.9214, Val Acc: 0.3250
+Epoch [22/70], Train Loss: 2.0169, Train Acc: 0.2837, Val Loss: 1.9037, Val Acc: 0.3292
+Epoch [23/70], Train Loss: 2.0115, Train Acc: 0.2853, Val Loss: 1.8801, Val Acc: 0.3569
+Epoch [24/70], Train Loss: 1.9912, Train Acc: 0.2938, Val Loss: 1.8729, Val Acc: 0.3677
+Epoch [25/70], Train Loss: 1.9821, Train Acc: 0.2912, Val Loss: 1.8616, Val Acc: 0.3596
+Epoch [26/70], Train Loss: 1.9773, Train Acc: 0.2992, Val Loss: 1.8574, Val Acc: 0.3631
+Epoch [27/70], Train Loss: 1.9716, Train Acc: 0.3041, Val Loss: 1.8355, Val Acc: 0.3708
+Epoch [28/70], Train Loss: 1.9527, Train Acc: 0.3108, Val Loss: 1.8161, Val Acc: 0.3704
+Epoch [29/70], Train Loss: 1.9357, Train Acc: 0.3164, Val Loss: 1.8048, Val Acc: 0.3808
+Epoch [30/70], Train Loss: 1.9273, Train Acc: 0.3175, Val Loss: 1.7997, Val Acc: 0.3950
+Epoch [31/70], Train Loss: 1.9284, Train Acc: 0.3232, Val Loss: 1.7880, Val Acc: 0.3912
+Epoch [32/70], Train Loss: 1.9164, Train Acc: 0.3290, Val Loss: 1.7803, Val Acc: 0.4031
+Epoch [33/70], Train Loss: 1.9090, Train Acc: 0.3316, Val Loss: 1.7671, Val Acc: 0.4004
+Epoch [34/70], Train Loss: 1.8967, Train Acc: 0.3355, Val Loss: 1.7529, Val Acc: 0.4065
+Epoch [35/70], Train Loss: 1.8865, Train Acc: 0.3400, Val Loss: 1.7303, Val Acc: 0.4192
+Epoch [36/70], Train Loss: 1.8747, Train Acc: 0.3487, Val Loss: 1.7236, Val Acc: 0.4131
+Epoch [37/70], Train Loss: 1.8616, Train Acc: 0.3516, Val Loss: 1.7229, Val Acc: 0.4169
+Epoch [38/70], Train Loss: 1.8503, Train Acc: 0.3519, Val Loss: 1.7163, Val Acc: 0.4254
+Epoch [39/70], Train Loss: 1.8452, Train Acc: 0.3524, Val Loss: 1.7143, Val Acc: 0.4173
+Epoch [40/70], Train Loss: 1.8369, Train Acc: 0.3645, Val Loss: 1.7089, Val Acc: 0.4200
+Epoch [41/70], Train Loss: 1.8380, Train Acc: 0.3569, Val Loss: 1.6801, Val Acc: 0.4304
+Epoch [42/70], Train Loss: 1.8202, Train Acc: 0.3715, Val Loss: 1.6769, Val Acc: 0.4285
+Epoch [43/70], Train Loss: 1.8121, Train Acc: 0.3652, Val Loss: 1.6617, Val Acc: 0.4404
+Epoch [44/70], Train Loss: 1.7877, Train Acc: 0.3811, Val Loss: 1.6660, Val Acc: 0.4335
+Epoch [45/70], Train Loss: 1.7919, Train Acc: 0.3744, Val Loss: 1.6623, Val Acc: 0.4392
+Epoch [46/70], Train Loss: 1.7917, Train Acc: 0.3789, Val Loss: 1.6513, Val Acc: 0.4481
+Epoch [47/70], Train Loss: 1.7844, Train Acc: 0.3809, Val Loss: 1.6334, Val Acc: 0.4427
+Epoch [48/70], Train Loss: 1.7537, Train Acc: 0.3939, Val Loss: 1.6203, Val Acc: 0.4642
+Epoch [49/70], Train Loss: 1.7548, Train Acc: 0.3935, Val Loss: 1.6484, Val Acc: 0.4435
+Epoch [50/70], Train Loss: 1.7585, Train Acc: 0.3926, Val Loss: 1.6070, Val Acc: 0.4612
+Epoch [51/70], Train Loss: 1.7464, Train Acc: 0.3982, Val Loss: 1.6076, Val Acc: 0.4631
+Epoch [52/70], Train Loss: 1.7329, Train Acc: 0.4127, Val Loss: 1.6034, Val Acc: 0.4662
+Epoch [53/70], Train Loss: 1.7332, Train Acc: 0.4069, Val Loss: 1.6191, Val Acc: 0.4585
+Epoch [54/70], Train Loss: 1.7224, Train Acc: 0.4053, Val Loss: 1.6129, Val Acc: 0.4431
+Epoch [55/70], Train Loss: 1.6965, Train Acc: 0.4182, Val Loss: 1.5947, Val Acc: 0.4646
+Epoch [56/70], Train Loss: 1.7262, Train Acc: 0.4072, Val Loss: 1.5718, Val Acc: 0.4708
+Epoch [57/70], Train Loss: 1.6885, Train Acc: 0.4254, Val Loss: 1.5943, Val Acc: 0.4615
+Epoch [58/70], Train Loss: 1.6833, Train Acc: 0.4232, Val Loss: 1.5574, Val Acc: 0.4754
+Epoch [59/70], Train Loss: 1.6689, Train Acc: 0.4258, Val Loss: 1.5595, Val Acc: 0.4738
+Epoch [60/70], Train Loss: 1.6600, Train Acc: 0.4296, Val Loss: 1.5323, Val Acc: 0.4812
+Epoch [61/70], Train Loss: 1.6656, Train Acc: 0.4290, Val Loss: 1.5282, Val Acc: 0.4962
+Epoch [62/70], Train Loss: 1.6704, Train Acc: 0.4300, Val Loss: 1.5197, Val Acc: 0.4923
+Epoch [63/70], Train Loss: 1.6501, Train Acc: 0.4358, Val Loss: 1.5381, Val Acc: 0.4854
+Epoch [64/70], Train Loss: 1.6551, Train Acc: 0.4349, Val Loss: 1.5058, Val Acc: 0.4912
+Epoch [65/70], Train Loss: 1.6541, Train Acc: 0.4286, Val Loss: 1.5005, Val Acc: 0.4958
+Epoch [66/70], Train Loss: 1.6421, Train Acc: 0.4392, Val Loss: 1.5226, Val Acc: 0.4808
+Epoch [67/70], Train Loss: 1.6319, Train Acc: 0.4431, Val Loss: 1.5424, Val Acc: 0.4796
+Epoch [68/70], Train Loss: 1.6312, Train Acc: 0.4399, Val Loss: 1.5145, Val Acc: 0.4923
+Epoch [69/70], Train Loss: 1.6370, Train Acc: 0.4412, Val Loss: 1.5118, Val Acc: 0.4915
+Epoch [70/70], Train Loss: 1.6202, Train Acc: 0.4473, Val Loss: 1.4894, Val Acc: 0.5046
+Generating and saving predictions...
+Combined predictions length: 13000
+
+Running model diagnostics on generated predictions...
+Model Validation ACC: 0.5046153846153847
+Start detect_prediction_correlation
+
+ACC: 0.480620 	Rare Case: attribute "color", description "green"
+ACC: 0.485437 	Rare Case: attribute "color", description "pink"
+ACC: 0.485294 	Rare Case: attribute "color", description "brown"
+ACC: 0.457627 	Rare Case: attribute "color", description "gray"
+ACC: 0.368421 	Rare Case: attribute "color", description "purple"
+ACC: 0.479339 	Hard case: attribute "color", description "black"
+ACC: 0.493151 	Rare Case: attribute "background", description "sky"
+ACC: 0.486815 	Hard case: attribute "background", description "inside a house"
+ACC: 0.333333 	Rare Case: attribute "background", description "bridge"
+ACC: 0.482517 	Rare Case: attribute "background", description "house"
+ACC: 0.445946 	Rare Case: attribute "background", description "street"
+ACC: 0.450000 	Rare Case: attribute "background", description "wild"
+ACC: 0.411765 	Rare Case: attribute "texture", description "metallic"
+ACC: 0.480841 	Hard case: attribute "texture", description "wooden"
+Current time: 0507062726

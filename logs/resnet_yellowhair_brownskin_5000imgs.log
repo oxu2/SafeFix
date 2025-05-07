@@ -1,67 +1,89 @@
-start time: 2025-05-06 18:55:22
-Current time: 0506185525
+start time: 2025-05-07 07:01:48
+Current time: 0507070151
 Selected 5000 filenames for sampling
 Added 5000 generated yellowhair_brownskin images, before training set has 80000 images, now 85000
 Using resnet model with random weights
-Epoch [1/20], Train Loss: 0.4281, Train Acc: 0.8360, Val Loss: 0.3814, Val Acc: 0.8823
-Epoch [2/20], Train Loss: 0.3046, Train Acc: 0.9392, Val Loss: 0.3742, Val Acc: 0.8718
-Epoch [3/20], Train Loss: 0.2779, Train Acc: 0.9584, Val Loss: 0.4135, Val Acc: 0.8839
-Epoch [4/20], Train Loss: 0.2607, Train Acc: 0.9679, Val Loss: 0.3324, Val Acc: 0.9113
-Epoch [5/20], Train Loss: 0.2546, Train Acc: 0.9719, Val Loss: 0.3367, Val Acc: 0.8988
-Epoch [6/20], Train Loss: 0.2498, Train Acc: 0.9743, Val Loss: 0.3323, Val Acc: 0.9126
-Epoch [7/20], Train Loss: 0.2428, Train Acc: 0.9780, Val Loss: 0.4212, Val Acc: 0.8990
-Epoch [8/20], Train Loss: 0.2414, Train Acc: 0.9786, Val Loss: 0.3272, Val Acc: 0.9202
-Epoch [9/20], Train Loss: 0.2396, Train Acc: 0.9799, Val Loss: 0.3574, Val Acc: 0.9096
-Epoch [10/20], Train Loss: 0.2351, Train Acc: 0.9820, Val Loss: 0.3624, Val Acc: 0.9079
-Epoch [11/20], Train Loss: 0.2350, Train Acc: 0.9822, Val Loss: 0.3522, Val Acc: 0.9112
-Epoch [12/20], Train Loss: 0.2347, Train Acc: 0.9827, Val Loss: 0.3707, Val Acc: 0.9062
-Epoch [13/20], Train Loss: 0.2319, Train Acc: 0.9837, Val Loss: 0.3422, Val Acc: 0.9150
-Epoch [14/20], Train Loss: 0.2315, Train Acc: 0.9840, Val Loss: 0.3390, Val Acc: 0.9151
-Epoch [15/20], Train Loss: 0.2316, Train Acc: 0.9842, Val Loss: 0.3466, Val Acc: 0.9133
-Epoch [16/20], Train Loss: 0.2299, Train Acc: 0.9851, Val Loss: 0.3664, Val Acc: 0.9086
-Epoch [17/20], Train Loss: 0.2298, Train Acc: 0.9849, Val Loss: 0.3591, Val Acc: 0.9106
-Epoch [18/20], Train Loss: 0.2294, Train Acc: 0.9856, Val Loss: 0.3471, Val Acc: 0.9127
-Epoch [19/20], Train Loss: 0.2286, Train Acc: 0.9858, Val Loss: 0.3522, Val Acc: 0.9116
-Epoch [20/20], Train Loss: 0.2292, Train Acc: 0.9856, Val Loss: 0.3594, Val Acc: 0.9106
+Epoch [1/20], Train Loss: 0.4281, Train Acc: 0.8360, Val Loss: 0.4231, Val Acc: 0.8641
+Epoch [2/20], Train Loss: 0.3046, Train Acc: 0.9392, Val Loss: 0.3678, Val Acc: 0.8795
+Epoch [3/20], Train Loss: 0.2779, Train Acc: 0.9584, Val Loss: 0.4329, Val Acc: 0.8700
+Epoch [4/20], Train Loss: 0.2607, Train Acc: 0.9679, Val Loss: 0.3353, Val Acc: 0.9084
+Epoch [5/20], Train Loss: 0.2546, Train Acc: 0.9719, Val Loss: 0.3474, Val Acc: 0.8894
+Epoch [6/20], Train Loss: 0.2498, Train Acc: 0.9743, Val Loss: 0.3343, Val Acc: 0.9102
+Epoch [7/20], Train Loss: 0.2428, Train Acc: 0.9780, Val Loss: 0.4218, Val Acc: 0.8933
+Epoch [8/20], Train Loss: 0.2414, Train Acc: 0.9786, Val Loss: 0.3294, Val Acc: 0.9143
+Epoch [9/20], Train Loss: 0.2396, Train Acc: 0.9799, Val Loss: 0.3598, Val Acc: 0.9052
+Epoch [10/20], Train Loss: 0.2351, Train Acc: 0.9820, Val Loss: 0.3611, Val Acc: 0.9049
+Epoch [11/20], Train Loss: 0.2350, Train Acc: 0.9822, Val Loss: 0.3477, Val Acc: 0.9094
+Epoch [12/20], Train Loss: 0.2347, Train Acc: 0.9827, Val Loss: 0.3612, Val Acc: 0.9065
+Epoch [13/20], Train Loss: 0.2319, Train Acc: 0.9837, Val Loss: 0.3334, Val Acc: 0.9143
+Epoch [14/20], Train Loss: 0.2315, Train Acc: 0.9840, Val Loss: 0.3344, Val Acc: 0.9139
+Epoch [15/20], Train Loss: 0.2316, Train Acc: 0.9842, Val Loss: 0.3486, Val Acc: 0.9093
+Epoch [16/20], Train Loss: 0.2299, Train Acc: 0.9851, Val Loss: 0.3583, Val Acc: 0.9081
+Epoch [17/20], Train Loss: 0.2298, Train Acc: 0.9849, Val Loss: 0.3590, Val Acc: 0.9084
+Epoch [18/20], Train Loss: 0.2294, Train Acc: 0.9856, Val Loss: 0.3404, Val Acc: 0.9117
+Epoch [19/20], Train Loss: 0.2286, Train Acc: 0.9858, Val Loss: 0.3458, Val Acc: 0.9110
+Epoch [20/20], Train Loss: 0.2292, Train Acc: 0.9856, Val Loss: 0.3537, Val Acc: 0.9099
 Generating and saving predictions...
 Combined predictions length: 185000 (should match combined_labels length: 185000)
-Current time: 0506185525
 
 Running model diagnostics on generated predictions...
-Model Validation ACC: 0.91745
+Model Validation ACC: 0.91435
 Start detect_failure_by_label
 
 Start detect_prediction_correlation
 
-ACC: 0.904844 	Hard case: attribute "beard", description "No"
-ACC: 0.865607 	Hard case: attribute "gender", description "female"
-The accuracy with "hair color" = "white" is 0.9405737704918032
-Correct predictions: 459/488
-The accuracy with "hair color" = "yellow" is 0.9459459459459459
-Correct predictions: 70/74
-The accuracy with "hair color" = "blonde" is 0.8907354345749762
-Correct predictions: 4663/5235
-ACC: 0.890735 	Hard case: attribute "hair color", description "blonde"
-The accuracy with "hair color" = "black" is 0.9328301886792453
-Correct predictions: 6180/6625
-The accuracy with "hair color" = "gray" is 0.9840225563909775
-Correct predictions: 1047/1064
-The accuracy with "hair color" = "brown" is 0.9104021720685559
-Correct predictions: 5365/5893
-The accuracy with "hair color" = "red" is 0.9098228663446055
-Correct predictions: 565/621
-The accuracy with "skin" = "white" is 0.9171428571428571
-Correct predictions: 9309/10150
-The accuracy with "skin" = "black" is 0.9383158433580753
-Correct predictions: 3666/3907
-The accuracy with "skin" = "brown" is 0.9042571092041056
-Correct predictions: 5374/5943
-ACC: 0.904257 	Rare Case: attribute "skin", description "brown"
-ACC: 0.870722 	Rare Case: attribute "emotion", description "sad"
-ACC: 0.901812 	Hard case: attribute "emotion", description "surprised"
-ACC: 0.880753 	Rare Case: attribute "emotion", description "pensive"
+ACC: 0.900658 	Hard case: attribute "beard", description "No"
+ACC: 0.862122 	Hard case: attribute "gender", description "female"
+The accuracy with "hair color" = "white" is 0.9344262295081968
+Correct predictions: 456/488
+The accuracy with "hair color" = "yellow" is 0.972972972972973
+Correct predictions: 72/74
+The accuracy with "hair color" = "blonde" is 0.8897803247373448
+Correct predictions: 4658/5235
+ACC: 0.889780 	Hard case: attribute "hair color", description "blonde"
+The accuracy with "hair color" = "black" is 0.9257358490566038
+Correct predictions: 6133/6625
+The accuracy with "hair color" = "gray" is 0.9783834586466166
+Correct predictions: 1041/1064
+The accuracy with "hair color" = "brown" is 0.9093840149329713
+Correct predictions: 5359/5893
+The accuracy with "hair color" = "red" is 0.9146537842190016
+Correct predictions: 568/621
+The accuracy with "skin" = "white" is 0.9158620689655173
+Correct predictions: 9296/10150
+The accuracy with "skin" = "black" is 0.9293575633478373
+Correct predictions: 3631/3907
+The accuracy with "skin" = "brown" is 0.9019013966010433
+Correct predictions: 5360/5943
+ACC: 0.901901 	Rare Case: attribute "skin", description "brown"
+ACC: 0.871673 	Rare Case: attribute "emotion", description "sad"
+ACC: 0.893145 	Rare Case: attribute "emotion", description "calm"
+ACC: 0.901391 	Hard case: attribute "emotion", description "surprised"
+ACC: 0.864017 	Rare Case: attribute "emotion", description "pensive"
 Start detect_failure_prediction_correlation
 
-Start Time: 2025-05-06 18:55:22
-End Time:   2025-05-06 19:24:19
-Duration:   00:28:57
+Model diagnostics complete.
+
+Comparing accuracy with log file: logs/compare/stat_origin_resnet_compare.log
+Overall accuracy: 0.906750 -> 0.914350: improved
+
+Attribute-specific accuracy comparison:
+beard, No, 0.893557 -> 0.900658: improved
+gender, female, 0.849626 -> 0.862122: improved
+hair color, white, 0.930328 -> 0.934426: improved
+hair color, yellow, 0.918919 -> 0.972973: improved
+hair color, blonde, 0.880229 -> 0.889780: improved
+hair color, black, 0.921358 -> 0.925736: improved
+hair color, gray, 0.977444 -> 0.978383: improved
+hair color, brown, 0.899712 -> 0.909384: improved
+hair color, red, 0.900161 -> 0.914654: improved
+skin, brown, 0.889450 -> 0.901901: improved
+emotion, sad, 0.851711 -> 0.871673: improved
+emotion, surprised, 0.882006 -> 0.901391: improved
+emotion, pensive, 0.859833 -> 0.864017: improved
+
+Compared 13 attribute-specific accuracies.
+Current time: 0507070151
+Start Time: 2025-05-07 07:01:48
+End Time:   2025-05-07 07:29:17
+Duration:   00:27:29

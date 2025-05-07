@@ -735,40 +735,29 @@ else:
     criterion = SmoothBCEWithLogitsLoss(pos_weight=pos_weight, smoothing=0.1)
 
 # Optimize all model parameters for all architectures
-if args.model == 'clip' and args.dataset == 'imagenet' and not args.pretrained:
-    optimizer = torch.optim.AdamW([
-        {'params': model.classifier.parameters(), 'lr': args.lr_head},
-        {'params': model.clip.parameters(),       'lr': args.lr_backbone},
-    ], weight_decay=0.01)
-elif args.model == 'clip':
+if args.model == 'clip':
     optimizer = torch.optim.AdamW(model.parameters(), lr=args.lr, weight_decay=0.01)
 else:
     optimizer = optim.Adam(model.parameters(), lr=args.lr, weight_decay=1e-3)
 
-# Use OneCycleLR scheduler for CLIP+ImageNet, CosineAnnealingLR for CelebA+CLIP/VIT, StepLR for resnet
+# Use CosineAnnealingLR for both CLIP and ViT, StepLR for ResNet
 if args.model == 'clip':
-    if args.dataset == 'imagenet':
-        # OneCycleLR for ImageNet+CLIP
-        total_steps = args.num_epochs * len(train_loader)
-        scheduler = torch.optim.lr_scheduler.OneCycleLR(
-            optimizer,
-            max_lr=args.lr,
-            total_steps=total_steps,
-            pct_start=0.05,
-            anneal_strategy='cos',
-            div_factor=25.0
-        )
-    else:
-        # Keep CosineAnnealingLR for CelebA+CLIP
-        scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
-            optimizer,
-            T_max=args.num_epochs
-        )
+    scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
+        optimizer,
+        T_max=args.num_epochs
+    )
 elif args.model == 'vit':
-    # Align T_max with the actual number of epochs for ViT
-    scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=args.num_epochs)
-else:  # resnet
-    scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=3, gamma=0.5)
+    scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
+        optimizer,
+        T_max=args.num_epochs
+    )
+# else for 'resnet'
+elif args.model == 'resnet':
+    scheduler = torch.optim.lr_scheduler.StepLR(
+        optimizer,
+        step_size=3,
+        gamma=0.5
+    )
 
 def evaluate(model, data_loader, save_preds=False):
     model.eval()
@@ -871,19 +860,7 @@ def train_model(model, train_loader, valid_loader, criterion, optimizer, schedul
     train_acc_history = []
     val_loss_history = []
     val_acc_history = []
-    # For scratch CLIP on ImageNet, freeze backbone for first 5 epochs
-    if args.model == 'clip' and args.dataset == 'imagenet' and not args.pretrained:
-        for param in model.clip.parameters():
-            param.requires_grad = False
-        if verbose:
-            print("Froze CLIP backbone parameters for initial 5 epochs")
     for epoch in range(num_epochs):
-        # Unfreeze at epoch 5 for scratch CLIP on ImageNet
-        if epoch == 5 and args.model == 'clip' and args.dataset == 'imagenet' and not args.pretrained:
-            for param in model.clip.parameters():
-                param.requires_grad = True
-            if verbose:
-                print("Unfroze CLIP backbone parameters; now fine-tuning entire model")
         model.train()
         total_loss, total_correct = 0, 0
         

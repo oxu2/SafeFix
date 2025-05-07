@@ -1,3 +1,11 @@
+nohup ./batch.sh -m clip -a yellowhair_brownskin -d 2 \
+  > logs/batch/batch_clip_yellowhair_brownskin.log 2>&1 < /dev/null &
+nohup ./batch.sh -m vit -a yellowhair_brownskin -d 0 \
+  > logs/batch/batch_vit_yellowhair_brownskin.log 2>&1 < /dev/null &
+
+
+CUDA_VISIBLE_DEVICES=0 nohup  python -u predict.py --dataset imagenet --model clip --num_added_img 0  --save_pred_model last --num_epochs 150 --plot 1  > logs/base_imgnet_clip_5e-3_150.log 2>&1 < /dev/null &
+
 CUDA_VISIBLE_DEVICES=3 nohup  python -u predict.py --dataset imagenet --model resnet --num_added_img 0  --save_pred_model last --num_epochs 50 --plot 1  > logs/base_imgnet_resnet_50.log 2>&1 < /dev/null &
 
 CUDA_VISIBLE_DEVICES=0 nohup  python -u predict.py --dataset imagenet --model clip --num_added_img 0  --save_pred_model last --num_epochs 70 --plot 1  > logs/base_imgnet_clip_5e-3_70.log 2>&1 < /dev/null &

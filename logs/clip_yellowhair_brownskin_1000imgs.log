@@ -1,7 +1,6 @@
-start time: 2025-05-07 06:28:39
-Current time: 0507062841
+start time: 2025-05-07 13:59:26
+Current time: 0507135929
 Selected 1000 filenames for sampling
 Added 1000 generated yellowhair_brownskin images, before training set has 80000 images, now 81000
 Using clip model with random weights
 Epoch [1/20], Train Loss: 0.6358, Train Acc: 0.6249, Val Loss: 0.5549, Val Acc: 0.7029
-Epoch [2/20], Train Loss: 0.5600, Train Acc: 0.7078, Val Loss: 0.5390, Val Acc: 0.7382
