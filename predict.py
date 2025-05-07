@@ -740,8 +740,14 @@ if args.model == 'clip':
 else:
     optimizer = optim.Adam(model.parameters(), lr=args.lr, weight_decay=1e-3)
 
-# Use CosineAnnealingLR for both CLIP and ViT, StepLR for ResNet
-if args.model == 'clip':
+# Use StepLR for pretrained CLIP/ViT on ImageNet, otherwise CosineAnnealingLR for CLIP/ViT, StepLR for ResNet
+if args.dataset == 'imagenet' and args.pretrained and args.model in ('clip', 'vit'):
+    scheduler = torch.optim.lr_scheduler.StepLR(
+        optimizer,
+        step_size=10,
+        gamma=0.5
+    )
+elif args.model == 'clip':
     scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
         optimizer,
         T_max=args.num_epochs
@@ -751,7 +757,6 @@ elif args.model == 'vit':
         optimizer,
         T_max=args.num_epochs
     )
-# else for 'resnet'
 elif args.model == 'resnet':
     scheduler = torch.optim.lr_scheduler.StepLR(
         optimizer,
@@ -860,7 +865,28 @@ def train_model(model, train_loader, valid_loader, criterion, optimizer, schedul
     train_acc_history = []
     val_loss_history = []
     val_acc_history = []
+
+    # For pretrained ViT and CLIP on ImageNet, freeze backbone for initial epochs
+    freeze_epochs = 10
+    if args.dataset == 'imagenet' and args.pretrained and args.model in ('vit', 'clip'):
+        for name, param in model.named_parameters():
+            # keep only classification head trainable
+            if args.model == 'vit':
+                if "head" not in name:
+                    param.requires_grad = False
+            else:  # clip
+                if "classifier" not in name:
+                    param.requires_grad = False
+        if verbose:
+            print(f"Froze {args.model} backbone parameters for initial {freeze_epochs} epochs")
+
     for epoch in range(num_epochs):
+        # Unfreeze backbone after initial freeze_epochs for pretrained ImageNet CLIP/ViT
+        if epoch == freeze_epochs and args.dataset == 'imagenet' and args.pretrained and args.model in ('vit', 'clip'):
+            for param in model.parameters():
+                param.requires_grad = True
+            if verbose:
+                print(f"Unfroze all {args.model} backbone parameters; now fine-tuning entire model")
         model.train()
         total_loss, total_correct = 0, 0
         

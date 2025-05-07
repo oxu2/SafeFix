@@ -10,7 +10,7 @@ parser.add_argument(
     action="store_true",
     help="Enable attribute selection step (default: False)"
 )
-parser.add_argument('--text_labels', action='store_true', default=False,
+parser.add_argument('--text_labels', action='store_true', default=True,
                     help='If set, also save text labels to label10_txt.npy')
 
 args = parser.parse_args()

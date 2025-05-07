@@ -1,0 +1,13 @@
+Current time: 0507140117
+Loaded pre-split ImageNet10 indices: 10400 train, 2600 validation.
+Using vit model with pretrained weights
+Epoch [1/30], Train Loss: 0.2863, Train Acc: 0.9140, Val Loss: 0.2247, Val Acc: 0.9277
+Epoch [2/30], Train Loss: 0.1831, Train Acc: 0.9434, Val Loss: 0.2037, Val Acc: 0.9385
+Epoch [3/30], Train Loss: 0.1990, Train Acc: 0.9356, Val Loss: 0.3303, Val Acc: 0.9065
+Epoch [4/30], Train Loss: 0.2317, Train Acc: 0.9251, Val Loss: 0.3755, Val Acc: 0.8927
+Epoch [5/30], Train Loss: 0.2746, Train Acc: 0.9091, Val Loss: 0.3705, Val Acc: 0.8846
+Epoch [6/30], Train Loss: 0.2893, Train Acc: 0.9015, Val Loss: 0.4808, Val Acc: 0.8542
+Epoch [7/30], Train Loss: 0.3134, Train Acc: 0.8977, Val Loss: 0.4276, Val Acc: 0.8654
+Epoch [8/30], Train Loss: 0.3337, Train Acc: 0.8877, Val Loss: 0.5947, Val Acc: 0.8092
+Epoch [9/30], Train Loss: 0.3363, Train Acc: 0.8886, Val Loss: 0.6554, Val Acc: 0.8085
+Epoch [10/30], Train Loss: 0.3460, Train Acc: 0.8845, Val Loss: 0.5299, Val Acc: 0.8373
