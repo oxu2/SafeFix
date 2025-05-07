@@ -1,6 +1,9 @@
 CUDA_VISIBLE_DEVICES=1 python predict.py --dataset imagenet --model resnet --num_added_img 0  --save_pred_model last --num_epochs 40
 
 
+CUDA_VISIBLE_DEVICES=0 nohup  python -u predict.py --dataset imagenet --model vit --num_added_img 0  --save_pred_model last --num_epochs 30 --plot 1  > logs/base_imgnet_vit.log 2>&1 < /dev/null &
+CUDA_VISIBLE_DEVICES=1 nohup  python -u predict.py --dataset imagenet --model resnet --num_added_img 0  --save_pred_model last --num_epochs 30 --plot 1  > logs/base_imgnet_resnet.log 2>&1 < /dev/null &
+CUDA_VISIBLE_DEVICES=0 nohup  python -u predict.py --dataset imagenet --model clip --num_added_img 0  --save_pred_model last --num_epochs 30 --plot 1  > logs/base_imgnet_clip.log 2>&1 < /dev/null &
 
 
 CUDA_VISIBLE_DEVICES=1 nohup python -u filter.py \

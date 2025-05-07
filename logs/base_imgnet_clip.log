@@ -1,4 +1,4 @@
-Current time: 0506185251
+Current time: 0506211612
 Loaded pre-split ImageNet10 indices: 10400 train, 2600 validation.
 Using clip model with random weights
 Epoch [1/30], Train Loss: 2.4057, Train Acc: 0.1426, Val Loss: 2.2211, Val Acc: 0.1958
@@ -33,25 +33,20 @@ Epoch [29/30], Train Loss: 0.9248, Train Acc: 0.6862, Val Loss: 1.9175, Val Acc:
 Epoch [30/30], Train Loss: 0.9134, Train Acc: 0.6887, Val Loss: 1.9188, Val Acc: 0.4304
 Generating and saving predictions...
 Combined predictions length: 13000
-Current time: 0506185251
 
 Running model diagnostics on generated predictions...
-Model Validation ACC: 0.09153846153846157
-Start detect_failure_by_label
-
+Model Validation ACC: 0.43038461538461537
 Start detect_prediction_correlation
 
-ACC: 0.050847 	Rare Case: attribute "color", description "gray"
-ACC: 0.077778 	Rare Case: attribute "color", description "yellow"
-ACC: 0.067885 	Hard case: attribute "color", description "multicolored"
-ACC: 0.000000 	Rare Case: attribute "color", description "purple"
-ACC: 0.054795 	Rare Case: attribute "background", description "sky"
-ACC: 0.045455 	Rare Case: attribute "background", description "rocks"
-ACC: 0.000000 	Rare Case: attribute "background", description "bridge"
-ACC: 0.069930 	Rare Case: attribute "background", description "house"
-ACC: 0.000000 	Rare Case: attribute "background", description "wild"
-ACC: 0.078049 	Rare Case: attribute "background", description "snow"
-ACC: 0.063433 	Rare Case: attribute "texture", description "plastic"
-ACC: 0.068548 	Hard case: attribute "texture", description "ceramic"
-Start detect_failure_prediction_correlation
-
+ACC: 0.409091 	Rare Case: attribute "color", description "silver"
+ACC: 0.400000 	Rare Case: attribute "color", description "orange"
+ACC: 0.322222 	Rare Case: attribute "color", description "yellow"
+ACC: 0.384298 	Hard case: attribute "color", description "black"
+ACC: 0.369863 	Rare Case: attribute "background", description "sky"
+ACC: 0.404580 	Hard case: attribute "background", description "trees"
+ACC: 0.365854 	Rare Case: attribute "background", description "buildings"
+ACC: 0.333333 	Rare Case: attribute "background", description "bridge"
+ACC: 0.398601 	Rare Case: attribute "background", description "house"
+ACC: 0.419036 	Hard case: attribute "texture", description "wooden"
+ACC: 0.403226 	Hard case: attribute "texture", description "ceramic"
+Current time: 0506211612
