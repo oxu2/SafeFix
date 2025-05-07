@@ -1,8 +1,13 @@
-
+nohup ./batch.sh -m clip -a yellowhair_brownskin -d 0 \
+  > logs/batch/batch_clip_yellowhair_brownskin.log 2>&1 < /dev/null &
+nohup ./batch.sh -m resnet -a yellowhair_brownskin -d 3 \
+  > logs/batch/batch_resnet_yellowhair_brownskin.log 2>&1 < /dev/null &
+nohup ./batch.sh -m vit -a yellowhair_brownskin -d 1 \
+  > logs/batch/batch_vit_yellowhair_brownskin.log 2>&1 < /dev/null &
 
 CUDA_VISIBLE_DEVICES=0 nohup  python -u predict.py --dataset imagenet --model vit --num_added_img 0  --save_pred_model last --num_epochs 30 > logs/vit.log 2>&1 < /dev/null &
 
-CUDA_VISIBLE_DEVICES=1 nohup  python -u predict.py --dataset imagenet --model resnet --num_added_img 0  --save_pred_model last --num_epochs 30 > logs/imgnet_resnt.log 2>&1 < /dev/null &
+CUDA_VISIBLE_DEVICES=1 nohup  python -u predict.py --dataset imagenet --model resnet --num_added_img 0  --save_pred_model last --num_epochs 40 > logs/imgnet_resnt.log 2>&1 < /dev/null &
 
 CUDA_VISIBLE_DEVICES=2 nohup  python -u predict.py --dataset imagenet --model clip --num_added_img 0  --save_pred_model last --num_epochs 40 > logs/imgnet_clip_40.log 2>&1 < /dev/null &
 
@@ -60,7 +65,7 @@ nohup ./batch.sh -m resnet -a redhair_sademotion -d 1 \
 nohup ./batch.sh -m vit -a redhair_sademotion -d 3 \
   > logs/batch/batch_vit_redhair_sademotion.log 2>&1 < /dev/null &
 
-CUDA_VISIBLE_DEVICES=0 python predict.py --dataset imagenet --model blip --num_added_img 0  --save_pred_model last --num_epochs 40
+CUDA_VISIBLE_DEVICES=0 python predict.py --dataset imagenet --num_added_img 0  --save_pred_model last --num_epochs 40
 
 CUDA_VISIBLE_DEVICES=1 nohup  python -u blip.py > logs/blip.log 2>&1 < /dev/null &
 

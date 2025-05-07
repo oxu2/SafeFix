@@ -60,12 +60,12 @@ print("Sample counts per class:")
 for cls, cnt in zip(classes, counts):
     print(f"{cls}: {cnt}")
 
-# Randomly select 20 samples and print their index and label
+# Randomly select 10 samples and print their index and label
 import random
 random.seed(42)
-selected_indices = random.sample(range(labels_array.shape[0]), 20)
-print("Random 20 samples (idx: label):")
-for idx in sorted(selected_indices):
+selected_indices_15 = random.sample(range(labels_array.shape[0]), 15)
+print("Random 15 samples (idx: label):")
+for idx in sorted(selected_indices_15):
     print(f"{idx}: {labels_array[idx]}")
 
 

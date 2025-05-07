@@ -30,7 +30,7 @@ class DummyReport:
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--predictions', default = "save/pred/predictions_imagenet_resnet_redhair_brownskin_234imgs_0506013043.npy", type=str, required=True, help='Path to predictions .npy file')
+    parser.add_argument('--predictions', default = None, type=str, required=True, help='Path to predictions .npy file')
     parser.add_argument('--verbose', type=str2bool, default=False, help='Enable verbose output')
     parser.add_argument(
         '--dataset',
