@@ -1,4 +1,8 @@
-nohup ./batch.sh -m clip -a yellowhair_brownskin -d 2 \
+
+nohup ./batch.sh -m resnet -a yellowhair_brownskin -d 1 \
+  > logs/batch/batch_resnet_yellowhair_brownskin.log 2>&1 < /dev/null &
+
+nohup ./batch.sh -m clip -a yellowhair_brownskin -d 3 \
   > logs/batch/batch_clip_yellowhair_brownskin.log 2>&1 < /dev/null &
 nohup ./batch.sh -m vit -a yellowhair_brownskin -d 0 \
   > logs/batch/batch_vit_yellowhair_brownskin.log 2>&1 < /dev/null &

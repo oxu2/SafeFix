@@ -320,7 +320,7 @@ non_yellowcolor_indices = get_original_indices_by_attribute(
     None,
     find_matching=False,
     save_path="non_yellowcolor_indices.txt",
-    num_display=100
+    num_display=10
 )
 
 
@@ -331,5 +331,15 @@ non_fabrictexture_indices = get_original_indices_by_attribute(
     None,
     find_matching=False,
     save_path="non_fabrictexture_indices.txt",
-    num_display=100
+    num_display=10
+)
+
+non_orangecolor_indices = get_original_indices_by_attribute(
+    "color",
+    "orange",
+    "attribute10.json",
+    None,
+    find_matching=False,
+    save_path="non_orangecolor_indices.txt",
+    num_display=10
 )
