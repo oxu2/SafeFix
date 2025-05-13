@@ -11,3 +11,8 @@ Epoch [7/30], Train Loss: 0.3134, Train Acc: 0.8977, Val Loss: 0.4276, Val Acc: 
 Epoch [8/30], Train Loss: 0.3337, Train Acc: 0.8877, Val Loss: 0.5947, Val Acc: 0.8092
 Epoch [9/30], Train Loss: 0.3363, Train Acc: 0.8886, Val Loss: 0.6554, Val Acc: 0.8085
 Epoch [10/30], Train Loss: 0.3460, Train Acc: 0.8845, Val Loss: 0.5299, Val Acc: 0.8373
+Epoch [11/30], Train Loss: 0.3333, Train Acc: 0.8902, Val Loss: 0.6869, Val Acc: 0.8146
+Epoch [12/30], Train Loss: 0.3465, Train Acc: 0.8838, Val Loss: 0.5915, Val Acc: 0.8212
+Epoch [13/30], Train Loss: 0.3345, Train Acc: 0.8881, Val Loss: 0.8356, Val Acc: 0.7723
+Epoch [14/30], Train Loss: 0.3270, Train Acc: 0.8886, Val Loss: 0.6486, Val Acc: 0.8065
+Epoch [15/30], Train Loss: 0.3110, Train Acc: 0.8954, Val Loss: 0.7315, Val Acc: 0.7950
