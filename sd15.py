@@ -16,6 +16,7 @@ import argparse
 import os
 import json
 import numpy as np
+from typing import Union, List
 
 # Global image counter for simple mode
 counter = 1
@@ -40,7 +41,29 @@ parser.add_argument(
     '--batch', type=int, default=28,
     help='Number of images to generate per prompt in parallel (default: 4).'
 )
+parser.add_argument(
+    '--dataset',
+    choices=['imagenet', 'celeba'],
+    default='imagenet',
+    help='Which dataset to use: imagenet (default) or celeba'
+)
+parser.add_argument(
+    '--seed',
+    type=int,
+    default=None,
+    help='Random seed for reproducibility'
+)
 args = parser.parse_args()
+
+if args.seed is not None:
+    import numpy as np
+    import random
+    random.seed(args.seed)
+    np.random.seed(args.seed)
+    import torch
+    torch.manual_seed(args.seed)
+    if torch.cuda.is_available():
+        torch.cuda.manual_seed_all(args.seed)
 
 # Parse attribute overrides from args.attributes
 attribute_parts = args.attributes.split('_')
@@ -57,40 +80,67 @@ for part in attribute_parts:
 
 
 if args.simple:
-    # Simple uniform sampling across all attribute categories
-    beard_list   = ['Yes', 'No']
-    makeup_list  = ['Yes', 'No']
-    gender_list  = ['female', 'male']
-    hair_list    = ['white', 'yellow', 'blonde', 'black', 'gray', 'brown', 'red']
-    skin_list    = ['white', 'black', 'brown']
-    emotion_list = ['sad', 'serious', 'calm', 'happy', 'surprised', 'neutral', 'angry', 'excited', 'pensive']
-    young_list   = ['young', 'middle-aged', 'old']
-
     num = args.num_added_img
-    # half the samples wear lipstick
-    num_lip = num // 2
-    lipstick_flags = [1] * num_lip + [0] * (num - num_lip)
-    random.shuffle(lipstick_flags)
+    if args.dataset == 'celeba':
+        # CelebA simple uniform sampling mode
+        beard_list   = ['Yes', 'No']
+        makeup_list  = ['Yes', 'No']
+        gender_list  = ['female', 'male']
+        hair_list    = ['white', 'yellow', 'blonde', 'black', 'gray', 'brown', 'red']
+        skin_list    = ['white', 'black', 'brown']
+        emotion_list = ['sad', 'serious', 'calm', 'happy', 'surprised', 'neutral', 'angry', 'excited', 'pensive']
+        young_list   = ['young', 'middle-aged', 'old']
 
-    prompts = []
-    for i in range(num):
-        beard = random.choice(beard_list)
-        makeup = random.choice(makeup_list)
-        gender = random.choice(gender_list)
-        hair = random.choice(hair_list)
-        skin = random.choice(skin_list)
-        emotion = random.choice(emotion_list)
-        age = random.choice(young_list)
-        lipstick_clause = 'wearing lipstick' if lipstick_flags[i] else 'no lipstick'
-        beard_clause = 'with beard' if beard == 'Yes' else 'without beard'
-        makeup_clause = 'wearing makeup' if makeup == 'Yes' else 'no makeup'
-        prompt = (
-            f"A photo of a {gender} {beard_clause} {makeup_clause} {lipstick_clause} "
-            f"with {hair} hair and {skin} skin, looking {emotion}, appearing {age}."
-        )
-        prompts.append(prompt)
-    # For compatibility with rest of script
-    selected_indices = list(range(num))
+        # half the samples wear lipstick
+        num_lip = num // 2
+        lipstick_flags = [1] * num_lip + [0] * (num - num_lip)
+        random.shuffle(lipstick_flags)
+
+        prompts = []
+        for i in range(num):
+            beard = random.choice(beard_list)
+            makeup = random.choice(makeup_list)
+            gender = random.choice(gender_list)
+            hair = random.choice(hair_list)
+            skin = random.choice(skin_list)
+            emotion = random.choice(emotion_list)
+            age = random.choice(young_list)
+            lipstick_clause = 'wearing lipstick' if lipstick_flags[i] else 'no lipstick'
+            beard_clause = 'with beard' if beard == 'Yes' else 'without beard'
+            makeup_clause = 'wearing makeup' if makeup == 'Yes' else 'no makeup'
+            prompt = (
+                f"A photo of a {gender} {beard_clause} {makeup_clause} {lipstick_clause} "
+                f"with {hair} hair and {skin} skin, looking {emotion}, appearing {age}."
+            )
+            prompts.append(prompt)
+    else:
+        # ImageNet simple sampling mode
+        color_list = [
+            "red", "green", "pink", "brown", "white", "blue", "tan",
+            "silver", "orange", "gray", "maroon", "yellow", "multicolored",
+            "purple", "black"
+        ]
+        background_list = [
+            "sky", "trees", "inside a house", "buildings", "grass", "rocks",
+            "bridge", "water", "wall", "house", "street", "wild", "snow"
+        ]
+        texture_list = [
+            "plastic", "metallic", "wooden", "leather", "fabric", "ceramic", "glass"
+        ]
+        label_list = [
+            'backpack', 'barber_chair', 'coffee_mug', 'desk', 'electric_guitar',
+            'park_bench', 'pitcher', 'purse', 'rocking_chair', 'water_bottle'
+        ]
+
+        prompts = []
+        labels_selected = []
+        for i in range(num):
+            color = random.choice(color_list)
+            background = random.choice(background_list)
+            label = random.choice(label_list)
+            prompt = f"A photo of {color} {label}, in a {background}."
+            prompts.append(prompt)
+            labels_selected.append(label)
 else:
     with open(args.attribute_file, 'r') as f:
         attr_json = json.load(f)
@@ -141,16 +191,53 @@ else:
         )
         prompts.append(prompt)
 
-def generate_images(prompt: str, num_images: int, output_prefix: str = "output"):
+def generate_images(prompt: Union[str, List[str]], num_images: int, output_prefix: Union[str, List[str]] = "output"):
     """
     Generate images using Stable Diffusion v1.5.
 
     Args:
-        prompt (str): The text prompt for image generation.
-        num_images (int): Number of images to generate.
-        output_prefix (str): Prefix for output image filenames.
+        prompt (str or List[str]): A single text prompt or list of prompts.
+        num_images (int): Number of images to generate per prompt (ignored if prompt is list).
+        output_prefix (str or List[str]): Prefix or list of prefixes for output filenames.
     """
     global counter
+    # Handle list of prompts for distinct per-image prompts
+    if isinstance(prompt, list):
+        # Load pipeline once
+        model_id = "runwayml/stable-diffusion-v1-5"
+        pipeline = StableDiffusionPipeline.from_pretrained(
+            model_id,
+            torch_dtype=torch.float16
+        ).to(f"cuda:{args.gpu}")
+        pipeline.enable_attention_slicing()
+        pipeline.set_progress_bar_config(disable=True)
+
+        # Generate one image per prompt
+        result = pipeline(
+            prompt,
+            num_inference_steps=args.num_inference_steps,
+            num_images_per_prompt=1
+        )
+        # Save each image with its corresponding prefix, avoid overwriting files
+        for img, pref in zip(result.images, output_prefix):
+            # Ensure directory exists
+            os.makedirs(os.path.dirname(pref), exist_ok=True)
+            folder, base = os.path.split(pref)
+            ext = ".png"
+            # Start with base filename
+            candidate = os.path.join(folder, base + ext)
+            # If file exists, append incremental suffix
+            if os.path.exists(candidate):
+                suffix = 2
+                while True:
+                    new_name = f"{base}_{suffix}{ext}"
+                    candidate = os.path.join(folder, new_name)
+                    if not os.path.exists(candidate):
+                        break
+                    suffix += 1
+            img.save(candidate)
+            print(f"Saved image: {candidate}")
+        return
     # Load the Stable Diffusion v1.5 pipeline with fp16 precision (revision removed)
     model_id = "runwayml/stable-diffusion-v1-5"
     pipeline = StableDiffusionPipeline.from_pretrained(
@@ -185,20 +272,25 @@ def generate_images(prompt: str, num_images: int, output_prefix: str = "output")
             print(f"Saved image: {filename}")
 
 if __name__ == "__main__":
-    for i, user_prompt in enumerate(prompts):
-        if args.simple:
-            # use lipstick label to name files
-            lip_flag = lipstick_flags[i]
-            lip_label = "yes" if lip_flag == 1 else "no"
-            output_prefix = f"exampleData/hibug_simple/{lip_label}"
-            # Ensure output directory exists
-            output_dir = os.path.dirname(output_prefix)
-            os.makedirs(output_dir, exist_ok=True)
-            generate_images(user_prompt, num_images=args.batch, output_prefix=output_prefix)
+    if args.simple:
+        if args.dataset == 'celeba':
+            for i, user_prompt in enumerate(prompts):
+                lip_flag = lipstick_flags[i]
+                lip_label = "yes" if lip_flag == 1 else "no"
+                output_prefix = f"exampleData/hibug_simple/{lip_label}"
+                os.makedirs(os.path.dirname(output_prefix), exist_ok=True)
+                generate_images(user_prompt, num_images=args.batch, output_prefix=output_prefix)
         else:
+            # ImageNet simple: batch of distinct prompts per call
+            for i in range(0, len(prompts), args.batch):
+                batch_prompts = prompts[i:i+args.batch]
+                batch_labels = labels_selected[i:i+args.batch]
+                batch_prefixes = [f"exampleData/imagenet_simple2/{lbl}" for lbl in batch_labels]
+                generate_images(batch_prompts, num_images=1, output_prefix=batch_prefixes)
+    else:
+        for i, user_prompt in enumerate(prompts):
             original_idx = selected_indices[i]
             output_prefix = f"exampleData/hibug_{args.attributes}/{args.attributes}_{original_idx:06d}"
-            # Ensure output directory exists
             output_dir = os.path.dirname(output_prefix)
             os.makedirs(output_dir, exist_ok=True)
             generate_images(user_prompt, num_images=1, output_prefix=output_prefix)

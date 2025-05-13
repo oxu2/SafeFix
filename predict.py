@@ -226,6 +226,17 @@ if args.model == 'vit' and args.lr == 1e-4:
     args.lr = 5e-5
     if verbose:
         print(f"Adjusted learning rate for ViT to {args.lr}")
+
+# Specific adjustment for pretrained ViT on ImageNet to further reduce LR
+if args.dataset == 'imagenet' and args.model == 'vit' and args.pretrained:
+    # This can override the 5e-5 set above if conditions match,
+    # or override a user-specified LR for this specific scenario.
+    new_lr_val = 2e-5  # Target LR for this case
+    if args.lr != new_lr_val: # Apply and print only if it's a change from current args.lr
+        args.lr = new_lr_val
+        if verbose:
+            print(f"Specifically set learning rate for pretrained ViT on ImageNet to {args.lr}")
+
 # Adjust LR for CLIP on ImageNet based on pretrained flag
 elif args.dataset == 'imagenet' and args.model == 'clip' and args.lr == 1e-4:
     if args.pretrained:
@@ -668,7 +679,10 @@ elif args.model == 'vit':
     num_head_features = model.head.in_features
     if args.dataset == 'imagenet':
         # Multiclass head for ImageNet subset
-        model.head = nn.Linear(num_head_features, num_classes)
+        model.head = nn.Sequential(
+            nn.Dropout(p=0.5),  # Added Dropout layer
+            nn.Linear(num_head_features, num_classes)
+        )
     else:
         # Binary classification head for CelebA
         model.head = nn.Sequential(

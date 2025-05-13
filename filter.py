@@ -1,3 +1,5 @@
+ # Global flag for presence inclusion
+INCLUDE_PRESENCE = False
 import json
 import random
 import sys
@@ -143,44 +145,77 @@ def configure_gpu_memory(available_gpus, max_memory_per_gpu_gb=23):
 
 def process_image(image_path, model, processor, tags: List[str], attributes: List[str], verbose=False):
     """Process a single image and return the binary results for both features."""
-    # Construct prompt based on tags and attributes
-    questions = []
-    for t, a in zip(tags, attributes):
-        if a == "lipstick":
-            questions.append("Is the person in this picture wearing lipstick?")
-        elif a == "emotion":
-            questions.append(
-                f"If you see any hint of {t} emotion in this picture, answer 1; "
-                "only answer 0 if you are completely sure there is no such emotion."
-            )
-        else:
-            questions.append(f"Does the person in this picture have {t} {a}?")
-    prompt = " ".join(questions) + " For each question, only answer with 1 (yes) or 0 (no). Provide answers separated by spaces."
-    response = inference(image_path, prompt, verbose=verbose)
-    # Debug: print Qwen's raw response for emotion detection
-    # if 'emotion' in attributes:
-    # if True:
-    #     print(f"Debug: {image_path} emotion raw response: {response}")
-    
-    # Extract the two numbers from the response
-    try:
-        numbers = [int(s) for s in response.replace(',', ' ').split() if s.isdigit()]
-        results = {f"{t}_{a.replace(' ', '_')}": num for t, a, num in zip(tags, attributes, numbers)}
-        # Fallback for emotion attributes: if inference missing or ambiguous, default to positive (1)
-        for t, a in zip(tags, attributes):
-            if a == "emotion":
-                key = f"{t}_{a.replace(' ', '_')}"
-                if key not in results:
-                    results[key] = 1
+    # Special handling for ImageNet dataset
+    if DATASET == 'imagenet':
+        # Derive class name from parent directory
+        class_name = os.path.basename(os.path.dirname(image_path))
+        # Build questions: one per tag-attribute pair, then presence check
+        questions = [f"Does the {class_name} have {t} {a}?" for t, a in zip(tags, attributes)]
+        questions.append(f"Is there a {class_name} in the picture?")
+        prompt = " ".join(questions) + " For each question, only answer with 1 (yes) or 0 (no). Provide answers separated by spaces."
+        response = inference(image_path, prompt, verbose=verbose)
+        # Parse the responses
+        try:
+            nums = [int(s) for s in response.replace(',', ' ').split() if s.isdigit()]
+            # Map attribute results
+            results = {
+                f"{class_name}_{t}{a}": nums[i] if i < len(nums) else 0
+                for i, (t, a) in enumerate(zip(tags, attributes))
+            }
+            # Map presence result (last number)
+            presence_val = nums[len(tags)] if len(nums) > len(tags) else 0
+            results[f"{class_name}_presence"] = presence_val
+            # Optionally remove presence field
+            if not INCLUDE_PRESENCE:
+                results.pop(f"{class_name}_presence", None)
+        except Exception as e:
+            print(f"Warning: Error parsing response '{response}' for {image_path}: {e}")
+            # On error, default all to 0
+            results = {f"{class_name}_{t}{a}": 0 for t, a in zip(tags, attributes)}
+            results[f"{class_name}_presence"] = 0
+            # Optionally remove presence field
+            if not INCLUDE_PRESENCE:
+                results.pop(f"{class_name}_presence", None)
         return results
-    except Exception as e:
-        print(f"Warning: Error parsing response '{response}' for {image_path}: {e}")
-        # If parsing fails, at least return positive for emotion attributes
-        fallback_results = {}
+    else:
+        # Existing CelebA logic for building questions follows below...
+        questions = []
         for t, a in zip(tags, attributes):
-            if a == "emotion":
-                fallback_results[f"{t}_{a.replace(' ', '_')}"] = 1
-        return fallback_results
+            if a == "lipstick":
+                questions.append("Is the person in this picture wearing lipstick?")
+            elif a == "emotion":
+                questions.append(
+                    f"If you see any hint of {t} emotion in this picture, answer 1; "
+                    "only answer 0 if you are completely sure there is no such emotion."
+                )
+            else:
+                questions.append(f"Does the person in this picture have {t} {a}?")
+        prompt = " ".join(questions) + " For each question, only answer with 1 (yes) or 0 (no). Provide answers separated by spaces."
+        response = inference(image_path, prompt, verbose=verbose)
+        # Debug: print Qwen's raw response for emotion detection
+        # if 'emotion' in attributes:
+        # if True:
+        #     print(f"Debug: {image_path} emotion raw response: {response}")
+        
+        # Extract the two numbers from the response
+        try:
+            numbers = [int(s) for s in response.replace(',', ' ').split() if s.isdigit()]
+            results = {f"{t}_{a.replace(' ', '_')}": num for t, a, num in zip(tags, attributes, numbers)}
+            # Fallback for emotion attributes: if inference missing or ambiguous, default to positive (1)
+            for t, a in zip(tags, attributes):
+                if a == "emotion":
+                    key = f"{t}_{a.replace(' ', '_')}"
+                    if key not in results:
+                        results[key] = 1
+            return results
+        except Exception as e:
+            print(f"Warning: Error parsing response '{response}' for {image_path}: {e}")
+            # If parsing fails, at least return positive for emotion attributes
+            fallback_results = {}
+            for t, a in zip(tags, attributes):
+                if a == "emotion":
+                    fallback_results[f"{t}_{a.replace(' ', '_')}"] = 1
+            return fallback_results
 
 def process_directory(directory_path, output_json_path, tags, attributes, verbose=False, file_type="png", stop_at: int = 15000, stop_suffix=None):
     """
@@ -209,14 +244,20 @@ def process_directory(directory_path, output_json_path, tags, attributes, verbos
     if stop_at:
         print(f"Stop condition active: stop after processing {stop_at} images.")
 
-    # Get image files based on the specified file type
+    # Get image files recursively based on the specified file type
     if file_type.lower() == "all":
-        image_files = [f for f in os.listdir(directory_path) if (f.lower().endswith('.png') or f.lower().endswith('.jpg') or f.lower().endswith('.jpeg'))]
+        exts = ['.png', '.jpg', '.jpeg']
     else:
-        extensions = ['.' + ext.lower() for ext in file_type.lower().split(',')]
-        image_files = [f for f in os.listdir(directory_path) if any(f.lower().endswith(ext) for ext in extensions)]
-
-    # Sort files in ascending order by filename
+        exts = ['.' + ext.lower() for ext in file_type.lower().split(',')]
+    image_files = []
+    for root, _, files in os.walk(directory_path):
+        for f in files:
+            if any(f.lower().endswith(ext) for ext in exts):
+                # Compute relative path to preserve subdirectory structure
+                rel_dir = os.path.relpath(root, directory_path)
+                rel_path = f if rel_dir == '.' else os.path.join(rel_dir, f)
+                image_files.append(rel_path)
+    # Sort files in ascending order
     image_files.sort()
 
     # Filter out files already processed
@@ -294,19 +335,31 @@ def create_feature_mapping(results_json, feasible_json="features.json", attribut
     # Build tags and attributes lists
     tags = []
     attrs = []
-    for attr in attr_list:
-        if attr.endswith('hair'):
-            tags.append(attr[:-4])
-            attrs.append('hair')
-        elif attr.endswith('skin'):
-            tags.append(attr[:-4])
-            attrs.append('skin')
-        elif attr.endswith('emotion'):
-            tags.append(attr[:-7])
-            attrs.append('emotion')
-        else:
-            tags.append(attr)
-            attrs.append(attr)
+    if DATASET == 'celeba':
+        for attr in attr_list:
+            if attr.endswith('hair'):
+                tags.append(attr[:-4])
+                attrs.append('hair')
+            elif attr.endswith('skin'):
+                tags.append(attr[:-4])
+                attrs.append('skin')
+            elif attr.endswith('emotion'):
+                tags.append(attr[:-7])
+                attrs.append('emotion')
+            else:
+                tags.append(attr)
+                attrs.append(attr)
+        # Always include lipstick for CelebA
+        tags.append('wearing')
+        attrs.append('lipstick')
+    else:  # imagenet
+        for attr in attr_list:
+            if attr.endswith('color'):
+                tags.append(attr[:-5])
+                attrs.append('color')
+            elif attr.endswith('texture'):
+                tags.append(attr[:-7])
+                attrs.append('texture')
     # Derive feature keys
     keys = [f"{t}_{a}" for t, a in zip(tags, attrs)]
     # Retain these attribute keys for filtering; ensure we always include lipstick feature in output
@@ -349,26 +402,29 @@ def rename_images_with_suffix(directory_path, suffix="_red", verbose=False):
         
     renamed_count = 0
     
-    # Get all jpg files in the directory
-    jpg_files = [f for f in os.listdir(directory_path) if f.lower().endswith('.jpg')]
-    
-    for filename in jpg_files:
-        # Get base name without extension
-        base_name = os.path.splitext(filename)[0]
+    # Get all image files with .jpg or .jpeg extensions in the directory
+    image_files = [
+        f for f in os.listdir(directory_path)
+        if any(f.lower().endswith(ext) for ext in ['.jpg', '.jpeg'])
+    ]
+
+    for filename in image_files:
+        # Get base name and extension
+        base_name, ext = os.path.splitext(filename)
         
         # Skip files that already have the suffix
         if base_name.endswith(suffix):
             continue
             
-        # Only rename files that are numeric (e.g., "123.jpg")
+        # Only rename files that are numeric (e.g., "123.jpg" or "123.jpeg")
         if base_name.isdigit():
             # Create new filename with suffix
-            new_filename = f"{base_name}{suffix}.jpg"
-            
+            new_filename = f"{base_name}{suffix}{ext}"
+
             # Full paths
             old_path = os.path.join(directory_path, filename)
             new_path = os.path.join(directory_path, new_filename)
-            
+
             # Rename the file
             try:
                 os.rename(old_path, new_path)
@@ -452,26 +508,35 @@ def main(directory_path="",
         if verbose:
             print(f"Renamed {renamed_count} files with suffix '{rename_suffix}'")
     
-    # Parse attribute string into list
+    # Parse attribute string into list and build tags/attrs lists depending on dataset
     attr_list = attributes.split('_')
     tags = []
     attrs = []
-    for attr in attr_list:
-        if attr.endswith('hair'):
-            tags.append(attr[:-4])
-            attrs.append('hair')
-        elif attr.endswith('skin'):
-            tags.append(attr[:-4])
-            attrs.append('skin')
-        elif attr.endswith('emotion'):
-            tags.append(attr[:-7])
-            attrs.append('emotion')
-        else:
-            tags.append(attr)
-            attrs.append(attr)
-    # Always include lipstick
-    tags.append('wearing')
-    attrs.append('lipstick')
+    if DATASET == 'celeba':
+        for attr in attr_list:
+            if attr.endswith('hair'):
+                tags.append(attr[:-4])
+                attrs.append('hair')
+            elif attr.endswith('skin'):
+                tags.append(attr[:-4])
+                attrs.append('skin')
+            elif attr.endswith('emotion'):
+                tags.append(attr[:-7])
+                attrs.append('emotion')
+            else:
+                tags.append(attr)
+                attrs.append(attr)
+        # Always include lipstick for CelebA
+        tags.append('wearing')
+        attrs.append('lipstick')
+    else:  # imagenet
+        for attr in attr_list:
+            if attr.endswith('color'):
+                tags.append(attr[:-5])
+                attrs.append('color')
+            elif attr.endswith('texture'):
+                tags.append(attr[:-7])
+                attrs.append('texture')
 
     # Build timestamped file paths
     timestamp = datetime.datetime.now().strftime("%m%d%H%M")
@@ -560,16 +625,16 @@ if __name__ == "__main__":
         default=False,
         help='Display detailed processing information (true/false)'
     )
-    parser.add_argument('--file_type', type=str, default="jpg", 
-                        help='Type of image files to process ("png", "jpg", "png,jpg", "all")')
+    parser.add_argument('--file_type', type=str, default="jpg,jpeg",
+                    help='Type of image files to process ("png", "jpg", "jpeg", "jpg,jpeg", "png,jpg,jpeg", "all")')
     parser.add_argument(
         '--rename_files',
         type=str2bool,
         default=False,
         help='Rename files by adding suffix before extension (true/false)'
     )
-    parser.add_argument('--attributes', type=str, default="brownskin",
-                        help='attributes to detect, e.g. redhair_brownskin, redhair, etc.')
+    parser.add_argument('--attributes', type=str, default="pinkcolor",
+                        help='Attributes to detect; for celeba: e.g., redhair_brownskin, redhair; for imagenet: e.g., fabrictexture, pinkcolor')
     parser.add_argument('--rename_suffix', type=str, default=None,
                         help='Suffix to add when renaming files (default: "_red")')
     parser.add_argument('--max_memory', type=int, default=23, 
@@ -584,17 +649,37 @@ if __name__ == "__main__":
                         help='Only copy feasible images using an existing feasible JSON (skip processing).')
     parser.add_argument('--feasible_json', type=str, default=None,
                         help='Path to existing feasible JSON file for copying images.')
+    parser.add_argument(
+        '--dataset',
+        choices=['imagenet', 'celeba'],
+        default='imagenet',
+        help='Which dataset to use: imagenet (default) or celeba'
+    )
+    parser.add_argument(
+        '--include_presence',
+        type=str2bool,
+        default=False,
+        help='If true, include the <class>_presence field in ImageNet results (default: False)'
+    )
     
 args = parser.parse_args()
 
-# If no image_dir provided, default to exampleData/{attributes}
+# Whether to include presence check in results
+INCLUDE_PRESENCE = args.include_presence
+
 if not args.image_dir:
-    args.image_dir = os.path.join("exampleData", args.attributes)
+    if args.dataset == 'celeba':
+        args.image_dir = os.path.join("exampleData", args.attributes)
+    else:  # imagenet
+        args.image_dir = f"./imagenet10_{args.attributes}"
     if args.verbose:
         print(f"No --image_dir provided, using default: {args.image_dir}")
 
 if args.rename_suffix is None:
     args.rename_suffix = "_" + args.attributes
+
+# Set global dataset flag
+DATASET = args.dataset
 
 main(
    args.image_dir,

@@ -1,0 +1,50 @@
+Current time: 0509124316
+Loaded pre-split ImageNet10 indices: 10400 train, 2600 validation.
+Using vit model with pretrained weights
+Epoch [1/30], Train Loss: 1.4653, Train Acc: 0.5972, Val Loss: 0.5038, Val Acc: 0.9554
+Epoch [2/30], Train Loss: 0.3704, Train Acc: 0.9430, Val Loss: 0.1441, Val Acc: 0.9769
+Epoch [3/30], Train Loss: 0.1657, Train Acc: 0.9649, Val Loss: 0.0901, Val Acc: 0.9788
+Epoch [4/30], Train Loss: 0.1186, Train Acc: 0.9696, Val Loss: 0.0744, Val Acc: 0.9815
+Epoch [5/30], Train Loss: 0.0953, Train Acc: 0.9744, Val Loss: 0.0677, Val Acc: 0.9815
+Epoch [6/30], Train Loss: 0.0919, Train Acc: 0.9741, Val Loss: 0.0631, Val Acc: 0.9819
+Epoch [7/30], Train Loss: 0.0799, Train Acc: 0.9774, Val Loss: 0.0608, Val Acc: 0.9815
+Epoch [8/30], Train Loss: 0.0760, Train Acc: 0.9783, Val Loss: 0.0589, Val Acc: 0.9819
+Epoch [9/30], Train Loss: 0.0706, Train Acc: 0.9786, Val Loss: 0.0573, Val Acc: 0.9827
+Epoch [10/30], Train Loss: 0.0671, Train Acc: 0.9801, Val Loss: 0.0568, Val Acc: 0.9835
+Epoch [11/30], Train Loss: 0.1051, Train Acc: 0.9661, Val Loss: 0.0865, Val Acc: 0.9727
+Epoch [12/30], Train Loss: 0.0820, Train Acc: 0.9723, Val Loss: 0.1353, Val Acc: 0.9615
+Epoch [13/30], Train Loss: 0.0924, Train Acc: 0.9702, Val Loss: 0.1467, Val Acc: 0.9577
+Epoch [14/30], Train Loss: 0.0912, Train Acc: 0.9724, Val Loss: 0.1693, Val Acc: 0.9558
+Epoch [15/30], Train Loss: 0.1030, Train Acc: 0.9693, Val Loss: 0.2263, Val Acc: 0.9431
+Epoch [16/30], Train Loss: 0.1130, Train Acc: 0.9645, Val Loss: 0.2729, Val Acc: 0.9296
+Epoch [17/30], Train Loss: 0.1302, Train Acc: 0.9589, Val Loss: 0.3226, Val Acc: 0.9204
+Epoch [18/30], Train Loss: 0.1549, Train Acc: 0.9510, Val Loss: 0.3277, Val Acc: 0.9115
+Epoch [19/30], Train Loss: 0.1644, Train Acc: 0.9459, Val Loss: 0.3291, Val Acc: 0.9065
+Epoch [20/30], Train Loss: 0.1709, Train Acc: 0.9434, Val Loss: 0.3648, Val Acc: 0.8954
+Epoch [21/30], Train Loss: 0.1124, Train Acc: 0.9629, Val Loss: 0.4579, Val Acc: 0.8923
+Epoch [22/30], Train Loss: 0.1053, Train Acc: 0.9644, Val Loss: 0.4262, Val Acc: 0.8996
+Epoch [23/30], Train Loss: 0.1164, Train Acc: 0.9624, Val Loss: 0.4500, Val Acc: 0.9019
+Epoch [24/30], Train Loss: 0.1151, Train Acc: 0.9626, Val Loss: 0.4215, Val Acc: 0.9035
+Epoch [25/30], Train Loss: 0.1250, Train Acc: 0.9592, Val Loss: 0.5150, Val Acc: 0.8854
+Epoch [26/30], Train Loss: 0.1261, Train Acc: 0.9581, Val Loss: 0.5411, Val Acc: 0.8850
+Epoch [27/30], Train Loss: 0.1387, Train Acc: 0.9538, Val Loss: 0.5102, Val Acc: 0.8812
+Epoch [28/30], Train Loss: 0.1648, Train Acc: 0.9474, Val Loss: 0.5307, Val Acc: 0.8715
+Epoch [29/30], Train Loss: 0.1572, Train Acc: 0.9471, Val Loss: 0.5852, Val Acc: 0.8669
+Epoch [30/30], Train Loss: 0.1563, Train Acc: 0.9479, Val Loss: 0.5659, Val Acc: 0.8638
+Generating and saving predictions...
+Combined predictions length: 13000
+
+Running model diagnostics on generated predictions...
+Model Validation ACC: 0.8638461538461538
+Start detect_prediction_correlation
+
+ACC: 0.844660 	Rare Case: attribute "color", description "pink"
+ACC: 0.829412 	Rare Case: attribute "color", description "brown"
+ACC: 0.842105 	Rare Case: attribute "color", description "maroon"
+ACC: 0.789474 	Rare Case: attribute "color", description "purple"
+ACC: 0.824427 	Hard case: attribute "background", description "trees"
+ACC: 0.853659 	Rare Case: attribute "background", description "buildings"
+ACC: 0.853659 	Rare Case: attribute "background", description "snow"
+ACC: 0.852941 	Rare Case: attribute "texture", description "metallic"
+ACC: 0.850433 	Hard case: attribute "texture", description "wooden"
+Current time: 0509124316
