@@ -1,12 +1,18 @@
+CUDA_VISIBLE_DEVICES=2 nohup python -u filter.py \
+  --attributes yellowcolor \
+  > logs/filter/filter_yellowcolor.log 2>&1 < /dev/null &
+
+
+CUDA_VISIBLE_DEVICES=2 nohup python -u filter.py \
+  --attributes pinkcolor \
+  > logs/filter/filter_pinkcolor.log 2>&1 < /dev/null &
 
 
 CUDA_VISIBLE_DEVICES=1 nohup python -u filter.py \
   --attributes purplecolor \
   > logs/filter/filter_purplecolor.log 2>&1 < /dev/null &
 
-CUDA_VISIBLE_DEVICES=2 nohup python -u filter.py \
-  --attributes yellowcolor \
-  > logs/filter/filter_yellowcolor.log 2>&1 < /dev/null &
+
 
 CUDA_VISIBLE_DEVICES=3 nohup python -u filter.py \
   --attributes fabrictexture \

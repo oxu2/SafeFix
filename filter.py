@@ -154,28 +154,24 @@ def process_image(image_path, model, processor, tags: List[str], attributes: Lis
         questions.append(f"Is there a {class_name} in the picture?")
         prompt = " ".join(questions) + " For each question, only answer with 1 (yes) or 0 (no). Provide answers separated by spaces."
         response = inference(image_path, prompt, verbose=verbose)
-        # Parse the responses
         try:
+            # Parse numeric answers
             nums = [int(s) for s in response.replace(',', ' ').split() if s.isdigit()]
-            # Map attribute results
+            # Map attribute results without class prefix: e.g., "yellowcolor"
             results = {
-                f"{class_name}_{t}{a}": nums[i] if i < len(nums) else 0
+                f"{t}{a}": nums[i] if i < len(nums) else 0
                 for i, (t, a) in enumerate(zip(tags, attributes))
             }
-            # Map presence result (last number)
-            presence_val = nums[len(tags)] if len(nums) > len(tags) else 0
-            results[f"{class_name}_presence"] = presence_val
-            # Optionally remove presence field
-            if not INCLUDE_PRESENCE:
-                results.pop(f"{class_name}_presence", None)
+            # Optionally include presence if requested
+            if INCLUDE_PRESENCE:
+                presence_val = nums[len(tags)] if len(nums) > len(tags) else 0
+                results["presence"] = presence_val
         except Exception as e:
             print(f"Warning: Error parsing response '{response}' for {image_path}: {e}")
-            # On error, default all to 0
-            results = {f"{class_name}_{t}{a}": 0 for t, a in zip(tags, attributes)}
-            results[f"{class_name}_presence"] = 0
-            # Optionally remove presence field
-            if not INCLUDE_PRESENCE:
-                results.pop(f"{class_name}_presence", None)
+            # On error, default all attributes to 0
+            results = {f"{t}{a}": 0 for t, a in zip(tags, attributes)}
+            if INCLUDE_PRESENCE:
+                results["presence"] = 0
         return results
     else:
         # Existing CelebA logic for building questions follows below...
@@ -661,8 +657,8 @@ if __name__ == "__main__":
                         help='Attributes to detect; for celeba: e.g., redhair_brownskin, redhair; for imagenet: e.g., fabrictexture, pinkcolor')
     parser.add_argument('--rename_suffix', type=str, default=None,
                         help='Suffix to add when renaming files (default: "_red")')
-    parser.add_argument('--max_memory', type=int, default=23, 
-                        help='Maximum memory allocation per GPU in GiB (default: 23)')
+    parser.add_argument('--max_memory', type=int, default=33, 
+                        help='Maximum memory allocation per GPU in GiB (default: 33)')
     parser.add_argument('--stop_at', type=int, default=15000,
                         help='Number of images to process before stopping (default: 15000)')
     parser.add_argument('--feasible_only', action='store_true',
