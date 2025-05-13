@@ -39,6 +39,7 @@ from torchvision.datasets import ImageFolder
 
 # Suppress the CLIPFeatureExtractor deprecation warning
 import warnings
+
 warnings.filterwarnings(
     "ignore",
     "The class CLIPFeatureExtractor is deprecated and will be removed in version 5 of Transformers",
@@ -50,6 +51,31 @@ warnings.filterwarnings(
     "`resume_download` is deprecated and will be removed in version 1.0.0",
     FutureWarning
 )
+
+# Helper functions for transforms and loaders
+def default_img_transform(train: bool):
+    if train:
+        return transforms.Compose([
+            transforms.RandomResizedCrop(224, scale=(0.8, 1.0)),
+            transforms.RandomHorizontalFlip(p=0.5),
+            transforms.ColorJitter(brightness=0.2, contrast=0.2, saturation=0.2),
+            transforms.ToTensor(),
+            transforms.Normalize(mean=[0.5,0.5,0.5], std=[0.5,0.5,0.5]),
+        ])
+    else:
+        return transforms.Compose([
+            transforms.Resize(256),
+            transforms.CenterCrop(224),
+            transforms.ToTensor(),
+            transforms.Normalize(mean=[0.5,0.5,0.5], std=[0.5,0.5,0.5]),
+        ])
+
+def clip_processor_transform(proc):
+    return lambda img: proc(images=img, return_tensors="pt")["pixel_values"].squeeze(0)
+
+def make_loader(dataset, shuffle):
+    return DataLoader(dataset, batch_size=args.batch_size, shuffle=shuffle,
+                      num_workers=args.workers, pin_memory=True)
 
 # Custom loss for smoothed BCE with logits
 class SmoothBCEWithLogitsLoss(nn.Module):
@@ -200,6 +226,17 @@ if args.model == 'vit' and args.lr == 1e-4:
     args.lr = 5e-5
     if verbose:
         print(f"Adjusted learning rate for ViT to {args.lr}")
+
+# Specific adjustment for pretrained ViT on ImageNet to further reduce LR
+if args.dataset == 'imagenet' and args.model == 'vit' and args.pretrained:
+    # This can override the 5e-5 set above if conditions match,
+    # or override a user-specified LR for this specific scenario.
+    new_lr_val = 2e-5  # Target LR for this case
+    if args.lr != new_lr_val: # Apply and print only if it's a change from current args.lr
+        args.lr = new_lr_val
+        if verbose:
+            print(f"Specifically set learning rate for pretrained ViT on ImageNet to {args.lr}")
+
 # Adjust LR for CLIP on ImageNet based on pretrained flag
 elif args.dataset == 'imagenet' and args.model == 'clip' and args.lr == 1e-4:
     if args.pretrained:
@@ -213,7 +250,11 @@ elif args.dataset == 'imagenet' and args.model == 'clip' and args.lr == 1e-4:
         if verbose:
             print(f"Scratch CLIP: head lr={args.lr_head}, backbone lr={args.lr_backbone}")
 # Leave non-CLIP/ImageNet default unchanged for other cases
-
+# Adjust learning rate for CLIP and ViT on CelebA to match predict_0505.py
+if args.dataset == 'celeba' and args.model in ('clip', 'vit'):
+    args.lr = 1e-5
+    if verbose:
+        print(f"Adjusted learning rate for {args.model} on CelebA to {args.lr}")
 time_now = datetime.datetime.now().strftime("%m%d%H%M%S")   
 print("Current time:", time_now)
 
@@ -299,46 +340,18 @@ if args.dataset == 'imagenet':
     data_dir = Path("./imagenet_subset")
     feature_extractor = CLIPImageProcessor.from_pretrained("openai/clip-vit-base-patch32")
     if args.model == 'clip':
-        if args.pretrained:
-            # Use CLIP’s standard preprocessing when fine-tuning
-            train_transform = lambda img: feature_extractor(images=img, return_tensors="pt")["pixel_values"].squeeze(0)
-            val_transform   = train_transform
-        else:
-            # Strong augmentation for scratch CLIP
-            train_transform = transforms.Compose([
-                transforms.RandomResizedCrop(224, scale=(0.2, 1.0)),
-                transforms.RandomHorizontalFlip(p=0.5),
-                transforms.ColorJitter(brightness=0.4, contrast=0.4, saturation=0.4),
-                transforms.ToTensor(),
-                transforms.Normalize(mean=[0.5,0.5,0.5], std=[0.5,0.5,0.5]),
-            ])
-            val_transform = transforms.Compose([
-                transforms.Resize(256),
-                transforms.CenterCrop(224),
-                transforms.ToTensor(),
-                transforms.Normalize(mean=[0.5,0.5,0.5], std=[0.5,0.5,0.5]),
-            ])
+        train_transform = clip_processor_transform(feature_extractor)
+        val_transform = train_transform
     elif args.model == 'blip':
         processor = BlipProcessor.from_pretrained(
             "Salesforce/blip-image-captioning-base",
             local_files_only=True
         )
-        train_transform = lambda img: processor(images=img, return_tensors="pt")["pixel_values"].squeeze(0)
-        val_transform   = train_transform
+        train_transform = clip_processor_transform(processor)
+        val_transform = train_transform
     else:
-        train_transform = transforms.Compose([
-            transforms.RandomResizedCrop(224, scale=(0.8, 1.0)),
-            transforms.RandomHorizontalFlip(p=0.5),
-            transforms.ColorJitter(brightness=0.2, contrast=0.2, saturation=0.2),
-            transforms.ToTensor(),
-            transforms.Normalize(mean=[0.5,0.5,0.5], std=[0.5,0.5,0.5]),
-        ])
-        val_transform = transforms.Compose([
-            transforms.Resize(256),
-            transforms.CenterCrop(224),
-            transforms.ToTensor(),
-            transforms.Normalize(mean=[0.5,0.5,0.5], std=[0.5,0.5,0.5]),
-        ])
+        train_transform = default_img_transform(train=True)
+        val_transform = default_img_transform(train=False)
     # Use no transform for index mapping, then create train/val datasets with correct transforms
     full_ds = ImageFolder(data_dir)
     train_idx = np.load('train_idx_imagenet.npy')
@@ -347,12 +360,8 @@ if args.dataset == 'imagenet':
     print(f"Loaded pre-split ImageNet10 indices: {len(train_idx)} train, {len(val_idx)} validation.")
     train_ds = Subset(ImageFolder(data_dir, transform=train_transform), train_idx)
     val_ds   = Subset(ImageFolder(data_dir, transform=val_transform), val_idx)
-    train_loader = DataLoader(
-        train_ds, batch_size=args.batch_size,
-        shuffle=True, num_workers=args.workers, pin_memory=True)
-    valid_loader = DataLoader(
-        val_ds, batch_size=args.batch_size,
-        shuffle=False, num_workers=args.workers, pin_memory=True)
+    train_loader = make_loader(train_ds, shuffle=True)
+    valid_loader = make_loader(val_ds, shuffle=False)
     num_classes = len(full_ds.classes)
     # Expose datasets for training loop compatibility
     train_dataset = train_ds
@@ -413,46 +422,18 @@ else:
     # Initialize CLIP feature extractor
     feature_extractor = CLIPImageProcessor.from_pretrained("openai/clip-vit-base-patch32")
     if args.model == 'clip':
-        if args.pretrained:
-            # Use CLIP’s standard preprocessing when fine-tuning
-            train_transform = lambda img: feature_extractor(images=img, return_tensors="pt")["pixel_values"].squeeze(0)
-            val_transform   = train_transform
-        else:
-            # Strong augmentation for scratch CLIP
-            train_transform = transforms.Compose([
-                transforms.RandomResizedCrop(224, scale=(0.2, 1.0)),
-                transforms.RandomHorizontalFlip(p=0.5),
-                transforms.ColorJitter(brightness=0.4, contrast=0.4, saturation=0.4),
-                transforms.ToTensor(),
-                transforms.Normalize(mean=[0.5,0.5,0.5], std=[0.5,0.5,0.5]),
-            ])
-            val_transform = transforms.Compose([
-                transforms.Resize(256),
-                transforms.CenterCrop(224),
-                transforms.ToTensor(),
-                transforms.Normalize(mean=[0.5,0.5,0.5], std=[0.5,0.5,0.5]),
-            ])
+        train_transform = clip_processor_transform(feature_extractor)
+        val_transform = train_transform
     elif args.model == 'blip':
         processor = BlipProcessor.from_pretrained(
             "Salesforce/blip-image-captioning-base",
             local_files_only=True
         )
-        train_transform = lambda img: processor(images=img, return_tensors="pt")["pixel_values"].squeeze(0)
-        val_transform   = train_transform
+        train_transform = clip_processor_transform(processor)
+        val_transform = train_transform
     else:
-        train_transform = transforms.Compose([
-            transforms.RandomResizedCrop(224, scale=(0.8, 1.0)),
-            transforms.RandomHorizontalFlip(p=0.5),
-            transforms.ColorJitter(brightness=0.2, contrast=0.2, saturation=0.2),
-            transforms.ToTensor(),
-            transforms.Normalize(mean=[0.5,0.5,0.5], std=[0.5,0.5,0.5]),
-        ])
-        val_transform = transforms.Compose([
-            transforms.Resize(256),
-            transforms.CenterCrop(224),
-            transforms.ToTensor(),
-            transforms.Normalize(mean=[0.5,0.5,0.5], std=[0.5,0.5,0.5]),
-        ])
+        train_transform = default_img_transform(train=True)
+        val_transform = default_img_transform(train=False)
 
     # Create Datasets and Loaders
     train_imgs = [all_datas[i] for i in range(len(all_datas)) if split[i] == TRAIN]
@@ -652,8 +633,8 @@ else:
     train_dataset = CelebADataset(all_train_imgs, all_train_labels, train_transform)
     valid_dataset = CelebADataset(valid_imgs, valid_labels, val_transform)
 
-    train_loader = DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True, num_workers=4)
-    valid_loader = DataLoader(valid_dataset, batch_size=args.batch_size, shuffle=False, num_workers=4)
+    train_loader = make_loader(train_dataset, shuffle=True)
+    valid_loader = make_loader(valid_dataset, shuffle=False)
     num_classes = 2
 
 
@@ -698,7 +679,10 @@ elif args.model == 'vit':
     num_head_features = model.head.in_features
     if args.dataset == 'imagenet':
         # Multiclass head for ImageNet subset
-        model.head = nn.Linear(num_head_features, num_classes)
+        model.head = nn.Sequential(
+            nn.Dropout(p=0.5),  # Added Dropout layer
+            nn.Linear(num_head_features, num_classes)
+        )
     else:
         # Binary classification head for CelebA
         model.head = nn.Sequential(

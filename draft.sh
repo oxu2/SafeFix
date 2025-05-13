@@ -1,4 +1,26 @@
-nohup ./batch.sh -m clip -a yellowhair_brownskin -d 2 \
+CUDA_VISIBLE_DEVICES=3 python filter.py
+
+
+CUDA_VISIBLE_DEVICES=2 nohup python -u filter.py \
+  --attributes pinkcolor \
+  > logs/filter/filter_pinkcolor.log 2>&1 < /dev/null &
+
+CUDA_VISIBLE_DEVICES=0 nohup python -u filter.py \
+  --max_memory 23 \
+  --attributes redhair_brownskin_sademotion \
+  > logs/filter/filter_redhair_brownskin_sademotion.log 2>&1 < /dev/null &
+
+
+CUDA_VISIBLE_DEVICES=2 nohup bash time_run.sh sd15.py --num_added_img 1113 > logs/sd_simple_imagenet_1113.log 2>&1 < /dev/null &
+CUDA_VISIBLE_DEVICES=1 nohup bash time_run.sh sd15.py --num_added_img 1113 > logs/sd_simple_imagenet_1113.log 2>&1 < /dev/null &
+
+CUDA_VISIBLE_DEVICES=2 nohup  python -u predict.py --dataset imagenet --model vit --num_added_img 0  --save_pred_model last --num_epochs 15 --pretrained 1  > logs/base_vit_pretrain_15.log 2>&1 < /dev/null &
+CUDA_VISIBLE_DEVICES=3 nohup  python -u predict.py --dataset imagenet --model vit --num_added_img 0  --save_pred_model last --num_epochs 30 --pretrained 1  > logs/base_vit_pretrain.log 2>&1 < /dev/null &
+
+nohup ./batch.sh -m resnet -a yellowhair_brownskin -d 1 \
+  > logs/batch/batch_resnet_yellowhair_brownskin.log 2>&1 < /dev/null &
+
+nohup ./batch.sh -m clip -a yellowhair_brownskin -d 3 \
   > logs/batch/batch_clip_yellowhair_brownskin.log 2>&1 < /dev/null &
 nohup ./batch.sh -m vit -a yellowhair_brownskin -d 0 \
   > logs/batch/batch_vit_yellowhair_brownskin.log 2>&1 < /dev/null &

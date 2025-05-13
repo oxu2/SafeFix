@@ -1,5 +1,5 @@
-start time: 2025-05-07 07:01:48
-Current time: 0507070151
+start time: 2025-05-07 19:07:08
+Current time: 0507190710
 Selected 5000 filenames for sampling
 Added 5000 generated yellowhair_brownskin images, before training set has 80000 images, now 85000
 Using resnet model with random weights
@@ -83,7 +83,7 @@ emotion, surprised, 0.882006 -> 0.901391: improved
 emotion, pensive, 0.859833 -> 0.864017: improved
 
 Compared 13 attribute-specific accuracies.
-Current time: 0507070151
-Start Time: 2025-05-07 07:01:48
-End Time:   2025-05-07 07:29:17
-Duration:   00:27:29
+Current time: 0507190710
+Start Time: 2025-05-07 19:07:08
+End Time:   2025-05-07 19:30:32
+Duration:   00:23:24
