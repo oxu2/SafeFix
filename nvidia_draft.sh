@@ -1,3 +1,17 @@
+
+
+CUDA_VISIBLE_DEVICES=1 nohup python -u filter.py \
+  --attributes purplecolor \
+  > logs/filter/filter_purplecolor.log 2>&1 < /dev/null &
+
+CUDA_VISIBLE_DEVICES=2 nohup python -u filter.py \
+  --attributes yellowcolor \
+  > logs/filter/filter_yellowcolor.log 2>&1 < /dev/null &
+
+CUDA_VISIBLE_DEVICES=3 nohup python -u filter.py \
+  --attributes fabrictexture \
+  > logs/filter/filter_fabrictexture.log 2>&1 < /dev/null &
+
 CUDA_VISIBLE_DEVICES=1 python predict.py --dataset imagenet --model resnet --num_added_img 0  --save_pred_model last --num_epochs 40
 
 

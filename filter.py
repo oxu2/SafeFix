@@ -318,69 +318,93 @@ def create_feature_mapping(results_json, feasible_json="features.json", attribut
     - results_json: Path to results JSON or dictionary of results
     - feasible_json: Path to save the filtered results
     """
+    # For ImageNet, simplify mapping to just the attribute value
+    if DATASET == 'imagenet':
+        # Load results dict if a filepath is given
+        if isinstance(results_json, str):
+            with open(results_json, 'r') as f:
+                results = json.load(f)
+        else:
+            results = results_json
+        # Build mapping: include only items where attribute==1
+        feature_mapping = {}
+        suffix = f"_{attributes}"
+        for filename, result in results.items():
+            # Find the value for the attribute key ending with suffix
+            val = next((v for k, v in result.items() if k.endswith(suffix)), 0)
+            if val == 1:
+                feature_mapping[filename] = {attributes: val}
+        # Save and return
+        save_dir = os.path.dirname(feasible_json)
+        os.makedirs(save_dir, exist_ok=True)
+        out_path = os.path.join(save_dir, os.path.basename(feasible_json))
+        with open(out_path, 'w') as f:
+            json.dump(feature_mapping, f, indent=4)
+        return feature_mapping
+    # --- Original logic for CelebA etc. is now disabled for ImageNet ---
     # Ensure the save/json directory exists
-    save_dir = "save/json"
-    os.makedirs(save_dir, exist_ok=True)
-    feasible_json = os.path.join(save_dir, os.path.basename(feasible_json))  # Fix duplicate path issue
-
-    if isinstance(results_json, str):
-        # If results_json is a file path
-        with open(results_json, 'r') as f:
-            results = json.load(f)
-    else:
-        # If results_json is already a dictionary
-        results = results_json
-    # Parse the attributes string into keys
-    attr_list = attributes.split('_')
-    # Build tags and attributes lists
-    tags = []
-    attrs = []
-    if DATASET == 'celeba':
-        for attr in attr_list:
-            if attr.endswith('hair'):
-                tags.append(attr[:-4])
-                attrs.append('hair')
-            elif attr.endswith('skin'):
-                tags.append(attr[:-4])
-                attrs.append('skin')
-            elif attr.endswith('emotion'):
-                tags.append(attr[:-7])
-                attrs.append('emotion')
-            else:
-                tags.append(attr)
-                attrs.append(attr)
-        # Always include lipstick for CelebA
-        tags.append('wearing')
-        attrs.append('lipstick')
-    else:  # imagenet
-        for attr in attr_list:
-            if attr.endswith('color'):
-                tags.append(attr[:-5])
-                attrs.append('color')
-            elif attr.endswith('texture'):
-                tags.append(attr[:-7])
-                attrs.append('texture')
-    # Derive feature keys
-    keys = [f"{t}_{a}" for t, a in zip(tags, attrs)]
-    # Retain these attribute keys for filtering; ensure we always include lipstick feature in output
-    attr_keys = keys[:]
-    output_keys = attr_keys + ["wearing_lipstick"]
-
-    feature_mapping = {}
-    for filename, result in results.items():
-        # Require all specified attribute keys be positive
-        if all(result.get(key, 0) == 1 for key in attr_keys):
-            # Build mapping entry: include attribute keys and lipstick feature
-            mapping_entry = {key: result.get(key, 0) for key in attr_keys}
-            # Always include lipstick result (0 or 1)
-            mapping_entry["wearing_lipstick"] = result.get("wearing_lipstick", 0)
-            feature_mapping[filename] = mapping_entry
-
-    # Save the feature mapping to a JSON file
-    with open(feasible_json, 'w') as f:
-        json.dump(feature_mapping, f, indent=4)
-
-    return feature_mapping
+    # save_dir = "save/json"
+    # os.makedirs(save_dir, exist_ok=True)
+    # feasible_json = os.path.join(save_dir, os.path.basename(feasible_json))  # Fix duplicate path issue
+    #
+    # if isinstance(results_json, str):
+    #     # If results_json is a file path
+    #     with open(results_json, 'r') as f:
+    #         results = json.load(f)
+    # else:
+    #     # If results_json is already a dictionary
+    #     results = results_json
+    # # Parse the attributes string into keys
+    # attr_list = attributes.split('_')
+    # # Build tags and attributes lists
+    # tags = []
+    # attrs = []
+    # if DATASET == 'celeba':
+    #     for attr in attr_list:
+    #         if attr.endswith('hair'):
+    #             tags.append(attr[:-4])
+    #             attrs.append('hair')
+    #         elif attr.endswith('skin'):
+    #             tags.append(attr[:-4])
+    #             attrs.append('skin')
+    #         elif attr.endswith('emotion'):
+    #             tags.append(attr[:-7])
+    #             attrs.append('emotion')
+    #         else:
+    #             tags.append(attr)
+    #             attrs.append(attr)
+    #     # Always include lipstick for CelebA
+    #     tags.append('wearing')
+    #     attrs.append('lipstick')
+    # else:  # imagenet
+    #     for attr in attr_list:
+    #         if attr.endswith('color'):
+    #             tags.append(attr[:-5])
+    #             attrs.append('color')
+    #         elif attr.endswith('texture'):
+    #             tags.append(attr[:-7])
+    #             attrs.append('texture')
+    # # Derive feature keys
+    # keys = [f"{t}_{a}" for t, a in zip(tags, attrs)]
+    # # Retain these attribute keys for filtering; ensure we always include lipstick feature in output
+    # attr_keys = keys[:]
+    # output_keys = attr_keys + ["wearing_lipstick"]
+    #
+    # feature_mapping = {}
+    # for filename, result in results.items():
+    #     # Require all specified attribute keys be positive
+    #     if all(result.get(key, 0) == 1 for key in attr_keys):
+    #         # Build mapping entry: include attribute keys and lipstick feature
+    #         mapping_entry = {key: result.get(key, 0) for key in attr_keys}
+    #         # Always include lipstick result (0 or 1)
+    #         mapping_entry["wearing_lipstick"] = result.get("wearing_lipstick", 0)
+    #         feature_mapping[filename] = mapping_entry
+    #
+    # # Save the feature mapping to a JSON file
+    # with open(feasible_json, 'w') as f:
+    #     json.dump(feature_mapping, f, indent=4)
+    #
+    # return feature_mapping
 
 def rename_images_with_suffix(directory_path, suffix="_red", verbose=False):
     """
