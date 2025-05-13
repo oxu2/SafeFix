@@ -5,6 +5,10 @@ CUDA_VISIBLE_DEVICES=2 nohup python -u filter.py \
   --attributes pinkcolor \
   > logs/filter/filter_pinkcolor.log 2>&1 < /dev/null &
 
+CUDA_VISIBLE_DEVICES=2 nohup python -u filter.py \
+  --attributes pinkcolor \
+  > logs/filter/filter_pinkcolor.log 2>&1 < /dev/null &
+
 CUDA_VISIBLE_DEVICES=0 nohup python -u filter.py \
   --max_memory 23 \
   --attributes redhair_brownskin_sademotion \
