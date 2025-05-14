@@ -1,0 +1,50 @@
+start time: 2025-05-14 01:53:49
+Current time: 0514015356
+Added 500 generated images.
+Added 500 ImageNet orangecolor_fabrictexture images: 10400 -> 10900
+Using vit model with pretrained weights
+Epoch [1/15], Train Loss: 2.3971, Train Acc: 0.2003, Val Loss: 1.5489, Val Acc: 0.6465
+Epoch [2/15], Train Loss: 1.5685, Train Acc: 0.5120, Val Loss: 0.8590, Val Acc: 0.9204
+Epoch [3/15], Train Loss: 1.0127, Train Acc: 0.7488, Val Loss: 0.4656, Val Acc: 0.9600
+Epoch [4/15], Train Loss: 0.6583, Train Acc: 0.8546, Val Loss: 0.2772, Val Acc: 0.9692
+Epoch [5/15], Train Loss: 0.4625, Train Acc: 0.9003, Val Loss: 0.1875, Val Acc: 0.9742
+Epoch [6/15], Train Loss: 0.3431, Train Acc: 0.9231, Val Loss: 0.1419, Val Acc: 0.9773
+Epoch [7/15], Train Loss: 0.2861, Train Acc: 0.9317, Val Loss: 0.1164, Val Acc: 0.9773
+Epoch [8/15], Train Loss: 0.2425, Train Acc: 0.9380, Val Loss: 0.1013, Val Acc: 0.9777
+Epoch [9/15], Train Loss: 0.2041, Train Acc: 0.9477, Val Loss: 0.0908, Val Acc: 0.9785
+Epoch [10/15], Train Loss: 0.1850, Train Acc: 0.9505, Val Loss: 0.0839, Val Acc: 0.9788
+Epoch [11/15], Train Loss: 0.1280, Train Acc: 0.9594, Val Loss: 0.0670, Val Acc: 0.9769
+Epoch [12/15], Train Loss: 0.0941, Train Acc: 0.9723, Val Loss: 0.0839, Val Acc: 0.9742
+Epoch [13/15], Train Loss: 0.0653, Train Acc: 0.9798, Val Loss: 0.0976, Val Acc: 0.9731
+Epoch [14/15], Train Loss: 0.0599, Train Acc: 0.9815, Val Loss: 0.1106, Val Acc: 0.9715
+Epoch [15/15], Train Loss: 0.0556, Train Acc: 0.9824, Val Loss: 0.1458, Val Acc: 0.9619
+Generating and saving predictions...
+Combined predictions length: 13000
+
+Running model diagnostics on generated predictions...
+Model Validation ACC: 0.9788461538461538
+Start detect_prediction_correlation
+
+ACC: 0.955556 	Rare Case: attribute "color", description "yellow"
+ACC: 0.958904 	Rare Case: attribute "background", description "sky"
+ACC: 0.950000 	Rare Case: attribute "background", description "wild"
+ACC: 0.941176 	Rare Case: attribute "texture", description "leather"
+ACC: 0.914634 	Rare Case: attribute "texture", description "fabric"
+
+Comparing accuracy with log file: logs/compare/stat_imagenet_vit_compare.log
+Overall accuracy: 0.974615 -> 0.978846: improved
+
+Attribute-specific accuracy comparison:
+color, pink, 0.951456 -> 0.970874: improved
+color, orange, 0.945455 -> 0.981818: improved
+color, maroon, 0.947368 -> 1.000000: improved
+color, yellow, 0.955556 -> 0.955556: declined
+color, purple, 0.947368 -> 1.000000: improved
+background, snow, 0.960976 -> 0.975610: improved
+texture, fabric, 0.951220 -> 0.914634: declined
+
+Compared 7 attribute-specific accuracies.
+Current time: 0514015356
+Start Time: 2025-05-14 01:53:49
+End Time:   2025-05-14 02:09:16
+Duration:   00:15:27
