@@ -1,0 +1,11 @@
+start time: 2025-05-14 14:22:08
+Ablation mode enabled (ControlNet disabled): using image directory no_controlnet_simple
+Current time: 0514142210
+Added 100 generated images.
+Added 100 ImageNet simple images: 10400 -> 10500
+Using clip model with pretrained weights
+Epoch [1/15], Train Loss: 2.3968, Train Acc: 0.1101, Val Loss: 2.2731, Val Acc: 0.1358
+time_run.sh: line 18: 2930197 Killed                  python "$SCRIPT" "${ARGS[@]}"
+Start Time: 2025-05-14 14:22:08
+End Time:   2025-05-14 14:22:41
+Duration:   00:00:33

@@ -1,3 +1,6 @@
+nohup ./batch.sh -m clip -a simple -d 2 -u true \
+  > logs/hibug_clip_simple.log 2>&1 < /dev/null &
+
 nohup ./batch.sh -m clip -a yellowcolor -d 1 \
   > logs/batch/batch_clip_yellowcolor.log 2>&1 < /dev/null &
 nohup ./batch.sh -m resnet -a yellowcolor -d 3 \

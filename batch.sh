@@ -11,7 +11,7 @@ ATTRIBUTES=""
 GEN_ONLY=false
 NO_CONTROLNET=false
 SIMPLE=false
-DATASET="imagenet"
+DATASET="celeba"
 
 # Default list of num_added_img values; can be overridden with -n
 NUM_LIST="1000 5000 10000"

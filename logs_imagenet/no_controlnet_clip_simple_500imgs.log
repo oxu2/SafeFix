@@ -1,0 +1,13 @@
+start time: 2025-05-14 14:22:41
+Ablation mode enabled (ControlNet disabled): using image directory no_controlnet_simple
+Current time: 0514142243
+Added 500 generated images.
+Added 500 ImageNet simple images: 10400 -> 10900
+Using clip model with pretrained weights
+Epoch [1/15], Train Loss: 2.3880, Train Acc: 0.1137, Val Loss: 2.2709, Val Acc: 0.1377
+Epoch [2/15], Train Loss: 2.3306, Train Acc: 0.1402, Val Loss: 2.2143, Val Acc: 0.1885
+Epoch [3/15], Train Loss: 2.2831, Train Acc: 0.1584, Val Loss: 2.1591, Val Acc: 0.2538
+Terminated
+Start Time: 2025-05-14 14:22:41
+End Time:   2025-05-14 14:24:14
+Duration:   00:01:33
