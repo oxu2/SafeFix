@@ -1,3 +1,34 @@
+nohup ./batch.sh -m resnet -a pinkcolor_fabrictexture -d 0 \
+  > logs/batch/batch_resnet_pinkcolor_fabrictexture.log 2>&1 < /dev/null &
+nohup ./batch.sh -m resnet -a fabrictexture -d 1 \
+  > logs/batch/batch_resnet_fabrictexture.log 2>&1 < /dev/null &
+nohup ./batch.sh -m resnet -a orangecolor_fabrictexture -d 3 \
+  > logs/batch/batch_resnet_orangecolor_fabrictexture.log 2>&1 < /dev/null &
+
+CUDA_VISIBLE_DEVICES=1 python filter.py \
+  --attributes pinkcolor_fabrictexture \
+  --copy_only  \
+  --feasible_json save/feasible_pinkcolor_fabrictexture.json
+
+
+CUDA_VISIBLE_DEVICES=1 nohup python -u filter.py \
+  --attributes pinkcolor_fabrictexture \
+  > logs/filter/filter_pinkcolor_fabrictexture.log 2>&1 < /dev/null &
+
+
+CUDA_VISIBLE_DEVICES=1 nohup python -u filter.py \
+  --attributes pinkcolor_fabrictexture \
+  > logs/filter/filter_pinkcolor_fabrictexture.log 2>&1 < /dev/null &
+
+
+CUDA_VISIBLE_DEVICES=3 nohup python -u filter.py \
+  --attributes fabrictexture \
+  > logs/filter/filter_fabrictexture.log 2>&1 < /dev/null &
+
+CUDA_VISIBLE_DEVICES=2 nohup python -u filter.py \
+  --attributes yellowcolor \
+  > logs/filter/filter_yellowcolor.log 2>&1 < /dev/null &
+
 CUDA_VISIBLE_DEVICES=2 nohup python -u filter.py \
   --attributes yellowcolor \
   > logs/filter/filter_yellowcolor.log 2>&1 < /dev/null &

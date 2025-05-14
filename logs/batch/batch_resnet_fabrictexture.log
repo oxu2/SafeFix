@@ -1,0 +1,10 @@
+=== [100 imgs] Starting resnet -> logs_imagenet/resnet_fabrictexture_100imgs.log ===
+=== [100 imgs] Finished resnet ===
+
+=== [500 imgs] Starting resnet -> logs_imagenet/resnet_fabrictexture_500imgs.log ===
+=== [500 imgs] Finished resnet ===
+
+=== [1000 imgs] Starting resnet -> logs_imagenet/resnet_fabrictexture_1000imgs.log ===
+=== [1000 imgs] Finished resnet ===
+
+All batches completed successfully.

@@ -665,7 +665,7 @@ if __name__ == "__main__":
                         help='Only perform feasible mapping from existing results JSON.')
     parser.add_argument('--results_file', type=str, default=None,
                         help='Path to existing results JSON file (used with --feasible_only).')
-    parser.add_argument('--copy_only', action='store_true',
+    parser.add_argument('--copy_only', type=str2bool,
                         help='Only copy feasible images using an existing feasible JSON (skip processing).')
     parser.add_argument('--feasible_json', type=str, default=None,
                         help='Path to existing feasible JSON file for copying images.')
@@ -688,12 +688,27 @@ args = parser.parse_args()
 INCLUDE_PRESENCE = args.include_presence
 
 if not args.image_dir:
+    # Determine default directory based on dataset and attributes
     if args.dataset == 'celeba':
-        args.image_dir = os.path.join("exampleData", args.attributes)
+        default_dir = os.path.join("exampleData", args.attributes)
     else:  # imagenet
-        args.image_dir = f"exampleData/imagenet_{args.attributes}"
+        default_dir = f"exampleData/imagenet_{args.attributes}"
+    # Use default if it exists, otherwise try fallback paths
+    if os.path.exists(default_dir):
+        args.image_dir = default_dir
+    else:
+        possible_dirs = [
+            f"/home/jovyan/ouyang/{args.dataset}_{args.attributes}",
+            f"/data/oxx220000/{args.dataset}_{args.attributes}"
+        ]
+        for d in possible_dirs:
+            if os.path.exists(d):
+                args.image_dir = d
+                break
+        else:
+            args.image_dir = default_dir
     if args.verbose:
-        print(f"No --image_dir provided, using default: {args.image_dir}")
+        print(f"No --image_dir provided or default not found; using: {args.image_dir}")
 
 if args.rename_suffix is None:
     args.rename_suffix = "_" + args.attributes

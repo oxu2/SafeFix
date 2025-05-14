@@ -1,0 +1,10 @@
+=== [100 imgs] Starting clip -> logs_imagenet/clip_pinkcolor_fabrictexture_100imgs.log ===
+=== [100 imgs] Finished clip ===
+
+=== [500 imgs] Starting clip -> logs_imagenet/clip_pinkcolor_fabrictexture_500imgs.log ===
+=== [500 imgs] Finished clip ===
+
+=== [1000 imgs] Starting clip -> logs_imagenet/clip_pinkcolor_fabrictexture_1000imgs.log ===
+=== [1000 imgs] Finished clip ===
+
+All batches completed successfully.

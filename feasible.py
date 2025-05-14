@@ -13,6 +13,9 @@ input_path = args.input_path
 # Derive attribute name from input file prefix (e.g., 'pinkcolor' from 'pinkcolor_results_*.json')
 attribute = os.path.basename(input_path).split('_results')[0]
 
+# Support multiple attributes separated by underscores
+attr_list = attribute.split('_')
+
 # Derive output path from attribute
 output_path = os.path.join("save", f"feasible_{attribute}.json")
 
@@ -20,23 +23,18 @@ output_path = os.path.join("save", f"feasible_{attribute}.json")
 with open(input_path, "r") as f:
     data = json.load(f)
 
-# Normalize inner keys to attribute-only (handle class-prefixed keys)
+# Normalize inner keys to only include specified attributes
 normalized = {}
 for fname, attrs in data.items():
-    # Extract the value for any key ending with _<attribute>
-    val = next((v for k, v in attrs.items() if k.endswith(f"_{attribute}")), None)
-    # If none found, fallback to direct attribute key
-    if val is None:
-        val = attrs.get(attribute, 0)
-    normalized[fname] = {attribute: val}
-# Replace data with normalized mapping
+    # Build a dict with each attribute's value (default to 0 if missing)
+    normalized[fname] = {attr: attrs.get(attr, 0) for attr in attr_list}
 data = normalized
 
-# Filter to only those entries with attribute == 1
+# Filter entries where all specified attributes equal 1
 feasible = {
     key: val
     for key, val in data.items()
-    if val.get(attribute, 0) == 1
+    if all(val.get(attr, 0) == 1 for attr in attr_list)
 }
 
 # Ensure the output directory exists

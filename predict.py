@@ -417,7 +417,23 @@ if args.dataset == 'imagenet':
             train_dataset, train_loader = train_ds, make_loader(train_ds, shuffle=True)
     else:
         # Normal mode: generated-images + feasible filter (mirrors CelebA logic)
-        args.gen_image_dir = f"exampleData/imagenet_{attributes}"
+        # Determine generated-image directory: use default if exists, otherwise try fallbacks
+        default_gen_dir = f"exampleData/imagenet_{attributes}"
+        fallback_dirs = [
+            f"/home/jovyan/ouyang/imagenet_{attributes}",
+            f"/data/oxx220000/imagenet_{attributes}"
+        ]
+        if os.path.exists(default_gen_dir):
+            args.gen_image_dir = default_gen_dir
+        else:
+            for d in fallback_dirs:
+                if os.path.exists(d):
+                    args.gen_image_dir = d
+                    break
+            else:
+                args.gen_image_dir = default_gen_dir
+        if verbose:
+            print(f"Using generated image directory: {args.gen_image_dir}")
         if verbose:
             print(f"[DEBUG] Normal mode: looking for generated images in directory: {args.gen_image_dir}")
         # --- Patch: Respect skip_feasible for feasible_images loading ---
