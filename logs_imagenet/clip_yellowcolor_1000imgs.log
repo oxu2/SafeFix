@@ -1,0 +1,53 @@
+start time: 2025-05-13 19:50:57
+Current time: 0513195100
+Added 1000 generated images.
+Added 1000 ImageNet yellowcolor images: 10400 -> 11400
+Using clip model with pretrained weights
+Epoch [1/15], Train Loss: 2.3945, Train Acc: 0.1128, Val Loss: 2.2682, Val Acc: 0.1415
+Epoch [2/15], Train Loss: 2.3331, Train Acc: 0.1370, Val Loss: 2.2094, Val Acc: 0.1942
+Epoch [3/15], Train Loss: 2.2665, Train Acc: 0.1638, Val Loss: 2.1516, Val Acc: 0.2650
+Epoch [4/15], Train Loss: 2.2125, Train Acc: 0.1939, Val Loss: 2.0947, Val Acc: 0.3592
+Epoch [5/15], Train Loss: 2.1566, Train Acc: 0.2311, Val Loss: 2.0393, Val Acc: 0.4662
+Epoch [6/15], Train Loss: 2.0947, Train Acc: 0.2676, Val Loss: 1.9855, Val Acc: 0.5773
+Epoch [7/15], Train Loss: 2.0419, Train Acc: 0.3086, Val Loss: 1.9325, Val Acc: 0.6577
+Epoch [8/15], Train Loss: 1.9846, Train Acc: 0.3561, Val Loss: 1.8811, Val Acc: 0.7196
+Epoch [9/15], Train Loss: 1.9266, Train Acc: 0.4061, Val Loss: 1.8298, Val Acc: 0.7569
+Epoch [10/15], Train Loss: 1.8790, Train Acc: 0.4366, Val Loss: 1.7804, Val Acc: 0.7896
+Epoch [11/15], Train Loss: 0.6507, Train Acc: 0.8796, Val Loss: 0.2534, Val Acc: 0.9369
+Epoch [12/15], Train Loss: 0.1527, Train Acc: 0.9701, Val Loss: 0.2317, Val Acc: 0.9350
+Epoch [13/15], Train Loss: 0.0613, Train Acc: 0.9889, Val Loss: 0.2229, Val Acc: 0.9423
+Epoch [14/15], Train Loss: 0.0244, Train Acc: 0.9961, Val Loss: 0.2573, Val Acc: 0.9419
+Epoch [15/15], Train Loss: 0.0137, Train Acc: 0.9975, Val Loss: 0.3037, Val Acc: 0.9396
+Generating and saving predictions...
+Combined predictions length: 13000
+
+Running model diagnostics on generated predictions...
+Model Validation ACC: 0.9423076923076923
+Start detect_prediction_correlation
+
+ACC: 0.922481 	Rare Case: attribute "color", description "green"
+ACC: 0.922330 	Rare Case: attribute "color", description "pink"
+ACC: 0.909091 	Rare Case: attribute "color", description "orange"
+ACC: 0.894737 	Rare Case: attribute "color", description "maroon"
+ACC: 0.931507 	Rare Case: attribute "background", description "sky"
+ACC: 0.908397 	Hard case: attribute "background", description "trees"
+ACC: 0.931707 	Rare Case: attribute "background", description "snow"
+ACC: 0.914634 	Rare Case: attribute "texture", description "fabric"
+
+Comparing accuracy with log file: logs/compare/stat_imagenet_clip_compare.log
+Overall accuracy: 0.937308 -> 0.942308: improved
+
+Attribute-specific accuracy comparison:
+color, orange, 0.918182 -> 0.909091: declined
+color, maroon, 0.842105 -> 0.894737: improved
+color, yellow, 0.922222 -> 0.933333: improved
+color, multicolored, 0.924282 -> 0.934726: improved
+background, trees, 0.923664 -> 0.908397: declined
+background, buildings, 0.926829 -> 0.951220: improved
+texture, fabric, 0.902439 -> 0.914634: improved
+
+Compared 7 attribute-specific accuracies.
+Current time: 0513195100
+Start Time: 2025-05-13 19:50:57
+End Time:   2025-05-13 19:58:00
+Duration:   00:07:03

@@ -1,0 +1,14 @@
+Running model diagnostics on generated predictions...
+Model Validation ACC: 0.9746153846153847
+Start detect_prediction_correlation
+
+ACC: 0.951456 	Rare Case: attribute "color", description "pink"
+ACC: 0.945455 	Rare Case: attribute "color", description "orange"
+ACC: 0.947368 	Rare Case: attribute "color", description "maroon"
+ACC: 0.955556 	Rare Case: attribute "color", description "yellow"
+ACC: 0.947368 	Rare Case: attribute "color", description "purple"
+ACC: 0.960976 	Rare Case: attribute "background", description "snow"
+ACC: 0.951220 	Rare Case: attribute "texture", description "fabric"
+Current time: 0513182933
+
+

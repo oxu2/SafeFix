@@ -1,0 +1,52 @@
+start time: 2025-05-13 18:59:45
+Current time: 0513185948
+Added 1000 ImageNet simple images: 10400 -> 11400
+Using clip model with pretrained weights
+Epoch [1/15], Train Loss: 2.3927, Train Acc: 0.1141, Val Loss: 2.2688, Val Acc: 0.1412
+Epoch [2/15], Train Loss: 2.3322, Train Acc: 0.1367, Val Loss: 2.2103, Val Acc: 0.1912
+Epoch [3/15], Train Loss: 2.2667, Train Acc: 0.1636, Val Loss: 2.1526, Val Acc: 0.2635
+Epoch [4/15], Train Loss: 2.2136, Train Acc: 0.1953, Val Loss: 2.0963, Val Acc: 0.3535
+Epoch [5/15], Train Loss: 2.1596, Train Acc: 0.2298, Val Loss: 2.0414, Val Acc: 0.4588
+Epoch [6/15], Train Loss: 2.0981, Train Acc: 0.2682, Val Loss: 1.9877, Val Acc: 0.5685
+Epoch [7/15], Train Loss: 2.0466, Train Acc: 0.3050, Val Loss: 1.9351, Val Acc: 0.6558
+Epoch [8/15], Train Loss: 1.9900, Train Acc: 0.3509, Val Loss: 1.8843, Val Acc: 0.7181
+Epoch [9/15], Train Loss: 1.9314, Train Acc: 0.4022, Val Loss: 1.8335, Val Acc: 0.7577
+Epoch [10/15], Train Loss: 1.8898, Train Acc: 0.4292, Val Loss: 1.7841, Val Acc: 0.7873
+Epoch [11/15], Train Loss: 0.6815, Train Acc: 0.8701, Val Loss: 0.2469, Val Acc: 0.9412
+Epoch [12/15], Train Loss: 0.1685, Train Acc: 0.9662, Val Loss: 0.1996, Val Acc: 0.9427
+Epoch [13/15], Train Loss: 0.0780, Train Acc: 0.9842, Val Loss: 0.2281, Val Acc: 0.9365
+Epoch [14/15], Train Loss: 0.0366, Train Acc: 0.9932, Val Loss: 0.2484, Val Acc: 0.9427
+Epoch [15/15], Train Loss: 0.0180, Train Acc: 0.9970, Val Loss: 0.2690, Val Acc: 0.9473
+Generating and saving predictions...
+Combined predictions length: 13000
+
+Running model diagnostics on generated predictions...
+Model Validation ACC: 0.9473076923076923
+Start detect_prediction_correlation
+
+ACC: 0.932039 	Rare Case: attribute "color", description "pink"
+ACC: 0.927273 	Rare Case: attribute "color", description "orange"
+ACC: 0.894737 	Rare Case: attribute "color", description "maroon"
+ACC: 0.922222 	Rare Case: attribute "color", description "yellow"
+ACC: 0.925620 	Hard case: attribute "color", description "black"
+ACC: 0.935091 	Hard case: attribute "background", description "inside a house"
+ACC: 0.926829 	Rare Case: attribute "background", description "buildings"
+ACC: 0.902439 	Rare Case: attribute "texture", description "fabric"
+
+Comparing accuracy with log file: logs/compare/stat_imagenet_clip_compare.log
+Overall accuracy: 0.937308 -> 0.947308: improved
+
+Attribute-specific accuracy comparison:
+color, orange, 0.918182 -> 0.927273: improved
+color, maroon, 0.842105 -> 0.894737: improved
+color, yellow, 0.922222 -> 0.922222: improved
+color, multicolored, 0.924282 -> 0.950392: improved
+background, trees, 0.923664 -> 0.946565: improved
+background, buildings, 0.926829 -> 0.926829: improved
+texture, fabric, 0.902439 -> 0.902439: improved
+
+Compared 7 attribute-specific accuracies.
+Current time: 0513185948
+Start Time: 2025-05-13 18:59:45
+End Time:   2025-05-13 19:07:04
+Duration:   00:07:19

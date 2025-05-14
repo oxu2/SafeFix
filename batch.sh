@@ -11,32 +11,43 @@ ATTRIBUTES=""
 GEN_ONLY=false
 NO_CONTROLNET=false
 SIMPLE=false
+DATASET="imagenet"
 
 # Default list of num_added_img values; can be overridden with -n
 NUM_LIST="1000 5000 10000"
 
 RUN_SCRIPT="time_run.sh"
 PREDICT_SCRIPT="predict.py"
-LOG_DIR="logs"
+# Set log directory based on dataset
+if [[ "$DATASET" == "imagenet" ]]; then
+  LOG_DIR="logs_imagenet"
+else
+  LOG_DIR="logs"
+fi
 mkdir -p "${LOG_DIR}"
 # -m model, -a attributes, -d cuda_devices, -g gen_only
-while getopts "m:a:d:n:gus" opt; do
+while getopts "m:a:d:n:gusD:" opt; do
   case $opt in
     m) MODEL="$OPTARG" ;;
     a) ATTRIBUTES="$OPTARG" ;;
     d) CUDA_DEVICES="$OPTARG" ;;
     g) GEN_ONLY=true ;;
     u) NO_CONTROLNET=true ;;
-    s) SIMPLE=false ;;
+    s) SIMPLE=true ;;
     n) NUM_LIST="$OPTARG" ;;
+    D) DATASET="$OPTARG" ;;
     *)
-      echo "Usage: $(basename "$0") -m model -a attributes -d cuda_devices [-g] [-n num_list]"
+      echo "Usage: $(basename "$0") -m model -a attributes -d cuda_devices [-g] [-u] [-s] [-n num_list] [-D dataset]"
       exit 1
       ;;
   esac
 done
 shift $((OPTIND -1))
 
+# Override NUM_LIST for ImageNet
+if [[ "$DATASET" == "imagenet" ]]; then
+  NUM_LIST="100 500 1000"
+fi
 
 if [[ -z "$MODEL" || -z "$ATTRIBUTES" ]]; then
   echo "Error: model (-m) and attributes (-a) are required."
@@ -61,6 +72,7 @@ for NUM_ADDED_IMG in ${NUM_LIST}; do
 
   CUDA_VISIBLE_DEVICES=${CUDA_DEVICES} \
     bash "${RUN_SCRIPT}" "${PREDICT_SCRIPT}" \
+      --dataset "${DATASET}" \
       --model "${MODEL}" \
       --attributes "${ATTRIBUTES}" \
       --num_added_img "${NUM_ADDED_IMG}" \

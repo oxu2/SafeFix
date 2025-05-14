@@ -1,0 +1,10 @@
+=== [100 imgs] Starting vit -> logs_imagenet/vit_pinkcolor_100imgs.log ===
+=== [100 imgs] Finished vit ===
+
+=== [500 imgs] Starting vit -> logs_imagenet/vit_pinkcolor_500imgs.log ===
+=== [500 imgs] Finished vit ===
+
+=== [1000 imgs] Starting vit -> logs_imagenet/vit_pinkcolor_1000imgs.log ===
+=== [1000 imgs] Finished vit ===
+
+All batches completed successfully.

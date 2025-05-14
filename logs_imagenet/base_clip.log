@@ -1,0 +1,59 @@
+Current time: 0513181719
+Warning: Default comparison log file for clip not found at logs/compare/stat_imagenet_clip_compare.log
+Added 0 generated images.
+Added 0 ImageNet purplecolor images: 10400 -> 10400
+Using clip model with random weights
+Epoch [1/30], Train Loss: 2.4703, Train Acc: 0.1314, Val Loss: 2.2219, Val Acc: 0.1877
+Epoch [2/30], Train Loss: 2.2255, Train Acc: 0.1947, Val Loss: 2.1176, Val Acc: 0.2250
+Epoch [3/30], Train Loss: 2.1201, Train Acc: 0.2372, Val Loss: 2.0030, Val Acc: 0.2735
+Epoch [4/30], Train Loss: 2.0630, Train Acc: 0.2663, Val Loss: 2.0101, Val Acc: 0.2827
+Epoch [5/30], Train Loss: 2.0034, Train Acc: 0.2936, Val Loss: 1.9764, Val Acc: 0.2942
+Epoch [6/30], Train Loss: 1.9326, Train Acc: 0.3168, Val Loss: 1.9139, Val Acc: 0.3200
+Epoch [7/30], Train Loss: 1.8982, Train Acc: 0.3256, Val Loss: 1.9226, Val Acc: 0.3127
+Epoch [8/30], Train Loss: 1.8328, Train Acc: 0.3522, Val Loss: 1.9183, Val Acc: 0.3235
+Epoch [9/30], Train Loss: 1.7625, Train Acc: 0.3800, Val Loss: 1.8840, Val Acc: 0.3342
+Epoch [10/30], Train Loss: 1.7101, Train Acc: 0.4020, Val Loss: 1.8907, Val Acc: 0.3523
+Epoch [11/30], Train Loss: 1.6392, Train Acc: 0.4286, Val Loss: 1.8974, Val Acc: 0.3527
+Epoch [12/30], Train Loss: 1.5689, Train Acc: 0.4620, Val Loss: 1.9324, Val Acc: 0.3465
+Epoch [13/30], Train Loss: 1.4847, Train Acc: 0.4790, Val Loss: 1.9878, Val Acc: 0.3458
+Epoch [14/30], Train Loss: 1.3899, Train Acc: 0.5180, Val Loss: 1.9813, Val Acc: 0.3515
+Epoch [15/30], Train Loss: 1.2795, Train Acc: 0.5596, Val Loss: 2.1050, Val Acc: 0.3358
+Epoch [16/30], Train Loss: 1.1543, Train Acc: 0.6053, Val Loss: 2.2269, Val Acc: 0.3462
+Epoch [17/30], Train Loss: 1.0257, Train Acc: 0.6488, Val Loss: 2.2984, Val Acc: 0.3408
+Epoch [18/30], Train Loss: 0.8992, Train Acc: 0.6911, Val Loss: 2.5053, Val Acc: 0.3358
+Epoch [19/30], Train Loss: 0.7661, Train Acc: 0.7436, Val Loss: 2.7869, Val Acc: 0.3250
+Epoch [20/30], Train Loss: 0.6285, Train Acc: 0.7887, Val Loss: 3.0175, Val Acc: 0.3377
+Epoch [21/30], Train Loss: 0.4931, Train Acc: 0.8368, Val Loss: 3.5969, Val Acc: 0.3300
+Epoch [22/30], Train Loss: 0.3890, Train Acc: 0.8697, Val Loss: 3.8109, Val Acc: 0.3215
+Epoch [23/30], Train Loss: 0.2892, Train Acc: 0.9065, Val Loss: 4.4588, Val Acc: 0.3177
+Epoch [24/30], Train Loss: 0.2092, Train Acc: 0.9336, Val Loss: 4.7896, Val Acc: 0.3300
+Epoch [25/30], Train Loss: 0.1523, Train Acc: 0.9554, Val Loss: 5.2095, Val Acc: 0.3288
+Epoch [26/30], Train Loss: 0.1053, Train Acc: 0.9712, Val Loss: 5.5242, Val Acc: 0.3219
+Epoch [27/30], Train Loss: 0.0705, Train Acc: 0.9806, Val Loss: 5.7114, Val Acc: 0.3231
+Epoch [28/30], Train Loss: 0.0520, Train Acc: 0.9873, Val Loss: 5.9031, Val Acc: 0.3250
+Epoch [29/30], Train Loss: 0.0420, Train Acc: 0.9902, Val Loss: 5.9688, Val Acc: 0.3265
+Epoch [30/30], Train Loss: 0.0362, Train Acc: 0.9923, Val Loss: 5.9831, Val Acc: 0.3246
+Generating and saving predictions...
+Combined predictions length: 13000
+
+Running model diagnostics on generated predictions...
+Model Validation ACC: 0.32461538461538464
+Start detect_prediction_correlation
+
+ACC: 0.300226 	Hard case: attribute "color", description "white"
+ACC: 0.301370 	Hard case: attribute "color", description "blue"
+ACC: 0.300000 	Rare Case: attribute "color", description "tan"
+ACC: 0.305085 	Rare Case: attribute "color", description "gray"
+ACC: 0.300000 	Rare Case: attribute "color", description "yellow"
+ACC: 0.310705 	Hard case: attribute "color", description "multicolored"
+ACC: 0.210526 	Rare Case: attribute "color", description "purple"
+ACC: 0.273973 	Rare Case: attribute "background", description "sky"
+ACC: 0.303398 	Rare Case: attribute "background", description "water"
+ACC: 0.279720 	Rare Case: attribute "background", description "house"
+ACC: 0.283784 	Rare Case: attribute "background", description "street"
+ACC: 0.302439 	Rare Case: attribute "background", description "snow"
+ACC: 0.176471 	Rare Case: attribute "texture", description "leather"
+ACC: 0.308231 	Hard case: attribute "texture", description "glass"
+
+Skipping accuracy comparison: No comparison log file specified for the selected model or file not found.
+Current time: 0513181719

@@ -184,6 +184,9 @@ if getattr(args, 'verbose', False):
 # Override attribute file for ImageNet dataset
 if args.dataset == 'imagenet':
     args.attribute_file = 'attribute10.json'
+# Automatically enable pretrained weights for CLIP and ViT on ImageNet
+if args.dataset == 'imagenet' and args.model in ('clip', 'vit'):
+    args.pretrained = True
 # Dynamically lower batch size for memory‑intensive backbones to avoid CUDA OOM
 if args.model == 'blip' and args.batch_size > 32:
     args.batch_size = 32
@@ -195,15 +198,27 @@ if "emotion" in args.attributes.lower():
     if args.verbose:
         print(f"'emotion' detected in attributes; setting skip_feasible=True")
 
+# Automatically skip feasible filtering for ImageNet
+# if args.dataset == 'imagenet':
+#     args.skip_feasible = True
+#     if 'verbose' in locals():
+#         if verbose:
+#             print("Dataset is ImageNet; setting skip_feasible=True")
+#     elif getattr(args, 'verbose', False):
+#         print("Dataset is ImageNet; setting skip_feasible=True")
+
 # If using ViT, reduce epochs to 15 for faster training
 if args.model == 'vit' and args.num_epochs == 20:
     args.num_epochs = 15
     if args.verbose:
         print(f"Adjusted number of epochs for ViT model to {args.num_epochs}")
 
+if args.dataset == 'imagenet' and args.model == 'clip' and args.num_epochs == 20:
+    args.num_epochs = 15
+
 # Adjust number of epochs default for ImageNet subset
-if args.dataset == 'imagenet' and args.num_epochs == 20:
-    args.num_epochs = 40
+if args.dataset == 'imagenet' and args.num_epochs == 20 and args.model == 'resnet':
+    args.num_epochs = 30
     if 'verbose' in locals() and verbose:
         print(f"Adjusted number of epochs for ImageNet dataset to {args.num_epochs}")
 attributes = args.attributes
@@ -237,6 +252,9 @@ if args.dataset == 'imagenet' and args.model == 'vit' and args.pretrained:
         if verbose:
             print(f"Specifically set learning rate for pretrained ViT on ImageNet to {args.lr}")
 
+if args.dataset == 'imagenet' and args.lr == 1e-4 and args.model == 'resnet':
+    args.lr = 1e-3
+
 # Adjust LR for CLIP on ImageNet based on pretrained flag
 elif args.dataset == 'imagenet' and args.model == 'clip' and args.lr == 1e-4:
     if args.pretrained:
@@ -258,18 +276,18 @@ if args.dataset == 'celeba' and args.model in ('clip', 'vit'):
 time_now = datetime.datetime.now().strftime("%m%d%H%M%S")   
 print("Current time:", time_now)
 
-# Determine the comparison log file based on the model
+# Determine the comparison log file based on the model and dataset
 compare_log_path = None
 if args.model == 'resnet':
-    compare_log_path = 'logs/compare/stat_origin_resnet_compare.log'
+    compare_log_path = f"logs/compare/stat_{'imagenet' if args.dataset=='imagenet' else 'origin'}_resnet_compare.log"
 elif args.model == 'vit':
-    compare_log_path = 'logs/compare/stat_origin_vit_compare.log'
+    compare_log_path = f"logs/compare/stat_{'imagenet' if args.dataset=='imagenet' else 'origin'}_vit_compare.log"
 elif args.model == 'clip':
-    compare_log_path = 'logs/compare/stat_origin_clip_compare.log'
+    compare_log_path = f"logs/compare/stat_{'imagenet' if args.dataset=='imagenet' else 'origin'}_clip_compare.log"
 
 if compare_log_path and not os.path.exists(compare_log_path):
-     print(f"Warning: Default comparison log file for {args.model} not found at {compare_log_path}")
-     compare_log_path = None # Set to None if file doesn't exist
+    print(f"Warning: Default comparison log file for {args.model} not found at {compare_log_path}")
+    compare_log_path = None # Set to None if file doesn't exist
 
 class CLIPForBinary(nn.Module):
     def __init__(self, dropout_rate=0.5, pretrained=False, num_classes=1):
@@ -357,15 +375,126 @@ if args.dataset == 'imagenet':
     train_idx = np.load('train_idx_imagenet.npy')
     val_idx = np.load('val_idx_imagenet.npy')
     valid_idx = val_idx  # alias for diagnostics compatibility
-    print(f"Loaded pre-split ImageNet10 indices: {len(train_idx)} train, {len(val_idx)} validation.")
     train_ds = Subset(ImageFolder(data_dir, transform=train_transform), train_idx)
     val_ds   = Subset(ImageFolder(data_dir, transform=val_transform), val_idx)
-    train_loader = make_loader(train_ds, shuffle=True)
     valid_loader = make_loader(val_ds, shuffle=False)
-    num_classes = len(full_ds.classes)
-    # Expose datasets for training loop compatibility
-    train_dataset = train_ds
     valid_dataset = val_ds
+    num_classes = len(full_ds.classes)
+
+    # --- ImageNet augmentation modes ---
+    if args.simple:
+        # Simple mode: augment from exampleData/imagenet_simple
+        simple_root = Path("exampleData/imagenet_simple")
+        simple_paths, simple_labels = [], []
+        for cls_name, cls_idx in full_ds.class_to_idx.items():
+            cls_dir = simple_root / cls_name
+            if not cls_dir.is_dir():
+                continue
+            for img_name in os.listdir(cls_dir):
+                if img_name.lower().endswith((".png", ".jpg", ".jpeg")):
+                    simple_paths.append(str(cls_dir / img_name))
+                    simple_labels.append(cls_idx)
+        # Sample up to args.num_added_img
+        if len(simple_paths) > args.num_added_img:
+            combined = list(zip(simple_paths, simple_labels))
+            random.seed(args.seed)
+            sampled = random.sample(combined, args.num_added_img)
+            simple_paths, simple_labels = zip(*sampled)
+            simple_paths, simple_labels = list(simple_paths), list(simple_labels)
+        if simple_paths:
+            class SimpleImageDataset(Dataset):
+                def __init__(self, paths, labels, transform):
+                    self.paths, self.labels, self.transform = paths, labels, transform
+                def __len__(self): return len(self.paths)
+                def __getitem__(self, i):
+                    img = Image.open(self.paths[i]).convert("RGB")
+                    return (self.transform(img), self.labels[i]) if self.transform else (img, self.labels[i])
+            simple_ds = SimpleImageDataset(simple_paths, simple_labels, train_transform)
+            train_dataset = torch.utils.data.ConcatDataset([train_ds, simple_ds])
+            train_loader = make_loader(train_dataset, shuffle=True)
+            print(f"Added {len(simple_ds)} ImageNet simple images: {len(train_ds)} -> {len(train_dataset)}")
+        else:
+            train_dataset, train_loader = train_ds, make_loader(train_ds, shuffle=True)
+    else:
+        # Normal mode: generated-images + feasible filter (mirrors CelebA logic)
+        args.gen_image_dir = f"exampleData/imagenet_{attributes}"
+        if verbose:
+            print(f"[DEBUG] Normal mode: looking for generated images in directory: {args.gen_image_dir}")
+        # --- Patch: Respect skip_feasible for feasible_images loading ---
+        if args.skip_feasible:
+            feasible_images = {}
+            if verbose:
+                print("[DEBUG] Skipping feasible filtering (skip_feasible=True)")
+        else:
+            if os.path.exists(args.feasible_file):
+                with open(args.feasible_file) as f:
+                    feasible_images = json.load(f)
+            else:
+                feasible_images = {}
+            if verbose:
+                print(f"[DEBUG] Feasible images loaded: {len(feasible_images)} entries")
+                print(f"[DEBUG] Sample of feasible keys: {list(feasible_images.keys())[:10]}")
+        if verbose:
+            print(f"[DEBUG] Classes in full_ds: {list(full_ds.class_to_idx.keys())}")
+        # Traverse each class subfolder for generated images
+        from pathlib import Path as _Path
+        gen_paths, gen_labels = [], []
+        if verbose:
+            print("[DEBUG] Starting traversal of class subfolders for generated images...")
+        for cls_name, cls_idx in full_ds.class_to_idx.items():
+            cls_dir = _Path(args.gen_image_dir) / cls_name
+            if verbose:
+                print(f"[DEBUG] Checking class folder: {cls_dir} (exists: {cls_dir.is_dir()})")
+            if not cls_dir.is_dir():
+                continue
+            for img_name in os.listdir(cls_dir):
+                if verbose:
+                    print(f"[DEBUG] Found file in {cls_name}: {img_name}")
+                if not img_name.lower().endswith(('.png', '.jpg', '.jpeg')):
+                    continue
+                key = os.path.splitext(img_name)[0]
+                full_key = f"{cls_name}/{key}"
+                in_feasible = full_key in feasible_images
+                if verbose:
+                    print(f"[DEBUG] File key '{full_key}' in feasible_images: {in_feasible}")
+                # --- Patch: Only filter if not args.skip_feasible ---
+                if not args.skip_feasible and feasible_images and full_key not in feasible_images:
+                    if verbose:
+                        print(f"[DEBUG] Skipping '{full_key}' not in feasible_images")
+                    continue
+                gen_paths.append(str(cls_dir / img_name))
+                gen_labels.append(cls_idx)
+        # Debug before filtering by feasible_images
+        total_before_filter = len(gen_paths)
+        if verbose:
+            print(f"[DEBUG] Candidate images before feasible filtering: {total_before_filter}")
+            print(f"[DEBUG] Total candidate generated images before sampling: {len(gen_paths)}")
+        if len(gen_paths) < args.num_added_img:
+            print(f"Warning: requested {args.num_added_img}, but only {len(gen_paths)} available.")
+        # Sample up to requested number
+        random.seed(args.seed)
+        if len(gen_paths) > args.num_added_img:
+            idxs = random.sample(range(len(gen_paths)), args.num_added_img)
+            gen_paths = [gen_paths[i] for i in idxs]
+            gen_labels = [gen_labels[i] for i in idxs]
+        modified_image_paths = gen_paths
+        modified_image_labels = gen_labels
+        if verbose:
+            print(f"[DEBUG] Sampled generated images: {len(modified_image_paths)} items")
+        print(f"Added {len(modified_image_labels)} generated images.")
+        # Combine original train_ds and generated
+        class GeneratedDataset(Dataset):
+            def __init__(self, paths, labels, transform):
+                self.paths, self.labels, self.transform = paths, labels, transform
+            def __len__(self): return len(self.paths)
+            def __getitem__(self, i):
+                img = Image.open(self.paths[i]).convert("RGB")
+                return (self.transform(img), self.labels[i]) if self.transform else (img, self.labels[i])
+        gen_ds = GeneratedDataset(modified_image_paths, modified_image_labels, train_transform)
+        train_dataset = torch.utils.data.ConcatDataset([train_ds, gen_ds])
+        print(f"Added {len(modified_image_labels)} ImageNet {attributes} images: {len(train_ds)} -> {len(train_dataset)}")
+        train_loader = make_loader(train_dataset, shuffle=True)
+
     # Skip CelebA loading
     all_train_imgs = None  # placeholder
     valid_imgs = None
@@ -721,7 +850,9 @@ else:
 # Optimize all model parameters for all architectures
 if args.model == 'clip':
     optimizer = torch.optim.AdamW(model.parameters(), lr=args.lr, weight_decay=0.01)
-else:
+elif args.model == 'resnet':
+    optimizer = optim.Adam(model.parameters(), lr=args.lr, weight_decay=1e-3)
+elif args.model == 'vit':
     optimizer = optim.Adam(model.parameters(), lr=args.lr, weight_decay=1e-3)
 
 # Use StepLR for pretrained CLIP/ViT on ImageNet, otherwise CosineAnnealingLR for CLIP/ViT, StepLR for ResNet
@@ -787,41 +918,41 @@ def evaluate(model, data_loader, save_preds=False):
 # After training, save predictions for each dataset
 def save_predictions(model, train_loader, valid_loader):
     print("Generating and saving predictions...")
-    
+
     # Get predictions for training set
     _, train_preds, _ = evaluate(model, train_loader, save_preds=True)
-    
-    # Handle both cases: with or without modified images
-    if len(modified_image_paths) > 0:
-        original_train_preds = train_preds[:-len(modified_image_labels)]  # Separate original train predictions
-        modified_preds = train_preds[-len(modified_image_labels):]  # Get modified image predictions
-        # print(f"Original train predictions length: {len(original_train_preds)}")
-        # print(f"Modified image predictions length: {len(modified_preds)}")
-    else:
-        original_train_preds = train_preds
-        modified_preds = np.array([])  # Empty array if no modified images
-        # print(f"Train predictions length: {len(original_train_preds)}")
-    
+
     # Get predictions for validation set
     _, valid_preds, _ = evaluate(model, valid_loader, save_preds=True)
-    # print(f"Validation predictions length: {len(valid_preds)}")
-    
-    # Create combined predictions with correct handling for both cases
-    if len(modified_image_paths) > 0:
+
+    if args.dataset == 'imagenet':
+        # Separate original ImageNet train preds (exclude simple added ones)
+        original_count = len(train_idx)
+        original_train_preds = train_preds[:original_count]
+        # Combine only original train and validation preds
         combined_preds = np.concatenate((
             original_train_preds.flatten(),
-            valid_preds.flatten(),
-            modified_preds.flatten(),
-            unlabeled_predictions
+            valid_preds.flatten()
         ))
     else:
-        # Original + validation + unlabeled
-        combined_preds = np.concatenate((
-            original_train_preds.flatten(),
-            valid_preds.flatten(),
-            unlabeled_predictions
-        ))
-    
+        # Handle celeba or other cases
+        if len(modified_image_paths) > 0:
+            original_train_preds = train_preds[:-len(modified_image_labels)]
+            modified_preds = train_preds[-len(modified_image_labels):]
+            combined_preds = np.concatenate((
+                original_train_preds.flatten(),
+                valid_preds.flatten(),
+                modified_preds.flatten(),
+                unlabeled_predictions
+            ))
+        else:
+            original_train_preds = train_preds
+            combined_preds = np.concatenate((
+                original_train_preds.flatten(),
+                valid_preds.flatten(),
+                unlabeled_predictions
+            ))
+
     try:
         print(f"Combined predictions length: {len(combined_preds)} (should match combined_labels length: {len(combined_labels)})")
     except NameError:
@@ -1083,6 +1214,52 @@ if args.dataset == 'imagenet':
         os.makedirs(report_dir, exist_ok=True)
         MD.generate_report(f"{report_dir}/{args.dataset}_{args.model}_{attributes}_{args.num_added_img}imgs{suffix}_{time_now}")
         print(f"Diagnostic report saved to {report_dir}/{args.dataset}_{args.model}_{attributes}_{args.num_added_img}imgs{suffix}_{time_now}")
+
+    # --- Accuracy Comparison Logic ---
+    if args.gen_only:
+        print("Skipping accuracy comparison due to gen_only flag being True")
+    else:
+        if compare_log_path:
+            print(f"\nComparing accuracy with log file: {compare_log_path}")
+            orig_entries, orig_overall = parse_log(compare_log_path)
+            if orig_entries is not None:
+                orig_map = {(e['attribute'], e['description']): e['accuracy'] for e in orig_entries}
+                current_overall = MD.valid_acc
+                if orig_overall is not None and current_overall is not None:
+                    if current_overall > orig_overall:
+                        overall_status = 'improved'
+                    elif current_overall < orig_overall:
+                        overall_status = 'declined'
+                    else:
+                        overall_status = 'same'
+                    print(f'Overall accuracy: {orig_overall:.6f} -> {current_overall:.6f}: {overall_status}')
+                elif current_overall is not None:
+                     print(f'Current overall accuracy: {current_overall:.6f} (Original overall accuracy not found in log)')
+                else:
+                     print(f'Original overall accuracy: {orig_overall:.6f} (Current overall accuracy not available)')
+
+                print("\nAttribute-specific accuracy comparison:")
+                current_compared_count = 0
+                for (attribute, description), orig_acc in orig_map.items():
+                    current_acc = None
+                    if attribute in MD.attributes and description in MD.attributes[attribute]['valid acc']:
+                        current_acc = MD.attributes[attribute]['valid acc'][description]
+                    if current_acc is None:
+                        continue
+                    if current_acc > orig_acc:
+                        status = 'improved'
+                    elif current_acc < orig_acc:
+                        status = 'declined'
+                    else:
+                        status = 'same'
+                    print(f'{attribute}, {description}, {orig_acc:.6f} -> {current_acc:.6f}: {status}')
+                    current_compared_count += 1
+
+                print(f"\nCompared {current_compared_count} attribute-specific accuracies.")
+            else:
+                print(f"Could not parse or find the comparison log file: {compare_log_path}")
+        else:
+            print("\nSkipping accuracy comparison: No comparison log file specified for the selected model or file not found.")
 
 elif args.dataset == 'celeba':
     print("\nRunning model diagnostics on generated predictions...")

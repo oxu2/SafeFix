@@ -1,0 +1,22 @@
+Model Validation ACC: 0.7180769230769231
+Start detect_prediction_correlation
+
+ACC: 0.674419 	Rare Case: attribute "color", description "green"
+ACC: 0.699029 	Rare Case: attribute "color", description "pink"
+ACC: 0.700000 	Rare Case: attribute "color", description "tan"
+ACC: 0.690909 	Rare Case: attribute "color", description "orange"
+ACC: 0.688889 	Rare Case: attribute "color", description "yellow"
+ACC: 0.684211 	Rare Case: attribute "color", description "purple"
+ACC: 0.665289 	Hard case: attribute "color", description "black"
+ACC: 0.698630 	Rare Case: attribute "background", description "sky"
+ACC: 0.691684 	Hard case: attribute "background", description "inside a house"
+ACC: 0.707317 	Rare Case: attribute "background", description "buildings"
+ACC: 0.659091 	Rare Case: attribute "background", description "rocks"
+ACC: 0.662162 	Rare Case: attribute "background", description "street"
+ACC: 0.676471 	Rare Case: attribute "texture", description "metallic"
+ACC: 0.698393 	Hard case: attribute "texture", description "wooden"
+ACC: 0.588235 	Rare Case: attribute "texture", description "leather"
+ACC: 0.658537 	Rare Case: attribute "texture", description "fabric"
+
+Compared 12 attribute-specific accuracies.
+Current time: 0513165834

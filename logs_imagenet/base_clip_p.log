@@ -1,0 +1,37 @@
+Current time: 0513182952
+Warning: Default comparison log file for clip not found at logs/compare/stat_imagenet_clip_compare.log
+Added 0 generated images.
+Added 0 ImageNet redhair_brownskin images: 10400 -> 10400
+Using clip model with pretrained weights
+Epoch [1/15], Train Loss: 2.4039, Train Acc: 0.1101, Val Loss: 2.2733, Val Acc: 0.1358
+Epoch [2/15], Train Loss: 2.3410, Train Acc: 0.1304, Val Loss: 2.2187, Val Acc: 0.1815
+Epoch [3/15], Train Loss: 2.2752, Train Acc: 0.1590, Val Loss: 2.1648, Val Acc: 0.2423
+Epoch [4/15], Train Loss: 2.2183, Train Acc: 0.1930, Val Loss: 2.1121, Val Acc: 0.3292
+Epoch [5/15], Train Loss: 2.1735, Train Acc: 0.2170, Val Loss: 2.0609, Val Acc: 0.4246
+Epoch [6/15], Train Loss: 2.1182, Train Acc: 0.2525, Val Loss: 2.0108, Val Acc: 0.5319
+Epoch [7/15], Train Loss: 2.0689, Train Acc: 0.2890, Val Loss: 1.9618, Val Acc: 0.6227
+Epoch [8/15], Train Loss: 2.0152, Train Acc: 0.3301, Val Loss: 1.9138, Val Acc: 0.6896
+Epoch [9/15], Train Loss: 1.9679, Train Acc: 0.3700, Val Loss: 1.8674, Val Acc: 0.7350
+Epoch [10/15], Train Loss: 1.9172, Train Acc: 0.4083, Val Loss: 1.8213, Val Acc: 0.7712
+Epoch [11/15], Train Loss: 0.7083, Train Acc: 0.8665, Val Loss: 0.2903, Val Acc: 0.9312
+Epoch [12/15], Train Loss: 0.1695, Train Acc: 0.9694, Val Loss: 0.2146, Val Acc: 0.9412
+Epoch [13/15], Train Loss: 0.0713, Train Acc: 0.9870, Val Loss: 0.2214, Val Acc: 0.9408
+Epoch [14/15], Train Loss: 0.0313, Train Acc: 0.9947, Val Loss: 0.3205, Val Acc: 0.9296
+Epoch [15/15], Train Loss: 0.0160, Train Acc: 0.9975, Val Loss: 0.3147, Val Acc: 0.9373
+Generating and saving predictions...
+Combined predictions length: 13000
+
+Running model diagnostics on generated predictions...
+Model Validation ACC: 0.9373076923076923
+Start detect_prediction_correlation
+
+ACC: 0.918182 	Rare Case: attribute "color", description "orange"
+ACC: 0.842105 	Rare Case: attribute "color", description "maroon"
+ACC: 0.922222 	Rare Case: attribute "color", description "yellow"
+ACC: 0.924282 	Hard case: attribute "color", description "multicolored"
+ACC: 0.923664 	Hard case: attribute "background", description "trees"
+ACC: 0.926829 	Rare Case: attribute "background", description "buildings"
+ACC: 0.902439 	Rare Case: attribute "texture", description "fabric"
+
+Skipping accuracy comparison: No comparison log file specified for the selected model or file not found.
+Current time: 0513182952

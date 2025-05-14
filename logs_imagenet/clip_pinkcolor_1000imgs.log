@@ -1,0 +1,50 @@
+start time: 2025-05-13 18:59:58
+Current time: 0513190001
+Added 1000 generated images.
+Added 1000 ImageNet pinkcolor images: 10400 -> 11400
+Using clip model with pretrained weights
+Epoch [1/15], Train Loss: 2.3951, Train Acc: 0.1122, Val Loss: 2.2687, Val Acc: 0.1415
+Epoch [2/15], Train Loss: 2.3328, Train Acc: 0.1330, Val Loss: 2.2100, Val Acc: 0.1915
+Epoch [3/15], Train Loss: 2.2657, Train Acc: 0.1644, Val Loss: 2.1526, Val Acc: 0.2635
+Epoch [4/15], Train Loss: 2.2120, Train Acc: 0.1950, Val Loss: 2.0962, Val Acc: 0.3558
+Epoch [5/15], Train Loss: 2.1525, Train Acc: 0.2328, Val Loss: 2.0407, Val Acc: 0.4596
+Epoch [6/15], Train Loss: 2.0922, Train Acc: 0.2718, Val Loss: 1.9867, Val Acc: 0.5596
+Epoch [7/15], Train Loss: 2.0384, Train Acc: 0.3126, Val Loss: 1.9340, Val Acc: 0.6431
+Epoch [8/15], Train Loss: 1.9817, Train Acc: 0.3622, Val Loss: 1.8829, Val Acc: 0.7015
+Epoch [9/15], Train Loss: 1.9224, Train Acc: 0.4115, Val Loss: 1.8318, Val Acc: 0.7473
+Epoch [10/15], Train Loss: 1.8772, Train Acc: 0.4411, Val Loss: 1.7827, Val Acc: 0.7765
+Epoch [11/15], Train Loss: 0.6566, Train Acc: 0.8785, Val Loss: 0.2536, Val Acc: 0.9385
+Epoch [12/15], Train Loss: 0.1541, Train Acc: 0.9706, Val Loss: 0.2288, Val Acc: 0.9342
+Epoch [13/15], Train Loss: 0.0653, Train Acc: 0.9878, Val Loss: 0.2272, Val Acc: 0.9412
+Epoch [14/15], Train Loss: 0.0253, Train Acc: 0.9951, Val Loss: 0.2341, Val Acc: 0.9465
+Epoch [15/15], Train Loss: 0.0148, Train Acc: 0.9975, Val Loss: 0.2922, Val Acc: 0.9435
+Generating and saving predictions...
+Combined predictions length: 13000
+
+Running model diagnostics on generated predictions...
+Model Validation ACC: 0.9465384615384616
+Start detect_prediction_correlation
+
+ACC: 0.922481 	Rare Case: attribute "color", description "green"
+ACC: 0.932039 	Rare Case: attribute "color", description "pink"
+ACC: 0.936364 	Rare Case: attribute "color", description "orange"
+ACC: 0.926829 	Rare Case: attribute "background", description "buildings"
+ACC: 0.921951 	Rare Case: attribute "background", description "snow"
+
+Comparing accuracy with log file: logs/compare/stat_imagenet_clip_compare.log
+Overall accuracy: 0.937308 -> 0.946538: improved
+
+Attribute-specific accuracy comparison:
+color, orange, 0.918182 -> 0.936364: improved
+color, maroon, 0.842105 -> 0.947368: improved
+color, yellow, 0.922222 -> 0.955556: improved
+color, multicolored, 0.924282 -> 0.937337: improved
+background, trees, 0.923664 -> 0.938931: improved
+background, buildings, 0.926829 -> 0.926829: improved
+texture, fabric, 0.902439 -> 0.939024: improved
+
+Compared 7 attribute-specific accuracies.
+Current time: 0513190001
+Start Time: 2025-05-13 18:59:58
+End Time:   2025-05-13 19:07:04
+Duration:   00:07:06

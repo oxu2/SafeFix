@@ -1,8 +1,54 @@
+nohup ./batch.sh -m clip -a yellowcolor -d 1 \
+  > logs/batch/batch_clip_yellowcolor.log 2>&1 < /dev/null &
+nohup ./batch.sh -m resnet -a yellowcolor -d 3 \
+  > logs/batch/batch_resnet_yellowcolor.log 2>&1 < /dev/null &
+nohup ./batch.sh -m vit -a purplecolor -d 0 \
+  > logs/batch/batch_vit_purplecolor.log 2>&1 < /dev/null &
+nohup ./batch.sh -m vit -a pinkcolor -d 2 \
+  > logs/batch/batch_vit_pinkcolor.log 2>&1 < /dev/null &
+nohup ./batch.sh -m vit -a yellowcolor -d 3 \
+  > logs/batch/batch_vit_yellowcolor.log 2>&1 < /dev/null &
+
+
+nohup ./batch.sh -m clip -a pinkcolor -d 2 -s \
+  > logs/batch/simple_batch_clip_pinkcolor.log 2>&1 < /dev/null &
+nohup ./batch.sh -m clip -a pinkcolor -d 1 \
+  > logs/batch/batch_clip_pinkcolor.log 2>&1 < /dev/null &
+
+CUDA_VISIBLE_DEVICES=3 nohup python -u predict.py --dataset imagenet --model vit --num_added_img 0  --save_pred_model last > logs_imagenet/base_vit_p.log 2>&1 < /dev/null &
+
+
+CUDA_VISIBLE_DEVICES=1 nohup python -u predict.py --dataset imagenet --model resnet --num_added_img 0  --save_pred_model last --attributes purplecolor --num_epochs 30 > logs_imagenet/base_resnet.log 2>&1 < /dev/null &
+
+
+nohup ./batch.sh -m resnet -a pinkcolor -d 2 -s \
+  > logs/batch/simple_batch_resnet_pinkcolor.log 2>&1 < /dev/null &
+
+nohup ./batch.sh -m resnet -a pinkcolor -d 3 \
+  > logs/batch/batch_resnet_pinkcolor.log 2>&1 < /dev/null &
+
+
+nohup ./batch.sh -m resnet -a purplecolor -d 2 -s \
+  > logs/batch/simple_batch_resnet_purplecolor.log 2>&1 < /dev/null &
+
+nohup ./batch.sh -m resnet -a purplecolor -d 3 \
+  > logs/batch/batch_resnet_purplecolor.log 2>&1 < /dev/null &
+
+CUDA_VISIBLE_DEVICES=3 python predict.py --dataset imagenet --model resnet --num_added_img 100  --save_pred_model last --attributes purplecolor --num_epochs 10 
+
+CUDA_VISIBLE_DEVICES=1 nohup python -u predict.py --dataset imagenet --model resnet --num_added_img 0  --save_pred_model last --attributes purplecolor --num_epochs 30 > logs_imagenet/base_resnet.log 2>&1 < /dev/null &
+
+CUDA_VISIBLE_DEVICES=1 python predict.py --dataset imagenet --model resnet --num_added_img 100  --save_pred_model last --num_epochs 10 
+
+
+CUDA_VISIBLE_DEVICES=2 python predict.py --dataset imagenet --model resnet --num_added_img 100  --save_pred_model last --num_epochs 10 
+
 CUDA_VISIBLE_DEVICES=3 python filter.py
 
 
-CUDA_VISIBLE_DEVICES=2 nohup python -u filter.py \
+CUDA_VISIBLE_DEVICES=0 nohup python -u filter.py \
   --attributes pinkcolor \
+  --max_memory 22 \
   > logs/filter/filter_pinkcolor.log 2>&1 < /dev/null &
 
 CUDA_VISIBLE_DEVICES=2 nohup python -u filter.py \

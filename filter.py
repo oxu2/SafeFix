@@ -691,7 +691,7 @@ if not args.image_dir:
     if args.dataset == 'celeba':
         args.image_dir = os.path.join("exampleData", args.attributes)
     else:  # imagenet
-        args.image_dir = f"./imagenet10_{args.attributes}"
+        args.image_dir = f"exampleData/imagenet_{args.attributes}"
     if args.verbose:
         print(f"No --image_dir provided, using default: {args.image_dir}")
 

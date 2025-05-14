@@ -1,0 +1,50 @@
+start time: 2025-05-13 19:58:57
+Current time: 0513195859
+Added 500 generated images.
+Added 500 ImageNet purplecolor images: 10400 -> 10900
+Using vit model with pretrained weights
+Epoch [1/15], Train Loss: 2.4083, Train Acc: 0.1980, Val Loss: 1.5494, Val Acc: 0.6442
+Epoch [2/15], Train Loss: 1.5801, Train Acc: 0.5096, Val Loss: 0.8572, Val Acc: 0.9212
+Epoch [3/15], Train Loss: 1.0119, Train Acc: 0.7468, Val Loss: 0.4658, Val Acc: 0.9588
+Epoch [4/15], Train Loss: 0.6575, Train Acc: 0.8556, Val Loss: 0.2765, Val Acc: 0.9692
+Epoch [5/15], Train Loss: 0.4534, Train Acc: 0.9017, Val Loss: 0.1867, Val Acc: 0.9735
+Epoch [6/15], Train Loss: 0.3447, Train Acc: 0.9238, Val Loss: 0.1407, Val Acc: 0.9769
+Epoch [7/15], Train Loss: 0.2703, Train Acc: 0.9366, Val Loss: 0.1155, Val Acc: 0.9777
+Epoch [8/15], Train Loss: 0.2387, Train Acc: 0.9425, Val Loss: 0.1002, Val Acc: 0.9785
+Epoch [9/15], Train Loss: 0.2050, Train Acc: 0.9474, Val Loss: 0.0901, Val Acc: 0.9788
+Epoch [10/15], Train Loss: 0.1882, Train Acc: 0.9514, Val Loss: 0.0828, Val Acc: 0.9788
+Epoch [11/15], Train Loss: 0.1268, Train Acc: 0.9628, Val Loss: 0.0658, Val Acc: 0.9800
+Epoch [12/15], Train Loss: 0.0854, Train Acc: 0.9728, Val Loss: 0.0800, Val Acc: 0.9742
+Epoch [13/15], Train Loss: 0.0724, Train Acc: 0.9785, Val Loss: 0.0833, Val Acc: 0.9758
+Epoch [14/15], Train Loss: 0.0521, Train Acc: 0.9831, Val Loss: 0.1118, Val Acc: 0.9735
+Epoch [15/15], Train Loss: 0.0553, Train Acc: 0.9838, Val Loss: 0.1150, Val Acc: 0.9731
+Generating and saving predictions...
+Combined predictions length: 13000
+
+Running model diagnostics on generated predictions...
+Model Validation ACC: 0.98
+Start detect_prediction_correlation
+
+ACC: 0.947368 	Rare Case: attribute "color", description "maroon"
+ACC: 0.955556 	Rare Case: attribute "color", description "yellow"
+ACC: 0.894737 	Rare Case: attribute "color", description "purple"
+ACC: 0.950000 	Rare Case: attribute "background", description "wild"
+ACC: 0.951220 	Rare Case: attribute "texture", description "fabric"
+
+Comparing accuracy with log file: logs/compare/stat_imagenet_vit_compare.log
+Overall accuracy: 0.974615 -> 0.980000: improved
+
+Attribute-specific accuracy comparison:
+color, pink, 0.951456 -> 0.970874: improved
+color, orange, 0.945455 -> 0.981818: improved
+color, maroon, 0.947368 -> 0.947368: improved
+color, yellow, 0.955556 -> 0.955556: declined
+color, purple, 0.947368 -> 0.894737: declined
+background, snow, 0.960976 -> 0.970732: improved
+texture, fabric, 0.951220 -> 0.951220: declined
+
+Compared 7 attribute-specific accuracies.
+Current time: 0513195859
+Start Time: 2025-05-13 19:58:57
+End Time:   2025-05-13 20:18:44
+Duration:   00:19:47
