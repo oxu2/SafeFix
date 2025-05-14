@@ -1,3 +1,11 @@
+
+nohup ./batch.sh -m resnet -a pinkcolor_fabrictexture -d 0 -s \
+  > logs/batch/simple_batch_resnet_pinkcolor_fabrictexture.log 2>&1 < /dev/null &
+nohup ./batch.sh -m vit -a pinkcolor_fabrictexture -d 1 -s \
+  > logs/batch/simple_batch_vit_pinkcolor_fabrictexture.log 2>&1 < /dev/null &
+nohup ./batch.sh -m clip -a orangecolor_fabrictexture -d 2 -s \
+  > logs/batch/simple_batch_clip_cccc.log 2>&1 < /dev/null &
+
 nohup ./batch.sh -m resnet -a pinkcolor_fabrictexture -d 0 \
   > logs/batch/batch_resnet_pinkcolor_fabrictexture.log 2>&1 < /dev/null &
 nohup ./batch.sh -m resnet -a fabrictexture -d 1 \

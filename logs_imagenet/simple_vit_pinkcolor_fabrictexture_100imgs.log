@@ -1,0 +1,48 @@
+start time: 2025-05-14 16:51:15
+Current time: 0514165119
+Using vit model with pretrained weights
+Epoch [1/15], Train Loss: 2.4109, Train Acc: 0.1909, Val Loss: 1.5856, Val Acc: 0.6258
+Epoch [2/15], Train Loss: 1.6146, Train Acc: 0.4920, Val Loss: 0.9048, Val Acc: 0.9135
+Epoch [3/15], Train Loss: 1.0472, Train Acc: 0.7334, Val Loss: 0.5031, Val Acc: 0.9562
+Epoch [4/15], Train Loss: 0.6791, Train Acc: 0.8503, Val Loss: 0.2983, Val Acc: 0.9681
+Epoch [5/15], Train Loss: 0.4748, Train Acc: 0.8992, Val Loss: 0.1999, Val Acc: 0.9735
+Epoch [6/15], Train Loss: 0.3550, Train Acc: 0.9179, Val Loss: 0.1497, Val Acc: 0.9769
+Epoch [7/15], Train Loss: 0.2855, Train Acc: 0.9344, Val Loss: 0.1218, Val Acc: 0.9773
+Epoch [8/15], Train Loss: 0.2381, Train Acc: 0.9446, Val Loss: 0.1046, Val Acc: 0.9785
+Epoch [9/15], Train Loss: 0.2102, Train Acc: 0.9494, Val Loss: 0.0935, Val Acc: 0.9792
+Epoch [10/15], Train Loss: 0.1890, Train Acc: 0.9513, Val Loss: 0.0857, Val Acc: 0.9800
+Epoch [11/15], Train Loss: 0.1287, Train Acc: 0.9626, Val Loss: 0.0723, Val Acc: 0.9758
+Epoch [12/15], Train Loss: 0.0917, Train Acc: 0.9719, Val Loss: 0.0865, Val Acc: 0.9723
+Epoch [13/15], Train Loss: 0.0652, Train Acc: 0.9788, Val Loss: 0.0961, Val Acc: 0.9762
+Epoch [14/15], Train Loss: 0.0577, Train Acc: 0.9822, Val Loss: 0.1127, Val Acc: 0.9715
+Epoch [15/15], Train Loss: 0.0568, Train Acc: 0.9823, Val Loss: 0.1128, Val Acc: 0.9708
+Generating and saving predictions...
+Combined predictions length: 13000
+
+Running model diagnostics on generated predictions...
+Model Validation ACC: 0.98
+Start detect_prediction_correlation
+
+ACC: 0.968992 	Rare Case: attribute "color", description "green"
+ACC: 0.966667 	Rare Case: attribute "color", description "yellow"
+ACC: 0.950000 	Rare Case: attribute "background", description "wild"
+ACC: 0.941176 	Rare Case: attribute "texture", description "leather"
+ACC: 0.914634 	Rare Case: attribute "texture", description "fabric"
+
+Comparing accuracy with log file: logs/compare/stat_imagenet_vit_compare.log
+Overall accuracy: 0.974615 -> 0.980000: improved
+
+Attribute-specific accuracy comparison:
+color, pink, 0.951456 -> 0.970874: improved
+color, orange, 0.945455 -> 0.981818: improved
+color, maroon, 0.947368 -> 1.000000: improved
+color, yellow, 0.955556 -> 0.966667: improved
+color, purple, 0.947368 -> 1.000000: improved
+background, snow, 0.960976 -> 0.975610: improved
+texture, fabric, 0.951220 -> 0.914634: declined
+
+Compared 7 attribute-specific accuracies.
+Current time: 0514165119
+Start Time: 2025-05-14 16:51:15
+End Time:   2025-05-14 17:02:43
+Duration:   00:11:28
