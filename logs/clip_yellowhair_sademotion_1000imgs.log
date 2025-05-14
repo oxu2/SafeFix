@@ -29,7 +29,7 @@ Combined predictions length: 181000 (should match combined_labels length: 181000
 Current time: 0505171601
 
 Running model diagnostics on generated predictions...
-Model Validation ACC: 0.9073
+Model Validation ACC: 0.9072
 Start detect_failure_by_label
 
 Start detect_prediction_correlation
@@ -67,7 +67,7 @@ Start detect_failure_prediction_correlation
 Model diagnostics complete.
 
 Comparing accuracy with log file: logs/compare/stat_origin_clip_compare.log
-Overall accuracy: 0.898500 -> 0.907300: improved
+Overall accuracy: 0.898500 -> 0.907200: improved
 
 Attribute-specific accuracy comparison:
 beard, No, 0.884362 -> 0.894977: improved

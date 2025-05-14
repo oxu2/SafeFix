@@ -1,0 +1,12 @@
+start time: 2025-05-14 14:23:17
+Ablation mode enabled (ControlNet disabled): using image directory no_controlnet_simple
+Current time: 0514142320
+Error: Ablation image directory no_controlnet_simple not found.
+Warning: requested 1000 generated simple images, but only 0 available.
+Selected 0 filenames for sampling
+Added 0 generated simple images, before training set has 80000 images, now 80000
+Using clip model with random weights
+Terminated
+Start Time: 2025-05-14 14:23:17
+End Time:   2025-05-14 14:24:14
+Duration:   00:00:57

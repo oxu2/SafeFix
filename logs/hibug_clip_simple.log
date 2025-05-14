@@ -1,0 +1,11 @@
+=== [1000 imgs] Starting clip -> logs/no_controlnet_clip_simple_1000imgs.log ===
+=== [1000 imgs] Finished clip ===
+
+=== [5000 imgs] Starting clip -> logs/no_controlnet_clip_simple_5000imgs.log ===
+=== [5000 imgs] Finished clip ===
+
+=== [10000 imgs] Starting clip -> logs/no_controlnet_clip_simple_10000imgs.log ===
+=== [10000 imgs] Finished clip ===
+
+All batches completed successfully.
+2: cho: command not found

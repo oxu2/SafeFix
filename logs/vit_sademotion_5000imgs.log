@@ -9,7 +9,8 @@ Added 5000 generated sademotion images, before training set has 80000 images, no
 Using vit model with random weights
 Epoch [1/15], Train Loss: 0.5649, Train Acc: 0.7036, Val Loss: 0.5719, Val Acc: 0.7527
 Epoch [2/15], Train Loss: 0.4481, Train Acc: 0.8176, Val Loss: 0.4641, Val Acc: 0.8195
-Epoch [3/15], Train Loss: 0.4040, Train Acc: 0.8509, Val Loss: 0.4515, Val Acc: 0.8272
+Epoch [3/15], Train Loss
+: 0.4040, Train Acc: 0.8509, Val Loss: 0.4515, Val Acc: 0.8272
 Epoch [4/15], Train Loss: 0.3748, Train Acc: 0.8726, Val Loss: 0.4213, Val Acc: 0.8524
 Epoch [5/15], Train Loss: 0.3588, Train Acc: 0.8844, Val Loss: 0.4421, Val Acc: 0.8457
 Epoch [6/15], Train Loss: 0.3501, Train Acc: 0.8899, Val Loss: 0.4077, Val Acc: 0.8598

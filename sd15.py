@@ -138,7 +138,7 @@ if args.simple:
             color = random.choice(color_list)
             background = random.choice(background_list)
             label = random.choice(label_list)
-            prompt = f"A photo of {color} {label}, in a {background}."
+            prompt = f"A photo of {color} {label} with {texture} texture, in a {background}."
             prompts.append(prompt)
             labels_selected.append(label)
 else:
