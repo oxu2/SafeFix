@@ -67,7 +67,7 @@ for NUM_ADDED_IMG in ${NUM_LIST}; do
   if [[ "${NO_CONTROLNET}" == true ]]; then
     SUFFIX+="no_controlnet_"
   fi
-  LOG_FILE="${LOG_DIR}/${SUFFIX}${MODEL}_${ATTRIBUTES}_${NUM_ADDED_IMG}imgs.log"
+  LOG_FILE="${LOG_DIR}/${SUFFIX}${MODEL}_${ATTRIBUTES}_${NUM_ADDED_IMG}imgs_skipfeasible.log"
   echo "=== [${NUM_ADDED_IMG} imgs] Starting ${MODEL} -> ${LOG_FILE} ==="
 
   CUDA_VISIBLE_DEVICES=${CUDA_DEVICES} \
