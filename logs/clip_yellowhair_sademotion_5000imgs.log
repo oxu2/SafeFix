@@ -49,8 +49,8 @@ The accuracy with "hair color" = "gray" is 0.9736842105263158
 Correct predictions: 1036/1064
 The accuracy with "hair color" = "brown" is 0.90242660783981
 Correct predictions: 5318/5893
-The accuracy with "hair color" = "red" is 0.8985507246376812
-Correct predictions: 558/621
+The accuracy with "hair color" = "red" is 0.9082125604
+Correct predictions: 564/621
 The accuracy with "skin" = "white" is 0.9100492610837438
 Correct predictions: 9237/10150
 The accuracy with "skin" = "black" is 0.9247504479140005
@@ -78,7 +78,7 @@ hair color, blonde, 0.875836 -> 0.881184: improved
 hair color, black, 0.908075 -> 0.920000: improved
 hair color, gray, 0.972744 -> 0.973684: improved
 hair color, brown, 0.892754 -> 0.902427: improved
-hair color, red, 0.900161 -> 0.898551: declined
+hair color, red, 0.900161 -> 0.9082125604: improved
 skin, brown, 0.885580 -> 0.890964: improved
 emotion, sad, 0.853612 -> 0.862167: improved
 emotion, calm, 0.877016 -> 0.893145: improved

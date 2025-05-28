@@ -17,7 +17,7 @@ ATTRIBUTE_GROUPS = [
 import argparse
 
 parser = argparse.ArgumentParser(description="Compare hibug vs ours logs")
-parser.add_argument('--attributes', type=str, default="redhair_brownskin",
+parser.add_argument('--attributes', type=str, default=None,
                     help='attributes to detect, e.g. redhair_sademotion, redhair_brownskin, etc.')
 parser.add_argument('--model', type=str, default='resnet', choices=['resnet', 'vit', 'clip'],
                     help='Model architecture to use (resnet, vit, or clip)')
@@ -25,7 +25,15 @@ parser.add_argument('--only_attr', type=lambda x: x.lower() in ['true','1','yes'
                     help='Whether to print only metrics for attributes in --attributes.')
 parser.add_argument('--excel', type=lambda x: x.lower() in ['true','1','yes'], default=True,
                     help='Whether to save output to Excel (True/False).')
+parser.add_argument('--dataset', type=str, default='imagenet', choices=['imagenet','celeba'],
+                    help='Dataset to use (imagenet or celeba).')
 args = parser.parse_args()
+
+# Select log directory based on dataset
+if args.dataset == 'imagenet':
+    log_dir = 'logs_imagenet'
+else:
+    log_dir = 'logs'
 
 def parse_scores(log_path):
     """
@@ -52,46 +60,80 @@ def parse_scores(log_path):
                 after_scores[name] = float(m.group(4))
     return before_scores, after_scores
 
-# You can modify the list of added image counts below if needed
+# choose image counts based on dataset
+if args.dataset == 'imagenet':
+    nums = [100, 500, 1000]
+else:
+    nums = [1000, 5000, 10000]
 results = []
-for num in [1000, 5000, 10000]:
-    ours_log   = f"logs/{args.model}_{args.attributes}_{num}imgs.log"
-    hibug_log = f"logs/hibug_{args.model}_simple_{num}imgs_last.log"
-    class_log = f"logs/hibug_{args.model}_class_{num}imgs.log"
+for num in nums:
+    # determine attribute part for ours_log
+    if args.dataset == 'imagenet':
+        # groups already set above in excel branch, but ensure here too
+        if args.model in ['resnet', 'vit']:
+            attr_part = 'pinkcolor_fabrictexture'
+        elif args.model == 'clip':
+            attr_part = 'orangecolor_fabrictexture'
+        else:
+            attr_part = args.attributes or ''
+    else:
+        attr_part = args.attributes or ''
+    ours_log = f"{log_dir}/{args.model}_{attr_part}_{num}imgs.log"
+    
+    if args.dataset == 'imagenet':
+        hibug_log = f"{log_dir}/simple_{args.model}_{attr_part}_{num}imgs.log"
+        # example: logs_imagenet/hibug_resnet_simple_pinkcolor_fabrictexture_1000imgs.log
+        print(f"hibug log: {hibug_log}")
+    else:
+        hibug_log = f"{log_dir}/hibug_{args.model}_simple_{num}imgs_last.log"
+    class_log = f"{log_dir}/hibug_{args.model}_class_{num}imgs.log"
 
-    if not (os.path.exists(ours_log) and os.path.exists(hibug_log) and os.path.exists(class_log)):
-        print(f"Skipping {num} imgs: missing log files.")
+    # require ours_log always
+    if not os.path.exists(ours_log):
+        print(f"Skipping {num} imgs: missing ours log.")
         continue
-
+    # parse ours
     ours_before, ours_after = parse_scores(ours_log)
-    hibug_before, hibug_after = parse_scores(hibug_log)
-    class_before, class_after = parse_scores(class_log)
+    # parse hibug and class logs, but continue even if missing
+    try:
+        hibug_before, hibug_after = parse_scores(hibug_log)
+    except FileNotFoundError:
+        hibug_before, hibug_after = {}, {}
+    try:
+        class_before, class_after = parse_scores(class_log)
+    except FileNotFoundError:
+        class_before, class_after = {}, {}
 
-    if args.only_attr:
-        include = set()
-        for attr in args.attributes.split('_'):
-            if attr.endswith('hair'):
-                include.add(('hair color', attr[:-4]))
-            elif attr.endswith('skin'):
-                include.add(('skin', attr[:-4]))
-            elif attr.endswith('motion'):
-                include.add(('emotion', attr[:-6]))
+    # if args.only_attr:
+    #     include = set()
+    #     for attr in args.attributes.split('_'):
+    #         if attr.endswith('hair'):
+    #             include.add(('hair color', attr[:-4]))
+    #         elif attr.endswith('skin'):
+    #             include.add(('skin', attr[:-4]))
+    #         elif attr.endswith('motion'):
+    #             include.add(('emotion', attr[:-6]))
 
     base_val = ours_before.get('Overall', float('nan'))
     hibug_val = hibug_after.get('Overall', float('nan'))
     base_val *= 100
     hibug_val *= 100
     if args.excel:
-        # for clip model, only consider yellowhair_sademotion
-        if args.model == 'clip':
-            groups = ['yellowhair_sademotion']
+        # select attribute groups based on dataset and model
+        if args.dataset == 'imagenet':
+            if args.model in ['resnet', 'vit']:
+                groups = ['pinkcolor_fabrictexture']
+            elif args.model == 'clip':
+                groups = ['orangecolor_fabrictexture']
+            else:
+                groups = ATTRIBUTE_GROUPS
         else:
             groups = ATTRIBUTE_GROUPS
         class_val = class_after.get('Overall', float('nan')) * 100
         # extract Overall ACC for each attribute group from its own log file
         attr_accs = {}
         for attr in groups:
-            log_path = f"logs/{args.model}_{attr}_{num}imgs.log"
+            log_path = f"{log_dir}/{args.model}_{attr}_{num}imgs.log"
             if os.path.exists(log_path):
                 _, scores = parse_scores(log_path)
                 attr_accs[attr] = scores.get('Overall', float('nan')) * 100
@@ -118,7 +160,15 @@ for num in [1000, 5000, 10000]:
                 cat, val = 'Overall', None
             if args.only_attr and cat != 'Overall':
                 # build include set once above
-                if (cat, val) not in include:
+                # if (cat, val) not in include:
+                #     continue
+                # Instead, skip metrics not in groups if only_attr is True
+                found = False
+                for group in groups:
+                    if val and val in group:
+                        found = True
+                        break
+                if not found:
                     continue
             base = ours_before.get(metric, float('nan'))
             h = hibug_after.get(metric, float('nan'))
@@ -128,7 +178,7 @@ for num in [1000, 5000, 10000]:
 # After the loop, save Excel if requested
 if args.excel:
     df = pd.DataFrame(results).set_index('num_images')
-    out_name = f"{args.model}_comparison.xlsx"
+    out_name = f"{args.dataset}_{args.model}_comparison.xlsx"
     try:
         df.to_excel(out_name)
         print(f"Saved Excel report to {out_name}")

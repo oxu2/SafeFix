@@ -1,3 +1,19 @@
+
+
+CUDA_VISIBLE_DEVICES=3 nohup python -u lpips.py --dataset imagenet > logs_imagenet/lpips_imagenet.log 2>&1 < /dev/null &
+
+
+nohup ./batch.sh -m resnet -a redhair_brownskin_sademotion -d 0 \
+  > logs/batch/batch_resnet_redhair_brownskin_sademotion_skipfeasible.log 2>&1 < /dev/null &
+nohup ./batch.sh -m resnet -a redhair_brownskin -d 2 \
+  > logs/batch/batch_resnet_redhair_brownskin.log 2>&1 < /dev/null &
+
+
+  
+nohup ./batch.sh -m vit -a redhair_brownskin -d 3 -g \
+  > logs/g_vit_redhair_brownskin.log 2>&1 < /dev/null &
+
+
 nohup ./batch.sh -m clip -a simple -d 2 -u true \
   > logs/hibug_clip_simple.log 2>&1 < /dev/null &
 
