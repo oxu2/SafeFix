@@ -26,7 +26,7 @@ Found 14505 images with file type(s): jpg
 [14000/14505] Processed...
 Image processing using Qwen VL model complete.
 
-find /home/jovyan/ouyang/sad -type f -iname '*.jpg' | wc -l
+find /home/jovyan/ouser/sad -type f -iname '*.jpg' | wc -l
 
 --- Processing Summary ---
 Processed all 14505 found images.

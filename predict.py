@@ -133,7 +133,7 @@ parser.add_argument('--gen_only', type=str2bool, default=False,
                     help='Use only generated images for training (default: False)')
 parser.add_argument('--skip_train_unlabeled', type=str2bool, default=False,
                     help='Skip processing TRAIN and UNLABELED splits in diagnostics')
-parser.add_argument('--no_controlnet', type=str2bool, default=False,
+parser.add_argument('--no_controlnet', type=str2bool, default=True,
                     help='Ablation flag: disable ControlNet-based augmentation (default: False)')
 parser.add_argument('--skip_feasible', type=str2bool, default=False,
                     help='Skip loading feasible JSON for any attributes (default: False)')
@@ -420,7 +420,7 @@ if args.dataset == 'imagenet':
         # Determine generated-image directory: use default if exists, otherwise try fallbacks
         default_gen_dir = f"exampleData/imagenet_{attributes}"
         fallback_dirs = [
-            f"/home/jovyan/ouyang/imagenet_{attributes}",
+            f"/home/jovyan/ouser/imagenet_{attributes}",
             f"/data/oxx220000/imagenet_{attributes}"
         ]
         if os.path.exists(default_gen_dir):
@@ -525,8 +525,8 @@ else:
         lines = [line.strip('\n').split(' ')[0] for line in f.readlines()]
         
 
-    if os.path.exists('/home/jovyan/ouyang/dataset/img_align_celeba/'):
-        input_dir = '/home/jovyan/ouyang/dataset/img_align_celeba/'
+    if os.path.exists('/home/jovyan/ouser/dataset/img_align_celeba/'):
+        input_dir = '/home/jovyan/ouser/dataset/img_align_celeba/'
     else:
         input_dir = '/data/oxx220000/img_align_celeba/'    
     all_datas = [input_dir + line for line in lines][1:]

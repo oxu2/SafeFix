@@ -6,8 +6,8 @@ DiffusionWrapper has 859.52 M params.
 making attention of type 'vanilla' with 512 in_channels
 Working with z of shape (1, 4, 32, 32) = 4096 dimensions.
 making attention of type 'vanilla' with 512 in_channels
-Loaded model config from [/home/jovyan/ouyang/ControlNet/models/cldm_v15.yaml]
-Loaded state_dict from [/home/jovyan/ouyang/ControlNet/models/control_sd15_hed.pth]
+Loaded model config from [/home/jovyan/ouser/ControlNet/models/cldm_v15.yaml]
+Loaded state_dict from [/home/jovyan/ouser/ControlNet/models/control_sd15_hed.pth]
 Global seed set to 29365
 Global seed set to 32540
 Global seed set to 58715
