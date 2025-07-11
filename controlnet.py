@@ -73,8 +73,8 @@ prompt_text = 'a person with ' + ', '.join(mapped) + ', high detail, natural lig
 apply_hed = HEDdetector()
 
 # Determine model config and weights paths, with fallback
-config_path = '/home/jovyan/ouyang/ControlNet/models/cldm_v15.yaml'
-weights_path = '/home/jovyan/ouyang/ControlNet/models/control_sd15_hed.pth'
+config_path = '/home/jovyan/ouser/ControlNet/models/cldm_v15.yaml'
+weights_path = '/home/jovyan/ouser/ControlNet/models/control_sd15_hed.pth'
 if not os.path.exists(config_path):
     config_path = 'model_controlnet/cldm_v15.yaml'
     weights_path = 'model_controlnet/control_sd15_hed.pth'
@@ -172,8 +172,8 @@ def inference(image_path, prompt,
 
 
 # Determine input directory, try primary then fallback
-if os.path.exists('/home/jovyan/ouyang/dataset/img_align_celeba'):
-    input_dir = '/home/jovyan/ouyang/dataset/img_align_celeba'
+if os.path.exists('/home/jovyan/ouser/dataset/img_align_celeba'):
+    input_dir = '/home/jovyan/ouser/dataset/img_align_celeba'
 else:
     input_dir = '/data/oxx220000/img_align_celeba'
 # Output directory based on attributes
@@ -185,7 +185,7 @@ existing_files = [f for f in os.listdir(output_dir) if f.lower().endswith('.jpg'
 generated_count = len(existing_files)
 
 # Determine indices file path with fallback
-primary_indices = f'/home/jovyan/ouyang/HiBug/non_{args.attributes}_indices.txt'
+primary_indices = f'/home/jovyan/ouser/HiBug/non_{args.attributes}_indices.txt'
 fallback_indices = f'exampleData/celebA/non_{args.attributes}_indices.txt'
 if os.path.exists(primary_indices):
     indices_file = primary_indices

@@ -316,7 +316,7 @@ else:
     # Determine base directory for CelebA images
     celeba_dir_candidates = [
         "/data/oxx220000/img_align_celeba/",
-        "/home/jovyan/ouyang/dataset/img_align_celeba/"
+        "/home/jovyan/ouser/dataset/img_align_celeba/"
     ]
     for dir_path in celeba_dir_candidates:
         if os.path.isdir(dir_path):

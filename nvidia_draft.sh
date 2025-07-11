@@ -1,3 +1,9 @@
+nohup ./batch.sh -m resnet -a redhair_brownskin_sademotion -d 0 -u \
+  > logs/batch/batch_resnet_redhair_brownskin_sademotion_nocontrolnet.log 2>&1 < /dev/null &
+
+nohup ./batch.sh -m resnet -a redhair_brownskin -d 3 -u \
+  > logs/batch/batch_resnet_redhair_brownskin_nocontrolnet.log 2>&1 < /dev/null &
+
 
 nohup ./batch.sh -m resnet -a pinkcolor_fabrictexture -d 0 -s \
   > logs/batch/simple_batch_resnet_pinkcolor_fabrictexture.log 2>&1 < /dev/null &

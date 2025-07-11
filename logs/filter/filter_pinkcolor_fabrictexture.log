@@ -1,5 +1,12 @@
 Using 1 GPUs with 33GiB memory allocation each
-Loading checkpoint shards:   0%|          | 0/5 [00:00<?, ?it/s]Loading checkpoint shards:  20%|██        | 1/5 [00:02<00:08,  2.04s/it]Loading checkpoint shards:  40%|████      | 2/5 [00:03<00:04,  1.50s/it]Loading checkpoint shards:  60%|██████    | 3/5 [00:04<00:02,  1.40s/it]Loading checkpoint shards:  80%|████████  | 4/5 [00:05<00:01,  1.26s/it]Loading checkpoint shards: 100%|██████████| 5/5 [00:05<00:00,  1.03it/s]Loading checkpoint shards: 100%|██████████| 5/5 [00:05<00:00,  1.19s/it]
+
+Loading checkpoint shards:   0%|          | 0/5 [00:00<?, ?it/s]
+Loading checkpoint shards:  20%|██        | 1/5 [00:02<00:08,  2.04s/it]
+Loading checkpoint shards:  40%|████      | 2/5 [00:03<00:04,  1.50s/it]
+Loading checkpoint shards:  60%|██████    | 3/5 [00:04<00:02,  1.40s/it]
+Loading checkpoint shards:  80%|████████  | 4/5 [00:05<00:01,  1.26s/it]
+Loading checkpoint shards: 100%|██████████| 5/5 [00:05<00:00,  1.03it/s]
+Loading checkpoint shards: 100%|██████████| 5/5 [00:05<00:00,  1.19s/it]
 Starting image processing for attributes: pinkcolor_fabrictexture...
 Stop condition active: stop after processing 15000 images.
 Found 2000 images with file type(s): jpg,jpeg
@@ -7,11 +14,11 @@ Found 2000 images with file type(s): jpg,jpeg
 [2000/2000] Processed...
 Image processing using Qwen VL model complete.
 
---- Processing Summary ---
+--- Processing Summary ---ouser
 Processed all 2000 found images.
 Found 0 feasible images matching the criteria.
 Feasible images ratio: 0/2000 (0.00%)
 Results saved to: save/json/pinkcolor_fabrictexture_results_05140032.json
 Feasible mapping saved to: save/json/pinkcolor_fabrictexture_feasible_05140032.json
 --------------------------
-Copied 0 feasible images to /home/jovyan/ouyang/HiBug/pinkcolor_fabrictexture_0
+Copied 0 feasible images to /home/jovyan/ouser/HiBug/pinkcolor_fabrictexture_0

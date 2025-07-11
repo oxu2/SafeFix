@@ -698,7 +698,7 @@ if not args.image_dir:
         args.image_dir = default_dir
     else:
         possible_dirs = [
-            f"/home/jovyan/ouyang/{args.dataset}_{args.attributes}",
+            f"/home/jovyan/ouser/{args.dataset}_{args.attributes}",
             f"/data/oxx220000/{args.dataset}_{args.attributes}"
         ]
         for d in possible_dirs:
