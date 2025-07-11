@@ -228,6 +228,7 @@ def kl_div(mu1, cov1, mu2, cov2, eps=1e-6):
     term3 = logdet2 - logdet1
     k = dim
     return 0.5 * (term1 + term2 - k + term3)
+    
 kl_real_hibug = kl_div(mu_r_clip, cov_r_clip, mu_h, cov_h)
 kl_real_safefix = kl_div(mu_r_clip, cov_r_clip, mu_s, cov_s)
 print(f"KL Divergence (Real->HiBug): {kl_real_hibug:.4f}")

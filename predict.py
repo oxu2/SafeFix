@@ -18,6 +18,7 @@ from transformers import ViTModel, ViTFeatureExtractor
 from transformers import CLIPImageProcessor
 from transformers import BlipProcessor, BlipModel, BlipConfig
 import datetime
+import time
 from timm import create_model
 import matplotlib.pyplot as plt
 from transformers import CLIPModel
@@ -147,8 +148,16 @@ parser.add_argument(
     default='celeba',
     help='Which dataset to use: imagenet (default) or celeba')
 # Add batch_size argument here
+# Add batch_size argument here
 parser.add_argument('--batch_size', type=int, default=64,
                     help='Mini‑batch size for training and validation (default: 64)')
+# Add subsampling ratio argument for original training data when combining with modified images
+# Add subsampling ratio argument for original training data when combining with modified images
+parser.add_argument('--sub_ratio', type=float, default=0.3,
+                    help='Subsampling ratio (0-1) for original training data when combining with modified images')
+# Add pad_missing argument for subsampled original predictions
+parser.add_argument('--pad_missing', action='store_true', default=True,
+                    help='Pad missing original training image predictions with NaN when subsampling (enabled by default)')
 # Add workers argument here
 parser.add_argument('--workers', type=int, default=4,
                     help='Number of DataLoader workers (default: 4)')
@@ -507,8 +516,20 @@ if args.dataset == 'imagenet':
                 img = Image.open(self.paths[i]).convert("RGB")
                 return (self.transform(img), self.labels[i]) if self.transform else (img, self.labels[i])
         gen_ds = GeneratedDataset(modified_image_paths, modified_image_labels, train_transform)
-        train_dataset = torch.utils.data.ConcatDataset([train_ds, gen_ds])
-        print(f"Added {len(modified_image_labels)} ImageNet {attributes} images: {len(train_ds)} -> {len(train_dataset)}")
+        # Subsample original train_ds based on sub_ratio
+        orig_count = len(train_ds)
+        sub_count = int(orig_count * args.sub_ratio)
+        random.seed(args.seed)
+        selected_indices = random.sample(range(orig_count), sub_count)
+        # Map subset indices back to the original dataset indices
+        sub_orig_indices = [train_ds.indices[i] for i in selected_indices]
+        sub_train_ds = Subset(train_ds.dataset, sub_orig_indices)
+        # Store subsampling info for padding in save_predictions
+        args.selected_indices = selected_indices
+        args.orig_train_count = orig_count
+        # Combine subsampled original data with generated data
+        train_dataset = torch.utils.data.ConcatDataset([sub_train_ds, gen_ds])
+        print(f"Added {len(modified_image_labels)} ImageNet {attributes} images: {len(sub_train_ds)} -> {len(train_dataset)}")
         train_loader = make_loader(train_dataset, shuffle=True)
 
     # Skip CelebA loading
@@ -736,10 +757,19 @@ else:
         valid_imgs = [modified_image_paths[i] for i in val_indices]
         valid_labels = np.array(modified_image_labels)[val_indices]
     elif modified_image_paths:
-        # Combine original training data with modified images
-        all_train_imgs = train_imgs + modified_image_paths
-        all_train_labels = np.concatenate((train_labels, np.array(modified_image_labels)))
-        combined_labels = np.concatenate((train_labels, valid_labels, np.array(modified_image_labels), unlabeled_labels))
+        # Subsample original training data based on sub_ratio and combine with modified images
+        orig_count = len(train_imgs)
+        sub_count = int(orig_count * args.sub_ratio)
+        random.seed(args.seed)
+        selected_indices = random.sample(range(orig_count), sub_count)
+        sub_train_imgs = [train_imgs[i] for i in selected_indices]
+        sub_train_labels = train_labels[selected_indices]
+        all_train_imgs = sub_train_imgs + modified_image_paths
+        all_train_labels = np.concatenate((sub_train_labels, np.array(modified_image_labels)))
+        combined_labels = np.concatenate((sub_train_labels, valid_labels, np.array(modified_image_labels), unlabeled_labels))
+        # Store subsampling info for later padding of predictions
+        args.selected_indices = selected_indices
+        args.orig_train_count = orig_count
     else:
         all_train_imgs = train_imgs
         all_train_labels = train_labels
@@ -897,6 +927,7 @@ elif args.model == 'resnet':
 
 def evaluate(model, data_loader, save_preds=False):
     model.eval()
+    # start_time = time.time()
     total_correct = 0
     total_loss = 0
     all_preds = []
@@ -914,7 +945,8 @@ def evaluate(model, data_loader, save_preds=False):
                 if save_preds:
                     all_preds.extend(preds.cpu().numpy())
                     all_labels.extend(labels.cpu().numpy())
-            else:
+            elif args.dataset == 'celeba':
+                # For CelebA, ensure labels are for binary classification
                 images, labels = images.to(device), labels.to(device).unsqueeze(1)
                 outputs = model(images)
                 loss = criterion(outputs, labels)
@@ -927,6 +959,8 @@ def evaluate(model, data_loader, save_preds=False):
 
     acc = total_correct / len(data_loader.dataset)
     avg_loss = total_loss / len(data_loader)
+    # elapsed_time = time.time() - start_time
+    # print(f"Evaluation time: {elapsed_time:.2f} seconds")
     if save_preds:
         return acc, np.array(all_preds), np.array(all_labels)
     return acc, avg_loss
@@ -942,25 +976,46 @@ def save_predictions(model, train_loader, valid_loader):
     _, valid_preds, _ = evaluate(model, valid_loader, save_preds=True)
 
     if args.dataset == 'imagenet':
-        # Separate original ImageNet train preds (exclude simple added ones)
         original_count = len(train_idx)
-        original_train_preds = train_preds[:original_count]
-        # Combine only original train and validation preds
-        combined_preds = np.concatenate((
-            original_train_preds.flatten(),
-            valid_preds.flatten()
-        ))
+        # Number of subsampled original predictions available
+        sub_count = len(getattr(args, "selected_indices", []))
+        # Subsampled original preds come first in train_preds
+        sub_preds = train_preds[:sub_count]
+        if getattr(args, 'pad_missing', False):
+            # Initialize full-length original predictions with -1 (int) instead of NaN
+            full_orig_preds = np.full((original_count,), -1, dtype=int)
+            # Fill in the subsampled predictions at correct indices
+            for idx, pred in zip(args.selected_indices, sub_preds):
+                full_orig_preds[idx] = pred
+            combined_preds = np.concatenate((full_orig_preds.flatten(), valid_preds.flatten()))
+        else:
+            combined_preds = np.concatenate((sub_preds.flatten(), valid_preds.flatten()))
     else:
         # Handle celeba or other cases
         if len(modified_image_paths) > 0:
-            original_train_preds = train_preds[:-len(modified_image_labels)]
-            modified_preds = train_preds[-len(modified_image_labels):]
-            combined_preds = np.concatenate((
-                original_train_preds.flatten(),
-                valid_preds.flatten(),
-                modified_preds.flatten(),
-                unlabeled_predictions
-            ))
+            gen_cnt = len(modified_image_labels)
+            if getattr(args, "pad_missing", False):
+                # Pad missing original training predictions with -1 (int) instead of NaN
+                full_orig_preds = np.full((args.orig_train_count,), -1, dtype=int)
+                sub_preds = train_preds[:len(args.selected_indices)]
+                for idx, pred in zip(args.selected_indices, sub_preds):
+                    full_orig_preds[idx] = pred
+                modified_preds = train_preds[len(args.selected_indices):]
+                combined_preds = np.concatenate((
+                    full_orig_preds.flatten(),
+                    valid_preds.flatten(),
+                    modified_preds.flatten(),
+                    unlabeled_predictions
+                ))
+            else:
+                original_train_preds = train_preds[:-gen_cnt]
+                modified_preds = train_preds[-gen_cnt:]
+                combined_preds = np.concatenate((
+                    original_train_preds.flatten(),
+                    valid_preds.flatten(),
+                    modified_preds.flatten(),
+                    unlabeled_predictions
+                ))
         else:
             original_train_preds = train_preds
             combined_preds = np.concatenate((
@@ -987,7 +1042,6 @@ def save_predictions(model, train_loader, valid_loader):
         combined_preds
     )
 
-# Modify the train_model function to save predictions after training
 def train_model(model, train_loader, valid_loader, criterion, optimizer, scheduler=None, num_epochs=20):
     # Track best validation performance
     best_val_acc = 0.0
@@ -1156,10 +1210,14 @@ def parse_log(log_path):
     return results, overall_acc
 
 # Start training with scheduler
- # Train the model and capture history for diagnostics
+# Print training start message and record total training time
+# print(f"Starting training for {args.num_epochs} epochs...")
+total_start_time = time.time()
 train_loss_history, train_acc_history, val_loss_history, val_acc_history = train_model(
     model, train_loader, valid_loader, criterion, optimizer, scheduler, num_epochs=args.num_epochs
 )
+total_elapsed_time = time.time() - total_start_time
+print(f"Total training time for {args.num_epochs} epochs: {total_elapsed_time:.2f} seconds")
 
 
 

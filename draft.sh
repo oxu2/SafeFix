@@ -1,3 +1,19 @@
+CUDA_VISIBLE_DEVICES=1 python predict.py --dataset imagenet --model resnet --num_added_img 100  --save_pred_model last --attributes pinkcolor_fabrictexture --num_epochs 30
+
+
+
+CUDA_VISIBLE_DEVICES=1 nohup python -u predict.py --dataset imagenet --model resnet --num_added_img 0  --save_pred_model best --attributes purplecolor --num_epochs 30 > logs_imagenet/base_resnet_imagenet_best.log 2>&1 < /dev/null &
+
+CUDA_VISIBLE_DEVICES=1 nohup python -u predict.py --dataset imagenet --model resnet --num_added_img 0  --save_pred_model last --attributes purplecolor --num_epochs 30 > logs_imagenet/base_resnet_imagenet.log 2>&1 < /dev/null &
+
+CUDA_VISIBLE_DEVICES=3 nohup python -u predict.py --dataset imagenet --model resnet --num_added_img 100  --save_pred_model best --attributes pinkcolor_fabrictexture --num_epochs 30 > logs_imagenet/pinkcolor_fabrictexture_resnet_imagenet_best.log 2>&1 < /dev/null &
+
+CUDA_VISIBLE_DEVICES=2 nohup python -u predict.py --dataset imagenet --model resnet --num_added_img 100  --save_pred_model last --attributes pinkcolor_fabrictexture --num_epochs 30 > logs_imagenet/pinkcolor_fabrictexture_resnet_imagenet_last.log 2>&1 < /dev/null &
+
+
+CUDA_VISIBLE_DEVICES=3 nohup python -u predict.py --dataset imagenet --model resnet --num_added_img 1000  --save_pred_model best --attributes pinkcolor_fabrictexture --num_epochs 30 > logs_imagenet/pinkcolor_fabrictexture_resnet_imagenet_1000_best.log 2>&1 < /dev/null &
+
+CUDA_VISIBLE_DEVICES=2 nohup python -u predict.py --dataset imagenet --model resnet --num_added_img 1000  --save_pred_model last --attributes pinkcolor_fabrictexture --num_epochs 30 > logs_imagenet/pinkcolor_fabrictexture_resnet_imagenet_1000_last.log 2>&1 < /dev/null &
 
 
 CUDA_VISIBLE_DEVICES=3 nohup python -u lpips.py --dataset imagenet > logs_imagenet/lpips_imagenet.log 2>&1 < /dev/null &
