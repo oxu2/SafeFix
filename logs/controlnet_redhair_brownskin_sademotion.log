@@ -1,0 +1,50 @@
+Info: Now running in the 'control' conda environment.
+/people/cs/o/oxx220000/.conda/envs/control/lib/python3.8/site-packages/torchvision/io/image.py:13: UserWarning: Failed to load image Python extension: libtorch_cuda_cu.so: cannot open shared object file: No such file or directory
+  warn(f"Failed to load image Python extension: {e}")
+/people/cs/o/oxx220000/.conda/envs/control/lib/python3.8/site-packages/pytorch_lightning/plugins/training_type/ddp.py:68: DeprecationWarning: `TorchScript` support for functional optimizers is deprecated and will be removed in a future PyTorch release. Consider using the `torch.compile` optimizer instead.
+  from torch.distributed.optim import DistributedOptimizer
+logging improved.
+/people/cs/o/oxx220000/HiBug/annotator/hed/__init__.py:64: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  self.netNetwork.load_state_dict(torch.load(modelpath))
+/people/cs/o/oxx220000/.conda/envs/control/lib/python3.8/site-packages/pytorch_lightning/core/lightning.py:2058: DeprecationWarning: `torch.distributed._sharded_tensor` will be deprecated, use `torch.distributed._shard.sharded_tensor` instead
+  from torch.distributed._sharded_tensor import pre_load_state_dict_hook, state_dict_hook
+/people/cs/o/oxx220000/.conda/envs/control/lib/python3.8/site-packages/transformers/modeling_utils.py:392: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  return torch.load(checkpoint_file, map_location="cpu")
+/people/cs/o/oxx220000/HiBug/cldm/model.py:18: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  state_dict = get_state_dict(torch.load(ckpt_path, map_location=torch.device(location)))
+Starting image generation at 2025-07-27 17:19:56
+Target: 1000 new images to generate
+Existing images in folder: 0
+Final folder will contain: 1000 images
+Processing image 1, seed: 404
+Processing image 101, seed: 47417
+Processing image 201, seed: 6396
+Processing image 301, seed: 10533
+Processing image 401, seed: 10533
+Generated 500 new images, last saved: ./redhair_brownskin_sademotion/000853_redhair_brownskin_sademotion_64188.jpg
+Elapsed time: 4989.3s, Est. remaining: 83.2 min
+Processing image 501, seed: 10533
+Processing image 601, seed: 10533
+Processing image 701, seed: 10533
+Processing image 801, seed: 10533
+Processing image 901, seed: 10533
+=== Batch of 1000 images completed ===
+1000 new images generated so far.
+Total images in folder: 1000
+Last 1000 images took: 9988.38 seconds
+Average GPU time per image: 9.97 seconds
+Average total time per image: 9.99 seconds
+GPU utilization: 99.8%
+Generated 1000 new images, last saved: ./redhair_brownskin_sademotion/001758_redhair_brownskin_sademotion_64188.jpg
+Elapsed time: 9988.4s, Est. remaining: 0.0 min
+Reached target of 1000 new images generated. Exiting.
+
+=== Final Timing Summary ===
+Total execution time: 9988.38 seconds (166.5 minutes)
+New images generated: 1000
+Total images in folder: 1000
+Average GPU time per image: 9.97 seconds
+Average total time per image: 9.99 seconds
+Overall GPU utilization: 99.8%
+Images per hour: 360.4
+Completed at 2025-07-27 20:06:25

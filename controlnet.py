@@ -2,16 +2,17 @@ import os
 import sys
 import contextlib
 import io
+import time
 
 
 # Ensure this script runs in the 'control' conda environment
-# if os.environ.get('CONDA_DEFAULT_ENV') != 'control':
-#     sys.stderr.write("Info: Switching to the 'control' conda environment and re-running...\n")
-#     os.execvp(
-#         'conda',
-#         ['conda', 'run', '-n', 'control', 'python'] + sys.argv
-#     )
-# print("Info: Now running in the 'control' conda environment.")
+if os.environ.get('CONDA_DEFAULT_ENV') != 'control':
+    sys.stderr.write("Info: Switching to the 'control' conda environment and re-running...\n")
+    os.execvp(
+        'conda',
+        ['conda', 'run', '-n', 'control', 'python'] + sys.argv
+    )
+print("Info: Now running in the 'control' conda environment.")
 
 import cv2
 import numpy as np
@@ -20,9 +21,6 @@ from matplotlib import pyplot as plt
 
 # Ensure local modules are importable
 sys.path.insert(0, os.path.dirname(__file__))
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'ControlNet')))
-from share import *
-import config
 
 import cv2
 import einops
@@ -35,6 +33,11 @@ import random
 import logging
 # Suppress PyTorch Lightning info such as "Global seed set to ..."
 logging.getLogger("pytorch_lightning").setLevel(logging.ERROR)
+# Suppress MemoryEfficientCrossAttention setup messages
+logging.getLogger("ldm").setLevel(logging.ERROR)
+logging.getLogger("cldm").setLevel(logging.ERROR)
+# Suppress global seed messages
+logging.getLogger("pytorch_lightning.utilities.seed").setLevel(logging.ERROR)
 
 from pytorch_lightning import seed_everything
 
@@ -54,13 +57,24 @@ import argparse
 
 # Parse command-line arguments
 parser = argparse.ArgumentParser(description="ControlNet batch inference")
+parser.add_argument('--dataset', type=str, choices=['imagenet', 'celeba'], default='celeba',
+                    help="Dataset to use for generation")
 parser.add_argument('--attributes', type=str, default='redhair_brownskin_sademotion',
                     help="Attributes for generation, e.g., redhair_sademotion or redhair_brownskin")
-parser.add_argument('--stop_at', type=int, default=10234,
-                    help="Maximum total images to generate (including existing JPEGs in output_dir)")
+parser.add_argument(
+    '--stop_at',
+    type=int,
+    default=10234,
+    help="Maximum total images to generate (including existing JPEGs in output_dir)"
+)
 args = parser.parse_args()
 
-# Build prompt text from attributes
+# Now import ControlNet share utilities and configuration
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'ControlNet')))
+from share import *
+import config
+
+# Build prompt text from attributesd
 attr_tokens = args.attributes.split('_')
 token_map = {
     'redhair': 'vibrant red hair',
@@ -78,10 +92,14 @@ weights_path = '/home/jovyan/ouser/ControlNet/models/control_sd15_hed.pth'
 if not os.path.exists(config_path):
     config_path = 'model_controlnet/cldm_v15.yaml'
     weights_path = 'model_controlnet/control_sd15_hed.pth'
-model = create_model(config_path).cpu()
-model.load_state_dict(load_state_dict(weights_path, location='cuda'))
-model = model.cuda()
-ddim_sampler = DDIMSampler(model)
+
+# Suppress verbose model loading output
+f = io.StringIO()
+with contextlib.redirect_stdout(f):
+    model = create_model(config_path).cpu()
+    model.load_state_dict(load_state_dict(weights_path, location='cuda'))
+    model = model.cuda()
+    ddim_sampler = DDIMSampler(model)
 
 
 def process(input_image, prompt, a_prompt, n_prompt, num_samples, image_resolution, detect_resolution, ddim_steps, guess_mode, strength, scale, seed, eta):
@@ -182,7 +200,7 @@ output_dir = f'./{args.attributes}'
 os.makedirs(output_dir, exist_ok=True)
 # Count existing JPEGs to know where to stop
 existing_files = [f for f in os.listdir(output_dir) if f.lower().endswith('.jpg')]
-generated_count = len(existing_files)
+existing_count = len(existing_files)
 
 # Determine indices file path with fallback
 primary_indices = f'/home/jovyan/ouser/HiBug/non_{args.attributes}_indices.txt'
@@ -201,12 +219,23 @@ image_files = [f"{idx + 1:06d}.jpg" for idx in indices]
 # # List all jpg files in input folder
 # image_files = sorted([f for f in os.listdir(input_dir) if f.lower().endswith('.jpg')])
 
+# Start timing
+start_time = time.time()
+gpu_times = []  # Store GPU processing times for each image
+last_1k_start_time = start_time
+images_processed_in_batch = 0
+new_images_generated = 0  # Track only newly generated images
+
+print(f"Starting image generation at {time.strftime('%Y-%m-%d %H:%M:%S')}")
+print(f"Target: {args.stop_at} new images to generate")
+print(f"Existing images in folder: {existing_count}")
+print(f"Final folder will contain: {existing_count + args.stop_at} images")
 
 # Loop through each file
 for idx, filename in enumerate(image_files, start=1):
-    # Stop if we've reached the limit
-    if generated_count >= args.stop_at:
-        print(f"Reached stop_at limit of {args.stop_at} images. Exiting.")
+    # Stop if we've reached the limit of new images to generate
+    if new_images_generated >= args.stop_at:
+        print(f"Reached target of {args.stop_at} new images generated. Exiting.")
         break
     input_path = os.path.join(input_dir, filename)
     input_image = cv2.imread(input_path)
@@ -214,6 +243,13 @@ for idx, filename in enumerate(image_files, start=1):
 
     # Use a unique random seed for each image to vary outputs
     img_seed = random.randint(0, 65535)
+    
+    # Print seed every 100 images (starting from first image)
+    if new_images_generated % 100 == 0:
+        print(f"Processing image {new_images_generated + 1}, seed: {img_seed}")
+
+    # Record GPU processing start time
+    gpu_start_time = time.time()
 
     # Run your process (one image per input)
     results = process(
@@ -232,6 +268,11 @@ for idx, filename in enumerate(image_files, start=1):
         eta=0.0
     )
 
+    # Record GPU processing end time
+    gpu_end_time = time.time()
+    gpu_time = gpu_end_time - gpu_start_time
+    gpu_times.append(gpu_time)
+
     generated_image = results[1]  # Index 0 is the HED map
 
     # Save result, avoiding name collisions
@@ -244,10 +285,52 @@ for idx, filename in enumerate(image_files, start=1):
         counter += 1
     Image.fromarray(generated_image).save(save_path)
     # Update count and print every 1000 images
-    generated_count += 1
-    if generated_count % 1000 == 0:
-        print(f"{generated_count} images generated so far (including existing).")
+    new_images_generated += 1
+    images_processed_in_batch += 1
+    total_images_in_folder = existing_count + new_images_generated
+    
+    # Print timing statistics every 1000 images
+    if new_images_generated % 1000 == 0:
+        current_time = time.time()
+        batch_time = current_time - last_1k_start_time
+        avg_gpu_time = sum(gpu_times[-images_processed_in_batch:]) / images_processed_in_batch
+        avg_total_time = batch_time / images_processed_in_batch
+        
+        print(f"=== Batch of 1000 images completed ===")
+        print(f"{new_images_generated} new images generated so far.")
+        print(f"Total images in folder: {total_images_in_folder}")
+        print(f"Last 1000 images took: {batch_time:.2f} seconds")
+        print(f"Average GPU time per image: {avg_gpu_time:.2f} seconds")
+        print(f"Average total time per image: {avg_total_time:.2f} seconds")
+        print(f"GPU utilization: {(avg_gpu_time/avg_total_time)*100:.1f}%")
+        
+        # Reset for next batch
+        last_1k_start_time = current_time
+        images_processed_in_batch = 0
 
     # Print status every 500 images
-    if idx % 500 == 0:
-        print(f"Processed {idx} images, last saved: {save_path}")
+    if new_images_generated % 500 == 0 and new_images_generated > 0:
+        elapsed_time = time.time() - start_time
+        avg_time_per_image = elapsed_time / new_images_generated if new_images_generated > 0 else 0
+        remaining_images = args.stop_at - new_images_generated
+        estimated_remaining_time = remaining_images * avg_time_per_image
+        print(f"Generated {new_images_generated} new images, last saved: {save_path}")
+        print(f"Elapsed time: {elapsed_time:.1f}s, Est. remaining: {estimated_remaining_time/60:.1f} min")
+
+# Final timing summary
+end_time = time.time()
+total_time = end_time - start_time
+total_images_processed = len(gpu_times)
+
+print(f"\n=== Final Timing Summary ===")
+print(f"Total execution time: {total_time:.2f} seconds ({total_time/60:.1f} minutes)")
+print(f"New images generated: {total_images_processed}")
+print(f"Total images in folder: {existing_count + total_images_processed}")
+if total_images_processed > 0:
+    avg_gpu_time_overall = sum(gpu_times) / total_images_processed
+    avg_total_time_overall = total_time / total_images_processed
+    print(f"Average GPU time per image: {avg_gpu_time_overall:.2f} seconds")
+    print(f"Average total time per image: {avg_total_time_overall:.2f} seconds")
+    print(f"Overall GPU utilization: {(avg_gpu_time_overall/avg_total_time_overall)*100:.1f}%")
+    print(f"Images per hour: {3600/avg_total_time_overall:.1f}")
+print(f"Completed at {time.strftime('%Y-%m-%d %H:%M:%S')}")

@@ -6,28 +6,36 @@ import sys
 import os
 import datetime  # Add this import to support timestamps
 import shutil
+import time
+import psutil
+import GPUtil
 from typing import List
 from utils.defines import *
 # # Check if running in the correct conda environment
-# def ensure_conda_env(env_name):
-#     """Ensure script runs in the specified conda environment"""
-#     current_env = os.environ.get('CONDA_DEFAULT_ENV')
-#     if current_env != env_name:
-#         # print(f"Switching to conda environment '{env_name}' (current: {current_env or 'None'})")
-#         # Construct the conda run command
-#         conda_path = os.environ.get('CONDA_EXE', 'conda')
-#         script_path = os.path.abspath(sys.argv[0])
-#         args = ' '.join(sys.argv[1:])
-#         cmd = f"{conda_path} run -n {env_name} python {script_path} {args}"
-#         # print(f"Executing: {cmd}")
-#         os.system(cmd)
-#         sys.exit(0)
-#     else:
-#         print(f"Running in conda environment: {env_name}")
-#
-# # Make the conda environment configurable
-# conda_env = os.environ.get('CONDA_ENV', 'ad')  # Default to 'ad' but allow override via environment variable
-# ensure_conda_env(conda_env)
+def ensure_conda_env(env_name):
+    """Ensure script runs in the specified conda environment"""
+    current_env = os.environ.get('CONDA_DEFAULT_ENV')
+    if current_env != env_name:
+        # print(f"Switching to conda environment '{env_name}' (current: {current_env or 'None'})")
+        # Construct the conda run command
+        conda_path = os.environ.get('CONDA_EXE', 'conda')
+        script_path = os.path.abspath(sys.argv[0])
+        args = ' '.join(sys.argv[1:])
+        cmd = f"{conda_path} run -n {env_name} python {script_path} {args}"
+        # print(f"Executing: {cmd}")
+        os.system(cmd)
+        sys.exit(0)
+    else:
+        print(f"Running in conda environment: {env_name}")
+
+# Set environment variables to prevent tokenizer warnings and improve memory management
+os.environ['TOKENIZERS_PARALLELISM'] = 'false'
+os.environ['HF_HUB_DISABLE_PROGRESS_BARS'] = '1'
+os.environ['PYTORCH_CUDA_ALLOC_CONF'] = 'max_split_size_mb:512'
+
+# Make the conda environment configurable
+conda_env = os.environ.get('CONDA_ENV', 'ad')  # Default to 'ad' but allow override via environment variable
+ensure_conda_env(conda_env)
 
 from PIL import Image, ImageDraw, ImageFont
 from openai import OpenAI
@@ -117,6 +125,141 @@ import torch
 from transformers import Qwen2_5_VLForConditionalGeneration, AutoProcessor
 model_path = "Qwen/Qwen2.5-VL-7B-Instruct"
 
+# Resource monitoring class
+class ResourceMonitor:
+    def __init__(self):
+        self.reset()
+        
+    def reset(self):
+        self.start_time = None
+        self.end_time = None
+        self.inference_times = []
+        self.memory_usage = []
+        self.gpu_memory_usage = []
+        self.model_size_mb = 0
+        
+    def start_monitoring(self):
+        """Start monitoring resources"""
+        self.start_time = time.time()
+        
+    def stop_monitoring(self):
+        """Stop monitoring and calculate final metrics"""
+        self.end_time = time.time()
+        
+    def record_inference_time(self, inference_time):
+        """Record individual inference time"""
+        self.inference_times.append(inference_time)
+        
+    def record_memory_usage(self):
+        """Record current memory usage"""
+        # CPU memory
+        cpu_memory = psutil.virtual_memory().used / (1024**3)  # GB
+        self.memory_usage.append(cpu_memory)
+        
+        # GPU memory
+        try:
+            gpus = GPUtil.getGPUs()
+            if gpus:
+                gpu_memory = sum(gpu.memoryUsed for gpu in gpus) / 1024  # GB
+                self.gpu_memory_usage.append(gpu_memory)
+        except:
+            pass
+            
+    def get_model_size(self, model):
+        """Calculate model size in MB"""
+        param_size = 0
+        buffer_size = 0
+        
+        for param in model.parameters():
+            param_size += param.nelement() * param.element_size()
+        
+        for buffer in model.buffers():
+            buffer_size += buffer.nelement() * buffer.element_size()
+            
+        self.model_size_mb = (param_size + buffer_size) / (1024**2)
+        return self.model_size_mb
+        
+    def get_statistics(self, num_images):
+        """Get comprehensive resource statistics"""
+        total_time = self.end_time - self.start_time if self.end_time and self.start_time else 0
+        
+        stats = {
+            'total_processing_time_seconds': total_time,
+            'total_processing_time_minutes': total_time / 60,
+            'total_processing_time_hours': total_time / 3600,
+            'num_images_processed': num_images,
+            'avg_time_per_image_seconds': total_time / num_images if num_images > 0 else 0,
+            'model_size_mb': self.model_size_mb,
+            'model_size_gb': self.model_size_mb / 1024,
+            'inference_statistics': {
+                'total_inferences': len(self.inference_times),
+                'avg_inference_time_seconds': sum(self.inference_times) / len(self.inference_times) if self.inference_times else 0,
+                'min_inference_time_seconds': min(self.inference_times) if self.inference_times else 0,
+                'max_inference_time_seconds': max(self.inference_times) if self.inference_times else 0,
+                'total_inference_time_seconds': sum(self.inference_times)
+            },
+            'memory_statistics': {
+                'avg_cpu_memory_gb': sum(self.memory_usage) / len(self.memory_usage) if self.memory_usage else 0,
+                'max_cpu_memory_gb': max(self.memory_usage) if self.memory_usage else 0,
+                'avg_gpu_memory_gb': sum(self.gpu_memory_usage) / len(self.gpu_memory_usage) if self.gpu_memory_usage else 0,
+                'max_gpu_memory_gb': max(self.gpu_memory_usage) if self.gpu_memory_usage else 0
+            },
+            'estimated_cost_per_1k_images': {
+                'time_seconds': (total_time / num_images * 1000) if num_images > 0 else 0,
+                'time_minutes': (total_time / num_images * 1000 / 60) if num_images > 0 else 0,
+                'time_hours': (total_time / num_images * 1000 / 3600) if num_images > 0 else 0
+            }
+        }
+        
+        return stats
+        
+    def print_statistics(self, num_images):
+        """Print formatted resource statistics"""
+        stats = self.get_statistics(num_images)
+        
+        print("\n" + "="*60)
+        print("           RESOURCE USAGE STATISTICS")
+        print("="*60)
+        
+        print(f"📊 Processing Overview:")
+        print(f"   • Total images processed: {stats['num_images_processed']:,}")
+        print(f"   • Total processing time: {stats['total_processing_time_minutes']:.2f} minutes ({stats['total_processing_time_hours']:.2f} hours)")
+        print(f"   • Average time per image: {stats['avg_time_per_image_seconds']:.3f} seconds")
+        
+        print(f"\n🤖 Model Information:")
+        print(f"   • Model size: {stats['model_size_mb']:.1f} MB ({stats['model_size_gb']:.2f} GB)")
+        
+        print(f"\n⚡ Inference Performance:")
+        inf_stats = stats['inference_statistics']
+        print(f"   • Total inferences: {inf_stats['total_inferences']:,}")
+        print(f"   • Average inference time: {inf_stats['avg_inference_time_seconds']:.3f} seconds")
+        print(f"   • Min inference time: {inf_stats['min_inference_time_seconds']:.3f} seconds")
+        print(f"   • Max inference time: {inf_stats['max_inference_time_seconds']:.3f} seconds")
+        print(f"   • Total inference time: {inf_stats['total_inference_time_seconds']:.2f} seconds")
+        
+        print(f"\n💾 Memory Usage:")
+        mem_stats = stats['memory_statistics']
+        print(f"   • Average CPU memory: {mem_stats['avg_cpu_memory_gb']:.2f} GB")
+        print(f"   • Peak CPU memory: {mem_stats['max_cpu_memory_gb']:.2f} GB")
+        if mem_stats['avg_gpu_memory_gb'] > 0:
+            print(f"   • Average GPU memory: {mem_stats['avg_gpu_memory_gb']:.2f} GB")
+            print(f"   • Peak GPU memory: {mem_stats['max_gpu_memory_gb']:.2f} GB")
+        
+        print(f"\n📈 Estimated Cost for 1,000 Images:")
+        cost_1k = stats['estimated_cost_per_1k_images']
+        print(f"   • Processing time: {cost_1k['time_minutes']:.2f} minutes ({cost_1k['time_hours']:.2f} hours)")
+        print(f"   • Time per image: {cost_1k['time_seconds']/1000:.3f} seconds")
+        
+        # Calculate throughput
+        if stats['total_processing_time_seconds'] > 0:
+            throughput = num_images / stats['total_processing_time_seconds']
+            print(f"\n🚀 Throughput:")
+            print(f"   • Images per second: {throughput:.2f}")
+            print(f"   • Images per minute: {throughput * 60:.1f}")
+            print(f"   • Images per hour: {throughput * 3600:.0f}")
+        
+        print("="*60)
+
 # Get available CUDA devices from environment variable
 def get_available_gpus():
     """Get available GPU IDs from CUDA_VISIBLE_DEVICES"""
@@ -128,7 +271,7 @@ def get_available_gpus():
 def configure_gpu_memory(available_gpus, max_memory_per_gpu_gb=23):
     """Configure memory allocation based on available GPUs."""
     max_memory = {}
-    # Format the memory string
+    # Format the memory string - reduce default memory allocation
     max_memory_str = f"{max_memory_per_gpu_gb}GiB"
 
     for i, gpu_id in enumerate(available_gpus):
@@ -143,77 +286,109 @@ def configure_gpu_memory(available_gpus, max_memory_per_gpu_gb=23):
     print(f"Using {len(max_memory)} GPUs with {max_memory_str} memory allocation each")
     return max_memory
 
-def process_image(image_path, model, processor, tags: List[str], attributes: List[str], verbose=False):
+def process_image(image_path, model, processor, tags: List[str], attributes: List[str], verbose=False, resource_monitor=None):
     """Process a single image and return the binary results for both features."""
-    # Special handling for ImageNet dataset
-    if DATASET == 'imagenet':
-        # Derive class name from parent directory
-        class_name = os.path.basename(os.path.dirname(image_path))
-        # Build questions: one per tag-attribute pair, then presence check
-        questions = [f"Does the {class_name} have {t} {a}?" for t, a in zip(tags, attributes)]
-        questions.append(f"Is there a {class_name} in the picture?")
-        prompt = " ".join(questions) + " For each question, only answer with 1 (yes) or 0 (no). Provide answers separated by spaces."
-        response = inference(image_path, prompt, verbose=verbose)
-        try:
-            # Parse numeric answers
-            nums = [int(s) for s in response.replace(',', ' ').split() if s.isdigit()]
-            # Map attribute results without class prefix: e.g., "yellowcolor"
-            results = {
-                f"{t}{a}": nums[i] if i < len(nums) else 0
-                for i, (t, a) in enumerate(zip(tags, attributes))
-            }
-            # Optionally include presence if requested
-            if INCLUDE_PRESENCE:
-                presence_val = nums[len(tags)] if len(nums) > len(tags) else 0
-                results["presence"] = presence_val
-        except Exception as e:
-            print(f"Warning: Error parsing response '{response}' for {image_path}: {e}")
-            # On error, default all attributes to 0
+    inference_start = time.time()
+    
+    try:
+        # Special handling for ImageNet dataset
+        if DATASET == 'imagenet':
+            # Derive class name from parent directory
+            class_name = os.path.basename(os.path.dirname(image_path))
+            # Build questions: one per tag-attribute pair, then presence check
+            questions = [f"Does the {class_name} have {t} {a}?" for t, a in zip(tags, attributes)]
+            questions.append(f"Is there a {class_name} in the picture?")
+            prompt = " ".join(questions) + " For each question, only answer with 1 (yes) or 0 (no). Provide answers separated by spaces."
+            response = inference(image_path, prompt, verbose=verbose)
+            try:
+                # Parse numeric answers
+                nums = [int(s) for s in response.replace(',', ' ').split() if s.isdigit()]
+                # Map attribute results without class prefix: e.g., "yellowcolor"
+                results = {
+                    f"{t}{a}": nums[i] if i < len(nums) else 0
+                    for i, (t, a) in enumerate(zip(tags, attributes))
+                }
+                # Optionally include presence if requested
+                if INCLUDE_PRESENCE:
+                    presence_val = nums[len(tags)] if len(nums) > len(tags) else 0
+                    results["presence"] = presence_val
+            except Exception as e:
+                print(f"Warning: Error parsing response '{response}' for {image_path}: {e}")
+                # On error, default all attributes to 0
+                results = {f"{t}{a}": 0 for t, a in zip(tags, attributes)}
+                if INCLUDE_PRESENCE:
+                    results["presence"] = 0
+        else:
+            # Existing CelebA logic for building questions follows below...
+            questions = []
+            for t, a in zip(tags, attributes):
+                if a == "lipstick":
+                    questions.append("Is the person in this picture wearing lipstick?")
+                elif a == "emotion":
+                    questions.append(
+                        f"If you see any hint of {t} emotion in this picture, answer 1; "
+                        "only answer 0 if you are completely sure there is no such emotion."
+                    )
+                else:
+                    questions.append(f"Does the person in this picture have {t} {a}?")
+            prompt = " ".join(questions) + " For each question, only answer with 1 (yes) or 0 (no). Provide answers separated by spaces."
+            response = inference(image_path, prompt, verbose=verbose)
+            # Debug: print Qwen's raw response for emotion detection
+            # if 'emotion' in attributes:
+            # if True:
+            #     print(f"Debug: {image_path} emotion raw response: {response}")
+            
+            # Extract the two numbers from the response
+            try:
+                numbers = [int(s) for s in response.replace(',', ' ').split() if s.isdigit()]
+                results = {f"{t}_{a.replace(' ', '_')}": num for t, a, num in zip(tags, attributes, numbers)}
+                # Fallback for emotion attributes: if inference missing or ambiguous, default to positive (1)
+                for t, a in zip(tags, attributes):
+                    if a == "emotion":
+                        key = f"{t}_{a.replace(' ', '_')}"
+                        if key not in results:
+                            results[key] = 1
+            except Exception as e:
+                print(f"Warning: Error parsing response '{response}' for {image_path}: {e}")
+                # If parsing fails, at least return positive for emotion attributes
+                fallback_results = {}
+                for t, a in zip(tags, attributes):
+                    if a == "emotion":
+                        fallback_results[f"{t}_{a.replace(' ', '_')}"] = 1
+                results = fallback_results
+        
+        # Record inference time
+        inference_time = time.time() - inference_start
+        if resource_monitor:
+            resource_monitor.record_inference_time(inference_time)
+        
+        # Clear GPU cache periodically to prevent memory buildup
+        if torch.cuda.is_available() and hasattr(process_image, '_call_count'):
+            process_image._call_count += 1
+            if process_image._call_count % 50 == 0:  # Clear every 50 images
+                torch.cuda.empty_cache()
+        elif torch.cuda.is_available():
+            process_image._call_count = 1
+        
+        return results
+        
+    except Exception as e:
+        print(f"Error processing image {image_path}: {e}")
+        # Return default results on any error
+        if DATASET == 'imagenet':
             results = {f"{t}{a}": 0 for t, a in zip(tags, attributes)}
             if INCLUDE_PRESENCE:
                 results["presence"] = 0
+        else:
+            results = {}
+            for t, a in zip(tags, attributes):
+                if a == "emotion":
+                    results[f"{t}_{a.replace(' ', '_')}"] = 1
+                else:
+                    results[f"{t}_{a.replace(' ', '_')}"] = 0
         return results
-    else:
-        # Existing CelebA logic for building questions follows below...
-        questions = []
-        for t, a in zip(tags, attributes):
-            if a == "lipstick":
-                questions.append("Is the person in this picture wearing lipstick?")
-            elif a == "emotion":
-                questions.append(
-                    f"If you see any hint of {t} emotion in this picture, answer 1; "
-                    "only answer 0 if you are completely sure there is no such emotion."
-                )
-            else:
-                questions.append(f"Does the person in this picture have {t} {a}?")
-        prompt = " ".join(questions) + " For each question, only answer with 1 (yes) or 0 (no). Provide answers separated by spaces."
-        response = inference(image_path, prompt, verbose=verbose)
-        # Debug: print Qwen's raw response for emotion detection
-        # if 'emotion' in attributes:
-        # if True:
-        #     print(f"Debug: {image_path} emotion raw response: {response}")
-        
-        # Extract the two numbers from the response
-        try:
-            numbers = [int(s) for s in response.replace(',', ' ').split() if s.isdigit()]
-            results = {f"{t}_{a.replace(' ', '_')}": num for t, a, num in zip(tags, attributes, numbers)}
-            # Fallback for emotion attributes: if inference missing or ambiguous, default to positive (1)
-            for t, a in zip(tags, attributes):
-                if a == "emotion":
-                    key = f"{t}_{a.replace(' ', '_')}"
-                    if key not in results:
-                        results[key] = 1
-            return results
-        except Exception as e:
-            print(f"Warning: Error parsing response '{response}' for {image_path}: {e}")
-            # If parsing fails, at least return positive for emotion attributes
-            fallback_results = {}
-            for t, a in zip(tags, attributes):
-                if a == "emotion":
-                    fallback_results[f"{t}_{a.replace(' ', '_')}"] = 1
-            return fallback_results
 
-def process_directory(directory_path, output_json_path, tags, attributes, verbose=False, file_type="png", stop_at: int = 15000, stop_suffix=None):
+def process_directory(directory_path, output_json_path, tags, attributes, verbose=False, file_type="png", stop_at: int = 15000, stop_suffix=None, resource_monitor=None):
     """
     Process images in directory and save results to JSON.
     Stops processing *before* encountering an image file whose base number
@@ -278,12 +453,16 @@ def process_directory(directory_path, output_json_path, tags, attributes, verbos
 
         if verbose:
             print(f"Processing {image_file}...")
-        result = process_image(image_path, model, processor, tags, attributes, verbose=verbose)
+        result = process_image(image_path, model, processor, tags, attributes, verbose=verbose, resource_monitor=resource_monitor)
         if result:
             results[filename] = result
 
         with open(output_json_path, 'w') as f:
             json.dump(results, f, indent=4)
+
+        # Record memory usage periodically
+        if resource_monitor and (idx + 1) % 100 == 0:
+            resource_monitor.record_memory_usage()
 
         # Check stop-after-images condition
         processed_count = len(results)
@@ -512,15 +691,38 @@ def main(directory_path="",
     available_gpus = get_available_gpus()
     device_memory = configure_gpu_memory(available_gpus, max_memory_per_gpu)
 
+    # Initialize resource monitor
+    resource_monitor = ResourceMonitor()
+    resource_monitor.start_monitoring()
+
     # Load model and processor here, after configuring memory
     global model, processor
+    
+    # Clear GPU cache before loading model
+    if torch.cuda.is_available():
+        torch.cuda.empty_cache()
+    
+    print(f"Loading model with {max_memory_per_gpu}GB memory limit per GPU...")
     model = Qwen2_5_VLForConditionalGeneration.from_pretrained(
         model_path,
         torch_dtype=torch.bfloat16,
         device_map="auto",
-        max_memory=device_memory
+        max_memory=device_memory,
+        low_cpu_mem_usage=True,
+        torch_dtype_auto=True
     )
     processor = AutoProcessor.from_pretrained(model_path, use_fast=True)
+    
+    # Calculate model size
+    resource_monitor.get_model_size(model)
+    print(f"Model loaded. Size: {resource_monitor.model_size_mb:.1f} MB ({resource_monitor.model_size_mb/1024:.2f} GB)")
+    
+    # Record initial memory usage
+    resource_monitor.record_memory_usage()
+    
+    # Clear cache again after loading
+    if torch.cuda.is_available():
+        torch.cuda.empty_cache()
 
     # If rename_files is True, rename the files in the directory
     if rename_files and rename_suffix:
@@ -593,8 +795,13 @@ def main(directory_path="",
            verbose=verbose,
            file_type=file_type,
            stop_at=stop_at,
-           stop_suffix=rename_suffix
+           stop_suffix=rename_suffix,
+           resource_monitor=resource_monitor
        )
+    
+    # Stop monitoring and calculate statistics
+    resource_monitor.stop_monitoring()
+    
     print("Image processing using Qwen VL model complete.")
     
     # Create feature mapping for images with specified attributes
@@ -612,6 +819,18 @@ def main(directory_path="",
     print(f"Results saved to: {results_json_path}")
     print(f"Feasible mapping saved to: {feasible_json}")
     print("--------------------------")
+    
+    # Print resource usage statistics
+    resource_monitor.print_statistics(processed_count)
+    
+    # Save resource statistics to JSON file
+    stats = resource_monitor.get_statistics(processed_count)
+    stats_filename = f"{attributes}_resource_stats_{datetime.datetime.now().strftime('%m%d%H%M')}.json"
+    stats_path = os.path.join("save/json", stats_filename)
+    with open(stats_path, 'w') as f:
+        json.dump(stats, f, indent=4)
+    print(f"\n📊 Resource statistics saved to: {stats_path}")
+    
     # Filter and copy feasible images from the original dataset
     feasible_count = len(feature_mapping)
     dest_dir = os.path.join(os.getcwd(), f"{attributes}_{feasible_count}")
@@ -657,8 +876,8 @@ if __name__ == "__main__":
                         help='Attributes to detect; for celeba: e.g., redhair_brownskin, redhair; for imagenet: e.g., fabrictexture, pinkcolor')
     parser.add_argument('--rename_suffix', type=str, default=None,
                         help='Suffix to add when renaming files (default: "_red")')
-    parser.add_argument('--max_memory', type=int, default=33, 
-                        help='Maximum memory allocation per GPU in GiB (default: 33)')
+    parser.add_argument('--max_memory', type=int, default=20, 
+                        help='Maximum memory allocation per GPU in GiB (default: 20)')
     parser.add_argument('--stop_at', type=int, default=15000,
                         help='Number of images to process before stopping (default: 15000)')
     parser.add_argument('--feasible_only', action='store_true',
@@ -672,7 +891,7 @@ if __name__ == "__main__":
     parser.add_argument(
         '--dataset',
         choices=['imagenet', 'celeba'],
-        default='imagenet',
+        default='celeba',
         help='Which dataset to use: imagenet (default) or celeba'
     )
     parser.add_argument(

@@ -1,0 +1,42 @@
+Current time: 0711143409
+Using only generated images for ImageNet: train=400, valid=100
+Using resnet model with random weights
+Epoch [1/30], Train Loss: 2.4710, Train Acc: 0.1875, Val Loss: 3.8109, Val Acc: 0.1200
+Epoch [2/30], Train Loss: 2.0412, Train Acc: 0.2575, Val Loss: 3.3783, Val Acc: 0.2600
+Epoch [3/30], Train Loss: 1.7304, Train Acc: 0.3550, Val Loss: 3.4898, Val Acc: 0.2600
+Epoch [4/30], Train Loss: 1.6466, Train Acc: 0.4300, Val Loss: 2.4290, Val Acc: 0.3000
+Epoch [5/30], Train Loss: 1.4776, Train Acc: 0.4800, Val Loss: 1.9149, Val Acc: 0.4100
+Epoch [6/30], Train Loss: 1.4276, Train Acc: 0.5100, Val Loss: 1.9019, Val Acc: 0.3300
+Epoch [7/30], Train Loss: 1.2559, Train Acc: 0.5500, Val Loss: 1.6004, Val Acc: 0.5000
+Epoch [8/30], Train Loss: 1.1853, Train Acc: 0.5925, Val Loss: 1.6516, Val Acc: 0.4500
+Epoch [9/30], Train Loss: 1.1013, Train Acc: 0.6325, Val Loss: 1.5848, Val Acc: 0.4500
+Epoch [10/30], Train Loss: 1.0751, Train Acc: 0.6675, Val Loss: 1.5250, Val Acc: 0.5100
+Epoch [11/30], Train Loss: 0.9598, Train Acc: 0.6675, Val Loss: 1.5551, Val Acc: 0.4600
+Epoch [12/30], Train Loss: 0.9292, Train Acc: 0.6825, Val Loss: 1.5128, Val Acc: 0.5100
+Epoch [13/30], Train Loss: 0.8575, Train Acc: 0.7175, Val Loss: 1.4648, Val Acc: 0.5300
+Epoch [14/30], Train Loss: 0.8540, Train Acc: 0.7400, Val Loss: 1.5728, Val Acc: 0.4300
+Epoch [15/30], Train Loss: 0.7818, Train Acc: 0.7475, Val Loss: 1.5476, Val Acc: 0.4500
+Epoch [16/30], Train Loss: 0.8305, Train Acc: 0.7625, Val Loss: 1.5419, Val Acc: 0.4800
+Epoch [17/30], Train Loss: 0.7493, Train Acc: 0.7725, Val Loss: 1.5068, Val Acc: 0.4800
+Epoch [18/30], Train Loss: 0.7828, Train Acc: 0.7775, Val Loss: 1.4452, Val Acc: 0.4900
+Epoch [19/30], Train Loss: 0.7892, Train Acc: 0.7750, Val Loss: 1.4596, Val Acc: 0.4700
+Epoch [20/30], Train Loss: 0.8013, Train Acc: 0.7625, Val Loss: 1.4281, Val Acc: 0.4700
+Epoch [21/30], Train Loss: 0.6955, Train Acc: 0.8000, Val Loss: 1.4075, Val Acc: 0.5200
+Epoch [22/30], Train Loss: 0.6787, Train Acc: 0.7750, Val Loss: 1.4115, Val Acc: 0.5200
+Epoch [23/30], Train Loss: 0.6605, Train Acc: 0.8025, Val Loss: 1.4309, Val Acc: 0.4900
+Epoch [24/30], Train Loss: 0.6717, Train Acc: 0.7800, Val Loss: 1.4428, Val Acc: 0.5000
+Epoch [25/30], Train Loss: 0.6804, Train Acc: 0.8125, Val Loss: 1.4454, Val Acc: 0.5000
+Epoch [26/30], Train Loss: 0.7025, Train Acc: 0.8025, Val Loss: 1.4409, Val Acc: 0.5000
+Epoch [27/30], Train Loss: 0.6952, Train Acc: 0.7775, Val Loss: 1.4359, Val Acc: 0.4900
+Epoch [28/30], Train Loss: 0.7079, Train Acc: 0.7875, Val Loss: 1.4472, Val Acc: 0.5000
+Epoch [29/30], Train Loss: 0.6517, Train Acc: 0.7925, Val Loss: 1.4473, Val Acc: 0.5100
+Epoch [30/30], Train Loss: 0.7146, Train Acc: 0.7600, Val Loss: 1.4363, Val Acc: 0.5100
+Generating and saving predictions...
+Traceback (most recent call last):
+  File "/people/cs/o/oxx220000/HiBug/predict.py", line 1267, in <module>
+    train_loss_history, train_acc_history, val_loss_history, val_acc_history = train_model(
+  File "/people/cs/o/oxx220000/HiBug/predict.py", line 1211, in train_model
+    save_predictions(model, train_loader, valid_loader)
+  File "/people/cs/o/oxx220000/HiBug/predict.py", line 1039, in save_predictions
+    for idx, pred in zip(args.selected_indices, sub_preds):
+AttributeError: 'Namespace' object has no attribute 'selected_indices'

@@ -1,6 +1,50 @@
+AAAI ToDo:
+1. In your controlnet.py file, on line 244,So your ControlNet diffusion model is using 30 inference steps for the DDIM sampling process.
+2. There is also ambiguity in error thresholds (ϵ) and rare-class identification. These are somewhat arbitrarily set (e.g., ρ=0.05, ϵ=0.01) and lack sensitivity analysis. A deeper justification of why these values were chosen would have been preferred.
+
+CUDA_VISIBLE_DEVICES=3 nohup python -u filter.py \
+  --max_memory 23 \
+  --attributes redhair_brownskin_sademotion \
+  > logs/filter/filter_RH_BS_SM.log 2>&1 < /dev/null &
+
+
+CUDA_VISIBLE_DEVICES=1 nohup python -u filter.py \
+  --max_memory 23 \
+  --attributes redhair \
+  --stop_at 5000 \
+  > logs/filter/filter_RH.log 2>&1 < /dev/null &
+
+
+CUDA_VISIBLE_DEVICES=3 nohup python -u controlnet.py --attributes redhair_brownskin_sademotion --stop_at 1000 > logs/controlnet_redhair_brownskin_sademotion.log 2>&1 < /dev/null &
+
+
+CUDA_VISIBLE_DEVICES=3 nohup python -u predict.py --dataset imagenet --model resnet --num_added_img 500 --attributes pinkcolor_fabrictexture --num_epochs 30 --sub_ratio 1  --gen_only 1 > logs_imagenet/pinkcolor_fabrictexture_resnet_imagenet_500_gen_only.log 2>&1 < /dev/null &
+CUDA_VISIBLE_DEVICES=2 nohup python -u predict.py --dataset imagenet --model resnet --num_added_img 100 --attributes pinkcolor_fabrictexture --num_epochs 30 --sub_ratio 1  --gen_only 1 > logs_imagenet/pinkcolor_fabrictexture_resnet_imagenet_100_gen_only.log 2>&1 < /dev/null &
+
+CUDA_VISIBLE_DEVICES=1 nohup python -u predict.py --dataset imagenet --model resnet --num_added_img 1000 --attributes pinkcolor_fabrictexture --num_epochs 30 --sub_ratio 1  --gen_only 1 > logs_imagenet/pinkcolor_fabrictexture_resnet_imagenet_1000_gen_only.log 2>&1 < /dev/null &
+
+CUDA_VISIBLE_DEVICES=2 nohup python -u predict.py --dataset imagenet --model resnet --num_added_img 1000  --save_pred_model best --attributes pinkcolor_fabrictexture --num_epochs 30 > logs_imagenet/pinkcolor_fabrictexture_resnet_imagenet_1000_sub_ratio0.3.log 2>&1 < /dev/null &
+
+CUDA_VISIBLE_DEVICES=2 nohup python -u predict.py --dataset imagenet --model resnet --num_added_img 1000  --save_pred_model best --attributes pinkcolor_fabrictexture --num_epochs 30 --sub_ratio 0.5  > logs_imagenet/pinkcolor_fabrictexture_resnet_imagenet_1000_sub_ratio0.5.log 2>&1 < /dev/null &
+
+CUDA_VISIBLE_DEVICES=2 nohup python -u predict.py --dataset imagenet --model resnet --num_added_img 1000  --save_pred_model best --attributes pinkcolor_fabrictexture --num_epochs 30 --sub_ratio 0.9  > logs_imagenet/pinkcolor_fabrictexture_resnet_imagenet_1000_sub_ratio0.9.log 2>&1 < /dev/null &
+
+CUDA_VISIBLE_DEVICES=1 nohup python -u predict.py --dataset imagenet --model resnet --num_added_img 1000  --save_pred_model best --attributes pinkcolor_fabrictexture --num_epochs 30 --sub_ratio 1  > logs_imagenet/pinkcolor_fabrictexture_resnet_imagenet_1000_sub_ratio1.0.log 2>&1 < /dev/null &
+
+CUDA_VISIBLE_DEVICES=0 nohup python -u predict.py --dataset imagenet --model resnet --num_added_img 1000  --save_pred_model best --attributes pinkcolor_fabrictexture --num_epochs 30 --sub_ratio 0.8  > logs_imagenet/pinkcolor_fabrictexture_resnet_imagenet_1000_sub_ratio0.8.log 2>&1 < /dev/null &
+
+CUDA_VISIBLE_DEVICES=1 nohup python -u predict.py --dataset imagenet --model resnet --num_added_img 1000  --save_pred_model best --attributes pinkcolor_fabrictexture --num_epochs 30 --sub_ratio 0.7  > logs_imagenet/pinkcolor_fabrictexture_resnet_imagenet_1000_sub_ratio0.7.log 2>&1 < /dev/null &
+
+CUDA_VISIBLE_DEVICES=3 nohup python -u predict.py --dataset imagenet --model resnet --num_added_img 500  --save_pred_model best --attributes pinkcolor_fabrictexture --num_epochs 30 --sub_ratio 0  > logs_imagenet/pinkcolor_fabrictexture_resnet_imagenet_500_sub_ratio0.log 2>&1 < /dev/null &
+
+CUDA_VISIBLE_DEVICES=3 nohup python -u predict.py --dataset imagenet --model resnet --num_added_img 1000  --save_pred_model best --attributes pinkcolor_fabrictexture --num_epochs 30 --sub_ratio 0  > logs_imagenet/pinkcolor_fabrictexture_resnet_imagenet_1000_sub_ratio0.log 2>&1 < /dev/null &
+
+CUDA_VISIBLE_DEVICES=3 nohup python -u predict.py --dataset imagenet --model resnet --num_added_img 100  --save_pred_model best --attributes pinkcolor_fabrictexture --num_epochs 30 --sub_ratio 0  > logs_imagenet/pinkcolor_fabrictexture_resnet_imagenet_100_sub_ratio0.log 2>&1 < /dev/null &
+
+
 CUDA_VISIBLE_DEVICES=1 python predict.py --dataset imagenet --model resnet --num_added_img 100  --save_pred_model last --attributes pinkcolor_fabrictexture --num_epochs 30
 
-
+CUDA_VISIBLE_DEVICES=3 nohup python -u predict.py --dataset imagenet --model resnet --num_added_img 100  --save_pred_model best --attributes pinkcolor_fabrictexture --num_epochs 30 > logs_imagenet/pinkcolor_fabrictexture_resnet_imagenet_100.log 2>&1 < /dev/null &
 
 CUDA_VISIBLE_DEVICES=1 nohup python -u predict.py --dataset imagenet --model resnet --num_added_img 0  --save_pred_model best --attributes purplecolor --num_epochs 30 > logs_imagenet/base_resnet_imagenet_best.log 2>&1 < /dev/null &
 

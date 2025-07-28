@@ -134,7 +134,7 @@ parser.add_argument('--gen_only', type=str2bool, default=False,
                     help='Use only generated images for training (default: False)')
 parser.add_argument('--skip_train_unlabeled', type=str2bool, default=False,
                     help='Skip processing TRAIN and UNLABELED splits in diagnostics')
-parser.add_argument('--no_controlnet', type=str2bool, default=True,
+parser.add_argument('--no_controlnet', type=str2bool, default=False,
                     help='Ablation flag: disable ControlNet-based augmentation (default: False)')
 parser.add_argument('--skip_feasible', type=str2bool, default=True,
                     help='Skip loading feasible JSON for any attributes (default: False)')
@@ -153,7 +153,9 @@ parser.add_argument('--batch_size', type=int, default=64,
                     help='Mini‑batch size for training and validation (default: 64)')
 # Add subsampling ratio argument for original training data when combining with modified images
 # Add subsampling ratio argument for original training data when combining with modified images
-parser.add_argument('--sub_ratio', type=float, default=0.3,
+parser.add_argument('--sub_ratio', type=float, 
+                    default=0.3,
+                    # default=1.0,
                     help='Subsampling ratio (0-1) for original training data when combining with modified images')
 # Add pad_missing argument for subsampled original predictions
 parser.add_argument('--pad_missing', action='store_true', default=True,
@@ -363,6 +365,12 @@ else:
         print("Ablation (no_controlnet) mode: Skipping feasible image loading.")
 
 if args.dataset == 'imagenet':
+    # Ensure generated images directory uses the 'imagenet_' prefix
+    default_imagenet_gen_dir = f"exampleData/imagenet_{attributes}"
+    if os.path.isdir(default_imagenet_gen_dir):
+        args.gen_image_dir = default_imagenet_gen_dir
+    elif not os.path.isdir(args.gen_image_dir):
+        args.gen_image_dir = default_imagenet_gen_dir
     # Load ImageNet subset from folders
     data_dir = Path("./imagenet_subset")
     feature_extractor = CLIPImageProcessor.from_pretrained("openai/clip-vit-base-patch32")
@@ -391,7 +399,50 @@ if args.dataset == 'imagenet':
     num_classes = len(full_ds.classes)
 
     # --- ImageNet augmentation modes ---
-    if args.simple:
+    if args.gen_only:
+        # Use only generated images for ImageNet: 80% train, 20% validation
+        # Collect generated image paths and labels
+        gen_paths, gen_labels = [], []
+        for cls_name, cls_idx in full_ds.class_to_idx.items():
+            cls_dir = Path(args.gen_image_dir) / cls_name
+            if not cls_dir.is_dir():
+                continue
+            for img_name in os.listdir(cls_dir):
+                if img_name.lower().endswith(('.png', '.jpg', '.jpeg')):
+                    gen_paths.append(str(cls_dir / img_name))
+                    gen_labels.append(cls_idx)
+        if len(gen_paths) < args.num_added_img:
+            print(f"Warning: requested {args.num_added_img}, but only {len(gen_paths)} generated images available.")
+        # Sample up to requested number
+        random.seed(args.seed)
+        idxs = list(range(len(gen_paths)))
+        sampled = random.sample(idxs, min(len(gen_paths), args.num_added_img))
+        gen_paths = [gen_paths[i] for i in sampled]
+        gen_labels = [gen_labels[i] for i in sampled]
+        # Split into train and validation sets (80/20)
+        indices = list(range(len(gen_paths)))
+        random.shuffle(indices)
+        split_idx = int(0.8 * len(indices))
+        train_idx_gen = indices[:split_idx]
+        val_idx_gen = indices[split_idx:]
+        class GeneratedImageDataset(Dataset):
+            def __init__(self, paths, labels, transform):
+                self.paths, self.labels, self.transform = paths, labels, transform
+            def __len__(self):
+                return len(self.paths)
+            def __getitem__(self, i):
+                img = Image.open(self.paths[i]).convert("RGB")
+                return (self.transform(img), self.labels[i])
+        train_ds = GeneratedImageDataset([gen_paths[i] for i in train_idx_gen],
+                                         [gen_labels[i] for i in train_idx_gen],
+                                         train_transform)
+        val_ds = GeneratedImageDataset([gen_paths[i] for i in val_idx_gen],
+                                       [gen_labels[i] for i in val_idx_gen],
+                                       val_transform)
+        train_loader = make_loader(train_ds, shuffle=True)
+        valid_loader = make_loader(val_ds, shuffle=False)
+        print(f"Using only generated images for ImageNet: train={len(train_ds)}, valid={len(val_ds)}")
+    elif args.simple:
         # Simple mode: augment from exampleData/imagenet_simple
         simple_root = Path("exampleData/imagenet_simple")
         simple_paths, simple_labels = [], []
@@ -424,7 +475,7 @@ if args.dataset == 'imagenet':
             print(f"Added {len(simple_ds)} ImageNet simple images: {len(train_ds)} -> {len(train_dataset)}")
         else:
             train_dataset, train_loader = train_ds, make_loader(train_ds, shuffle=True)
-    else:
+    elif not args.gen_only and not args.simple:
         # Normal mode: generated-images + feasible filter (mirrors CelebA logic)
         # Determine generated-image directory: use default if exists, otherwise try fallbacks
         default_gen_dir = f"exampleData/imagenet_{attributes}"
@@ -541,7 +592,7 @@ if args.dataset == 'imagenet':
     modified_image_labels = []
     unlabeled_predictions = np.array([])
     # Jump to model setup
-else:
+elif args.dataset == 'celeba':
     with open("exampleData/celebA/list_attr_celeba.txt") as f:
         lines = [line.strip('\n').split(' ')[0] for line in f.readlines()]
         
@@ -1102,7 +1153,7 @@ def train_model(model, train_loader, valid_loader, criterion, optimizer, schedul
                 total_loss += loss.item()
                 total_correct += ((torch.sigmoid(outputs) > 0.5).int() == labels.int()).sum().item()
 
-        train_acc = total_correct / len(train_dataset)
+        train_acc = total_correct / len(train_loader.dataset)
         val_acc, val_loss = evaluate(model, valid_loader)
         # Update best model if this epoch's validation accuracy is higher
         if val_acc > best_val_acc:
