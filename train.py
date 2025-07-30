@@ -114,8 +114,8 @@ val_transform = default_img_transform(train=False)
 # Load ImageNet subset
 data_dir = Path(args.data_dir)
 full_ds = ImageFolder(data_dir)
-train_idx = np.load('train_idx_imagenet.npy')
-val_idx = np.load('val_idx_imagenet.npy')
+train_idx = np.load('save/train_idx_imagenet.npy')
+val_idx = np.load('save/val_idx_imagenet.npy')
 train_ds = Subset(ImageFolder(data_dir, transform=train_transform), train_idx)
 val_ds   = Subset(ImageFolder(data_dir, transform=val_transform), val_idx)
 train_loader = DataLoader(

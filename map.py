@@ -305,7 +305,7 @@ with open("exampleData/celebA/non_yellowhair_sademotion_indices.txt","w") as f: 
 non_pinkcolor_indices = get_original_indices_by_attribute(
     "color",
     "pink",
-    "attribute10.json",
+    "save/attribute10.json",
     None,
     find_matching=False,
     save_path="non_pinkcolor_indices.txt",
@@ -316,7 +316,7 @@ non_pinkcolor_indices = get_original_indices_by_attribute(
 non_yellowcolor_indices = get_original_indices_by_attribute(
     "color",
     "yellow",
-    "attribute10.json",
+    "save/attribute10.json",
     None,
     find_matching=False,
     save_path="non_yellowcolor_indices.txt",
@@ -327,7 +327,7 @@ non_yellowcolor_indices = get_original_indices_by_attribute(
 non_fabrictexture_indices = get_original_indices_by_attribute(
     "texture",
     "fabric",
-    "attribute10.json",
+    "save/attribute10.json",
     None,
     find_matching=False,
     save_path="non_fabrictexture_indices.txt",
@@ -337,7 +337,7 @@ non_fabrictexture_indices = get_original_indices_by_attribute(
 non_orangecolor_indices = get_original_indices_by_attribute(
     "color",
     "orange",
-    "attribute10.json",
+    "save/attribute10.json",
     None,
     find_matching=False,
     save_path="non_orangecolor_indices.txt",

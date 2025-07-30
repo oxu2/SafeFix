@@ -277,14 +277,14 @@ if args.dataset == 'imagenet':
     ds = ImageFolder(data_dir, transform=transform)
     # Load pre-defined train/val indices
     try:
-        train_idx = np.load('train_idx_imagenet.npy')
-        val_idx = np.load('val_idx_imagenet.npy')
+        train_idx = np.load('save/train_idx_imagenet.npy')
+        val_idx = np.load('save/val_idx_imagenet.npy')
         print(f"Loaded pre-split ImageNet10 indices: {len(train_idx)} train, {len(val_idx)} validation.")
         # Create Subset datasets using the loaded indices
         train_ds = Subset(ds, train_idx)
         val_ds = Subset(ds, val_idx)
     except FileNotFoundError:
-        print("Error: train_idx_imagenet.npy or val_idx_imagenet.npy not found.")
+        print("Error: save/train_idx_imagenet.npy or save/val_idx_imagenet.npy not found.")
         print("Please run blip.py first to generate the index files.")
         exit() # Exit if index files are missing
 

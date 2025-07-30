@@ -17,7 +17,7 @@ args = parser.parse_args()
 
 # Output filename for labels
 root_dir = 'imagenet_subset'
-output_file = 'labels10.npy'
+output_file = 'save/labels10.npy'
 
 # Build mapping from class names to numeric labels (0–9)
 classes = sorted([d for d in os.listdir(root_dir) if os.path.isdir(os.path.join(root_dir, d))])
@@ -83,10 +83,10 @@ val_idx = _indices[_split_pt:]
 # Optionally save unlabeled indices (empty)
 unlabel_idx = _np_split.array([], dtype=int)
 # Save index files
-_np_split.save('train_idx_imagenet.npy', train_idx)
-_np_split.save('val_idx_imagenet.npy', val_idx)
-print(f"Saved train indices ({len(train_idx)}) to train_idx_imagenet.npy")
-print(f"Saved val indices ({len(val_idx)}) to val_idx_imagenet.npy")
+_np_split.save('save/train_idx_imagenet.npy', train_idx)
+_np_split.save('save/val_idx_imagenet.npy', val_idx)
+print(f"Saved train indices ({len(train_idx)}) to save/train_idx_imagenet.npy")
+print(f"Saved val indices ({len(val_idx)}) to save/val_idx_imagenet.npy")
 # Print first 30 entries of train and val indices
 print("First 30 train indices:", train_idx[:30])
 print("First 30 val indices:", val_idx[:30])
@@ -175,9 +175,9 @@ if args.with_attribute_selection:
                 json.dump(self.attributes_dict, f, indent=4)
 
     # Run attribute selection
-    corpus_path = 'corpus10.json'
+    corpus_path = 'save/corpus10.json'
     AS = AttributeSelection(all_datas, labels, corpus_path)
     AS.match_description_to_data()
-    AS.save_attributes('attribute10.json')
+    AS.save_attributes('save/attribute10.json')
 else:
     print("Skipping attribute selection (use --with_attribute_selection to enable)")

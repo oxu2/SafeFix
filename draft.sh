@@ -3,6 +3,13 @@ AAAI ToDo:
 2. There is also ambiguity in error thresholds (ϵ) and rare-class identification. These are somewhat arbitrarily set (e.g., ρ=0.05, ϵ=0.01) and lack sensitivity analysis. A deeper justification of why these values were chosen would have been preferred.
 
 CUDA_VISIBLE_DEVICES=3 nohup python -u filter.py \
+  --attributes pinkcolor_fabrictexture \
+  --dataset imagenet \
+  --lvlm llava-7b \
+  > logs/filter/filter_pinkcolor_fabrictexture_llava.log 2>&1 < /dev/null &
+
+
+CUDA_VISIBLE_DEVICES=3 nohup python -u filter.py \
   --max_memory 23 \
   --attributes redhair_brownskin_sademotion \
   > logs/filter/filter_RH_BS_SM.log 2>&1 < /dev/null &

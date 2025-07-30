@@ -10,8 +10,10 @@ downloaded_data
 /save/*
 # ...but keep top-level JSON files in save/
 !/save/*.json
+!/save/*.npy
 !/save/plot/*.png
 yellowhair*
+redhair*
 redhair_sademotion*
 redhair_brownskin_sademotion
 .vscode

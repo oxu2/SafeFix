@@ -51,22 +51,37 @@ except ImportError:
 
 # @title inference function
 def inference(image_path, prompt, sys_prompt="You are a helpful assistant.", max_new_tokens=4096, return_input=False, verbose=False):
-    image = Image.open(image_path)
-    image_local_path = "file://" + image_path
-    messages = [
-        {"role": "system", "content": sys_prompt},
-        {"role": "user", "content": [
-                {"type": "text", "text": prompt},
-                {"image": image_local_path},
-            ]
-        },
-    ]
-    text = processor.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
-    if verbose:
-        print("text:", text)
+    global current_lvlm
     
-    inputs = processor(text=[text], images=[image], padding=True, return_tensors="pt")
-    inputs = inputs.to('cuda')
+    image = Image.open(image_path)
+    
+    if current_lvlm == "qwen":
+        # Qwen format
+        image_local_path = "file://" + image_path
+        messages = [
+            {"role": "system", "content": sys_prompt},
+            {"role": "user", "content": [
+                    {"type": "text", "text": prompt},
+                    {"image": image_local_path},
+                ]
+            },
+        ]
+        text = processor.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
+        if verbose:
+            print("text:", text)
+        
+        inputs = processor(text=[text], images=[image], padding=True, return_tensors="pt")
+        inputs = inputs.to('cuda')
+    
+    elif current_lvlm.startswith("llava"):
+        # LLaVA v1.5 format - needs specific prompt template
+        prompt_text = f"USER: <image>\n{prompt}\nASSISTANT:"
+        inputs = processor(images=image, text=prompt_text, return_tensors="pt").to('cuda')
+        if verbose:
+            print("LLaVA prompt:", prompt_text)
+    
+    else:
+        raise ValueError(f"Unsupported LVLM: {current_lvlm}")
 
     output_ids = model.generate(**inputs, max_new_tokens=max_new_tokens)
     generated_ids = [output_ids[len(input_ids):] for input_ids, output_ids in zip(inputs.input_ids, output_ids)]
@@ -122,8 +137,11 @@ def inference_with_api(image_path, prompt, sys_prompt="You are a helpful assista
     return completion.choices[0].message.content
 
 import torch
-from transformers import Qwen2_5_VLForConditionalGeneration, AutoProcessor
+from transformers import Qwen2_5_VLForConditionalGeneration, AutoProcessor, LlavaForConditionalGeneration, AutoProcessor as LlavaProcessor
 model_path = "Qwen/Qwen2.5-VL-7B-Instruct"
+
+# Global variable to track current LVLM type
+current_lvlm = "qwen"
 
 # Resource monitoring class
 class ResourceMonitor:
@@ -295,14 +313,77 @@ def process_image(image_path, model, processor, tags: List[str], attributes: Lis
         if DATASET == 'imagenet':
             # Derive class name from parent directory
             class_name = os.path.basename(os.path.dirname(image_path))
-            # Build questions: one per tag-attribute pair, then presence check
-            questions = [f"Does the {class_name} have {t} {a}?" for t, a in zip(tags, attributes)]
+            
+            # Build questions with improved prompts for LLaVA
+            questions = []
+            for t, a in zip(tags, attributes):
+                if a == 'texture' and current_lvlm.startswith("llava"):
+                    # More specific texture prompts for LLaVA
+                    if t == 'fabric':
+                        questions.append(f"Does the {class_name} appear to be made of soft, flexible material like fabric, cloth, canvas, nylon, or textile (not hard materials like plastic or metal)?")
+                    elif t == 'metal':
+                        questions.append(f"Is the {class_name} made of metal or metallic material?")
+                    elif t == 'wood':
+                        questions.append(f"Is the {class_name} made of wood or wooden material?")
+                    elif t == 'plastic':
+                        questions.append(f"Is the {class_name} made of plastic or synthetic material?")
+                    else:
+                        questions.append(f"Does the {class_name} have a {t} texture or is made of {t} material?")
+                elif a == 'color' and current_lvlm.startswith("llava"):
+                    # More specific color prompts for LLaVA
+                    questions.append(f"Is the {class_name} {t} in color or does it have {t} coloring?")
+                else:
+                    # Default format
+                    questions.append(f"Does the {class_name} have {t} {a}?")
+            
+            # Add presence check
             questions.append(f"Is there a {class_name} in the picture?")
-            prompt = " ".join(questions) + " For each question, only answer with 1 (yes) or 0 (no). Provide answers separated by spaces."
+            
+            # Different prompt format for LLaVA vs other models
+            if current_lvlm.startswith("llava"):
+                if len(questions) > 1:
+                    prompt = "Look carefully at this image. Answer each question with YES or NO, separated by spaces:\n" + \
+                            "\n".join([f"{i+1}. {q}" for i, q in enumerate(questions)]) + \
+                            "\n\nFor material questions: Examine the surface texture, flexibility, and visual properties carefully. If uncertain about fabric/textile material, lean towards YES."
+                else:
+                    prompt = f"Look carefully at this image. {questions[0]}\n\nFor material questions: Examine the surface texture and visual properties. If uncertain about fabric/textile material, lean towards YES.\n\nAnswer: YES or NO"
+            else:
+                prompt = " ".join(questions) + " For each question, only answer with 1 (yes) or 0 (no). Provide answers separated by spaces."
+            
             response = inference(image_path, prompt, verbose=verbose)
             try:
                 # Parse numeric answers
                 nums = [int(s) for s in response.replace(',', ' ').split() if s.isdigit()]
+                
+                # If no numbers found, try to parse text responses (for LLaVA)
+                if not nums and current_lvlm.startswith("llava"):
+                    # Convert text responses to numbers
+                    response_lower = response.lower()
+                    nums = []
+                    # Split by common separators and analyze each part
+                    parts = response.replace(',', ' ').replace('.', ' ').split()
+                    for part in parts:
+                        part_lower = part.lower().strip('.,!?')
+                        if part_lower in ['yes', 'true', '1']:
+                            nums.append(1)
+                        elif part_lower in ['no', 'false', '0']:
+                            nums.append(0)
+                    
+                    # If still no clear answers, try pattern matching for sentences
+                    if not nums:
+                        # For each expected question, look for yes/no patterns
+                        sentences = response.split('.')
+                        for sentence in sentences[:len(tags)]:  # Only look at as many sentences as we have questions
+                            sentence_lower = sentence.lower()
+                            if 'yes' in sentence_lower or 'true' in sentence_lower or 'is ' in sentence_lower:
+                                nums.append(1)
+                            elif 'no' in sentence_lower or 'false' in sentence_lower or 'not' in sentence_lower:
+                                nums.append(0)
+                    
+                    # If we still don't have enough answers, pad with defaults
+                    while len(nums) < len(tags):
+                        nums.append(0)
+                
                 # Map attribute results without class prefix: e.g., "yellowcolor"
                 results = {
                     f"{t}{a}": nums[i] if i < len(nums) else 0
@@ -338,24 +419,61 @@ def process_image(image_path, model, processor, tags: List[str], attributes: Lis
             # if True:
             #     print(f"Debug: {image_path} emotion raw response: {response}")
             
-            # Extract the two numbers from the response
+            # Extract the numbers from the response
             try:
                 numbers = [int(s) for s in response.replace(',', ' ').split() if s.isdigit()]
-                results = {f"{t}_{a.replace(' ', '_')}": num for t, a, num in zip(tags, attributes, numbers)}
-                # Fallback for emotion attributes: if inference missing or ambiguous, default to positive (1)
-                for t, a in zip(tags, attributes):
-                    if a == "emotion":
-                        key = f"{t}_{a.replace(' ', '_')}"
-                        if key not in results:
-                            results[key] = 1
+                
+                # If no numbers found, try to parse text responses (for LLaVA)
+                if not numbers and current_lvlm.startswith("llava"):
+                    # Convert text responses to numbers
+                    response_lower = response.lower()
+                    numbers = []
+                    # Split by common separators and analyze each part
+                    parts = response.replace(',', ' ').replace('.', ' ').split()
+                    for part in parts:
+                        part_lower = part.lower().strip('.,!?')
+                        if part_lower in ['yes', 'true', '1']:
+                            numbers.append(1)
+                        elif part_lower in ['no', 'false', '0']:
+                            numbers.append(0)
+                    
+                    # If still no clear answers, try pattern matching for sentences
+                    if not numbers:
+                        # For each expected question, look for yes/no patterns
+                        sentences = response.split('.')
+                        for sentence in sentences[:len(tags)]:  # Only look at as many sentences as we have questions
+                            sentence_lower = sentence.lower()
+                            if 'yes' in sentence_lower or 'true' in sentence_lower or 'is ' in sentence_lower:
+                                numbers.append(1)
+                            elif 'no' in sentence_lower or 'false' in sentence_lower or 'not' in sentence_lower:
+                                numbers.append(0)
+                    
+                    # If we still don't have enough answers, pad with defaults
+                    while len(numbers) < len(tags):
+                        numbers.append(0)
+                
+                results = {}
+                # Map each tag-attribute pair to its corresponding number
+                for i, (t, a) in enumerate(zip(tags, attributes)):
+                    key = f"{t}_{a.replace(' ', '_')}"
+                    if i < len(numbers):
+                        results[key] = numbers[i]
+                    else:
+                        # If no number available, default based on attribute type
+                        if a == "emotion":
+                            results[key] = 1  # Default to positive for emotion
+                        else:
+                            results[key] = 0  # Default to negative for other attributes
             except Exception as e:
                 print(f"Warning: Error parsing response '{response}' for {image_path}: {e}")
-                # If parsing fails, at least return positive for emotion attributes
-                fallback_results = {}
+                # If parsing fails, create default results for all attributes
+                results = {}
                 for t, a in zip(tags, attributes):
+                    key = f"{t}_{a.replace(' ', '_')}"
                     if a == "emotion":
-                        fallback_results[f"{t}_{a.replace(' ', '_')}"] = 1
-                results = fallback_results
+                        results[key] = 1  # Default to positive for emotion
+                    else:
+                        results[key] = 0  # Default to negative for other attributes
         
         # Record inference time
         inference_time = time.time() - inference_start
@@ -501,14 +619,27 @@ def create_feature_mapping(results_json, feasible_json="features.json", attribut
                 results = json.load(f)
         else:
             results = results_json
-        # Build mapping: include only items where attribute==1
+        
+        # Parse attributes to get individual attribute names
+        attr_list = attributes.split('_')
+        individual_attrs = []
+        for attr in attr_list:
+            if attr.endswith('color'):
+                individual_attrs.append(attr)
+            elif attr.endswith('texture'):
+                individual_attrs.append(attr)
+            else:
+                individual_attrs.append(attr)
+        
+        # Build mapping: include only items where ALL attributes == 1
         feature_mapping = {}
-        suffix = f"_{attributes}"
         for filename, result in results.items():
-            # Find the value for the attribute key ending with suffix
-            val = next((v for k, v in result.items() if k.endswith(suffix)), 0)
-            if val == 1:
-                feature_mapping[filename] = {attributes: val}
+            # Check if all individual attributes are 1
+            if all(result.get(attr, 0) == 1 for attr in individual_attrs):
+                # Include all attribute values in the mapping
+                mapping_entry = {attr: result.get(attr, 0) for attr in individual_attrs}
+                feature_mapping[filename] = mapping_entry
+        
         # Save and return
         save_dir = os.path.dirname(feasible_json)
         os.makedirs(save_dir, exist_ok=True)
@@ -516,70 +647,71 @@ def create_feature_mapping(results_json, feasible_json="features.json", attribut
         with open(out_path, 'w') as f:
             json.dump(feature_mapping, f, indent=4)
         return feature_mapping
-    # --- Original logic for CelebA etc. is now disabled for ImageNet ---
+    
+    # Original logic for CelebA
     # Ensure the save/json directory exists
-    # save_dir = "save/json"
-    # os.makedirs(save_dir, exist_ok=True)
-    # feasible_json = os.path.join(save_dir, os.path.basename(feasible_json))  # Fix duplicate path issue
-    #
-    # if isinstance(results_json, str):
-    #     # If results_json is a file path
-    #     with open(results_json, 'r') as f:
-    #         results = json.load(f)
-    # else:
-    #     # If results_json is already a dictionary
-    #     results = results_json
-    # # Parse the attributes string into keys
-    # attr_list = attributes.split('_')
-    # # Build tags and attributes lists
-    # tags = []
-    # attrs = []
-    # if DATASET == 'celeba':
-    #     for attr in attr_list:
-    #         if attr.endswith('hair'):
-    #             tags.append(attr[:-4])
-    #             attrs.append('hair')
-    #         elif attr.endswith('skin'):
-    #             tags.append(attr[:-4])
-    #             attrs.append('skin')
-    #         elif attr.endswith('emotion'):
-    #             tags.append(attr[:-7])
-    #             attrs.append('emotion')
-    #         else:
-    #             tags.append(attr)
-    #             attrs.append(attr)
-    #     # Always include lipstick for CelebA
-    #     tags.append('wearing')
-    #     attrs.append('lipstick')
-    # else:  # imagenet
-    #     for attr in attr_list:
-    #         if attr.endswith('color'):
-    #             tags.append(attr[:-5])
-    #             attrs.append('color')
-    #         elif attr.endswith('texture'):
-    #             tags.append(attr[:-7])
-    #             attrs.append('texture')
-    # # Derive feature keys
-    # keys = [f"{t}_{a}" for t, a in zip(tags, attrs)]
-    # # Retain these attribute keys for filtering; ensure we always include lipstick feature in output
-    # attr_keys = keys[:]
-    # output_keys = attr_keys + ["wearing_lipstick"]
-    #
-    # feature_mapping = {}
-    # for filename, result in results.items():
-    #     # Require all specified attribute keys be positive
-    #     if all(result.get(key, 0) == 1 for key in attr_keys):
-    #         # Build mapping entry: include attribute keys and lipstick feature
-    #         mapping_entry = {key: result.get(key, 0) for key in attr_keys}
-    #         # Always include lipstick result (0 or 1)
-    #         mapping_entry["wearing_lipstick"] = result.get("wearing_lipstick", 0)
-    #         feature_mapping[filename] = mapping_entry
-    #
-    # # Save the feature mapping to a JSON file
-    # with open(feasible_json, 'w') as f:
-    #     json.dump(feature_mapping, f, indent=4)
-    #
-    # return feature_mapping
+    save_dir = "save/json"
+    os.makedirs(save_dir, exist_ok=True)
+    feasible_json = os.path.join(save_dir, os.path.basename(feasible_json))  # Fix duplicate path issue
+
+    if isinstance(results_json, str):
+        # If results_json is a file path
+        with open(results_json, 'r') as f:
+            results = json.load(f)
+    else:
+        # If results_json is already a dictionary
+        results = results_json
+    # Parse the attributes string into keys
+    attr_list = attributes.split('_')
+    # Build tags and attributes lists
+    tags = []
+    attrs = []
+    if DATASET == 'celeba':
+        for attr in attr_list:
+            if attr.endswith('hair'):
+                tags.append(attr[:-4])
+                attrs.append('hair')
+            elif attr.endswith('skin'):
+                tags.append(attr[:-4])
+                attrs.append('skin')
+            elif attr.endswith('emotion'):
+                tags.append(attr[:-7])
+                attrs.append('emotion')
+            else:
+                tags.append(attr)
+                attrs.append(attr)
+        # Always include lipstick for CelebA
+        tags.append('wearing')
+        attrs.append('lipstick')
+    else:  # imagenet
+        for attr in attr_list:
+            if attr.endswith('color'):
+                tags.append(attr[:-5])
+                attrs.append('color')
+            elif attr.endswith('texture'):
+                tags.append(attr[:-7])
+                attrs.append('texture')
+    # Derive feature keys
+    keys = [f"{t}_{a}" for t, a in zip(tags, attrs)]
+    # Retain these attribute keys for filtering; ensure we always include lipstick feature in output
+    attr_keys = keys[:]
+    output_keys = attr_keys + ["wearing_lipstick"]
+
+    feature_mapping = {}
+    for filename, result in results.items():
+        # Require all specified attribute keys be positive
+        if all(result.get(key, 0) == 1 for key in attr_keys):
+            # Build mapping entry: include attribute keys and lipstick feature
+            mapping_entry = {key: result.get(key, 0) for key in attr_keys}
+            # Always include lipstick result (0 or 1)
+            mapping_entry["wearing_lipstick"] = result.get("wearing_lipstick", 0)
+            feature_mapping[filename] = mapping_entry
+
+    # Save the feature mapping to a JSON file
+    with open(feasible_json, 'w') as f:
+        json.dump(feature_mapping, f, indent=4)
+
+    return feature_mapping
 
 def rename_images_with_suffix(directory_path, suffix="_red", verbose=False):
     """
@@ -650,7 +782,8 @@ def main(directory_path="",
          feasible_only: bool = False,
          results_file: str = None,
          copy_only: bool = False,
-         feasible_json: str = None):
+         feasible_json: str = None,
+         lvlm: str = "qwen"):
     """
     Main function to process images and create feature mapping.
     
@@ -662,6 +795,7 @@ def main(directory_path="",
     - rename_suffix: Suffix to add when renaming files (default: "_red")
     - max_memory_per_gpu: Max memory per GPU in GiB (e.g., 23)
     - stop_at: Base filename number to stop processing at (e.g., "077000")
+    - lvlm: Large vision-language model to use ("qwen" or "llava")
     
     Returns:
     - Tuple of (results, feature_mapping)
@@ -696,22 +830,55 @@ def main(directory_path="",
     resource_monitor.start_monitoring()
 
     # Load model and processor here, after configuring memory
-    global model, processor
+    global model, processor, current_lvlm
+    
+    # Set global variable for current LVLM
+    current_lvlm = lvlm
     
     # Clear GPU cache before loading model
     if torch.cuda.is_available():
         torch.cuda.empty_cache()
     
-    print(f"Loading model with {max_memory_per_gpu}GB memory limit per GPU...")
-    model = Qwen2_5_VLForConditionalGeneration.from_pretrained(
-        model_path,
-        torch_dtype=torch.bfloat16,
-        device_map="auto",
-        max_memory=device_memory,
-        low_cpu_mem_usage=True,
-        torch_dtype_auto=True
-    )
-    processor = AutoProcessor.from_pretrained(model_path, use_fast=True)
+    # Choose model path and classes based on lvlm parameter
+    if lvlm == "qwen":
+        model_path_to_use = "Qwen/Qwen2.5-VL-7B-Instruct"
+        model_class = Qwen2_5_VLForConditionalGeneration
+        processor_class = AutoProcessor
+    elif lvlm == "llava-7b":
+        model_path_to_use = "llava-hf/llava-1.5-7b-hf"
+        model_class = LlavaForConditionalGeneration
+        processor_class = LlavaProcessor
+    elif lvlm == "llava-13b":
+        model_path_to_use = "liuhaotian/llava-v1.5-13b"
+        model_class = LlavaForConditionalGeneration
+        processor_class = LlavaProcessor
+    else:
+        raise ValueError(f"Unsupported LVLM: {lvlm}")
+    
+    print(f"Loading {lvlm.upper()} model ({model_path_to_use}) with {max_memory_per_gpu}GB memory limit per GPU...")
+    
+    if lvlm.startswith("llava"):
+        # Use more conservative loading for LLaVA
+        print("Using conservative loading strategy for LLaVA...")
+        model = model_class.from_pretrained(
+            model_path_to_use,
+            torch_dtype=torch.float16,  # Use float16 instead of bfloat16 for better compatibility
+            device_map="auto",
+            max_memory=device_memory,
+            low_cpu_mem_usage=True,
+            local_files_only=False,  # Allow downloading if needed
+        )
+    else:
+        # Original Qwen loading
+        model = model_class.from_pretrained(
+            model_path_to_use,
+            torch_dtype=torch.bfloat16,
+            device_map="auto",
+            max_memory=device_memory,
+            low_cpu_mem_usage=True
+        )
+    
+    processor = processor_class.from_pretrained(model_path_to_use, use_fast=True)
     
     # Calculate model size
     resource_monitor.get_model_size(model)
@@ -801,9 +968,9 @@ def main(directory_path="",
     
     # Stop monitoring and calculate statistics
     resource_monitor.stop_monitoring()
-    
-    print("Image processing using Qwen VL model complete.")
-    
+
+    print(f"Image processing using {args.lvlm} model complete.")
+
     # Create feature mapping for images with specified attributes
     feature_mapping = create_feature_mapping(results, feasible_json, attributes)
     print("\n--- Processing Summary ---")
@@ -851,6 +1018,17 @@ if __name__ == "__main__":
     import argparse
     import shlex
     
+    def str2bool(v):
+        """Convert string to boolean value"""
+        if isinstance(v, bool):
+            return v
+        if v.lower() in ('yes', 'true', 't', 'y', '1'):
+            return True
+        elif v.lower() in ('no', 'false', 'f', 'n', '0'):
+            return False
+        else:
+            raise argparse.ArgumentTypeError('Boolean value expected.')
+    
     parser = argparse.ArgumentParser(description='Process images for specific attributes')
     parser.add_argument(
         '--image_dir',
@@ -876,8 +1054,8 @@ if __name__ == "__main__":
                         help='Attributes to detect; for celeba: e.g., redhair_brownskin, redhair; for imagenet: e.g., fabrictexture, pinkcolor')
     parser.add_argument('--rename_suffix', type=str, default=None,
                         help='Suffix to add when renaming files (default: "_red")')
-    parser.add_argument('--max_memory', type=int, default=20, 
-                        help='Maximum memory allocation per GPU in GiB (default: 20)')
+    parser.add_argument('--max_memory', type=int, default=23, 
+                        help='Maximum memory allocation per GPU in GiB (default: 23)')
     parser.add_argument('--stop_at', type=int, default=15000,
                         help='Number of images to process before stopping (default: 15000)')
     parser.add_argument('--feasible_only', action='store_true',
@@ -899,6 +1077,12 @@ if __name__ == "__main__":
         type=str2bool,
         default=False,
         help='If true, include the <class>_presence field in ImageNet results (default: False)'
+    )
+    parser.add_argument(
+        '--lvlm',
+        choices=['qwen', 'llava-7b', 'llava-13b'],
+        default='qwen',
+        help='Which large vision-language model to use: qwen (default), llava-7b, or llava-13b'
     )
     
 args = parser.parse_args()
@@ -947,5 +1131,6 @@ main(
    args.feasible_only,
    args.results_file,
    args.copy_only,
-   args.feasible_json
+   args.feasible_json,
+   args.lvlm
 )

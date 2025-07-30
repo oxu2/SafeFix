@@ -194,7 +194,7 @@ if getattr(args, 'verbose', False):
     print(f"Random seed set to {args.seed}")
 # Override attribute file for ImageNet dataset
 if args.dataset == 'imagenet':
-    args.attribute_file = 'attribute10.json'
+    args.attribute_file = 'save/attribute10.json'
 # Automatically enable pretrained weights for CLIP and ViT on ImageNet
 if args.dataset == 'imagenet' and args.model in ('clip', 'vit'):
     args.pretrained = True
@@ -389,8 +389,8 @@ if args.dataset == 'imagenet':
         val_transform = default_img_transform(train=False)
     # Use no transform for index mapping, then create train/val datasets with correct transforms
     full_ds = ImageFolder(data_dir)
-    train_idx = np.load('train_idx_imagenet.npy')
-    val_idx = np.load('val_idx_imagenet.npy')
+    train_idx = np.load('save/train_idx_imagenet.npy')
+    val_idx = np.load('save/val_idx_imagenet.npy')
     valid_idx = val_idx  # alias for diagnostics compatibility
     train_ds = Subset(ImageFolder(data_dir, transform=train_transform), train_idx)
     val_ds   = Subset(ImageFolder(data_dir, transform=val_transform), val_idx)

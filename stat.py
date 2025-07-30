@@ -68,13 +68,13 @@ def main():
     elif dataset == 'imagenet':
         print("Loading ImageNet data...")
         # Load pre-split ImageNet indices
-        train_idx = np.load('train_idx_imagenet.npy')
-        valid_idx = np.load('val_idx_imagenet.npy')
+        train_idx = np.load('save/train_idx_imagenet.npy')
+        valid_idx = np.load('save/val_idx_imagenet.npy')
         # ImageNet doesn't have a predefined unlabeled set in this context
         unlabel_idx = np.array([], dtype=int)
 
         # Load provided labels for ImageNet subset
-        all_labels_full = np.load('labels10.npy')
+        all_labels_full = np.load('save/labels10.npy')
         # Concatenate labels for train and validation sets based on provided labels
         labels = np.concatenate([all_labels_full[train_idx], all_labels_full[valid_idx]])
         # Build mapping from numeric labels to folder names
@@ -82,7 +82,7 @@ def main():
         folder_path = 'imagenet_subset'
         class_names = sorted([d for d in _os.listdir(folder_path) if _os.path.isdir(_os.path.join(folder_path, d))])
         label_names_dict = {i: class_names[i] for i in range(len(class_names))}
-        print(f"Loaded and processed {len(labels)} ImageNet labels from labels10.npy.")
+        print(f"Loaded and processed {len(labels)} ImageNet labels from save/labels10.npy.")
         print(f"Class names: {class_names}")
 
         # Load predictions
@@ -114,7 +114,7 @@ def main():
         print(f"Created split list: {len(split)} entries ({split.count(TRAIN)} TRAIN, {split.count(VALID)} VALID)")
 
         # Define attribute file for ImageNet
-        attribute_file = "attribute10.json"
+        attribute_file = "save/attribute10.json"
         if not os.path.exists(attribute_file):
              print(f"Warning: ImageNet attribute file '{attribute_file}' not found. Run blip.py with --with_attribute_selection.")
              # Decide if you want to exit or continue without attributes
