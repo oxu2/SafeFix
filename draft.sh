@@ -1,12 +1,27 @@
+
+
+
 AAAI ToDo:
 1. In your controlnet.py file, on line 244,So your ControlNet diffusion model is using 30 inference steps for the DDIM sampling process.
 2. There is also ambiguity in error thresholds (ϵ) and rare-class identification. These are somewhat arbitrarily set (e.g., ρ=0.05, ϵ=0.01) and lack sensitivity analysis. A deeper justification of why these values were chosen would have been preferred.
+
+CUDA_VISIBLE_DEVICES=1 nohup python -u predict.py --dataset celeba --model resnet --num_added_img 1000  --save_pred_model best --attributes redhair_brownskin_sademotion --num_epochs 20   > logs_imagenet/RH_BS_SE_resnet_celeba_1000.log 2>&1 < /dev/null &
+
+CUDA_VISIBLE_DEVICES=2 nohup python -u predict.py --dataset celeba --model resnet --num_added_img 5000  --save_pred_model best --attributes redhair_brownskin_sademotion --num_epochs 20 --seed 12376  > logs_imagenet/RH_BS_SE_resnet_celeba_5000.log 2>&1 < /dev/null &
+
+CUDA_VISIBLE_DEVICES=3 nohup python -u predict.py --dataset celeba --model resnet --num_added_img 10000  --save_pred_model best --attributes redhair_brownskin_sademotion --num_epochs 20 --seed 12376  > logs_imagenet/RH_BS_SE_resnet_celeba_10000.log 2>&1 < /dev/null &
 
 CUDA_VISIBLE_DEVICES=3 nohup python -u filter.py \
   --attributes pinkcolor_fabrictexture \
   --dataset imagenet \
   --lvlm llava-7b \
   > logs/filter/filter_pinkcolor_fabrictexture_llava.log 2>&1 < /dev/null &
+
+CUDA_VISIBLE_DEVICES=1 nohup python -u filter.py \
+  --attributes pinkcolor_fabrictexture \
+  --dataset imagenet \
+  --lvlm qwen \
+  > logs/filter/filter_pinkcolor_fabrictexture_qwen.log 2>&1 < /dev/null &
 
 
 CUDA_VISIBLE_DEVICES=3 nohup python -u filter.py \

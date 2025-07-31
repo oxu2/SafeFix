@@ -7,3 +7,50 @@ Starting image processing for attributes: pinkcolor_fabrictexture...
 Stop condition active: stop after processing 15000 images.
 Found 2000 images with file type(s): jpg,jpeg
 [1000/2000] Processed...
+[2000/2000] Processed...
+Image processing using llava-7b model complete.
+
+--- Processing Summary ---
+Processed all 2000 found images.
+Found 1698 feasible images matching the criteria.
+Feasible images ratio: 1698/2000 (84.90%)
+Results saved to: save/json/pinkcolor_fabrictexture_results_07301707.json
+Feasible mapping saved to: save/json/pinkcolor_fabrictexture_feasible_07301707.json
+--------------------------
+
+============================================================
+           RESOURCE USAGE STATISTICS
+============================================================
+📊 Processing Overview:
+   • Total images processed: 2,000
+   • Total processing time: 17.08 minutes (0.28 hours)
+   • Average time per image: 0.512 seconds
+
+🤖 Model Information:
+   • Model size: 13472.4 MB (13.16 GB)
+
+⚡ Inference Performance:
+   • Total inferences: 2,000
+   • Average inference time: 0.505 seconds
+   • Min inference time: 0.220 seconds
+   • Max inference time: 2.516 seconds
+   • Total inference time: 1010.33 seconds
+
+💾 Memory Usage:
+   • Average CPU memory: 112.26 GB
+   • Peak CPU memory: 114.56 GB
+   • Average GPU memory: 14.70 GB
+   • Peak GPU memory: 14.75 GB
+
+📈 Estimated Cost for 1,000 Images:
+   • Processing time: 8.54 minutes (0.14 hours)
+   • Time per image: 0.512 seconds
+
+🚀 Throughput:
+   • Images per second: 1.95
+   • Images per minute: 117.1
+   • Images per hour: 7025
+============================================================
+
+📊 Resource statistics saved to: save/json/pinkcolor_fabrictexture_resource_stats_07301724.json
+Copied 1698 feasible images to /people/cs/o/oxx220000/HiBug/pinkcolor_fabrictexture_1698

@@ -154,8 +154,8 @@ parser.add_argument('--batch_size', type=int, default=64,
 # Add subsampling ratio argument for original training data when combining with modified images
 # Add subsampling ratio argument for original training data when combining with modified images
 parser.add_argument('--sub_ratio', type=float, 
-                    default=0.3,
-                    # default=1.0,
+                    # default=0.3,
+                    default=1.0,
                     help='Subsampling ratio (0-1) for original training data when combining with modified images')
 # Add pad_missing argument for subsampled original predictions
 parser.add_argument('--pad_missing', action='store_true', default=True,

@@ -1,0 +1,56 @@
+Running in conda environment: ad
+Using 1 GPUs with 23GiB memory allocation each
+Loading QWEN model (Qwen/Qwen2.5-VL-7B-Instruct) with 23GB memory limit per GPU...
+Model loaded. Size: 15816.1 MB (15.45 GB)
+Starting image processing for attributes: pinkcolor_fabrictexture...
+Stop condition active: stop after processing 15000 images.
+Found 2000 images with file type(s): jpg,jpeg
+Error processing image exampleData/imagenet_pinkcolor_fabrictexture/desk/n03179701_607.JPEG: CUDA out of memory. Tried to allocate 3.74 GiB (GPU 0; 23.68 GiB total capacity; 21.43 GiB already allocated; 1.26 GiB free; 21.79 GiB reserved in total by PyTorch) If reserved memory is >> allocated memory try setting max_split_size_mb to avoid fragmentation.  See documentation for Memory Management and PYTORCH_CUDA_ALLOC_CONF
+[1000/2000] Processed...
+[2000/2000] Processed...
+Image processing using qwen model complete.
+
+--- Processing Summary ---
+Processed all 2000 found images.
+Found 1300 feasible images matching the criteria.
+Feasible images ratio: 1300/2000 (65.00%)
+Results saved to: save/json/pinkcolor_fabrictexture_results_07301727.json
+Feasible mapping saved to: save/json/pinkcolor_fabrictexture_feasible_07301727.json
+--------------------------
+
+============================================================
+           RESOURCE USAGE STATISTICS
+============================================================
+📊 Processing Overview:
+   • Total images processed: 2,000
+   • Total processing time: 19.70 minutes (0.33 hours)
+   • Average time per image: 0.591 seconds
+
+🤖 Model Information:
+   • Model size: 15816.1 MB (15.45 GB)
+
+⚡ Inference Performance:
+   • Total inferences: 1,999
+   • Average inference time: 0.584 seconds
+   • Min inference time: 0.440 seconds
+   • Max inference time: 2.162 seconds
+   • Total inference time: 1166.60 seconds
+
+💾 Memory Usage:
+   • Average CPU memory: 115.23 GB
+   • Peak CPU memory: 117.95 GB
+   • Average GPU memory: 18.06 GB
+   • Peak GPU memory: 21.14 GB
+
+📈 Estimated Cost for 1,000 Images:
+   • Processing time: 9.85 minutes (0.16 hours)
+   • Time per image: 0.591 seconds
+
+🚀 Throughput:
+   • Images per second: 1.69
+   • Images per minute: 101.5
+   • Images per hour: 6090
+============================================================
+
+📊 Resource statistics saved to: save/json/pinkcolor_fabrictexture_resource_stats_07301746.json
+Copied 1300 feasible images to /people/cs/o/oxx220000/HiBug/pinkcolor_fabrictexture_1300
