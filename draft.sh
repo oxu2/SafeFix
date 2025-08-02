@@ -1,9 +1,52 @@
+mv logs_imagenet/RH_BS_SE_*_celeba_*.log logs/
+
+CUDA_VISIBLE_DEVICES=0 nohup python -u filter.py \
+  --attributes orangecolor_fabrictexture \
+  --dataset imagenet \
+  --lvlm llava-7b \
+  > logs/filter/filter_orangecolor_fabrictexture_llava.log 2>&1 < /dev/null &
+
+#!/bin/bash
+
+CUDA_VISIBLE_DEVICES=0 nohup python -u predict.py \
+  --dataset imagenet --model clip --num_added_img 100 \
+  --save_pred_model best --attributes orangecolor_fabrictexture \
+  --lvlm llava --num_epochs 15 \
+  > logs_imagenet/OC_FT_clip_imagenet_100.log 2>&1 < /dev/null &&
+
+CUDA_VISIBLE_DEVICES=0 nohup python -u predict.py \
+  --dataset imagenet --model clip --num_added_img 500 \
+  --save_pred_model best --attributes orangecolor_fabrictexture \
+  --lvlm llava --num_epochs 15 \
+  > logs_imagenet/OC_FT_clip_imagenet_500.log 2>&1 < /dev/null &&
+
+CUDA_VISIBLE_DEVICES=0 nohup python -u predict.py \
+  --dataset imagenet --model clip --num_added_img 1000 \
+  --save_pred_model best --attributes orangecolor_fabrictexture \
+  --lvlm llava --num_epochs 15 \
+  > logs_imagenet/OC_FT_clip_imagenet_1000.log 2>&1 < /dev/null &
 
 
+CUDA_VISIBLE_DEVICES=0 nohup python -u predict.py \
+  --dataset imagenet --model clip --num_added_img 1000 \
+  --save_pred_model best --attributes orangecolor_fabrictexture \
+  --lvlm llava --num_epochs 15 \
+  > logs_imagenet/OC_FT_clip_imagenet_llava_1000.log 2>&1 < /dev/null &
 
-AAAI ToDo:
-1. In your controlnet.py file, on line 244,So your ControlNet diffusion model is using 30 inference steps for the DDIM sampling process.
-2. There is also ambiguity in error thresholds (ϵ) and rare-class identification. These are somewhat arbitrarily set (e.g., ρ=0.05, ϵ=0.01) and lack sensitivity analysis. A deeper justification of why these values were chosen would have been preferred.
+CUDA_VISIBLE_DEVICES=0 nohup python -u predict.py --dataset imagenet --model vit --num_added_img 100  --save_pred_model best --attributes pinkcolor_fabrictexture --lvlm llava  --num_epochs 15   > logs_imagenet/PC_FT_vit_imagenet_100.log 2>&1 < /dev/null &
+CUDA_VISIBLE_DEVICES=0 nohup python -u predict.py --dataset imagenet --model vit --num_added_img 500  --save_pred_model best --attributes pinkcolor_fabrictexture --lvlm llava  --num_epochs 15   > logs_imagenet/PC_FT_vit_imagenet_500.log 2>&1 < /dev/null &
+CUDA_VISIBLE_DEVICES=0 nohup python -u predict.py --dataset imagenet --model vit --num_added_img 1000  --save_pred_model best --attributes pinkcolor_fabrictexture --lvlm llava  --num_epochs 15   > logs_imagenet/PC_FT_vit_imagenet_1000.log 2>&1 < /dev/null &
+
+CUDA_VISIBLE_DEVICES=1 nohup python -u predict.py --dataset celeba --model vit --num_added_img 1000  --save_pred_model best --attributes redhair_brownskin_sademotion --num_epochs 15  --seed 12376  > logs/RH_BS_SE_vit_celeba_1000.log 2>&1 < /dev/null &
+CUDA_VISIBLE_DEVICES=2 nohup python -u predict.py --dataset celeba --model vit --num_added_img 5000  --save_pred_model best --attributes redhair_brownskin_sademotion --num_epochs 15  --seed 12376  > logs/RH_BS_SE_vit_celeba_5000.log 2>&1 < /dev/null &
+CUDA_VISIBLE_DEVICES=3 nohup python -u predict.py --dataset celeba --model vit --num_added_img 10000  --save_pred_model best --attributes redhair_brownskin_sademotion --num_epochs 15  --seed 12376  > logs/RH_BS_SE_vit_celeba_10000.log 2>&1 < /dev/null &
+
+
+CUDA_VISIBLE_DEVICES=2 nohup python -u predict.py --dataset imagenet --model resnet --num_added_img 1000  --save_pred_model best --attributes pinkcolor_fabrictexture --num_epochs 30 --lvlm llava  > logs_imagenet/PC_FT_resnet_imagenet_llava_1000.log 2>&1 < /dev/null &
+
+CUDA_VISIBLE_DEVICES=1 nohup python -u predict.py --dataset imagenet --model resnet --num_added_img 500  --save_pred_model best --attributes pinkcolor_fabrictexture --num_epochs 30 --lvlm llava  > logs_imagenet/PC_FT_resnet_imagenet_llava_500.log 2>&1 < /dev/null &
+
+CUDA_VISIBLE_DEVICES=0 nohup python -u predict.py --dataset imagenet --model resnet --num_added_img 100  --save_pred_model best --attributes pinkcolor_fabrictexture --num_epochs 30 --lvlm llava  > logs_imagenet/PC_FT_resnet_imagenet_llava_100.log 2>&1 < /dev/null &
 
 CUDA_VISIBLE_DEVICES=1 nohup python -u predict.py --dataset celeba --model resnet --num_added_img 1000  --save_pred_model best --attributes redhair_brownskin_sademotion --num_epochs 20   > logs_imagenet/RH_BS_SE_resnet_celeba_1000.log 2>&1 < /dev/null &
 

@@ -1,0 +1,56 @@
+Running in conda environment: ad
+Using 1 GPUs with 23GiB memory allocation each
+Loading LLAVA-7B model (llava-hf/llava-1.5-7b-hf) with 23GB memory limit per GPU...
+Using conservative loading strategy for LLaVA...
+Model loaded. Size: 13472.4 MB (13.16 GB)
+Starting image processing for attributes: orangecolor_fabrictexture...
+Stop condition active: stop after processing 15000 images.
+Found 2000 images with file type(s): jpg,jpeg
+[1000/2000] Processed...
+[2000/2000] Processed...
+Image processing using llava-7b model complete.
+
+--- Processing Summary ---
+Processed all 2000 found images.
+Found 1349 feasible images matching the criteria.
+Feasible images ratio: 1349/2000 (67.45%)
+Results saved to: save/json/orangecolor_fabrictexture_results_07311601.json
+Feasible mapping saved to: save/json/orangecolor_fabrictexture_feasible_07311601.json
+--------------------------
+
+============================================================
+           RESOURCE USAGE STATISTICS
+============================================================
+📊 Processing Overview:
+   • Total images processed: 2,000
+   • Total processing time: 19.30 minutes (0.32 hours)
+   • Average time per image: 0.579 seconds
+
+🤖 Model Information:
+   • Model size: 13472.4 MB (13.16 GB)
+
+⚡ Inference Performance:
+   • Total inferences: 2,000
+   • Average inference time: 0.565 seconds
+   • Min inference time: 0.243 seconds
+   • Max inference time: 10.737 seconds
+   • Total inference time: 1129.21 seconds
+
+💾 Memory Usage:
+   • Average CPU memory: 474.77 GB
+   • Peak CPU memory: 476.99 GB
+   • Average GPU memory: 57.77 GB
+   • Peak GPU memory: 61.24 GB
+
+📈 Estimated Cost for 1,000 Images:
+   • Processing time: 9.65 minutes (0.16 hours)
+   • Time per image: 0.579 seconds
+
+🚀 Throughput:
+   • Images per second: 1.73
+   • Images per minute: 103.6
+   • Images per hour: 6218
+============================================================
+
+📊 Resource statistics saved to: save/json/orangecolor_fabrictexture_resource_stats_07311620.json
+Copied 1349 feasible images to /people/cs/o/oxx220000/HiBug/orangecolor_fabrictexture_1349

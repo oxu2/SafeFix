@@ -109,6 +109,8 @@ parser.add_argument('--lr', type=float, default=1e-4,
                     help='Learning rate (default: 1e-4)')
 parser.add_argument('--attributes', type=str, default="redhair_brownskin", 
                     help='attributes to detect, e.g. redhair_sademotion, redhair_brownskin, redhair, brownskin, yellowhair, sademotion, etc.')
+parser.add_argument('--lvlm', type=str, default=None,
+                    help='LVLM model name (e.g., llava) to modify feasible file naming')
 parser.add_argument('--model', type=str, default='resnet', choices=['resnet', 'vit', 'clip', 'blip'],
                     help='Model architecture to use (resnet, vit, clip, or blip)')
 parser.add_argument('--plot', type=str2bool, default=False, help='Enable plotting training metrics')
@@ -236,7 +238,12 @@ attributes = args.attributes
 
 # Set default feasible_file based on attributes if not provided
 if args.feasible_file is None:
-    args.feasible_file = f"save/feasible_{attributes}.json"
+    if args.lvlm == 'llava':
+        if args.verbose:
+            print(f"Using LLAVA model: setting feasible_file to save/feasible_{attributes}_{args.lvlm}.json")
+        args.feasible_file = f"save/feasible_{attributes}_{args.lvlm}.json"
+    else: #qwen
+        args.feasible_file = f"save/feasible_{attributes}.json"
 # Set default gen_image_dir based on attributes if not provided
 # Ablation: disable ControlNet-based augmentation if no_controlnet is True
 if args.no_controlnet:
@@ -372,7 +379,7 @@ if args.dataset == 'imagenet':
     elif not os.path.isdir(args.gen_image_dir):
         args.gen_image_dir = default_imagenet_gen_dir
     # Load ImageNet subset from folders
-    data_dir = Path("./imagenet_subset")
+    data_dir = Path("exampleData/imagenet_subset")
     feature_extractor = CLIPImageProcessor.from_pretrained("openai/clip-vit-base-patch32")
     if args.model == 'clip':
         train_transform = clip_processor_transform(feature_extractor)
@@ -1301,7 +1308,7 @@ if args.dataset == 'imagenet':
     # Prepare labels and split for diagnostics
     # Derive ground-truth labels from the ImageFolder ordering
     from pathlib import Path
-    data_dir = Path("./imagenet_subset")
+    data_dir = Path("exampleData/imagenet_subset")
     full_ds = ImageFolder(data_dir)
     labels_all = np.array(full_ds.targets)
     # Build labels for train and validation splits
