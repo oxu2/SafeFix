@@ -1,0 +1,133 @@
+{
+"Corpus": {
+  "color": {
+    "data": [],
+    "word": [
+      "red",
+      "green",
+      "pink",
+      "brown",
+      "white",
+      "blue",
+      "tan",
+      "silver",
+      "orange",
+      "gray",
+      "maroon",
+      "yellow",
+      "multicolored",
+      "purple",
+      "black"
+    ],
+    "prompt": ["A photo of a #1 #LABEL."],
+    "type": "description",
+    "question": "What color is the main object?"
+  },
+"background": {
+    "data": [],
+    "word": [
+        "sky",
+        "trees",
+        "inside a house",
+        "buildings",
+        "grass",
+        "rocks",
+        "bridge",
+        "water",
+        "wall",
+        "house",
+        "street",
+        "wild",
+        "snow"
+    ],
+    "prompt": ["The background of this photo is #1"],
+    "type": "description",
+    "question": "What is the background of this photo?"
+},
+  "texture": {
+    "data": [],
+    "word": [
+      "plastic",
+      "metallic",
+      "wooden",
+      "leather",
+      "fabric",
+      "ceramic",
+      "glass"
+    ],
+    "prompt": ["A photo of a #1 #LABEL."],
+    "type": "description",
+    "question": "What texture is the main object?"
+  },
+  "object_position": {
+    "data": [],
+    "word": [
+      "top-left",
+      "top-right",
+      "center",
+      "bottom-left",
+      "bottom-right",
+      "left",
+      "right",
+      "foreground",
+      "background"
+    ],
+    "prompt": ["The object is located at #1."],
+    "type": "description",
+    "question": "Where is the main object located in this photo?"
+  },
+  "object_size": {
+    "data": [],
+    "word": [
+      "small",
+      "medium",
+      "large",
+      "tiny",
+      "gigantic"
+    ],
+    "prompt": ["The object appears #1."],
+    "type": "description",
+    "question": "What is the size of the main object?"
+  },
+  "lighting": {
+    "data": [],
+    "word": [
+      "natural",
+      "artificial",
+      "low-light",
+      "bright",
+      "backlit"
+    ],
+    "prompt": ["The photo is under #1 lighting."],
+    "type": "description",
+    "question": "What is the lighting condition in this photo?"
+  },
+  "time_of_day": {
+    "data": [],
+    "word": [
+      "morning",
+      "afternoon",
+      "evening",
+      "night",
+      "dawn",
+      "dusk"
+    ],
+    "prompt": ["The photo was taken during #1."],
+    "type": "description",
+    "question": "When was the photo taken (time of day)?"
+  },
+  "perspective": {
+    "data": [],
+    "word": [
+      "front",
+      "side",
+      "top-down",
+      "bottom-up",
+      "rear-view"
+    ],
+    "prompt": ["The photo is viewed from a #1 perspective."],
+    "type": "description",
+    "question": "What perspective is this photo viewed from?"
+  }
+}
+}

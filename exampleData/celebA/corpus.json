@@ -1,0 +1,63 @@
+{
+    "Corpus": {
+        "beard": {
+            "data": [],
+            "type": "binary",
+            "question": "Does this people have a beard?"
+        },
+        "makeup": {
+            "data": [],
+            "type": "binary",
+            "question": "Does this people wear makeup?"
+        },
+        "gender": {
+            "data": [],
+            "word": [
+            ],
+            "prompt": [
+                "a photo of a #1"
+            ],
+            "type": "description",
+            "question": "What is the gender of the people in the photo?"
+        },
+        "hair color": {
+            "data": [],
+            "word": [
+            ],
+            "prompt": [
+                "a photo of a people with #1 hair"
+            ],
+            "type": "description",
+            "question": "What color is the hair of the people in the photo?"
+        },
+        "skin": {
+            "data": [],
+            "word": [
+            ],
+            "prompt": [
+                "a photo of a people with #1 skin"
+            ],
+            "type": "description",
+            "question": "What color is the skin of the people in the photo?"
+        },
+        "emotion": {
+            "data": [],
+            "word": [
+            ],
+            "prompt": [
+                "a photo of a #1 people"
+            ],
+            "type": "description",
+            "question": "What is the emotion of the people in the photo?"
+        },
+        "age": {
+            "word": [
+            ],
+            "prompt": [
+                "a photo of a #1 people"
+            ],
+            "type": "description",
+            "question": "What is the age of the people in the photo?"
+        }
+    }
+}
