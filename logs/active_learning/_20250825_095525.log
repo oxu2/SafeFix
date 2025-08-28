@@ -1,0 +1,11 @@
+usage: active_learning_coreset.py [-h] [--dataset {celeba,imagenet}]
+                                  [--model {resnet,clip}]
+                                  [--batch-size BATCH_SIZE]
+                                  [--learning-rate LEARNING_RATE]
+                                  [--num-epochs NUM_EPOCHS]
+                                  [--initial-labeled INITIAL_LABELED]
+                                  [--al-rounds AL_ROUNDS]
+                                  [--samples-per-round SAMPLES_PER_ROUND]
+                                  [--device DEVICE] [--verbose] [--quiet]
+                                  [--enable-progress-bars]
+active_learning_coreset.py: error: argument --dataset: expected one argument

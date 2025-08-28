@@ -1,0 +1,111 @@
+Using GPU: cuda:0 (NVIDIA RTX A5000)
+Loading ImageNet dataset...
+Loaded 13000 images
+Label distribution: [1300 1300 1300 1300 1300 1300 1300 1300 1300 1300]
+Number of classes: 10
+Model loaded on cuda:0
+GPU Memory: 25.4 GB
+GPU Memory Allocated: 0.099 GB
+Dataset statistics:
+  Train: 1000
+  Validation: 2600
+  Unlabeled: 9400
+Starting Active Learning with 1000 labeled samples
+
+=== Active Learning Round 1/8 ===
+Current labeled samples: 1000
+Current unlabeled samples: 9400
+Training model...
+Epoch 1/10: Train Acc: 75.40%, Val Acc: 90.69%
+Epoch 2/10: Train Acc: 88.30%, Val Acc: 79.85%
+Epoch 3/10: Train Acc: 92.50%, Val Acc: 84.12%
+Epoch 4/10: Train Acc: 95.20%, Val Acc: 83.38%
+Epoch 5/10: Train Acc: 96.40%, Val Acc: 82.42%
+Epoch 6/10: Train Acc: 97.00%, Val Acc: 83.69%
+Epoch 7/10: Train Acc: 97.90%, Val Acc: 79.65%
+Epoch 8/10: Train Acc: 98.00%, Val Acc: 82.58%
+Epoch 9/10: Train Acc: 96.40%, Val Acc: 86.69%
+Epoch 10/10: Train Acc: 98.00%, Val Acc: 84.00%
+Round 1 - Train Acc: 98.00%, Val Acc: 90.69%
+Performing core-set selection...
+Extracting embeddings from 32 batches...
+Embedding extraction completed.
+Extracting embeddings from 294 batches...
+Embedding extraction completed.
+Selecting 300 samples using core-set strategy...
+Selected 300 new samples for labeling
+
+=== Active Learning Round 2/8 ===
+Current labeled samples: 1300
+Current unlabeled samples: 9100
+Training model...
+Epoch 1/10: Train Acc: 90.15%, Val Acc: 89.62%
+Epoch 2/10: Train Acc: 88.46%, Val Acc: 78.65%
+Epoch 3/10: Train Acc: 92.54%, Val Acc: 85.12%
+Epoch 4/10: Train Acc: 95.46%, Val Acc: 85.50%
+Epoch 5/10: Train Acc: 95.15%, Val Acc: 85.62%
+Epoch 6/10: Train Acc: 98.62%, Val Acc: 88.88%
+Epoch 7/10: Train Acc: 98.23%, Val Acc: 86.12%
+Epoch 8/10: Train Acc: 99.31%, Val Acc: 85.88%
+Epoch 9/10: Train Acc: 96.69%, Val Acc: 79.62%
+Epoch 10/10: Train Acc: 97.08%, Val Acc: 85.04%
+Round 2 - Train Acc: 97.08%, Val Acc: 89.62%
+Performing core-set selection...
+Extracting embeddings from 41 batches...
+Embedding extraction completed.
+Extracting embeddings from 285 batches...
+Embedding extraction completed.
+Selecting 300 samples using core-set strategy...
+Selected 300 new samples for labeling
+
+=== Active Learning Round 3/8 ===
+Current labeled samples: 1600
+Current unlabeled samples: 8800
+Training model...
+Epoch 1/10: Train Acc: 89.50%, Val Acc: 90.35%
+Epoch 2/10: Train Acc: 87.75%, Val Acc: 78.65%
+Epoch 3/10: Train Acc: 90.31%, Val Acc: 78.77%
+Epoch 4/10: Train Acc: 93.81%, Val Acc: 83.92%
+Epoch 5/10: Train Acc: 96.69%, Val Acc: 86.15%
+Epoch 6/10: Train Acc: 98.06%, Val Acc: 86.73%
+Epoch 7/10: Train Acc: 96.75%, Val Acc: 83.65%
+Epoch 8/10: Train Acc: 96.81%, Val Acc: 87.27%
+Epoch 9/10: Train Acc: 97.62%, Val Acc: 80.92%
+Epoch 10/10: Train Acc: 98.88%, Val Acc: 86.46%
+Round 3 - Train Acc: 98.88%, Val Acc: 90.35%
+Performing core-set selection...
+Extracting embeddings from 50 batches...
+Embedding extraction completed.
+Extracting embeddings from 275 batches...
+Embedding extraction completed.
+Selecting 300 samples using core-set strategy...
+Selected 300 new samples for labeling
+
+=== Active Learning Round 4/8 ===
+Current labeled samples: 1900
+Current unlabeled samples: 8500
+Training model...
+Epoch 1/10: Train Acc: 91.21%, Val Acc: 91.35%
+Epoch 2/10: Train Acc: 85.84%, Val Acc: 81.23%
+Epoch 3/10: Train Acc: 91.63%, Val Acc: 85.62%
+Epoch 4/10: Train Acc: 94.37%, Val Acc: 84.00%
+Epoch 5/10: Train Acc: 97.11%, Val Acc: 83.46%
+Epoch 6/10: Train Acc: 97.53%, Val Acc: 81.38%
+Epoch 7/10: Train Acc: 96.47%, Val Acc: 85.58%
+Epoch 8/10: Train Acc: 98.16%, Val Acc: 78.00%
+Epoch 9/10: Train Acc: 96.42%, Val Acc: 87.58%
+Epoch 10/10: Train Acc: 98.68%, Val Acc: 81.88%
+Traceback (most recent call last):
+  File "/people/cs/o/oxx220000/HiBug/active_learning_coreset.py", line 696, in <module>
+    main()
+  File "/people/cs/o/oxx220000/HiBug/active_learning_coreset.py", line 670, in main
+    history = trainer.active_learning_loop(
+  File "/people/cs/o/oxx220000/HiBug/active_learning_coreset.py", line 455, in active_learning_loop
+    train_acc, val_acc = self.train_model(train_loader, val_loader)
+  File "/people/cs/o/oxx220000/HiBug/active_learning_coreset.py", line 356, in train_model
+    self.model.load_state_dict(torch.load('best_model.pth', map_location=self.device))
+  File "/people/cs/o/oxx220000/.conda/envs/ad/lib/python3.9/site-packages/torch/nn/modules/module.py", line 1671, in load_state_dict
+    raise RuntimeError('Error(s) in loading state_dict for {}:\n\t{}'.format(
+RuntimeError: Error(s) in loading state_dict for ResNetClassifier:
+	size mismatch for classifier.weight: copying a param with shape torch.Size([2, 2048]) from checkpoint, the shape in current model is torch.Size([10, 2048]).
+	size mismatch for classifier.bias: copying a param with shape torch.Size([2]) from checkpoint, the shape in current model is torch.Size([10]).

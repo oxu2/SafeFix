@@ -1,0 +1,65 @@
+Using GPU: cuda:0 (NVIDIA RTX A5000)
+Loading ImageNet dataset...
+Loaded 13000 images
+Label distribution: [1300 1300 1300 1300 1300 1300 1300 1300 1300 1300]
+Number of classes: 10
+Model loaded on cuda:0
+GPU Memory: 25.4 GB
+GPU Memory Allocated: 0.099 GB
+Dataset statistics:
+  Train: 1000
+  Validation: 2600
+  Unlabeled: 9400
+Starting Active Learning with 1000 labeled samples
+
+=== Active Learning Round 1/5 ===
+Current labeled samples: 1000
+Current unlabeled samples: 9400
+Training model...
+Epoch 1/10: Train Acc: 76.70%, Val Acc: 89.77%
+Epoch 2/10: Train Acc: 91.80%, Val Acc: 75.88%
+Epoch 3/10: Train Acc: 87.60%, Val Acc: 80.58%
+Epoch 4/10: Train Acc: 93.90%, Val Acc: 85.65%
+Epoch 5/10: Train Acc: 98.30%, Val Acc: 84.54%
+Epoch 6/10: Train Acc: 98.70%, Val Acc: 82.00%
+Epoch 7/10: Train Acc: 97.40%, Val Acc: 85.62%
+Epoch 8/10: Train Acc: 97.70%, Val Acc: 82.42%
+Epoch 9/10: Train Acc: 96.30%, Val Acc: 81.58%
+Epoch 10/10: Train Acc: 98.20%, Val Acc: 87.19%
+Round 1 - Train Acc: 98.20%, Val Acc: 89.77%
+Performing core-set selection...
+Extracting embeddings from 32 batches...
+Embedding extraction completed.
+Extracting embeddings from 294 batches...
+Embedding extraction completed.
+Selecting 500 samples using core-set strategy...
+Selected 500 new samples for labeling
+
+=== Active Learning Round 2/5 ===
+Current labeled samples: 1500
+Current unlabeled samples: 8900
+Training model...
+Epoch 1/10: Train Acc: 79.20%, Val Acc: 89.23%
+Epoch 2/10: Train Acc: 87.47%, Val Acc: 80.54%
+Epoch 3/10: Train Acc: 89.53%, Val Acc: 86.38%
+Epoch 4/10: Train Acc: 96.20%, Val Acc: 82.23%
+Epoch 5/10: Train Acc: 96.27%, Val Acc: 86.92%
+Epoch 6/10: Train Acc: 98.07%, Val Acc: 86.04%
+Epoch 7/10: Train Acc: 95.93%, Val Acc: 81.85%
+Epoch 8/10: Train Acc: 93.40%, Val Acc: 83.85%
+Epoch 9/10: Train Acc: 93.87%, Val Acc: 86.58%
+Epoch 10/10: Train Acc: 98.27%, Val Acc: 83.35%
+Traceback (most recent call last):
+  File "/people/cs/o/oxx220000/HiBug/active_learning_coreset.py", line 696, in <module>
+    main()
+  File "/people/cs/o/oxx220000/HiBug/active_learning_coreset.py", line 670, in main
+    history = trainer.active_learning_loop(
+  File "/people/cs/o/oxx220000/HiBug/active_learning_coreset.py", line 455, in active_learning_loop
+    train_acc, val_acc = self.train_model(train_loader, val_loader)
+  File "/people/cs/o/oxx220000/HiBug/active_learning_coreset.py", line 356, in train_model
+    self.model.load_state_dict(torch.load('best_model.pth', map_location=self.device))
+  File "/people/cs/o/oxx220000/.conda/envs/ad/lib/python3.9/site-packages/torch/nn/modules/module.py", line 1671, in load_state_dict
+    raise RuntimeError('Error(s) in loading state_dict for {}:\n\t{}'.format(
+RuntimeError: Error(s) in loading state_dict for ResNetClassifier:
+	size mismatch for classifier.weight: copying a param with shape torch.Size([2, 2048]) from checkpoint, the shape in current model is torch.Size([10, 2048]).
+	size mismatch for classifier.bias: copying a param with shape torch.Size([2]) from checkpoint, the shape in current model is torch.Size([10]).

@@ -1,0 +1,42 @@
+Using GPU: cuda:0 (NVIDIA RTX A5000)
+Loading ImageNet dataset...
+Loaded 13000 images
+Label distribution: [1300 1300 1300 1300 1300 1300 1300 1300 1300 1300]
+Number of classes: 10
+Model loaded on cuda:0
+GPU Memory: 25.4 GB
+GPU Memory Allocated: 0.099 GB
+Dataset statistics:
+  Train: 1000
+  Validation: 2600
+  Unlabeled: 9400
+Starting Active Learning with 500 labeled samples
+
+=== Active Learning Round 1/5 ===
+Current labeled samples: 500
+Current unlabeled samples: 9900
+Training model...
+Epoch 1/10: Train Acc: 61.00%, Val Acc: 87.77%
+Epoch 2/10: Train Acc: 93.20%, Val Acc: 76.19%
+Epoch 3/10: Train Acc: 94.60%, Val Acc: 81.85%
+Epoch 4/10: Train Acc: 94.80%, Val Acc: 76.12%
+Epoch 5/10: Train Acc: 95.40%, Val Acc: 83.50%
+Epoch 6/10: Train Acc: 98.40%, Val Acc: 83.12%
+Epoch 7/10: Train Acc: 97.60%, Val Acc: 77.81%
+Epoch 8/10: Train Acc: 96.40%, Val Acc: 83.15%
+Epoch 9/10: Train Acc: 98.80%, Val Acc: 82.69%
+Epoch 10/10: Train Acc: 98.40%, Val Acc: 77.04%
+Traceback (most recent call last):
+  File "/people/cs/o/oxx220000/HiBug/active_learning_coreset.py", line 696, in <module>
+    main()
+  File "/people/cs/o/oxx220000/HiBug/active_learning_coreset.py", line 670, in main
+    history = trainer.active_learning_loop(
+  File "/people/cs/o/oxx220000/HiBug/active_learning_coreset.py", line 455, in active_learning_loop
+    train_acc, val_acc = self.train_model(train_loader, val_loader)
+  File "/people/cs/o/oxx220000/HiBug/active_learning_coreset.py", line 356, in train_model
+    self.model.load_state_dict(torch.load('best_model.pth', map_location=self.device))
+  File "/people/cs/o/oxx220000/.conda/envs/ad/lib/python3.9/site-packages/torch/nn/modules/module.py", line 1671, in load_state_dict
+    raise RuntimeError('Error(s) in loading state_dict for {}:\n\t{}'.format(
+RuntimeError: Error(s) in loading state_dict for ResNetClassifier:
+	size mismatch for classifier.weight: copying a param with shape torch.Size([2, 2048]) from checkpoint, the shape in current model is torch.Size([10, 2048]).
+	size mismatch for classifier.bias: copying a param with shape torch.Size([2]) from checkpoint, the shape in current model is torch.Size([10]).

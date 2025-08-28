@@ -1,0 +1,42 @@
+Using GPU: cuda:0 (NVIDIA RTX A5000)
+Loading ImageNet dataset...
+Loaded 13000 images
+Label distribution: [1300 1300 1300 1300 1300 1300 1300 1300 1300 1300]
+Number of classes: 10
+Model loaded on cuda:0
+GPU Memory: 25.4 GB
+GPU Memory Allocated: 0.099 GB
+Dataset statistics:
+  Train: 1000
+  Validation: 2600
+  Unlabeled: 9400
+Starting Active Learning with 100 labeled samples
+
+=== Active Learning Round 1/2 ===
+Current labeled samples: 100
+Current unlabeled samples: 10300
+Training model...
+Epoch 1/3: Train Acc: 6.00%, Val Acc: 9.81%
+Epoch 2/3: Train Acc: 5.00%, Val Acc: 9.62%
+Epoch 3/3: Train Acc: 9.00%, Val Acc: 10.35%
+Round 1 - Train Acc: 9.00%, Val Acc: 10.35%
+Performing core-set selection...
+Extracting embeddings from 7 batches...
+Embedding extraction completed.
+Extracting embeddings from 644 batches...
+Embedding extraction completed.
+Selecting 50 samples using core-set strategy...
+Selected 50 new samples for labeling
+
+=== Active Learning Round 2/2 ===
+Current labeled samples: 150
+Current unlabeled samples: 10250
+Training model...
+Epoch 1/3: Train Acc: 14.67%, Val Acc: 11.31%
+Epoch 2/3: Train Acc: 12.00%, Val Acc: 9.96%
+Epoch 3/3: Train Acc: 16.67%, Val Acc: 12.65%
+Round 2 - Train Acc: 16.67%, Val Acc: 12.65%
+
+Active Learning completed!
+Results plot saved to al_results_imagenet_resnet_nopretrain.png
+History saved to al_history_imagenet_resnet_nopretrain.json

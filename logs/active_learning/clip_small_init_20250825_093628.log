@@ -1,0 +1,125 @@
+Using GPU: cuda:0 (NVIDIA RTX A5000)
+Loading ImageNet dataset...
+Loaded 13000 images
+Label distribution: [1300 1300 1300 1300 1300 1300 1300 1300 1300 1300]
+Number of classes: 10
+Model loaded on cuda:0
+GPU Memory: 25.4 GB
+GPU Memory Allocated: 0.607 GB
+Dataset statistics:
+  Train: 1000
+  Validation: 2600
+  Unlabeled: 9400
+Starting Active Learning with 500 labeled samples
+
+=== Active Learning Round 1/5 ===
+Current labeled samples: 500
+Current unlabeled samples: 9900
+Training model...
+Epoch 1/10: Train Acc: 6.80%, Val Acc: 9.31%
+Epoch 2/10: Train Acc: 9.20%, Val Acc: 9.96%
+Epoch 3/10: Train Acc: 10.00%, Val Acc: 9.88%
+Epoch 4/10: Train Acc: 11.60%, Val Acc: 12.92%
+Epoch 5/10: Train Acc: 12.80%, Val Acc: 13.31%
+Epoch 6/10: Train Acc: 13.60%, Val Acc: 11.54%
+Epoch 7/10: Train Acc: 13.20%, Val Acc: 13.35%
+Epoch 8/10: Train Acc: 18.60%, Val Acc: 15.12%
+Epoch 9/10: Train Acc: 22.00%, Val Acc: 16.65%
+Epoch 10/10: Train Acc: 23.80%, Val Acc: 18.69%
+Round 1 - Train Acc: 23.80%, Val Acc: 18.69%
+Performing core-set selection...
+Extracting embeddings from 16 batches...
+Embedding extraction completed.
+Extracting embeddings from 310 batches...
+Embedding extraction completed.
+Selecting 500 samples using core-set strategy...
+Selected 500 new samples for labeling
+
+=== Active Learning Round 2/5 ===
+Current labeled samples: 1000
+Current unlabeled samples: 9400
+Training model...
+Epoch 1/10: Train Acc: 20.80%, Val Acc: 17.46%
+Epoch 2/10: Train Acc: 26.80%, Val Acc: 21.73%
+Epoch 3/10: Train Acc: 27.90%, Val Acc: 21.15%
+Epoch 4/10: Train Acc: 32.70%, Val Acc: 20.46%
+Epoch 5/10: Train Acc: 33.80%, Val Acc: 20.31%
+Epoch 6/10: Train Acc: 40.20%, Val Acc: 23.27%
+Epoch 7/10: Train Acc: 42.80%, Val Acc: 21.62%
+Epoch 8/10: Train Acc: 47.50%, Val Acc: 23.38%
+Epoch 9/10: Train Acc: 51.90%, Val Acc: 23.46%
+Epoch 10/10: Train Acc: 58.70%, Val Acc: 23.42%
+Round 2 - Train Acc: 58.70%, Val Acc: 23.46%
+Performing core-set selection...
+Extracting embeddings from 32 batches...
+Embedding extraction completed.
+Extracting embeddings from 294 batches...
+Embedding extraction completed.
+Selecting 500 samples using core-set strategy...
+Selected 500 new samples for labeling
+
+=== Active Learning Round 3/5 ===
+Current labeled samples: 1500
+Current unlabeled samples: 8900
+Training model...
+Epoch 1/10: Train Acc: 45.33%, Val Acc: 27.04%
+Epoch 2/10: Train Acc: 55.00%, Val Acc: 25.88%
+Epoch 3/10: Train Acc: 62.07%, Val Acc: 26.27%
+Epoch 4/10: Train Acc: 70.27%, Val Acc: 26.19%
+Epoch 5/10: Train Acc: 74.93%, Val Acc: 26.23%
+Epoch 6/10: Train Acc: 82.20%, Val Acc: 26.65%
+Epoch 7/10: Train Acc: 84.93%, Val Acc: 25.27%
+Epoch 8/10: Train Acc: 89.60%, Val Acc: 27.42%
+Epoch 9/10: Train Acc: 93.80%, Val Acc: 27.15%
+Epoch 10/10: Train Acc: 98.60%, Val Acc: 26.62%
+Round 3 - Train Acc: 98.60%, Val Acc: 27.42%
+Performing core-set selection...
+Extracting embeddings from 47 batches...
+Embedding extraction completed.
+Extracting embeddings from 279 batches...
+Embedding extraction completed.
+Selecting 500 samples using core-set strategy...
+Selected 500 new samples for labeling
+
+=== Active Learning Round 4/5 ===
+Current labeled samples: 2000
+Current unlabeled samples: 8400
+Training model...
+Epoch 1/10: Train Acc: 69.10%, Val Acc: 26.88%
+Epoch 2/10: Train Acc: 82.80%, Val Acc: 24.73%
+Epoch 3/10: Train Acc: 88.10%, Val Acc: 27.46%
+Epoch 4/10: Train Acc: 91.25%, Val Acc: 27.00%
+Epoch 5/10: Train Acc: 92.95%, Val Acc: 26.31%
+Epoch 6/10: Train Acc: 92.65%, Val Acc: 26.65%
+Epoch 7/10: Train Acc: 96.40%, Val Acc: 27.62%
+Epoch 8/10: Train Acc: 95.05%, Val Acc: 26.96%
+Epoch 9/10: Train Acc: 90.70%, Val Acc: 25.38%
+Epoch 10/10: Train Acc: 90.35%, Val Acc: 26.00%
+Round 4 - Train Acc: 90.35%, Val Acc: 27.62%
+Performing core-set selection...
+Extracting embeddings from 63 batches...
+Embedding extraction completed.
+Extracting embeddings from 263 batches...
+Embedding extraction completed.
+Selecting 500 samples using core-set strategy...
+Selected 500 new samples for labeling
+
+=== Active Learning Round 5/5 ===
+Current labeled samples: 2500
+Current unlabeled samples: 7900
+Training model...
+Epoch 1/10: Train Acc: 76.16%, Val Acc: 26.92%
+Epoch 2/10: Train Acc: 87.80%, Val Acc: 27.27%
+Epoch 3/10: Train Acc: 88.68%, Val Acc: 26.85%
+Epoch 4/10: Train Acc: 88.08%, Val Acc: 26.69%
+Epoch 5/10: Train Acc: 92.20%, Val Acc: 26.54%
+Epoch 6/10: Train Acc: 96.32%, Val Acc: 27.62%
+Epoch 7/10: Train Acc: 97.52%, Val Acc: 28.35%
+Epoch 8/10: Train Acc: 95.64%, Val Acc: 26.54%
+Epoch 9/10: Train Acc: 93.80%, Val Acc: 27.19%
+Epoch 10/10: Train Acc: 90.84%, Val Acc: 25.73%
+Round 5 - Train Acc: 90.84%, Val Acc: 28.35%
+
+Active Learning completed!
+Results plot saved to al_results_clip.png
+History saved to al_history_clip.json

@@ -1,3 +1,16 @@
+
+
+CUDA_VISIBLE_DEVICES=3 nohup ./run_active_learning.sh coreset resnet 5 > logs/al.log 2>&1 < /dev/null &
+
+
+CUDA_VISIBLE_DEVICES=2 nohup ./run_active_learning.sh coreset resnet 5 > logs/coreset.log 2>&1 < /dev/null &
+
+CUDA_VISIBLE_DEVICES=1 nohup ./run_active_learning.sh coreset resnet 5 > logs/coreset_imagenet.log 2>&1 < /dev/null &
+
+CUDA_VISIBLE_DEVICES=1 nohup ./run_active_learning.sh coreset resnet 5 > logs/coreset_imagenet_5.log 2>&1 < /dev/null &
+
+# move
+
 mv logs_imagenet/RH_BS_SE_*_celeba_*.log logs/
 
 CUDA_VISIBLE_DEVICES=0 nohup python -u filter.py \
