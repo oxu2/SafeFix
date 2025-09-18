@@ -1,62 +1,62 @@
 # Active Learning with ImageNet Dataset
 
-## 概述
+## Overview
 
-本项目实现了基于 Core-set 策略的 Active Learning 系统，支持 ImageNet 数据集和多种模型（ResNet、CLIP）。
+This project implements an Active Learning system based on the Core-set strategy, supporting ImageNet dataset and multiple models (ResNet, CLIP).
 
-## 功能特性
+## Features
 
-- **Core-set Selection**: 基于 Sener & Savarese (2017) 论文的核心集选择策略
-- **多模型支持**: ResNet50 和 CLIP ViT-B/32
-- **数据集支持**: CelebA 和 ImageNet
-- **GPU 自动管理**: 自动检测 GPU 可用性，支持 CPU 降级
-- **进度控制**: 可控制的输出详细程度
+- **Core-set Selection**: Core-set selection strategy based on Sener & Savarese (2017) paper
+- **Multi-model Support**: ResNet50 and CLIP ViT-B/32
+- **Dataset Support**: CelebA and ImageNet
+- **GPU Auto Management**: Automatic GPU detection with CPU fallback
+- **Progress Control**: Controllable output verbosity
 
-## 文件结构
+## File Structure
 
 ```
-├── active_learning_coreset.py      # 主要的 Active Learning 实现
-├── run_active_learning.sh          # 完整实验脚本
-├── run_quick_al.sh                 # 快速测试脚本
-├── results/                        # 结果输出目录
-│   ├── active_learning/            # 完整实验结果
-│   └── quick_test/                 # 快速测试结果
-└── logs/                           # 日志文件
+├── active_learning_coreset.py      # Main Active Learning implementation
+├── run_active_learning.sh          # Complete experiment script
+├── run_quick_al.sh                 # Quick test script
+├── results/                        # Results output directory
+│   ├── active_learning/            # Complete experiment results
+│   └── quick_test/                 # Quick test results
+└── logs/                           # Log files
     ├── active_learning/
     └── quick_test/
 ```
 
-## 使用方法
+## Usage
 
-### 1. 快速测试（推荐先运行）
+### 1. Quick Test (Recommended to run first)
 
 ```bash
 ./run_quick_al.sh
 ```
 
-这会运行：
-- ResNet 和 CLIP 的快速测试
-- 小参数设置（100 初始样本，2轮，3个epoch）
-- 约 5-10 分钟完成
+This will run:
+- Quick test for ResNet and CLIP
+- Small parameter settings (100 initial samples, 2 rounds, 3 epochs)
+- Approximately 5-10 minutes to complete
 
-### 2. 完整实验
+### 2. Complete Experiment
 
 ```bash
 ./run_active_learning.sh
 ```
 
-这会运行：
-- ResNet 和 CLIP 的基准实验
-- 不同参数组合的对比实验
-- 包含多种配置的完整测试
+This will run:
+- Baseline experiments for ResNet and CLIP
+- Comparative experiments with different parameter combinations
+- Complete testing with various configurations
 
-### 3. 单独运行
+### 3. Individual Run
 
 ```bash
-# 基本用法
+# Basic usage
 python active_learning_coreset.py --dataset imagenet --model resnet
 
-# 自定义参数
+# Custom parameters
 python active_learning_coreset.py \
     --dataset imagenet \
     --model resnet \
@@ -67,7 +67,7 @@ python active_learning_coreset.py \
     --num-epochs 10 \
     --batch-size 32
 
-# CPU 模式
+# CPU mode
 python active_learning_coreset.py \
     --dataset imagenet \
     --model resnet \
@@ -75,73 +75,73 @@ python active_learning_coreset.py \
     --batch-size 16
 ```
 
-## 参数说明
+## Parameter Description
 
-| 参数 | 默认值 | 说明 |
-|------|--------|------|
-| `--dataset` | imagenet | 数据集选择 (imagenet/celeba) |
-| `--model` | resnet | 模型类型 (resnet/clip) |
-| `--al-rounds` | 5 | Active Learning 轮数 |
-| `--initial-labeled` | 1000 | 初始标记样本数 |
-| `--samples-per-round` | 500 | 每轮选择的样本数 |
-| `--num-epochs` | 10 | 每轮训练的 epoch 数 |
-| `--batch-size` | 32 | 批次大小 |
-| `--learning-rate` | 1e-4 | 学习率 |
-| `--device` | auto | 设备选择 (auto/cuda/cpu) |
-| `--verbose` | False | 详细输出 |
-| `--quiet` | True | 安静模式 |
+| Parameter | Default | Description |
+|-----------|---------|-------------|
+| `--dataset` | imagenet | Dataset selection (imagenet/celeba) |
+| `--model` | resnet | Model type (resnet/clip) |
+| `--al-rounds` | 5 | Active Learning rounds |
+| `--initial-labeled` | 1000 | Initial labeled sample count |
+| `--samples-per-round` | 500 | Samples selected per round |
+| `--num-epochs` | 10 | Training epochs per round |
+| `--batch-size` | 32 | Batch size |
+| `--learning-rate` | 1e-4 | Learning rate |
+| `--device` | auto | Device selection (auto/cuda/cpu) |
+| `--verbose` | False | Verbose output |
+| `--quiet` | True | Quiet mode |
 
-## 输出说明
+## Output Description
 
-### 结果文件
+### Result Files
 
-- `al_results_[model].png`: 准确率曲线图
-- `al_history_[model].json`: 详细训练历史
-- `logs/[experiment]_[timestamp].log`: 完整日志
+- `al_results_[model].png`: Accuracy curve plots
+- `al_history_[model].json`: Detailed training history
+- `logs/[experiment]_[timestamp].log`: Complete logs
 
-### 性能指标
+### Performance Metrics
 
-每轮实验会输出：
-- 训练准确率
-- 验证准确率
-- 选择的样本数量
-- Core-set 选择时间
+Each round outputs:
+- Training accuracy
+- Validation accuracy
+- Number of selected samples
+- Core-set selection time
 
-## 技术细节
+## Technical Details
 
-### Core-set 策略
+### Core-set Strategy
 
-基于贪心 k-center 算法：
-1. 提取所有样本的特征嵌入
-2. 使用贪心算法选择最具代表性的样本
-3. 最大化新选择样本与已标记样本的最小距离
+Based on greedy k-center algorithm:
+1. Extract feature embeddings for all samples
+2. Use greedy algorithm to select most representative samples
+3. Maximize minimum distance between newly selected and already labeled samples
 
-### GPU 内存管理
+### GPU Memory Management
 
-- 自动检测 GPU 可用性
-- 内存不足时自动降低批次大小
-- CUDA 错误时自动切换到 CPU
+- Automatic GPU availability detection
+- Automatic batch size reduction when memory insufficient
+- Automatic CPU fallback on CUDA errors
 
-### 模型架构
+### Model Architecture
 
-- **ResNet**: 预训练 ResNet50 + 分类头
-- **CLIP**: 预训练 CLIP ViT-B/32 + 分类头
+- **ResNet**: Pre-trained ResNet50 + classification head
+- **CLIP**: Pre-trained CLIP ViT-B/32 + classification head
 
-## 常见问题
+## Common Issues
 
-### 1. GPU 内存不足
+### 1. GPU Memory Insufficient
 
 ```bash
-# 减小批次大小
+# Reduce batch size
 python active_learning_coreset.py --batch-size 16
 
-# 或使用 CPU
+# Or use CPU
 python active_learning_coreset.py --device cpu
 ```
 
-### 2. 数据集路径问题
+### 2. Dataset Path Issues
 
-确保 ImageNet 数据存在于：
+Ensure ImageNet data exists at:
 ```
 exampleData/imagenet_subset/
 ├── class1/
@@ -149,16 +149,16 @@ exampleData/imagenet_subset/
 └── ...
 ```
 
-### 3. 依赖问题
+### 3. Dependency Issues
 
 ```bash
-# 安装必要依赖
+# Install necessary dependencies
 pip install torch torchvision transformers scikit-learn matplotlib numpy pillow
 ```
 
-## 实验结果示例
+## Example Experimental Results
 
-完整实验完成后，会生成如下总结：
+After complete experiment, the following summary will be generated:
 
 ```
 === EXPERIMENT SUMMARY ===
@@ -169,9 +169,9 @@ clip_small_init      | Rounds:  5 | Train: 81.30% | Val: 75.90%
 ==========================
 ```
 
-## 论文引用
+## Paper Citation
 
-如果使用此代码，请引用原始论文：
+If using this code, please cite the original paper:
 
 ```bibtex
 @article{sener2017active,

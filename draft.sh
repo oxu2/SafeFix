@@ -1,4 +1,38 @@
+nohup ./test_combined_al.sh --combined_ratio 0.9 > combined_al_0.9.log 2>&1 < /dev/null &
 
+nohup ./test_combined_al.sh --combined_ratio 0.7 > combined_al_0.7.log 2>&1 < /dev/null &
+
+nohup ./test_combined_al.sh --combined_ratio 0.5 > combined_al_0.5.log 2>&1 < /dev/null &
+
+pkill -u oxx220000 -f python
+
+nohup ./test_al_strategies.sh --sub_ratio 0.9 > test_al_strategies_ratio0.9.log 2>&1 < /dev/null &
+
+nohup ./test_al_strategies.sh --sub_ratio 0.7 > test_al_strategies_ratio0.7.log 2>&1 < /dev/null &
+
+CUDA_VISIBLE_DEVICES=3 nohup python -u alpred.py \
+  --dataset imagenet --model resnet --num_added_img 1000 \
+  --attributes pinkcolor_fabrictexture --num_epochs 30 \
+  --al_initial_labeled 400 \
+  --al_embedding_dim 256 \
+  --sub_ratio 0.5 \
+  > logs_imagenet/AL_resnet_imagenet_balanced_1000.log 2>&1 < /dev/null &
+
+CUDA_VISIBLE_DEVICES=2 nohup python -u alpred.py \
+  --dataset imagenet --model resnet --num_added_img 1000 \
+  --attributes pinkcolor_fabrictexture --num_epochs 30 \
+  --al_initial_labeled 200 \
+  --al_embedding_dim 128 \
+  --sub_ratio 0.5 \
+  > logs_imagenet/AL_resnet_imagenet_lightweight_1000.log 2>&1 < /dev/null &
+
+
+CUDA_VISIBLE_DEVICES=3 nohup python -u alpred.py \
+  --dataset imagenet --model resnet --num_added_img 1000 \
+  --attributes pinkcolor_fabrictexture --num_epochs 30 \
+  --use_active_learning False \
+  --sub_ratio 0.5 \
+  > logs_imagenet/AL_resnet_imagenet_random_1000.log 2>&1 < /dev/null &
 
 CUDA_VISIBLE_DEVICES=3 nohup ./run_active_learning.sh coreset resnet 5 > logs/al.log 2>&1 < /dev/null &
 

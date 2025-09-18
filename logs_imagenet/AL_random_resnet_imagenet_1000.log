@@ -1,0 +1,14 @@
+Random seed set to 42
+Adjusted al_initial_labeled for ImageNet scale to 500
+Adjusted al_embedding_dim for ResNet on ImageNet to 256
+Current time: 0827213352
+skip_feasible flag is True; skipping feasible JSON loading for pinkcolor_fabrictexture.
+Using generated image directory: exampleData/imagenet_pinkcolor_fabrictexture
+[DEBUG] Normal mode: looking for generated images in directory: exampleData/imagenet_pinkcolor_fabrictexture
+[DEBUG] Skipping feasible filtering (skip_feasible=True)
+[DEBUG] Classes in full_ds: ['backpack', 'barber_chair', 'coffee_mug', 'desk', 'electric_guitar', 'park_bench', 'pitcher', 'purse', 'rocking_chair', 'water_bottle']
+[DEBUG] Starting traversal of class subfolders for generated images...
+Traceback (most recent call last):
+  File "/people/cs/o/oxx220000/HiBug/alpred.py", line 446, in <module>
+    cls_dir = _Path(args.gen_image_dir) / cls_name
+NameError: name '_Path' is not defined

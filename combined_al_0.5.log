@@ -1,0 +1,8 @@
+Testing Combined Active Learning approach...
+Using combined_ratio: 0.5
+=== Test 0: Combined Core-set AL ===
+=== Test 1: Combined Stratified AL ===
+=== Test 2: Combined Diversity AL ===
+=== Test 3: Combined Hybrid AL ===
+Tests completed. Check logs in logs_imagenet/AL_combined_*.log
+Look for lines like 'AL selected from combined dataset: X original + Y generated = Z total'

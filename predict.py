@@ -138,7 +138,7 @@ parser.add_argument('--skip_train_unlabeled', type=str2bool, default=False,
                     help='Skip processing TRAIN and UNLABELED splits in diagnostics')
 parser.add_argument('--no_controlnet', type=str2bool, default=False,
                     help='Ablation flag: disable ControlNet-based augmentation (default: False)')
-parser.add_argument('--skip_feasible', type=str2bool, default=True,
+parser.add_argument('--skip_feasible', type=str2bool, default=False,
                     help='Skip loading feasible JSON for any attributes (default: False)')
 parser.add_argument(
     '--simple', type=str2bool, default=False,

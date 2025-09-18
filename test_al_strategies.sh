@@ -58,17 +58,39 @@ COMMON_ARGS="--dataset imagenet --model resnet --num_added_img 1000 --attributes
 # Generate ratio string for filenames
 RATIO_STR="ratio${SUB_RATIO}"
 
-# Test 0: Random baseline (for comparison)
-echo "=== Testing Random Baseline ==="
-wait_for_gpu_free 0
-CUDA_VISIBLE_DEVICES=0 python -u alpred.py \
-  $COMMON_ARGS \
-  --sub_ratio $SUB_RATIO \
-  --use_active_learning False \
-  > logs_imagenet/AL_random_resnet_imagenet_1000_${RATIO_STR}.log 2>&1 &
+# ---
+# Grouped sequential jobs for GPU 0
+# The commands inside the parentheses will run one after the other.
+# The '&' at the end runs the entire group in the background.
+# ---
+(
+  echo "=== Queuing sequential jobs for GPU 0 ==="
+  
+  # Test 0: Random baseline (for comparison)
+  echo "--- Waiting for GPU 0 to start Random Baseline ---"
+  wait_for_gpu_free 0
+  echo "--- Starting Random Baseline on GPU 0 ---"
+  CUDA_VISIBLE_DEVICES=0 python -u alpred.py \
+    $COMMON_ARGS \
+    --sub_ratio $SUB_RATIO \
+    --use_active_learning False \
+    > logs_imagenet/AL_random_resnet_imagenet_1000_${RATIO_STR}.log 2>&1
+  
+  # Test 2: Stratified sampling strategy
+  echo "--- Random Baseline finished. Starting Stratified Strategy on GPU 0 ---"
+  # No need for another wait_for_gpu_free, as the previous job on this GPU just finished.
+  CUDA_VISIBLE_DEVICES=0 python -u alpred.py \
+    $COMMON_ARGS \
+    --sub_ratio $SUB_RATIO \
+    --al_strategy stratified \
+    > logs_imagenet/AL_stratified_resnet_imagenet_1000_${RATIO_STR}.log 2>&1
+  
+  echo "=== All jobs for GPU 0 finished. ==="
+) &
 
-# Test 1: Core-set strategy
-echo "=== Testing Core-set Strategy ==="
+
+# Test 1: Core-set strategy (runs in parallel on GPU 1)
+echo "=== Testing Core-set Strategy on GPU 1 ==="
 wait_for_gpu_free 1
 CUDA_VISIBLE_DEVICES=1 python -u alpred.py \
   $COMMON_ARGS \
@@ -78,18 +100,8 @@ CUDA_VISIBLE_DEVICES=1 python -u alpred.py \
   --al_embedding_dim 256 \
   > logs_imagenet/AL_coreset_resnet_imagenet_1000_${RATIO_STR}.log 2>&1 &
 
-# Test 2: Stratified sampling strategy
-echo "=== Testing Stratified Strategy ==="
-# sleep 3
-wait_for_gpu_free 0
-CUDA_VISIBLE_DEVICES=0 python -u alpred.py \
-  $COMMON_ARGS \
-  --sub_ratio $SUB_RATIO \
-  --al_strategy stratified \
-  > logs_imagenet/AL_stratified_resnet_imagenet_1000_${RATIO_STR}.log 2>&1 &
-
-# Test 3: Diversity strategy  
-echo "=== Testing Diversity Strategy ==="
+# Test 3: Diversity strategy (runs in parallel on GPU 2)
+echo "=== Testing Diversity Strategy on GPU 2 ==="
 wait_for_gpu_free 2
 CUDA_VISIBLE_DEVICES=2 python -u alpred.py \
   $COMMON_ARGS \
@@ -99,8 +111,8 @@ CUDA_VISIBLE_DEVICES=2 python -u alpred.py \
   --al_embedding_dim 256 \
   > logs_imagenet/AL_diversity_resnet_imagenet_1000_${RATIO_STR}.log 2>&1 &
 
-# Test 4: Hybrid strategy
-echo "=== Testing Hybrid Strategy ==="
+# Test 4: Hybrid strategy (runs in parallel on GPU 3)
+echo "=== Testing Hybrid Strategy on GPU 3 ==="
 wait_for_gpu_free 3
 CUDA_VISIBLE_DEVICES=3 python -u alpred.py \
   $COMMON_ARGS \

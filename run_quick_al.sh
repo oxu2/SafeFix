@@ -80,9 +80,9 @@ run_quick_test() {
     if [ $? -eq 0 ]; then
         echo "✅ $run_name completed successfully"
         # Move results to organized folders with new naming convention
-        # New format: al_results_{model}_{dataset}_nopretrained.png
-        results_file="al_results_${model}_${DATASET}_nopretrained.png"
-        history_file="al_history_${model}_${DATASET}_nopretrained.json"
+        # New format: al_results_{model}_{dataset}.png
+        results_file="al_results_${model}_${DATASET}.png"
+        history_file="al_history_${model}_${DATASET}.json"
         
         # Define target paths
         target_results="results/quick_test/${run_name}_results.png"

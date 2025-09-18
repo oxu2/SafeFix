@@ -1,0 +1,69 @@
+Random seed set to 42
+Adjusted al_initial_labeled for ImageNet scale to 500
+Adjusted al_embedding_dim for ResNet on ImageNet to 256
+Current time: 0828063338
+Loaded 1311 feasible pinkcolor_fabrictexture images
+Using generated image directory: exampleData/imagenet_pinkcolor_fabrictexture
+[DEBUG] Normal mode: looking for generated images in directory: exampleData/imagenet_pinkcolor_fabrictexture
+[DEBUG] Starting traversal of class subfolders for generated images...
+[DEBUG] Candidate images before feasible filtering: 1311
+[DEBUG] Total candidate generated images before sampling: 1311
+[DEBUG] Sampled generated images: 1000 items
+Added 1000 generated images.
+Combined AL approach: selecting 10260 samples from 11400 (original: 10400, generated: 1000)
+Starting Active Learning data selection using 'stratified' strategy...
+Dataset: imagenet, Model: resnet
+Train samples: 11400, Val samples: 2600
+Target selection ratio: 1.0
+Embedding dimension: 256
+Initial labeled samples: 500
+Warning: Could not extract targets for stratified sampling, falling back to random
+[TIMING] Active Learning selection (Combined ImageNet) took 0.00 seconds
+AL selected from combined dataset: 9350 original + 910 generated = 10260 total
+Using resnet model with random weights
+Epoch [1/30], Train Loss: 2.0413, Train Acc: 0.2758, Val Loss: 2.0371, Val Acc: 0.2919
+Epoch [2/30], Train Loss: 1.8017, Train Acc: 0.3657, Val Loss: 1.7721, Val Acc: 0.3777
+Epoch [3/30], Train Loss: 1.6715, Train Acc: 0.4205, Val Loss: 1.6872, Val Acc: 0.4181
+Epoch [4/30], Train Loss: 1.4438, Train Acc: 0.5068, Val Loss: 1.5684, Val Acc: 0.4719
+Epoch [5/30], Train Loss: 1.3632, Train Acc: 0.5365, Val Loss: 1.5168, Val Acc: 0.4838
+Epoch [6/30], Train Loss: 1.2939, Train Acc: 0.5610, Val Loss: 1.8095, Val Acc: 0.4373
+Epoch [7/30], Train Loss: 1.1008, Train Acc: 0.6317, Val Loss: 1.3417, Val Acc: 0.5592
+Epoch [8/30], Train Loss: 1.0054, Train Acc: 0.6625, Val Loss: 1.6923, Val Acc: 0.4681
+Epoch [9/30], Train Loss: 0.9681, Train Acc: 0.6712, Val Loss: 1.3723, Val Acc: 0.5492
+Epoch [10/30], Train Loss: 0.8061, Train Acc: 0.7350, Val Loss: 1.0519, Val Acc: 0.6608
+Epoch [11/30], Train Loss: 0.7505, Train Acc: 0.7529, Val Loss: 1.0822, Val Acc: 0.6473
+Epoch [12/30], Train Loss: 0.7026, Train Acc: 0.7681, Val Loss: 1.0473, Val Acc: 0.6623
+Epoch [13/30], Train Loss: 0.5971, Train Acc: 0.8108, Val Loss: 0.9210, Val Acc: 0.7035
+Epoch [14/30], Train Loss: 0.5631, Train Acc: 0.8165, Val Loss: 0.9116, Val Acc: 0.6973
+Epoch [15/30], Train Loss: 0.5266, Train Acc: 0.8348, Val Loss: 0.9152, Val Acc: 0.7027
+Epoch [16/30], Train Loss: 0.4498, Train Acc: 0.8605, Val Loss: 0.8866, Val Acc: 0.7138
+Epoch [17/30], Train Loss: 0.4225, Train Acc: 0.8719, Val Loss: 0.8817, Val Acc: 0.7104
+Epoch [18/30], Train Loss: 0.4006, Train Acc: 0.8760, Val Loss: 0.8816, Val Acc: 0.7119
+Epoch [19/30], Train Loss: 0.3615, Train Acc: 0.8926, Val Loss: 0.8686, Val Acc: 0.7192
+Epoch [20/30], Train Loss: 0.3403, Train Acc: 0.9005, Val Loss: 0.8660, Val Acc: 0.7212
+Epoch [21/30], Train Loss: 0.3193, Train Acc: 0.9081, Val Loss: 0.8525, Val Acc: 0.7227
+Epoch [22/30], Train Loss: 0.3075, Train Acc: 0.9113, Val Loss: 0.8458, Val Acc: 0.7235
+Epoch [23/30], Train Loss: 0.3001, Train Acc: 0.9153, Val Loss: 0.8442, Val Acc: 0.7250
+Epoch [24/30], Train Loss: 0.2862, Train Acc: 0.9180, Val Loss: 0.8631, Val Acc: 0.7150
+Epoch [25/30], Train Loss: 0.2784, Train Acc: 0.9245, Val Loss: 0.8468, Val Acc: 0.7212
+Epoch [26/30], Train Loss: 0.2703, Train Acc: 0.9270, Val Loss: 0.8461, Val Acc: 0.7219
+Epoch [27/30], Train Loss: 0.2650, Train Acc: 0.9289, Val Loss: 0.8546, Val Acc: 0.7208
+Epoch [28/30], Train Loss: 0.2557, Train Acc: 0.9316, Val Loss: 0.8572, Val Acc: 0.7188
+Epoch [29/30], Train Loss: 0.2612, Train Acc: 0.9297, Val Loss: 0.8538, Val Acc: 0.7258
+Epoch [30/30], Train Loss: 0.2578, Train Acc: 0.9278, Val Loss: 0.8566, Val Acc: 0.7185
+Generating and saving predictions...
+Combined predictions length: 2600
+Total training time for 30 epochs: 635.07 seconds
+Total Active Learning selection time: 0.00 seconds
+End-to-end wall time (data prep + AL + training + setup): 636.05 seconds
+
+Running model diagnostics on generated predictions...
+Skipping model diagnostics due to --al_combined mode (data indices are misaligned)
+Skipping accuracy comparison due to skipped diagnostics
+Skipping model diagnostics
+
+============================================================
+Final Epoch Validation Accuracy: 0.7185
+============================================================
+
+Current time: 0828063338

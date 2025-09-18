@@ -1,97 +1,13 @@
-import torch
-import torch.nn as nn
-import torch.optim as optim
-import torchvision.transforms as transforms
-from torchvision import models
-from torch.utils.data import Dataset, DataLoader, Subset
-from PIL import Image
-import numpy as np
-import os
-import json
-import argparse
+# Import all common dependencies from utils
+from utils.imports import *
 from utils.defines import *
-import torchvision
-# print(torchvision.__version__) 
-#0.14.1+cu117g
-from torchvision.models import ResNet18_Weights
-from transformers import ViTModel, ViTFeatureExtractor
-from transformers import CLIPImageProcessor
-from transformers import BlipProcessor, BlipModel, BlipConfig
-import datetime
-import time
-from timm import create_model
-import matplotlib.pyplot as plt
-from transformers import CLIPModel
-from transformers import CLIPConfig
-import random
-import re  # Added for log parsing
-import copy  # Added for saving best model state
-from utils.stat import ModelDiagnose  # Import ModelDiagnose from local stat.py
-from itertools import combinations
-from processData.report import ReportGenerator
-from torchvision.datasets import ImageFolder
-from pathlib import Path
 
-import torch.nn.functional as F
-
-from torchvision.datasets import ImageFolder
-
-
-
-# Suppress the CLIPFeatureExtractor deprecation warning
-import warnings
-
-warnings.filterwarnings(
-    "ignore",
-    "The class CLIPFeatureExtractor is deprecated and will be removed in version 5 of Transformers",
-    FutureWarning
-)
-# Suppress the resume_download deprecation warning
-warnings.filterwarnings(
-    "ignore",
-    "`resume_download` is deprecated and will be removed in version 1.0.0",
-    FutureWarning
-)
-
-# Helper functions for transforms and loaders
-def default_img_transform(train: bool):
-    if train:
-        return transforms.Compose([
-            transforms.RandomResizedCrop(224, scale=(0.8, 1.0)),
-            transforms.RandomHorizontalFlip(p=0.5),
-            transforms.ColorJitter(brightness=0.2, contrast=0.2, saturation=0.2),
-            transforms.ToTensor(),
-            transforms.Normalize(mean=[0.5,0.5,0.5], std=[0.5,0.5,0.5]),
-        ])
-    else:
-        return transforms.Compose([
-            transforms.Resize(256),
-            transforms.CenterCrop(224),
-            transforms.ToTensor(),
-            transforms.Normalize(mean=[0.5,0.5,0.5], std=[0.5,0.5,0.5]),
-        ])
-
-def clip_processor_transform(proc):
-    return lambda img: proc(images=img, return_tensors="pt")["pixel_values"].squeeze(0)
-
-def make_loader(dataset, shuffle):
-    return DataLoader(dataset, batch_size=args.batch_size, shuffle=shuffle,
-                      num_workers=args.workers, pin_memory=True)
-
-# Custom loss for smoothed BCE with logits
-class SmoothBCEWithLogitsLoss(nn.Module):
-    """
-    Binary cross-entropy loss with logits and manual label smoothing.
-    """
-    def __init__(self, pos_weight=None, smoothing=0.1):
-        super().__init__()
-        self.pos_weight = pos_weight
-        self.smoothing = smoothing
-
-    def forward(self, logits, targets):
-        # Smooth targets: positive labels -> 1 - smoothing/2, negatives -> smoothing/2
-        smoothed = targets * (1 - self.smoothing) + 0.5 * self.smoothing
-        return F.binary_cross_entropy_with_logits(logits, smoothed, pos_weight=self.pos_weight)
+# Modular imports
+from utils.active_learning import CoreSetStrategy, extract_embeddings_for_al, active_learning_selection
+from utils.models import CLIPForBinary, SmoothBCEWithLogitsLoss
+from utils.data_utils import (default_img_transform, clip_processor_transform, make_loader, 
+                             CelebADataset, GeneratedImageDataset, SimpleImageDataset, GeneratedDataset)
+from utils.training import evaluate, train_model, save_predictions, parse_log
 
 # Parse command-line arguments
 parser = argparse.ArgumentParser(description='Train model on CelebA dataset')
@@ -109,10 +25,10 @@ parser.add_argument('--lr', type=float, default=1e-4,
                     help='Learning rate (default: 1e-4)')
 parser.add_argument('--attributes', type=str, default="redhair_brownskin", 
                     help='attributes to detect, e.g. redhair_sademotion, redhair_brownskin, redhair, brownskin, yellowhair, sademotion, etc.')
-parser.add_argument('--lvlm', type=str, default=None,
+parser.add_argument('--lvlm', type=str, default='qwen',
                     help='LVLM model name (e.g., llava) to modify feasible file naming')
-parser.add_argument('--model', type=str, default='resnet', choices=['resnet', 'vit', 'clip', 'blip'],
-                    help='Model architecture to use (resnet, vit, clip, or blip)')
+parser.add_argument('--model', type=str, default='resnet', choices=['resnet', 'vit', 'clip'],
+                    help='Model architecture to use (resnet, vit, or clip)')
 parser.add_argument('--plot', type=str2bool, default=False, help='Enable plotting training metrics')
 parser.add_argument('--num_epochs', type=int, default=20,
                     help='Number of training epochs (default: 20)')
@@ -138,7 +54,7 @@ parser.add_argument('--skip_train_unlabeled', type=str2bool, default=False,
                     help='Skip processing TRAIN and UNLABELED splits in diagnostics')
 parser.add_argument('--no_controlnet', type=str2bool, default=False,
                     help='Ablation flag: disable ControlNet-based augmentation (default: False)')
-parser.add_argument('--skip_feasible', type=str2bool, default=True,
+parser.add_argument('--skip_feasible', type=str2bool, default=False,
                     help='Skip loading feasible JSON for any attributes (default: False)')
 parser.add_argument(
     '--simple', type=str2bool, default=False,
@@ -173,54 +89,63 @@ parser.add_argument('--lr_head', type=float, default=None,
                     help='Learning rate for CLIP classification head (scratch mode)')
 parser.add_argument('--lr_backbone', type=float, default=None,
                     help='Learning rate for CLIP backbone (scratch mode)')
+# Active Learning arguments
+parser.add_argument('--use_active_learning', type=str2bool, default=True,
+                    help='Use Active Learning Core-set strategy for data selection (default: True)')
+parser.add_argument('--al_strategy', type=str, default='coreset', 
+                    choices=['coreset', 'stratified', 'diversity', 'hybrid'],
+                    help='Active Learning strategy: coreset (default), stratified, diversity, or hybrid')
+parser.add_argument('--al_embedding_dim', type=int, default=512,
+                    help='Embedding dimension for Active Learning (default: 512)')
+parser.add_argument('--al_initial_labeled', type=int, default=500,
+                    help='Initial number of labeled samples for Active Learning (default: 500)')
+# Hybrid strategy parameters
+parser.add_argument('--al_coreset_ratio', type=float, default=0.4,
+                    help='Ratio of samples selected by core-set in hybrid strategy (default: 0.4)')
+parser.add_argument('--al_stratified_ratio', type=float, default=0.4,
+                    help='Ratio of samples selected by stratified sampling in hybrid strategy (default: 0.4)')
+# Diversity strategy parameters  
+parser.add_argument('--al_clusters', type=int, default=None,
+                    help='Number of clusters for diversity strategy (default: n_select//10)')
+# Combined Active Learning arguments
+parser.add_argument('--al_combined', type=str2bool, default=False,
+                    help='Apply Active Learning on combined dataset (generated + original) instead of just original (default: False)')
+parser.add_argument('--combined_ratio', type=float, default=0.7,
+                    help='Ratio of samples to select from combined dataset when using --al_combined (default: 0.7)')
 # Parse arguments
 args = parser.parse_args()
 
 # Set random seed for reproducibility
-import random
-import numpy as _np
-import torch as _torch
-
 random.seed(args.seed)
-_np.random.seed(args.seed)
-if _torch.cuda.is_available():
-    _torch.manual_seed(args.seed)
-    _torch.cuda.manual_seed_all(args.seed)
+np.random.seed(args.seed)
+if torch.cuda.is_available():
+    torch.manual_seed(args.seed)
+    torch.cuda.manual_seed_all(args.seed)
 else:
-    _torch.manual_seed(args.seed)
+    torch.manual_seed(args.seed)
 # Enforce deterministic algorithms
-_torch.backends.cudnn.deterministic = True
-_torch.backends.cudnn.benchmark = False
+torch.backends.cudnn.deterministic = True
+torch.backends.cudnn.benchmark = False
 
 if getattr(args, 'verbose', False):
     print(f"Random seed set to {args.seed}")
+
+# Record overall start time (end-to-end, includes data prep, AL selection, training)
+overall_start_time = time.time()
+# Accumulator for total Active Learning selection time (may have multiple selection phases)
+al_total_time = 0.0
 # Override attribute file for ImageNet dataset
 if args.dataset == 'imagenet':
     args.attribute_file = 'save/attribute10.json'
 # Automatically enable pretrained weights for CLIP and ViT on ImageNet
 if args.dataset == 'imagenet' and args.model in ('clip', 'vit'):
     args.pretrained = True
-# Dynamically lower batch size for memory‑intensive backbones to avoid CUDA OOM
-if args.model == 'blip' and args.batch_size > 32:
-    args.batch_size = 32
-    if args.verbose:
-        print(f"Adjusted batch size for BLIP model to {args.batch_size} to fit GPU memory.")
 # If the attribute list includes "emotion", automatically skip feasible loading
 if "emotion" in args.attributes.lower():
     args.skip_feasible = True
     if args.verbose:
         print(f"'emotion' detected in attributes; setting skip_feasible=True")
 
-# Automatically skip feasible filtering for ImageNet
-# if args.dataset == 'imagenet':
-#     args.skip_feasible = True
-#     if 'verbose' in locals():
-#         if verbose:
-#             print("Dataset is ImageNet; setting skip_feasible=True")
-#     elif getattr(args, 'verbose', False):
-#         print("Dataset is ImageNet; setting skip_feasible=True")
-
-# If using ViT, reduce epochs to 15 for faster training
 if args.model == 'vit' and args.num_epochs == 20:
     args.num_epochs = 15
     if args.verbose:
@@ -230,10 +155,30 @@ if args.dataset == 'imagenet' and args.model == 'clip' and args.num_epochs == 20
     args.num_epochs = 15
 
 # Adjust number of epochs default for ImageNet subset
-if args.dataset == 'imagenet' and args.num_epochs == 20 and args.model == 'resnet':
-    args.num_epochs = 30
-    if 'verbose' in locals() and verbose:
-        print(f"Adjusted number of epochs for ImageNet dataset to {args.num_epochs}")
+# if args.dataset == 'imagenet' and args.num_epochs == 20 and args.model == 'resnet':
+#     args.num_epochs = 30
+#     if 'verbose' in locals() and verbose:
+#         print(f"Adjusted number of epochs for ImageNet dataset to {args.num_epochs}")
+
+# Adjust Active Learning parameters for ImageNet dataset (13000 images, 10 classes)
+if args.dataset == 'imagenet':
+    # For ImageNet with 13000 images total (1300 per class, 10 classes)
+    # Adjust initial labeled size to be proportional to dataset size
+    if args.al_initial_labeled == 2000:  # Default value
+        args.al_initial_labeled = 1300  # About 10% of total dataset
+        if args.verbose:
+            print(f"Adjusted al_initial_labeled for ImageNet to {args.al_initial_labeled}")
+    
+    # Ensure embedding dimension is appropriate for the model
+    if args.model == 'resnet' and args.al_embedding_dim == 512:
+        args.al_embedding_dim = 512  # ResNet18 feature dimension before FC
+    elif args.model == 'clip' and args.al_embedding_dim == 512:
+        args.al_embedding_dim = 512  # CLIP projection dimension
+    elif args.model == 'vit' and args.al_embedding_dim == 512:
+        args.al_embedding_dim = 768  # ViT hidden dimension
+        if args.verbose:
+            print(f"Adjusted al_embedding_dim for ViT to {args.al_embedding_dim}")
+
 attributes = args.attributes
 
 # Set default feasible_file based on attributes if not provided
@@ -253,6 +198,40 @@ elif args.gen_image_dir is None:
     args.gen_image_dir = f"exampleData/{attributes}"
 
 verbose = args.verbose
+
+# Adjust Active Learning parameters based on dataset size
+if args.dataset == 'imagenet':
+    # ImageNet subset has ~13000 images (1300 per class × 10 classes)
+    # Adjust al_initial_labeled to be reasonable for this scale
+    if args.al_initial_labeled == 500:  # Default value
+        # Use about 3-5% of total dataset as initial labeled set
+        args.al_initial_labeled = min(500, max(200, int(13000 * 0.04)))  # ~520, capped at 500
+        if verbose:
+            print(f"Adjusted al_initial_labeled for ImageNet scale to {args.al_initial_labeled}")
+    
+    # For ImageNet with 10 classes, ensure we have representation from all classes
+    # Validation set typically uses 20% of data, so ~2600 images
+    # This is sufficient for initial labeled set
+    
+    # Adjust embedding dimension based on model type for ImageNet
+    if args.model == 'resnet' and args.al_embedding_dim == 512:
+        args.al_embedding_dim = 256  # Lighter for ResNet features
+        if verbose:
+            print(f"Adjusted al_embedding_dim for ResNet on ImageNet to {args.al_embedding_dim}")
+    elif args.model == 'clip' and args.al_embedding_dim == 512:
+        args.al_embedding_dim = 512  # Keep 512 for CLIP
+    elif args.model == 'vit' and args.al_embedding_dim == 512:
+        args.al_embedding_dim = 768  # ViT typically uses 768
+        if verbose:
+            print(f"Adjusted al_embedding_dim for ViT on ImageNet to {args.al_embedding_dim}")
+
+elif args.dataset == 'celeba':
+    # CelebA has much larger scale (~80k training images)
+    # Adjust parameters accordingly
+    if args.al_initial_labeled == 500:  # Default value
+        args.al_initial_labeled = 1000  # More samples for larger dataset
+        if verbose:
+            print(f"Adjusted al_initial_labeled for CelebA scale to {args.al_initial_labeled}")
 
 # Adjust learning rate default for ViT if not manually overridden
 if args.model == 'vit' and args.lr == 1e-4:
@@ -307,49 +286,6 @@ if compare_log_path and not os.path.exists(compare_log_path):
     print(f"Warning: Default comparison log file for {args.model} not found at {compare_log_path}")
     compare_log_path = None # Set to None if file doesn't exist
 
-class CLIPForBinary(nn.Module):
-    def __init__(self, dropout_rate=0.5, pretrained=False, num_classes=1):
-        super().__init__()
-        # Initialize CLIP with or without pre-trained weights
-        if pretrained:
-            self.clip = CLIPModel.from_pretrained("openai/clip-vit-base-patch32")
-        else:
-            self.clip = CLIPModel(CLIPConfig())
-        self.dropout = nn.Dropout(p=dropout_rate)
-        self.dropout2 = nn.Dropout(p=dropout_rate)
-        # Replace classifier to handle multiclass if needed
-        self.classifier = nn.Linear(self.clip.config.projection_dim, num_classes)
-
-    def forward(self, pixel_values):
-        # Get image features and classify
-        feats = self.clip.get_image_features(pixel_values=pixel_values)
-        feats = self.dropout(feats)
-        feats = self.dropout2(feats)
-        return self.classifier(feats)
-
-# BLIP backbone + linear classification head
-class BlipClassifier(nn.Module):
-    """
-    BLIP backbone + linear classification head.
-    Works for both binary and multiclass tasks.
-    """
-    def __init__(self, num_classes=1, dropout_rate=0.5, pretrained=False):
-        super().__init__()
-        if pretrained:
-            self.blip = BlipModel.from_pretrained("Salesforce/blip-image-captioning-base")
-        else:
-            self.blip = BlipModel(BlipConfig())
-        self.dropout = nn.Dropout(dropout_rate)
-        # Use the BLIP image-projection dimension for the classification head
-        feat_dim = getattr(self.blip.config.vision_config, "projection_dim",
-                           self.blip.config.vision_config.hidden_size)
-        self.classifier = nn.Linear(feat_dim, num_classes)
-
-    def forward(self, pixel_values):
-        feats = self.blip.get_image_features(pixel_values=pixel_values)
-        feats = self.dropout(feats)
-        return self.classifier(feats)
-
 # Load the feasible images from feasible.json unless skip_feasible is True
 if not args.no_controlnet:
     if args.skip_feasible:
@@ -383,13 +319,6 @@ if args.dataset == 'imagenet':
     feature_extractor = CLIPImageProcessor.from_pretrained("openai/clip-vit-base-patch32")
     if args.model == 'clip':
         train_transform = clip_processor_transform(feature_extractor)
-        val_transform = train_transform
-    elif args.model == 'blip':
-        processor = BlipProcessor.from_pretrained(
-            "Salesforce/blip-image-captioning-base",
-            local_files_only=True
-        )
-        train_transform = clip_processor_transform(processor)
         val_transform = train_transform
     else:
         train_transform = default_img_transform(train=True)
@@ -506,44 +435,43 @@ if args.dataset == 'imagenet':
         # --- Patch: Respect skip_feasible for feasible_images loading ---
         if args.skip_feasible:
             feasible_images = {}
-            if verbose:
-                print("[DEBUG] Skipping feasible filtering (skip_feasible=True)")
+            # if verbose:
+            #     print("[DEBUG] Skipping feasible filtering (skip_feasible=True)")
         else:
             if os.path.exists(args.feasible_file):
                 with open(args.feasible_file) as f:
                     feasible_images = json.load(f)
             else:
                 feasible_images = {}
-            if verbose:
-                print(f"[DEBUG] Feasible images loaded: {len(feasible_images)} entries")
-                print(f"[DEBUG] Sample of feasible keys: {list(feasible_images.keys())[:10]}")
-        if verbose:
-            print(f"[DEBUG] Classes in full_ds: {list(full_ds.class_to_idx.keys())}")
+            # if verbose:
+            #     print(f"[DEBUG] Feasible images loaded: {len(feasible_images)} entries")
+            #     print(f"[DEBUG] Sample of feasible keys: {list(feasible_images.keys())[:10]}")
+        # if verbose:
+        #     print(f"[DEBUG] Classes in full_ds: {list(full_ds.class_to_idx.keys())}")
         # Traverse each class subfolder for generated images
-        from pathlib import Path as _Path
         gen_paths, gen_labels = [], []
         if verbose:
             print("[DEBUG] Starting traversal of class subfolders for generated images...")
         for cls_name, cls_idx in full_ds.class_to_idx.items():
-            cls_dir = _Path(args.gen_image_dir) / cls_name
-            if verbose:
-                print(f"[DEBUG] Checking class folder: {cls_dir} (exists: {cls_dir.is_dir()})")
+            cls_dir = Path(args.gen_image_dir) / cls_name
+            # if verbose:
+            #     print(f"[DEBUG] Checking class folder: {cls_dir} (exists: {cls_dir.is_dir()})")
             if not cls_dir.is_dir():
                 continue
             for img_name in os.listdir(cls_dir):
-                if verbose:
-                    print(f"[DEBUG] Found file in {cls_name}: {img_name}")
+                # if verbose:
+                #     print(f"[DEBUG] Found file in {cls_name}: {img_name}")
                 if not img_name.lower().endswith(('.png', '.jpg', '.jpeg')):
                     continue
                 key = os.path.splitext(img_name)[0]
                 full_key = f"{cls_name}/{key}"
                 in_feasible = full_key in feasible_images
-                if verbose:
-                    print(f"[DEBUG] File key '{full_key}' in feasible_images: {in_feasible}")
+                # if verbose:
+                #     print(f"[DEBUG] File key '{full_key}' in feasible_images: {in_feasible}")
                 # --- Patch: Only filter if not args.skip_feasible ---
                 if not args.skip_feasible and feasible_images and full_key not in feasible_images:
-                    if verbose:
-                        print(f"[DEBUG] Skipping '{full_key}' not in feasible_images")
+                    # if verbose:
+                    #     print(f"[DEBUG] Skipping '{full_key}' not in feasible_images")
                     continue
                 gen_paths.append(str(cls_dir / img_name))
                 gen_labels.append(cls_idx)
@@ -574,20 +502,94 @@ if args.dataset == 'imagenet':
                 img = Image.open(self.paths[i]).convert("RGB")
                 return (self.transform(img), self.labels[i]) if self.transform else (img, self.labels[i])
         gen_ds = GeneratedDataset(modified_image_paths, modified_image_labels, train_transform)
-        # Subsample original train_ds based on sub_ratio
-        orig_count = len(train_ds)
-        sub_count = int(orig_count * args.sub_ratio)
-        random.seed(args.seed)
-        selected_indices = random.sample(range(orig_count), sub_count)
-        # Map subset indices back to the original dataset indices
-        sub_orig_indices = [train_ds.indices[i] for i in selected_indices]
-        sub_train_ds = Subset(train_ds.dataset, sub_orig_indices)
+        
+        # Handle combined Active Learning or original approach
+        if args.al_combined and args.use_active_learning:
+            # Combined approach: Apply AL on combined dataset (original + generated)
+            orig_count = len(train_ds)
+            gen_count = len(gen_ds)
+            combined_dataset = torch.utils.data.ConcatDataset([train_ds, gen_ds])
+            combined_count = len(combined_dataset)
+            combined_target_count = int(combined_count * args.combined_ratio)
+            
+            if verbose:
+                print(f"Combined AL approach: selecting {combined_target_count} samples from {combined_count} (original: {orig_count}, generated: {gen_count})")
+            
+            # Define device for Active Learning
+            if torch.cuda.is_available():
+                al_device = torch.device(f"cuda:{args.gpu}")
+            else:
+                al_device = torch.device("cpu")
+            
+            # Use Active Learning for data selection on combined dataset (timed)
+            al_select_start = time.time()
+            selected_indices = active_learning_selection(combined_dataset, val_ds, args, al_device, verbose)
+            al_duration = time.time() - al_select_start
+            al_total_time += al_duration
+            if verbose:
+                print(f"[TIMING] Active Learning selection (Combined ImageNet) took {al_duration:.2f} seconds")
+            
+            # Ensure we don't exceed the target count
+            if len(selected_indices) > combined_target_count:
+                random.seed(args.seed)
+                selected_indices = random.sample(selected_indices, combined_target_count)
+            
+            # Analyze selection: count original vs generated
+            orig_selected = sum(1 for idx in selected_indices if idx < orig_count)
+            gen_selected = len(selected_indices) - orig_selected
+            print(f"AL selected from combined dataset: {orig_selected} original + {gen_selected} generated = {len(selected_indices)} total")
+            
+            # Create final training dataset from selected indices
+            train_dataset = Subset(combined_dataset, selected_indices)
+            selection_method = f"Combined Active Learning ({args.al_strategy})"
+            
+        else:
+            # Original approach: Apply AL/random on original data, then add all generated
+            orig_count = len(train_ds)
+            sub_count = int(orig_count * args.sub_ratio)
+            
+            if args.use_active_learning and args.sub_ratio < 1.0:
+                if verbose:
+                    print(f"Using Active Learning Core-set strategy to select {sub_count} samples from {orig_count}")
+                # Define device for Active Learning if not already defined
+                if torch.cuda.is_available():
+                    al_device = torch.device(f"cuda:{args.gpu}")
+                else:
+                    al_device = torch.device("cpu")
+                # Use Active Learning for data selection (timed)
+                al_select_start = time.time()
+                selected_indices = active_learning_selection(train_ds, val_ds, args, al_device, verbose)
+                al_duration = time.time() - al_select_start
+                al_total_time += al_duration
+                if verbose:
+                    print(f"[TIMING] Active Learning selection (ImageNet) took {al_duration:.2f} seconds")
+                # Ensure we don't exceed the target count
+                if len(selected_indices) > sub_count:
+                    random.seed(args.seed)
+                    selected_indices = random.sample(selected_indices, sub_count)
+            else:
+                if verbose:
+                    print(f"Using random sampling to select {sub_count} samples from {orig_count}")
+                # Use random sampling (original behavior)
+                random.seed(args.seed)
+                selected_indices = random.sample(range(orig_count), sub_count)
+            
+            # Map subset indices back to the original dataset indices
+            sub_orig_indices = [train_ds.indices[i] for i in selected_indices]
+            sub_train_ds = Subset(train_ds.dataset, sub_orig_indices)
+            # Combine subsampled original data with generated data
+            train_dataset = torch.utils.data.ConcatDataset([sub_train_ds, gen_ds])
+            selection_method = "Active Learning Core-set" if args.use_active_learning and args.sub_ratio < 1.0 else "Random sampling"
+            print(f"Added {len(modified_image_labels)} ImageNet {attributes} images using {selection_method}: {len(sub_train_ds)} -> {len(train_dataset)}")
+        
         # Store subsampling info for padding in save_predictions
-        args.selected_indices = selected_indices
-        args.orig_train_count = orig_count
-        # Combine subsampled original data with generated data
-        train_dataset = torch.utils.data.ConcatDataset([sub_train_ds, gen_ds])
-        print(f"Added {len(modified_image_labels)} ImageNet {attributes} images: {len(sub_train_ds)} -> {len(train_dataset)}")
+        if not args.al_combined:
+            args.selected_indices = selected_indices
+            args.orig_train_count = orig_count
+        else:
+            args.selected_indices = None  # Combined mode doesn't need this
+            args.orig_train_count = None
+        
         train_loader = make_loader(train_dataset, shuffle=True)
 
     # Skip CelebA loading
@@ -647,13 +649,6 @@ elif args.dataset == 'celeba':
     feature_extractor = CLIPImageProcessor.from_pretrained("openai/clip-vit-base-patch32")
     if args.model == 'clip':
         train_transform = clip_processor_transform(feature_extractor)
-        val_transform = train_transform
-    elif args.model == 'blip':
-        processor = BlipProcessor.from_pretrained(
-            "Salesforce/blip-image-captioning-base",
-            local_files_only=True
-        )
-        train_transform = clip_processor_transform(processor)
         val_transform = train_transform
     else:
         train_transform = default_img_transform(train=True)
@@ -815,19 +810,115 @@ elif args.dataset == 'celeba':
         valid_imgs = [modified_image_paths[i] for i in val_indices]
         valid_labels = np.array(modified_image_labels)[val_indices]
     elif modified_image_paths:
-        # Subsample original training data based on sub_ratio and combine with modified images
-        orig_count = len(train_imgs)
-        sub_count = int(orig_count * args.sub_ratio)
-        random.seed(args.seed)
-        selected_indices = random.sample(range(orig_count), sub_count)
-        sub_train_imgs = [train_imgs[i] for i in selected_indices]
-        sub_train_labels = train_labels[selected_indices]
-        all_train_imgs = sub_train_imgs + modified_image_paths
-        all_train_labels = np.concatenate((sub_train_labels, np.array(modified_image_labels)))
-        combined_labels = np.concatenate((sub_train_labels, valid_labels, np.array(modified_image_labels), unlabeled_labels))
+        # Handle combined Active Learning or original approach for CelebA
+        if args.al_combined and args.use_active_learning:
+            # Combined approach: Apply AL on combined dataset (original + generated)
+            orig_count = len(train_imgs)
+            gen_count = len(modified_image_paths)
+            
+            # Create temporary datasets for combined Active Learning
+            temp_train_dataset = CelebADataset(train_imgs, train_labels, val_transform)
+            temp_gen_dataset = CelebADataset(modified_image_paths, np.array(modified_image_labels), val_transform)
+            temp_combined_dataset = torch.utils.data.ConcatDataset([temp_train_dataset, temp_gen_dataset])
+            temp_valid_dataset = CelebADataset(valid_imgs, valid_labels, val_transform)
+            
+            combined_count = len(temp_combined_dataset)
+            combined_target_count = int(combined_count * args.combined_ratio)
+            
+            if verbose:
+                print(f"Combined AL approach (CelebA): selecting {combined_target_count} samples from {combined_count} (original: {orig_count}, generated: {gen_count})")
+            
+            # Define device for Active Learning
+            if torch.cuda.is_available():
+                al_device = torch.device(f"cuda:{args.gpu}")
+            else:
+                al_device = torch.device("cpu")
+            
+            # Use Active Learning for data selection on combined dataset (timed)
+            al_select_start = time.time()
+            selected_indices = active_learning_selection(temp_combined_dataset, temp_valid_dataset, args, al_device, verbose)
+            al_duration = time.time() - al_select_start
+            al_total_time += al_duration
+            if verbose:
+                print(f"[TIMING] Active Learning selection (Combined CelebA) took {al_duration:.2f} seconds")
+            
+            # Ensure we don't exceed the target count
+            if len(selected_indices) > combined_target_count:
+                random.seed(args.seed)
+                selected_indices = random.sample(selected_indices, combined_target_count)
+            
+            # Analyze selection: count original vs generated
+            orig_selected = sum(1 for idx in selected_indices if idx < orig_count)
+            gen_selected = len(selected_indices) - orig_selected
+            print(f"AL selected from combined CelebA dataset: {orig_selected} original + {gen_selected} generated = {len(selected_indices)} total")
+            
+            # Extract selected images and labels
+            all_train_imgs = []
+            all_train_labels = []
+            for idx in selected_indices:
+                if idx < orig_count:
+                    all_train_imgs.append(train_imgs[idx])
+                    all_train_labels.append(train_labels[idx])
+                else:
+                    gen_idx = idx - orig_count
+                    all_train_imgs.append(modified_image_paths[gen_idx])
+                    all_train_labels.append(modified_image_labels[gen_idx])
+            all_train_labels = np.array(all_train_labels)
+            
+            selection_method = f"Combined Active Learning ({args.al_strategy})"
+            print(f"CelebA: {selection_method} selected {len(all_train_imgs)} samples ({orig_selected} original + {gen_selected} generated)")
+            
+        else:
+            # Original approach: Apply AL/random on original data, then add all generated
+            orig_count = len(train_imgs)
+            sub_count = int(orig_count * args.sub_ratio)
+            
+            if args.use_active_learning and args.sub_ratio < 1.0:
+                if verbose:
+                    print(f"Using Active Learning Core-set strategy to select {sub_count} samples from {orig_count} for CelebA")
+                # Define device for Active Learning if not already defined
+                if torch.cuda.is_available():
+                    al_device = torch.device(f"cuda:{args.gpu}")
+                else:
+                    al_device = torch.device("cpu")
+                    
+                # Create temporary datasets for Active Learning
+                temp_train_dataset = CelebADataset(train_imgs, train_labels, val_transform)
+                temp_valid_dataset = CelebADataset(valid_imgs, valid_labels, val_transform)
+                
+                # Use Active Learning for data selection (timed)
+                al_select_start = time.time()
+                selected_indices = active_learning_selection(temp_train_dataset, temp_valid_dataset, args, al_device, verbose)
+                al_duration = time.time() - al_select_start
+                al_total_time += al_duration
+                if verbose:
+                    print(f"[TIMING] Active Learning selection (CelebA) took {al_duration:.2f} seconds")
+                # Ensure we don't exceed the target count
+                if len(selected_indices) > sub_count:
+                    random.seed(args.seed)
+                    selected_indices = random.sample(selected_indices, sub_count)
+            else:
+                if verbose:
+                    print(f"Using random sampling to select {sub_count} samples from {orig_count} for CelebA")
+                # Use random sampling (original behavior)
+                random.seed(args.seed)
+                selected_indices = random.sample(range(orig_count), sub_count)
+                
+            sub_train_imgs = [train_imgs[i] for i in selected_indices]
+            sub_train_labels = train_labels[selected_indices]
+            all_train_imgs = sub_train_imgs + modified_image_paths
+            all_train_labels = np.concatenate((sub_train_labels, np.array(modified_image_labels)))
+            selection_method = "Active Learning Core-set" if args.use_active_learning and args.sub_ratio < 1.0 else "Random sampling"
+            print(f"CelebA: Combined {len(sub_train_imgs)} selected samples with {len(modified_image_paths)} generated images using {selection_method}")
+        
+        combined_labels = np.concatenate((all_train_labels, valid_labels, unlabeled_labels))
         # Store subsampling info for later padding of predictions
-        args.selected_indices = selected_indices
-        args.orig_train_count = orig_count
+        if not args.al_combined:
+            args.selected_indices = selected_indices
+            args.orig_train_count = orig_count
+        else:
+            args.selected_indices = None  # Combined mode doesn't need this
+            args.orig_train_count = None
     else:
         all_train_imgs = train_imgs
         all_train_labels = train_labels
@@ -877,8 +968,8 @@ if torch.cuda.is_available():
     device = torch.device(f"cuda:{args.gpu}")
 else:
     device = torch.device("cpu")
-if verbose and device.type == "cuda":
-    print(f"Using GPU {args.gpu}: {torch.cuda.get_device_name(args.gpu)}")
+# if verbose and device.type == "cuda":
+#     print(f"Using GPU {args.gpu}: {torch.cuda.get_device_name(args.gpu)}")
 
 if args.model == 'resnet':
     # Use full ResNet-18 for multiclass ImageNet, simplified version for binary tasks (CelebA)
@@ -928,13 +1019,6 @@ elif args.model == 'clip':
         dropout_rate=0.5,
         pretrained=args.pretrained,
         num_classes=num_classes if args.dataset=='imagenet' else 1
-    )
-elif args.model == 'blip':
-    # Initialize BLIP backbone + linear head
-    model = BlipClassifier(
-        num_classes=num_classes if args.dataset == 'imagenet' else 1,
-        dropout_rate=0.5,
-        pretrained=args.pretrained
     )
 
 model = model.to(device)
@@ -1036,18 +1120,24 @@ def save_predictions(model, train_loader, valid_loader):
     if args.dataset == 'imagenet':
         original_count = len(train_idx)
         # Number of subsampled original predictions available
-        sub_count = len(getattr(args, "selected_indices", []))
+        selected_indices = getattr(args, "selected_indices", None)
+        if selected_indices is not None:
+            sub_count = len(selected_indices)
+        else:
+            sub_count = 0  # Combined mode or no subsampling
         # Subsampled original preds come first in train_preds
-        sub_preds = train_preds[:sub_count]
-        if getattr(args, 'pad_missing', False):
+        sub_preds = train_preds[:sub_count] if sub_count > 0 else []
+        if getattr(args, 'pad_missing', False) and selected_indices is not None:
             # Initialize full-length original predictions with -1 (int) instead of NaN
             full_orig_preds = np.full((original_count,), -1, dtype=int)
             # Fill in the subsampled predictions at correct indices
-            for idx, pred in zip(args.selected_indices, sub_preds):
+            for idx, pred in zip(selected_indices, sub_preds):
                 full_orig_preds[idx] = pred
             combined_preds = np.concatenate((full_orig_preds.flatten(), valid_preds.flatten()))
         else:
-            combined_preds = np.concatenate((sub_preds.flatten(), valid_preds.flatten()))
+            # Convert list to numpy array before flattening
+            sub_preds_array = np.array(sub_preds) if isinstance(sub_preds, list) else sub_preds
+            combined_preds = np.concatenate((sub_preds_array.flatten(), valid_preds.flatten()))
     else:
         # Handle celeba or other cases
         if len(modified_image_paths) > 0:
@@ -1170,8 +1260,8 @@ def train_model(model, train_loader, valid_loader, criterion, optimizer, schedul
         # Step the learning rate scheduler if provided
         if scheduler:
             scheduler.step()
-            if verbose:
-                print(f"Current learning rate: {scheduler.get_last_lr()[0]}")
+            # if verbose:
+            #     print(f"Current learning rate: {scheduler.get_last_lr()[0]}")
 
         # Compute average training loss
         avg_train_loss = total_loss / len(train_loader)
@@ -1276,45 +1366,57 @@ train_loss_history, train_acc_history, val_loss_history, val_acc_history = train
 )
 total_elapsed_time = time.time() - total_start_time
 print(f"Total training time for {args.num_epochs} epochs: {total_elapsed_time:.2f} seconds")
+print(f"Total Active Learning selection time: {al_total_time:.2f} seconds")
+overall_elapsed_time = time.time() - overall_start_time
+print(f"End-to-end wall time (data prep + AL + training + setup): {overall_elapsed_time:.2f} seconds")
 
 
 
 # Run the model diagnostics after predictions are saved
-# Add import for ImageFolder at the top if not present
-from torchvision.datasets import ImageFolder
+print("\nRunning model diagnostics on generated predictions...")
 
+# Define thresholds for diagnostics (same for both datasets)
+acc_diff_threshold = 0.01
+distribution_diff_threshold = 0.3
+dominant_label_in_failure_threshold = 0.8
+dominant_label_in_prediction_threshold = 0.8
+rare_label_threshold = 0.93
+dominant_error_threshold = 0.3
+error_cover_threshold = 0.9
+top_error = 3
+
+# Determine filename suffix for predictions
+suffix = ""
+if args.gen_only:
+    suffix += "_g"
+if args.no_controlnet:
+    suffix += "_h"  # Add 'h' for ablation/no_controlnet
+
+# Load the predictions we just saved
+prediction_file = f"save/pred/predictions_{args.dataset}_{args.model}_{attributes}_{args.num_added_img}imgs{suffix}_{time_now}.npy"
+predictions = np.load(prediction_file)
+
+# Prepare labels and split for diagnostics based on dataset
 if args.dataset == 'imagenet':
-    print("\nRunning model diagnostics on generated predictions...")
-    # Define thresholds for diagnostics
-    acc_diff_threshold = 0.01
-    distribution_diff_threshold = 0.3
-    dominant_label_in_failure_threshold = 0.8
-    dominant_label_in_prediction_threshold = 0.8
-    rare_label_threshold = 0.93
-    dominant_error_threshold = 0.3
-    error_cover_threshold = 0.9
-    top_error = 3
-
-    # Determine filename suffix for predictions
-    suffix = ""
-    if args.gen_only:
-        suffix += "_g"
-    if args.no_controlnet:
-        suffix += "_h"
-    # Load the predictions we just saved
-    prediction_file = f"save/pred/predictions_{args.dataset}_{args.model}_{attributes}_{args.num_added_img}imgs{suffix}_{time_now}.npy"
-    predictions = np.load(prediction_file)
-
-    # Prepare labels and split for diagnostics
     # Derive ground-truth labels from the ImageFolder ordering
-    from pathlib import Path
     data_dir = Path("exampleData/imagenet_subset")
     full_ds = ImageFolder(data_dir)
     labels_all = np.array(full_ds.targets)
     # Build labels for train and validation splits
     labels_to_diagnose = np.concatenate([labels_all[train_idx], labels_all[val_idx]])
     split = [TRAIN] * len(train_idx) + [VALID] * len(val_idx)
+elif args.dataset == 'celeba':
+    # Use combined_labels and adjust split to match (including modified images in the training split)
+    labels_to_diagnose = combined_labels
+    split = (
+        [TRAIN] * len(train_labels) +
+        [VALID] * len(valid_labels) +
+        [TRAIN] * len(modified_image_labels) +
+        [UNLABELED] * len(unlabeled_labels)
+    )
 
+# Run diagnostics for both datasets (skip for gen_only mode in CelebA or combined AL mode)
+if not (args.dataset == 'celeba' and args.gen_only) and not args.al_combined:
     # Instantiate ModelDiagnose and run diagnostics
     MD = ModelDiagnose(
         labels=labels_to_diagnose,
@@ -1333,12 +1435,22 @@ if args.dataset == 'imagenet':
         top_error=top_error
     )
 
-    # print("Start detect_failure_by_label\n")
-    # MD.detect_failure_by_label()
-    print("Start detect_prediction_correlation\n")
-    MD.detect_prediction_correlation()
-    # print("Start detect_failure_prediction_correlation\n")
-    # MD.detect_failure_prediction_correlation()
+    # Run diagnostics based on dataset
+    if args.dataset == 'imagenet':
+        # print("Start detect_failure_by_label\n")
+        # MD.detect_failure_by_label()
+        print("Start detect_prediction_correlation\n")
+        MD.detect_prediction_correlation()
+        # print("Start detect_failure_prediction_correlation\n")
+        # MD.detect_failure_prediction_correlation()
+    elif args.dataset == 'celeba':
+        print("Start detect_failure_by_label\n")
+        MD.detect_failure_by_label()
+        print("Start detect_prediction_correlation\n")
+        MD.detect_prediction_correlation()
+        print("Start detect_failure_prediction_correlation\n")
+        MD.detect_failure_prediction_correlation()
+        print("Model diagnostics complete.")
 
     # Optionally save a report
     if args.save_report:
@@ -1392,121 +1504,131 @@ if args.dataset == 'imagenet':
                 print(f"Could not parse or find the comparison log file: {compare_log_path}")
         else:
             print("\nSkipping accuracy comparison: No comparison log file specified for the selected model or file not found.")
-
-elif args.dataset == 'celeba':
-    print("\nRunning model diagnostics on generated predictions...")
-
-    # Define the parameters for diagnostics
-    acc_diff_threshold = 0.01
-    distribution_diff_threshold = 0.3
-    dominant_label_in_failure_threshold = 0.8
-    dominant_label_in_prediction_threshold = 0.8
-    rare_label_threshold = 0.93
-    dominant_error_threshold = 0.3
-    error_cover_threshold = 0.9
-    top_error = 3
-
-    # Determine filename suffix based on gen_only flag and ablation flag
-    suffix = ""
-    if args.gen_only:
-        suffix += "_g"
-    if args.no_controlnet:
-        suffix += "_h"  # Add 'h' for ablation/no_controlnet
-
-    # Load the predictions we just saved
-    prediction_file = f"save/pred/predictions_{args.dataset}_{args.model}_{attributes}_{args.num_added_img}imgs{suffix}_{time_now}.npy"
-    predictions = np.load(prediction_file)
-
-    # Adjust split to match combined_labels (including modified images in the training split)
-    split = (
-        [TRAIN] * len(train_labels) +
-        [VALID] * len(valid_labels) +
-        [TRAIN] * len(modified_image_labels) +
-        [UNLABELED] * len(unlabeled_labels)
-    )
-
-    if not args.gen_only:
-        MD = ModelDiagnose(labels=combined_labels,
-                           predictions=predictions,
-                           split=split,
-                           attribute_dict_path=args.attribute_file,
-                           print=args.verbose,
-                           dataset=args.dataset,
-                           acc_diff_threshold=acc_diff_threshold,
-                           distribution_diff_threshold=distribution_diff_threshold,
-                           dominant_label_in_failure_threshold=dominant_label_in_failure_threshold,
-                           dominant_label_in_prediction_threshold=dominant_label_in_prediction_threshold,
-                           rare_label_threshold=rare_label_threshold,
-                           dominant_error_threshold=dominant_error_threshold,
-                           error_cover_threshold=error_cover_threshold,
-                           top_error=top_error)
-
-        print("Start detect_failure_by_label\n")
-        MD.detect_failure_by_label()
-        print("Start detect_prediction_correlation\n")
-        MD.detect_prediction_correlation()
-        print("Start detect_failure_prediction_correlation\n")
-        MD.detect_failure_prediction_correlation()
-        print("Model diagnostics complete.")
-
-        if args.save_report:
-            report_dir = "save/reports"
-            os.makedirs(report_dir, exist_ok=True)
-            MD.generate_report(f"{report_dir}/{args.dataset}_{args.model}_{attributes}_{args.num_added_img}imgs{suffix}_{time_now}")
-            print(f"Diagnostic report saved to {report_dir}/{args.dataset}_{args.model}_{attributes}_{args.num_added_img}imgs{suffix}_{time_now}")
+else:
+    if args.al_combined:
+        print("Skipping model diagnostics due to --al_combined mode (data indices are misaligned)")
     else:
-        print("Skipping model diagnostics because gen_only=True")
-        if len(train_acc_history) > 0:
-            final_train_acc = train_acc_history[-1]
-            print("\n" + "="*60)
-            print(f"Final Epoch Train Accuracy (gen_only=True): {final_train_acc:.4f}")
-            print("="*60 + "\n")
+        print("Skipping model diagnostics due to gen_only mode")
+    print("Skipping accuracy comparison due to skipped diagnostics")
 
-    # --- Accuracy Comparison Logic ---
-    if args.gen_only:
-        print("Skipping accuracy comparison due to gen_only flag being True")
-    else:
-        if compare_log_path:
-            print(f"\nComparing accuracy with log file: {compare_log_path}")
-            orig_entries, orig_overall = parse_log(compare_log_path)
+# Continue with the rest of the script regardless of diagnostics
+if not args.gen_only and not args.al_combined:
 
-            if orig_entries is not None:
-                orig_map = {(e['attribute'], e['description']): e['accuracy'] for e in orig_entries}
-                current_overall = MD.valid_acc
-                if orig_overall is not None and current_overall is not None:
-                    if current_overall > orig_overall:
-                        overall_status = 'improved'
-                    elif current_overall < orig_overall:
-                        overall_status = 'declined'
-                    else:
-                        overall_status = 'same'
-                    print(f'Overall accuracy: {orig_overall:.6f} -> {current_overall:.6f}: {overall_status}')
-                elif current_overall is not None:
-                     print(f'Current overall accuracy: {current_overall:.6f} (Original overall accuracy not found in log)')
-                else:
-                     print(f'Original overall accuracy: {orig_overall:.6f} (Current overall accuracy not available)')
+        # --- Active Learning vs Random Selection Comparison ---
+        if args.use_active_learning and args.sub_ratio < 1.0:
+            # Construct the random selection log file path based on current configuration
 
-                print("\nAttribute-specific accuracy comparison:")
-                current_compared_count = 0
-                for (attribute, description), orig_acc in orig_map.items():
-                    current_acc = None
-                    if attribute in MD.attributes and description in MD.attributes[attribute]['valid acc']:
-                        current_acc = MD.attributes[attribute]['valid acc'][description]
-                    if current_acc is None:
-                        continue
-                    if current_acc > orig_acc:
-                        status = 'improved'
-                    elif current_acc < orig_acc:
-                        status = 'declined'
-                    else:
-                        status = 'same'
-                    print(f'{attribute}, {description}, {orig_acc:.6f} -> {current_acc:.6f}: {status}')
-                    current_compared_count += 1
+            log_name1 = f"AL_{args.model}_{args.dataset}_random_{args.num_added_img}_{args.sub_ratio}.log"
+            log_name2 = f"AL_random_{args.model}_{args.dataset}_{args.num_added_img}_ratio{args.sub_ratio}.log"
+            # AL_random_resnet_imagenet_1000_ratio${SUB_RATIO}.log
 
-                print(f"\nCompared {current_compared_count} attribute-specific accuracies.")
+
+
+            log_name1 = f"AL_{args.model}_{args.dataset}_random_{args.num_added_img}.log"
+            log_name2 = f"AL_random_{args.model}_{args.dataset}_{args.num_added_img}_ratio{args.sub_ratio}.log"
+
+            if args.dataset == "imagenet":
+                log_dir = f"logs_{args.dataset}"
+            elif args.dataset == "celeba":
+                log_dir = "logs"
+
+            log_path1 = os.path.join(log_dir, log_name1)
+            log_path2 = os.path.join(log_dir, log_name2)
+
+            if os.path.exists(log_path2):
+                random_log_path = log_path2
+            elif os.path.exists(log_path1):
+                random_log_path = log_path1
             else:
-                print(f"Could not parse or find the comparison log file: {compare_log_path}")
-        else:
-            print("\nSkipping accuracy comparison: No comparison log file specified for the selected model or file not found.")
+                raise FileNotFoundError(f"No log file found: {log_path1} or {log_path2}")
+
+            print(f"Using log file: {random_log_path}")
+            
+            if os.path.exists(random_log_path):
+                print(f"\n" + "="*80)
+                print(f"ACTIVE LEARNING vs RANDOM SELECTION COMPARISON")
+                print(f"="*80)
+                print(f"Comparing current Active Learning results with random selection: {random_log_path}")
+                
+                # Parse random selection log
+                random_entries, random_overall = parse_log(random_log_path)
+                
+                if random_entries is not None:
+                    random_map = {(e['attribute'], e['description']): e['accuracy'] for e in random_entries}
+                    # Use current running results from MD (not from log file)
+                    current_overall = MD.valid_acc
+                    
+                    # Overall accuracy comparison
+                    if random_overall is not None and current_overall is not None:
+                        overall_diff = current_overall - random_overall
+                        if current_overall > random_overall:
+                            overall_status = 'ACTIVE LEARNING WINS'
+                        elif current_overall < random_overall:
+                            overall_status = 'RANDOM SELECTION WINS'
+                        else:
+                            overall_status = 'TIE'
+                        print(f'Overall accuracy: Random {random_overall:.6f} -> Active Learning {current_overall:.6f} (Δ={overall_diff:+.6f}): {overall_status}')
+                    elif current_overall is not None:
+                        print(f'Current Active Learning overall accuracy: {current_overall:.6f} (Random overall accuracy not found)')
+                    else:
+                        print(f'Random overall accuracy: {random_overall:.6f} (Current Active Learning accuracy not available)')
+
+                    # Attribute-specific comparison
+                    print("\nAttribute-specific Active Learning vs Random Selection comparison:")
+                    al_wins = 0
+                    random_wins = 0
+                    ties = 0
+                    al_vs_random_count = 0
+                    
+                    for (attribute, description), random_acc in random_map.items():
+                        # Extract current AL result from MD.attributes (not from log file)
+                        current_acc = None
+                        if attribute in MD.attributes and description in MD.attributes[attribute]['valid acc']:
+                            current_acc = MD.attributes[attribute]['valid acc'][description]
+                        if current_acc is None:
+                            continue
+                        
+                        diff = current_acc - random_acc
+                        if current_acc > random_acc:
+                            status = 'AL WINS'
+                            al_wins += 1
+                        elif current_acc < random_acc:
+                            status = 'RANDOM WINS'
+                            random_wins += 1
+                        else:
+                            status = 'TIE'
+                            ties += 1
+                        
+                        print(f'{attribute}, {description}, Random {random_acc:.6f} -> AL {current_acc:.6f} (Δ={diff:+.6f}): {status}')
+                        al_vs_random_count += 1
+
+                    print(f"\n" + "-"*60)
+                    print(f"ACTIVE LEARNING vs RANDOM SELECTION SUMMARY:")
+                    print(f"Total compared attributes: {al_vs_random_count}")
+                    print(f"Active Learning wins: {al_wins}")
+                    print(f"Random Selection wins: {random_wins}")
+                    print(f"Ties: {ties}")
+                    if al_vs_random_count > 0:
+                        al_win_rate = al_wins / al_vs_random_count * 100
+                        print(f"Active Learning win rate: {al_win_rate:.1f}%")
+                    print(f"-"*60)
+                else:
+                    print(f"Could not parse the random selection log file: {random_log_path}")
+            else:
+                print(f"\nRandom selection comparison skipped: {random_log_path} not found")
+                print("To enable comparison, run the random selection baseline:")
+                print(f"CUDA_VISIBLE_DEVICES=X python -u alpred.py \\")
+                print(f"  --dataset {args.dataset} --model {args.model} --num_added_img {args.num_added_img} \\")
+                print(f"  --attributes {args.attributes} --num_epochs {args.num_epochs} \\")
+                print(f"  --use_active_learning False --sub_ratio {args.sub_ratio} \\")
+                print(f"  > logs_{args.dataset}/{random_log_name} 2>&1 < /dev/null &")
+else:
+    # Special case for gen_only mode or al_combined mode
+    print("Skipping model diagnostics")
+    if len(val_acc_history) > 0:
+        final_val_acc = val_acc_history[-1]
+        print("\n" + "="*60)
+        print(f"Final Epoch Validation Accuracy: {final_val_acc:.4f}")
+        print("="*60 + "\n")
 
 print("Current time:", time_now)
