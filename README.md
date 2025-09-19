@@ -1,5 +1,12 @@
 # SafeFix: Targeted Model Repair via Controlled Image Generation
 
+[![arXiv](https://img.shields.io/badge/arXiv-2508.08701-b31b1b.svg)](https://arxiv.org/abs/2508.08701)
+
+
+<a id="authors-line"></a>
+Authors: [Ouyang Xu](https://oxu2.github.io/), [Baoming Zhang](#authors-line), [Ruiyu Mao](#authors-line), [Yunhui Guo](https://yunhuiguo.github.io)
+
+
 **SafeFix** is a data-centric pipeline for automated model repair in vision tasks. It identifies rare-case failure slices in classification models and generates targeted, attribute-preserving synthetic data to fine-tune models, improving performance on underrepresented subpopulations without degrading overall accuracy.
 ![Workflow](Overview_SafeFix.png)
 
