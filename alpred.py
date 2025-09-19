@@ -93,8 +93,8 @@ parser.add_argument('--lr_backbone', type=float, default=None,
 parser.add_argument('--use_active_learning', type=str2bool, default=True,
                     help='Use Active Learning Core-set strategy for data selection (default: True)')
 parser.add_argument('--al_strategy', type=str, default='coreset', 
-                    choices=['coreset', 'stratified', 'diversity', 'hybrid'],
-                    help='Active Learning strategy: coreset (default), stratified, diversity, or hybrid')
+                    choices=['coreset', 'stratified', 'diversity', 'hybrid', 'hierarchical'],
+                    help='Active Learning strategy: coreset (default), stratified, diversity, hybrid, or hierarchical')
 parser.add_argument('--al_embedding_dim', type=int, default=512,
                     help='Embedding dimension for Active Learning (default: 512)')
 parser.add_argument('--al_initial_labeled', type=int, default=500,
@@ -107,6 +107,25 @@ parser.add_argument('--al_stratified_ratio', type=float, default=0.4,
 # Diversity strategy parameters  
 parser.add_argument('--al_clusters', type=int, default=None,
                     help='Number of clusters for diversity strategy (default: n_select//10)')
+# Hierarchical strategy parameters
+parser.add_argument('--al_w_err', type=float, default=0.6,
+                    help='Weight for error rate in hierarchical difficulty calculation (default: 0.6)')
+parser.add_argument('--al_w_unc', type=float, default=0.4,
+                    help='Weight for uncertainty in hierarchical difficulty calculation (default: 0.4)')
+parser.add_argument('--al_alpha', type=float, default=0.4,
+                    help='Weight for difficulty in hierarchical priority score (default: 0.4)')
+parser.add_argument('--al_beta', type=float, default=0.4,
+                    help='Weight for coverage gap in hierarchical priority score (default: 0.4)')
+parser.add_argument('--al_gamma', type=float, default=0.2,
+                    help='Weight for correlation penalty in hierarchical priority score (default: 0.2)')
+parser.add_argument('--al_lambda_div', type=float, default=0.5,
+                    help='Weight for diversity in hierarchical instance selection (default: 0.5)')
+parser.add_argument('--al_round1_ratio', type=float, default=0.7,
+                    help='Fraction of budget allocated to Round 1 in hierarchical AL (default: 0.7)')
+parser.add_argument('--al_min_slice_quota', type=int, default=5,
+                    help='Minimum samples per slice in hierarchical AL (default: 5)')
+parser.add_argument('--al_max_slice_quota', type=int, default=100,
+                    help='Maximum samples per slice in hierarchical AL (default: 100)')
 # Combined Active Learning arguments
 parser.add_argument('--al_combined', type=str2bool, default=False,
                     help='Apply Active Learning on combined dataset (generated + original) instead of just original (default: False)')

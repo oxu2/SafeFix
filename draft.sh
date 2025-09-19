@@ -1,3 +1,5 @@
+nohup ./test_hierarchical_al.sh --sub_ratio 0.9 > test_hierarchical_al.sh_ratio0.9.log 2>&1 < /dev/null &
+
 nohup ./test_combined_al.sh --combined_ratio 0.9 > combined_al_0.9.log 2>&1 < /dev/null &
 
 nohup ./test_combined_al.sh --combined_ratio 0.7 > combined_al_0.7.log 2>&1 < /dev/null &

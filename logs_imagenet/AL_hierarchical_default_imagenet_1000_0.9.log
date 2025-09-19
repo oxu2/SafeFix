@@ -1,0 +1,366 @@
+Random seed set to 42
+Adjusted al_initial_labeled for ImageNet scale to 500
+Current time: 0918091441
+Loaded 1311 feasible pinkcolor_fabrictexture images
+Using generated image directory: exampleData/imagenet_pinkcolor_fabrictexture
+[DEBUG] Normal mode: looking for generated images in directory: exampleData/imagenet_pinkcolor_fabrictexture
+[DEBUG] Starting traversal of class subfolders for generated images...
+[DEBUG] Candidate images before feasible filtering: 1311
+[DEBUG] Total candidate generated images before sampling: 1311
+[DEBUG] Sampled generated images: 1000 items
+Added 1000 generated images.
+Using Active Learning Core-set strategy to select 9360 samples from 10400
+Starting Active Learning data selection using 'hierarchical' strategy...
+Dataset: imagenet, Model: resnet
+Train samples: 10400, Val samples: 2600
+Target selection ratio: 0.9
+Embedding dimension: 256
+Initial labeled samples: 500
+/people/cs/o/oxx220000/.conda/envs/ad/lib/python3.9/site-packages/torchvision/models/_utils.py:208: UserWarning: The parameter 'pretrained' is deprecated since 0.13 and may be removed in the future, please use 'weights' instead.
+  warnings.warn(
+/people/cs/o/oxx220000/.conda/envs/ad/lib/python3.9/site-packages/torchvision/models/_utils.py:223: UserWarning: Arguments other than a weight enum or `None` for 'weights' are deprecated since 0.13 and may be removed in the future. The current behavior is equivalent to passing `weights=ResNet18_Weights.IMAGENET1K_V1`. You can also use `weights=ResNet18_Weights.DEFAULT` to get the most up-to-date weights.
+  warnings.warn(msg)
+Using batch size 32 for Active Learning feature extraction
+Extracting embeddings from 10400 training samples...
+Train embeddings shape: torch.Size([10400, 256])
+Using hierarchical two-stage active learning
+Starting hierarchical active learning selection for 9360 samples
+Computing uncertainty scores...
+Extracting feature embeddings...
+Round 1: Allocating 6552 samples to single-attribute slices
+  color=red: selected 100/100 samples
+  color=blue: selected 100/100 samples
+  color=green: selected 100/100 samples
+  color=yellow: selected 100/100 samples
+  color=pink: selected 100/100 samples
+  color=white: selected 100/100 samples
+  color=black: selected 100/100 samples
+  color=brown: selected 100/100 samples
+  texture=smooth: selected 100/100 samples
+  texture=rough: selected 100/100 samples
+  texture=fabric: selected 100/100 samples
+  texture=metal: selected 100/100 samples
+  texture=wood: selected 100/100 samples
+  texture=plastic: selected 100/100 samples
+  background=indoor: selected 100/100 samples
+  background=outdoor: selected 100/100 samples
+  background=nature: selected 100/100 samples
+  background=urban: selected 100/100 samples
+  background=plain: selected 100/100 samples
+  size=small: selected 100/100 samples
+  size=medium: selected 100/100 samples
+  size=large: selected 100/100 samples
+Round 2: Allocating 2808 samples to attribute-pair slices
+  color=red&texture=smooth: selected 15/15 samples
+  color=red&texture=rough: selected 16/16 samples
+  color=red&texture=fabric: selected 16/16 samples
+  color=red&texture=metal: selected 16/16 samples
+  color=red&texture=wood: selected 16/16 samples
+  color=red&texture=plastic: selected 15/15 samples
+  color=blue&texture=smooth: selected 16/16 samples
+  color=blue&texture=rough: selected 16/16 samples
+  color=blue&texture=fabric: selected 16/16 samples
+  color=blue&texture=metal: selected 15/15 samples
+  color=blue&texture=wood: selected 15/15 samples
+  color=blue&texture=plastic: selected 15/15 samples
+  color=green&texture=smooth: selected 15/15 samples
+  color=green&texture=rough: selected 16/16 samples
+  color=green&texture=fabric: selected 16/16 samples
+  color=green&texture=metal: selected 16/16 samples
+  color=green&texture=wood: selected 16/16 samples
+  color=green&texture=plastic: selected 16/16 samples
+  color=yellow&texture=smooth: selected 15/15 samples
+  color=yellow&texture=rough: selected 15/15 samples
+  color=yellow&texture=fabric: selected 16/16 samples
+  color=yellow&texture=metal: selected 15/15 samples
+  color=yellow&texture=wood: selected 16/16 samples
+  color=yellow&texture=plastic: selected 16/16 samples
+  color=pink&texture=smooth: selected 16/16 samples
+  color=pink&texture=rough: selected 16/16 samples
+  color=pink&texture=fabric: selected 15/15 samples
+  color=pink&texture=metal: selected 15/15 samples
+  color=pink&texture=wood: selected 16/16 samples
+  color=pink&texture=plastic: selected 15/15 samples
+  color=white&texture=smooth: selected 15/15 samples
+  color=white&texture=rough: selected 16/16 samples
+  color=white&texture=fabric: selected 16/16 samples
+  color=white&texture=metal: selected 16/16 samples
+  color=white&texture=wood: selected 15/15 samples
+  color=white&texture=plastic: selected 16/16 samples
+  color=black&texture=smooth: selected 15/15 samples
+  color=black&texture=rough: selected 15/15 samples
+  color=black&texture=fabric: selected 16/16 samples
+  color=black&texture=metal: selected 15/15 samples
+  color=black&texture=wood: selected 16/16 samples
+  color=black&texture=plastic: selected 15/15 samples
+  color=brown&texture=smooth: selected 15/15 samples
+  color=brown&texture=rough: selected 16/16 samples
+  color=brown&texture=fabric: selected 16/16 samples
+  color=brown&texture=metal: selected 16/16 samples
+  color=brown&texture=wood: selected 16/16 samples
+  color=brown&texture=plastic: selected 16/16 samples
+  color=red&background=indoor: selected 16/16 samples
+  color=red&background=outdoor: selected 16/16 samples
+  color=red&background=nature: selected 16/16 samples
+  color=red&background=urban: selected 15/15 samples
+  color=red&background=plain: selected 16/16 samples
+  color=blue&background=indoor: selected 16/16 samples
+  color=blue&background=outdoor: selected 16/16 samples
+  color=blue&background=nature: selected 15/15 samples
+  color=blue&background=urban: selected 15/15 samples
+  color=blue&background=plain: selected 16/16 samples
+  color=green&background=indoor: selected 15/15 samples
+  color=green&background=outdoor: selected 16/16 samples
+  color=green&background=nature: selected 15/15 samples
+  color=green&background=urban: selected 16/16 samples
+  color=green&background=plain: selected 16/16 samples
+  color=yellow&background=indoor: selected 15/15 samples
+  color=yellow&background=outdoor: selected 16/16 samples
+  color=yellow&background=nature: selected 16/16 samples
+  color=yellow&background=urban: selected 16/16 samples
+  color=yellow&background=plain: selected 15/15 samples
+  color=pink&background=indoor: selected 16/16 samples
+  color=pink&background=outdoor: selected 15/15 samples
+  color=pink&background=nature: selected 16/16 samples
+  color=pink&background=urban: selected 16/16 samples
+  color=pink&background=plain: selected 15/15 samples
+  color=white&background=indoor: selected 16/16 samples
+  color=white&background=outdoor: selected 16/16 samples
+  color=white&background=nature: selected 16/16 samples
+  color=white&background=urban: selected 16/16 samples
+  color=white&background=plain: selected 16/16 samples
+  color=black&background=indoor: selected 16/16 samples
+  color=black&background=outdoor: selected 16/16 samples
+  color=black&background=nature: selected 16/16 samples
+  color=black&background=urban: selected 16/16 samples
+  color=black&background=plain: selected 16/16 samples
+  color=brown&background=indoor: selected 16/16 samples
+  color=brown&background=outdoor: selected 15/15 samples
+  color=brown&background=nature: selected 16/16 samples
+  color=brown&background=urban: selected 16/16 samples
+  color=brown&background=plain: selected 16/16 samples
+  color=red&size=small: selected 15/15 samples
+  color=red&size=medium: selected 16/16 samples
+  color=red&size=large: selected 15/15 samples
+  color=blue&size=small: selected 16/16 samples
+  color=blue&size=medium: selected 15/15 samples
+  color=blue&size=large: selected 16/16 samples
+  color=green&size=small: selected 15/15 samples
+  color=green&size=medium: selected 16/16 samples
+  color=green&size=large: selected 15/15 samples
+  color=yellow&size=small: selected 16/16 samples
+  color=yellow&size=medium: selected 16/16 samples
+  color=yellow&size=large: selected 15/15 samples
+  color=pink&size=small: selected 15/15 samples
+  color=pink&size=medium: selected 16/16 samples
+  color=pink&size=large: selected 16/16 samples
+  color=white&size=small: selected 15/15 samples
+  color=white&size=medium: selected 16/16 samples
+  color=white&size=large: selected 16/16 samples
+  color=black&size=small: selected 16/16 samples
+  color=black&size=medium: selected 15/15 samples
+  color=black&size=large: selected 15/15 samples
+  color=brown&size=small: selected 15/15 samples
+  color=brown&size=medium: selected 16/16 samples
+  color=brown&size=large: selected 15/15 samples
+  texture=smooth&background=indoor: selected 16/16 samples
+  texture=smooth&background=outdoor: selected 16/16 samples
+  texture=smooth&background=nature: selected 16/16 samples
+  texture=smooth&background=urban: selected 15/15 samples
+  texture=smooth&background=plain: selected 16/16 samples
+  texture=rough&background=indoor: selected 16/16 samples
+  texture=rough&background=outdoor: selected 16/16 samples
+  texture=rough&background=nature: selected 16/16 samples
+  texture=rough&background=urban: selected 16/16 samples
+  texture=rough&background=plain: selected 16/16 samples
+  texture=fabric&background=indoor: selected 16/16 samples
+  texture=fabric&background=outdoor: selected 16/16 samples
+  texture=fabric&background=nature: selected 15/15 samples
+  texture=fabric&background=urban: selected 16/16 samples
+  texture=fabric&background=plain: selected 16/16 samples
+  texture=metal&background=indoor: selected 15/15 samples
+  texture=metal&background=outdoor: selected 16/16 samples
+  texture=metal&background=nature: selected 16/16 samples
+  texture=metal&background=urban: selected 16/16 samples
+  texture=metal&background=plain: selected 15/15 samples
+  texture=wood&background=indoor: selected 16/16 samples
+  texture=wood&background=outdoor: selected 15/15 samples
+  texture=wood&background=nature: selected 15/15 samples
+  texture=wood&background=urban: selected 16/16 samples
+  texture=wood&background=plain: selected 16/16 samples
+  texture=plastic&background=indoor: selected 16/16 samples
+  texture=plastic&background=outdoor: selected 16/16 samples
+  texture=plastic&background=nature: selected 15/15 samples
+  texture=plastic&background=urban: selected 16/16 samples
+  texture=plastic&background=plain: selected 16/16 samples
+  texture=smooth&size=small: selected 16/16 samples
+  texture=smooth&size=medium: selected 16/16 samples
+  texture=smooth&size=large: selected 16/16 samples
+  texture=rough&size=small: selected 16/16 samples
+  texture=rough&size=medium: selected 15/15 samples
+  texture=rough&size=large: selected 16/16 samples
+  texture=fabric&size=small: selected 16/16 samples
+  texture=fabric&size=medium: selected 16/16 samples
+  texture=fabric&size=large: selected 16/16 samples
+  texture=metal&size=small: selected 16/16 samples
+  texture=metal&size=medium: selected 16/16 samples
+  texture=metal&size=large: selected 16/16 samples
+  texture=wood&size=small: selected 16/16 samples
+  texture=wood&size=medium: selected 16/16 samples
+  texture=wood&size=large: selected 16/16 samples
+  texture=plastic&size=small: selected 16/16 samples
+  texture=plastic&size=medium: selected 15/15 samples
+  texture=plastic&size=large: selected 15/15 samples
+  background=indoor&size=small: selected 15/15 samples
+  background=indoor&size=medium: selected 16/16 samples
+  background=indoor&size=large: selected 16/16 samples
+  background=outdoor&size=small: selected 16/16 samples
+  background=outdoor&size=medium: selected 16/16 samples
+  background=outdoor&size=large: selected 16/16 samples
+  background=nature&size=small: selected 16/16 samples
+  background=nature&size=medium: selected 16/16 samples
+  background=nature&size=large: selected 15/15 samples
+  background=urban&size=small: selected 16/16 samples
+  background=urban&size=medium: selected 16/16 samples
+  background=urban&size=large: selected 15/15 samples
+  background=plain&size=small: selected 16/16 samples
+  background=plain&size=medium: selected 15/15 samples
+  background=plain&size=large: selected 16/16 samples
+Filling remaining 4415 samples with uncertainty-based selection
+Hierarchical AL selected 9360 samples total
+  Round 1 (single attr): 6552 samples
+  Round 2 (attr pairs): 2808 samples
+  Additional: 0 samples
+
+Class distribution in selected samples:
+  Class 0: 987 samples (10.5%)
+  Class 1: 938 samples (10.0%)
+  Class 2: 987 samples (10.5%)
+  Class 3: 1014 samples (10.8%)
+  Class 4: 762 samples (8.1%)
+  Class 5: 918 samples (9.8%)
+  Class 6: 990 samples (10.6%)
+  Class 7: 997 samples (10.7%)
+  Class 8: 776 samples (8.3%)
+  Class 9: 991 samples (10.6%)
+
+Class distribution in random baseline:
+  Class 0: 934 samples (10.0%)
+  Class 1: 941 samples (10.1%)
+  Class 2: 931 samples (9.9%)
+  Class 3: 944 samples (10.1%)
+  Class 4: 945 samples (10.1%)
+  Class 5: 932 samples (10.0%)
+  Class 6: 942 samples (10.1%)
+  Class 7: 939 samples (10.0%)
+  Class 8: 924 samples (9.9%)
+  Class 9: 928 samples (9.9%)
+Active Learning selection completed. Selected 9360 samples using 'hierarchical' strategy.
+[TIMING] Active Learning selection (ImageNet) took 3570.96 seconds
+Added 1000 ImageNet pinkcolor_fabrictexture images using Active Learning Core-set: 9360 -> 10360
+Using resnet model with random weights
+Epoch [1/30], Train Loss: 2.0977, Train Acc: 0.2585, Val Loss: 2.1532, Val Acc: 0.2677
+Epoch [2/30], Train Loss: 1.8833, Train Acc: 0.3335, Val Loss: 1.9395, Val Acc: 0.3235
+Epoch [3/30], Train Loss: 1.7717, Train Acc: 0.3796, Val Loss: 2.3137, Val Acc: 0.2565
+Epoch [4/30], Train Loss: 1.5760, Train Acc: 0.4489, Val Loss: 1.6349, Val Acc: 0.4312
+Epoch [5/30], Train Loss: 1.4908, Train Acc: 0.4818, Val Loss: 2.0719, Val Acc: 0.3204
+Epoch [6/30], Train Loss: 1.4262, Train Acc: 0.5142, Val Loss: 1.9955, Val Acc: 0.3565
+Epoch [7/30], Train Loss: 1.2450, Train Acc: 0.5791, Val Loss: 1.4364, Val Acc: 0.5154
+Epoch [8/30], Train Loss: 1.1497, Train Acc: 0.6135, Val Loss: 1.3209, Val Acc: 0.5700
+Epoch [9/30], Train Loss: 1.0926, Train Acc: 0.6391, Val Loss: 1.2350, Val Acc: 0.5958
+Epoch [10/30], Train Loss: 0.9221, Train Acc: 0.6906, Val Loss: 1.1555, Val Acc: 0.6162
+Epoch [11/30], Train Loss: 0.8574, Train Acc: 0.7145, Val Loss: 1.1500, Val Acc: 0.6154
+Epoch [12/30], Train Loss: 0.8135, Train Acc: 0.7264, Val Loss: 1.2038, Val Acc: 0.6127
+Epoch [13/30], Train Loss: 0.7002, Train Acc: 0.7692, Val Loss: 1.0087, Val Acc: 0.6662
+Epoch [14/30], Train Loss: 0.6470, Train Acc: 0.7914, Val Loss: 0.9514, Val Acc: 0.6981
+Epoch [15/30], Train Loss: 0.6140, Train Acc: 0.7995, Val Loss: 1.0063, Val Acc: 0.6708
+Epoch [16/30], Train Loss: 0.5378, Train Acc: 0.8264, Val Loss: 0.9371, Val Acc: 0.7000
+Epoch [17/30], Train Loss: 0.5049, Train Acc: 0.8386, Val Loss: 0.9163, Val Acc: 0.7042
+Epoch [18/30], Train Loss: 0.4759, Train Acc: 0.8536, Val Loss: 0.9011, Val Acc: 0.7081
+Epoch [19/30], Train Loss: 0.4331, Train Acc: 0.8684, Val Loss: 0.8984, Val Acc: 0.7069
+Epoch [20/30], Train Loss: 0.4092, Train Acc: 0.8770, Val Loss: 0.8871, Val Acc: 0.7019
+Epoch [21/30], Train Loss: 0.3915, Train Acc: 0.8834, Val Loss: 0.8941, Val Acc: 0.7092
+Epoch [22/30], Train Loss: 0.3690, Train Acc: 0.8939, Val Loss: 0.8935, Val Acc: 0.7104
+Epoch [23/30], Train Loss: 0.3499, Train Acc: 0.9012, Val Loss: 0.8906, Val Acc: 0.7058
+Epoch [24/30], Train Loss: 0.3471, Train Acc: 0.8993, Val Loss: 0.8963, Val Acc: 0.7104
+Epoch [25/30], Train Loss: 0.3310, Train Acc: 0.9046, Val Loss: 0.8874, Val Acc: 0.7081
+Epoch [26/30], Train Loss: 0.3257, Train Acc: 0.9104, Val Loss: 0.8912, Val Acc: 0.7108
+Epoch [27/30], Train Loss: 0.3228, Train Acc: 0.9086, Val Loss: 0.8903, Val Acc: 0.7035
+Epoch [28/30], Train Loss: 0.3160, Train Acc: 0.9118, Val Loss: 0.8964, Val Acc: 0.7073
+Epoch [29/30], Train Loss: 0.3121, Train Acc: 0.9161, Val Loss: 0.8922, Val Acc: 0.7073
+Epoch [30/30], Train Loss: 0.3096, Train Acc: 0.9135, Val Loss: 0.8890, Val Acc: 0.7085
+Generating and saving predictions...
+Combined predictions length: 13000
+Total training time for 30 epochs: 742.30 seconds
+Total Active Learning selection time: 3570.96 seconds
+End-to-end wall time (data prep + AL + training + setup): 4313.51 seconds
+
+Running model diagnostics on generated predictions...
+Model Validation ACC: 0.7107692307692308
+Start detect_prediction_correlation
+
+ACC: 0.697674 	Rare Case: attribute "color", description "green"
+ACC: 0.625000 	Rare Case: attribute "color", description "tan"
+ACC: 0.700000 	Rare Case: attribute "color", description "orange"
+ACC: 0.694915 	Rare Case: attribute "color", description "gray"
+ACC: 0.671018 	Hard case: attribute "color", description "multicolored"
+ACC: 0.684211 	Rare Case: attribute "color", description "purple"
+ACC: 0.698783 	Hard case: attribute "background", description "inside a house"
+ACC: 0.636364 	Rare Case: attribute "background", description "rocks"
+ACC: 0.689189 	Rare Case: attribute "background", description "street"
+ACC: 0.650000 	Rare Case: attribute "background", description "wild"
+ACC: 0.647059 	Rare Case: attribute "texture", description "leather"
+ACC: 0.646341 	Rare Case: attribute "texture", description "fabric"
+
+Comparing accuracy with log file: logs/compare/stat_imagenet_resnet_compare.log
+Overall accuracy: 0.718077 -> 0.710769: declined
+
+Attribute-specific accuracy comparison:
+color, green, 0.674419 -> 0.697674: improved
+color, pink, 0.699029 -> 0.718447: improved
+color, tan, 0.700000 -> 0.625000: declined
+color, orange, 0.690909 -> 0.700000: improved
+color, yellow, 0.688889 -> 0.722222: improved
+color, purple, 0.684211 -> 0.684211: declined
+color, black, 0.665289 -> 0.714876: improved
+background, sky, 0.698630 -> 0.726027: improved
+background, inside a house, 0.691684 -> 0.698783: improved
+background, buildings, 0.707317 -> 0.731707: improved
+background, rocks, 0.659091 -> 0.636364: declined
+background, street, 0.662162 -> 0.689189: improved
+texture, metallic, 0.676471 -> 0.735294: improved
+texture, wooden, 0.698393 -> 0.705810: improved
+texture, leather, 0.588235 -> 0.647059: improved
+texture, fabric, 0.658537 -> 0.646341: declined
+
+Compared 16 attribute-specific accuracies.
+Using log file: logs_imagenet/AL_random_resnet_imagenet_1000_ratio0.9.log
+
+================================================================================
+ACTIVE LEARNING vs RANDOM SELECTION COMPARISON
+================================================================================
+Comparing current Active Learning results with random selection: logs_imagenet/AL_random_resnet_imagenet_1000_ratio0.9.log
+Overall accuracy: Random 0.730385 -> Active Learning 0.710769 (Δ=-0.019615): RANDOM SELECTION WINS
+
+Attribute-specific Active Learning vs Random Selection comparison:
+color, green, Random 0.705426 -> AL 0.697674 (Δ=-0.007752): RANDOM WINS
+color, brown, Random 0.700000 -> AL 0.711765 (Δ=+0.011765): AL WINS
+color, orange, Random 0.718182 -> AL 0.700000 (Δ=-0.018182): RANDOM WINS
+color, multicolored, Random 0.718016 -> AL 0.671018 (Δ=-0.046998): RANDOM WINS
+color, purple, Random 0.684211 -> AL 0.684211 (Δ=-0.000000): RANDOM WINS
+color, black, Random 0.710744 -> AL 0.714876 (Δ=+0.004132): AL WINS
+background, inside a house, Random 0.709939 -> AL 0.698783 (Δ=-0.011156): RANDOM WINS
+background, rocks, Random 0.636364 -> AL 0.636364 (Δ=-0.000000): RANDOM WINS
+background, street, Random 0.716216 -> AL 0.689189 (Δ=-0.027027): RANDOM WINS
+texture, wooden, Random 0.719407 -> AL 0.705810 (Δ=-0.013597): RANDOM WINS
+texture, leather, Random 0.705882 -> AL 0.647059 (Δ=-0.058823): RANDOM WINS
+
+------------------------------------------------------------
+ACTIVE LEARNING vs RANDOM SELECTION SUMMARY:
+Total compared attributes: 11
+Active Learning wins: 2
+Random Selection wins: 9
+Ties: 0
+Active Learning win rate: 18.2%
+------------------------------------------------------------
+Current time: 0918091441

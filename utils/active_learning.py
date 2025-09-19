@@ -5,6 +5,7 @@ This module contains multiple active learning strategies and related functions.
 
 from utils.imports import *
 from utils.defines import *
+from utils.hierarchical_al import HierarchicalActiveStrategy
 
 
 class CoreSetStrategy:
@@ -565,6 +566,38 @@ def active_learning_selection(train_dataset, val_dataset, args, device, verbose=
             
             strategy = CoreSetStrategy(embedding_dim=args.al_embedding_dim)
             selected_indices = strategy.greedy_k_center(labeled_embeddings, train_embeddings, target_samples)
+            
+    elif al_strategy == 'hierarchical':
+        # Hierarchical two-stage active learning
+        # This strategy requires a trained model for uncertainty computation
+        if verbose:
+            print("Using hierarchical two-stage active learning")
+        
+        # Initialize hierarchical strategy with parameters from args
+        strategy = HierarchicalActiveStrategy(
+            w_err=getattr(args, 'al_w_err', 0.6),
+            w_unc=getattr(args, 'al_w_unc', 0.4),
+            alpha=getattr(args, 'al_alpha', 0.4),
+            beta=getattr(args, 'al_beta', 0.4),
+            gamma=getattr(args, 'al_gamma', 0.2),
+            lambda_div=getattr(args, 'al_lambda_div', 0.5),
+            round1_ratio=getattr(args, 'al_round1_ratio', 0.7),
+            min_slice_quota=getattr(args, 'al_min_slice_quota', 5),
+            max_slice_quota=getattr(args, 'al_max_slice_quota', 100),
+            embedding_dim=args.al_embedding_dim,
+            dataset=args.dataset
+        )
+        
+        # For hierarchical AL, we need a pre-trained model to compute uncertainties
+        # Use the feature extraction model as a proxy
+        selected_indices = strategy.select(
+            dataset=train_dataset,
+            val_dataset=val_dataset,
+            model=feature_model,
+            device=device,
+            n_select=target_samples,
+            verbose=verbose
+        )
             
     else:
         # Unknown strategy, fall back to random
