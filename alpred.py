@@ -4,6 +4,7 @@ from utils.defines import *
 
 # Modular imports
 from utils.active_learning import CoreSetStrategy, extract_embeddings_for_al, active_learning_selection
+from utils.llm_selection import llm_data_selection
 from utils.models import CLIPForBinary, SmoothBCEWithLogitsLoss
 from utils.data_utils import (default_img_transform, clip_processor_transform, make_loader, 
                              CelebADataset, GeneratedImageDataset, SimpleImageDataset, GeneratedDataset)
@@ -93,8 +94,8 @@ parser.add_argument('--lr_backbone', type=float, default=None,
 parser.add_argument('--use_active_learning', type=str2bool, default=True,
                     help='Use Active Learning Core-set strategy for data selection (default: True)')
 parser.add_argument('--al_strategy', type=str, default='coreset', 
-                    choices=['coreset', 'stratified', 'diversity', 'hybrid', 'hierarchical'],
-                    help='Active Learning strategy: coreset (default), stratified, diversity, hybrid, or hierarchical')
+                    choices=['coreset', 'stratified', 'diversity', 'hybrid', 'hierarchical', 'attribute'],
+                    help='Active Learning strategy: coreset (default), stratified, diversity, hybrid, hierarchical, or attribute-driven')
 parser.add_argument('--al_embedding_dim', type=int, default=512,
                     help='Embedding dimension for Active Learning (default: 512)')
 parser.add_argument('--al_initial_labeled', type=int, default=500,
@@ -112,6 +113,21 @@ parser.add_argument('--al_w_err', type=float, default=0.6,
                     help='Weight for error rate in hierarchical difficulty calculation (default: 0.6)')
 parser.add_argument('--al_w_unc', type=float, default=0.4,
                     help='Weight for uncertainty in hierarchical difficulty calculation (default: 0.4)')
+# Attribute-driven strategy parameters
+parser.add_argument('--al_attribute_focus', type=str, default=None,
+                    help='Comma-separated attribute keys to prioritize (defaults to all attributes in metadata)')
+parser.add_argument('--al_attribute_rarity_power', type=float, default=1.0,
+                    help='Exponent controlling emphasis on rare attribute values (default: 1.0)')
+parser.add_argument('--al_attribute_uncertainty_boost', type=float, default=1.0,
+                    help='Score bonus for samples flagged as uncertain in attribute metadata (default: 1.0)')
+parser.add_argument('--al_attribute_log_path', type=str, default=None,
+                    help='Optional path to attribute diagnostics log for rare/hard case boosts')
+parser.add_argument('--al_attribute_include_hard', type=str2bool, default=True,
+                    help='Include "Hard case" slices from the log when computing attribute boosts (default: True)')
+parser.add_argument('--al_attribute_log_rare_boost', type=float, default=1.0,
+                    help='Score bonus added for each rare case occurrence in the log (default: 1.0)')
+parser.add_argument('--al_attribute_log_hard_boost', type=float, default=0.0,
+                    help='Score bonus added for each hard case occurrence in the log (default: 0.0)')
 parser.add_argument('--al_alpha', type=float, default=0.4,
                     help='Weight for difficulty in hierarchical priority score (default: 0.4)')
 parser.add_argument('--al_beta', type=float, default=0.4,
@@ -131,6 +147,17 @@ parser.add_argument('--al_combined', type=str2bool, default=False,
                     help='Apply Active Learning on combined dataset (generated + original) instead of just original (default: False)')
 parser.add_argument('--combined_ratio', type=float, default=0.7,
                     help='Ratio of samples to select from combined dataset when using --al_combined (default: 0.7)')
+# LLM-based selection arguments (alternative to traditional Active Learning)
+parser.add_argument('--use_llm_selection', type=str2bool, default=False,
+                    help='Use LLM-based data selection instead of traditional Active Learning (default: False)')
+parser.add_argument('--llm_model', type=str, default='qwen', 
+                    choices=['qwen', 'llava-7b', 'llava-13b'],
+                    help='LLM model for data selection: qwen (default), llava-7b, or llava-13b')
+parser.add_argument('--llm_strategy', type=str, default='diversity_difficulty',
+                    choices=['diversity', 'difficulty', 'diversity_difficulty', 'llm_random'],
+                    help='LLM selection strategy: diversity, difficulty, diversity_difficulty (default), or llm_random')
+parser.add_argument('--llm_max_memory', type=int, default=23,
+                    help='Maximum memory per GPU in GB for LLM model (default: 23)')
 # Parse arguments
 args = parser.parse_args()
 
@@ -151,7 +178,7 @@ if getattr(args, 'verbose', False):
 
 # Record overall start time (end-to-end, includes data prep, AL selection, training)
 overall_start_time = time.time()
-# Accumulator for total Active Learning selection time (may have multiple selection phases)
+# Accumulator for total selection time (Active Learning or LLM-based selection)
 al_total_time = 0.0
 # Override attribute file for ImageNet dataset
 if args.dataset == 'imagenet':
@@ -251,6 +278,12 @@ elif args.dataset == 'celeba':
         args.al_initial_labeled = 1000  # More samples for larger dataset
         if verbose:
             print(f"Adjusted al_initial_labeled for CelebA scale to {args.al_initial_labeled}")
+
+# Validation: Ensure only one selection method is enabled
+if args.use_active_learning and args.use_llm_selection:
+    print("Warning: Both --use_active_learning and --use_llm_selection are enabled.")
+    print("Disabling Active Learning in favor of LLM selection.")
+    args.use_active_learning = False
 
 # Adjust learning rate default for ViT if not manually overridden
 if args.model == 'vit' and args.lr == 1e-4:
@@ -586,6 +619,34 @@ if args.dataset == 'imagenet':
                 if len(selected_indices) > sub_count:
                     random.seed(args.seed)
                     selected_indices = random.sample(selected_indices, sub_count)
+            elif args.use_llm_selection and args.sub_ratio < 1.0:
+                if verbose:
+                    print(f"Using LLM-based selection ({args.llm_strategy}) to select {sub_count} samples from {orig_count}")
+                
+                # Extract image paths and labels from ImageNet Subset dataset
+                # train_ds is a Subset, so we need to access the underlying dataset
+                underlying_dataset = train_ds.dataset
+                subset_indices = train_ds.indices
+                image_paths = [underlying_dataset.samples[idx][0] for idx in subset_indices]
+                dataset_labels = np.array([underlying_dataset.samples[idx][1] for idx in subset_indices])
+                
+                # Use LLM-based selection (timed)
+                llm_select_start = time.time()
+                selected_indices = llm_data_selection(
+                    image_paths=image_paths,
+                    labels=dataset_labels,
+                    sub_ratio=args.sub_ratio,
+                    dataset_type='imagenet',
+                    lvlm_model=args.llm_model,
+                    strategy=args.llm_strategy,
+                    device=torch.device(f"cuda:{args.gpu}") if torch.cuda.is_available() else torch.device("cpu"),
+                    random_seed=args.seed,
+                    verbose=verbose
+                )
+                llm_duration = time.time() - llm_select_start
+                al_total_time += llm_duration  # Add to AL time for comparison
+                if verbose:
+                    print(f"[TIMING] LLM selection (ImageNet) took {llm_duration:.2f} seconds")
             else:
                 if verbose:
                     print(f"Using random sampling to select {sub_count} samples from {orig_count}")
@@ -598,7 +659,9 @@ if args.dataset == 'imagenet':
             sub_train_ds = Subset(train_ds.dataset, sub_orig_indices)
             # Combine subsampled original data with generated data
             train_dataset = torch.utils.data.ConcatDataset([sub_train_ds, gen_ds])
-            selection_method = "Active Learning Core-set" if args.use_active_learning and args.sub_ratio < 1.0 else "Random sampling"
+            selection_method = ("Active Learning Core-set" if args.use_active_learning and args.sub_ratio < 1.0 
+                               else f"LLM-based selection ({args.llm_strategy})" if args.use_llm_selection and args.sub_ratio < 1.0
+                               else "Random sampling")
             print(f"Added {len(modified_image_labels)} ImageNet {attributes} images using {selection_method}: {len(sub_train_ds)} -> {len(train_dataset)}")
         
         # Store subsampling info for padding in save_predictions
@@ -916,6 +979,27 @@ elif args.dataset == 'celeba':
                 if len(selected_indices) > sub_count:
                     random.seed(args.seed)
                     selected_indices = random.sample(selected_indices, sub_count)
+            elif args.use_llm_selection and args.sub_ratio < 1.0:
+                if verbose:
+                    print(f"Using LLM-based selection ({args.llm_strategy}) to select {sub_count} samples from {orig_count} for CelebA")
+                
+                # Use LLM-based selection (timed)
+                llm_select_start = time.time()
+                selected_indices = llm_data_selection(
+                    image_paths=train_imgs,
+                    labels=train_labels,
+                    sub_ratio=args.sub_ratio,
+                    dataset_type='celeba',
+                    lvlm_model=args.llm_model,
+                    strategy=args.llm_strategy,
+                    device=torch.device(f"cuda:{args.gpu}") if torch.cuda.is_available() else torch.device("cpu"),
+                    random_seed=args.seed,
+                    verbose=verbose
+                )
+                llm_duration = time.time() - llm_select_start
+                al_total_time += llm_duration  # Add to AL time for comparison
+                if verbose:
+                    print(f"[TIMING] LLM selection (CelebA) took {llm_duration:.2f} seconds")
             else:
                 if verbose:
                     print(f"Using random sampling to select {sub_count} samples from {orig_count} for CelebA")
@@ -927,7 +1011,9 @@ elif args.dataset == 'celeba':
             sub_train_labels = train_labels[selected_indices]
             all_train_imgs = sub_train_imgs + modified_image_paths
             all_train_labels = np.concatenate((sub_train_labels, np.array(modified_image_labels)))
-            selection_method = "Active Learning Core-set" if args.use_active_learning and args.sub_ratio < 1.0 else "Random sampling"
+            selection_method = ("Active Learning Core-set" if args.use_active_learning and args.sub_ratio < 1.0 
+                               else f"LLM-based selection ({args.llm_strategy})" if args.use_llm_selection and args.sub_ratio < 1.0
+                               else "Random sampling")
             print(f"CelebA: Combined {len(sub_train_imgs)} selected samples with {len(modified_image_paths)} generated images using {selection_method}")
         
         combined_labels = np.concatenate((all_train_labels, valid_labels, unlabeled_labels))
@@ -1337,7 +1423,7 @@ def parse_log(log_path):
     pattern1 = re.compile(
         r'ACC:\s*(?P<acc>\d+\.\d+).*attribute\s+"(?P<attr>[^"]+)",\s*description\s+"(?P<desc>[^"]+)"'
     )
-    # 2：The accuracy with "hair color" = "white" is 0.9303...
+    # 2：The accuracy with "hair color" = "white" is
     pattern2 = re.compile(
         r'The accuracy with\s+"(?P<attr>[^"]+)"\s*=\s*"(?P<desc>[^"]+)"\s*is\s*(?P<acc>\d+\.\d+)'
     )
@@ -1385,9 +1471,10 @@ train_loss_history, train_acc_history, val_loss_history, val_acc_history = train
 )
 total_elapsed_time = time.time() - total_start_time
 print(f"Total training time for {args.num_epochs} epochs: {total_elapsed_time:.2f} seconds")
-print(f"Total Active Learning selection time: {al_total_time:.2f} seconds")
+selection_time_label = "LLM selection" if args.use_llm_selection else "Active Learning selection"
+print(f"Total {selection_time_label} time: {al_total_time:.2f} seconds")
 overall_elapsed_time = time.time() - overall_start_time
-print(f"End-to-end wall time (data prep + AL + training + setup): {overall_elapsed_time:.2f} seconds")
+print(f"End-to-end wall time (data prep + selection + training + setup): {overall_elapsed_time:.2f} seconds")
 
 
 

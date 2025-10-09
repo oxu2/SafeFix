@@ -1,7 +1,0 @@
-Testing different Active Learning strategies...
-Using sub_ratio: 0.7
-=== Testing Random Baseline ===
-Checking GPU 0 for availability...
-GPU 0 is free (memory usage: 9MB).
-./test_al_strategies.sh: line 71: syntax error near unexpected token `echo'
-./test_al_strategies.sh: line 71: `echo "=== Testing Core-set Strategy ==="'

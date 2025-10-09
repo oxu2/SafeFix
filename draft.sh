@@ -1,3 +1,96 @@
+
+CUDA_VISIBLE_DEVICES=1 nohup python -u alpred.py \
+  --dataset imagenet --model resnet --num_added_img 1000 \
+  --attributes pinkcolor_fabrictexture --num_epochs 30 \
+  --al_initial_labeled 400 \
+  --al_embedding_dim 256 \
+  --sub_ratio 0.7 \
+  --al_strategy attribute \
+  --attribute_file save/attribute10.json \
+  --al_attribute_focus color,background \
+  --al_attribute_log_rare_boost 1.5 \
+  --verbose True \
+  > logs_imagenet/AL_resnet_imagenet_attr_0.9_1000.log 2>&1 < /dev/null &
+
+CUDA_VISIBLE_DEVICES=2 nohup python -u alpred.py \
+  --dataset imagenet --model resnet --num_added_img 1000 \
+  --attributes pinkcolor_fabrictexture --num_epochs 30 \
+  --al_initial_labeled 400 \
+  --al_embedding_dim 256 \
+  --sub_ratio 0.7 \
+  --al_strategy attribute \
+  --attribute_file save/attribute10.json \
+  --al_attribute_focus color,background \
+  --al_attribute_log_rare_boost 1.2 \
+  --verbose True \
+  > logs_imagenet/AL_resnet_imagenet_attr_0.7_1000.log 2>&1 < /dev/null &
+
+
+CUDA_VISIBLE_DEVICES=3 nohup python -u alpred.py \
+  --dataset imagenet --model resnet --num_added_img 1000 \
+  --attributes pinkcolor_fabrictexture --num_epochs 30 \
+  --al_initial_labeled 400 \
+  --al_embedding_dim 256 \
+  --sub_ratio 0.5 \
+  --al_strategy attribute \
+  --attribute_file save/attribute10.json \
+  --al_attribute_focus color,background \
+  --al_attribute_log_rare_boost 1.5 \
+  --verbose True \
+  > logs_imagenet/AL_resnet_imagenet_attr_1000.log 2>&1 < /dev/null &
+
+CUDA_VISIBLE_DEVICES=3 nohup python -u alpred.py \
+  --dataset imagenet --model resnet --num_added_img 1000 \
+  --attributes pinkcolor_fabrictexture --num_epochs 30 \
+  --use_llm_selection True \
+  --llm_model qwen \
+  --llm_strategy diversity_difficulty \
+  --sub_ratio 0.9 \
+  --verbose True \
+  > logs_imagenet/qwen_resnet_imagenet_0.9_1000.log 2>&1 < /dev/null &
+  
+CUDA_VISIBLE_DEVICES=0 nohup python -u alpred.py \
+  --dataset imagenet --model resnet --num_added_img 1000 \
+  --attributes pinkcolor_fabrictexture --num_epochs 30 \
+  --use_llm_selection True \
+  --llm_model llava-7b \
+  --llm_strategy diversity_difficulty \
+  --sub_ratio 0.9 \
+  --verbose True \
+  > logs_imagenet/llava7b_resnet_imagenet_0.9_1000.log 2>&1 < /dev/null &
+
+CUDA_VISIBLE_DEVICES=1 nohup python -u alpred.py \
+  --dataset imagenet --model resnet --num_added_img 1000 \
+  --attributes pinkcolor_fabrictexture --num_epochs 30 \
+  --use_llm_selection True \
+  --llm_model llava-7b \
+  --llm_strategy diversity_difficulty \
+  --sub_ratio 0.5 \
+  --verbose True \
+  > logs_imagenet/llava7b_resnet_imagenet_0.5_1000.log 2>&1 < /dev/null &
+
+
+CUDA_VISIBLE_DEVICES=2 nohup python -u alpred.py \
+  --dataset imagenet --model resnet --num_added_img 1000 \
+  --attributes pinkcolor_fabrictexture --num_epochs 30 \
+  --use_llm_selection True \
+  --llm_model qwen \
+  --llm_strategy diversity_difficulty \
+  --sub_ratio 0.7 \
+  --verbose True \
+  > logs_imagenet/qwen_resnet_imagenet_0.7_1000.log 2>&1 < /dev/null &
+
+# LLM-based selection using Qwen model
+CUDA_VISIBLE_DEVICES=3 nohup python -u alpred.py \
+  --dataset imagenet --model resnet --num_added_img 1000 \
+  --attributes pinkcolor_fabrictexture --num_epochs 30 \
+  --use_llm_selection True \
+  --llm_model qwen \
+  --llm_strategy diversity_difficulty \
+  --sub_ratio 0.5 \
+  --verbose True \
+  > logs_imagenet/qwen_resnet_imagenet_0.5_1000.log 2>&1 < /dev/null &
+
 nohup ./test_hierarchical_al.sh --sub_ratio 0.9 > test_hierarchical_al.sh_ratio0.9.log 2>&1 < /dev/null &
 
 nohup ./test_combined_al.sh --combined_ratio 0.9 > combined_al_0.9.log 2>&1 < /dev/null &
@@ -12,6 +105,8 @@ nohup ./test_al_strategies.sh --sub_ratio 0.9 > test_al_strategies_ratio0.9.log 
 
 nohup ./test_al_strategies.sh --sub_ratio 0.7 > test_al_strategies_ratio0.7.log 2>&1 < /dev/null &
 
+
+# Original Active Learning for comparison  
 CUDA_VISIBLE_DEVICES=3 nohup python -u alpred.py \
   --dataset imagenet --model resnet --num_added_img 1000 \
   --attributes pinkcolor_fabrictexture --num_epochs 30 \

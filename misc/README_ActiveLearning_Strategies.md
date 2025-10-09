@@ -42,10 +42,21 @@ python alpred.py --al_strategy hybrid --al_coreset_ratio 0.3 --al_stratified_rat
 - **Use Cases**: Complex data distributions, need comprehensive consideration
 - **Advantages**: Most robust, highly adaptive
 
+### 5. AttributeFocusedStrategy (Attribute-Driven Sampling)
+```bash
+python alpred.py --al_strategy attribute --attribute_file save/attribute10.json \
+  --al_attribute_focus color,background --al_attribute_rarity_power 1.5 --al_attribute_uncertainty_boost 1.0
+```
+- **Principle**: Scores samples using external attribute metadata, prioritizing rare or uncertain attribute slices
+- **Use Cases**: Vision models with known attribute weaknesses (e.g., color, background, texture)
+- **Advantages**: No feature extraction required, directly targets challenging attributes
+- **Speed**: Fast (metadata lookup only)
+> Tip: Provide a diagnostic log (for example `logs/compare/stat_imagenet_resnet_compare.log`) via `--al_attribute_log_path` so that slices flagged as “Rare Case”/“Hard case” receive additional selection boost.
+
 ## Parameter Description
 
 ### General Parameters
-- `--al_strategy`: AL strategy selection [coreset|stratified|diversity|hybrid]
+- `--al_strategy`: AL strategy selection [coreset|stratified|diversity|hybrid|hierarchical|attribute]
 - `--al_embedding_dim`: Feature vector dimension (default: 512)
 - `--al_initial_labeled`: Initial labeled sample count (default: 500)
 
@@ -56,6 +67,16 @@ python alpred.py --al_strategy hybrid --al_coreset_ratio 0.3 --al_stratified_rat
 
 ### Diversity Strategy Parameters
 - `--al_clusters`: Number of clusters (default: n_select//10)
+
+### Attribute Strategy Parameters
+- `--attribute_file`: Path to attribute metadata JSON (e.g., `save/attribute10.json`)
+- `--al_attribute_focus`: Optional comma-separated attribute keys to prioritize (default: all keys in metadata)
+- `--al_attribute_rarity_power`: Emphasis on rare attribute values (>=0, higher = stronger focus on rare slices)
+- `--al_attribute_uncertainty_boost`: Score bonus for samples marked as uncertain in metadata (>=0)
+- `--al_attribute_log_path`: Optional path to diagnostic log highlighting rare/hard attribute slices
+- `--al_attribute_include_hard`: Whether to boost “Hard case” slices from the log (default: True)
+- `--al_attribute_log_rare_boost`: Additional score for each rare case match (default: 1.0)
+- `--al_attribute_log_hard_boost`: Additional score for each hard case match (default: 0.0)
 
 ## Recommended Configurations
 

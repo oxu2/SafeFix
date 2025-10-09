@@ -1,6 +1,0 @@
-Testing different Active Learning strategies...
-=== Testing Core-set Strategy ===
-=== Testing Stratified Strategy ===
-=== Testing Diversity Strategy ===
-=== Testing Hybrid Strategy ===
-Created compare_al_results.py for result analysis.

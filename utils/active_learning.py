@@ -6,6 +6,33 @@ This module contains multiple active learning strategies and related functions.
 from utils.imports import *
 from utils.defines import *
 from utils.hierarchical_al import HierarchicalActiveStrategy
+from collections import Counter, defaultdict
+
+
+def parse_attribute_priority_log(log_path):
+    """Parse rare or hard attribute cases from a diagnostic log file."""
+    if not log_path or not os.path.exists(log_path):
+        return {}
+
+    pattern = re.compile(
+        r"(?:Rare Case|Hard case):\s*attribute\s*\"([^\"]+)\",\s*description\s*\"([^\"]+)\"",
+        re.IGNORECASE,
+    )
+
+    priorities = defaultdict(lambda: {"rare": set(), "hard": set()})
+
+    with open(log_path, "r") as log_file:
+        for line in log_file:
+            match = pattern.search(line)
+            if not match:
+                continue
+
+            attribute, description = match.groups()
+            category = "rare" if "rare" in line.lower() else "hard"
+            priorities[attribute][category].add(description)
+
+    # Convert defaultdict to regular dict for downstream usage
+    return {attr: {k: set(v) for k, v in buckets.items()} for attr, buckets in priorities.items() if any(buckets.values())}
 
 
 class CoreSetStrategy:
@@ -305,6 +332,164 @@ class DiversityStrategy:
         return selected_indices
 
 
+class AttributeFocusedStrategy:
+    """
+    Attribute-driven sampling strategy that prioritizes underrepresented
+    or uncertain attribute slices defined in an attribute metadata JSON.
+    """
+
+    def __init__(
+        self,
+        attribute_metadata,
+        focus_attributes=None,
+        rarity_power=1.0,
+        uncertain_boost=1.0,
+        epsilon=1e-8,
+        value_boosts=None,
+    ):
+        """
+        Args:
+            attribute_metadata: Path to attribute JSON or pre-loaded dict.
+            focus_attributes: Optional iterable of attribute keys to use.
+            rarity_power: Exponent applied to rarity weighting (>= 0).
+            uncertain_boost: Score bonus added when a sample belongs to an
+                uncertain attribute slice.
+            epsilon: Numerical stability term for rarity weighting.
+            value_boosts: Optional dict {attribute: {value: bonus}} to
+                incorporate external priority signals (e.g., from logs).
+        """
+        if isinstance(attribute_metadata, str):
+            if not os.path.exists(attribute_metadata):
+                raise FileNotFoundError(
+                    f"Attribute metadata file '{attribute_metadata}' not found."
+                )
+            with open(attribute_metadata, "r") as f:
+                attribute_metadata = json.load(f)
+
+        if not isinstance(attribute_metadata, dict):
+            raise ValueError("Attribute metadata must be a dict or path to a JSON file")
+
+        if focus_attributes:
+            focus_set = {attr.strip() for attr in focus_attributes if attr.strip()}
+            attribute_metadata = {
+                key: value for key, value in attribute_metadata.items() if key in focus_set
+            }
+
+        if len(attribute_metadata) == 0:
+            raise ValueError("No attribute metadata available for AttributeFocusedStrategy")
+
+        # Pre-process attribute metadata for efficient lookup
+        self.attributes = {}
+        for attr_name, attr_info in attribute_metadata.items():
+            data = attr_info.get("data", [])
+            uncertain_idx = attr_info.get("uncertain_idx", [])
+            self.attributes[attr_name] = {
+                "data": data,
+                "uncertain": set(uncertain_idx) if uncertain_idx else set(),
+            }
+
+        self.rarity_power = max(rarity_power, 0.0)
+        self.uncertain_boost = max(uncertain_boost, 0.0)
+        self.epsilon = epsilon
+        self.value_boosts = value_boosts or {}
+
+    def _resolve_metadata_indices(self, dataset):
+        """Map dataset-local indices to attribute metadata indices."""
+        from torch.utils.data import Subset, ConcatDataset
+
+        if isinstance(dataset, Subset):
+            parent_mapping = self._resolve_metadata_indices(dataset.dataset)
+            if parent_mapping is None:
+                return list(dataset.indices)
+            return [parent_mapping[idx] for idx in dataset.indices]
+
+        if isinstance(dataset, ConcatDataset):
+            indices = []
+            for sub_dataset in dataset.datasets:
+                sub_map = self._resolve_metadata_indices(sub_dataset)
+                if sub_map is None:
+                    indices.extend([None] * len(sub_dataset))
+                else:
+                    indices.extend(sub_map)
+            return indices
+
+        # Base dataset: assume attribute metadata aligns with dataset order
+        dataset_len = len(dataset) if hasattr(dataset, "__len__") else 0
+
+        # Heuristic: generated datasets typically do not have attribute metadata
+        class_name = dataset.__class__.__name__.lower()
+        if "generated" in class_name or dataset_len == 0:
+            return [None] * dataset_len
+
+        return list(range(dataset_len))
+
+    def _compute_attribute_counts(self, metadata_indices):
+        """Compute frequency of each attribute value within the dataset subset."""
+        counts = {attr: Counter() for attr in self.attributes}
+        for meta_idx in metadata_indices:
+            if meta_idx is None:
+                continue
+            for attr_name, attr_info in self.attributes.items():
+                data = attr_info.get("data", [])
+                if meta_idx < len(data):
+                    value = data[meta_idx]
+                    counts[attr_name][value] += 1
+        return counts
+
+    def select(self, dataset, n_select, random_seed=42):
+        """
+        Score each sample by attribute rarity and uncertainty, then pick the top ones.
+        """
+        total_samples = len(dataset)
+        if n_select >= total_samples:
+            return list(range(total_samples))
+
+        metadata_indices = self._resolve_metadata_indices(dataset)
+        if len(metadata_indices) != total_samples:
+            raise RuntimeError("Metadata index mapping length mismatch with dataset")
+
+        attribute_counts = self._compute_attribute_counts(metadata_indices)
+
+        scores = np.zeros(total_samples, dtype=np.float32)
+        rng = np.random.default_rng(random_seed)
+
+        for local_idx, meta_idx in enumerate(metadata_indices):
+            if meta_idx is None:
+                continue
+
+            sample_score = 0.0
+            for attr_name, attr_info in self.attributes.items():
+                data = attr_info["data"]
+                if meta_idx >= len(data):
+                    continue
+                value = data[meta_idx]
+                frequency = attribute_counts[attr_name].get(value, 0)
+                rarity = 1.0 / ((frequency if frequency > 0 else 1) + self.epsilon)
+                if self.rarity_power != 1.0:
+                    rarity = rarity ** self.rarity_power
+                sample_score += rarity
+
+                if meta_idx in attr_info["uncertain"]:
+                    sample_score += self.uncertain_boost
+
+                if self.value_boosts:
+                    attr_boosts = self.value_boosts.get(attr_name, {})
+                    if attr_boosts:
+                        sample_score += attr_boosts.get(value, 0.0)
+
+            scores[local_idx] = sample_score
+
+        if np.all(scores == 0):
+            # Fall back to random selection if no attribute information applied
+            rng = np.random.default_rng(random_seed)
+            return rng.choice(total_samples, size=n_select, replace=False).tolist()
+
+        # Tie-break by adding a small amount of random noise (stable selection)
+        noise = rng.uniform(low=0.0, high=1e-6, size=total_samples)
+        ranked_indices = np.argsort(-(scores + noise))
+        return ranked_indices[:n_select].tolist()
+
+
 def extract_embeddings_for_al(model, dataloader, device, model_type='resnet', embedding_dim=512):
     """
     Extract embeddings from the model for Active Learning
@@ -442,6 +627,83 @@ def active_learning_selection(train_dataset, val_dataset, args, device, verbose=
         except Exception as e:
             if verbose:
                 print(f"Stratified sampling failed: {e}, falling back to random")
+            random.seed(args.seed)
+            return random.sample(range(total_train_samples), target_samples)
+
+    elif al_strategy == 'attribute':
+        attribute_path = getattr(args, 'attribute_file', None)
+        focus_raw = getattr(args, 'al_attribute_focus', None)
+        rarity_power = getattr(args, 'al_attribute_rarity_power', 1.0)
+        uncertain_boost = getattr(args, 'al_attribute_uncertainty_boost', 1.0)
+        log_path = getattr(args, 'al_attribute_log_path', None)
+        include_hard = getattr(args, 'al_attribute_include_hard', True)
+        rare_boost = getattr(args, 'al_attribute_log_rare_boost', 1.0)
+        hard_boost = getattr(args, 'al_attribute_log_hard_boost', 0.0)
+
+        focus_attributes = None
+        if isinstance(focus_raw, str) and focus_raw.strip():
+            focus_attributes = [part.strip() for part in focus_raw.split(',') if part.strip()]
+        elif isinstance(focus_raw, (list, tuple)):
+            focus_attributes = list(focus_raw)
+
+        if not log_path and getattr(args, 'dataset', None) and getattr(args, 'model', None):
+            default_log = Path('logs/compare') / f"stat_{args.dataset}_{args.model}_compare.log"
+            if default_log.exists():
+                log_path = str(default_log)
+            elif verbose:
+                print(f"Attribute strategy: default log {default_log} not found.")
+
+        value_boosts = None
+        if log_path:
+            priority_map = parse_attribute_priority_log(log_path)
+            if priority_map:
+                value_boosts = {}
+                for attr_name, buckets in priority_map.items():
+                    boost_map = {}
+                    for value in buckets.get('rare', set()):
+                        boost_map[value] = boost_map.get(value, 0.0) + rare_boost
+                    if include_hard:
+                        for value in buckets.get('hard', set()):
+                            boost_map[value] = boost_map.get(value, 0.0) + hard_boost
+                    if boost_map:
+                        value_boosts[attr_name] = boost_map
+                if verbose:
+                    print(f"Loaded attribute priorities from {log_path}: {len(value_boosts or {})} attributes with boosts")
+            elif verbose:
+                print(f"Attribute strategy: No priority entries found in {log_path}")
+        elif verbose:
+            print("Attribute strategy: No log file provided for priority boosts")
+
+        try:
+            strategy = AttributeFocusedStrategy(
+                attribute_metadata=attribute_path,
+                focus_attributes=focus_attributes,
+                rarity_power=rarity_power,
+                uncertain_boost=uncertain_boost,
+                value_boosts=value_boosts,
+            )
+            selected_indices = strategy.select(train_dataset, target_samples, random_seed=args.seed)
+
+            if verbose:
+                print(
+                    "Attribute-focused Active Learning completed. "
+                    f"Selected {len(selected_indices)} samples with focus={focus_attributes or 'all'}"
+                )
+                # Resolve indices for logging (subset order and base dataset order if available)
+                resolved_indices = selected_indices
+                if hasattr(train_dataset, 'indices'):
+                    try:
+                        resolved_indices = [train_dataset.indices[i] for i in selected_indices]
+                    except Exception:
+                        resolved_indices = selected_indices
+
+                print(f"Attribute strategy selected subset indices: {selected_indices}")
+                if resolved_indices is not selected_indices:
+                    print(f"Attribute strategy corresponding base indices: {resolved_indices}")
+            return selected_indices
+        except Exception as exc:
+            if verbose:
+                print(f"Attribute strategy failed ({exc}). Falling back to random selection.")
             random.seed(args.seed)
             return random.sample(range(total_train_samples), target_samples)
     
