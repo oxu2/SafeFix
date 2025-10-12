@@ -121,13 +121,9 @@ parser.add_argument('--al_attribute_rarity_power', type=float, default=1.0,
 parser.add_argument('--al_attribute_uncertainty_boost', type=float, default=1.0,
                     help='Score bonus for samples flagged as uncertain in attribute metadata (default: 1.0)')
 parser.add_argument('--al_attribute_log_path', type=str, default=None,
-                    help='Optional path to attribute diagnostics log for rare/hard case boosts')
-parser.add_argument('--al_attribute_include_hard', type=str2bool, default=True,
-                    help='Include "Hard case" slices from the log when computing attribute boosts (default: True)')
-parser.add_argument('--al_attribute_log_rare_boost', type=float, default=1.0,
-                    help='Score bonus added for each rare case occurrence in the log (default: 1.0)')
-parser.add_argument('--al_attribute_log_hard_boost', type=float, default=0.0,
-                    help='Score bonus added for each hard case occurrence in the log (default: 0.0)')
+                    help='Optional path to attribute diagnostics log for Rare Case accuracies')
+parser.add_argument('--al_attribute_log_acc_scale', type=float, default=1.0,
+                    help='Scaling factor applied to log-derived failure weights (default: 1.0)')
 parser.add_argument('--al_alpha', type=float, default=0.4,
                     help='Weight for difficulty in hierarchical priority score (default: 0.4)')
 parser.add_argument('--al_beta', type=float, default=0.4,

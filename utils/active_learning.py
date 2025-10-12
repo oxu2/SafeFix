@@ -10,16 +10,16 @@ from collections import Counter, defaultdict
 
 
 def parse_attribute_priority_log(log_path):
-    """Parse rare or hard attribute cases from a diagnostic log file."""
+    """Parse Rare Case entries and associated accuracies from a diagnostic log file."""
     if not log_path or not os.path.exists(log_path):
         return {}
 
     pattern = re.compile(
-        r"(?:Rare Case|Hard case):\s*attribute\s*\"([^\"]+)\",\s*description\s*\"([^\"]+)\"",
+        r"ACC:\s*([0-9]*\.?[0-9]+).*?Rare Case:\s*attribute\s*\"([^\"]+)\",\s*description\s*\"([^\"]+)\"",
         re.IGNORECASE,
     )
 
-    priorities = defaultdict(lambda: {"rare": set(), "hard": set()})
+    priorities = defaultdict(dict)
 
     with open(log_path, "r") as log_file:
         for line in log_file:
@@ -27,12 +27,21 @@ def parse_attribute_priority_log(log_path):
             if not match:
                 continue
 
-            attribute, description = match.groups()
-            category = "rare" if "rare" in line.lower() else "hard"
-            priorities[attribute][category].add(description)
+            acc_value, attribute, description = match.groups()
+            try:
+                accuracy = float(acc_value)
+            except ValueError:
+                continue
 
-    # Convert defaultdict to regular dict for downstream usage
-    return {attr: {k: set(v) for k, v in buckets.items()} for attr, buckets in priorities.items() if any(buckets.values())}
+            if accuracy > 1.0:
+                accuracy /= 100.0
+
+            accuracy = max(0.0, min(accuracy, 1.0))
+            failure_weight = 1.0 - accuracy
+
+            priorities[attribute][description] = failure_weight
+
+    return {attr: dict(values) for attr, values in priorities.items() if values}
 
 
 class CoreSetStrategy:
@@ -345,7 +354,8 @@ class AttributeFocusedStrategy:
         rarity_power=1.0,
         uncertain_boost=1.0,
         epsilon=1e-8,
-        value_boosts=None,
+        value_weights=None,
+        log_acc_scale=1.0,
     ):
         """
         Args:
@@ -355,8 +365,9 @@ class AttributeFocusedStrategy:
             uncertain_boost: Score bonus added when a sample belongs to an
                 uncertain attribute slice.
             epsilon: Numerical stability term for rarity weighting.
-            value_boosts: Optional dict {attribute: {value: bonus}} to
-                incorporate external priority signals (e.g., from logs).
+            value_weights: Optional dict {attribute: {value: weight}} derived
+                from diagnostic logs.
+            log_acc_scale: Scaling factor applied to each log-based weight.
         """
         if isinstance(attribute_metadata, str):
             if not os.path.exists(attribute_metadata):
@@ -391,7 +402,8 @@ class AttributeFocusedStrategy:
         self.rarity_power = max(rarity_power, 0.0)
         self.uncertain_boost = max(uncertain_boost, 0.0)
         self.epsilon = epsilon
-        self.value_boosts = value_boosts or {}
+        self.value_weights = value_weights or {}
+        self.log_acc_scale = log_acc_scale
 
     def _resolve_metadata_indices(self, dataset):
         """Map dataset-local indices to attribute metadata indices."""
@@ -436,9 +448,15 @@ class AttributeFocusedStrategy:
                     counts[attr_name][value] += 1
         return counts
 
-    def select(self, dataset, n_select, random_seed=42):
+    def select(self, dataset, n_select, random_seed=42, debug_attribute=None):
         """
         Score each sample by attribute rarity and uncertainty, then pick the top ones.
+
+        Args:
+            dataset: Dataset or subset aligned with attribute metadata indices.
+            n_select: Number of samples to select.
+            random_seed: Seed used when generating tie-break noise.
+            debug_attribute: Optional attribute key to emit component breakdown (R, U, L).
         """
         total_samples = len(dataset)
         if n_select >= total_samples:
@@ -452,6 +470,22 @@ class AttributeFocusedStrategy:
 
         scores = np.zeros(total_samples, dtype=np.float32)
         rng = np.random.default_rng(random_seed)
+
+        per_attribute_breakdown = (
+            defaultdict(
+                lambda: defaultdict(
+                    lambda: {
+                        "frequency": 0,
+                        "rarity": 0.0,
+                        "log": 0.0,
+                        "indices": [],
+                        "uncertain_count": 0,
+                    }
+                )
+            )
+            if debug_attribute
+            else None
+        )
 
         for local_idx, meta_idx in enumerate(metadata_indices):
             if meta_idx is None:
@@ -472,10 +506,21 @@ class AttributeFocusedStrategy:
                 if meta_idx in attr_info["uncertain"]:
                     sample_score += self.uncertain_boost
 
-                if self.value_boosts:
-                    attr_boosts = self.value_boosts.get(attr_name, {})
-                    if attr_boosts:
-                        sample_score += attr_boosts.get(value, 0.0)
+                log_increment = 0.0
+                if self.value_weights:
+                    attr_weights = self.value_weights.get(attr_name, {})
+                    if attr_weights:
+                        log_increment = self.log_acc_scale * attr_weights.get(value, 0.0)
+                        sample_score += log_increment
+
+                if debug_attribute and attr_name == debug_attribute:
+                    stats = per_attribute_breakdown[attr_name][value]
+                    stats["frequency"] = frequency
+                    stats["rarity"] = float(rarity)
+                    stats["log"] = float(log_increment)
+                    stats["indices"].append(meta_idx)
+                    if meta_idx in attr_info["uncertain"]:
+                        stats["uncertain_count"] += 1
 
             scores[local_idx] = sample_score
 
@@ -487,6 +532,26 @@ class AttributeFocusedStrategy:
         # Tie-break by adding a small amount of random noise (stable selection)
         noise = rng.uniform(low=0.0, high=1e-6, size=total_samples)
         ranked_indices = np.argsort(-(scores + noise))
+
+        if debug_attribute and per_attribute_breakdown:
+            value_stats = per_attribute_breakdown.get(debug_attribute, {})
+            if value_stats:
+                print(f"Debug attribute breakdown for '{debug_attribute}':")
+                sorted_items = sorted(value_stats.items(), key=lambda kv: (kv[1]["frequency"], kv[0]))
+                for value, stats in sorted_items:
+                    rarity = stats["rarity"]
+                    log_component = stats["log"]
+                    uncertainty_component = self.uncertain_boost if stats["uncertain_count"] > 0 else 0.0
+                    sorted_indices = sorted(stats["indices"])
+                    if len(sorted_indices) > 10:
+                        indices_preview = ",".join(str(idx) for idx in sorted_indices[:10]) + ",..."
+                    else:
+                        indices_preview = ",".join(str(idx) for idx in sorted_indices)
+                    print(
+                        f"  value={value}, freq={stats['frequency']}, indices=[{indices_preview}], "
+                        f"R={rarity:.4f}, U={uncertainty_component:.4f}, L={log_component:.4f}"
+                    )
+
         return ranked_indices[:n_select].tolist()
 
 
@@ -636,9 +701,7 @@ def active_learning_selection(train_dataset, val_dataset, args, device, verbose=
         rarity_power = getattr(args, 'al_attribute_rarity_power', 1.0)
         uncertain_boost = getattr(args, 'al_attribute_uncertainty_boost', 1.0)
         log_path = getattr(args, 'al_attribute_log_path', None)
-        include_hard = getattr(args, 'al_attribute_include_hard', True)
-        rare_boost = getattr(args, 'al_attribute_log_rare_boost', 1.0)
-        hard_boost = getattr(args, 'al_attribute_log_hard_boost', 0.0)
+        log_acc_scale = getattr(args, 'al_attribute_log_acc_scale', 1.0)
 
         focus_attributes = None
         if isinstance(focus_raw, str) and focus_raw.strip():
@@ -653,26 +716,17 @@ def active_learning_selection(train_dataset, val_dataset, args, device, verbose=
             elif verbose:
                 print(f"Attribute strategy: default log {default_log} not found.")
 
-        value_boosts = None
+        value_weights = None
         if log_path:
             priority_map = parse_attribute_priority_log(log_path)
             if priority_map:
-                value_boosts = {}
-                for attr_name, buckets in priority_map.items():
-                    boost_map = {}
-                    for value in buckets.get('rare', set()):
-                        boost_map[value] = boost_map.get(value, 0.0) + rare_boost
-                    if include_hard:
-                        for value in buckets.get('hard', set()):
-                            boost_map[value] = boost_map.get(value, 0.0) + hard_boost
-                    if boost_map:
-                        value_boosts[attr_name] = boost_map
+                value_weights = priority_map
                 if verbose:
-                    print(f"Loaded attribute priorities from {log_path}: {len(value_boosts or {})} attributes with boosts")
+                    print(f"Loaded attribute accuracies from {log_path}: {len(value_weights)} attributes with weights")
             elif verbose:
-                print(f"Attribute strategy: No priority entries found in {log_path}")
+                print(f"Attribute strategy: No Rare Case entries found in {log_path}")
         elif verbose:
-            print("Attribute strategy: No log file provided for priority boosts")
+            print("Attribute strategy: No log file provided for attribute weights")
 
         try:
             strategy = AttributeFocusedStrategy(
@@ -680,9 +734,26 @@ def active_learning_selection(train_dataset, val_dataset, args, device, verbose=
                 focus_attributes=focus_attributes,
                 rarity_power=rarity_power,
                 uncertain_boost=uncertain_boost,
-                value_boosts=value_boosts,
+                value_weights=value_weights,
+                log_acc_scale=log_acc_scale,
             )
-            selected_indices = strategy.select(train_dataset, target_samples, random_seed=args.seed)
+            debug_attr = None
+            if verbose:
+                preferred_attr = "color"
+                if preferred_attr in strategy.attributes:
+                    debug_attr = preferred_attr
+                elif focus_attributes:
+                    for attr in focus_attributes:
+                        if attr in strategy.attributes:
+                            debug_attr = attr
+                            break
+
+            selected_indices = strategy.select(
+                train_dataset,
+                target_samples,
+                random_seed=args.seed,
+                debug_attribute=debug_attr,
+            )
 
             if verbose:
                 print(

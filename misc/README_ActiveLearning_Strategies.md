@@ -47,11 +47,39 @@ python alpred.py --al_strategy hybrid --al_coreset_ratio 0.3 --al_stratified_rat
 python alpred.py --al_strategy attribute --attribute_file save/attribute10.json \
   --al_attribute_focus color,background --al_attribute_rarity_power 1.5 --al_attribute_uncertainty_boost 1.0
 ```
-- **Principle**: Scores samples using external attribute metadata, prioritizing rare or uncertain attribute slices
-- **Use Cases**: Vision models with known attribute weaknesses (e.g., color, background, texture)
-- **Advantages**: No feature extraction required, directly targets challenging attributes
-- **Speed**: Fast (metadata lookup only)
-> Tip: Provide a diagnostic log (for example `logs/compare/stat_imagenet_resnet_compare.log`) via `--al_attribute_log_path` so that slices flagged as “Rare Case”/“Hard case” receive additional selection boost.
+- **Principle**: Builds a score for every unlabeled sample by combining attribute rarity, metadata-level uncertainty, and optional diagnostic weights derived from logs.
+- **Use Cases**: Scenarios where human annotations describe attribute slices (color, background, hairstyle, etc.) and the model underperforms on specific combinations.
+- **Advantages**: Lightweight (no feature extraction), controllable focus on high-value slices, deterministic once metadata is fixed.
+
+Let $i$ index a candidate sample and $A$ denote the set of attributes contained in the metadata (e.g., $A = \{\text{color}, \text{background}\}$). For attribute $a \in A$, let $v_{i,a}$ be the attribute value of sample $i$, and $f_{a}(v)$ be the frequency of value $v$ among the current pool. The strategy computes three additive components:
+
+1. **Rarity term** (controlled by `--al_attribute_rarity_power`):
+  $$R_{i,a} = \left(\frac{1}{f_{a}(v_{i,a}) + \varepsilon}\right)^{\alpha}$$
+  where $\alpha \geq 0$ is the rarity power and $\varepsilon$ avoids division by zero. Higher $\alpha$ exaggerates the contrast between common and rare attributes.
+
+2. **Uncertainty bonus** (driven by the `uncertain_idx` list in the metadata):
+  $$U_{i,a} = \begin{cases}
+  \beta, & \text{if sample $i$ is marked uncertain for attribute $a$}\\
+  0, & \text{otherwise}
+  \end{cases}$$
+  with $\beta \geq 0$ set by `--al_attribute_uncertainty_boost`.
+
+3. **Log-derived weight** (optional, requires `--al_attribute_log_path` and `--al_attribute_log_acc_scale`): diagnostic logs record rare cases along with their classification accuracy. The parser converts each entry into a failure weight $w_{a}(v) = 1 - \text{ACC}$. For attribute $a$ and value $v$, the contribution becomes
+  $$L_{i,a} = \gamma \cdot w_{a}(v_{i,a})$$
+  where $\gamma$ is the scaling factor. Lower accuracies therefore produce larger boosts, while missing entries default to zero.
+
+The total score for sample $i$ is the sum across all attributes:
+$$S_i = \sum_{a \in A} \big(R_{i,a} + U_{i,a} + L_{i,a}\big).$$
+
+Samples are sorted by $S_i$ (with a small injected noise term for tie breaking) and the top $n_{\text{select}}$ indices are returned. When a sample exhibits multiple rare or low-accuracy attributes, the contributions accumulate, ensuring multi-attribute failures are prioritized.
+
+**Workflow**
+- Provide an attribute JSON (for example `save/attribute10.json`) that maps each attribute to per-sample values and optional uncertain indices.
+- Optionally restrict attention to a subset via `--al_attribute_focus` (comma-separated keys).
+- (Optional) Supply a diagnostic log with `--al_attribute_log_path`; each `Rare Case` entry contributes a failure weight $(1 - \text{ACC})$ through the parser in `utils.active_learning.parse_attribute_priority_log`.
+- Tune `--al_attribute_rarity_power`, `--al_attribute_uncertainty_boost`, and `--al_attribute_log_acc_scale` to balance between metadata-driven rarity, known uncertain slices, and empirical accuracy signals.
+
+Because the method operates purely on metadata, it integrates cleanly with the rest of the pipeline—no embedding extraction or model forward passes are required during selection.
 
 ## Parameter Description
 
@@ -73,10 +101,8 @@ python alpred.py --al_strategy attribute --attribute_file save/attribute10.json 
 - `--al_attribute_focus`: Optional comma-separated attribute keys to prioritize (default: all keys in metadata)
 - `--al_attribute_rarity_power`: Emphasis on rare attribute values (>=0, higher = stronger focus on rare slices)
 - `--al_attribute_uncertainty_boost`: Score bonus for samples marked as uncertain in metadata (>=0)
-- `--al_attribute_log_path`: Optional path to diagnostic log highlighting rare/hard attribute slices
-- `--al_attribute_include_hard`: Whether to boost “Hard case” slices from the log (default: True)
-- `--al_attribute_log_rare_boost`: Additional score for each rare case match (default: 1.0)
-- `--al_attribute_log_hard_boost`: Additional score for each hard case match (default: 0.0)
+- `--al_attribute_log_path`: Optional path to diagnostic log providing Rare Case accuracies
+- `--al_attribute_log_acc_scale`: Scaling factor applied to each log-derived failure weight (default: 1.0)
 
 ## Recommended Configurations
 

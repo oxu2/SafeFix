@@ -10,7 +10,10 @@ import numpy as np
 import os
 import tempfile
 from pathlib import Path
-from torchvision.datasets import ImageFolder, FakeData
+
+import torch
+from torch.utils.data import Dataset
+from torchvision.datasets import ImageFolder
 from active_learning_coreset import load_imagenet_data, ActiveLearningTrainer
 from utils.active_learning import AttributeFocusedStrategy, parse_attribute_priority_log
 from utils.defines import TRAIN, VALID, UNLABELED
@@ -80,17 +83,90 @@ def test_imagenet_setup():
         return False
 
 
+class RandomTensorDataset(Dataset):
+    """Dataset that returns random tensors with stable seeding."""
+
+    def __init__(self, num_samples, seed=0):
+        self.num_samples = num_samples
+        generator = torch.Generator().manual_seed(seed)
+        self.images = torch.randn(num_samples, 3, 64, 64, generator=generator)
+        self.labels = torch.randint(low=0, high=2, size=(num_samples,), generator=generator)
+
+    def __len__(self):
+        return self.num_samples
+
+    def __getitem__(self, idx):
+        return self.images[idx], int(self.labels[idx])
+
+
 def test_attribute_strategy_mock():
     """Ensure attribute-focused strategy prioritizes rare/uncertain slices."""
 
     print("\n=== Testing Attribute-Focused Strategy (Mock Data) ===")
 
-    # Mock metadata for five samples with color attribute
+    # Explicit annotations for thirty-five samples
+    sample_annotations = [
+        # Blue-ground cases (slightly fewer)
+        ("blue", "ground"),
+        ("blue", "ground"),
+        ("blue", "ground"),
+        ("blue", "ground"),
+        # Blue-sky cases
+        ("blue", "sky"),
+        ("blue", "sky"),
+        ("blue", "sky"),
+        # Green-ground cases
+        ("green", "ground"),
+        ("green", "ground"),
+        ("green", "ground"),
+        # Green-sky cases (rarest)
+        ("green", "sky"),
+        ("green", "sky"),
+        # Red-ground cases (most common)
+        ("red", "ground"),
+        ("red", "ground"),
+        ("red", "ground"),
+        ("red", "ground"),
+        ("red", "ground"),
+        ("red", "ground"),
+        ("red", "ground"),
+        ("red", "ground"),
+        ("red", "ground"),
+        ("red", "ground"),
+        ("red", "ground"),
+        ("red", "ground"),
+        ("red", "ground"),
+        ("red", "ground"),
+        ("red", "ground"),
+        ("red", "ground"),
+        ("red", "ground"),
+        ("red", "ground"),
+        ("red", "ground"),
+        # Red-sky cases (few examples)
+        ("red", "sky"),
+        ("red", "sky"),
+        ("red", "sky"),
+        ("red", "sky"),
+        ("red", "sky"),
+        ("red", "sky"),
+    ]
+
+    for idx, (color, background) in enumerate(sample_annotations):
+        print(f"Sample {idx:02d}: color={color}, background={background}")
+
+    color_data = [c for c, _ in sample_annotations]
+    background_data = [b for _, b in sample_annotations]
+
     metadata = {
         "color": {
-            "data": ["red", "blue", "blue", "green", "red"],
+            "data": color_data,
             "word": ["red", "blue", "green"],
             "uncertain_idx": [1],
+        },
+        "background": {
+            "data": background_data,
+            "word": ["ground", "sky"],
+            "uncertain_idx": [],
         }
     }
 
@@ -100,22 +176,28 @@ def test_attribute_strategy_mock():
         uncertain_boost=1.0,
     )
 
-    # Simple dataset with five entries
-    dataset = FakeData(size=5, image_size=(3, 64, 64), num_classes=2)
+    # Dataset providing random tensors for the thirty-five entries
+    dataset = RandomTensorDataset(num_samples=len(sample_annotations), seed=0)
 
-    selected = strategy.select(dataset, n_select=2, random_seed=0)
+    raw_selected = strategy.select(dataset, n_select=20, random_seed=0)
+    selected = sorted(raw_selected)
 
-    print(f"Selected indices: {selected}")
+    print(f"Selected indices (sorted): {selected}")
 
-    assert len(selected) == 2, "Strategy must return requested number of samples"
-    # Expect uncertain sample (idx 1) and rare attribute sample (idx 3)
+    # Expect uncertain sample (idx 1) and rare attribute sample (idx 10 or 11)
     assert 1 in selected, "Uncertain attribute sample should be prioritized"
-    assert 3 in selected, "Rarest attribute sample should be prioritized"
+    assert any(idx in selected for idx in (10, 11)), "Rarest attribute sample should be prioritized"
 
-    # Validate log parsing and value boosts
+    blue_sky_indices = [idx for idx, (color, background) in enumerate(sample_annotations) if color == "blue" and background == "sky"]
+    assert sum(1 for idx in raw_selected if idx in blue_sky_indices) >= 2, (
+        "Low-accuracy blue sky combinations should appear multiple times in the selection"
+    )
+
+    # Validate log parsing and value weighting
     log_content = (
         'ACC: 0.60\tRare Case: attribute "color", description "blue"\n'
-        'ACC: 0.55\tHard case: attribute "color", description "green"\n'
+        'ACC: 0.55\tRare Case: attribute "color", description "green"\n'
+        'ACC: 0.40\tRare Case: attribute "background", description "sky"\n'
     )
 
     tmp_log = tempfile.NamedTemporaryFile("w", delete=False)
@@ -128,29 +210,24 @@ def test_attribute_strategy_mock():
 
     try:
         priorities = parse_attribute_priority_log(tmp_log_name)
-        assert "color" in priorities, "Log parser should capture color attribute"
-        assert "blue" in priorities["color"]["rare"], "Blue should be marked as rare"
-        assert "green" in priorities["color"]["hard"], "Green should be marked as hard"
-
-        value_boosts = {}
-        for attr_name, buckets in priorities.items():
-            boost_map = {}
-            for value in buckets.get("rare", set()):
-                boost_map[value] = boost_map.get(value, 0.0) + 2.0
-            for value in buckets.get("hard", set()):
-                boost_map[value] = boost_map.get(value, 0.0) + 1.0
-            if boost_map:
-                value_boosts[attr_name] = boost_map
+        assert "color" in priorities and "background" in priorities, "Log parser should capture attributes"
+        assert abs(priorities["color"]["blue"] - 0.40) < 1e-6, "Blue failure weight should be preserved"
+        assert abs(priorities["color"]["green"] - 0.45) < 1e-6, "Green failure weight should be preserved"
+        assert abs(priorities["background"]["sky"] - 0.60) < 1e-6, "Sky failure weight should be preserved"
 
         boosted_strategy = AttributeFocusedStrategy(
             attribute_metadata=metadata,
             rarity_power=0.0,
             uncertain_boost=0.0,
-            value_boosts=value_boosts,
+            value_weights=priorities,
+            log_acc_scale=1.0,
         )
 
         boosted_selected = boosted_strategy.select(dataset, n_select=1, random_seed=0)
-        assert boosted_selected[0] in {1, 2}, "Log boosts should prioritize blue samples"
+        green_sky_indices = [idx for idx, (color, background) in enumerate(sample_annotations) if color == "green" and background == "sky"]
+        assert boosted_selected[0] in green_sky_indices, (
+            "Combined weights should prioritize samples covering the lowest-accuracy attributes"
+        )
     finally:
         os.unlink(tmp_log_name)
 

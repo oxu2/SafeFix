@@ -1,14 +1,28 @@
 
+
+CUDA_VISIBLE_DEVICES=3 nohup python -u alpred.py \
+  --dataset imagenet --model resnet --num_added_img 1000 \
+  --attributes pinkcolor_fabrictexture --num_epochs 30 \
+  --al_initial_labeled 400 \
+  --al_embedding_dim 256 \
+  --sub_ratio 0.5 \
+  --al_strategy attribute \
+  --attribute_file save/attribute10.json \
+  --al_attribute_focus color,background \
+  --verbose True \
+  --al_attribute_log_acc_scale 10 \
+  > logs_imagenet/AL_resnet_imagenet_attr_0.5_scale10_1000.log 2>&1 < /dev/null &
+
+
 CUDA_VISIBLE_DEVICES=1 nohup python -u alpred.py \
   --dataset imagenet --model resnet --num_added_img 1000 \
   --attributes pinkcolor_fabrictexture --num_epochs 30 \
   --al_initial_labeled 400 \
   --al_embedding_dim 256 \
-  --sub_ratio 0.7 \
+  --sub_ratio 0.9 \
   --al_strategy attribute \
   --attribute_file save/attribute10.json \
   --al_attribute_focus color,background \
-  --al_attribute_log_rare_boost 1.5 \
   --verbose True \
   > logs_imagenet/AL_resnet_imagenet_attr_0.9_1000.log 2>&1 < /dev/null &
 
@@ -35,9 +49,8 @@ CUDA_VISIBLE_DEVICES=3 nohup python -u alpred.py \
   --al_strategy attribute \
   --attribute_file save/attribute10.json \
   --al_attribute_focus color,background \
-  --al_attribute_log_rare_boost 1.5 \
   --verbose True \
-  > logs_imagenet/AL_resnet_imagenet_attr_1000.log 2>&1 < /dev/null &
+  > logs_imagenet/AL_resnet_imagenet_attr_0.5_1000.log 2>&1 < /dev/null &
 
 CUDA_VISIBLE_DEVICES=3 nohup python -u alpred.py \
   --dataset imagenet --model resnet --num_added_img 1000 \
