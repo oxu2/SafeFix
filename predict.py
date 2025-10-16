@@ -149,6 +149,12 @@ parser.add_argument(
     choices=['imagenet', 'celeba'],
     default='celeba',
     help='Which dataset to use: imagenet (default) or celeba')
+parser.add_argument(
+    '--cdm',
+    choices=['controlnet', 'instruct_pix2pix'],
+    default='controlnet',
+    help='Conditional diffusion model used to generate images (default: controlnet)'
+)
 # Add batch_size argument here
 # Add batch_size argument here
 parser.add_argument('--batch_size', type=int, default=64,
@@ -251,7 +257,9 @@ if args.no_controlnet:
     print(f"Ablation mode enabled (ControlNet disabled): using image directory {args.gen_image_dir}")
 elif args.gen_image_dir is None:
     args.gen_image_dir = f"exampleData/{attributes}"
-
+    if args.cdm == 'instruct_pix2pix':
+        print(f"Using InstructPix2Pix: setting gen_image_dir to {args.gen_image_dir}")
+        args.gen_image_dir = f"exampleData/{attributes}_instruct_pix2pix"
 verbose = args.verbose
 
 # Adjust learning rate default for ViT if not manually overridden
@@ -372,8 +380,12 @@ else:
         print("Ablation (no_controlnet) mode: Skipping feasible image loading.")
 
 if args.dataset == 'imagenet':
-    # Ensure generated images directory uses the 'imagenet_' prefix
-    default_imagenet_gen_dir = f"exampleData/imagenet_{attributes}"
+    # Ensure generated images directory uses the correct prefix based on CDM
+    if args.cdm == 'instruct_pix2pix':
+        args.skip_feasible = True
+        default_imagenet_gen_dir = f"exampleData/{attributes}_instruct_pix2pix"
+    else:
+        default_imagenet_gen_dir = f"exampleData/imagenet_{attributes}"
     if os.path.isdir(default_imagenet_gen_dir):
         args.gen_image_dir = default_imagenet_gen_dir
     elif not os.path.isdir(args.gen_image_dir):
@@ -485,11 +497,18 @@ if args.dataset == 'imagenet':
     elif not args.gen_only and not args.simple:
         # Normal mode: generated-images + feasible filter (mirrors CelebA logic)
         # Determine generated-image directory: use default if exists, otherwise try fallbacks
-        default_gen_dir = f"exampleData/imagenet_{attributes}"
-        fallback_dirs = [
-            f"/home/jovyan/ouser/imagenet_{attributes}",
-            f"/data/oxx220000/imagenet_{attributes}"
-        ]
+        if args.cdm == 'instruct_pix2pix':
+            default_gen_dir = f"exampleData/{attributes}_instruct_pix2pix"
+            fallback_dirs = [
+                f"/home/jovyan/ouser/{attributes}_instruct_pix2pix",
+                f"/data/oxx220000/{attributes}_instruct_pix2pix"
+            ]
+        else:
+            default_gen_dir = f"exampleData/imagenet_{attributes}"
+            fallback_dirs = [
+                f"/home/jovyan/ouser/imagenet_{attributes}",
+                f"/data/oxx220000/imagenet_{attributes}"
+            ]
         if os.path.exists(default_gen_dir):
             args.gen_image_dir = default_gen_dir
         else:
@@ -499,6 +518,7 @@ if args.dataset == 'imagenet':
                     break
             else:
                 args.gen_image_dir = default_gen_dir
+        print(f"[DEBUG] Using generated image directory: {args.gen_image_dir} (exists: {os.path.isdir(args.gen_image_dir)})")
         if verbose:
             print(f"Using generated image directory: {args.gen_image_dir}")
         if verbose:
@@ -522,6 +542,7 @@ if args.dataset == 'imagenet':
         # Traverse each class subfolder for generated images
         from pathlib import Path as _Path
         gen_paths, gen_labels = [], []
+        class_file_counts = {}
         if verbose:
             print("[DEBUG] Starting traversal of class subfolders for generated images...")
         for cls_name, cls_idx in full_ds.class_to_idx.items():
@@ -529,6 +550,7 @@ if args.dataset == 'imagenet':
             if verbose:
                 print(f"[DEBUG] Checking class folder: {cls_dir} (exists: {cls_dir.is_dir()})")
             if not cls_dir.is_dir():
+                print(f"[DEBUG] Skipping class '{cls_name}' because directory {cls_dir} is missing")
                 continue
             for img_name in os.listdir(cls_dir):
                 if verbose:
@@ -547,6 +569,11 @@ if args.dataset == 'imagenet':
                     continue
                 gen_paths.append(str(cls_dir / img_name))
                 gen_labels.append(cls_idx)
+                class_file_counts[cls_name] = class_file_counts.get(cls_name, 0) + 1
+        if not gen_paths:
+            print(f"[DEBUG] No generated files collected from {args.gen_image_dir}. class_file_counts={class_file_counts}")
+        else:
+            print(f"[DEBUG] Generated file counts per class: {class_file_counts}")
         # Debug before filtering by feasible_images
         total_before_filter = len(gen_paths)
         if verbose:
@@ -588,6 +615,11 @@ if args.dataset == 'imagenet':
         # Combine subsampled original data with generated data
         train_dataset = torch.utils.data.ConcatDataset([sub_train_ds, gen_ds])
         print(f"Added {len(modified_image_labels)} ImageNet {attributes} images: {len(sub_train_ds)} -> {len(train_dataset)}")
+        # preview_paths = modified_image_paths[:3]
+        # if preview_paths:
+        #     print("Sample generated image paths:")
+        #     for p in preview_paths:
+        #         print(f"  {p}")
         train_loader = make_loader(train_dataset, shuffle=True)
 
     # Skip CelebA loading
@@ -814,6 +846,11 @@ elif args.dataset == 'celeba':
         # Override valid set to use generated images
         valid_imgs = [modified_image_paths[i] for i in val_indices]
         valid_labels = np.array(modified_image_labels)[val_indices]
+        preview_paths = modified_image_paths[:3]
+        if preview_paths:
+            print("Sample generated image paths:")
+            for p in preview_paths:
+                print(f"  {p}")
     elif modified_image_paths:
         # Subsample original training data based on sub_ratio and combine with modified images
         orig_count = len(train_imgs)
@@ -828,6 +865,11 @@ elif args.dataset == 'celeba':
         # Store subsampling info for later padding of predictions
         args.selected_indices = selected_indices
         args.orig_train_count = orig_count
+        preview_paths = modified_image_paths[:3]
+        if preview_paths:
+            print("Sample generated image paths:")
+            for p in preview_paths:
+                print(f"  {p}")
     else:
         all_train_imgs = train_imgs
         all_train_labels = train_labels

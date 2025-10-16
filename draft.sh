@@ -1,4 +1,18 @@
+CUDA_VISIBLE_DEVICES=2 python predict.py --model resnet --num_added_img 1000 --cdm instruct_pix2pix --attributes pinkcolor_fabrictexture --dataset imagenet
 
+CUDA_VISIBLE_DEVICES=2 python predict.py --model resnet --num_added_img 1000 --cdm instruct_pix2pix --attributes redhair_brownskin_sademotion
+
+CUDA_VISIBLE_DEVICES=3 nohup python -u predict.py --model resnet --num_added_img 1000 --cdm instruct_pix2pix --attributes redhair_brownskin_sademotion  > logs/instruct_pix2pix_redhair_brownskin_sademotion.log 2>&1 < /dev/null &
+
+CUDA_VISIBLE_DEVICES=2 nohup python -u predict.py --model resnet --num_added_img 1000 --cdm   --attributes pinkcolor_fabrictexture --dataset imagenet > logs/instruct_pix2pix_pinkcolor_fabrictexture.log 2>&1 < /dev/null &
+
+CUDA_VISIBLE_DEVICES=2 nohup python -u predict.py --model resnet --num_epochs 30 --num_added_img 1000 --cdm instruct_pix2pix --attributes redhair_brownskin_sademotion  > logs/instruct_pix2pix_redhair_brownskin_sademotion_resnet_epoch30.log 2>&1 < /dev/null &
+
+CUDA_VISIBLE_DEVICES=3 nohup python -u instruct_pix2pix.py --attributes pinkcolor_fabrictexture --stop_at 1000 --dataset imagenet > logs/InstructPix2Pix_pinkcolor_fabrictexture.log 2>&1 < /dev/null &
+
+CUDA_VISIBLE_DEVICES=3 nohup python -u instruct_pix2pix.py --attributes redhair_brownskin_sademotion --stop_at 1200 > logs/InstructPix2Pix_redhair_brownskin_sademotion.log 2>&1 < /dev/null &
+
+CUDA_VISIBLE_DEVICES=2 python controlnet.py --attributes yellowhair_brownskin
 
 CUDA_VISIBLE_DEVICES=3 nohup python -u alpred.py \
   --dataset imagenet --model resnet --num_added_img 1000 \

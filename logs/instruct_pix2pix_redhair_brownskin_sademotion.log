@@ -1,0 +1,94 @@
+Using InstructPix2Pix: setting gen_image_dir to exampleData/redhair_brownskin_sademotion
+Current time: 1012182032
+Selected 1000 filenames for sampling
+Added 1000 generated redhair_brownskin_sademotion images, before training set has 80000 images, now 81000
+Sample generated image paths:
+  ./exampleData/redhair_brownskin_sademotion_instruct_pix2pix/001839_redhair_brownskin_sademotion_31808.jpg
+  ./exampleData/redhair_brownskin_sademotion_instruct_pix2pix/000068_redhair_brownskin_sademotion_36382.jpg
+  ./exampleData/redhair_brownskin_sademotion_instruct_pix2pix/000271_redhair_brownskin_sademotion_59866.jpg
+Using resnet model with random weights
+Epoch [1/20], Train Loss: 0.4234, Train Acc: 0.8360, Val Loss: 0.3805, Val Acc: 0.8711
+Epoch [2/20], Train Loss: 0.2956, Train Acc: 0.9451, Val Loss: 0.4300, Val Acc: 0.8733
+Epoch [3/20], Train Loss: 0.2721, Train Acc: 0.9608, Val Loss: 0.5841, Val Acc: 0.7692
+Epoch [4/20], Train Loss: 0.2543, Train Acc: 0.9719, Val Loss: 0.5706, Val Acc: 0.8359
+Epoch [5/20], Train Loss: 0.2489, Train Acc: 0.9742, Val Loss: 0.3740, Val Acc: 0.8949
+Epoch [6/20], Train Loss: 0.2440, Train Acc: 0.9766, Val Loss: 0.3732, Val Acc: 0.8993
+Epoch [7/20], Train Loss: 0.2373, Train Acc: 0.9800, Val Loss: 0.4103, Val Acc: 0.8868
+Epoch [8/20], Train Loss: 0.2359, Train Acc: 0.9812, Val Loss: 0.3187, Val Acc: 0.9130
+Epoch [9/20], Train Loss: 0.2342, Train Acc: 0.9818, Val Loss: 0.3890, Val Acc: 0.8904
+Epoch [10/20], Train Loss: 0.2308, Train Acc: 0.9835, Val Loss: 0.3569, Val Acc: 0.9102
+Epoch [11/20], Train Loss: 0.2298, Train Acc: 0.9846, Val Loss: 0.3435, Val Acc: 0.9095
+Epoch [12/20], Train Loss: 0.2293, Train Acc: 0.9847, Val Loss: 0.3365, Val Acc: 0.9118
+Epoch [13/20], Train Loss: 0.2277, Train Acc: 0.9856, Val Loss: 0.3386, Val Acc: 0.9126
+Epoch [14/20], Train Loss: 0.2268, Train Acc: 0.9858, Val Loss: 0.3582, Val Acc: 0.9074
+Epoch [15/20], Train Loss: 0.2262, Train Acc: 0.9861, Val Loss: 0.3378, Val Acc: 0.9127
+Epoch [16/20], Train Loss: 0.2259, Train Acc: 0.9870, Val Loss: 0.3568, Val Acc: 0.9075
+Epoch [17/20], Train Loss: 0.2252, Train Acc: 0.9874, Val Loss: 0.3426, Val Acc: 0.9113
+Epoch [18/20], Train Loss: 0.2249, Train Acc: 0.9875, Val Loss: 0.3529, Val Acc: 0.9102
+Epoch [19/20], Train Loss: 0.2243, Train Acc: 0.9877, Val Loss: 0.3560, Val Acc: 0.9086
+Epoch [20/20], Train Loss: 0.2238, Train Acc: 0.9880, Val Loss: 0.3563, Val Acc: 0.9089
+Generating and saving predictions...
+/people/cs/o/oxx220000/HiBug/predict.py:1102: DeprecationWarning: Conversion of an array with ndim > 0 to a scalar is deprecated, and will error in future. Ensure you extract a single element from your array before performing this operation. (Deprecated NumPy 1.25.)
+  full_orig_preds[idx] = pred
+Combined predictions length: 181000 (should match combined_labels length: 181000)
+Total training time for 20 epochs: 1318.79 seconds
+
+Running model diagnostics on generated predictions...
+Model Validation ACC: 0.913
+Start detect_failure_by_label
+
+Start detect_prediction_correlation
+
+ACC: 0.900135 	Hard case: attribute "beard", description "No"
+ACC: 0.857361 	Hard case: attribute "gender", description "female"
+The accuracy with "hair color" = "white" is 0.930327868852459
+Correct predictions: 454/488
+The accuracy with "hair color" = "yellow" is 0.9594594594594594
+Correct predictions: 71/74
+The accuracy with "hair color" = "blonde" is 0.8911174785100286
+Correct predictions: 4665/5235
+ACC: 0.891117 	Hard case: attribute "hair color", description "blonde"
+The accuracy with "hair color" = "black" is 0.9227169811320755
+Correct predictions: 6113/6625
+The accuracy with "hair color" = "gray" is 0.9783834586466166
+Correct predictions: 1041/1064
+The accuracy with "hair color" = "brown" is 0.9097234006448328
+Correct predictions: 5361/5893
+The accuracy with "hair color" = "red" is 0.893719806763285
+Correct predictions: 555/621
+ACC: 0.893720 	Rare Case: attribute "hair color", description "red"
+The accuracy with "skin" = "white" is 0.9160591133004926
+Correct predictions: 9298/10150
+The accuracy with "skin" = "black" is 0.9234706936268237
+Correct predictions: 3608/3907
+The accuracy with "skin" = "brown" is 0.900891805485445
+Correct predictions: 5354/5943
+ACC: 0.900892 	Rare Case: attribute "skin", description "brown"
+ACC: 0.879278 	Rare Case: attribute "emotion", description "sad"
+ACC: 0.899194 	Rare Case: attribute "emotion", description "calm"
+ACC: 0.886641 	Hard case: attribute "emotion", description "surprised"
+ACC: 0.880753 	Rare Case: attribute "emotion", description "pensive"
+Start detect_failure_prediction_correlation
+
+Model diagnostics complete.
+
+Comparing accuracy with log file: logs/compare/stat_origin_resnet_compare.log
+Overall accuracy: 0.906750 -> 0.913000: improved
+
+Attribute-specific accuracy comparison:
+beard, No, 0.893557 -> 0.900135: improved
+gender, female, 0.849626 -> 0.857361: improved
+hair color, white, 0.930328 -> 0.930328: same
+hair color, yellow, 0.918919 -> 0.959459: improved
+hair color, blonde, 0.880229 -> 0.891117: improved
+hair color, black, 0.921358 -> 0.922717: improved
+hair color, gray, 0.977444 -> 0.978383: improved
+hair color, brown, 0.899712 -> 0.909723: improved
+hair color, red, 0.900161 -> 0.893720: declined
+skin, brown, 0.889450 -> 0.900892: improved
+emotion, sad, 0.851711 -> 0.879278: improved
+emotion, surprised, 0.882006 -> 0.886641: improved
+emotion, pensive, 0.859833 -> 0.880753: improved
+
+Compared 13 attribute-specific accuracies.
+Current time: 1012182032
