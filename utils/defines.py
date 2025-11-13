@@ -1,5 +1,6 @@
 TRAIN = 'Train'
 VALID = 'Valid'
+TEST = 'Test'
 UNLABELED = 'Unlabeled'
 NO_LABEL = ''
 ALL = 'ALL'

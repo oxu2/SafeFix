@@ -1,0 +1,54 @@
+Current time: 1023023650
+Added 0 generated images.
+Added 0 ImageNet pinkcolor_fabrictexture images using Random sampling: 10400 -> 10400
+Using resnet model with random weights
+Generating and saving predictions...
+Held-out test accuracy: 0.1038
+Prediction segments -> train: 10400, val: 1300, test: 1300
+Combined predictions length: 13000
+Total training time for 0 epochs: 209.92 seconds
+Total Active Learning selection time: 0.00 seconds
+End-to-end wall time (data prep + selection + training + setup): 225.91 seconds
+
+Running model diagnostics on generated predictions...
+Model Test ACC: 0.10384615384615381
+Start detect_prediction_correlation
+
+ACC: 0.081967 	Rare Case: attribute "color", description "pink"
+ACC: 0.074434 	Rare Case: attribute "color", description "brown"
+ACC: 0.066667 	Rare Case: attribute "color", description "orange"
+ACC: 0.017857 	Rare Case: attribute "color", description "yellow"
+ACC: 0.033113 	Hard case: attribute "color", description "black"
+ACC: 0.085366 	Hard case: attribute "background", description "trees"
+ACC: 0.081724 	Hard case: attribute "background", description "inside a house"
+ACC: 0.037736 	Hard case: attribute "background", description "grass"
+ACC: 0.000000 	Rare Case: attribute "background", description "bridge"
+ACC: 0.066667 	Hard case: attribute "background", description "wall"
+ACC: 0.000000 	Rare Case: attribute "background", description "wild"
+ACC: 0.000000 	Rare Case: attribute "texture", description "leather"
+ACC: 0.074074 	Rare Case: attribute "texture", description "fabric"
+ACC: 0.061135 	Hard case: attribute "texture", description "glass"
+
+Comparing accuracy with log file: logs/compare/stat_imagenet_resnet_compare.log
+Overall accuracy: 0.718077 -> 0.095385: declined
+
+Attribute-specific accuracy comparison:
+color, green, 0.674419 -> 0.140625: declined
+color, pink, 0.699029 -> 0.081967: declined
+color, tan, 0.700000 -> 0.125000: declined
+color, orange, 0.690909 -> 0.066667: declined
+color, yellow, 0.688889 -> 0.017857: declined
+color, purple, 0.684211 -> 0.111111: declined
+color, black, 0.665289 -> 0.033113: declined
+background, sky, 0.698630 -> 0.151515: declined
+background, inside a house, 0.691684 -> 0.081724: declined
+background, buildings, 0.707317 -> 0.357143: declined
+background, rocks, 0.659091 -> 0.160000: declined
+background, street, 0.662162 -> 0.136364: declined
+texture, metallic, 0.676471 -> 0.300000: declined
+texture, wooden, 0.698393 -> 0.095652: declined
+texture, leather, 0.588235 -> 0.000000: declined
+texture, fabric, 0.658537 -> 0.074074: declined
+
+Compared 16 attribute-specific accuracies.
+Current time: 1023023650

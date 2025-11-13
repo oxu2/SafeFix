@@ -1,0 +1,84 @@
+Current time: 1016034931
+Added 1000 generated images.
+/people/cs/o/oxx220000/.conda/envs/ad/lib/python3.9/site-packages/torchvision/models/_utils.py:208: UserWarning: The parameter 'pretrained' is deprecated since 0.13 and may be removed in the future, please use 'weights' instead.
+  warnings.warn(
+/people/cs/o/oxx220000/.conda/envs/ad/lib/python3.9/site-packages/torchvision/models/_utils.py:223: UserWarning: Arguments other than a weight enum or `None` for 'weights' are deprecated since 0.13 and may be removed in the future. The current behavior is equivalent to passing `weights=ResNet18_Weights.IMAGENET1K_V1`. You can also use `weights=ResNet18_Weights.DEFAULT` to get the most up-to-date weights.
+  warnings.warn(msg)
+Core-set selection: choosing 0 from 10400 samples...
+Progress: ████████████████████ 0/0 - Complete!
+Added 1000 ImageNet pinkcolor_fabrictexture images using Active Learning Core-set: 0 -> 1000
+Using resnet model with random weights
+Epoch [1/30], Train Loss: 2.1728, Train Acc: 0.2520, Val Loss: 20.7055, Val Acc: 0.1154
+Epoch [2/30], Train Loss: 1.6293, Train Acc: 0.4370, Val Loss: 4.2077, Val Acc: 0.1615
+Epoch [3/30], Train Loss: 1.4505, Train Acc: 0.5100, Val Loss: 4.8498, Val Acc: 0.1473
+Epoch [4/30], Train Loss: 1.2541, Train Acc: 0.5700, Val Loss: 3.7262, Val Acc: 0.1738
+Epoch [5/30], Train Loss: 1.1310, Train Acc: 0.6220, Val Loss: 2.9250, Val Acc: 0.2273
+Epoch [6/30], Train Loss: 1.0468, Train Acc: 0.6610, Val Loss: 5.2880, Val Acc: 0.1558
+Epoch [7/30], Train Loss: 0.9344, Train Acc: 0.6850, Val Loss: 3.9515, Val Acc: 0.2035
+Epoch [8/30], Train Loss: 0.8446, Train Acc: 0.6980, Val Loss: 3.6415, Val Acc: 0.2288
+Epoch [9/30], Train Loss: 0.7718, Train Acc: 0.7460, Val Loss: 3.4346, Val Acc: 0.2523
+Epoch [10/30], Train Loss: 0.6529, Train Acc: 0.7810, Val Loss: 3.8403, Val Acc: 0.2250
+Epoch [11/30], Train Loss: 0.5926, Train Acc: 0.8000, Val Loss: 4.0121, Val Acc: 0.2262
+Epoch [12/30], Train Loss: 0.5496, Train Acc: 0.8220, Val Loss: 3.7302, Val Acc: 0.2442
+Epoch [13/30], Train Loss: 0.4899, Train Acc: 0.8490, Val Loss: 3.5480, Val Acc: 0.2604
+Epoch [14/30], Train Loss: 0.4471, Train Acc: 0.8680, Val Loss: 3.5810, Val Acc: 0.2519
+Epoch [15/30], Train Loss: 0.4487, Train Acc: 0.8610, Val Loss: 3.8040, Val Acc: 0.2454
+Epoch [16/30], Train Loss: 0.3776, Train Acc: 0.8920, Val Loss: 3.7983, Val Acc: 0.2473
+Epoch [17/30], Train Loss: 0.3645, Train Acc: 0.8940, Val Loss: 3.7011, Val Acc: 0.2558
+Epoch [18/30], Train Loss: 0.3301, Train Acc: 0.9040, Val Loss: 3.8550, Val Acc: 0.2527
+Epoch [19/30], Train Loss: 0.3256, Train Acc: 0.9090, Val Loss: 3.7626, Val Acc: 0.2604
+Epoch [20/30], Train Loss: 0.3037, Train Acc: 0.9140, Val Loss: 3.8076, Val Acc: 0.2554
+Epoch [21/30], Train Loss: 0.2976, Train Acc: 0.9120, Val Loss: 3.9053, Val Acc: 0.2488
+Epoch [22/30], Train Loss: 0.3016, Train Acc: 0.9180, Val Loss: 3.8858, Val Acc: 0.2496
+Epoch [23/30], Train Loss: 0.3086, Train Acc: 0.9160, Val Loss: 3.8108, Val Acc: 0.2550
+Epoch [24/30], Train Loss: 0.2759, Train Acc: 0.9380, Val Loss: 3.8206, Val Acc: 0.2535
+Epoch [25/30], Train Loss: 0.2803, Train Acc: 0.9280, Val Loss: 3.8715, Val Acc: 0.2500
+Epoch [26/30], Train Loss: 0.2779, Train Acc: 0.9240, Val Loss: 3.8422, Val Acc: 0.2527
+Epoch [27/30], Train Loss: 0.2964, Train Acc: 0.9270, Val Loss: 3.8664, Val Acc: 0.2519
+Epoch [28/30], Train Loss: 0.2677, Train Acc: 0.9290, Val Loss: 3.9002, Val Acc: 0.2492
+Epoch [29/30], Train Loss: 0.2692, Train Acc: 0.9310, Val Loss: 3.9044, Val Acc: 0.2515
+Epoch [30/30], Train Loss: 0.2638, Train Acc: 0.9420, Val Loss: 3.9056, Val Acc: 0.2488
+Generating and saving predictions...
+Combined predictions length: 13000
+Total training time for 30 epochs: 141.47 seconds
+Total Active Learning selection time: 17.89 seconds
+End-to-end wall time (data prep + selection + training + setup): 159.62 seconds
+
+Running model diagnostics on generated predictions...
+Model Validation ACC: 0.26038461538461544
+Start detect_prediction_correlation
+
+ACC: 0.240310 	Rare Case: attribute "color", description "green"
+ACC: 0.208219 	Hard case: attribute "color", description "blue"
+ACC: 0.227273 	Rare Case: attribute "color", description "orange"
+ACC: 0.186441 	Rare Case: attribute "color", description "gray"
+ACC: 0.105263 	Rare Case: attribute "color", description "purple"
+ACC: 0.082192 	Rare Case: attribute "background", description "sky"
+ACC: 0.000000 	Rare Case: attribute "background", description "bridge"
+
+Comparing accuracy with log file: logs/compare/stat_imagenet_resnet_compare.log
+Overall accuracy: 0.718077 -> 0.260385: declined
+
+Attribute-specific accuracy comparison:
+color, green, 0.674419 -> 0.240310: declined
+color, pink, 0.699029 -> 0.271845: declined
+color, tan, 0.700000 -> 0.300000: declined
+color, orange, 0.690909 -> 0.227273: declined
+color, yellow, 0.688889 -> 0.277778: declined
+color, purple, 0.684211 -> 0.105263: declined
+color, black, 0.665289 -> 0.276860: declined
+background, sky, 0.698630 -> 0.082192: declined
+background, inside a house, 0.691684 -> 0.255578: declined
+background, buildings, 0.707317 -> 0.268293: declined
+background, rocks, 0.659091 -> 0.386364: declined
+background, street, 0.662162 -> 0.256757: declined
+texture, metallic, 0.676471 -> 0.294118: declined
+texture, wooden, 0.698393 -> 0.254635: declined
+texture, leather, 0.588235 -> 0.294118: declined
+texture, fabric, 0.658537 -> 0.317073: declined
+
+Compared 16 attribute-specific accuracies.
+Traceback (most recent call last):
+  File "/people/cs/o/oxx220000/HiBug/alpred.py", line 1645, in <module>
+    raise FileNotFoundError(f"No log file found: {log_path1} or {log_path2}")
+FileNotFoundError: No log file found: logs_imagenet/AL_resnet_imagenet_random_1000.log or logs_imagenet/AL_random_resnet_imagenet_1000_ratio0.0.log

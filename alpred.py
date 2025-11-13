@@ -240,6 +240,7 @@ elif args.gen_image_dir is None:
     args.gen_image_dir = f"exampleData/{attributes}"
 
 verbose = args.verbose
+test_loader = None
 
 # Adjust Active Learning parameters based on dataset size
 if args.dataset == 'imagenet':
@@ -375,10 +376,17 @@ if args.dataset == 'imagenet':
     full_ds = ImageFolder(data_dir)
     train_idx = np.load('save/train_idx_imagenet.npy')
     val_idx = np.load('save/val_idx_imagenet.npy')
+    test_idx_path = Path('save/test_idx_imagenet.npy')
+    if test_idx_path.exists():
+        test_idx = np.load(test_idx_path)
+    else:
+        test_idx = np.array([], dtype=int)
     valid_idx = val_idx  # alias for diagnostics compatibility
     train_ds = Subset(ImageFolder(data_dir, transform=train_transform), train_idx)
     val_ds   = Subset(ImageFolder(data_dir, transform=val_transform), val_idx)
+    test_ds = Subset(ImageFolder(data_dir, transform=val_transform), test_idx) if len(test_idx) else None
     valid_loader = make_loader(val_ds, shuffle=False)
+    test_loader = make_loader(test_ds, shuffle=False) if test_ds is not None else None
     valid_dataset = val_ds
     num_classes = len(full_ds.classes)
 
@@ -691,17 +699,24 @@ elif args.dataset == 'celeba':
     all_datas = [input_dir + line for line in lines][1:]
 
     train_idx = np.load("exampleData/celebA/train_idx.npy")[:80000]
-    valid_idx = np.arange(len(all_datas))[-100000:-80000]
+    val_pool = np.arange(len(all_datas))[-100000:-80000]
+    if val_pool.size < 20000:
+        raise ValueError("Expected at least 20000 samples in CelebA validation pool.")
+    rng = np.random.default_rng(args.seed)
+    permuted_val = rng.permutation(val_pool)
+    valid_idx = np.sort(permuted_val[:10000])
+    test_idx = np.sort(permuted_val[10000:20000])
     unlabel_idx = np.arange(len(all_datas))[-80000:]
 
-    idxs = np.concatenate([train_idx, valid_idx, unlabel_idx], axis=0)
+    idxs = np.concatenate([train_idx, valid_idx, test_idx, unlabel_idx], axis=0)
     labels = np.load("exampleData/celebA/labels.npy")[idxs]
 
     all_datas = [all_datas[i] for i in idxs]
     split = (
-        [TRAIN for _ in train_idx] + 
-        [VALID for _ in valid_idx] + 
-        [UNLABELED for _ in unlabel_idx]
+        [TRAIN] * len(train_idx) +
+        [VALID] * len(valid_idx) +
+        [TEST] * len(test_idx) +
+        [UNLABELED] * len(unlabel_idx)
     )
 
     # Define Dataset
@@ -735,10 +750,12 @@ elif args.dataset == 'celeba':
     # Create Datasets and Loaders
     train_imgs = [all_datas[i] for i in range(len(all_datas)) if split[i] == TRAIN]
     valid_imgs = [all_datas[i] for i in range(len(all_datas)) if split[i] == VALID]
+    test_imgs = [all_datas[i] for i in range(len(all_datas)) if split[i] == TEST]
     unlabeled_imgs = [all_datas[i] for i in range(len(all_datas)) if split[i] == UNLABELED]
 
     train_labels = np.array([labels[i] for i in range(len(all_datas)) if split[i] == TRAIN])
     valid_labels = np.array([labels[i] for i in range(len(all_datas)) if split[i] == VALID])
+    test_labels = np.array([labels[i] for i in range(len(all_datas)) if split[i] == TEST])
     unlabeled_labels = np.array([labels[i] for i in range(len(all_datas)) if split[i] == UNLABELED])
 
     # Add the modified hair images to the training set
@@ -796,9 +813,9 @@ elif args.dataset == 'celeba':
 
     # Build a map from base image number to label for quick lookup (not needed for simple ablation mode)
     if not (args.no_controlnet and args.simple):
-        # Include training, validation, and unlabeled images in the label map
-        all_orig_paths = train_imgs + valid_imgs + unlabeled_imgs
-        all_orig_labels = np.concatenate((train_labels, valid_labels, unlabeled_labels))
+        # Include training, validation, test, and unlabeled images in the label map
+        all_orig_paths = train_imgs + valid_imgs + test_imgs + unlabeled_imgs
+        all_orig_labels = np.concatenate((train_labels, valid_labels, test_labels, unlabeled_labels))
         base_to_label = {
             os.path.splitext(os.path.basename(p))[0]: lbl
             for p, lbl in zip(all_orig_paths, all_orig_labels)
@@ -1011,8 +1028,8 @@ elif args.dataset == 'celeba':
                                else f"LLM-based selection ({args.llm_strategy})" if args.use_llm_selection and args.sub_ratio < 1.0
                                else "Random sampling")
             print(f"CelebA: Combined {len(sub_train_imgs)} selected samples with {len(modified_image_paths)} generated images using {selection_method}")
-        
-        combined_labels = np.concatenate((all_train_labels, valid_labels, unlabeled_labels))
+            
+        combined_labels = np.concatenate((all_train_labels, valid_labels, test_labels, unlabeled_labels))
         # Store subsampling info for later padding of predictions
         if not args.al_combined:
             args.selected_indices = selected_indices
@@ -1023,7 +1040,7 @@ elif args.dataset == 'celeba':
     else:
         all_train_imgs = train_imgs
         all_train_labels = train_labels
-        combined_labels = np.concatenate((train_labels, valid_labels, unlabeled_labels))
+        combined_labels = np.concatenate((train_labels, valid_labels, test_labels, unlabeled_labels))
 
     # Save combined indices and labels when using generated images
     if modified_image_paths:
@@ -1057,6 +1074,12 @@ elif args.dataset == 'celeba':
     # Create datasets using the combined data
     train_dataset = CelebADataset(all_train_imgs, all_train_labels, train_transform)
     valid_dataset = CelebADataset(valid_imgs, valid_labels, val_transform)
+    if len(test_imgs) > 0:
+        test_dataset = CelebADataset(test_imgs, test_labels, val_transform)
+        test_loader = make_loader(test_dataset, shuffle=False)
+    else:
+        test_dataset = None
+        test_loader = None
 
     train_loader = make_loader(train_dataset, shuffle=True)
     valid_loader = make_loader(valid_dataset, shuffle=False)
@@ -1209,7 +1232,7 @@ def evaluate(model, data_loader, save_preds=False):
     return acc, avg_loss
 
 # After training, save predictions for each dataset
-def save_predictions(model, train_loader, valid_loader):
+def save_predictions(model, train_loader, valid_loader, test_loader=None):
     print("Generating and saving predictions...")
 
     # Get predictions for training set
@@ -1217,6 +1240,11 @@ def save_predictions(model, train_loader, valid_loader):
 
     # Get predictions for validation set
     _, valid_preds, _ = evaluate(model, valid_loader, save_preds=True)
+
+    test_preds = None
+    if test_loader is not None:
+        test_acc, test_preds, _ = evaluate(model, test_loader, save_preds=True)
+        print(f"Held-out test accuracy: {test_acc:.4f}")
 
     if args.dataset == 'imagenet':
         original_count = len(train_idx)
@@ -1239,6 +1267,13 @@ def save_predictions(model, train_loader, valid_loader):
             # Convert list to numpy array before flattening
             sub_preds_array = np.array(sub_preds) if isinstance(sub_preds, list) else sub_preds
             combined_preds = np.concatenate((sub_preds_array.flatten(), valid_preds.flatten()))
+
+        if test_preds is not None:
+            combined_preds = np.concatenate((combined_preds, test_preds.flatten()))
+        print(
+            f"Prediction segments -> train: {len(train_preds)}, val: {len(valid_preds)}, "
+            f"test: {len(test_preds) if test_preds is not None else 0}"
+        )
     else:
         # Handle celeba or other cases
         if len(modified_image_paths) > 0:
@@ -1250,28 +1285,38 @@ def save_predictions(model, train_loader, valid_loader):
                 for idx, pred in zip(args.selected_indices, sub_preds):
                     full_orig_preds[idx] = pred
                 modified_preds = train_preds[len(args.selected_indices):]
-                combined_preds = np.concatenate((
+                segs = [
                     full_orig_preds.flatten(),
-                    valid_preds.flatten(),
-                    modified_preds.flatten(),
-                    unlabeled_predictions
-                ))
+                    valid_preds.flatten()
+                ]
+                if test_preds is not None:
+                    segs.append(test_preds.flatten())
+                segs.append(modified_preds.flatten())
+                segs.append(unlabeled_predictions)
+                combined_preds = np.concatenate(segs)
             else:
                 original_train_preds = train_preds[:-gen_cnt]
                 modified_preds = train_preds[-gen_cnt:]
-                combined_preds = np.concatenate((
+                segs = [
                     original_train_preds.flatten(),
-                    valid_preds.flatten(),
-                    modified_preds.flatten(),
-                    unlabeled_predictions
-                ))
+                    valid_preds.flatten()
+                ]
+                if test_preds is not None:
+                    segs.append(test_preds.flatten())
+                if gen_cnt > 0:
+                    segs.append(modified_preds.flatten())
+                segs.append(unlabeled_predictions)
+                combined_preds = np.concatenate(segs)
         else:
             original_train_preds = train_preds
-            combined_preds = np.concatenate((
+            segs = [
                 original_train_preds.flatten(),
-                valid_preds.flatten(),
-                unlabeled_predictions
-            ))
+                valid_preds.flatten()
+            ]
+            if test_preds is not None:
+                segs.append(test_preds.flatten())
+            segs.append(unlabeled_predictions)
+            combined_preds = np.concatenate(segs)
 
     try:
         print(f"Combined predictions length: {len(combined_preds)} (should match combined_labels length: {len(combined_labels)})")
@@ -1291,7 +1336,7 @@ def save_predictions(model, train_loader, valid_loader):
         combined_preds
     )
 
-def train_model(model, train_loader, valid_loader, criterion, optimizer, scheduler=None, num_epochs=20):
+def train_model(model, train_loader, valid_loader, criterion, optimizer, scheduler=None, num_epochs=20, test_loader=None):
     # Track best validation performance
     best_val_acc = 0.0
     best_model_state = None
@@ -1406,7 +1451,7 @@ def train_model(model, train_loader, valid_loader, criterion, optimizer, schedul
     if args.save_pred_model == 'best' and best_model_state is not None:
         model.load_state_dict(best_model_state)
     # Save predictions after training
-    save_predictions(model, train_loader, valid_loader)
+    save_predictions(model, train_loader, valid_loader, test_loader=test_loader)
     # Return training history for external use
     return train_loss_history, train_acc_history, val_loss_history, val_acc_history
 
@@ -1463,7 +1508,14 @@ def parse_log(log_path):
 # print(f"Starting training for {args.num_epochs} epochs...")
 total_start_time = time.time()
 train_loss_history, train_acc_history, val_loss_history, val_acc_history = train_model(
-    model, train_loader, valid_loader, criterion, optimizer, scheduler, num_epochs=args.num_epochs
+    model,
+    train_loader,
+    valid_loader,
+    criterion,
+    optimizer,
+    scheduler,
+    num_epochs=args.num_epochs,
+    test_loader=test_loader,
 )
 total_elapsed_time = time.time() - total_start_time
 print(f"Total training time for {args.num_epochs} epochs: {total_elapsed_time:.2f} seconds")
@@ -1504,16 +1556,39 @@ if args.dataset == 'imagenet':
     data_dir = Path("exampleData/imagenet_subset")
     full_ds = ImageFolder(data_dir)
     labels_all = np.array(full_ds.targets)
-    # Build labels for train and validation splits
-    labels_to_diagnose = np.concatenate([labels_all[train_idx], labels_all[val_idx]])
-    split = [TRAIN] * len(train_idx) + [VALID] * len(val_idx)
+    expected_train = len(train_idx)
+    expected_val = len(val_idx)
+    expected_test = len(test_idx) if 'test_idx' in locals() else 0
+    total_predictions = len(predictions)
+    total_without_test = expected_train + expected_val
+    total_with_test = total_without_test + expected_test
+
+    if expected_test and total_predictions == total_with_test:
+        labels_to_diagnose = np.concatenate([labels_all[train_idx], labels_all[val_idx], labels_all[test_idx]])
+        split = [TRAIN] * expected_train + [VALID] * expected_val + [TEST] * expected_test
+    elif total_predictions == total_without_test:
+        labels_to_diagnose = np.concatenate([labels_all[train_idx], labels_all[val_idx]])
+        split = [TRAIN] * expected_train + [VALID] * expected_val
+        if expected_test:
+            print(
+                "Warning: Predictions file omits test samples (expected total "
+                f"{total_with_test}, got {total_predictions}). Diagnostics run on train+val only."
+            )
+    else:
+        print(
+            "Warning: Predictions length ({}) does not match expected counts ({}/{}).".format(
+                total_predictions, total_without_test, total_with_test
+            )
+        )
+        labels_to_diagnose = np.concatenate([labels_all[train_idx], labels_all[val_idx]])
+        split = [TRAIN] * expected_train + [VALID] * expected_val
 elif args.dataset == 'celeba':
     # Use combined_labels and adjust split to match (including modified images in the training split)
     labels_to_diagnose = combined_labels
     split = (
-        [TRAIN] * len(train_labels) +
+        [TRAIN] * len(all_train_labels) +
         [VALID] * len(valid_labels) +
-        [TRAIN] * len(modified_image_labels) +
+        [TEST] * len(test_labels) +
         [UNLABELED] * len(unlabeled_labels)
     )
 
