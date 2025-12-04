@@ -6,28 +6,82 @@ To use this example, ou need to get celebA dataset first. At http://mmlab.ie.cuh
 all_datas: a list of image address
 labels: a list of labels
 predictions: a list of predictions
-split: a list of tags, tag can be {TRAIN, VALID, UNLABELED}
+split: a list of tags, tag can be {TRAIN, VALID, TEST, UNLABELED}
 The above four list should have equal length
 """
 import numpy as np
 from utils.defines import *
 import os
 import json  
+import time
+
 os.environ['CUDA_VISIBLE_DEVICES'] = '0'
-f = open("exampleData/celebA/list_attr_celeba.txt")
-lines = list(f.readlines())
-lines = [line.strip('\n').split(' ')[0] for line in lines]
-all_datas = ['/data/oxx220000/img_align_celeba/' + line for line in lines][1:]
+with open("exampleData/celebA/list_attr_celeba.txt") as f:
+    lines = [line.strip('\n').split(' ')[0] for line in f.readlines()]
+
+if os.path.exists('/home/jovyan/ouser/dataset/img_align_celeba/'):
+    input_dir = '/home/jovyan/ouser/dataset/img_align_celeba/'
+else:
+    input_dir = '/data/oxx220000/img_align_celeba/'
+
+all_datas = [input_dir + line for line in lines][1:]
 train_idx = np.load("exampleData/celebA/train_idx.npy")[:80000]
-valid_idx = np.arange(len(all_datas))[-100000:-80000]
-unlabel_idx = np.arange(len(all_datas))[-80000:]
-# print(len(all_datas), len(train_idx), len(valid_idx), len(unlabel_idx))
-# that means, the 80001 th to 102599 th sample are not used in this example
-idxs = np.concatenate([train_idx, valid_idx, unlabel_idx], axis=0)
+
+split_cache_dir = "save"
+val_idx_path = os.path.join(split_cache_dir, "val_idx_celeba.npy")
+test_idx_path = os.path.join(split_cache_dir, "test_idx_celeba.npy")
+unlabel_idx_path = os.path.join(split_cache_dir, "unlabel_idx_celeba.npy")
+meta_path = os.path.join(split_cache_dir, "celeba_split_meta.json")
+
+seed = int(os.getenv("CELEBA_SPLIT_SEED", "42"))
+cached_seed = None
+if os.path.exists(meta_path):
+    try:
+        with open(meta_path, "r", encoding="utf-8") as meta_file:
+            cached_seed = json.load(meta_file).get("seed")
+    except Exception:
+        cached_seed = None
+
+cache_ready = (
+    os.path.exists(val_idx_path)
+    and os.path.exists(test_idx_path)
+    and os.path.exists(unlabel_idx_path)
+    and cached_seed == seed
+)
+
+if cache_ready:
+    valid_idx = np.load(val_idx_path)
+    test_idx = np.load(test_idx_path)
+    unlabel_idx = np.load(unlabel_idx_path)
+else:
+    val_pool = np.arange(len(all_datas))[-100000:]
+    if val_pool.size < 20000:
+        raise ValueError("Expected at least 20000 samples in CelebA validation/test pool.")
+    rng = np.random.default_rng(seed)
+    shuffled_pool = rng.permutation(val_pool)
+    valid_idx = shuffled_pool[:10000]
+    test_idx = shuffled_pool[10000:20000]
+    unlabel_idx = shuffled_pool[20000:]
+    os.makedirs(split_cache_dir, exist_ok=True)
+    np.save(val_idx_path, valid_idx)
+    np.save(test_idx_path, test_idx)
+    np.save(unlabel_idx_path, unlabel_idx)
+    with open(meta_path, "w", encoding="utf-8") as meta_file:
+        json.dump({
+            "seed": int(seed),
+            "timestamp": time.time()
+        }, meta_file)
+
+idxs = np.concatenate([train_idx, valid_idx, test_idx, unlabel_idx], axis=0)
 labels = np.load("exampleData/celebA/labels.npy")[idxs]
 predictions = np.load("exampleData/celebA/predictions.npy")[idxs]
 all_datas = [all_datas[i] for i in idxs]
-split = [TRAIN for i in  train_idx] + [VALID for i in  valid_idx] + [UNLABELED for i in  unlabel_idx]
+split = (
+    [TRAIN for _ in train_idx] +
+    [VALID for _ in valid_idx] +
+    [TEST for _ in test_idx] +
+    [UNLABELED for _ in unlabel_idx]
+)
 
 # Create bidirectional mapping
 original_to_filtered = {}  # original idx -> filtered idx
@@ -81,13 +135,17 @@ red_hair_original_indices = [filtered_to_original[i] for i in red_hair_filtered_
 
 # Check split distribution of red hair samples
 train_count = sum(1 for i in red_hair_filtered_indices if i < len(train_idx))
-valid_count = sum(1 for i in red_hair_filtered_indices if len(train_idx) <= i < len(train_idx) + len(valid_idx))
-unlabel_count = sum(1 for i in red_hair_filtered_indices if i >= len(train_idx) + len(valid_idx))
+valid_start = len(train_idx)
+test_start = valid_start + len(valid_idx)
+unlabel_start = test_start + len(test_idx)
+valid_count = sum(1 for i in red_hair_filtered_indices if valid_start <= i < test_start)
+test_count = sum(1 for i in red_hair_filtered_indices if test_start <= i < unlabel_start)
+unlabel_count = sum(1 for i in red_hair_filtered_indices if i >= unlabel_start)
 
 print("\nRed hair information:")
 print(f"Number of red hair images: {len(red_hair_filtered_indices)}")
 print(f"Original indices of some red hair images: {red_hair_original_indices[:10]}...")
-print(f"Red hair samples distribution: Train: {train_count}, Valid: {valid_count}, Unlabeled: {unlabel_count}")
+print(f"Red hair samples distribution: Train: {train_count}, Valid: {valid_count}, Test: {test_count}, Unlabeled: {unlabel_count}")
 
 # Verify image filenames for red hair samples
 print("\nVerifying image filenames for red hair samples:")

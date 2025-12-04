@@ -1,12 +1,23 @@
+CUDA_VISIBLE_DEVICES=0 nohup python -u alpred.py \
+  --dataset celeba --model resnet --num_added_img 0 \
+  --num_epochs 1 \
+  --sub_ratio 1 \
+  --save_pred_model last \
+  > logs/test_resnet_last_1epoch.log 2>&1 < /dev/null &
 
-
+CUDA_VISIBLE_DEVICES=0 nohup python -u alpred.py \
+  --dataset celeba --model resnet --num_added_img 0 \
+  --num_epochs 20 \
+  --sub_ratio 1 \
+  --save_pred_model last \
+  > logs/test_resnet_last_20epoch.log 2>&1 < /dev/null &
 
 CUDA_VISIBLE_DEVICES=1 nohup python -u alpred.py \
   --dataset imagenet --model clip --num_added_img 0 \
   --attributes pinkcolor_fabrictexture --num_epochs 15 \
   --sub_ratio 1 \
   --save_pred_model last \
-  > logs_imagenet/test_clip_last_15epoch.log 2>&1 < /dev/null &
+  > logs_imagenet/test_clip_last_15epoch.log 2>&1 < /dev/null &j
 
 CUDA_VISIBLE_DEVICES=3 nohup python -u alpred.py \
   --dataset imagenet --model clip --num_added_img 0 \

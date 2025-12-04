@@ -643,16 +643,59 @@ elif args.dataset == 'celeba':
     all_datas = [input_dir + line for line in lines][1:]
 
     train_idx = np.load("exampleData/celebA/train_idx.npy")[:80000]
-    valid_idx = np.arange(len(all_datas))[-100000:-80000]
-    unlabel_idx = np.arange(len(all_datas))[-80000:]
 
-    idxs = np.concatenate([train_idx, valid_idx, unlabel_idx], axis=0)
+    split_cache_dir = "save"
+    val_idx_path = os.path.join(split_cache_dir, "val_idx_celeba.npy")
+    test_idx_path = os.path.join(split_cache_dir, "test_idx_celeba.npy")
+    unlabel_idx_path = os.path.join(split_cache_dir, "unlabel_idx_celeba.npy")
+    meta_path = os.path.join(split_cache_dir, "celeba_split_meta.json")
+
+    cached_seed = None
+    if os.path.exists(meta_path):
+        try:
+            with open(meta_path, "r", encoding="utf-8") as meta_file:
+                cached_seed = json.load(meta_file).get("seed")
+        except Exception:
+            cached_seed = None
+
+    cache_ready = (
+        os.path.exists(val_idx_path)
+        and os.path.exists(test_idx_path)
+        and os.path.exists(unlabel_idx_path)
+        and cached_seed == args.seed
+    )
+
+    if cache_ready:
+        valid_idx = np.load(val_idx_path)
+        test_idx = np.load(test_idx_path)
+        unlabel_idx = np.load(unlabel_idx_path)
+    else:
+        val_pool = np.arange(len(all_datas))[-100000:]
+        if val_pool.size < 20000:
+            raise ValueError("Expected at least 20000 samples in CelebA validation/test pool.")
+        rng = np.random.default_rng(args.seed)
+        shuffled_pool = rng.permutation(val_pool)
+        valid_idx = shuffled_pool[:10000]
+        test_idx = shuffled_pool[10000:20000]
+        unlabel_idx = shuffled_pool[20000:]
+        os.makedirs(split_cache_dir, exist_ok=True)
+        np.save(val_idx_path, valid_idx)
+        np.save(test_idx_path, test_idx)
+        np.save(unlabel_idx_path, unlabel_idx)
+        with open(meta_path, "w", encoding="utf-8") as meta_file:
+            json.dump({
+                "seed": int(args.seed),
+                "timestamp": time.time()
+            }, meta_file)
+
+    idxs = np.concatenate([train_idx, valid_idx, test_idx, unlabel_idx], axis=0)
     labels = np.load("exampleData/celebA/labels.npy")[idxs]
 
     all_datas = [all_datas[i] for i in idxs]
     split = (
         [TRAIN for _ in train_idx] + 
         [VALID for _ in valid_idx] + 
+        [TEST for _ in test_idx] +
         [UNLABELED for _ in unlabel_idx]
     )
 
@@ -755,9 +798,9 @@ elif args.dataset == 'celeba':
 
     # Build a map from base image number to label for quick lookup (not needed for simple ablation mode)
     if not (args.no_controlnet and args.simple):
-        # Include training, validation, and unlabeled images in the label map
-        all_orig_paths = train_imgs + valid_imgs + unlabeled_imgs
-        all_orig_labels = np.concatenate((train_labels, valid_labels, unlabeled_labels))
+        # Include training, validation, test, and unlabeled images in the label map
+        all_orig_paths = train_imgs + valid_imgs + test_imgs + unlabeled_imgs
+        all_orig_labels = np.concatenate((train_labels, valid_labels, test_labels, unlabeled_labels))
         base_to_label = {
             os.path.splitext(os.path.basename(p))[0]: lbl
             for p, lbl in zip(all_orig_paths, all_orig_labels)
@@ -861,7 +904,6 @@ elif args.dataset == 'celeba':
         sub_train_labels = train_labels[selected_indices]
         all_train_imgs = sub_train_imgs + modified_image_paths
         all_train_labels = np.concatenate((sub_train_labels, np.array(modified_image_labels)))
-        combined_labels = np.concatenate((sub_train_labels, valid_labels, np.array(modified_image_labels), unlabeled_labels))
         # Store subsampling info for later padding of predictions
         args.selected_indices = selected_indices
         args.orig_train_count = orig_count
@@ -873,7 +915,7 @@ elif args.dataset == 'celeba':
     else:
         all_train_imgs = train_imgs
         all_train_labels = train_labels
-        combined_labels = np.concatenate((train_labels, valid_labels, unlabeled_labels))
+    combined_labels = np.concatenate((all_train_labels, valid_labels, test_labels, unlabeled_labels))
 
     # Save combined indices and labels when using generated images
     if modified_image_paths:

@@ -4,7 +4,7 @@ Data consistency verification and unified settings configuration
 
 import numpy as np
 import os
-from utils.defines import TRAIN, VALID, UNLABELED
+from utils.defines import TRAIN, VALID, TEST, UNLABELED
 
 def verify_data_consistency():
     """Verify that all scripts use the same data split"""
@@ -20,6 +20,7 @@ def verify_data_consistency():
         # Count splits
         train_count = sum(1 for s in all_splits if s == TRAIN)
         valid_count = sum(1 for s in all_splits if s == VALID)
+        test_count = sum(1 for s in all_splits if s == TEST)
         unlabeled_count = sum(1 for s in all_splits if s == UNLABELED)
         
         print("✅ Data loaded successfully!")
@@ -31,8 +32,9 @@ def verify_data_consistency():
         print("📊 Data Split Distribution:")
         print(f"  Training set: {train_count:,} samples")
         print(f"  Validation set: {valid_count:,} samples") 
+        print(f"  Test set: {test_count:,} samples")
         print(f"  Unlabeled set: {unlabeled_count:,} samples")
-        print(f"  Total: {train_count + valid_count + unlabeled_count:,} samples")
+        print(f"  Total: {train_count + valid_count + test_count + unlabeled_count:,} samples")
         print()
         
         print("🏷️ Label Distribution:")
@@ -175,7 +177,7 @@ def main():
         
         print("💡 Key Points:")
         print("1. ALL scripts use identical data loading (load_celeba_data())")
-        print("2. ALL scripts use the same train/validation/unlabeled split")
+        print("2. Splits follow the consistent train/validation/test/unlabeled partition")
         print("3. ONLY training parameters differ between scripts")
         print("4. Choose the script based on your needs (speed vs. accuracy)")
         

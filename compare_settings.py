@@ -27,8 +27,9 @@ def compare_settings():
     print("\n=== Data Split (Same for all) ===")
     print("All scripts use the same load_celeba_data() function:")
     print("- Training set: 80,000 samples (from train_idx.npy)")
-    print("- Validation set: 20,000 samples (from indices [-100000:-80000])")
-    print("- Unlabeled set: 80,000 samples (from indices [-80000:])")
+    print("- Validation set: 10,000 samples (random within last 100,000; cached per seed)")
+    print("- Test set: 10,000 samples (disjoint from validation, same pool)")
+    print("- Unlabeled set: 80,000 samples (remaining from the 100,000-sample pool)")
     print("- Total images: ~200,000 (from CelebA dataset)")
     
     print("\n=== Key Differences ===")

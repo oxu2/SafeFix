@@ -19,6 +19,7 @@ from PIL import Image
 import json
 import os
 import argparse
+import time
 from pathlib import Path
 from sklearn.metrics import accuracy_score, classification_report
 from sklearn.metrics.pairwise import euclidean_distances
@@ -38,7 +39,7 @@ except ImportError:
     pass
 
 # Import from your existing codebase
-from utils.defines import TRAIN, VALID, UNLABELED
+from utils.defines import TRAIN, VALID, TEST, UNLABELED
 
 class CoreSetStrategy:
     """
@@ -415,7 +416,7 @@ class ActiveLearningTrainer:
         Args:
             all_image_paths: list of all image paths
             all_labels: list of all labels  
-            all_splits: list of splits (TRAIN, VALID, UNLABELED)
+            all_splits: list of splits (TRAIN, VALID, TEST, UNLABELED)
             initial_labeled_size: initial number of labeled samples
             al_rounds: number of active learning rounds
             samples_per_round: number of samples to select each round
@@ -424,11 +425,13 @@ class ActiveLearningTrainer:
         # Separate data by split
         train_indices = [i for i, split in enumerate(all_splits) if split == TRAIN]
         val_indices = [i for i, split in enumerate(all_splits) if split == VALID]
+        test_indices = [i for i, split in enumerate(all_splits) if split == TEST]
         unlabeled_indices = [i for i, split in enumerate(all_splits) if split == UNLABELED]
-        
+
         print(f"Dataset statistics:")
         print(f"  Train: {len(train_indices)}")
         print(f"  Validation: {len(val_indices)}")
+        print(f"  Test: {len(test_indices)}")
         print(f"  Unlabeled: {len(unlabeled_indices)}")
         
         # Start with initial labeled set (subset of training data)
@@ -567,32 +570,79 @@ class ActiveLearningTrainer:
         
         print(f"Results plot saved to {save_path}")
 
-def load_celeba_data():
-    """Load CelebA data following the existing structure"""
-    
+def load_celeba_data(seed: int = 42):
+    """Load CelebA data with reproducible train/validation/test/unlabeled splits."""
+
     # Load image paths
     with open("exampleData/celebA/list_attr_celeba.txt") as f:
         lines = [line.strip('\n').split(' ')[0] for line in f.readlines()]
-    
+
     # Determine base directory
     if os.path.exists('/home/jovyan/ouser/dataset/img_align_celeba/'):
         input_dir = '/home/jovyan/ouser/dataset/img_align_celeba/'
     else:
         input_dir = '/data/oxx220000/img_align_celeba/'
-    
+
     all_datas = [input_dir + line for line in lines][1:]
-    
+
     # Load indices
     train_idx = np.load("exampleData/celebA/train_idx.npy")[:80000]
-    valid_idx = np.arange(len(all_datas))[-100000:-80000]
-    unlabel_idx = np.arange(len(all_datas))[-80000:]
-    
+
+    split_cache_dir = "save"
+    val_idx_path = os.path.join(split_cache_dir, "val_idx_celeba.npy")
+    test_idx_path = os.path.join(split_cache_dir, "test_idx_celeba.npy")
+    unlabel_idx_path = os.path.join(split_cache_dir, "unlabel_idx_celeba.npy")
+    meta_path = os.path.join(split_cache_dir, "celeba_split_meta.json")
+
+    cached_seed = None
+    if os.path.exists(meta_path):
+        try:
+            with open(meta_path, "r", encoding="utf-8") as meta_file:
+                cached_seed = json.load(meta_file).get("seed")
+        except Exception:
+            cached_seed = None
+
+    cache_ready = (
+        os.path.exists(val_idx_path)
+        and os.path.exists(test_idx_path)
+        and os.path.exists(unlabel_idx_path)
+        and cached_seed == seed
+    )
+
+    if cache_ready:
+        valid_idx = np.load(val_idx_path)
+        test_idx = np.load(test_idx_path)
+        unlabel_idx = np.load(unlabel_idx_path)
+    else:
+        val_pool = np.arange(len(all_datas))[-100000:]
+        if val_pool.size < 20000:
+            raise ValueError("Expected at least 20000 samples in CelebA validation/test pool.")
+        rng = np.random.default_rng(seed)
+        shuffled_pool = rng.permutation(val_pool)
+        valid_idx = shuffled_pool[:10000]
+        test_idx = shuffled_pool[10000:20000]
+        unlabel_idx = shuffled_pool[20000:]
+        os.makedirs(split_cache_dir, exist_ok=True)
+        np.save(val_idx_path, valid_idx)
+        np.save(test_idx_path, test_idx)
+        np.save(unlabel_idx_path, unlabel_idx)
+        with open(meta_path, "w", encoding="utf-8") as meta_file:
+            json.dump({
+                "seed": int(seed),
+                "timestamp": time.time()
+            }, meta_file)
+
     # Concatenate and reorder
-    idxs = np.concatenate([train_idx, valid_idx, unlabel_idx], axis=0)
+    idxs = np.concatenate([train_idx, valid_idx, test_idx, unlabel_idx], axis=0)
     labels = np.load("exampleData/celebA/labels.npy")[idxs]
     all_datas = [all_datas[i] for i in idxs]
-    split = [TRAIN for _ in train_idx] + [VALID for _ in valid_idx] + [UNLABELED for _ in unlabel_idx]
-    
+    split = (
+        [TRAIN for _ in train_idx] +
+        [VALID for _ in valid_idx] +
+        [TEST for _ in test_idx] +
+        [UNLABELED for _ in unlabel_idx]
+    )
+
     return all_datas, labels, split
 
 def load_imagenet_data(data_dir):
@@ -662,6 +712,7 @@ def main():
     parser.add_argument('--verbose', action='store_true', help='Enable verbose output')
     parser.add_argument('--quiet', default=True, action='store_true', help='Disable progress output')
     parser.add_argument('--enable-progress-bars', action='store_true', help='Enable progress bars (disabled by default)')
+    parser.add_argument('--seed', type=int, default=42, help='Random seed for CelebA validation/test split cache')
     
     args = parser.parse_args()
     
@@ -690,7 +741,7 @@ def main():
         all_image_paths, all_labels, all_splits = load_imagenet_data(data_dir)
     else:
         print("Loading CelebA dataset...")
-        all_image_paths, all_labels, all_splits = load_celeba_data()
+        all_image_paths, all_labels, all_splits = load_celeba_data(seed=args.seed)
     
     print(f"Loaded {len(all_image_paths)} images")
     print(f"Label distribution: {np.bincount(all_labels)}")

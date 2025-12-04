@@ -1,0 +1,67 @@
+Current time: 1112234817
+Selected 0 filenames for sampling
+Added 0 generated redhair_brownskin images, before training set has 80000 images, now 80000
+Using resnet model with random weights
+Epoch [1/1], Train Loss: 0.4130, Train Acc: 0.8447, Val Loss: 0.5052, Val Acc: 0.8338
+Generating and saving predictions...
+Held-out test accuracy: 0.8246
+Combined predictions length: 180000 (should match combined_labels length: 180000)
+Total training time for 1 epochs: 435.79 seconds
+Total Active Learning selection time: 0.00 seconds
+End-to-end wall time (data prep + selection + training + setup): 437.57 seconds
+
+Running model diagnostics on generated predictions...
+Model Test ACC: 0.8246
+Start detect_failure_by_label
+
+Start detect_prediction_correlation
+
+The accuracy with "hair color" = "white" is 0.7933884297520661
+Correct predictions: 192/242
+ACC: 0.793388 	Rare Case: attribute "hair color", description "white"
+The accuracy with "hair color" = "yellow" is 0.7333333333333333
+Correct predictions: 22/30
+ACC: 0.733333 	Rare Case: attribute "hair color", description "yellow"
+The accuracy with "hair color" = "blonde" is 0.8401063425750095
+Correct predictions: 2212/2633
+The accuracy with "hair color" = "black" is 0.8341875188423274
+Correct predictions: 2767/3317
+The accuracy with "hair color" = "gray" is 0.8623853211009175
+Correct predictions: 470/545
+The accuracy with "hair color" = "brown" is 0.8296928327645051
+Correct predictions: 2431/2930
+The accuracy with "hair color" = "red" is 0.8052805280528053
+Correct predictions: 244/303
+ACC: 0.805281 	Rare Case: attribute "hair color", description "red"
+The accuracy with "skin" = "white" is 0.8371954842543078
+Correct predictions: 4227/5049
+The accuracy with "skin" = "black" is 0.832146490335707
+Correct predictions: 1636/1966
+The accuracy with "skin" = "brown" is 0.8291457286432161
+Correct predictions: 2475/2985
+ACC: 0.822111 	Hard case: attribute "emotion", description "surprised"
+ACC: 0.820041 	Rare Case: attribute "emotion", description "pensive"
+Start detect_failure_prediction_correlation
+
+Model diagnostics complete.
+
+Comparing accuracy with log file: logs/compare/stat_origin_resnet_compare.log
+Overall accuracy: 0.906750 -> 0.833800: declined
+
+Attribute-specific accuracy comparison:
+beard, No, 0.893557 -> 0.832487: declined
+gender, female, 0.849626 -> 0.833108: declined
+hair color, white, 0.930328 -> 0.793388: declined
+hair color, yellow, 0.918919 -> 0.733333: declined
+hair color, blonde, 0.880229 -> 0.840106: declined
+hair color, black, 0.921358 -> 0.834188: declined
+hair color, gray, 0.977444 -> 0.862385: declined
+hair color, brown, 0.899712 -> 0.829693: declined
+hair color, red, 0.900161 -> 0.805281: declined
+skin, brown, 0.889450 -> 0.829146: declined
+emotion, sad, 0.851711 -> 0.824953: declined
+emotion, surprised, 0.882006 -> 0.822111: declined
+emotion, pensive, 0.859833 -> 0.820041: declined
+
+Compared 13 attribute-specific accuracies.
+Current time: 1112234817
