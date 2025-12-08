@@ -1,702 +1,11 @@
 Random seed set to 42
 Adjusted al_initial_labeled for ImageNet scale to 500
 Adjusted al_embedding_dim for ResNet on ImageNet to 256
-Current time: 0828035521
+Current time: 1204022353
 Loaded 1311 feasible pinkcolor_fabrictexture images
 Using generated image directory: exampleData/imagenet_pinkcolor_fabrictexture
 [DEBUG] Normal mode: looking for generated images in directory: exampleData/imagenet_pinkcolor_fabrictexture
-[DEBUG] Feasible images loaded: 1311 entries
-[DEBUG] Sample of feasible keys: ['backpack/n02769748_1032', 'backpack/n02769748_1107', 'backpack/n02769748_111', 'backpack/n02769748_1144', 'backpack/n02769748_1188', 'backpack/n02769748_1218', 'backpack/n02769748_1220', 'backpack/n02769748_1270', 'backpack/n02769748_1295', 'backpack/n02769748_1298']
 [DEBUG] Starting traversal of class subfolders for generated images...
-[DEBUG] Skipping 'backpack/n02769748_3571' not in feasible_images
-[DEBUG] Skipping 'backpack/n02769748_872' not in feasible_images
-[DEBUG] Skipping 'backpack/n02769748_73' not in feasible_images
-[DEBUG] Skipping 'backpack/n02769748_90' not in feasible_images
-[DEBUG] Skipping 'backpack/n02769748_3552' not in feasible_images
-[DEBUG] Skipping 'backpack/n02769748_4513' not in feasible_images
-[DEBUG] Skipping 'backpack/n02769748_4711' not in feasible_images
-[DEBUG] Skipping 'backpack/n02769748_1984' not in feasible_images
-[DEBUG] Skipping 'backpack/n02769748_474' not in feasible_images
-[DEBUG] Skipping 'backpack/n02769748_4161' not in feasible_images
-[DEBUG] Skipping 'backpack/n02769748_3250' not in feasible_images
-[DEBUG] Skipping 'backpack/n02769748_5239' not in feasible_images
-[DEBUG] Skipping 'backpack/n02769748_1021' not in feasible_images
-[DEBUG] Skipping 'backpack/n02769748_6000' not in feasible_images
-[DEBUG] Skipping 'backpack/n02769748_2426' not in feasible_images
-[DEBUG] Skipping 'backpack/n02769748_4684' not in feasible_images
-[DEBUG] Skipping 'backpack/n02769748_825' not in feasible_images
-[DEBUG] Skipping 'backpack/n02769748_3084' not in feasible_images
-[DEBUG] Skipping 'barber_chair/n02791124_629' not in feasible_images
-[DEBUG] Skipping 'barber_chair/n02791124_612' not in feasible_images
-[DEBUG] Skipping 'barber_chair/n02791124_263' not in feasible_images
-[DEBUG] Skipping 'barber_chair/n02791124_984' not in feasible_images
-[DEBUG] Skipping 'barber_chair/n02791124_241' not in feasible_images
-[DEBUG] Skipping 'barber_chair/n02791124_643' not in feasible_images
-[DEBUG] Skipping 'barber_chair/n02791124_373' not in feasible_images
-[DEBUG] Skipping 'barber_chair/n02791124_1140' not in feasible_images
-[DEBUG] Skipping 'barber_chair/n02791124_428' not in feasible_images
-[DEBUG] Skipping 'barber_chair/n02791124_117' not in feasible_images
-[DEBUG] Skipping 'barber_chair/n02791124_1113' not in feasible_images
-[DEBUG] Skipping 'coffee_mug/n03063599_8' not in feasible_images
-[DEBUG] Skipping 'coffee_mug/n03063599_1260' not in feasible_images
-[DEBUG] Skipping 'coffee_mug/n03063599_444' not in feasible_images
-[DEBUG] Skipping 'coffee_mug/n03063599_929' not in feasible_images
-[DEBUG] Skipping 'coffee_mug/n03063599_1137' not in feasible_images
-[DEBUG] Skipping 'coffee_mug/n03063599_537' not in feasible_images
-[DEBUG] Skipping 'coffee_mug/n03063599_1206' not in feasible_images
-[DEBUG] Skipping 'coffee_mug/n03063599_1172' not in feasible_images
-[DEBUG] Skipping 'coffee_mug/n03063599_526' not in feasible_images
-[DEBUG] Skipping 'coffee_mug/n03063599_234' not in feasible_images
-[DEBUG] Skipping 'coffee_mug/n03063599_436' not in feasible_images
-[DEBUG] Skipping 'coffee_mug/n03063599_256' not in feasible_images
-[DEBUG] Skipping 'coffee_mug/n03063599_1016' not in feasible_images
-[DEBUG] Skipping 'coffee_mug/n03063599_1190' not in feasible_images
-[DEBUG] Skipping 'coffee_mug/n03063599_127' not in feasible_images
-[DEBUG] Skipping 'coffee_mug/n03063599_685' not in feasible_images
-[DEBUG] Skipping 'coffee_mug/n03063599_1156' not in feasible_images
-[DEBUG] Skipping 'coffee_mug/n03063599_410' not in feasible_images
-[DEBUG] Skipping 'coffee_mug/n03063599_432' not in feasible_images
-[DEBUG] Skipping 'coffee_mug/n03063599_398' not in feasible_images
-[DEBUG] Skipping 'coffee_mug/n03063599_614' not in feasible_images
-[DEBUG] Skipping 'coffee_mug/n03063599_997' not in feasible_images
-[DEBUG] Skipping 'coffee_mug/n03063599_240' not in feasible_images
-[DEBUG] Skipping 'coffee_mug/n03063599_250' not in feasible_images
-[DEBUG] Skipping 'coffee_mug/n03063599_495' not in feasible_images
-[DEBUG] Skipping 'coffee_mug/n03063599_455' not in feasible_images
-[DEBUG] Skipping 'coffee_mug/n03063599_22' not in feasible_images
-[DEBUG] Skipping 'coffee_mug/n03063599_456' not in feasible_images
-[DEBUG] Skipping 'coffee_mug/n03063599_845' not in feasible_images
-[DEBUG] Skipping 'coffee_mug/n03063599_930' not in feasible_images
-[DEBUG] Skipping 'coffee_mug/n03063599_501' not in feasible_images
-[DEBUG] Skipping 'coffee_mug/n03063599_429' not in feasible_images
-[DEBUG] Skipping 'coffee_mug/n03063599_13' not in feasible_images
-[DEBUG] Skipping 'coffee_mug/n03063599_386' not in feasible_images
-[DEBUG] Skipping 'coffee_mug/n03063599_921' not in feasible_images
-[DEBUG] Skipping 'coffee_mug/n03063599_1169' not in feasible_images
-[DEBUG] Skipping 'coffee_mug/n03063599_738' not in feasible_images
-[DEBUG] Skipping 'coffee_mug/n03063599_447' not in feasible_images
-[DEBUG] Skipping 'coffee_mug/n03063599_1217' not in feasible_images
-[DEBUG] Skipping 'coffee_mug/n03063599_774' not in feasible_images
-[DEBUG] Skipping 'coffee_mug/n03063599_897' not in feasible_images
-[DEBUG] Skipping 'coffee_mug/n03063599_1076' not in feasible_images
-[DEBUG] Skipping 'coffee_mug/n03063599_1201' not in feasible_images
-[DEBUG] Skipping 'coffee_mug/n03063599_346' not in feasible_images
-[DEBUG] Skipping 'coffee_mug/n03063599_1325' not in feasible_images
-[DEBUG] Skipping 'coffee_mug/n03063599_584' not in feasible_images
-[DEBUG] Skipping 'coffee_mug/n03063599_662' not in feasible_images
-[DEBUG] Skipping 'coffee_mug/n03063599_1025' not in feasible_images
-[DEBUG] Skipping 'coffee_mug/n03063599_1244' not in feasible_images
-[DEBUG] Skipping 'coffee_mug/n03063599_489' not in feasible_images
-[DEBUG] Skipping 'coffee_mug/n03063599_753' not in feasible_images
-[DEBUG] Skipping 'coffee_mug/n03063599_28' not in feasible_images
-[DEBUG] Skipping 'coffee_mug/n03063599_496' not in feasible_images
-[DEBUG] Skipping 'coffee_mug/n03063599_797' not in feasible_images
-[DEBUG] Skipping 'coffee_mug/n03063599_1311' not in feasible_images
-[DEBUG] Skipping 'coffee_mug/n03063599_660' not in feasible_images
-[DEBUG] Skipping 'coffee_mug/n03063599_1215' not in feasible_images
-[DEBUG] Skipping 'coffee_mug/n03063599_1307' not in feasible_images
-[DEBUG] Skipping 'coffee_mug/n03063599_807' not in feasible_images
-[DEBUG] Skipping 'coffee_mug/n03063599_724' not in feasible_images
-[DEBUG] Skipping 'coffee_mug/n03063599_538' not in feasible_images
-[DEBUG] Skipping 'coffee_mug/n03063599_775' not in feasible_images
-[DEBUG] Skipping 'coffee_mug/n03063599_1289' not in feasible_images
-[DEBUG] Skipping 'coffee_mug/n03063599_1011' not in feasible_images
-[DEBUG] Skipping 'coffee_mug/n03063599_977' not in feasible_images
-[DEBUG] Skipping 'coffee_mug/n03063599_1026' not in feasible_images
-[DEBUG] Skipping 'coffee_mug/n03063599_645' not in feasible_images
-[DEBUG] Skipping 'coffee_mug/n03063599_63' not in feasible_images
-[DEBUG] Skipping 'coffee_mug/n03063599_646' not in feasible_images
-[DEBUG] Skipping 'coffee_mug/n03063599_677' not in feasible_images
-[DEBUG] Skipping 'coffee_mug/n03063599_949' not in feasible_images
-[DEBUG] Skipping 'coffee_mug/n03063599_695' not in feasible_images
-[DEBUG] Skipping 'coffee_mug/n03063599_918' not in feasible_images
-[DEBUG] Skipping 'coffee_mug/n03063599_510' not in feasible_images
-[DEBUG] Skipping 'coffee_mug/n03063599_525' not in feasible_images
-[DEBUG] Skipping 'coffee_mug/n03063599_60' not in feasible_images
-[DEBUG] Skipping 'coffee_mug/n03063599_900' not in feasible_images
-[DEBUG] Skipping 'coffee_mug/n03063599_890' not in feasible_images
-[DEBUG] Skipping 'coffee_mug/n03063599_479' not in feasible_images
-[DEBUG] Skipping 'coffee_mug/n03063599_749' not in feasible_images
-[DEBUG] Skipping 'coffee_mug/n03063599_1279' not in feasible_images
-[DEBUG] Skipping 'coffee_mug/n03063599_973' not in feasible_images
-[DEBUG] Skipping 'coffee_mug/n03063599_745' not in feasible_images
-[DEBUG] Skipping 'coffee_mug/n03063599_954' not in feasible_images
-[DEBUG] Skipping 'coffee_mug/n03063599_664' not in feasible_images
-[DEBUG] Skipping 'coffee_mug/n03063599_609' not in feasible_images
-[DEBUG] Skipping 'coffee_mug/n03063599_405' not in feasible_images
-[DEBUG] Skipping 'coffee_mug/n03063599_1069' not in feasible_images
-[DEBUG] Skipping 'coffee_mug/n03063599_647' not in feasible_images
-[DEBUG] Skipping 'coffee_mug/n03063599_508' not in feasible_images
-[DEBUG] Skipping 'coffee_mug/n03063599_114' not in feasible_images
-[DEBUG] Skipping 'coffee_mug/n03063599_1303' not in feasible_images
-[DEBUG] Skipping 'coffee_mug/n03063599_837' not in feasible_images
-[DEBUG] Skipping 'coffee_mug/n03063599_968' not in feasible_images
-[DEBUG] Skipping 'coffee_mug/n03063599_1281' not in feasible_images
-[DEBUG] Skipping 'coffee_mug/n03063599_1089' not in feasible_images
-[DEBUG] Skipping 'coffee_mug/n03063599_770' not in feasible_images
-[DEBUG] Skipping 'coffee_mug/n03063599_594' not in feasible_images
-[DEBUG] Skipping 'coffee_mug/n03063599_712' not in feasible_images
-[DEBUG] Skipping 'coffee_mug/n03063599_762' not in feasible_images
-[DEBUG] Skipping 'coffee_mug/n03063599_1275' not in feasible_images
-[DEBUG] Skipping 'coffee_mug/n03063599_1230' not in feasible_images
-[DEBUG] Skipping 'coffee_mug/n03063599_334' not in feasible_images
-[DEBUG] Skipping 'coffee_mug/n03063599_1253' not in feasible_images
-[DEBUG] Skipping 'coffee_mug/n03063599_1241' not in feasible_images
-[DEBUG] Skipping 'coffee_mug/n03063599_1295' not in feasible_images
-[DEBUG] Skipping 'coffee_mug/n03063599_500' not in feasible_images
-[DEBUG] Skipping 'coffee_mug/n03063599_468' not in feasible_images
-[DEBUG] Skipping 'coffee_mug/n03063599_465' not in feasible_images
-[DEBUG] Skipping 'coffee_mug/n03063599_491' not in feasible_images
-[DEBUG] Skipping 'coffee_mug/n03063599_833' not in feasible_images
-[DEBUG] Skipping 'coffee_mug/n03063599_275' not in feasible_images
-[DEBUG] Skipping 'coffee_mug/n03063599_122' not in feasible_images
-[DEBUG] Skipping 'coffee_mug/n03063599_1312' not in feasible_images
-[DEBUG] Skipping 'coffee_mug/n03063599_308' not in feasible_images
-[DEBUG] Skipping 'coffee_mug/n03063599_452' not in feasible_images
-[DEBUG] Skipping 'coffee_mug/n03063599_945' not in feasible_images
-[DEBUG] Skipping 'coffee_mug/n03063599_1262' not in feasible_images
-[DEBUG] Skipping 'coffee_mug/n03063599_1115' not in feasible_images
-[DEBUG] Skipping 'coffee_mug/n03063599_2' not in feasible_images
-[DEBUG] Skipping 'coffee_mug/n03063599_667' not in feasible_images
-[DEBUG] Skipping 'coffee_mug/n03063599_54' not in feasible_images
-[DEBUG] Skipping 'coffee_mug/n03063599_96' not in feasible_images
-[DEBUG] Skipping 'coffee_mug/n03063599_588' not in feasible_images
-[DEBUG] Skipping 'coffee_mug/n03063599_477' not in feasible_images
-[DEBUG] Skipping 'coffee_mug/n03063599_858' not in feasible_images
-[DEBUG] Skipping 'coffee_mug/n03063599_991' not in feasible_images
-[DEBUG] Skipping 'coffee_mug/n03063599_959' not in feasible_images
-[DEBUG] Skipping 'coffee_mug/n03063599_1221' not in feasible_images
-[DEBUG] Skipping 'coffee_mug/n03063599_748' not in feasible_images
-[DEBUG] Skipping 'coffee_mug/n03063599_732' not in feasible_images
-[DEBUG] Skipping 'coffee_mug/n03063599_1276' not in feasible_images
-[DEBUG] Skipping 'coffee_mug/n03063599_88' not in feasible_images
-[DEBUG] Skipping 'coffee_mug/n03063599_438' not in feasible_images
-[DEBUG] Skipping 'coffee_mug/n03063599_1013' not in feasible_images
-[DEBUG] Skipping 'coffee_mug/n03063599_1290' not in feasible_images
-[DEBUG] Skipping 'coffee_mug/n03063599_558' not in feasible_images
-[DEBUG] Skipping 'desk/n03179701_327' not in feasible_images
-[DEBUG] Skipping 'desk/n03179701_192' not in feasible_images
-[DEBUG] Skipping 'desk/n03179701_86' not in feasible_images
-[DEBUG] Skipping 'desk/n03179701_1043' not in feasible_images
-[DEBUG] Skipping 'desk/n03179701_103' not in feasible_images
-[DEBUG] Skipping 'desk/n03179701_673' not in feasible_images
-[DEBUG] Skipping 'desk/n03179701_84' not in feasible_images
-[DEBUG] Skipping 'desk/n03179701_269' not in feasible_images
-[DEBUG] Skipping 'desk/n03179701_428' not in feasible_images
-[DEBUG] Skipping 'desk/n03179701_1594' not in feasible_images
-[DEBUG] Skipping 'desk/n03179701_1071' not in feasible_images
-[DEBUG] Skipping 'desk/n03179701_1790' not in feasible_images
-[DEBUG] Skipping 'desk/n03179701_686' not in feasible_images
-[DEBUG] Skipping 'desk/n03179701_303' not in feasible_images
-[DEBUG] Skipping 'desk/n03179701_1485' not in feasible_images
-[DEBUG] Skipping 'desk/n03179701_105' not in feasible_images
-[DEBUG] Skipping 'desk/n03179701_1058' not in feasible_images
-[DEBUG] Skipping 'desk/n03179701_247' not in feasible_images
-[DEBUG] Skipping 'desk/n03179701_570' not in feasible_images
-[DEBUG] Skipping 'desk/n03179701_751' not in feasible_images
-[DEBUG] Skipping 'desk/n03179701_1' not in feasible_images
-[DEBUG] Skipping 'desk/n03179701_157' not in feasible_images
-[DEBUG] Skipping 'desk/n03179701_53' not in feasible_images
-[DEBUG] Skipping 'desk/n03179701_392' not in feasible_images
-[DEBUG] Skipping 'desk/n03179701_1135' not in feasible_images
-[DEBUG] Skipping 'desk/n03179701_123' not in feasible_images
-[DEBUG] Skipping 'desk/n03179701_993' not in feasible_images
-[DEBUG] Skipping 'desk/n03179701_1699' not in feasible_images
-[DEBUG] Skipping 'desk/n03179701_1349' not in feasible_images
-[DEBUG] Skipping 'desk/n03179701_1647' not in feasible_images
-[DEBUG] Skipping 'desk/n03179701_301' not in feasible_images
-[DEBUG] Skipping 'desk/n03179701_901' not in feasible_images
-[DEBUG] Skipping 'desk/n03179701_372' not in feasible_images
-[DEBUG] Skipping 'desk/n03179701_1216' not in feasible_images
-[DEBUG] Skipping 'desk/n03179701_170' not in feasible_images
-[DEBUG] Skipping 'desk/n03179701_1178' not in feasible_images
-[DEBUG] Skipping 'desk/n03179701_1259' not in feasible_images
-[DEBUG] Skipping 'desk/n03179701_1557' not in feasible_images
-[DEBUG] Skipping 'desk/n03179701_1080' not in feasible_images
-[DEBUG] Skipping 'desk/n03179701_450' not in feasible_images
-[DEBUG] Skipping 'desk/n03179701_305' not in feasible_images
-[DEBUG] Skipping 'desk/n03179701_34' not in feasible_images
-[DEBUG] Skipping 'desk/n03179701_579' not in feasible_images
-[DEBUG] Skipping 'desk/n03179701_1500' not in feasible_images
-[DEBUG] Skipping 'desk/n03179701_366' not in feasible_images
-[DEBUG] Skipping 'desk/n03179701_98' not in feasible_images
-[DEBUG] Skipping 'desk/n03179701_1055' not in feasible_images
-[DEBUG] Skipping 'desk/n03179701_430' not in feasible_images
-[DEBUG] Skipping 'desk/n03179701_4' not in feasible_images
-[DEBUG] Skipping 'desk/n03179701_316' not in feasible_images
-[DEBUG] Skipping 'desk/n03179701_242' not in feasible_images
-[DEBUG] Skipping 'desk/n03179701_865' not in feasible_images
-[DEBUG] Skipping 'desk/n03179701_294' not in feasible_images
-[DEBUG] Skipping 'desk/n03179701_1688' not in feasible_images
-[DEBUG] Skipping 'desk/n03179701_844' not in feasible_images
-[DEBUG] Skipping 'desk/n03179701_1381' not in feasible_images
-[DEBUG] Skipping 'desk/n03179701_571' not in feasible_images
-[DEBUG] Skipping 'desk/n03179701_939' not in feasible_images
-[DEBUG] Skipping 'desk/n03179701_607' not in feasible_images
-[DEBUG] Skipping 'desk/n03179701_1428' not in feasible_images
-[DEBUG] Skipping 'desk/n03179701_495' not in feasible_images
-[DEBUG] Skipping 'desk/n03179701_1420' not in feasible_images
-[DEBUG] Skipping 'desk/n03179701_63' not in feasible_images
-[DEBUG] Skipping 'desk/n03179701_478' not in feasible_images
-[DEBUG] Skipping 'desk/n03179701_879' not in feasible_images
-[DEBUG] Skipping 'desk/n03179701_1095' not in feasible_images
-[DEBUG] Skipping 'desk/n03179701_1533' not in feasible_images
-[DEBUG] Skipping 'desk/n03179701_711' not in feasible_images
-[DEBUG] Skipping 'desk/n03179701_888' not in feasible_images
-[DEBUG] Skipping 'desk/n03179701_141' not in feasible_images
-[DEBUG] Skipping 'desk/n03179701_390' not in feasible_images
-[DEBUG] Skipping 'desk/n03179701_837' not in feasible_images
-[DEBUG] Skipping 'desk/n03179701_1371' not in feasible_images
-[DEBUG] Skipping 'desk/n03179701_1124' not in feasible_images
-[DEBUG] Skipping 'electric_guitar/n03085013_2594' not in feasible_images
-[DEBUG] Skipping 'electric_guitar/n03085013_1944' not in feasible_images
-[DEBUG] Skipping 'electric_guitar/n03085013_1859' not in feasible_images
-[DEBUG] Skipping 'electric_guitar/n03085013_2945' not in feasible_images
-[DEBUG] Skipping 'electric_guitar/n03085013_2122' not in feasible_images
-[DEBUG] Skipping 'electric_guitar/n03085013_2090' not in feasible_images
-[DEBUG] Skipping 'electric_guitar/n03085013_2961' not in feasible_images
-[DEBUG] Skipping 'electric_guitar/n03085013_4542' not in feasible_images
-[DEBUG] Skipping 'electric_guitar/n03085013_1483' not in feasible_images
-[DEBUG] Skipping 'electric_guitar/n03085013_4754' not in feasible_images
-[DEBUG] Skipping 'electric_guitar/n03085013_4512' not in feasible_images
-[DEBUG] Skipping 'electric_guitar/n03085013_2114' not in feasible_images
-[DEBUG] Skipping 'electric_guitar/n03085013_5738' not in feasible_images
-[DEBUG] Skipping 'electric_guitar/n03085013_4489' not in feasible_images
-[DEBUG] Skipping 'electric_guitar/n03085013_108' not in feasible_images
-[DEBUG] Skipping 'electric_guitar/n03085013_3264' not in feasible_images
-[DEBUG] Skipping 'electric_guitar/n03085013_2139' not in feasible_images
-[DEBUG] Skipping 'electric_guitar/n03085013_3859' not in feasible_images
-[DEBUG] Skipping 'electric_guitar/n03085013_5846' not in feasible_images
-[DEBUG] Skipping 'electric_guitar/n03085013_2066' not in feasible_images
-[DEBUG] Skipping 'electric_guitar/n03085013_2968' not in feasible_images
-[DEBUG] Skipping 'electric_guitar/n03085013_2919' not in feasible_images
-[DEBUG] Skipping 'electric_guitar/n03085013_3521' not in feasible_images
-[DEBUG] Skipping 'electric_guitar/n03085013_1387' not in feasible_images
-[DEBUG] Skipping 'electric_guitar/n03085013_3178' not in feasible_images
-[DEBUG] Skipping 'electric_guitar/n03085013_3656' not in feasible_images
-[DEBUG] Skipping 'electric_guitar/n03085013_5539' not in feasible_images
-[DEBUG] Skipping 'electric_guitar/n03085013_2508' not in feasible_images
-[DEBUG] Skipping 'electric_guitar/n03085013_689' not in feasible_images
-[DEBUG] Skipping 'electric_guitar/n03085013_919' not in feasible_images
-[DEBUG] Skipping 'electric_guitar/n03085013_2143' not in feasible_images
-[DEBUG] Skipping 'electric_guitar/n03085013_1812' not in feasible_images
-[DEBUG] Skipping 'electric_guitar/n03085013_4298' not in feasible_images
-[DEBUG] Skipping 'electric_guitar/n03085013_4172' not in feasible_images
-[DEBUG] Skipping 'electric_guitar/n03085013_4180' not in feasible_images
-[DEBUG] Skipping 'electric_guitar/n03085013_630' not in feasible_images
-[DEBUG] Skipping 'electric_guitar/n03085013_2752' not in feasible_images
-[DEBUG] Skipping 'electric_guitar/n03085013_4136' not in feasible_images
-[DEBUG] Skipping 'electric_guitar/n03085013_688' not in feasible_images
-[DEBUG] Skipping 'electric_guitar/n03085013_161' not in feasible_images
-[DEBUG] Skipping 'electric_guitar/n03085013_233' not in feasible_images
-[DEBUG] Skipping 'electric_guitar/n03085013_3691' not in feasible_images
-[DEBUG] Skipping 'electric_guitar/n03085013_3002' not in feasible_images
-[DEBUG] Skipping 'electric_guitar/n03085013_4281' not in feasible_images
-[DEBUG] Skipping 'electric_guitar/n03085013_5440' not in feasible_images
-[DEBUG] Skipping 'electric_guitar/n03085013_3175' not in feasible_images
-[DEBUG] Skipping 'electric_guitar/n03085013_743' not in feasible_images
-[DEBUG] Skipping 'electric_guitar/n03085013_2725' not in feasible_images
-[DEBUG] Skipping 'electric_guitar/n03085013_4856' not in feasible_images
-[DEBUG] Skipping 'electric_guitar/n03085013_5568' not in feasible_images
-[DEBUG] Skipping 'electric_guitar/n03085013_1312' not in feasible_images
-[DEBUG] Skipping 'electric_guitar/n03085013_1188' not in feasible_images
-[DEBUG] Skipping 'electric_guitar/n03085013_2552' not in feasible_images
-[DEBUG] Skipping 'electric_guitar/n03085013_3980' not in feasible_images
-[DEBUG] Skipping 'electric_guitar/n03085013_5579' not in feasible_images
-[DEBUG] Skipping 'electric_guitar/n03085013_4814' not in feasible_images
-[DEBUG] Skipping 'electric_guitar/n03085013_5141' not in feasible_images
-[DEBUG] Skipping 'electric_guitar/n03085013_2270' not in feasible_images
-[DEBUG] Skipping 'electric_guitar/n03085013_4823' not in feasible_images
-[DEBUG] Skipping 'electric_guitar/n03085013_4160' not in feasible_images
-[DEBUG] Skipping 'electric_guitar/n03085013_914' not in feasible_images
-[DEBUG] Skipping 'electric_guitar/n03085013_5501' not in feasible_images
-[DEBUG] Skipping 'electric_guitar/n03085013_3084' not in feasible_images
-[DEBUG] Skipping 'electric_guitar/n03085013_3095' not in feasible_images
-[DEBUG] Skipping 'electric_guitar/n03085013_2864' not in feasible_images
-[DEBUG] Skipping 'electric_guitar/n03085013_2227' not in feasible_images
-[DEBUG] Skipping 'electric_guitar/n03085013_3119' not in feasible_images
-[DEBUG] Skipping 'electric_guitar/n03085013_584' not in feasible_images
-[DEBUG] Skipping 'electric_guitar/n03085013_2166' not in feasible_images
-[DEBUG] Skipping 'electric_guitar/n03085013_3607' not in feasible_images
-[DEBUG] Skipping 'electric_guitar/n03085013_4936' not in feasible_images
-[DEBUG] Skipping 'electric_guitar/n03085013_5714' not in feasible_images
-[DEBUG] Skipping 'electric_guitar/n03085013_2335' not in feasible_images
-[DEBUG] Skipping 'electric_guitar/n03085013_4600' not in feasible_images
-[DEBUG] Skipping 'electric_guitar/n03085013_5353' not in feasible_images
-[DEBUG] Skipping 'electric_guitar/n03085013_2842' not in feasible_images
-[DEBUG] Skipping 'electric_guitar/n03085013_3632' not in feasible_images
-[DEBUG] Skipping 'electric_guitar/n03085013_3733' not in feasible_images
-[DEBUG] Skipping 'electric_guitar/n03085013_785' not in feasible_images
-[DEBUG] Skipping 'electric_guitar/n03085013_4156' not in feasible_images
-[DEBUG] Skipping 'electric_guitar/n03085013_5819' not in feasible_images
-[DEBUG] Skipping 'electric_guitar/n03085013_3539' not in feasible_images
-[DEBUG] Skipping 'electric_guitar/n03085013_3204' not in feasible_images
-[DEBUG] Skipping 'electric_guitar/n03085013_4636' not in feasible_images
-[DEBUG] Skipping 'electric_guitar/n03085013_4884' not in feasible_images
-[DEBUG] Skipping 'electric_guitar/n03085013_5812' not in feasible_images
-[DEBUG] Skipping 'electric_guitar/n03085013_2483' not in feasible_images
-[DEBUG] Skipping 'electric_guitar/n03085013_3666' not in feasible_images
-[DEBUG] Skipping 'electric_guitar/n03085013_5054' not in feasible_images
-[DEBUG] Skipping 'electric_guitar/n03085013_999' not in feasible_images
-[DEBUG] Skipping 'electric_guitar/n03085013_2625' not in feasible_images
-[DEBUG] Skipping 'electric_guitar/n03085013_2149' not in feasible_images
-[DEBUG] Skipping 'electric_guitar/n03085013_655' not in feasible_images
-[DEBUG] Skipping 'electric_guitar/n03085013_1704' not in feasible_images
-[DEBUG] Skipping 'electric_guitar/n03085013_2936' not in feasible_images
-[DEBUG] Skipping 'electric_guitar/n03085013_4780' not in feasible_images
-[DEBUG] Skipping 'electric_guitar/n03085013_5430' not in feasible_images
-[DEBUG] Skipping 'electric_guitar/n03085013_3007' not in feasible_images
-[DEBUG] Skipping 'electric_guitar/n03085013_5622' not in feasible_images
-[DEBUG] Skipping 'electric_guitar/n03085013_4374' not in feasible_images
-[DEBUG] Skipping 'electric_guitar/n03085013_679' not in feasible_images
-[DEBUG] Skipping 'electric_guitar/n03085013_2092' not in feasible_images
-[DEBUG] Skipping 'electric_guitar/n03085013_4941' not in feasible_images
-[DEBUG] Skipping 'electric_guitar/n03085013_2277' not in feasible_images
-[DEBUG] Skipping 'electric_guitar/n03085013_3489' not in feasible_images
-[DEBUG] Skipping 'electric_guitar/n03085013_1070' not in feasible_images
-[DEBUG] Skipping 'electric_guitar/n03085013_3148' not in feasible_images
-[DEBUG] Skipping 'electric_guitar/n03085013_5611' not in feasible_images
-[DEBUG] Skipping 'electric_guitar/n03085013_5667' not in feasible_images
-[DEBUG] Skipping 'electric_guitar/n03085013_3078' not in feasible_images
-[DEBUG] Skipping 'electric_guitar/n03085013_2169' not in feasible_images
-[DEBUG] Skipping 'electric_guitar/n03085013_2640' not in feasible_images
-[DEBUG] Skipping 'electric_guitar/n03085013_2061' not in feasible_images
-[DEBUG] Skipping 'electric_guitar/n03085013_3665' not in feasible_images
-[DEBUG] Skipping 'electric_guitar/n03085013_3171' not in feasible_images
-[DEBUG] Skipping 'electric_guitar/n03085013_3098' not in feasible_images
-[DEBUG] Skipping 'electric_guitar/n03085013_1830' not in feasible_images
-[DEBUG] Skipping 'electric_guitar/n03085013_661' not in feasible_images
-[DEBUG] Skipping 'electric_guitar/n03085013_1877' not in feasible_images
-[DEBUG] Skipping 'electric_guitar/n03085013_1824' not in feasible_images
-[DEBUG] Skipping 'electric_guitar/n03085013_353' not in feasible_images
-[DEBUG] Skipping 'electric_guitar/n03085013_5726' not in feasible_images
-[DEBUG] Skipping 'electric_guitar/n03085013_3257' not in feasible_images
-[DEBUG] Skipping 'electric_guitar/n03085013_2362' not in feasible_images
-[DEBUG] Skipping 'park_bench/n03891251_140' not in feasible_images
-[DEBUG] Skipping 'park_bench/n03891251_344' not in feasible_images
-[DEBUG] Skipping 'park_bench/n03891251_233' not in feasible_images
-[DEBUG] Skipping 'park_bench/n03891251_352' not in feasible_images
-[DEBUG] Skipping 'park_bench/n03891251_286' not in feasible_images
-[DEBUG] Skipping 'park_bench/n03891251_426' not in feasible_images
-[DEBUG] Skipping 'park_bench/n03891251_200' not in feasible_images
-[DEBUG] Skipping 'park_bench/n03891251_473' not in feasible_images
-[DEBUG] Skipping 'park_bench/n03891251_346' not in feasible_images
-[DEBUG] Skipping 'park_bench/n03891251_13' not in feasible_images
-[DEBUG] Skipping 'park_bench/n03891251_539' not in feasible_images
-[DEBUG] Skipping 'park_bench/n03891251_492' not in feasible_images
-[DEBUG] Skipping 'park_bench/n03891251_409' not in feasible_images
-[DEBUG] Skipping 'park_bench/n03891251_570' not in feasible_images
-[DEBUG] Skipping 'park_bench/n03891251_157' not in feasible_images
-[DEBUG] Skipping 'park_bench/n03891251_592' not in feasible_images
-[DEBUG] Skipping 'park_bench/n03891251_128' not in feasible_images
-[DEBUG] Skipping 'park_bench/n03891251_198' not in feasible_images
-[DEBUG] Skipping 'park_bench/n03891251_368' not in feasible_images
-[DEBUG] Skipping 'park_bench/n03891251_112' not in feasible_images
-[DEBUG] Skipping 'park_bench/n03891251_108' not in feasible_images
-[DEBUG] Skipping 'park_bench/n03891251_435' not in feasible_images
-[DEBUG] Skipping 'park_bench/n03891251_63' not in feasible_images
-[DEBUG] Skipping 'park_bench/n03891251_215' not in feasible_images
-[DEBUG] Skipping 'park_bench/n03891251_183' not in feasible_images
-[DEBUG] Skipping 'park_bench/n03891251_455' not in feasible_images
-[DEBUG] Skipping 'park_bench/n03891251_419' not in feasible_images
-[DEBUG] Skipping 'park_bench/n03891251_442' not in feasible_images
-[DEBUG] Skipping 'park_bench/n03891251_97' not in feasible_images
-[DEBUG] Skipping 'park_bench/n03891251_40' not in feasible_images
-[DEBUG] Skipping 'park_bench/n03891251_573' not in feasible_images
-[DEBUG] Skipping 'park_bench/n03891251_489' not in feasible_images
-[DEBUG] Skipping 'park_bench/n03891251_234' not in feasible_images
-[DEBUG] Skipping 'park_bench/n03891251_467' not in feasible_images
-[DEBUG] Skipping 'park_bench/n03891251_7' not in feasible_images
-[DEBUG] Skipping 'park_bench/n03891251_299' not in feasible_images
-[DEBUG] Skipping 'park_bench/n03891251_478' not in feasible_images
-[DEBUG] Skipping 'park_bench/n03891251_148' not in feasible_images
-[DEBUG] Skipping 'park_bench/n03891251_262' not in feasible_images
-[DEBUG] Skipping 'park_bench/n03891251_370' not in feasible_images
-[DEBUG] Skipping 'park_bench/n03891251_445' not in feasible_images
-[DEBUG] Skipping 'park_bench/n03891251_376' not in feasible_images
-[DEBUG] Skipping 'park_bench/n03891251_322' not in feasible_images
-[DEBUG] Skipping 'park_bench/n03891251_321' not in feasible_images
-[DEBUG] Skipping 'park_bench/n03891251_515' not in feasible_images
-[DEBUG] Skipping 'park_bench/n03891251_595' not in feasible_images
-[DEBUG] Skipping 'park_bench/n03891251_551' not in feasible_images
-[DEBUG] Skipping 'park_bench/n03891251_137' not in feasible_images
-[DEBUG] Skipping 'park_bench/n03891251_564' not in feasible_images
-[DEBUG] Skipping 'park_bench/n03891251_111' not in feasible_images
-[DEBUG] Skipping 'park_bench/n03891251_307' not in feasible_images
-[DEBUG] Skipping 'park_bench/n03891251_511' not in feasible_images
-[DEBUG] Skipping 'park_bench/n03891251_124' not in feasible_images
-[DEBUG] Skipping 'park_bench/n03891251_32' not in feasible_images
-[DEBUG] Skipping 'park_bench/n03891251_171' not in feasible_images
-[DEBUG] Skipping 'park_bench/n03891251_214' not in feasible_images
-[DEBUG] Skipping 'park_bench/n03891251_371' not in feasible_images
-[DEBUG] Skipping 'park_bench/n03891251_86' not in feasible_images
-[DEBUG] Skipping 'park_bench/n03891251_314' not in feasible_images
-[DEBUG] Skipping 'park_bench/n03891251_486' not in feasible_images
-[DEBUG] Skipping 'park_bench/n03891251_460' not in feasible_images
-[DEBUG] Skipping 'park_bench/n03891251_336' not in feasible_images
-[DEBUG] Skipping 'park_bench/n03891251_572' not in feasible_images
-[DEBUG] Skipping 'park_bench/n03891251_114' not in feasible_images
-[DEBUG] Skipping 'park_bench/n03891251_67' not in feasible_images
-[DEBUG] Skipping 'park_bench/n03891251_241' not in feasible_images
-[DEBUG] Skipping 'park_bench/n03891251_384' not in feasible_images
-[DEBUG] Skipping 'park_bench/n03891251_575' not in feasible_images
-[DEBUG] Skipping 'park_bench/n03891251_5' not in feasible_images
-[DEBUG] Skipping 'park_bench/n03891251_334' not in feasible_images
-[DEBUG] Skipping 'park_bench/n03891251_436' not in feasible_images
-[DEBUG] Skipping 'park_bench/n03891251_356' not in feasible_images
-[DEBUG] Skipping 'park_bench/n03891251_117' not in feasible_images
-[DEBUG] Skipping 'park_bench/n03891251_383' not in feasible_images
-[DEBUG] Skipping 'park_bench/n03891251_574' not in feasible_images
-[DEBUG] Skipping 'park_bench/n03891251_296' not in feasible_images
-[DEBUG] Skipping 'park_bench/n03891251_463' not in feasible_images
-[DEBUG] Skipping 'park_bench/n03891251_94' not in feasible_images
-[DEBUG] Skipping 'park_bench/n03891251_289' not in feasible_images
-[DEBUG] Skipping 'park_bench/n03891251_402' not in feasible_images
-[DEBUG] Skipping 'pitcher/n03950228_2481' not in feasible_images
-[DEBUG] Skipping 'pitcher/n03950228_1054' not in feasible_images
-[DEBUG] Skipping 'pitcher/n03950228_4579' not in feasible_images
-[DEBUG] Skipping 'pitcher/n03950228_3621' not in feasible_images
-[DEBUG] Skipping 'pitcher/n03950228_2081' not in feasible_images
-[DEBUG] Skipping 'pitcher/n03950228_3357' not in feasible_images
-[DEBUG] Skipping 'pitcher/n03950228_1623' not in feasible_images
-[DEBUG] Skipping 'pitcher/n03950228_505' not in feasible_images
-[DEBUG] Skipping 'pitcher/n03950228_78' not in feasible_images
-[DEBUG] Skipping 'pitcher/n03950228_3046' not in feasible_images
-[DEBUG] Skipping 'pitcher/n03950228_2909' not in feasible_images
-[DEBUG] Skipping 'pitcher/n03950228_127' not in feasible_images
-[DEBUG] Skipping 'pitcher/n03950228_1473' not in feasible_images
-[DEBUG] Skipping 'pitcher/n03950228_1226' not in feasible_images
-[DEBUG] Skipping 'pitcher/n03950228_4273' not in feasible_images
-[DEBUG] Skipping 'pitcher/n03950228_2816' not in feasible_images
-[DEBUG] Skipping 'pitcher/n03950228_2586' not in feasible_images
-[DEBUG] Skipping 'pitcher/n03950228_1541' not in feasible_images
-[DEBUG] Skipping 'pitcher/n03950228_333' not in feasible_images
-[DEBUG] Skipping 'pitcher/n03950228_2280' not in feasible_images
-[DEBUG] Skipping 'pitcher/n03950228_3259' not in feasible_images
-[DEBUG] Skipping 'pitcher/n03950228_2078' not in feasible_images
-[DEBUG] Skipping 'pitcher/n03950228_4231' not in feasible_images
-[DEBUG] Skipping 'pitcher/n03950228_3474' not in feasible_images
-[DEBUG] Skipping 'pitcher/n03950228_3906' not in feasible_images
-[DEBUG] Skipping 'pitcher/n03950228_1469' not in feasible_images
-[DEBUG] Skipping 'pitcher/n03950228_2457' not in feasible_images
-[DEBUG] Skipping 'pitcher/n03950228_2862' not in feasible_images
-[DEBUG] Skipping 'pitcher/n03950228_4049' not in feasible_images
-[DEBUG] Skipping 'pitcher/n03950228_39' not in feasible_images
-[DEBUG] Skipping 'pitcher/n03950228_1670' not in feasible_images
-[DEBUG] Skipping 'pitcher/n03950228_1843' not in feasible_images
-[DEBUG] Skipping 'pitcher/n03950228_1191' not in feasible_images
-[DEBUG] Skipping 'pitcher/n03950228_1435' not in feasible_images
-[DEBUG] Skipping 'pitcher/n03950228_3072' not in feasible_images
-[DEBUG] Skipping 'pitcher/n03950228_4475' not in feasible_images
-[DEBUG] Skipping 'pitcher/n03950228_2320' not in feasible_images
-[DEBUG] Skipping 'pitcher/n03950228_4625' not in feasible_images
-[DEBUG] Skipping 'pitcher/n03950228_2335' not in feasible_images
-[DEBUG] Skipping 'pitcher/n03950228_3916' not in feasible_images
-[DEBUG] Skipping 'pitcher/n03950228_2664' not in feasible_images
-[DEBUG] Skipping 'pitcher/n03950228_2741' not in feasible_images
-[DEBUG] Skipping 'pitcher/n03950228_3200' not in feasible_images
-[DEBUG] Skipping 'pitcher/n03950228_378' not in feasible_images
-[DEBUG] Skipping 'pitcher/n03950228_19' not in feasible_images
-[DEBUG] Skipping 'pitcher/n03950228_4620' not in feasible_images
-[DEBUG] Skipping 'pitcher/n03950228_237' not in feasible_images
-[DEBUG] Skipping 'pitcher/n03950228_4362' not in feasible_images
-[DEBUG] Skipping 'pitcher/n03950228_1746' not in feasible_images
-[DEBUG] Skipping 'pitcher/n03950228_160' not in feasible_images
-[DEBUG] Skipping 'pitcher/n03950228_2911' not in feasible_images
-[DEBUG] Skipping 'pitcher/n03950228_336' not in feasible_images
-[DEBUG] Skipping 'pitcher/n03950228_3017' not in feasible_images
-[DEBUG] Skipping 'pitcher/n03950228_1544' not in feasible_images
-[DEBUG] Skipping 'pitcher/n03950228_424' not in feasible_images
-[DEBUG] Skipping 'pitcher/n03950228_26' not in feasible_images
-[DEBUG] Skipping 'pitcher/n03950228_1517' not in feasible_images
-[DEBUG] Skipping 'pitcher/n03950228_3333' not in feasible_images
-[DEBUG] Skipping 'pitcher/n03950228_2865' not in feasible_images
-[DEBUG] Skipping 'pitcher/n03950228_4277' not in feasible_images
-[DEBUG] Skipping 'pitcher/n03950228_4765' not in feasible_images
-[DEBUG] Skipping 'pitcher/n03950228_2219' not in feasible_images
-[DEBUG] Skipping 'pitcher/n03950228_2483' not in feasible_images
-[DEBUG] Skipping 'pitcher/n03950228_4533' not in feasible_images
-[DEBUG] Skipping 'pitcher/n03950228_1450' not in feasible_images
-[DEBUG] Skipping 'pitcher/n03950228_218' not in feasible_images
-[DEBUG] Skipping 'purse/n04026417_2858' not in feasible_images
-[DEBUG] Skipping 'purse/n04026417_3239' not in feasible_images
-[DEBUG] Skipping 'purse/n04026417_1760' not in feasible_images
-[DEBUG] Skipping 'purse/n04026417_2618' not in feasible_images
-[DEBUG] Skipping 'rocking_chair/n04099969_2336' not in feasible_images
-[DEBUG] Skipping 'rocking_chair/n04099969_1444' not in feasible_images
-[DEBUG] Skipping 'rocking_chair/n04099969_905' not in feasible_images
-[DEBUG] Skipping 'rocking_chair/n04099969_2316' not in feasible_images
-[DEBUG] Skipping 'rocking_chair/n04099969_573' not in feasible_images
-[DEBUG] Skipping 'rocking_chair/n04099969_451' not in feasible_images
-[DEBUG] Skipping 'rocking_chair/n04099969_1231' not in feasible_images
-[DEBUG] Skipping 'rocking_chair/n04099969_1854' not in feasible_images
-[DEBUG] Skipping 'rocking_chair/n04099969_2374' not in feasible_images
-[DEBUG] Skipping 'rocking_chair/n04099969_1879' not in feasible_images
-[DEBUG] Skipping 'rocking_chair/n04099969_2233' not in feasible_images
-[DEBUG] Skipping 'rocking_chair/n04099969_981' not in feasible_images
-[DEBUG] Skipping 'rocking_chair/n04099969_513' not in feasible_images
-[DEBUG] Skipping 'rocking_chair/n04099969_246' not in feasible_images
-[DEBUG] Skipping 'rocking_chair/n04099969_1901' not in feasible_images
-[DEBUG] Skipping 'rocking_chair/n04099969_2339' not in feasible_images
-[DEBUG] Skipping 'rocking_chair/n04099969_319' not in feasible_images
-[DEBUG] Skipping 'rocking_chair/n04099969_1126' not in feasible_images
-[DEBUG] Skipping 'rocking_chair/n04099969_1028' not in feasible_images
-[DEBUG] Skipping 'rocking_chair/n04099969_1805' not in feasible_images
-[DEBUG] Skipping 'rocking_chair/n04099969_1427' not in feasible_images
-[DEBUG] Skipping 'rocking_chair/n04099969_2113' not in feasible_images
-[DEBUG] Skipping 'rocking_chair/n04099969_43' not in feasible_images
-[DEBUG] Skipping 'rocking_chair/n04099969_465' not in feasible_images
-[DEBUG] Skipping 'rocking_chair/n04099969_52' not in feasible_images
-[DEBUG] Skipping 'rocking_chair/n04099969_114' not in feasible_images
-[DEBUG] Skipping 'rocking_chair/n04099969_1229' not in feasible_images
-[DEBUG] Skipping 'rocking_chair/n04099969_1802' not in feasible_images
-[DEBUG] Skipping 'rocking_chair/n04099969_381' not in feasible_images
-[DEBUG] Skipping 'rocking_chair/n04099969_2398' not in feasible_images
-[DEBUG] Skipping 'rocking_chair/n04099969_1652' not in feasible_images
-[DEBUG] Skipping 'rocking_chair/n04099969_1212' not in feasible_images
-[DEBUG] Skipping 'rocking_chair/n04099969_1075' not in feasible_images
-[DEBUG] Skipping 'rocking_chair/n04099969_142' not in feasible_images
-[DEBUG] Skipping 'rocking_chair/n04099969_8' not in feasible_images
-[DEBUG] Skipping 'rocking_chair/n04099969_65' not in feasible_images
-[DEBUG] Skipping 'rocking_chair/n04099969_2354' not in feasible_images
-[DEBUG] Skipping 'rocking_chair/n04099969_1738' not in feasible_images
-[DEBUG] Skipping 'water_bottle/n04557648_1293' not in feasible_images
-[DEBUG] Skipping 'water_bottle/n04557648_684' not in feasible_images
-[DEBUG] Skipping 'water_bottle/n04557648_1210' not in feasible_images
-[DEBUG] Skipping 'water_bottle/n04557648_487' not in feasible_images
-[DEBUG] Skipping 'water_bottle/n04557648_33' not in feasible_images
-[DEBUG] Skipping 'water_bottle/n04557648_414' not in feasible_images
-[DEBUG] Skipping 'water_bottle/n04557648_1317' not in feasible_images
-[DEBUG] Skipping 'water_bottle/n04557648_1067' not in feasible_images
-[DEBUG] Skipping 'water_bottle/n04557648_631' not in feasible_images
-[DEBUG] Skipping 'water_bottle/n04557648_1498' not in feasible_images
-[DEBUG] Skipping 'water_bottle/n04557648_617' not in feasible_images
-[DEBUG] Skipping 'water_bottle/n04557648_299' not in feasible_images
-[DEBUG] Skipping 'water_bottle/n04557648_993' not in feasible_images
-[DEBUG] Skipping 'water_bottle/n04557648_1320' not in feasible_images
-[DEBUG] Skipping 'water_bottle/n04557648_1479' not in feasible_images
-[DEBUG] Skipping 'water_bottle/n04557648_942' not in feasible_images
-[DEBUG] Skipping 'water_bottle/n04557648_591' not in feasible_images
-[DEBUG] Skipping 'water_bottle/n04557648_977' not in feasible_images
-[DEBUG] Skipping 'water_bottle/n04557648_388' not in feasible_images
-[DEBUG] Skipping 'water_bottle/n04557648_207' not in feasible_images
-[DEBUG] Skipping 'water_bottle/n04557648_1339' not in feasible_images
-[DEBUG] Skipping 'water_bottle/n04557648_32' not in feasible_images
-[DEBUG] Skipping 'water_bottle/n04557648_516' not in feasible_images
-[DEBUG] Skipping 'water_bottle/n04557648_570' not in feasible_images
-[DEBUG] Skipping 'water_bottle/n04557648_818' not in feasible_images
-[DEBUG] Skipping 'water_bottle/n04557648_91' not in feasible_images
-[DEBUG] Skipping 'water_bottle/n04557648_368' not in feasible_images
-[DEBUG] Skipping 'water_bottle/n04557648_1040' not in feasible_images
-[DEBUG] Skipping 'water_bottle/n04557648_1187' not in feasible_images
-[DEBUG] Skipping 'water_bottle/n04557648_495' not in feasible_images
-[DEBUG] Skipping 'water_bottle/n04557648_687' not in feasible_images
-[DEBUG] Skipping 'water_bottle/n04557648_662' not in feasible_images
-[DEBUG] Skipping 'water_bottle/n04557648_1184' not in feasible_images
-[DEBUG] Skipping 'water_bottle/n04557648_222' not in feasible_images
-[DEBUG] Skipping 'water_bottle/n04557648_1133' not in feasible_images
-[DEBUG] Skipping 'water_bottle/n04557648_634' not in feasible_images
-[DEBUG] Skipping 'water_bottle/n04557648_53' not in feasible_images
-[DEBUG] Skipping 'water_bottle/n04557648_1014' not in feasible_images
-[DEBUG] Skipping 'water_bottle/n04557648_220' not in feasible_images
-[DEBUG] Skipping 'water_bottle/n04557648_1352' not in feasible_images
-[DEBUG] Skipping 'water_bottle/n04557648_1481' not in feasible_images
-[DEBUG] Skipping 'water_bottle/n04557648_954' not in feasible_images
-[DEBUG] Skipping 'water_bottle/n04557648_94' not in feasible_images
-[DEBUG] Skipping 'water_bottle/n04557648_1453' not in feasible_images
-[DEBUG] Skipping 'water_bottle/n04557648_1254' not in feasible_images
-[DEBUG] Skipping 'water_bottle/n04557648_1375' not in feasible_images
-[DEBUG] Skipping 'water_bottle/n04557648_854' not in feasible_images
-[DEBUG] Skipping 'water_bottle/n04557648_679' not in feasible_images
-[DEBUG] Skipping 'water_bottle/n04557648_1326' not in feasible_images
-[DEBUG] Skipping 'water_bottle/n04557648_517' not in feasible_images
-[DEBUG] Skipping 'water_bottle/n04557648_980' not in feasible_images
-[DEBUG] Skipping 'water_bottle/n04557648_907' not in feasible_images
-[DEBUG] Skipping 'water_bottle/n04557648_957' not in feasible_images
-[DEBUG] Skipping 'water_bottle/n04557648_1457' not in feasible_images
-[DEBUG] Skipping 'water_bottle/n04557648_707' not in feasible_images
-[DEBUG] Skipping 'water_bottle/n04557648_314' not in feasible_images
-[DEBUG] Skipping 'water_bottle/n04557648_1403' not in feasible_images
-[DEBUG] Skipping 'water_bottle/n04557648_757' not in feasible_images
-[DEBUG] Skipping 'water_bottle/n04557648_510' not in feasible_images
-[DEBUG] Skipping 'water_bottle/n04557648_1007' not in feasible_images
-[DEBUG] Skipping 'water_bottle/n04557648_764' not in feasible_images
-[DEBUG] Skipping 'water_bottle/n04557648_1268' not in feasible_images
-[DEBUG] Skipping 'water_bottle/n04557648_171' not in feasible_images
-[DEBUG] Skipping 'water_bottle/n04557648_894' not in feasible_images
-[DEBUG] Skipping 'water_bottle/n04557648_628' not in feasible_images
-[DEBUG] Skipping 'water_bottle/n04557648_259' not in feasible_images
-[DEBUG] Skipping 'water_bottle/n04557648_606' not in feasible_images
-[DEBUG] Skipping 'water_bottle/n04557648_1333' not in feasible_images
-[DEBUG] Skipping 'water_bottle/n04557648_146' not in feasible_images
-[DEBUG] Skipping 'water_bottle/n04557648_403' not in feasible_images
-[DEBUG] Skipping 'water_bottle/n04557648_332' not in feasible_images
-[DEBUG] Skipping 'water_bottle/n04557648_592' not in feasible_images
-[DEBUG] Skipping 'water_bottle/n04557648_425' not in feasible_images
-[DEBUG] Skipping 'water_bottle/n04557648_966' not in feasible_images
-[DEBUG] Skipping 'water_bottle/n04557648_40' not in feasible_images
-[DEBUG] Skipping 'water_bottle/n04557648_840' not in feasible_images
-[DEBUG] Skipping 'water_bottle/n04557648_996' not in feasible_images
-[DEBUG] Skipping 'water_bottle/n04557648_1074' not in feasible_images
-[DEBUG] Skipping 'water_bottle/n04557648_789' not in feasible_images
-[DEBUG] Skipping 'water_bottle/n04557648_150' not in feasible_images
-[DEBUG] Skipping 'water_bottle/n04557648_395' not in feasible_images
-[DEBUG] Skipping 'water_bottle/n04557648_266' not in feasible_images
-[DEBUG] Skipping 'water_bottle/n04557648_1083' not in feasible_images
-[DEBUG] Skipping 'water_bottle/n04557648_623' not in feasible_images
-[DEBUG] Skipping 'water_bottle/n04557648_1107' not in feasible_images
-[DEBUG] Skipping 'water_bottle/n04557648_1057' not in feasible_images
-[DEBUG] Skipping 'water_bottle/n04557648_83' not in feasible_images
-[DEBUG] Skipping 'water_bottle/n04557648_132' not in feasible_images
-[DEBUG] Skipping 'water_bottle/n04557648_1177' not in feasible_images
-[DEBUG] Skipping 'water_bottle/n04557648_859' not in feasible_images
-[DEBUG] Skipping 'water_bottle/n04557648_1434' not in feasible_images
-[DEBUG] Skipping 'water_bottle/n04557648_482' not in feasible_images
-[DEBUG] Skipping 'water_bottle/n04557648_587' not in feasible_images
-[DEBUG] Skipping 'water_bottle/n04557648_704' not in feasible_images
-[DEBUG] Skipping 'water_bottle/n04557648_448' not in feasible_images
-[DEBUG] Skipping 'water_bottle/n04557648_373' not in feasible_images
-[DEBUG] Skipping 'water_bottle/n04557648_581' not in feasible_images
-[DEBUG] Skipping 'water_bottle/n04557648_481' not in feasible_images
-[DEBUG] Skipping 'water_bottle/n04557648_152' not in feasible_images
-[DEBUG] Skipping 'water_bottle/n04557648_732' not in feasible_images
-[DEBUG] Skipping 'water_bottle/n04557648_214' not in feasible_images
-[DEBUG] Skipping 'water_bottle/n04557648_262' not in feasible_images
-[DEBUG] Skipping 'water_bottle/n04557648_1450' not in feasible_images
-[DEBUG] Skipping 'water_bottle/n04557648_218' not in feasible_images
-[DEBUG] Skipping 'water_bottle/n04557648_1360' not in feasible_images
-[DEBUG] Skipping 'water_bottle/n04557648_109' not in feasible_images
-[DEBUG] Skipping 'water_bottle/n04557648_774' not in feasible_images
-[DEBUG] Skipping 'water_bottle/n04557648_943' not in feasible_images
-[DEBUG] Skipping 'water_bottle/n04557648_163' not in feasible_images
-[DEBUG] Skipping 'water_bottle/n04557648_364' not in feasible_images
-[DEBUG] Skipping 'water_bottle/n04557648_1026' not in feasible_images
-[DEBUG] Skipping 'water_bottle/n04557648_189' not in feasible_images
-[DEBUG] Skipping 'water_bottle/n04557648_164' not in feasible_images
-[DEBUG] Skipping 'water_bottle/n04557648_999' not in feasible_images
-[DEBUG] Skipping 'water_bottle/n04557648_496' not in feasible_images
-[DEBUG] Skipping 'water_bottle/n04557648_22' not in feasible_images
-[DEBUG] Skipping 'water_bottle/n04557648_4' not in feasible_images
-[DEBUG] Skipping 'water_bottle/n04557648_797' not in feasible_images
-[DEBUG] Skipping 'water_bottle/n04557648_367' not in feasible_images
-[DEBUG] Skipping 'water_bottle/n04557648_1314' not in feasible_images
-[DEBUG] Skipping 'water_bottle/n04557648_1247' not in feasible_images
-[DEBUG] Skipping 'water_bottle/n04557648_206' not in feasible_images
-[DEBUG] Skipping 'water_bottle/n04557648_474' not in feasible_images
-[DEBUG] Skipping 'water_bottle/n04557648_142' not in feasible_images
-[DEBUG] Skipping 'water_bottle/n04557648_555' not in feasible_images
-[DEBUG] Skipping 'water_bottle/n04557648_74' not in feasible_images
-[DEBUG] Skipping 'water_bottle/n04557648_140' not in feasible_images
-[DEBUG] Skipping 'water_bottle/n04557648_1136' not in feasible_images
-[DEBUG] Skipping 'water_bottle/n04557648_326' not in feasible_images
-[DEBUG] Skipping 'water_bottle/n04557648_680' not in feasible_images
-[DEBUG] Skipping 'water_bottle/n04557648_928' not in feasible_images
-[DEBUG] Skipping 'water_bottle/n04557648_499' not in feasible_images
-[DEBUG] Skipping 'water_bottle/n04557648_76' not in feasible_images
-[DEBUG] Skipping 'water_bottle/n04557648_935' not in feasible_images
-[DEBUG] Skipping 'water_bottle/n04557648_157' not in feasible_images
-[DEBUG] Skipping 'water_bottle/n04557648_444' not in feasible_images
-[DEBUG] Skipping 'water_bottle/n04557648_834' not in feasible_images
 [DEBUG] Candidate images before feasible filtering: 1311
 [DEBUG] Total candidate generated images before sampling: 1311
 [DEBUG] Sampled generated images: 1000 items
@@ -704,7 +13,7 @@ Added 1000 generated images.
 Using Active Learning Core-set strategy to select 7279 samples from 10400
 Starting Active Learning data selection using 'stratified' strategy...
 Dataset: imagenet, Model: resnet
-Train samples: 10400, Val samples: 2600
+Train samples: 10400, Val samples: 1300
 Target selection ratio: 0.7
 Embedding dimension: 256
 Initial labeled samples: 500
@@ -722,113 +31,86 @@ Stratified sampling: choosing 7279 from 10400 samples across 10 classes...
 Stratified Active Learning selection completed. Selected 7279 samples.
 [TIMING] Active Learning selection (ImageNet) took 0.00 seconds
 Added 1000 ImageNet pinkcolor_fabrictexture images using Active Learning Core-set: 7279 -> 8279
-Using GPU 0: NVIDIA RTX A5000
 Using resnet model with random weights
-Current learning rate: 0.001
-Epoch [1/30], Train Loss: 2.1124, Train Acc: 0.2476, Val Loss: 2.3855, Val Acc: 0.2242
-Current learning rate: 0.001
-Epoch [2/30], Train Loss: 1.9153, Train Acc: 0.3208, Val Loss: 1.8756, Val Acc: 0.3577
-Current learning rate: 0.0005
-Epoch [3/30], Train Loss: 1.7905, Train Acc: 0.3668, Val Loss: 2.0288, Val Acc: 0.2923
-Current learning rate: 0.0005
-Epoch [4/30], Train Loss: 1.5918, Train Acc: 0.4457, Val Loss: 2.0075, Val Acc: 0.3227
-Current learning rate: 0.0005
-Epoch [5/30], Train Loss: 1.5167, Train Acc: 0.4748, Val Loss: 1.6495, Val Acc: 0.4323
-Current learning rate: 0.00025
-Epoch [6/30], Train Loss: 1.4454, Train Acc: 0.5018, Val Loss: 1.7626, Val Acc: 0.4235
-Current learning rate: 0.00025
-Epoch [7/30], Train Loss: 1.2683, Train Acc: 0.5663, Val Loss: 1.5422, Val Acc: 0.4942
-Current learning rate: 0.00025
-Epoch [8/30], Train Loss: 1.2005, Train Acc: 0.5927, Val Loss: 1.4003, Val Acc: 0.5381
-Current learning rate: 0.000125
-Epoch [9/30], Train Loss: 1.1234, Train Acc: 0.6221, Val Loss: 1.4763, Val Acc: 0.5231
-Current learning rate: 0.000125
-Epoch [10/30], Train Loss: 0.9526, Train Acc: 0.6869, Val Loss: 1.2661, Val Acc: 0.5877
-Current learning rate: 0.000125
-Epoch [11/30], Train Loss: 0.8832, Train Acc: 0.7072, Val Loss: 1.1860, Val Acc: 0.6235
-Current learning rate: 6.25e-05
-Epoch [12/30], Train Loss: 0.8469, Train Acc: 0.7165, Val Loss: 1.1712, Val Acc: 0.6112
-Current learning rate: 6.25e-05
-Epoch [13/30], Train Loss: 0.7228, Train Acc: 0.7589, Val Loss: 1.0912, Val Acc: 0.6438
-Current learning rate: 6.25e-05
-Epoch [14/30], Train Loss: 0.6662, Train Acc: 0.7823, Val Loss: 1.0666, Val Acc: 0.6554
-Current learning rate: 3.125e-05
-Epoch [15/30], Train Loss: 0.6461, Train Acc: 0.7913, Val Loss: 1.0166, Val Acc: 0.6777
-Current learning rate: 3.125e-05
-Epoch [16/30], Train Loss: 0.5549, Train Acc: 0.8205, Val Loss: 1.0050, Val Acc: 0.6731
-Current learning rate: 3.125e-05
-Epoch [17/30], Train Loss: 0.5297, Train Acc: 0.8273, Val Loss: 0.9870, Val Acc: 0.6708
-Current learning rate: 1.5625e-05
-Epoch [18/30], Train Loss: 0.5073, Train Acc: 0.8391, Val Loss: 0.9524, Val Acc: 0.6892
-Current learning rate: 1.5625e-05
-Epoch [19/30], Train Loss: 0.4657, Train Acc: 0.8528, Val Loss: 0.9515, Val Acc: 0.6873
-Current learning rate: 1.5625e-05
-Epoch [20/30], Train Loss: 0.4470, Train Acc: 0.8590, Val Loss: 0.9264, Val Acc: 0.6927
-Current learning rate: 7.8125e-06
-Epoch [21/30], Train Loss: 0.4210, Train Acc: 0.8695, Val Loss: 0.9331, Val Acc: 0.6981
-Current learning rate: 7.8125e-06
-Epoch [22/30], Train Loss: 0.4012, Train Acc: 0.8778, Val Loss: 0.9246, Val Acc: 0.7012
-Current learning rate: 7.8125e-06
-Epoch [23/30], Train Loss: 0.3912, Train Acc: 0.8838, Val Loss: 0.9226, Val Acc: 0.7023
-Current learning rate: 3.90625e-06
-Epoch [24/30], Train Loss: 0.3796, Train Acc: 0.8844, Val Loss: 0.9182, Val Acc: 0.7046
-Current learning rate: 3.90625e-06
-Epoch [25/30], Train Loss: 0.3719, Train Acc: 0.8947, Val Loss: 0.9204, Val Acc: 0.7038
-Current learning rate: 3.90625e-06
-Epoch [26/30], Train Loss: 0.3681, Train Acc: 0.8896, Val Loss: 0.9194, Val Acc: 0.7062
-Current learning rate: 1.953125e-06
-Epoch [27/30], Train Loss: 0.3619, Train Acc: 0.8933, Val Loss: 0.9279, Val Acc: 0.7019
-Current learning rate: 1.953125e-06
-Epoch [28/30], Train Loss: 0.3526, Train Acc: 0.8989, Val Loss: 0.9217, Val Acc: 0.7065
-Current learning rate: 1.953125e-06
-Epoch [29/30], Train Loss: 0.3502, Train Acc: 0.8984, Val Loss: 0.9182, Val Acc: 0.7046
-Current learning rate: 9.765625e-07
-Epoch [30/30], Train Loss: 0.3499, Train Acc: 0.8967, Val Loss: 0.9340, Val Acc: 0.7027
+Epoch [1/30], Train Loss: 2.1124, Train Acc: 0.2476, Val Loss: 2.4580, Val Acc: 0.2146
+Epoch [2/30], Train Loss: 1.9153, Train Acc: 0.3208, Val Loss: 1.9211, Val Acc: 0.3477
+Epoch [3/30], Train Loss: 1.7905, Train Acc: 0.3668, Val Loss: 2.0749, Val Acc: 0.2754
+Epoch [4/30], Train Loss: 1.5918, Train Acc: 0.4457, Val Loss: 2.0620, Val Acc: 0.3046
+Epoch [5/30], Train Loss: 1.5167, Train Acc: 0.4748, Val Loss: 1.7040, Val Acc: 0.4177
+Epoch [6/30], Train Loss: 1.4454, Train Acc: 0.5018, Val Loss: 1.7753, Val Acc: 0.4169
+Epoch [7/30], Train Loss: 1.2683, Train Acc: 0.5663, Val Loss: 1.5892, Val Acc: 0.4862
+Epoch [8/30], Train Loss: 1.2005, Train Acc: 0.5927, Val Loss: 1.4519, Val Acc: 0.5277
+Epoch [9/30], Train Loss: 1.1234, Train Acc: 0.6221, Val Loss: 1.5070, Val Acc: 0.5277
+Epoch [10/30], Train Loss: 0.9526, Train Acc: 0.6869, Val Loss: 1.3163, Val Acc: 0.5692
+Epoch [11/30], Train Loss: 0.8832, Train Acc: 0.7072, Val Loss: 1.2006, Val Acc: 0.6192
+Epoch [12/30], Train Loss: 0.8469, Train Acc: 0.7165, Val Loss: 1.2172, Val Acc: 0.6038
+Epoch [13/30], Train Loss: 0.7228, Train Acc: 0.7589, Val Loss: 1.1331, Val Acc: 0.6431
+Epoch [14/30], Train Loss: 0.6662, Train Acc: 0.7823, Val Loss: 1.0962, Val Acc: 0.6515
+Epoch [15/30], Train Loss: 0.6461, Train Acc: 0.7913, Val Loss: 1.0658, Val Acc: 0.6631
+Epoch [16/30], Train Loss: 0.5549, Train Acc: 0.8205, Val Loss: 1.0349, Val Acc: 0.6677
+Epoch [17/30], Train Loss: 0.5297, Train Acc: 0.8273, Val Loss: 1.0087, Val Acc: 0.6700
+Epoch [18/30], Train Loss: 0.5073, Train Acc: 0.8391, Val Loss: 0.9912, Val Acc: 0.6800
+Epoch [19/30], Train Loss: 0.4657, Train Acc: 0.8528, Val Loss: 0.9789, Val Acc: 0.6869
+Epoch [20/30], Train Loss: 0.4470, Train Acc: 0.8590, Val Loss: 0.9631, Val Acc: 0.6931
+Epoch [21/30], Train Loss: 0.4210, Train Acc: 0.8695, Val Loss: 0.9725, Val Acc: 0.6938
+Epoch [22/30], Train Loss: 0.4012, Train Acc: 0.8778, Val Loss: 0.9641, Val Acc: 0.7008
+Epoch [23/30], Train Loss: 0.3912, Train Acc: 0.8838, Val Loss: 0.9578, Val Acc: 0.7000
+Epoch [24/30], Train Loss: 0.3796, Train Acc: 0.8844, Val Loss: 0.9590, Val Acc: 0.7015
+Epoch [25/30], Train Loss: 0.3719, Train Acc: 0.8947, Val Loss: 0.9616, Val Acc: 0.7008
+Epoch [26/30], Train Loss: 0.3681, Train Acc: 0.8896, Val Loss: 0.9596, Val Acc: 0.7015
+Epoch [27/30], Train Loss: 0.3619, Train Acc: 0.8933, Val Loss: 0.9696, Val Acc: 0.6954
+Epoch [28/30], Train Loss: 0.3526, Train Acc: 0.8989, Val Loss: 0.9634, Val Acc: 0.7023
+Epoch [29/30], Train Loss: 0.3502, Train Acc: 0.8984, Val Loss: 0.9619, Val Acc: 0.7015
+Epoch [30/30], Train Loss: 0.3499, Train Acc: 0.8967, Val Loss: 0.9732, Val Acc: 0.6992
 Generating and saving predictions...
+Held-out test accuracy: 0.7108
+Prediction segments -> train: 8279, val: 1300, test: 1300
 Combined predictions length: 13000
-Total training time for 30 epochs: 503.33 seconds
+Total training time for 30 epochs: 360.72 seconds
 Total Active Learning selection time: 0.00 seconds
-End-to-end wall time (data prep + AL + training + setup): 504.46 seconds
+End-to-end wall time (data prep + selection + training + setup): 361.92 seconds
 
 Running model diagnostics on generated predictions...
-Model Validation ACC: 0.7065384615384616
+Model Test ACC: 0.7107692307692308
 Start detect_prediction_correlation
 
-ACC: 0.666667 	Rare Case: attribute "color", description "green"
-ACC: 0.679612 	Rare Case: attribute "color", description "pink"
-ACC: 0.694118 	Rare Case: attribute "color", description "brown"
-ACC: 0.625000 	Rare Case: attribute "color", description "tan"
-ACC: 0.684211 	Rare Case: attribute "color", description "maroon"
-ACC: 0.655556 	Rare Case: attribute "color", description "yellow"
-ACC: 0.677686 	Hard case: attribute "color", description "black"
-ACC: 0.682556 	Hard case: attribute "background", description "inside a house"
-ACC: 0.682119 	Hard case: attribute "background", description "grass"
-ACC: 0.666667 	Rare Case: attribute "background", description "bridge"
-ACC: 0.675676 	Rare Case: attribute "background", description "street"
-ACC: 0.678049 	Rare Case: attribute "background", description "snow"
-ACC: 0.686032 	Hard case: attribute "texture", description "wooden"
-ACC: 0.682927 	Rare Case: attribute "texture", description "fabric"
+ACC: 0.684932 	Rare Case: attribute "color", description "red"
+ACC: 0.687500 	Rare Case: attribute "color", description "green"
+ACC: 0.675000 	Hard case: attribute "color", description "white"
+ACC: 0.666667 	Rare Case: attribute "color", description "silver"
+ACC: 0.625000 	Rare Case: attribute "color", description "maroon"
+ACC: 0.682927 	Hard case: attribute "color", description "multicolored"
+ACC: 0.682119 	Hard case: attribute "color", description "black"
+ACC: 0.575758 	Rare Case: attribute "background", description "sky"
+ACC: 0.428571 	Rare Case: attribute "background", description "buildings"
+ACC: 0.680000 	Rare Case: attribute "background", description "rocks"
+ACC: 0.500000 	Rare Case: attribute "background", description "bridge"
+ACC: 0.500000 	Rare Case: attribute "background", description "water"
+ACC: 0.632653 	Rare Case: attribute "texture", description "plastic"
+ACC: 0.642857 	Rare Case: attribute "texture", description "leather"
+ACC: 0.685185 	Rare Case: attribute "texture", description "fabric"
+ACC: 0.676856 	Hard case: attribute "texture", description "glass"
 
 Comparing accuracy with log file: logs/compare/stat_imagenet_resnet_compare.log
-Overall accuracy: 0.718077 -> 0.706538: declined
+Overall accuracy: 0.718077 -> 0.702308: declined
 
 Attribute-specific accuracy comparison:
-color, green, 0.674419 -> 0.666667: declined
-color, pink, 0.699029 -> 0.679612: declined
-color, tan, 0.700000 -> 0.625000: declined
-color, orange, 0.690909 -> 0.727273: improved
-color, yellow, 0.688889 -> 0.655556: declined
-color, purple, 0.684211 -> 0.789474: improved
-color, black, 0.665289 -> 0.677686: improved
-background, sky, 0.698630 -> 0.739726: improved
-background, inside a house, 0.691684 -> 0.682556: declined
-background, buildings, 0.707317 -> 0.756098: improved
-background, rocks, 0.659091 -> 0.704545: improved
-background, street, 0.662162 -> 0.675676: improved
-texture, metallic, 0.676471 -> 0.735294: improved
-texture, wooden, 0.698393 -> 0.686032: declined
-texture, leather, 0.588235 -> 0.705882: improved
-texture, fabric, 0.658537 -> 0.682927: improved
+color, green, 0.674419 -> 0.687500: improved
+color, pink, 0.699029 -> 0.770492: improved
+color, tan, 0.700000 -> 0.750000: improved
+color, orange, 0.690909 -> 0.800000: improved
+color, yellow, 0.688889 -> 0.696429: improved
+color, purple, 0.684211 -> 0.777778: improved
+color, black, 0.665289 -> 0.682119: improved
+background, sky, 0.698630 -> 0.575758: declined
+background, inside a house, 0.691684 -> 0.692422: improved
+background, buildings, 0.707317 -> 0.428571: declined
+background, rocks, 0.659091 -> 0.680000: improved
+background, street, 0.662162 -> 0.772727: improved
+texture, metallic, 0.676471 -> 0.800000: improved
+texture, wooden, 0.698393 -> 0.714286: improved
+texture, leather, 0.588235 -> 0.642857: improved
+texture, fabric, 0.658537 -> 0.685185: improved
 
 Compared 16 attribute-specific accuracies.
 Using log file: logs_imagenet/AL_random_resnet_imagenet_1000_ratio0.7.log
@@ -837,15 +119,31 @@ Using log file: logs_imagenet/AL_random_resnet_imagenet_1000_ratio0.7.log
 ACTIVE LEARNING vs RANDOM SELECTION COMPARISON
 ================================================================================
 Comparing current Active Learning results with random selection: logs_imagenet/AL_random_resnet_imagenet_1000_ratio0.7.log
-Current Active Learning overall accuracy: 0.706538 (Random overall accuracy not found)
+Current Active Learning overall accuracy: 0.702308 (Random overall accuracy not found)
 
 Attribute-specific Active Learning vs Random Selection comparison:
+color, red, Random 0.643836 -> AL 0.684932 (Δ=+0.041096): AL WINS
+color, white, Random 0.642857 -> AL 0.675000 (Δ=+0.032143): AL WINS
+color, silver, Random 0.629630 -> AL 0.666667 (Δ=+0.037037): AL WINS
+color, maroon, Random 0.500000 -> AL 0.625000 (Δ=+0.125000): AL WINS
+color, multicolored, Random 0.658537 -> AL 0.682927 (Δ=+0.024390): AL WINS
+color, purple, Random 0.666667 -> AL 0.777778 (Δ=+0.111111): AL WINS
+background, sky, Random 0.606061 -> AL 0.575758 (Δ=-0.030303): RANDOM WINS
+background, buildings, Random 0.571429 -> AL 0.428571 (Δ=-0.142858): RANDOM WINS
+background, rocks, Random 0.640000 -> AL 0.680000 (Δ=+0.040000): AL WINS
+background, bridge, Random 0.500000 -> AL 0.500000 (Δ=+0.000000): TIE
+background, house, Random 0.660377 -> AL 0.698113 (Δ=+0.037736): AL WINS
+texture, plastic, Random 0.612245 -> AL 0.632653 (Δ=+0.020408): AL WINS
+texture, metallic, Random 0.650000 -> AL 0.800000 (Δ=+0.150000): AL WINS
+texture, fabric, Random 0.611111 -> AL 0.685185 (Δ=+0.074074): AL WINS
+texture, glass, Random 0.646288 -> AL 0.676856 (Δ=+0.030568): AL WINS
 
 ------------------------------------------------------------
 ACTIVE LEARNING vs RANDOM SELECTION SUMMARY:
-Total compared attributes: 0
-Active Learning wins: 0
-Random Selection wins: 0
-Ties: 0
+Total compared attributes: 15
+Active Learning wins: 12
+Random Selection wins: 2
+Ties: 1
+Active Learning win rate: 80.0%
 ------------------------------------------------------------
-Current time: 0828035521
+Current time: 1204022353

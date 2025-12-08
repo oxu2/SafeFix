@@ -44,6 +44,134 @@ def parse_attribute_priority_log(log_path):
     return {attr: dict(values) for attr, values in priorities.items() if values}
 
 
+def load_attribute_metadata(metadata_source):
+    """Load attribute metadata from a path or return an existing dict."""
+    if metadata_source is None:
+        raise ValueError("Attribute metadata path must be provided for attribute strategy")
+
+    if isinstance(metadata_source, dict):
+        return metadata_source
+
+    if not isinstance(metadata_source, str):
+        raise ValueError("Attribute metadata must be a dict or path to a JSON file")
+
+    if not os.path.exists(metadata_source):
+        raise FileNotFoundError(f"Attribute metadata file '{metadata_source}' not found.")
+
+    with open(metadata_source, "r") as handle:
+        metadata = json.load(handle)
+
+    if not isinstance(metadata, dict):
+        raise ValueError("Attribute metadata JSON must contain a dictionary")
+    return metadata
+
+
+def parse_attribute_value_counts(source, default_count=None):
+    """Parse extra attribute counts either from an inline string or a JSON file."""
+    if not source:
+        return {}
+
+    if os.path.exists(source):
+        with open(source, "r") as handle:
+            data = json.load(handle)
+        if not isinstance(data, dict):
+            raise ValueError("Attribute count JSON must be a dict of attribute -> value -> count")
+        parsed = {}
+        for attr_name, value_map in data.items():
+            if not isinstance(value_map, dict):
+                raise ValueError(
+                    f"Attribute '{attr_name}' in extra counts JSON must map to a dict of values"
+                )
+            parsed[attr_name] = {
+                str(val): float(count) for val, count in value_map.items()
+            }
+        return parsed
+
+    parsed = defaultdict(dict)
+    entries = re.split(r"[;,]", source)
+    for raw_entry in entries:
+        entry = raw_entry.strip()
+        if not entry:
+            continue
+        count = default_count
+        attr_value = entry
+        if "=" in entry:
+            attr_value, count_str = entry.split("=", 1)
+            try:
+                count = float(count_str)
+            except ValueError as exc:
+                raise ValueError(f"Invalid count '{count_str}' for entry '{entry}'") from exc
+        elif default_count is None:
+            raise ValueError(
+                "Extra attribute counts must include '=count' when no default_count is provided"
+            )
+
+        if ":" not in attr_value:
+            raise ValueError(
+                "Extra attribute count entries must follow attr:value or attr:value=count"
+            )
+        attr, value = attr_value.split(":", 1)
+        if count is None:
+            raise ValueError(
+                f"No count specified for entry '{entry}' and default_count is None"
+            )
+        parsed[attr.strip()][value.strip()] = float(count)
+
+    return {attr: dict(values) for attr, values in parsed.items() if values}
+
+
+def infer_generated_attribute_counts(metadata, attribute_string, default_count, focus_attributes=None):
+    """Infer extra counts from attribute string like 'pinkcolor_fabrictexture'."""
+    if not attribute_string or not default_count or default_count <= 0:
+        return {}
+
+    metadata_dict = load_attribute_metadata(metadata)
+    attributes_scope = (
+        {k: v for k, v in metadata_dict.items() if not focus_attributes or k in focus_attributes}
+        if isinstance(metadata_dict, dict)
+        else {}
+    )
+    if not attributes_scope:
+        return {}
+
+    tokens = [tok for tok in re.split(r"[_\s]+", attribute_string) if tok]
+    if not tokens:
+        return {}
+
+    inferred = defaultdict(dict)
+
+    token_pairs = [(tok, tok.lower()) for tok in tokens]
+
+    for attr_name, attr_info in attributes_scope.items():
+        attr_suffix = attr_name.lower()
+        if not attr_suffix:
+            continue
+        values = attr_info.get("data", [])
+        value_lookup = {}
+        for val in values:
+            if val is None:
+                continue
+            lowered = str(val).lower()
+            if lowered not in value_lookup:
+                value_lookup[lowered] = val
+        if not value_lookup:
+            continue
+
+        suffix_len = len(attr_suffix)
+        for token_original, token_lower in token_pairs:
+            if len(token_lower) <= suffix_len:
+                continue
+            if not token_lower.endswith(attr_suffix):
+                continue
+            candidate = token_lower[:-suffix_len]
+            canonical_value = value_lookup.get(candidate)
+            if canonical_value is None:
+                continue
+            inferred[attr_name][canonical_value] = float(default_count)
+
+    return {attr: values for attr, values in inferred.items() if values}
+
+
 class CoreSetStrategy:
     """
     Core-set selection strategy for Active Learning
@@ -356,6 +484,8 @@ class AttributeFocusedStrategy:
         epsilon=1e-8,
         value_weights=None,
         log_acc_scale=1.0,
+        extra_counts=None,
+        balance_strength=0.0,
     ):
         """
         Args:
@@ -368,6 +498,9 @@ class AttributeFocusedStrategy:
             value_weights: Optional dict {attribute: {value: weight}} derived
                 from diagnostic logs.
             log_acc_scale: Scaling factor applied to each log-based weight.
+            extra_counts: Optional dict of additional counts per attribute value
+                used to augment observed frequencies (e.g., generated data).
+            balance_strength: Penalty multiplier for frequent attribute values.
         """
         if isinstance(attribute_metadata, str):
             if not os.path.exists(attribute_metadata):
@@ -404,6 +537,11 @@ class AttributeFocusedStrategy:
         self.epsilon = epsilon
         self.value_weights = value_weights or {}
         self.log_acc_scale = log_acc_scale
+        self.extra_counts = {
+            attr: {val: float(count) for val, count in value_map.items()}
+            for attr, value_map in (extra_counts or {}).items()
+        }
+        self.balance_strength = max(balance_strength, 0.0)
 
     def _resolve_metadata_indices(self, dataset):
         """Map dataset-local indices to attribute metadata indices."""
@@ -446,6 +584,12 @@ class AttributeFocusedStrategy:
                 if meta_idx < len(data):
                     value = data[meta_idx]
                     counts[attr_name][value] += 1
+        if self.extra_counts:
+            for attr_name, value_map in self.extra_counts.items():
+                if attr_name not in counts:
+                    counts[attr_name] = Counter()
+                for value, bonus in value_map.items():
+                    counts[attr_name][value] += bonus
         return counts
 
     def select(self, dataset, n_select, random_seed=42, debug_attribute=None):
@@ -467,6 +611,10 @@ class AttributeFocusedStrategy:
             raise RuntimeError("Metadata index mapping length mismatch with dataset")
 
         attribute_counts = self._compute_attribute_counts(metadata_indices)
+        attribute_totals = {
+            attr: float(sum(counter.values()))
+            for attr, counter in attribute_counts.items()
+        }
 
         scores = np.zeros(total_samples, dtype=np.float32)
         rng = np.random.default_rng(random_seed)
@@ -478,6 +626,7 @@ class AttributeFocusedStrategy:
                         "frequency": 0,
                         "rarity": 0.0,
                         "log": 0.0,
+                        "balance": 0.0,
                         "indices": [],
                         "uncertain_count": 0,
                     }
@@ -513,11 +662,20 @@ class AttributeFocusedStrategy:
                         log_increment = self.log_acc_scale * attr_weights.get(value, 0.0)
                         sample_score += log_increment
 
+                balance_component = 0.0
+                if self.balance_strength > 0:
+                    total_count = attribute_totals.get(attr_name, 0.0)
+                    if total_count > 0.0:
+                        freq_ratio = frequency / total_count
+                        balance_component = -self.balance_strength * freq_ratio
+                        sample_score += balance_component
+
                 if debug_attribute and attr_name == debug_attribute:
                     stats = per_attribute_breakdown[attr_name][value]
                     stats["frequency"] = frequency
                     stats["rarity"] = float(rarity)
                     stats["log"] = float(log_increment)
+                    stats["balance"] = float(balance_component)
                     stats["indices"].append(meta_idx)
                     if meta_idx in attr_info["uncertain"]:
                         stats["uncertain_count"] += 1
@@ -542,6 +700,7 @@ class AttributeFocusedStrategy:
                     rarity = stats["rarity"]
                     log_component = stats["log"]
                     uncertainty_component = self.uncertain_boost if stats["uncertain_count"] > 0 else 0.0
+                    balance_component = stats.get("balance", 0.0)
                     sorted_indices = sorted(stats["indices"])
                     if len(sorted_indices) > 10:
                         indices_preview = ",".join(str(idx) for idx in sorted_indices[:10]) + ",..."
@@ -549,7 +708,8 @@ class AttributeFocusedStrategy:
                         indices_preview = ",".join(str(idx) for idx in sorted_indices)
                     print(
                         f"  value={value}, freq={stats['frequency']}, indices=[{indices_preview}], "
-                        f"R={rarity:.4f}, U={uncertainty_component:.4f}, L={log_component:.4f}"
+                        f"R={rarity:.4f}, U={uncertainty_component:.4f}, L={log_component:.4f}, "
+                        f"B={balance_component:.4f}"
                     )
 
         return ranked_indices[:n_select].tolist()
@@ -702,12 +862,43 @@ def active_learning_selection(train_dataset, val_dataset, args, device, verbose=
         uncertain_boost = getattr(args, 'al_attribute_uncertainty_boost', 1.0)
         log_path = getattr(args, 'al_attribute_log_path', None)
         log_acc_scale = getattr(args, 'al_attribute_log_acc_scale', 1.0)
+        extra_counts_raw = getattr(args, 'al_attribute_extra_counts', None)
+        balance_strength = getattr(args, 'al_attribute_balance_strength', 0.0)
 
         focus_attributes = None
         if isinstance(focus_raw, str) and focus_raw.strip():
             focus_attributes = [part.strip() for part in focus_raw.split(',') if part.strip()]
         elif isinstance(focus_raw, (list, tuple)):
             focus_attributes = list(focus_raw)
+
+        extra_counts = None
+        if isinstance(extra_counts_raw, str) and extra_counts_raw.strip():
+            try:
+                extra_counts = parse_attribute_value_counts(
+                    extra_counts_raw.strip(),
+                    default_count=getattr(args, 'num_added_img', None)
+                )
+            except ValueError as exc:
+                if verbose:
+                    print(f"Attribute strategy: failed to parse extra counts ({exc})")
+                raise
+
+        attribute_metadata_obj = load_attribute_metadata(attribute_path)
+
+        if extra_counts is None and getattr(args, 'num_added_img', 0):
+            inferred_counts = infer_generated_attribute_counts(
+                attribute_metadata_obj,
+                getattr(args, 'attributes', ''),
+                getattr(args, 'num_added_img', 0),
+                focus_attributes=focus_attributes,
+            )
+            if inferred_counts:
+                extra_counts = inferred_counts
+                if verbose:
+                    print(
+                        "Attribute strategy: auto-injected extra counts for generated attributes "
+                        f"{inferred_counts}"
+                    )
 
         if not log_path and getattr(args, 'dataset', None) and getattr(args, 'model', None):
             default_log = Path('logs/compare') / f"stat_{args.dataset}_{args.model}_compare.log"
@@ -730,12 +921,14 @@ def active_learning_selection(train_dataset, val_dataset, args, device, verbose=
 
         try:
             strategy = AttributeFocusedStrategy(
-                attribute_metadata=attribute_path,
+                attribute_metadata=attribute_metadata_obj,
                 focus_attributes=focus_attributes,
                 rarity_power=rarity_power,
                 uncertain_boost=uncertain_boost,
                 value_weights=value_weights,
                 log_acc_scale=log_acc_scale,
+                extra_counts=extra_counts,
+                balance_strength=balance_strength,
             )
             debug_attr = None
             if verbose:

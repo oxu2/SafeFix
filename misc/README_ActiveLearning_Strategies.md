@@ -68,8 +68,12 @@ Let $i$ index a candidate sample and $A$ denote the set of attributes contained 
   $$L_{i,a} = \gamma \cdot w_{a}(v_{i,a})$$
   where $\gamma$ is the scaling factor. Lower accuracies therefore produce larger boosts, while missing entries default to zero.
 
+  4. **Balance penalty** (optional, requires `--al_attribute_extra_counts` and `--al_attribute_balance_strength`): when generated data injects thousands of samples with specific attribute values, pass those counts through `--al_attribute_extra_counts` (inline `attr:value=count` list or JSON file). Frequencies are augmented with the supplied counts, and the balance term subtracts
+    $$B_{i,a} = -\lambda \cdot \frac{f^{*}_{a}(v_{i,a})}{\sum_{v} f^{*}_{a}(v)}$$
+    where $\lambda$ is "al_attribute_balance_strength" and $f^{*}$ denotes the augmented frequency. Larger augmented shares therefore receive a larger negative adjustment.
+
 The total score for sample $i$ is the sum across all attributes:
-$$S_i = \sum_{a \in A} \big(R_{i,a} + U_{i,a} + L_{i,a}\big).$$
+  $$S_i = \sum_{a \in A} \big(R_{i,a} + U_{i,a} + L_{i,a} + B_{i,a}\big).$$
 
 Samples are sorted by $S_i$ (with a small injected noise term for tie breaking) and the top $n_{\text{select}}$ indices are returned. When a sample exhibits multiple rare or low-accuracy attributes, the contributions accumulate, ensuring multi-attribute failures are prioritized.
 
@@ -78,6 +82,7 @@ Samples are sorted by $S_i$ (with a small injected noise term for tie breaking) 
 - Optionally restrict attention to a subset via `--al_attribute_focus` (comma-separated keys).
 - (Optional) Supply a diagnostic log with `--al_attribute_log_path`; each `Rare Case` entry contributes a failure weight $(1 - \text{ACC})$ through the parser in `utils.active_learning.parse_attribute_priority_log`.
 - Tune `--al_attribute_rarity_power`, `--al_attribute_uncertainty_boost`, and `--al_attribute_log_acc_scale` to balance between metadata-driven rarity, known uncertain slices, and empirical accuracy signals.
+- (Optional) Provide pre-counted generated samples via `--al_attribute_extra_counts color:pink,texture:fabric`; when counts are omitted they default to `--num_added_img`, and if the flag itself is omitted the selector now parses `--attributes` (tokens such as `pinkcolor` or `fabrictexture`) to auto-inject the same `--num_added_img` count for those attribute-value pairs.
 
 Because the method operates purely on metadata, it integrates cleanly with the rest of the pipeline—no embedding extraction or model forward passes are required during selection.
 
@@ -103,6 +108,8 @@ Because the method operates purely on metadata, it integrates cleanly with the r
 - `--al_attribute_uncertainty_boost`: Score bonus for samples marked as uncertain in metadata (>=0)
 - `--al_attribute_log_path`: Optional path to diagnostic log providing Rare Case accuracies
 - `--al_attribute_log_acc_scale`: Scaling factor applied to each log-derived failure weight (default: 1.0)
+- `--al_attribute_extra_counts`: Inline list or JSON file describing additional counts to inject per attribute value (useful when synthetic data floods specific slices); inline entries without `=count` inherit `--num_added_img`, and when omitted entirely the code infers counts from `--attributes` tokens (value+attribute) using `--num_added_img`
+- `--al_attribute_balance_strength`: Multiplier controlling how strongly over-represented values are penalized (0 disables the term)
 
 ## Recommended Configurations
 

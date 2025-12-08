@@ -124,6 +124,10 @@ parser.add_argument('--al_attribute_log_path', type=str, default=None,
                     help='Optional path to attribute diagnostics log for Rare Case accuracies')
 parser.add_argument('--al_attribute_log_acc_scale', type=float, default=1.0,
                     help='Scaling factor applied to log-derived failure weights (default: 1.0)')
+parser.add_argument('--al_attribute_extra_counts', type=str, default=None,
+                    help='Extra counts per attribute value to reflect generated data (attr:value=count entries or JSON path)')
+parser.add_argument('--al_attribute_balance_strength', type=float, default=0.5,
+                    help='Penalty strength applied to over-represented attribute values (default: 0.5)')
 parser.add_argument('--al_alpha', type=float, default=0.4,
                     help='Weight for difficulty in hierarchical priority score (default: 0.4)')
 parser.add_argument('--al_beta', type=float, default=0.4,
@@ -1279,7 +1283,7 @@ def save_predictions(model, train_loader, valid_loader, test_loader=None):
     test_preds = None
     if test_loader is not None:
         test_acc, test_preds, _ = evaluate(model, test_loader, save_preds=True)
-        print(f"Held-out test accuracy: {test_acc:.4f}")
+        # print(f"Held-out test accuracy: {test_acc:.4f}")
 
     if args.dataset == 'imagenet':
         original_count = len(train_idx)
@@ -1305,10 +1309,11 @@ def save_predictions(model, train_loader, valid_loader, test_loader=None):
 
         if test_preds is not None:
             combined_preds = np.concatenate((combined_preds, test_preds.flatten()))
-        print(
-            f"Prediction segments -> train: {len(train_preds)}, val: {len(valid_preds)}, "
-            f"test: {len(test_preds) if test_preds is not None else 0}"
-        )
+        if verbose:
+            print(
+                f"Prediction segments -> train: {len(train_preds)}, val: {len(valid_preds)}, "
+                f"test: {len(test_preds) if test_preds is not None else 0}"
+            )
     else:
         # Handle celeba or other cases
         if len(modified_image_paths) > 0:
