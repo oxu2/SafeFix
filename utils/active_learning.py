@@ -7,6 +7,7 @@ from utils.imports import *
 from utils.defines import *
 from utils.hierarchical_al import HierarchicalActiveStrategy
 from collections import Counter, defaultdict
+import math
 
 
 def parse_attribute_priority_log(log_path):
@@ -118,6 +119,27 @@ def parse_attribute_value_counts(source, default_count=None):
         parsed[attr.strip()][value.strip()] = float(count)
 
     return {attr: dict(values) for attr, values in parsed.items() if values}
+
+
+def parse_float_with_infinity(value, default=0.0):
+    """Parse floats that may include textual infinity tokens."""
+    if value is None:
+        return float(default)
+
+    if isinstance(value, (int, float)):
+        parsed = float(value)
+    else:
+        text = str(value).strip().lower()
+        if text in {"inf", "+inf", "infinity", "+infinity"}:
+            return float("inf")
+        if text in {"-inf", "-infinity"}:
+            return 0.0
+        try:
+            parsed = float(text)
+        except ValueError as exc:
+            raise ValueError(f"Could not parse '{value}' as a float or infinity") from exc
+
+    return parsed if parsed > 0 else 0.0
 
 
 def infer_generated_attribute_counts(metadata, attribute_string, default_count, focus_attributes=None):
@@ -486,6 +508,7 @@ class AttributeFocusedStrategy:
         log_acc_scale=1.0,
         extra_counts=None,
         balance_strength=0.0,
+        class_balance_weight=0.0,
     ):
         """
         Args:
@@ -501,6 +524,8 @@ class AttributeFocusedStrategy:
             extra_counts: Optional dict of additional counts per attribute value
                 used to augment observed frequencies (e.g., generated data).
             balance_strength: Penalty multiplier for frequent attribute values.
+            class_balance_weight: Non-negative weight controlling class-level
+                stratification (use float('inf') for strict round-robin quotas).
         """
         if isinstance(attribute_metadata, str):
             if not os.path.exists(attribute_metadata):
@@ -542,6 +567,38 @@ class AttributeFocusedStrategy:
             for attr, value_map in (extra_counts or {}).items()
         }
         self.balance_strength = max(balance_strength, 0.0)
+        try:
+            parsed_balance = float(class_balance_weight)
+        except (TypeError, ValueError):
+            parsed_balance = 0.0
+        self.class_balance_weight = parsed_balance if math.isinf(parsed_balance) else max(parsed_balance, 0.0)
+
+    def _log_attribute_distribution(self, metadata_indices, local_indices, label):
+        if not local_indices:
+            return
+
+        print(f"\n{label}:")
+        for attr_name, attr_info in self.attributes.items():
+            value_counts = Counter()
+            valid_total = 0
+            data = attr_info.get("data", [])
+            for local_idx in local_indices:
+                if local_idx >= len(metadata_indices):
+                    continue
+                meta_idx = metadata_indices[local_idx]
+                if meta_idx is None or meta_idx >= len(data):
+                    continue
+                value = data[meta_idx]
+                value_counts[value] += 1
+                valid_total += 1
+
+            if valid_total == 0:
+                print(f"  Attribute '{attr_name}': no coverage")
+                continue
+
+            for value, count in value_counts.most_common():
+                percentage = (count / valid_total) * 100.0 if valid_total else 0.0
+                print(f"  [{attr_name}] {value}: {count} samples ({percentage:.1f}%)")
 
     def _resolve_metadata_indices(self, dataset):
         """Map dataset-local indices to attribute metadata indices."""
@@ -573,6 +630,60 @@ class AttributeFocusedStrategy:
 
         return list(range(dataset_len))
 
+    def _resolve_class_labels(self, dataset):
+        """Map dataset-local indices to class labels when available."""
+        from torch.utils.data import Subset, ConcatDataset
+
+        if isinstance(dataset, Subset):
+            parent_labels = self._resolve_class_labels(dataset.dataset)
+            if parent_labels is None:
+                return [None] * len(dataset)
+            resolved = []
+            for idx in dataset.indices:
+                if idx is None or idx >= len(parent_labels):
+                    resolved.append(None)
+                else:
+                    resolved.append(parent_labels[idx])
+            return resolved
+
+        if isinstance(dataset, ConcatDataset):
+            labels = []
+            for sub_dataset in dataset.datasets:
+                sub_labels = self._resolve_class_labels(sub_dataset)
+                if sub_labels is None:
+                    sub_len = len(sub_dataset) if hasattr(sub_dataset, "__len__") else 0
+                    labels.extend([None] * sub_len)
+                else:
+                    labels.extend(sub_labels)
+            return labels
+
+        candidates = None
+        for attr_name in ("targets", "labels"):
+            if hasattr(dataset, attr_name):
+                candidates = getattr(dataset, attr_name)
+                break
+
+        if candidates is None and hasattr(dataset, "samples"):
+            candidates = [sample[1] for sample in dataset.samples]
+        if candidates is None and hasattr(dataset, "imgs"):
+            candidates = [sample[1] for sample in dataset.imgs]
+
+        if candidates is not None:
+            if isinstance(candidates, np.ndarray):
+                candidates = candidates.tolist()
+            else:
+                candidates = list(candidates)
+            resolved = []
+            for label in candidates:
+                try:
+                    resolved.append(int(label) if label is not None else None)
+                except (TypeError, ValueError):
+                    resolved.append(None)
+            return resolved
+
+        dataset_len = len(dataset) if hasattr(dataset, "__len__") else 0
+        return [None] * dataset_len
+
     def _compute_attribute_counts(self, metadata_indices):
         """Compute frequency of each attribute value within the dataset subset."""
         counts = {attr: Counter() for attr in self.attributes}
@@ -592,6 +703,151 @@ class AttributeFocusedStrategy:
                     counts[attr_name][value] += bonus
         return counts
 
+    def _select_with_class_balance(self, base_scores, class_labels, n_select):
+        if class_labels is None or n_select <= 0:
+            return None
+
+        total_samples = len(base_scores)
+        if total_samples == 0 or len(class_labels) != total_samples:
+            return None
+
+        label_to_indices = defaultdict(list)
+        unlabeled_indices = []
+        for idx, label in enumerate(class_labels):
+            if label is None:
+                unlabeled_indices.append(idx)
+            else:
+                try:
+                    label_to_indices[int(label)].append(idx)
+                except (TypeError, ValueError):
+                    unlabeled_indices.append(idx)
+
+        active_labels = [label for label, queue in label_to_indices.items() if queue]
+        if len(active_labels) <= 1:
+            return None
+
+        for queue in label_to_indices.values():
+            queue.sort(key=lambda value_idx: base_scores[value_idx], reverse=True)
+        unlabeled_indices.sort(key=lambda value_idx: base_scores[value_idx], reverse=True)
+
+        if math.isinf(self.class_balance_weight):
+            preliminary = self._round_robin_class_selection(label_to_indices, n_select)
+        else:
+            preliminary = self._soft_class_selection(
+                label_to_indices,
+                unlabeled_indices,
+                base_scores,
+                n_select,
+            )
+
+        return self._finalize_balanced_selection(base_scores, preliminary, n_select)
+
+    def _round_robin_class_selection(self, label_to_indices, n_select):
+        ordered_labels = [label for label, queue in label_to_indices.items() if queue]
+        if not ordered_labels:
+            return []
+
+        selected = []
+        active_labels = ordered_labels.copy()
+        pointer = 0
+        while len(selected) < n_select and active_labels:
+            idx = pointer % len(active_labels)
+            label = active_labels[idx]
+            queue = label_to_indices[label]
+            if queue:
+                selected.append(queue.pop(0))
+                pointer += 1
+            else:
+                active_labels.pop(idx)
+                if not active_labels:
+                    break
+        return selected
+
+    def _soft_class_selection(self, label_to_indices, unlabeled_indices, base_scores, n_select):
+        if not label_to_indices:
+            return []
+
+        available_labels = [label for label, queue in label_to_indices.items() if queue]
+        if not available_labels:
+            return []
+
+        n_classes = len(available_labels)
+        target = n_select / n_classes if n_classes else 0.0
+        denominator = max(target, 1e-6)
+        class_counts = {label: 0 for label in label_to_indices}
+        unlabeled_ptr = 0
+        selected = []
+        max_iterations = max(4 * n_select, len(base_scores))
+
+        for _ in range(max_iterations):
+            if len(selected) >= n_select:
+                break
+
+            best_label = None
+            best_idx = None
+            best_score = -np.inf
+
+            for label, queue in label_to_indices.items():
+                if not queue:
+                    continue
+                candidate_idx = queue[0]
+                deficit = target - class_counts.get(label, 0)
+                bonus = self.class_balance_weight * (deficit / denominator)
+                effective = base_scores[candidate_idx] + bonus
+                if effective > best_score:
+                    best_score = effective
+                    best_label = label
+                    best_idx = candidate_idx
+
+            unlabeled_candidate = None
+            unlabeled_score = -np.inf
+            if unlabeled_ptr < len(unlabeled_indices):
+                unlabeled_candidate = unlabeled_indices[unlabeled_ptr]
+                unlabeled_score = base_scores[unlabeled_candidate]
+            if unlabeled_candidate is not None and unlabeled_score > best_score:
+                best_label = None
+                best_idx = unlabeled_candidate
+                best_score = unlabeled_score
+
+            if best_idx is None:
+                break
+
+            selected.append(best_idx)
+            if best_label is None:
+                unlabeled_ptr += 1
+            else:
+                class_counts[best_label] = class_counts.get(best_label, 0) + 1
+                label_to_indices[best_label].pop(0)
+
+        return selected
+
+    def _finalize_balanced_selection(self, base_scores, preliminary_indices, n_select):
+        if preliminary_indices is None:
+            preliminary_indices = []
+
+        ordered = []
+        seen = set()
+        for idx in preliminary_indices:
+            idx_int = int(idx)
+            if idx_int in seen:
+                continue
+            ordered.append(idx_int)
+            seen.add(idx_int)
+            if len(ordered) >= n_select:
+                return ordered[:n_select]
+
+        ranked = np.argsort(-base_scores)
+        for idx in ranked:
+            idx_int = int(idx)
+            if idx_int in seen:
+                continue
+            ordered.append(idx_int)
+            seen.add(idx_int)
+            if len(ordered) >= n_select:
+                break
+
+        return ordered[:n_select]
+
     def select(self, dataset, n_select, random_seed=42, debug_attribute=None):
         """
         Score each sample by attribute rarity and uncertainty, then pick the top ones.
@@ -609,6 +865,12 @@ class AttributeFocusedStrategy:
         metadata_indices = self._resolve_metadata_indices(dataset)
         if len(metadata_indices) != total_samples:
             raise RuntimeError("Metadata index mapping length mismatch with dataset")
+
+        class_labels = None
+        if self.class_balance_weight > 0:
+            labels_candidate = self._resolve_class_labels(dataset)
+            if labels_candidate and len(labels_candidate) == total_samples:
+                class_labels = labels_candidate
 
         attribute_counts = self._compute_attribute_counts(metadata_indices)
         attribute_totals = {
@@ -683,13 +945,33 @@ class AttributeFocusedStrategy:
             scores[local_idx] = sample_score
 
         if np.all(scores == 0):
-            # Fall back to random selection if no attribute information applied
-            rng = np.random.default_rng(random_seed)
+            noise = rng.uniform(low=0.0, high=1.0, size=total_samples)
+            if self.class_balance_weight > 0 and class_labels:
+                balanced_pick = self._select_with_class_balance(noise, class_labels, n_select)
+                if balanced_pick is not None:
+                    return balanced_pick
             return rng.choice(total_samples, size=n_select, replace=False).tolist()
 
         # Tie-break by adding a small amount of random noise (stable selection)
         noise = rng.uniform(low=0.0, high=1e-6, size=total_samples)
-        ranked_indices = np.argsort(-(scores + noise))
+        base_scores = scores + noise
+
+        selected_indices = None
+        if self.class_balance_weight > 0 and class_labels:
+            balanced_selection = self._select_with_class_balance(base_scores, class_labels, n_select)
+            if balanced_selection is not None:
+                selected_indices = balanced_selection
+
+        if selected_indices is None:
+            ranked_indices = np.argsort(-base_scores)
+            selected_indices = ranked_indices[:n_select].tolist()
+
+        if selected_indices:
+            self._log_attribute_distribution(
+                metadata_indices=metadata_indices,
+                local_indices=selected_indices,
+                label="Attribute distribution in selected samples",
+            )
 
         if debug_attribute and per_attribute_breakdown:
             value_stats = per_attribute_breakdown.get(debug_attribute, {})
@@ -712,7 +994,7 @@ class AttributeFocusedStrategy:
                         f"B={balance_component:.4f}"
                     )
 
-        return ranked_indices[:n_select].tolist()
+        return selected_indices
 
 
 def extract_embeddings_for_al(model, dataloader, device, model_type='resnet', embedding_dim=512):
@@ -864,6 +1146,8 @@ def active_learning_selection(train_dataset, val_dataset, args, device, verbose=
         log_acc_scale = getattr(args, 'al_attribute_log_acc_scale', 1.0)
         extra_counts_raw = getattr(args, 'al_attribute_extra_counts', None)
         balance_strength = getattr(args, 'al_attribute_balance_strength', 0.0)
+        class_balance_raw = getattr(args, 'al_attribute_class_balance', 0.0)
+        class_balance_weight = parse_float_with_infinity(class_balance_raw)
 
         focus_attributes = None
         if isinstance(focus_raw, str) and focus_raw.strip():
@@ -929,6 +1213,7 @@ def active_learning_selection(train_dataset, val_dataset, args, device, verbose=
                 log_acc_scale=log_acc_scale,
                 extra_counts=extra_counts,
                 balance_strength=balance_strength,
+                class_balance_weight=class_balance_weight,
             )
             debug_attr = None
             if verbose:
@@ -1133,37 +1418,45 @@ def active_learning_selection(train_dataset, val_dataset, args, device, verbose=
         selected_indices = random.sample(range(total_train_samples), target_samples)
     
     # Diagnostic: Check class distribution in selected samples
-    if verbose:
-        try:
-            # For ImageNet subset, check class balance
-            if hasattr(train_dataset, 'targets') or (hasattr(train_dataset, 'dataset') and hasattr(train_dataset.dataset, 'targets')):
-                if hasattr(train_dataset, 'targets'):
-                    all_targets = np.array([train_dataset.dataset.targets[i] for i in train_dataset.indices])
-                else:
-                    all_targets = np.array([train_dataset.dataset.targets[i] for i in train_dataset.indices])
-                    
-                selected_targets = all_targets[selected_indices]
-                
-                print(f"\nClass distribution in selected samples:")
-                unique_classes, class_counts = np.unique(selected_targets, return_counts=True)
-                for cls, count in zip(unique_classes, class_counts):
-                    percentage = count / len(selected_targets) * 100
-                    print(f"  Class {cls}: {count} samples ({percentage:.1f}%)")
-                
-                # Compare with random baseline
-                random.seed(args.seed + 1)  # Different seed for comparison
-                random_indices = random.sample(range(len(train_dataset)), target_samples)
-                random_targets = all_targets[random_indices]
-                random_unique, random_counts = np.unique(random_targets, return_counts=True)
-                
-                print(f"\nClass distribution in random baseline:")
-                for cls, count in zip(random_unique, random_counts):
-                    percentage = count / len(random_targets) * 100
-                    print(f"  Class {cls}: {count} samples ({percentage:.1f}%)")
-                    
-        except Exception as e:
-            if verbose:
-                print(f"Could not analyze class distribution: {e}")
+    try:
+        base_dataset = train_dataset.dataset if hasattr(train_dataset, 'dataset') else train_dataset
+        subset_indices = getattr(train_dataset, 'indices', list(range(len(train_dataset))))
+        base_targets = None
+        if hasattr(train_dataset, 'targets') and isinstance(train_dataset.targets, (list, np.ndarray)):
+            base_targets = np.array(train_dataset.targets)
+        elif hasattr(base_dataset, 'targets'):
+            base_targets = np.array([base_dataset.targets[i] for i in subset_indices])
+
+        if base_targets is not None and len(base_targets) == len(train_dataset):
+            n_classes = None
+            class_names = None
+            if hasattr(base_dataset, 'classes'):
+                class_names = list(base_dataset.classes)
+                n_classes = len(class_names)
+            if n_classes is None:
+                n_classes = int(base_targets.max()) + 1 if base_targets.size else 0
+
+            selected_targets = base_targets[selected_indices]
+            print("\nClass distribution in selected samples:")
+            for cls in range(n_classes):
+                count = int(np.sum(selected_targets == cls))
+                percentage = (count / len(selected_targets) * 100.0) if len(selected_targets) > 0 else 0.0
+                label = class_names[cls] if class_names and cls < len(class_names) else cls
+                print(f"  Class {label}: {count} samples ({percentage:.1f}%)")
+
+            random.seed(args.seed + 1)
+            random_indices = random.sample(range(len(train_dataset)), target_samples)
+            random_targets = base_targets[random_indices]
+            print("\nClass distribution in random baseline:")
+            for cls in range(n_classes):
+                count = int(np.sum(random_targets == cls))
+                percentage = (count / len(random_targets) * 100.0) if len(random_targets) > 0 else 0.0
+                label = class_names[cls] if class_names and cls < len(class_names) else cls
+                print(f"  Class {label}: {count} samples ({percentage:.1f}%)")
+
+    except Exception as e:
+        if verbose:
+            print(f"Could not analyze class distribution: {e}")
     
     if verbose:
         print(f"Active Learning selection completed. Selected {len(selected_indices)} samples using '{al_strategy}' strategy.")

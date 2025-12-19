@@ -1,3 +1,157 @@
+CUDA_VISIBLE_DEVICES=3 nohup python -u alpred.py \
+  --dataset imagenet --model resnet --num_added_img 1000 \
+  --attributes pinkcolor_fabrictexture --num_epochs 30 \
+  --gen_only train_val_test \
+  > logs_imagenet/gen_imagenet_1000.log 2>&1 < /dev/null &
+
+CUDA_VISIBLE_DEVICES=0 nohup python -u alpred.py \
+  --dataset imagenet --model resnet --num_added_img 1000 \
+  --attributes pinkcolor_fabrictexture --num_epochs 60 \
+  --gen_only train_val_test \
+  > logs_imagenet/gen_imagenet_epoch60_1000.log 2>&1 < /dev/null &
+
+
+CUDA_VISIBLE_DEVICES=2 nohup python -u alpred.py \
+  --dataset imagenet --model resnet --num_added_img 1000 \
+  --attributes pinkcolor_fabrictexture --num_epochs 30 \
+  --gen_only train_only \
+  > logs_imagenet/gen_imagenet_train_only_1000.log 2>&1 < /dev/null &
+
+CUDA_VISIBLE_DEVICES=3 nohup python -u alpred.py \
+  --dataset imagenet --model resnet --num_added_img 1000 \
+  --attributes pinkcolor_fabrictexture --num_epochs 30 \
+  --sub_ratio 0.1 \
+  --al_attribute_focus color,background,texture \
+  --verbose False \
+  --al_attribute_log_acc_scale 1 \
+  --num_epochs 30 \
+  --al_attribute_balance_strength 5 \
+  --al_attribute_class_balance inf \
+  > logs_imagenet/AL_resnet_attr_imagenet_0.1_scale1_B5_classINF_1000.log 2>&1 < /dev/null &
+
+CUDA_VISIBLE_DEVICES=3 nohup python -u alpred.py \
+  --dataset imagenet --model resnet --num_added_img 1000 \
+  --attributes pinkcolor_fabrictexture --num_epochs 30 \
+  --sub_ratio 0.1 \
+  --al_attribute_focus color,background,texture \
+  --verbose False \
+  --al_attribute_log_acc_scale 1 \
+  --num_epochs 30 \
+  --al_attribute_balance_strength 5 \
+  --al_attribute_class_balance 4 \
+  > logs_imagenet/AL_resnet_attr_imagenet_0.1_scale1_B5_class4_1000.log 2>&1 < /dev/null &
+
+CUDA_VISIBLE_DEVICES=1 nohup python -u alpred.py \
+  --dataset imagenet --model resnet --num_added_img 1000 \
+  --attributes pinkcolor_fabrictexture --num_epochs 30 \
+  --sub_ratio 0.3 \
+  --al_attribute_focus color,background,texture \
+  --verbose False \
+  --al_attribute_log_acc_scale 1 \
+  --num_epochs 30 \
+  --al_attribute_balance_strength 5 \
+  --al_attribute_class_balance inf \
+  > logs_imagenet/AL_resnet_attr_imagenet_0.3_scale1_B5_classINF_1000.log 2>&1 < /dev/null &
+
+CUDA_VISIBLE_DEVICES=1 nohup python -u alpred.py \
+  --dataset imagenet --model resnet --num_added_img 1000 \
+  --attributes pinkcolor_fabrictexture --num_epochs 30 \
+  --sub_ratio 0.3 \
+  --al_attribute_focus color,background,texture \
+  --verbose False \
+  --al_attribute_log_acc_scale 1 \
+  --num_epochs 30 \
+  --al_attribute_balance_strength 5 \
+  --al_attribute_class_balance 4 \
+  > logs_imagenet/AL_resnet_attr_imagenet_0.3_scale1_B5_class4_1000.log 2>&1 < /dev/null &
+
+CUDA_VISIBLE_DEVICES=1 nohup python -u alpred.py \
+  --dataset imagenet --model resnet --num_added_img 1000 \
+  --attributes pinkcolor_fabrictexture --num_epochs 30 \
+  --sub_ratio 0.3 \
+  --al_attribute_focus color,background,texture \
+  --verbose False \
+  --al_attribute_log_acc_scale 1 \
+  --num_epochs 30 \
+  --al_attribute_balance_strength 5 \
+  --al_attribute_class_balance 3 \
+  > logs_imagenet/AL_resnet_attr_imagenet_0.3_scale1_B5_class3_1000.log 2>&1 < /dev/null &
+
+
+CUDA_VISIBLE_DEVICES=0 nohup python -u alpred.py \
+  --dataset imagenet --model resnet --num_added_img 1000 \
+  --attributes pinkcolor_fabrictexture --num_epochs 30 \
+  --sub_ratio 0.1 \
+  --al_attribute_focus color,background,texture \
+  --verbose False \
+  --al_attribute_log_acc_scale 1 \
+  --num_epochs 30 \
+  --al_attribute_balance_strength 1 \
+  > logs_imagenet/AL_resnet_attr_imagenet_0.1_scale1_B1_1000.log 2>&1 < /dev/null &
+
+CUDA_VISIBLE_DEVICES=1 nohup python -u alpred.py \
+  --dataset imagenet --model resnet --num_added_img 1000 \
+  --attributes pinkcolor_fabrictexture --num_epochs 30 \
+  --sub_ratio 0.3 \
+  --al_attribute_focus color,background,texture \
+  --verbose False \
+  --al_attribute_log_acc_scale 1 \
+  --num_epochs 30 \
+  --al_attribute_balance_strength 0.5 \
+  > logs_imagenet/AL_resnet_attr_imagenet_0.3_scale1_B0.5_1000.log 2>&1 < /dev/null &
+
+CUDA_VISIBLE_DEVICES=3 nohup python -u alpred.py \
+  --dataset imagenet --model resnet --num_added_img 1000 \
+  --attributes pinkcolor_fabrictexture --num_epochs 30 \
+  --sub_ratio 0.5 \
+  --al_attribute_focus color,background,texture \
+  --verbose False \
+  --al_attribute_log_acc_scale 1 \
+  --num_epochs 0 \
+  > logs_imagenet/Debug_AL_resnet_attr_imagenet_0.5_scale1_1000.log 2>&1 < /dev/null &
+
+CUDA_VISIBLE_DEVICES=3 nohup python -u alpred.py \
+  --dataset imagenet --model resnet --num_added_img 1000 \
+  --attributes pinkcolor_fabrictexture --num_epochs 30 \
+  --sub_ratio 0.5 \
+  --al_attribute_focus color,background,texture \
+  --verbose False \
+  --al_attribute_log_acc_scale 1 \
+  --num_epochs 0 \
+  --al_attribute_balance_strength 5 \
+  > logs_imagenet/Debug_B5_AL_resnet_attr_imagenet_0.5_scale1_1000.log 2>&1 < /dev/null &
+
+CUDA_VISIBLE_DEVICES=3 nohup python -u alpred.py \
+  --dataset imagenet --model resnet --num_added_img 1000 \
+  --attributes pinkcolor_fabrictexture --num_epochs 30 \
+  --sub_ratio 0.5 \
+  --al_attribute_focus color,background,texture \
+  --verbose False \
+  --al_attribute_log_acc_scale 1 \
+  --num_epochs 30 \
+  --al_attribute_balance_strength 5 \
+  > logs_imagenet/AL_resnet_attr_imagenet_0.5_scale1_B5_1000.log 2>&1 < /dev/null &
+
+CUDA_VISIBLE_DEVICES=1 nohup python -u alpred.py \
+  --dataset imagenet --model resnet --num_added_img 1000 \
+  --attributes pinkcolor_fabrictexture --num_epochs 30 \
+  --sub_ratio 0.3 \
+  --al_attribute_focus color,background,texture \
+  --verbose False \
+  --al_attribute_log_acc_scale 1 \
+  --num_epochs 30 \
+  --al_attribute_balance_strength 5 \
+  > logs_imagenet/AL_resnet_attr_imagenet_0.3_scale1_B5_1000.log 2>&1 < /dev/null &
+
+CUDA_VISIBLE_DEVICES=2 nohup python -u alpred.py \
+  --dataset imagenet --model resnet --num_added_img 1000 \
+  --attributes pinkcolor_fabrictexture --num_epochs 30 \
+  --sub_ratio 0.3 \
+  --al_attribute_focus color,background,texture \
+  --verbose False \
+  --al_attribute_log_acc_scale 1 \
+  --num_epochs 0 \
+  > logs_imagenet/Debug_AL_resnet_attr_imagenet_0.3_scale1_1000.log 2>&1 < /dev/null &
 
 nohup ./test_al_strategies.sh --sub_ratio 0.9 > test_al_strategies_ratio0.9.log 2>&1 < /dev/null &
 nohup ./test_al_strategies.sh --sub_ratio 0.7 > test_al_strategies_ratio0.7.log 2>&1 < /dev/null &

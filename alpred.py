@@ -10,6 +10,49 @@ from utils.data_utils import (default_img_transform, clip_processor_transform, m
                              CelebADataset, GeneratedImageDataset, SimpleImageDataset, GeneratedDataset)
 from utils.training import evaluate, train_model, save_predictions, parse_log
 
+
+def _print_class_distribution(subset, description, verbose=False):
+    """Log per-class counts for a torch.utils.data.Subset built on ImageFolder."""
+    from torch.utils.data import Subset as TorchSubset
+
+    try:
+        if not isinstance(subset, TorchSubset):
+            return False
+
+        base_dataset = subset.dataset
+        indices = subset.indices
+        if base_dataset is None or indices is None:
+            return False
+
+        base_targets = None
+        if hasattr(base_dataset, "targets"):
+            base_targets = base_dataset.targets
+        elif hasattr(base_dataset, "samples"):
+            base_targets = [sample[1] for sample in base_dataset.samples]
+
+        if base_targets is None:
+            return False
+
+        labels = np.array([base_targets[i] for i in indices])
+        if labels.size == 0:
+            return False
+
+        class_names = getattr(base_dataset, "classes", None)
+        n_classes = len(class_names) if class_names else int(labels.max()) + 1
+
+        print(f"\n[{description}] class distribution:")
+        for cls in range(n_classes):
+            count = int(np.sum(labels == cls))
+            percentage = (count / len(labels) * 100.0) if len(labels) > 0 else 0.0
+            label = class_names[cls] if class_names and cls < len(class_names) else cls
+            print(f"  Class {label}: {count} samples ({percentage:.1f}%)")
+
+        return True
+    except Exception as exc:
+        if verbose:
+            print(f"Warning: could not compute class distribution for {description}: {exc}")
+        return False
+
 # Parse command-line arguments
 parser = argparse.ArgumentParser(description='Train model on CelebA dataset')
 parser.add_argument('--verbose', type=str2bool, default=False,
@@ -36,8 +79,8 @@ parser.add_argument('--num_epochs', type=int, default=20,
 parser.add_argument('--num_added_img', type=int, default=1000,
                     help='Number of generated images to add (default: 4000)')
 # Add argument for attribute file path
-parser.add_argument('--attribute_file', type=str, default="exampleData/celebA/attribute.json",
-                    help='Path to the attribute JSON file (default: exampleData/celebA/attribute.json)')
+parser.add_argument('--attribute_file', type=str, default="save/attribute10.json",
+                    help='Path to the attribute JSON file (default: save/attribute10.json)')
 parser.add_argument('--gpu', type=int, default=0,
                     help='Index of the CUDA GPU to use (default: 0)')
 parser.add_argument('--save_report', type=str2bool, default=False,
@@ -49,8 +92,13 @@ parser.add_argument(
     default='best',
     help='Which model to use for saving predictions: best (default) or last'
 )
-parser.add_argument('--gen_only', type=str2bool, default=False,
-                    help='Use only generated images for training (default: False)')
+parser.add_argument(
+    '--gen_only',
+    type=str,
+    default='false',
+    choices=['false', 'train_only', 'train_val_test'],
+    help='Generated-image usage: false (off), train_only (use generated for train/val), train_val_test (8:1:1 split for train/val/test)'
+)
 parser.add_argument('--skip_train_unlabeled', type=str2bool, default=False,
                     help='Skip processing TRAIN and UNLABELED splits in diagnostics')
 parser.add_argument('--no_controlnet', type=str2bool, default=False,
@@ -92,14 +140,14 @@ parser.add_argument('--lr_backbone', type=float, default=None,
                     help='Learning rate for CLIP backbone (scratch mode)')
 # Active Learning arguments
 parser.add_argument('--use_active_learning', type=str2bool, default=True,
-                    help='Use Active Learning Core-set strategy for data selection (default: True)')
-parser.add_argument('--al_strategy', type=str, default='coreset', 
+                    help='Use Active Learning strategy for data selection (default: True)')
+parser.add_argument('--al_strategy', type=str, default='attribute', 
                     choices=['coreset', 'stratified', 'diversity', 'hybrid', 'hierarchical', 'attribute'],
                     help='Active Learning strategy: coreset (default), stratified, diversity, hybrid, hierarchical, or attribute-driven')
 parser.add_argument('--al_embedding_dim', type=int, default=512,
                     help='Embedding dimension for Active Learning (default: 512)')
-parser.add_argument('--al_initial_labeled', type=int, default=500,
-                    help='Initial number of labeled samples for Active Learning (default: 500)')
+parser.add_argument('--al_initial_labeled', type=int, default=400,
+                    help='Initial number of labeled samples for Active Learning (default: 400)')
 # Hybrid strategy parameters
 parser.add_argument('--al_coreset_ratio', type=float, default=0.4,
                     help='Ratio of samples selected by core-set in hybrid strategy (default: 0.4)')
@@ -128,6 +176,8 @@ parser.add_argument('--al_attribute_extra_counts', type=str, default=None,
                     help='Extra counts per attribute value to reflect generated data (attr:value=count entries or JSON path)')
 parser.add_argument('--al_attribute_balance_strength', type=float, default=0.5,
                     help='Penalty strength applied to over-represented attribute values (default: 0.5)')
+parser.add_argument('--al_attribute_class_balance', type=str, default="0",
+                    help='Class-level stratified weight; pass "inf" to enforce hard per-class quotas (default: 0)')
 parser.add_argument('--al_alpha', type=float, default=0.4,
                     help='Weight for difficulty in hierarchical priority score (default: 0.4)')
 parser.add_argument('--al_beta', type=float, default=0.4,
@@ -161,6 +211,15 @@ parser.add_argument('--llm_max_memory', type=int, default=23,
 # Parse arguments
 args = parser.parse_args()
 
+# Normalize generated-image mode
+gen_mode = str(args.gen_only).lower()
+valid_gen_modes = ('false', 'train_only', 'train_val_test')
+if gen_mode not in valid_gen_modes:
+    raise ValueError(f"Invalid --gen_only value '{args.gen_only}'. Choose from {valid_gen_modes}.")
+args.gen_only = gen_mode
+gen_use_generated = gen_mode != 'false'
+gen_three_split = gen_mode == 'train_val_test'
+
 # Set random seed for reproducibility
 random.seed(args.seed)
 np.random.seed(args.seed)
@@ -181,6 +240,9 @@ overall_start_time = time.time()
 # Accumulator for total selection time (Active Learning or LLM-based selection)
 al_total_time = 0.0
 # Override attribute file for ImageNet dataset
+diag_labels_imagenet = None
+diag_split_imagenet = None
+
 if args.dataset == 'imagenet':
     args.attribute_file = 'save/attribute10.json'
 # Automatically enable pretrained weights for CLIP and ViT on ImageNet
@@ -394,9 +456,11 @@ if args.dataset == 'imagenet':
     valid_dataset = val_ds
     num_classes = len(full_ds.classes)
 
+    labels_all = np.array(full_ds.targets)
+
     # --- ImageNet augmentation modes ---
-    if args.gen_only:
-        # Use only generated images for ImageNet: 80% train, 20% validation
+    if gen_use_generated:
+        # Use only generated images for ImageNet
         # Collect generated image paths and labels
         gen_paths, gen_labels = [], []
         for cls_name, cls_idx in full_ds.class_to_idx.items():
@@ -415,12 +479,20 @@ if args.dataset == 'imagenet':
         sampled = random.sample(idxs, min(len(gen_paths), args.num_added_img))
         gen_paths = [gen_paths[i] for i in sampled]
         gen_labels = [gen_labels[i] for i in sampled]
-        # Split into train and validation sets (80/20)
+        # Split generated set
         indices = list(range(len(gen_paths)))
         random.shuffle(indices)
-        split_idx = int(0.8 * len(indices))
-        train_idx_gen = indices[:split_idx]
-        val_idx_gen = indices[split_idx:]
+        if gen_three_split:
+            train_end = int(0.8 * len(indices))
+            val_end = int(0.9 * len(indices))
+            train_idx_gen = indices[:train_end]
+            val_idx_gen = indices[train_end:val_end]
+            test_idx_gen = indices[val_end:]
+        else:
+            split_idx = int(0.8 * len(indices))
+            train_idx_gen = indices[:split_idx]
+            val_idx_gen = indices[split_idx:]
+            test_idx_gen = []
         class GeneratedImageDataset(Dataset):
             def __init__(self, paths, labels, transform):
                 self.paths, self.labels, self.transform = paths, labels, transform
@@ -437,7 +509,31 @@ if args.dataset == 'imagenet':
                                        val_transform)
         train_loader = make_loader(train_ds, shuffle=True)
         valid_loader = make_loader(val_ds, shuffle=False)
-        print(f"Using only generated images for ImageNet: train={len(train_ds)}, valid={len(val_ds)}")
+        if gen_three_split:
+            test_ds_gen = GeneratedImageDataset([gen_paths[i] for i in test_idx_gen],
+                                                [gen_labels[i] for i in test_idx_gen],
+                                                val_transform)
+            test_loader = make_loader(test_ds_gen, shuffle=False)
+        print(
+            f"Using generated images for ImageNet ({gen_mode}): "
+            f"train={len(train_ds)}, valid={len(val_ds)}"
+            + (f", test={len(test_idx_gen)}" if gen_three_split else "")
+        )
+
+        # Prepare diagnostics labels/split for generated modes
+        gen_labels_np = np.array(gen_labels)
+        train_labels_gen = gen_labels_np[train_idx_gen]
+        val_labels_gen = gen_labels_np[val_idx_gen]
+        if gen_three_split:
+            test_labels_gen = gen_labels_np[test_idx_gen]
+        else:
+            test_labels_gen = labels_all[test_idx] if len(test_idx) else np.array([])
+        diag_labels_imagenet = np.concatenate([train_labels_gen, val_labels_gen, test_labels_gen])
+        diag_split_imagenet = (
+            [TRAIN] * len(train_labels_gen)
+            + [VALID] * len(val_labels_gen)
+            + [TEST] * len(test_labels_gen)
+        )
     elif args.simple:
         # Simple mode: augment from exampleData/imagenet_simple
         simple_root = Path("exampleData/imagenet_simple")
@@ -471,7 +567,7 @@ if args.dataset == 'imagenet':
             print(f"Added {len(simple_ds)} ImageNet simple images: {len(train_ds)} -> {len(train_dataset)}")
         else:
             train_dataset, train_loader = train_ds, make_loader(train_ds, shuffle=True)
-    elif not args.gen_only and not args.simple:
+    elif not gen_use_generated and not args.simple:
         # Normal mode: generated-images + feasible filter (mirrors CelebA logic)
         # Determine generated-image directory: use default if exists, otherwise try fallbacks
         default_gen_dir = f"exampleData/imagenet_{attributes}"
@@ -610,7 +706,7 @@ if args.dataset == 'imagenet':
             
             if args.use_active_learning and args.sub_ratio < 1.0:
                 if verbose:
-                    print(f"Using Active Learning Core-set strategy to select {sub_count} samples from {orig_count}")
+                    print(f"Using Active Learning strategy to select {sub_count} samples from {orig_count}")
                 # Define device for Active Learning if not already defined
                 if torch.cuda.is_available():
                     al_device = torch.device(f"cuda:{args.gpu}")
@@ -665,9 +761,16 @@ if args.dataset == 'imagenet':
             # Map subset indices back to the original dataset indices
             sub_orig_indices = [train_ds.indices[i] for i in selected_indices]
             sub_train_ds = Subset(train_ds.dataset, sub_orig_indices)
+
+            if args.dataset == 'imagenet':
+                _print_class_distribution(
+                    sub_train_ds,
+                    description="Active Learning subset (before adding generated images)",
+                    verbose=verbose,
+                )
             # Combine subsampled original data with generated data
             train_dataset = torch.utils.data.ConcatDataset([sub_train_ds, gen_ds])
-            selection_method = ("Active Learning Core-set" if args.use_active_learning and args.sub_ratio < 1.0 
+            selection_method = ("Active Learning" if args.use_active_learning and args.sub_ratio < 1.0 
                                else f"LLM-based selection ({args.llm_strategy})" if args.use_llm_selection and args.sub_ratio < 1.0
                                else "Random sampling")
             print(f"Added {len(modified_image_labels)} ImageNet {attributes} images using {selection_method}: {len(sub_train_ds)} -> {len(train_dataset)}")
@@ -915,9 +1018,10 @@ elif args.dataset == 'celeba':
         print("Finish sampling for generated images")
 
     # Print information about the added images
-    if args.gen_only:
-        # In gen_only mode, we’re only ever using the generated set
-        print(f"Using only generated images: total training images = {len(modified_image_labels)}")
+    if gen_use_generated:
+        print(
+            f"Using generated images ({gen_mode}): total generated samples considered = {len(modified_image_labels)}"
+        )
     else:
         added_count = len(modified_image_labels)
         print(f"Added {added_count} generated {attributes} images, "
@@ -931,18 +1035,28 @@ elif args.dataset == 'celeba':
         print(f"Unlabeled predictions length: {len(unlabeled_predictions)}")
 
     # Construct training data based on gen_only flag
-    if args.gen_only:
-        # Use only generated images: split into 80:20 train/validation sets
+    if gen_use_generated:
+        # Use only generated images: split into 80/20 or 80/10/10
         indices = list(range(len(modified_image_paths)))
         random.shuffle(indices)
-        split_idx = int(0.8 * len(indices))
-        train_indices = indices[:split_idx]
-        val_indices = indices[split_idx:]
+        if gen_three_split:
+            train_end = int(0.8 * len(indices))
+            val_end = int(0.9 * len(indices))
+            train_indices = indices[:train_end]
+            val_indices = indices[train_end:val_end]
+            test_indices = indices[val_end:]
+        else:
+            split_idx = int(0.8 * len(indices))
+            train_indices = indices[:split_idx]
+            val_indices = indices[split_idx:]
+            test_indices = []
         all_train_imgs = [modified_image_paths[i] for i in train_indices]
         all_train_labels = np.array(modified_image_labels)[train_indices]
-        # Override valid set to use generated images
         valid_imgs = [modified_image_paths[i] for i in val_indices]
         valid_labels = np.array(modified_image_labels)[val_indices]
+        if gen_three_split:
+            test_imgs = [modified_image_paths[i] for i in test_indices]
+            test_labels = np.array(modified_image_labels)[test_indices]
     elif modified_image_paths:
         # Handle combined Active Learning or original approach for CelebA
         if args.al_combined and args.use_active_learning:
@@ -1009,7 +1123,7 @@ elif args.dataset == 'celeba':
             
             if args.use_active_learning and args.sub_ratio < 1.0:
                 if verbose:
-                    print(f"Using Active Learning Core-set strategy to select {sub_count} samples from {orig_count} for CelebA")
+                    print(f"Using Active Learningstrategy to select {sub_count} samples from {orig_count} for CelebA")
                 # Define device for Active Learning if not already defined
                 if torch.cuda.is_available():
                     al_device = torch.device(f"cuda:{args.gpu}")
@@ -1063,7 +1177,7 @@ elif args.dataset == 'celeba':
             sub_train_labels = train_labels[selected_indices]
             all_train_imgs = sub_train_imgs + modified_image_paths
             all_train_labels = np.concatenate((sub_train_labels, np.array(modified_image_labels)))
-            selection_method = ("Active Learning Core-set" if args.use_active_learning and args.sub_ratio < 1.0 
+            selection_method = ("Active Learning" if args.use_active_learning and args.sub_ratio < 1.0 
                                else f"LLM-based selection ({args.llm_strategy})" if args.use_llm_selection and args.sub_ratio < 1.0
                                else "Random sampling")
             print(f"CelebA: Combined {len(sub_train_imgs)} selected samples with {len(modified_image_paths)} generated images using {selection_method}")
@@ -1084,7 +1198,7 @@ elif args.dataset == 'celeba':
     # Save combined indices and labels when using generated images
     if modified_image_paths:
         modified_filenames = [os.path.basename(path).split('.')[0] for path in modified_image_paths]
-        if args.gen_only:
+        if gen_use_generated:
             combined_train_idx = np.array(modified_filenames, dtype=object)
         else:
             combined_train_idx = np.array([*train_idx, *modified_filenames], dtype=object)
@@ -1364,7 +1478,7 @@ def save_predictions(model, train_loader, valid_loader, test_loader=None):
         print(f"Combined predictions length: {len(combined_preds)}")
     # Determine filename suffix based on gen_only flag and ablation flag
     suffix = ""
-    if args.gen_only:
+    if gen_use_generated:
         suffix += "_g"
     if args.no_controlnet:
         suffix += "_h" # Add 'h' for ablation/no_controlnet
@@ -1581,7 +1695,7 @@ top_error = 3
 
 # Determine filename suffix for predictions
 suffix = ""
-if args.gen_only:
+if gen_use_generated:
     suffix += "_g"
 if args.no_controlnet:
     suffix += "_h"  # Add 'h' for ablation/no_controlnet
@@ -1592,36 +1706,40 @@ predictions = np.load(prediction_file)
 
 # Prepare labels and split for diagnostics based on dataset
 if args.dataset == 'imagenet':
-    # Derive ground-truth labels from the ImageFolder ordering
-    data_dir = Path("exampleData/imagenet_subset")
-    full_ds = ImageFolder(data_dir)
-    labels_all = np.array(full_ds.targets)
-    expected_train = len(train_idx)
-    expected_val = len(val_idx)
-    expected_test = len(test_idx) if 'test_idx' in locals() else 0
-    total_predictions = len(predictions)
-    total_without_test = expected_train + expected_val
-    total_with_test = total_without_test + expected_test
-
-    if expected_test and total_predictions == total_with_test:
-        labels_to_diagnose = np.concatenate([labels_all[train_idx], labels_all[val_idx], labels_all[test_idx]])
-        split = [TRAIN] * expected_train + [VALID] * expected_val + [TEST] * expected_test
-    elif total_predictions == total_without_test:
-        labels_to_diagnose = np.concatenate([labels_all[train_idx], labels_all[val_idx]])
-        split = [TRAIN] * expected_train + [VALID] * expected_val
-        if expected_test:
-            print(
-                "Warning: Predictions file omits test samples (expected total "
-                f"{total_with_test}, got {total_predictions}). Diagnostics run on train+val only."
-            )
+    # Prefer generated-mode labels if present, otherwise fall back to original split
+    if diag_labels_imagenet is not None and diag_split_imagenet is not None:
+        labels_to_diagnose = diag_labels_imagenet
+        split = diag_split_imagenet
     else:
-        print(
-            "Warning: Predictions length ({}) does not match expected counts ({}/{}).".format(
-                total_predictions, total_without_test, total_with_test
+        data_dir = Path("exampleData/imagenet_subset")
+        full_ds = ImageFolder(data_dir)
+        labels_all = np.array(full_ds.targets)
+        expected_train = len(train_idx)
+        expected_val = len(val_idx)
+        expected_test = len(test_idx) if 'test_idx' in locals() else 0
+        total_predictions = len(predictions)
+        total_without_test = expected_train + expected_val
+        total_with_test = total_without_test + expected_test
+
+        if expected_test and total_predictions == total_with_test:
+            labels_to_diagnose = np.concatenate([labels_all[train_idx], labels_all[val_idx], labels_all[test_idx]])
+            split = [TRAIN] * expected_train + [VALID] * expected_val + [TEST] * expected_test
+        elif total_predictions == total_without_test:
+            labels_to_diagnose = np.concatenate([labels_all[train_idx], labels_all[val_idx]])
+            split = [TRAIN] * expected_train + [VALID] * expected_val
+            if expected_test:
+                print(
+                    "Warning: Predictions file omits test samples (expected total "
+                    f"{total_with_test}, got {total_predictions}). Diagnostics run on train+val only."
+                )
+        else:
+            print(
+                "Warning: Predictions length ({}) does not match expected counts ({}/{}).".format(
+                    total_predictions, total_without_test, total_with_test
+                )
             )
-        )
-        labels_to_diagnose = np.concatenate([labels_all[train_idx], labels_all[val_idx]])
-        split = [TRAIN] * expected_train + [VALID] * expected_val
+            labels_to_diagnose = np.concatenate([labels_all[train_idx], labels_all[val_idx]])
+            split = [TRAIN] * expected_train + [VALID] * expected_val
 elif args.dataset == 'celeba':
     # Use combined_labels and adjust split to match (including modified images in the training split)
     labels_to_diagnose = combined_labels
@@ -1632,8 +1750,8 @@ elif args.dataset == 'celeba':
         [UNLABELED] * len(unlabeled_labels)
     )
 
-# Run diagnostics for both datasets (skip for gen_only mode in CelebA or combined AL mode)
-if not (args.dataset == 'celeba' and args.gen_only) and not args.al_combined:
+# Run diagnostics for both datasets (skip for train_val_test generated mode, generated-only CelebA, or combined AL mode)
+if not gen_three_split and not (args.dataset == 'celeba' and gen_use_generated) and not args.al_combined:
     # Instantiate ModelDiagnose and run diagnostics
     MD = ModelDiagnose(
         labels=labels_to_diagnose,
@@ -1677,8 +1795,8 @@ if not (args.dataset == 'celeba' and args.gen_only) and not args.al_combined:
         print(f"Diagnostic report saved to {report_dir}/{args.dataset}_{args.model}_{attributes}_{args.num_added_img}imgs{suffix}_{time_now}")
 
     # --- Accuracy Comparison Logic ---
-    if args.gen_only:
-        print("Skipping accuracy comparison due to gen_only flag being True")
+    if gen_use_generated:
+        print("Skipping accuracy comparison due to generated-only mode")
     else:
         if compare_log_path:
             print(f"\nComparing accuracy with log file: {compare_log_path}")
@@ -1725,11 +1843,11 @@ else:
     if args.al_combined:
         print("Skipping model diagnostics due to --al_combined mode (data indices are misaligned)")
     else:
-        print("Skipping model diagnostics due to gen_only mode")
+        print("Skipping model diagnostics due to generated-only mode")
     print("Skipping accuracy comparison due to skipped diagnostics")
 
 # Continue with the rest of the script regardless of diagnostics
-if not args.gen_only and not args.al_combined:
+if not gen_use_generated and not args.al_combined:
 
         # --- Active Learning vs Random Selection Comparison ---
         if args.use_active_learning and args.sub_ratio < 1.0:
@@ -1840,7 +1958,7 @@ if not args.gen_only and not args.al_combined:
                 print(f"  --use_active_learning False --sub_ratio {args.sub_ratio} \\")
                 print(f"  > logs_{args.dataset}/{random_log_name} 2>&1 < /dev/null &")
 else:
-    # Special case for gen_only mode or al_combined mode
+    # Special case for generated-only mode or al_combined mode
     print("Skipping model diagnostics")
     if len(val_acc_history) > 0:
         final_val_acc = val_acc_history[-1]
