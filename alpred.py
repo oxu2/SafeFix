@@ -489,9 +489,12 @@ if args.dataset == 'imagenet':
             val_idx_gen = indices[train_end:val_end]
             test_idx_gen = indices[val_end:]
         else:
-            split_idx = int(0.8 * len(indices))
-            train_idx_gen = indices[:split_idx]
-            val_idx_gen = indices[split_idx:]
+            # 8:1 split for train_only
+            train_end = max(1, (len(indices) * 8) // 9)
+            if train_end >= len(indices):
+                train_end = max(len(indices) - 1, 0)
+            train_idx_gen = indices[:train_end]
+            val_idx_gen = indices[train_end:]
             test_idx_gen = []
         class GeneratedImageDataset(Dataset):
             def __init__(self, paths, labels, transform):
@@ -1046,9 +1049,12 @@ elif args.dataset == 'celeba':
             val_indices = indices[train_end:val_end]
             test_indices = indices[val_end:]
         else:
-            split_idx = int(0.8 * len(indices))
-            train_indices = indices[:split_idx]
-            val_indices = indices[split_idx:]
+            # 8:1 split for train_only
+            train_end = max(1, (len(indices) * 8) // 9)
+            if train_end >= len(indices):
+                train_end = max(len(indices) - 1, 0)
+            train_indices = indices[:train_end]
+            val_indices = indices[train_end:]
             test_indices = []
         all_train_imgs = [modified_image_paths[i] for i in train_indices]
         all_train_labels = np.array(modified_image_labels)[train_indices]
@@ -1604,6 +1610,12 @@ def train_model(model, train_loader, valid_loader, criterion, optimizer, schedul
     # Load best or last model before saving predictions
     if args.save_pred_model == 'best' and best_model_state is not None:
         model.load_state_dict(best_model_state)
+
+    # Evaluate on test set (when available) before saving predictions
+    if test_loader is not None:
+        test_acc, test_loss = evaluate(model, test_loader)
+        print(f"Held-out test accuracy: {test_acc:.4f}, test loss: {test_loss:.4f}")
+
     # Save predictions after training
     save_predictions(model, train_loader, valid_loader, test_loader=test_loader)
     # Return training history for external use
@@ -1750,8 +1762,8 @@ elif args.dataset == 'celeba':
         [UNLABELED] * len(unlabeled_labels)
     )
 
-# Run diagnostics for both datasets (skip for train_val_test generated mode, generated-only CelebA, or combined AL mode)
-if not gen_three_split and not (args.dataset == 'celeba' and gen_use_generated) and not args.al_combined:
+# Run diagnostics for both datasets (skip for any generated-only mode or combined AL mode)
+if not gen_use_generated and not args.al_combined:
     # Instantiate ModelDiagnose and run diagnostics
     MD = ModelDiagnose(
         labels=labels_to_diagnose,

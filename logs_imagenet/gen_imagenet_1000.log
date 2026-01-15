@@ -1,4 +1,4 @@
-Current time: 1218182442
+Current time: 1219124459
 Using generated images for ImageNet (train_val_test): train=800, valid=100, test=100
 Using resnet model with random weights
 Epoch [1/30], Train Loss: 2.2015, Train Acc: 0.2300, Val Loss: 37.2551, Val Acc: 0.0700
@@ -33,9 +33,9 @@ Epoch [29/30], Train Loss: 0.4393, Train Acc: 0.8638, Val Loss: 1.5138, Val Acc:
 Epoch [30/30], Train Loss: 0.4347, Train Acc: 0.8825, Val Loss: 1.5362, Val Acc: 0.5300
 Generating and saving predictions...
 Combined predictions length: 200
-Total training time for 30 epochs: 76.38 seconds
+Total training time for 30 epochs: 82.98 seconds
 Total Active Learning selection time: 0.00 seconds
-End-to-end wall time (data prep + selection + training + setup): 77.33 seconds
+End-to-end wall time (data prep + selection + training + setup): 84.15 seconds
 
 Running model diagnostics on generated predictions...
 Skipping model diagnostics due to generated-only mode
@@ -46,4 +46,4 @@ Skipping model diagnostics
 Final Epoch Validation Accuracy: 0.5300
 ============================================================
 
-Current time: 1218182442
+Current time: 1219124459

@@ -29,17 +29,53 @@ CUDA_VISIBLE_DEVICES=3 nohup python -u alpred.py \
   --al_attribute_class_balance inf \
   > logs_imagenet/AL_resnet_attr_imagenet_0.1_scale1_B5_classINF_1000.log 2>&1 < /dev/null &
 
+CUDA_VISIBLE_DEVICES=0 nohup python -u alpred.py \
+  --dataset imagenet --model resnet --num_added_img 1000 \
+  --attributes pinkcolor_fabrictexture --num_epochs 30 \
+  --sub_ratio 0.1 \
+  --al_attribute_focus color,background,texture \
+  --verbose False \
+  --al_attribute_rarity_power 0 \
+  --al_attribute_log_acc_scale 0 \
+  --al_attribute_balance_strength 0 \
+  --al_attribute_class_balance 4 \
+  > logs_imagenet/AL_resnet_attr_imagenet_0.1_R0_L0_B0_class4_1000.log 2>&1 < /dev/null &
+
+CUDA_VISIBLE_DEVICES=1 nohup python -u alpred.py \
+  --dataset imagenet --model resnet --num_added_img 1000 \
+  --attributes pinkcolor_fabrictexture --num_epochs 30 \
+  --sub_ratio 0.1 \
+  --al_attribute_focus color,background,texture \
+  --verbose False \
+  --al_attribute_rarity_power 1 \
+  --al_attribute_log_acc_scale 0 \
+  --al_attribute_balance_strength 0 \
+  --al_attribute_class_balance 4 \
+  > logs_imagenet/AL_resnet_attr_imagenet_0.1_R1_L0_B0_class4_1000.log 2>&1 < /dev/null &
+
+CUDA_VISIBLE_DEVICES=2 nohup python -u alpred.py \
+  --dataset imagenet --model resnet --num_added_img 1000 \
+  --attributes pinkcolor_fabrictexture --num_epochs 30 \
+  --sub_ratio 0.1 \
+  --al_attribute_focus color,background,texture \
+  --verbose False \
+  --al_attribute_rarity_power 0 \
+  --al_attribute_log_acc_scale 1 \
+  --al_attribute_balance_strength 0 \
+  --al_attribute_class_balance 4 \
+  > logs_imagenet/AL_resnet_attr_imagenet_0.1_R0_L1_B0_class4_1000.log 2>&1 < /dev/null &
+
 CUDA_VISIBLE_DEVICES=3 nohup python -u alpred.py \
   --dataset imagenet --model resnet --num_added_img 1000 \
   --attributes pinkcolor_fabrictexture --num_epochs 30 \
   --sub_ratio 0.1 \
   --al_attribute_focus color,background,texture \
   --verbose False \
-  --al_attribute_log_acc_scale 1 \
-  --num_epochs 30 \
+  --al_attribute_rarity_power 0 \
+  --al_attribute_log_acc_scale 0 \
   --al_attribute_balance_strength 5 \
   --al_attribute_class_balance 4 \
-  > logs_imagenet/AL_resnet_attr_imagenet_0.1_scale1_B5_class4_1000.log 2>&1 < /dev/null &
+  > logs_imagenet/AL_resnet_attr_imagenet_0.1_R0_L0_B5_class4_1000.log 2>&1 < /dev/null &
 
 CUDA_VISIBLE_DEVICES=1 nohup python -u alpred.py \
   --dataset imagenet --model resnet --num_added_img 1000 \
