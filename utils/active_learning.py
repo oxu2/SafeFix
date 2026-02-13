@@ -491,6 +491,101 @@ class DiversityStrategy:
         return selected_indices
 
 
+class UncertaintyStratifiedStrategy:
+    """
+    Uncertainty-Weighted Stratified Sampling Strategy.
+    Maintains strict class quotas but selects the most uncertain samples within each class.
+    """
+
+    def __init__(self):
+        pass
+
+    def select(self, model, dataloader, device, n_select, model_type='resnet'):
+        """
+        Select samples using stratified uncertainty (entropy/confidence).
+
+        Args:
+            model: trained model or feature extractor
+            dataloader: DataLoader (must not be shuffled to preserve indices)
+            device: computation device
+            n_select: number of samples to select
+            model_type: type of model
+
+        Returns:
+            selected_indices: indices of selected samples
+        """
+        print(f"Uncertainty-Stratified: choosing {n_select} samples...")
+
+        # 1. Collect predictions and targets
+        model.eval()
+        all_uncertainties = []
+        all_targets = []
+        
+        # We need to extract targets from the dataloader while collecting uncertainties
+        # This assumes the dataloader returns (data, target) tuples
+        
+        with torch.no_grad():
+            for batch_idx, (data, targets) in enumerate(dataloader):
+                data = data.to(device)
+                outputs = model(data)
+                
+                # Compute uncertainty
+                if model_type in ['resnet', 'vit', 'clip'] and outputs.dim() > 1:
+                    # Multi-class: use entropy
+                    probs = torch.softmax(outputs, dim=1)
+                    entropy = -torch.sum(probs * torch.log(probs + 1e-8), dim=1)
+                    uncertainties = entropy.cpu().numpy()
+                elif outputs.dim() == 1 or (outputs.dim() == 2 and outputs.shape[1] == 1):
+                    # Binary: use confidence (distance from 0.5)
+                    probs = torch.sigmoid(outputs.squeeze())
+                    confidence = torch.abs(probs - 0.5) * 2
+                    uncertainties = 1.0 - confidence.cpu().numpy() # Higher is more uncertain
+                else:
+                    # Fallback
+                    uncertainties = np.random.rand(len(targets))
+                
+                all_uncertainties.extend(uncertainties)
+                all_targets.extend(targets.numpy())
+
+        all_uncertainties = np.array(all_uncertainties)
+        all_targets = np.array(all_targets)
+
+        # 2. Determine stratified quotas
+        unique_classes, class_counts = np.unique(all_targets, return_counts=True)
+        n_classes = len(unique_classes)
+        samples_per_class = n_select // n_classes
+        remaining_samples = n_select % n_classes
+
+        print(f"  Class breakdown: {samples_per_class} per class (+{remaining_samples} remainder)")
+
+        selected_indices = []
+
+        # 3. Select top uncertainty per class
+        for i, cls in enumerate(unique_classes):
+            # Indices matching this class
+            cls_indices_global = np.where(all_targets == cls)[0]
+            
+            # Quota for this class
+            n_cls_target = samples_per_class + (1 if i < remaining_samples else 0)
+            n_cls_target = min(n_cls_target, len(cls_indices_global))
+            
+            # Get uncertainties for this class
+            cls_uncertainties = all_uncertainties[cls_indices_global]
+            
+            # Sort by uncertainty (descending)
+            # argsort returns indices into cls_uncertainties
+            sorted_local_indices = np.argsort(cls_uncertainties)[::-1] # High to low
+            top_local_indices = sorted_local_indices[:n_cls_target]
+            
+            # Map back to global indices
+            top_global_indices = cls_indices_global[top_local_indices]
+            selected_indices.extend(top_global_indices)
+            
+            # print(f"    Class {cls}: selected {len(top_global_indices)} (mean unc: {cls_uncertainties[top_local_indices].mean():.4f})")
+
+        return selected_indices
+
+
 class AttributeFocusedStrategy:
     """
     Attribute-driven sampling strategy that prioritizes underrepresented
@@ -508,8 +603,12 @@ class AttributeFocusedStrategy:
         log_acc_scale=1.0,
         extra_counts=None,
         balance_strength=0.0,
+        extra_counts=None,
+        balance_strength=0.0,
         class_balance_weight=0.0,
+        conditional_rarity=False,
     ):
+
         """
         Args:
             attribute_metadata: Path to attribute JSON or pre-loaded dict.
@@ -526,8 +625,11 @@ class AttributeFocusedStrategy:
             balance_strength: Penalty multiplier for frequent attribute values.
             class_balance_weight: Non-negative weight controlling class-level
                 stratification (use float('inf') for strict round-robin quotas).
+            conditional_rarity: If True, compute rarity relative to the class label
+                (P(val|class)) instead of global P(val).
         """
         if isinstance(attribute_metadata, str):
+
             if not os.path.exists(attribute_metadata):
                 raise FileNotFoundError(
                     f"Attribute metadata file '{attribute_metadata}' not found."
@@ -572,6 +674,7 @@ class AttributeFocusedStrategy:
         except (TypeError, ValueError):
             parsed_balance = 0.0
         self.class_balance_weight = parsed_balance if math.isinf(parsed_balance) else max(parsed_balance, 0.0)
+        self.conditional_rarity = conditional_rarity
 
     def _log_attribute_distribution(self, metadata_indices, local_indices, label):
         if not local_indices:
@@ -701,6 +804,35 @@ class AttributeFocusedStrategy:
                     counts[attr_name] = Counter()
                 for value, bonus in value_map.items():
                     counts[attr_name][value] += bonus
+        return counts
+
+    def _compute_conditional_attribute_counts(self, metadata_indices, class_labels):
+        """Compute frequency of each attribute value per class."""
+        # Structure: {attr: {class_label: Counter()}}
+        counts = {attr: defaultdict(Counter) for attr in self.attributes}
+        
+        if not class_labels or len(class_labels) != len(metadata_indices):
+            return counts
+
+        for i, meta_idx in enumerate(metadata_indices):
+            if meta_idx is None:
+                continue
+            
+            label = class_labels[i]
+            if label is None:
+                continue
+                
+            label = int(label)
+            
+            for attr_name, attr_info in self.attributes.items():
+                data = attr_info.get("data", [])
+                if meta_idx < len(data):
+                    value = data[meta_idx]
+                    counts[attr_name][label][value] += 1
+                    
+        # Apply extra counts globally (since they might not be class-specific in current format)
+        # OR just ignore extra counts for conditional rarity for now to keep it simple
+        # The prompt implies we want to find "Red Banana", so we rely on observed data.
         return counts
 
     def _select_with_class_balance(self, base_scores, class_labels, n_select):
@@ -867,12 +999,17 @@ class AttributeFocusedStrategy:
             raise RuntimeError("Metadata index mapping length mismatch with dataset")
 
         class_labels = None
-        if self.class_balance_weight > 0:
+        class_labels = None
+        if self.class_balance_weight > 0 or self.conditional_rarity:
             labels_candidate = self._resolve_class_labels(dataset)
             if labels_candidate and len(labels_candidate) == total_samples:
                 class_labels = labels_candidate
 
         attribute_counts = self._compute_attribute_counts(metadata_indices)
+        conditional_counts = None
+        if self.conditional_rarity and class_labels:
+             conditional_counts = self._compute_conditional_attribute_counts(metadata_indices, class_labels)
+
         attribute_totals = {
             attr: float(sum(counter.values()))
             for attr, counter in attribute_counts.items()
@@ -908,7 +1045,16 @@ class AttributeFocusedStrategy:
                 if meta_idx >= len(data):
                     continue
                 value = data[meta_idx]
-                frequency = attribute_counts[attr_name].get(value, 0)
+                value = data[meta_idx]
+                
+                if self.conditional_rarity and conditional_counts and class_labels[local_idx] is not None:
+                    # Conditional Rarity: P(val | class)
+                    cls_label = int(class_labels[local_idx])
+                    frequency = conditional_counts[attr_name][cls_label].get(value, 0)
+                else:
+                    # Global Rarity: P(val)
+                    frequency = attribute_counts[attr_name].get(value, 0)
+                
                 rarity = 1.0 / ((frequency if frequency > 0 else 1) + self.epsilon)
                 if self.rarity_power != 1.0:
                     rarity = rarity ** self.rarity_power
@@ -1214,6 +1360,7 @@ def active_learning_selection(train_dataset, val_dataset, args, device, verbose=
                 extra_counts=extra_counts,
                 balance_strength=balance_strength,
                 class_balance_weight=class_balance_weight,
+                conditional_rarity=getattr(args, 'al_conditional_rarity', False),
             )
             debug_attr = None
             if verbose:
@@ -1255,6 +1402,48 @@ def active_learning_selection(train_dataset, val_dataset, args, device, verbose=
                 print(f"Attribute strategy failed ({exc}). Falling back to random selection.")
             random.seed(args.seed)
             return random.sample(range(total_train_samples), target_samples)
+
+    elif al_strategy == 'uncertainty_stratified':
+        # Combined uncertainty + stratified sampling
+        # Requires a model with a classification head
+        if verbose:
+            print("Using Uncertainty-Weighted Stratified Strategy")
+
+        # 1. Load Model (with head)
+        if args.model == 'resnet':
+            model = models.resnet18(pretrained=True)
+            # Default ResNet18 has 1000 classes, matching ImageNet
+        elif args.model == 'clip':
+             # CLIP not straightforward for classification uncertainty without prompts
+             # Fallback to feature extraction -> linear probe?
+             # For simplicity, warn and use ResNet
+             if verbose:
+                print("Warning: CLIP uncertainty not fully supported, using ResNet18 proxy for uncertainty")
+             model = models.resnet18(pretrained=True)
+        else:
+            if verbose:
+                print(f"Warning: Model {args.model} uncertainty not fully supported, using ResNet18 proxy")
+            model = models.resnet18(pretrained=True)
+        
+        model = model.to(device)
+        model.eval()
+
+        # 2. Create DataLoader (no shuffle!)
+        # Check if train_dataset is a Subset, if so, we need proper collation
+        al_batch_size = min(args.batch_size, 32)
+        train_loader = DataLoader(train_dataset, batch_size=al_batch_size, shuffle=False,
+                                 num_workers=args.workers, pin_memory=True)
+
+        # 3. Select
+        strategy = UncertaintyStratifiedStrategy()
+        selected_indices = strategy.select(
+            model=model,
+            dataloader=train_loader,
+            device=device,
+            n_select=target_samples,
+            model_type=args.model
+        )
+        return selected_indices
     
     # For other strategies, we need feature extraction
     # Create a simple model for feature extraction

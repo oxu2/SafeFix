@@ -1,0 +1,7 @@
+Traceback (most recent call last):
+  File "/people/cs/o/oxx220000/HiBug/alpred.py", line 6, in <module>
+    from utils.active_learning import CoreSetStrategy, extract_embeddings_for_al, active_learning_selection
+  File "/people/cs/o/oxx220000/HiBug/utils/active_learning.py", line 595
+    def __init__(
+    ^
+SyntaxError: duplicate argument 'extra_counts' in function definition

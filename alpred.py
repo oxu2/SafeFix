@@ -142,8 +142,8 @@ parser.add_argument('--lr_backbone', type=float, default=None,
 parser.add_argument('--use_active_learning', type=str2bool, default=True,
                     help='Use Active Learning strategy for data selection (default: True)')
 parser.add_argument('--al_strategy', type=str, default='attribute', 
-                    choices=['coreset', 'stratified', 'diversity', 'hybrid', 'hierarchical', 'attribute'],
-                    help='Active Learning strategy: coreset (default), stratified, diversity, hybrid, hierarchical, or attribute-driven')
+                    choices=['coreset', 'stratified', 'diversity', 'hybrid', 'hierarchical', 'attribute', 'uncertainty_stratified'],
+                    help='Active Learning strategy: coreset (default), stratified, diversity, hybrid, hierarchical, attribute, or uncertainty_stratified')
 parser.add_argument('--al_embedding_dim', type=int, default=512,
                     help='Embedding dimension for Active Learning (default: 512)')
 parser.add_argument('--al_initial_labeled', type=int, default=400,
@@ -192,6 +192,8 @@ parser.add_argument('--al_min_slice_quota', type=int, default=5,
                     help='Minimum samples per slice in hierarchical AL (default: 5)')
 parser.add_argument('--al_max_slice_quota', type=int, default=100,
                     help='Maximum samples per slice in hierarchical AL (default: 100)')
+parser.add_argument('--al_conditional_rarity', type=str2bool, default=False,
+                    help='Attribute strategy: use class-conditional rarity (P(val|class)) instead of global rarity')
 # Combined Active Learning arguments
 parser.add_argument('--al_combined', type=str2bool, default=False,
                     help='Apply Active Learning on combined dataset (generated + original) instead of just original (default: False)')

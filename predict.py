@@ -71,8 +71,33 @@ def default_img_transform(train: bool):
             transforms.Normalize(mean=[0.5,0.5,0.5], std=[0.5,0.5,0.5]),
         ])
 
-def clip_processor_transform(proc):
-    return lambda img: proc(images=img, return_tensors="pt")["pixel_values"].squeeze(0)
+def augmentation_pil_transform():
+    return transforms.Compose([
+        transforms.RandomResizedCrop(224, scale=(0.08, 1.0), ratio=(3/4, 4/3)),
+        transforms.RandomHorizontalFlip(p=0.5),
+        transforms.ColorJitter(brightness=0.4, contrast=0.4, saturation=0.4, hue=0.1),
+        transforms.RandomGrayscale(p=0.2),
+    ])
+
+def augmentation_baseline_transform(train: bool):
+    if train:
+        return transforms.Compose([
+            transforms.RandomResizedCrop(224, scale=(0.08, 1.0), ratio=(3/4, 4/3)),
+            transforms.RandomHorizontalFlip(p=0.5),
+            transforms.ColorJitter(brightness=0.4, contrast=0.4, saturation=0.4, hue=0.1),
+            transforms.RandomGrayscale(p=0.2),
+            transforms.ToTensor(),
+            transforms.RandomErasing(p=0.25, scale=(0.02, 0.33), ratio=(0.3, 3.3), value="random"),
+            transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5]),
+        ])
+    return default_img_transform(train=False)
+
+def clip_processor_transform(proc, pre_transform=None):
+    def _apply(img):
+        if pre_transform is not None:
+            img = pre_transform(img)
+        return proc(images=img, return_tensors="pt")["pixel_values"].squeeze(0)
+    return _apply
 
 def make_loader(dataset, shuffle):
     return DataLoader(dataset, batch_size=args.batch_size, shuffle=shuffle,
@@ -118,6 +143,8 @@ parser.add_argument('--num_epochs', type=int, default=20,
                     help='Number of training epochs (default: 20)')
 parser.add_argument('--num_added_img', type=int, default=1000,
                     help='Number of generated images to add (default: 4000)')
+parser.add_argument('--augmentation_baseline', type=str2bool, default=False,
+                    help='Use strong data augmentation baseline without adding generated images (default: False)')
 # Add argument for attribute file path
 parser.add_argument('--attribute_file', type=str, default="exampleData/celebA/attribute.json",
                     help='Path to the attribute JSON file (default: exampleData/celebA/attribute.json)')
@@ -262,6 +289,13 @@ elif args.gen_image_dir is None:
         args.gen_image_dir = f"exampleData/{attributes}_instruct_pix2pix"
 verbose = args.verbose
 
+if args.augmentation_baseline:
+    if verbose and (args.gen_only or args.simple or args.num_added_img != 0):
+        print("Augmentation baseline enabled: disabling generated-image options and setting num_added_img=0.")
+    args.gen_only = False
+    args.simple = False
+    args.num_added_img = 0
+
 # Adjust learning rate default for ViT if not manually overridden
 if args.model == 'vit' and args.lr == 1e-4:
     args.lr = 5e-5
@@ -394,8 +428,11 @@ if args.dataset == 'imagenet':
     data_dir = Path("exampleData/imagenet_subset")
     feature_extractor = CLIPImageProcessor.from_pretrained("openai/clip-vit-base-patch32")
     if args.model == 'clip':
-        train_transform = clip_processor_transform(feature_extractor)
-        val_transform = train_transform
+        if args.augmentation_baseline:
+            train_transform = clip_processor_transform(feature_extractor, pre_transform=augmentation_pil_transform())
+        else:
+            train_transform = clip_processor_transform(feature_extractor)
+        val_transform = clip_processor_transform(feature_extractor)
     elif args.model == 'blip':
         processor = BlipProcessor.from_pretrained(
             "Salesforce/blip-image-captioning-base",
@@ -418,7 +455,12 @@ if args.dataset == 'imagenet':
     num_classes = len(full_ds.classes)
 
     # --- ImageNet augmentation modes ---
-    if args.gen_only:
+    if args.augmentation_baseline:
+        train_dataset = train_ds
+        train_loader = make_loader(train_ds, shuffle=True)
+        if verbose:
+            print("Augmentation baseline enabled: training on original ImageNet subset only.")
+    elif args.gen_only:
         # Use only generated images for ImageNet: 80% train, 20% validation
         # Collect generated image paths and labels
         gen_paths, gen_labels = [], []
@@ -721,17 +763,26 @@ elif args.dataset == 'celeba':
     # Initialize CLIP feature extractor
     feature_extractor = CLIPImageProcessor.from_pretrained("openai/clip-vit-base-patch32")
     if args.model == 'clip':
-        train_transform = clip_processor_transform(feature_extractor)
-        val_transform = train_transform
+        if args.augmentation_baseline:
+            train_transform = clip_processor_transform(feature_extractor, pre_transform=augmentation_pil_transform())
+        else:
+            train_transform = clip_processor_transform(feature_extractor)
+        val_transform = clip_processor_transform(feature_extractor)
     elif args.model == 'blip':
         processor = BlipProcessor.from_pretrained(
             "Salesforce/blip-image-captioning-base",
             local_files_only=True
         )
-        train_transform = clip_processor_transform(processor)
-        val_transform = train_transform
+        if args.augmentation_baseline:
+            train_transform = clip_processor_transform(processor, pre_transform=augmentation_pil_transform())
+        else:
+            train_transform = clip_processor_transform(processor)
+        val_transform = clip_processor_transform(processor)
     else:
-        train_transform = default_img_transform(train=True)
+        if args.augmentation_baseline:
+            train_transform = augmentation_baseline_transform(train=True)
+        else:
+            train_transform = default_img_transform(train=True)
         val_transform = default_img_transform(train=False)
 
     # Create Datasets and Loaders
@@ -747,54 +798,60 @@ elif args.dataset == 'celeba':
     # These images' labels will be the same as their corresponding original images
     modified_image_paths = []
     modified_image_labels = []
+    sample_keys = []
+    selected_filenames = []
 
     #
     # Prepare sample keys for ablation mode (was hibug mode)
-    if args.no_controlnet:
-        if args.simple:
-            # Simple mode: read all PNGs from hibug_simple folder
-            args.gen_image_dir = "hibug_simple"
-            files = os.listdir(args.gen_image_dir)
-            sample_keys = [os.path.splitext(f)[0] for f in files if f.lower().endswith('.png')]
-            print(f"Simple ablation (no_controlnet) mode: Found {len(sample_keys)} images in {args.gen_image_dir}")
-        else:
-            # Existing ablation behavior: read from no_controlnet_<attributes> folder
-            args.gen_image_dir = f"no_controlnet_{attributes}"
+    if args.augmentation_baseline:
+        if verbose:
+            print("Augmentation baseline enabled: skipping generated image loading.")
+    else:
+        if args.no_controlnet:
+            if args.simple:
+                # Simple mode: read all PNGs from hibug_simple folder
+                args.gen_image_dir = "hibug_simple"
+                files = os.listdir(args.gen_image_dir)
+                sample_keys = [os.path.splitext(f)[0] for f in files if f.lower().endswith('.png')]
+                print(f"Simple ablation (no_controlnet) mode: Found {len(sample_keys)} images in {args.gen_image_dir}")
+            else:
+                # Existing ablation behavior: read from no_controlnet_<attributes> folder
+                args.gen_image_dir = f"no_controlnet_{attributes}"
+                if not os.path.isdir(args.gen_image_dir):
+                    print(f"Error: Ablation image directory {args.gen_image_dir} not found.")
+                    sample_keys = []
+                else:
+                    all_files = os.listdir(args.gen_image_dir)
+                    sample_keys = [os.path.splitext(f)[0] for f in all_files if f.lower().endswith('.png')]
+                    print(f"Ablation (no_controlnet) mode: Found {len(sample_keys)} images in {args.gen_image_dir}")
+
+        # Sample from all generated image files in the directory, ignoring JSON-based feasible_images
+        if not args.no_controlnet:
             if not os.path.isdir(args.gen_image_dir):
-                print(f"Error: Ablation image directory {args.gen_image_dir} not found.")
+                print(f"Error: Generated image directory {args.gen_image_dir} not found.")
                 sample_keys = []
             else:
+                import re  # ensure this import is at the top of the file
                 all_files = os.listdir(args.gen_image_dir)
-                sample_keys = [os.path.splitext(f)[0] for f in all_files if f.lower().endswith('.png')]
-                print(f"Ablation (no_controlnet) mode: Found {len(sample_keys)} images in {args.gen_image_dir}")
+                # Match files named "<digits>_<attribute>" or "<digits>_<attribute>_<seed>"
+                regex = re.compile(rf'^\d+_{re.escape(attributes)}(?:_\d+)?$')
+                file_keys = [
+                    os.path.splitext(f)[0]
+                    for f in all_files
+                    if regex.match(os.path.splitext(f)[0])
+                ]
+                sample_keys = file_keys
 
-    # Sample from all generated image files in the directory, ignoring JSON-based feasible_images
-    if not args.no_controlnet:
-        if not os.path.isdir(args.gen_image_dir):
-            print(f"Error: Generated image directory {args.gen_image_dir} not found.")
-            sample_keys = []
-        else:
-            import re  # ensure this import is at the top of the file
-            all_files = os.listdir(args.gen_image_dir)
-            # Match files named "<digits>_<attribute>" or "<digits>_<attribute>_<seed>"
-            regex = re.compile(rf'^\d+_{re.escape(attributes)}(?:_\d+)?$')
-            file_keys = [
-                os.path.splitext(f)[0]
-                for f in all_files
-                if regex.match(os.path.splitext(f)[0])
-            ]
-            sample_keys = file_keys
+        # Warn if fewer images are available than requested in the chosen sample_keys
+        if len(sample_keys) < args.num_added_img:
+            print(f"Warning: requested {args.num_added_img} generated {args.attributes} images, "
+                  f"but only {len(sample_keys)} available.")
 
-    # Warn if fewer images are available than requested in the chosen sample_keys
-    if len(sample_keys) < args.num_added_img:
-        print(f"Warning: requested {args.num_added_img} generated {args.attributes} images, "
-              f"but only {len(sample_keys)} available.")
-
-    # Perform sampling
-    if verbose:
-        print("Perform sampling for generated images")
-    selected_filenames = random.sample(sample_keys, min(args.num_added_img, len(sample_keys)))
-    print(f"Selected {len(selected_filenames)} filenames for sampling")
+        # Perform sampling
+        if verbose:
+            print("Perform sampling for generated images")
+        selected_filenames = random.sample(sample_keys, min(args.num_added_img, len(sample_keys)))
+        print(f"Selected {len(selected_filenames)} filenames for sampling")
 
     # Build a map from base image number to label for quick lookup (not needed for simple ablation mode)
     if not (args.no_controlnet and args.simple):
@@ -860,21 +917,22 @@ elif args.dataset == 'celeba':
     if verbose:
         print("Finish sampling for generated images")
 
-    # Print information about the added images
-    if args.gen_only:
-        # In gen_only mode, we’re only ever using the generated set
-        print(f"Using only generated images: total training images = {len(modified_image_labels)}")
-    else:
-        added_count = len(modified_image_labels)
-        print(f"Added {added_count} generated {attributes} images, "
-              f"before training set has {len(train_labels)} images, "
-              f"now {len(train_labels) + added_count}")
-            
-    # Load unlabeled predictions - moved outside conditional block
+    # Load unlabeled predictions
     unlabeled_predictions = np.load("exampleData/celebA/predictions.npy")[idxs]
     unlabeled_predictions = np.array([unlabeled_predictions[i] for i in range(len(all_datas)) if split[i] == UNLABELED])
     if verbose:
         print(f"Unlabeled predictions length: {len(unlabeled_predictions)}")
+
+    # Print information about the added images
+    if not args.augmentation_baseline:
+        if args.gen_only:
+            # In gen_only mode, we’re only ever using the generated set
+            print(f"Using only generated images: total training images = {len(modified_image_labels)}")
+        else:
+            added_count = len(modified_image_labels)
+            print(f"Added {added_count} generated {attributes} images, "
+                  f"before training set has {len(train_labels)} images, "
+                  f"now {len(train_labels) + added_count}")
 
     # Construct training data based on gen_only flag
     if args.gen_only:

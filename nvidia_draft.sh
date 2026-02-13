@@ -1,3 +1,6 @@
+CUDA_VISIBLE_DEVICES=2 nohup python -u predict.py --dataset imagenet --model resnet --num_added_img 1000  --save_pred_model best --attributes pinkcolor_fabrictexture --num_epochs 30  > logs_imagenet/PC_FT_resnet_imagenet__1000.log 2>&1 < /dev/null &
+
+
 nohup ./batch.sh -m resnet -a redhair_brownskin_sademotion -d 0 -u \
   > logs/batch/batch_resnet_redhair_brownskin_sademotion_nocontrolnet.log 2>&1 < /dev/null &
 

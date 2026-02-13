@@ -1,18 +1,4 @@
-## New results on current split
-**Validation accuracy (%) on CelebA**
 
-| Method       | ResNet 1k | ResNet 5k | ResNet 10k | ViT 1k | ViT 5k | ViT 10k | CLIP 1k | CLIP 5k | CLIP 10k |
-|--------------|-----------|-----------|------------|--------|--------|---------|---------|---------|----------|
-| Base         | 90.91     | 90.91     | 90.91      | 85.28  | 85.28  | 85.28   | 90.02   | 90.02   | 90.02    |
-| HiBug_Class  | 91.05     | 91.12     | 90.89      | 85.79  | 86.18  | 86.10   | 90.03   | 90.07   | 89.95    |
-| HiBug_Task   | 91.21     | 91.03     | 90.94      | 87.82  | 86.78  | 86.18   | 90.16   | 90.09   | 90.03    |
-| **Ours (Q)** | **91.92** | **91.65** | **91.98**  | **87.91** | **87.33** | **87.41** | **90.98** | **91.02** | **90.71** |
-## New Split
-train: val: test = 10400: 1300 : 1300 = 8:1:1
-
-The test accuracy when adding 1000 images is 0.7485, while its baseline is 0.7223.
-
-For the SafeFix we reported before, the val acc is 0.7453, and baseline is 0.7181.
 
 
 ## AttributeFocusedStrategy (Attribute-Driven Sampling)
