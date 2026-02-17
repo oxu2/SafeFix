@@ -211,3 +211,45 @@ New AL strategies are all in `utils/active_learning.py`:
 - `HybridStrategy`: Mixed multiple strategies
 
 Each strategy is an independent class that can be easily extended and modified.
+
+### 6. Improved Strategies (New)
+
+I have implemented two robust strategies to correct the weaknesses of previous methods (ignoring class balance or ignoring semantic rarity).
+
+#### A. Uncertainty-Weighted Stratified Strategy (`uncertainty_stratified`)
+```bash
+python alpred.py --al_strategy uncertainty_stratified
+```
+**Motivation**: Standard uncertainty sampling often picks outliers from a single "hard" class, causing imbalance. Standard stratified sampling ignores sample difficulty. This strategy fuses them.
+
+**Algorithm**:
+1.  **Inference**: Compute uncertainty for all unlabeled samples.
+    *   *Multi-class*: Entropy $H(p) = -\sum p_i \log p_i$.
+    *   *Binary*: Confidence gap $1 - |p - 0.5| \times 2$.
+2.  **Quota Calculation**: Determine strict sample quotas for each class $c$: $k_c \approx N_{total} / C$.
+3.  **Selection**: 
+    *   For each class $c$, retrieve all samples predicted as $c$ (or labeled as $c$ if labels available).
+    *   Sort them by uncertainty (High to Low).
+    *   Select top $k_c$ samples.
+
+**Key Benefit**: Guarantees diversity across classes (like Stratified) whilst maximizing information gain (like Uncertainty).
+
+#### B. Class-Conditional Attribute Rarity (`conditional_rarity`)
+```bash
+python alpred.py --al_strategy attribute --al_conditional_rarity True
+```
+**Motivation**: Global rarity ($P(v)$) fails when an attribute is common globally but rare for a specific object (e.g., "Red" is common, but "Red Banana" is rare). We need to find *semantically* interesting outliers.
+
+**Algorithm** (Modification to `AttributeFocusedStrategy`):
+Instead of scoring based on global frequency $f_a(v)$, we score based on **class-conditional frequency** $f_a(v|y)$:
+$$S_{i} = \sum_{a \in Attributes} \left( \left( \frac{1}{f_a(v_{i,a} | y_i) + \epsilon} \right)^\alpha + U_{i,a} + L_{i,a} + B_{i,a} \right)$$
+
+1.  **Grouping**: Split the unlabeled pool and labeled metadata by class label $y$.
+2.  **Counting**: Inside each class group $c$, count attribute value frequencies $f_a(v|c)$.
+3.  **Scoring**: For a sample $i$ with predicted class $y_i$, use the frequencies of that class. A sample with value $v$ gets a high score only if $v$ is rare *within its specific class*.
+
+**Example**:
+*   *Global Rarity*: "White" is common -> Low score.
+*   *Conditional Rarity*: "White" is common for *Sheep*, but rare for *Crows*. A "White Crow" gets a massive score boost.
+
+**Key Benefit**: Discovers subtle, context-dependent anomalies that global statistics miss.

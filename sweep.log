@@ -1,0 +1,21 @@
+Starting Conditional Rarity Sweep on GPU 3
+Using Python: /people/cs/o/oxx220000/.conda/envs/ad/bin/python
+----------------------------------------------------------------
+Running ratio 0.1... Logging to logs_imagenet/AL_resnet_condRarity_imagenet_0.1_1000.log
+Finished ratio 0.1 successfully.
+----------------------------------------------------------------
+Running ratio 0.3... Logging to logs_imagenet/AL_resnet_condRarity_imagenet_0.3_1000.log
+Finished ratio 0.3 successfully.
+----------------------------------------------------------------
+Running ratio 0.5... Logging to logs_imagenet/AL_resnet_condRarity_imagenet_0.5_1000.log
+Finished ratio 0.5 successfully.
+----------------------------------------------------------------
+Running ratio 0.7... Logging to logs_imagenet/AL_resnet_condRarity_imagenet_0.7_1000.log
+Terminated
+Error running ratio 0.7. Check log: logs_imagenet/AL_resnet_condRarity_imagenet_0.7_1000.log
+----------------------------------------------------------------
+Running ratio 0.9... Logging to logs_imagenet/AL_resnet_condRarity_imagenet_0.9_1000.log
+Terminated
+Error running ratio 0.9. Check log: logs_imagenet/AL_resnet_condRarity_imagenet_0.9_1000.log
+./run_conditional_rarity_sweep.sh: line 35: syntax error near unexpected token `else'
+./run_conditional_rarity_sweep.sh: line 35: ` else'

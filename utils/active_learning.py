@@ -603,8 +603,6 @@ class AttributeFocusedStrategy:
         log_acc_scale=1.0,
         extra_counts=None,
         balance_strength=0.0,
-        extra_counts=None,
-        balance_strength=0.0,
         class_balance_weight=0.0,
         conditional_rarity=False,
     ):

@@ -176,7 +176,7 @@ parser.add_argument('--al_attribute_extra_counts', type=str, default=None,
                     help='Extra counts per attribute value to reflect generated data (attr:value=count entries or JSON path)')
 parser.add_argument('--al_attribute_balance_strength', type=float, default=0.5,
                     help='Penalty strength applied to over-represented attribute values (default: 0.5)')
-parser.add_argument('--al_attribute_class_balance', type=str, default="0",
+parser.add_argument('--al_attribute_class_balance', type=str, default="inf",
                     help='Class-level stratified weight; pass "inf" to enforce hard per-class quotas (default: 0)')
 parser.add_argument('--al_alpha', type=float, default=0.4,
                     help='Weight for difficulty in hierarchical priority score (default: 0.4)')
