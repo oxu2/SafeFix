@@ -1,0 +1,51 @@
+Current time: 0220040543
+Using generated images for ImageNet (train_only): train=888, valid=112
+Using resnet model with random weights
+Epoch [1/30], Train Loss: 2.2460, Train Acc: 0.2342, Val Loss: 8.3902, Val Acc: 0.1429
+Epoch [2/30], Train Loss: 1.7531, Train Acc: 0.3806, Val Loss: 4.2559, Val Acc: 0.1518
+Epoch [3/30], Train Loss: 1.7259, Train Acc: 0.3874, Val Loss: 3.2382, Val Acc: 0.2679
+Epoch [4/30], Train Loss: 1.4785, Train Acc: 0.4764, Val Loss: 1.5796, Val Acc: 0.4107
+Epoch [5/30], Train Loss: 1.3461, Train Acc: 0.5360, Val Loss: 1.5332, Val Acc: 0.4286
+Epoch [6/30], Train Loss: 1.2981, Train Acc: 0.5293, Val Loss: 1.4820, Val Acc: 0.4464
+Epoch [7/30], Train Loss: 1.1719, Train Acc: 0.5957, Val Loss: 1.4117, Val Acc: 0.5804
+Epoch [8/30], Train Loss: 1.0469, Train Acc: 0.6475, Val Loss: 1.3473, Val Acc: 0.5179
+Epoch [9/30], Train Loss: 1.0048, Train Acc: 0.6543, Val Loss: 1.2452, Val Acc: 0.5804
+Epoch [10/30], Train Loss: 0.8955, Train Acc: 0.7128, Val Loss: 1.2143, Val Acc: 0.6071
+Epoch [11/30], Train Loss: 0.8088, Train Acc: 0.7331, Val Loss: 1.1382, Val Acc: 0.5804
+Epoch [12/30], Train Loss: 0.8026, Train Acc: 0.7354, Val Loss: 1.1176, Val Acc: 0.5893
+Epoch [13/30], Train Loss: 0.7120, Train Acc: 0.7736, Val Loss: 1.0731, Val Acc: 0.6339
+Epoch [14/30], Train Loss: 0.6852, Train Acc: 0.7827, Val Loss: 1.0068, Val Acc: 0.6161
+Epoch [15/30], Train Loss: 0.6407, Train Acc: 0.7860, Val Loss: 0.9857, Val Acc: 0.6429
+Epoch [16/30], Train Loss: 0.5890, Train Acc: 0.8176, Val Loss: 0.9587, Val Acc: 0.6607
+Epoch [17/30], Train Loss: 0.5632, Train Acc: 0.8255, Val Loss: 0.9388, Val Acc: 0.6696
+Epoch [18/30], Train Loss: 0.5323, Train Acc: 0.8390, Val Loss: 0.9377, Val Acc: 0.6429
+Epoch [19/30], Train Loss: 0.5210, Train Acc: 0.8423, Val Loss: 0.9214, Val Acc: 0.6339
+Epoch [20/30], Train Loss: 0.5021, Train Acc: 0.8491, Val Loss: 0.8995, Val Acc: 0.6786
+Epoch [21/30], Train Loss: 0.4999, Train Acc: 0.8435, Val Loss: 0.9300, Val Acc: 0.6786
+Epoch [22/30], Train Loss: 0.4928, Train Acc: 0.8491, Val Loss: 0.9197, Val Acc: 0.7054
+Epoch [23/30], Train Loss: 0.4684, Train Acc: 0.8626, Val Loss: 0.9108, Val Acc: 0.6964
+Epoch [24/30], Train Loss: 0.4698, Train Acc: 0.8660, Val Loss: 0.9211, Val Acc: 0.6786
+Epoch [25/30], Train Loss: 0.4673, Train Acc: 0.8626, Val Loss: 0.9208, Val Acc: 0.6875
+Epoch [26/30], Train Loss: 0.4541, Train Acc: 0.8806, Val Loss: 0.9086, Val Acc: 0.6875
+Epoch [27/30], Train Loss: 0.4319, Train Acc: 0.8682, Val Loss: 0.9187, Val Acc: 0.6786
+Epoch [28/30], Train Loss: 0.4482, Train Acc: 0.8671, Val Loss: 0.9110, Val Acc: 0.6786
+Epoch [29/30], Train Loss: 0.4338, Train Acc: 0.8750, Val Loss: 0.9154, Val Acc: 0.6875
+Epoch [30/30], Train Loss: 0.4507, Train Acc: 0.8739, Val Loss: 0.9138, Val Acc: 0.6875
+Model saved to save/models/model_imagenet_resnet_pinkcolor_fabrictexture_1000imgs_0220040543.pth
+Held-out test accuracy: 0.2462, test loss: 3.5014
+Generating and saving predictions...
+Combined predictions length: 1412
+Total training time for 30 epochs: 79.03 seconds
+Total Active Learning selection time: 0.00 seconds
+End-to-end wall time (data prep + selection + training + setup): 80.13 seconds
+
+Running model diagnostics on generated predictions...
+Skipping model diagnostics due to generated-only mode
+Skipping accuracy comparison due to skipped diagnostics
+Skipping model diagnostics
+
+============================================================
+Final Epoch Validation Accuracy: 0.6875
+============================================================
+
+Current time: 0220040543

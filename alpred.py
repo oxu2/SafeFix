@@ -85,6 +85,14 @@ parser.add_argument('--gpu', type=int, default=0,
                     help='Index of the CUDA GPU to use (default: 0)')
 parser.add_argument('--save_report', type=str2bool, default=False,
                     help='Generate and save diagnostic report (default: False)')
+parser.add_argument('--save_preds', type=str2bool, default=True,
+                    help='Save model predictions after training (default: True)')
+parser.add_argument('--save_model', type=str2bool, default=False,
+                    help='Save model checkpoint (.pth) to save/models/ after training (default: False)')
+parser.add_argument('--resume_model', type=str, default=None,
+                    help='Path to a saved .pth checkpoint to resume/fine-tune from (default: None, train from scratch)')
+parser.add_argument('--freeze_backbone', type=str2bool, default=None,
+                    help='Freeze early backbone layers when fine-tuning from checkpoint (default: auto-True when --resume_model is set)')
 parser.add_argument(
     '--save_pred_model',
     type=str,
@@ -141,9 +149,14 @@ parser.add_argument('--lr_backbone', type=float, default=None,
 # Active Learning arguments
 parser.add_argument('--use_active_learning', type=str2bool, default=True,
                     help='Use Active Learning strategy for data selection (default: True)')
-parser.add_argument('--al_strategy', type=str, default='attribute', 
-                    choices=['coreset', 'stratified', 'diversity', 'hybrid', 'hierarchical', 'attribute', 'uncertainty_stratified'],
-                    help='Active Learning strategy: coreset (default), stratified, diversity, hybrid, hierarchical, attribute, or uncertainty_stratified')
+parser.add_argument('--al_strategy', type=str, default='attribute',
+                    choices=['coreset', 'stratified', 'diversity', 'hybrid', 'hierarchical',
+                             'attribute', 'uncertainty_stratified', 'gen_probe',
+                             'random', 'none', '0', 'false', 'no'],
+                    help='Active Learning strategy: coreset, stratified, diversity, hybrid, hierarchical, '
+                         'attribute, uncertainty_stratified, gen_probe, or random/none/0/false (all map to plain random selection)')
+parser.add_argument('--al_probe_model', type=str, default=None,
+                    help='Path to the model trained ONLY on generated images, used for the gen_probe AL strategy.')
 parser.add_argument('--al_embedding_dim', type=int, default=512,
                     help='Embedding dimension for Active Learning (default: 512)')
 parser.add_argument('--al_initial_labeled', type=int, default=400,
@@ -212,6 +225,12 @@ parser.add_argument('--llm_max_memory', type=int, default=23,
                     help='Maximum memory per GPU in GB for LLM model (default: 23)')
 # Parse arguments
 args = parser.parse_args()
+
+# Normalize al_strategy: treat none/0/false/no/random as 'random' (plain random selection)
+_strategy_str = str(args.al_strategy).lower().strip() if args.al_strategy is not None else 'random'
+if _strategy_str in ('none', '0', 'false', 'no', 'random', ''):
+    args.al_strategy = 'random'
+    args.use_active_learning = False  # Disable AL so random branch is taken
 
 # Normalize generated-image mode
 gen_mode = str(args.gen_only).lower()
@@ -367,7 +386,17 @@ if args.dataset == 'imagenet' and args.model == 'vit' and args.pretrained:
             print(f"Specifically set learning rate for pretrained ViT on ImageNet to {args.lr}")
 
 if args.dataset == 'imagenet' and args.lr == 1e-4 and args.model == 'resnet':
-    args.lr = 1e-3
+    # If resuming from checkpoint with frozen backbone, use much lower LR
+    if args.resume_model and args.freeze_backbone is not False:
+        args.lr = 1e-5
+        if verbose:
+            print(f"Using fine-tuning learning rate {args.lr} for resumed model with frozen backbone")
+    elif args.resume_model:
+        args.lr = 1e-4
+        if verbose:
+            print(f"Using fine-tuning learning rate {args.lr} for resumed model")
+    else:
+        args.lr = 1e-3
 
 # Adjust LR for CLIP on ImageNet based on pretrained flag
 elif args.dataset == 'imagenet' and args.model == 'clip' and args.lr == 1e-4:
@@ -775,9 +804,12 @@ if args.dataset == 'imagenet':
                 )
             # Combine subsampled original data with generated data
             train_dataset = torch.utils.data.ConcatDataset([sub_train_ds, gen_ds])
-            selection_method = ("Active Learning" if args.use_active_learning and args.sub_ratio < 1.0 
-                               else f"LLM-based selection ({args.llm_strategy})" if args.use_llm_selection and args.sub_ratio < 1.0
-                               else "Random sampling")
+            if args.use_active_learning and args.sub_ratio < 1.0:
+                selection_method = f"Active Learning ({args.al_strategy})"
+            elif args.use_llm_selection and args.sub_ratio < 1.0:
+                selection_method = f"LLM-based selection ({args.llm_strategy})"
+            else:
+                selection_method = "Random sampling"
             print(f"Added {len(modified_image_labels)} ImageNet {attributes} images using {selection_method}: {len(sub_train_ds)} -> {len(train_dataset)}")
         
         # Store subsampling info for padding in save_predictions
@@ -1307,7 +1339,47 @@ elif args.model == 'clip':
     )
 
 model = model.to(device)
-print(f"Using {args.model} model with {'pretrained' if args.pretrained else 'random'} weights")
+
+# Load saved checkpoint if --resume_model is provided
+if args.resume_model:
+    if not os.path.exists(args.resume_model):
+        raise FileNotFoundError(f"Resume model not found: {args.resume_model}")
+    ckpt = torch.load(args.resume_model, map_location=device)
+    model.load_state_dict(ckpt['model_state_dict'])
+    resumed_val_acc = ckpt.get('best_val_acc', 'N/A')
+    print(f"Resumed model from {args.resume_model} (best val acc: {resumed_val_acc})")
+
+    # Auto-enable freeze_backbone if not explicitly set
+    if args.freeze_backbone is None:
+        args.freeze_backbone = True
+else:
+    print(f"Using {args.model} model with {'pretrained' if args.pretrained else 'random'} weights")
+    if args.freeze_backbone is None:
+        args.freeze_backbone = False
+
+# Freeze early layers when fine-tuning to prevent catastrophic forgetting
+if args.freeze_backbone:
+    frozen_count = 0
+    if args.model == 'resnet':
+        # Freeze everything except layer4 and fc
+        for name, param in model.named_parameters():
+            if not any(k in name for k in ('layer4', 'fc')):
+                param.requires_grad = False
+                frozen_count += 1
+    elif args.model == 'vit':
+        # Freeze all except last 2 blocks and head
+        for name, param in model.named_parameters():
+            if 'head' not in name and 'blocks.11' not in name and 'blocks.10' not in name:
+                param.requires_grad = False
+                frozen_count += 1
+    elif args.model == 'clip':
+        # Freeze CLIP backbone, only fine-tune classifier
+        for name, param in model.named_parameters():
+            if 'classifier' not in name:
+                param.requires_grad = False
+                frozen_count += 1
+    trainable_count = sum(1 for p in model.parameters() if p.requires_grad)
+    print(f"Froze {frozen_count} parameter groups, {trainable_count} remain trainable")
 
 # For consistency, handle pos_weight and loss for both datasets
 if args.dataset == 'imagenet':
@@ -1320,13 +1392,14 @@ else:
     # Use smoothed BCE loss since label_smoothing param is unavailable
     criterion = SmoothBCEWithLogitsLoss(pos_weight=pos_weight, smoothing=0.1)
 
-# Optimize all model parameters for all architectures
+# Optimize only trainable parameters (respects freeze_backbone)
+trainable_params = [p for p in model.parameters() if p.requires_grad]
 if args.model == 'clip':
-    optimizer = torch.optim.AdamW(model.parameters(), lr=args.lr, weight_decay=0.01)
+    optimizer = torch.optim.AdamW(trainable_params, lr=args.lr, weight_decay=0.01)
 elif args.model == 'resnet':
-    optimizer = optim.Adam(model.parameters(), lr=args.lr, weight_decay=1e-3)
+    optimizer = optim.Adam(trainable_params, lr=args.lr, weight_decay=1e-3)
 elif args.model == 'vit':
-    optimizer = optim.Adam(model.parameters(), lr=args.lr, weight_decay=1e-3)
+    optimizer = optim.Adam(trainable_params, lr=args.lr, weight_decay=1e-3)
 
 # Use StepLR for pretrained CLIP/ViT on ImageNet, otherwise CosineAnnealingLR for CLIP/ViT, StepLR for ResNet
 if args.dataset == 'imagenet' and args.pretrained and args.model in ('clip', 'vit'):
@@ -1613,13 +1686,31 @@ def train_model(model, train_loader, valid_loader, criterion, optimizer, schedul
     if args.save_pred_model == 'best' and best_model_state is not None:
         model.load_state_dict(best_model_state)
 
+    # Save model checkpoint if requested
+    if args.save_model:
+        os.makedirs("save/models", exist_ok=True)
+        model_path = (
+            f"save/models/model_{args.dataset}_{args.model}_{attributes}"
+            f"_{args.num_added_img}imgs_{time_now}.pth"
+        )
+        torch.save({
+            'model_state_dict': model.state_dict(),
+            'best_val_acc': best_val_acc,
+            'args': vars(args),
+        }, model_path)
+        print(f"Model saved to {model_path}")
+
     # Evaluate on test set (when available) before saving predictions
     if test_loader is not None:
         test_acc, test_loss = evaluate(model, test_loader)
         print(f"Held-out test accuracy: {test_acc:.4f}, test loss: {test_loss:.4f}")
 
-    # Save predictions after training
-    save_predictions(model, train_loader, valid_loader, test_loader=test_loader)
+    # Save predictions after training (can be disabled with --save_preds False)
+    if args.save_preds:
+        save_predictions(model, train_loader, valid_loader, test_loader=test_loader)
+    else:
+        if verbose:
+            print("Skipping prediction saving (--save_preds False).")
     # Return training history for external use
     return train_loss_history, train_acc_history, val_loss_history, val_acc_history
 

@@ -1,0 +1,105 @@
+Random seed set to 42
+Adjusted al_embedding_dim for ResNet on ImageNet to 256
+Current time: 0220041154
+Loaded 1311 feasible pinkcolor_fabrictexture images
+Using generated image directory: exampleData/imagenet_pinkcolor_fabrictexture
+[DEBUG] Normal mode: looking for generated images in directory: exampleData/imagenet_pinkcolor_fabrictexture
+[DEBUG] Starting traversal of class subfolders for generated images...
+[DEBUG] Candidate images before feasible filtering: 1311
+[DEBUG] Total candidate generated images before sampling: 1311
+[DEBUG] Sampled generated images: 1000 items
+Added 1000 generated images.
+Using random sampling to select 3120 samples from 10400
+
+[Active Learning subset (before adding generated images)] class distribution:
+  Class backpack: 326 samples (10.4%)
+  Class barber_chair: 297 samples (9.5%)
+  Class coffee_mug: 301 samples (9.6%)
+  Class desk: 311 samples (10.0%)
+  Class electric_guitar: 320 samples (10.3%)
+  Class park_bench: 336 samples (10.8%)
+  Class pitcher: 316 samples (10.1%)
+  Class purse: 297 samples (9.5%)
+  Class rocking_chair: 299 samples (9.6%)
+  Class water_bottle: 317 samples (10.2%)
+Added 1000 ImageNet pinkcolor_fabrictexture images using Random sampling: 3120 -> 4120
+Using resnet model with random weights
+Epoch [1/30], Train Loss: 2.1728, Train Acc: 0.2405, Val Loss: 2.1986, Val Acc: 0.2323
+Epoch [2/30], Train Loss: 1.9416, Train Acc: 0.3141, Val Loss: 2.2911, Val Acc: 0.1854
+Epoch [3/30], Train Loss: 1.8378, Train Acc: 0.3551, Val Loss: 2.0955, Val Acc: 0.2954
+Epoch [4/30], Train Loss: 1.6862, Train Acc: 0.4102, Val Loss: 1.8320, Val Acc: 0.3746
+Epoch [5/30], Train Loss: 1.6270, Train Acc: 0.4223, Val Loss: 1.9719, Val Acc: 0.3477
+Epoch [6/30], Train Loss: 1.5706, Train Acc: 0.4536, Val Loss: 1.9237, Val Acc: 0.3246
+Epoch [7/30], Train Loss: 1.4368, Train Acc: 0.5022, Val Loss: 1.7727, Val Acc: 0.3946
+Epoch [8/30], Train Loss: 1.3596, Train Acc: 0.5357, Val Loss: 1.7260, Val Acc: 0.4238
+Epoch [9/30], Train Loss: 1.2996, Train Acc: 0.5539, Val Loss: 1.8165, Val Acc: 0.4131
+Epoch [10/30], Train Loss: 1.1707, Train Acc: 0.6034, Val Loss: 1.5323, Val Acc: 0.4846
+Epoch [11/30], Train Loss: 1.0926, Train Acc: 0.6269, Val Loss: 1.5798, Val Acc: 0.4900
+Epoch [12/30], Train Loss: 1.0533, Train Acc: 0.6398, Val Loss: 1.5962, Val Acc: 0.4785
+Epoch [13/30], Train Loss: 0.9447, Train Acc: 0.6864, Val Loss: 1.5505, Val Acc: 0.5062
+Epoch [14/30], Train Loss: 0.8634, Train Acc: 0.7119, Val Loss: 1.4284, Val Acc: 0.5415
+Epoch [15/30], Train Loss: 0.8263, Train Acc: 0.7257, Val Loss: 1.4621, Val Acc: 0.5238
+Epoch [16/30], Train Loss: 0.7373, Train Acc: 0.7575, Val Loss: 1.4143, Val Acc: 0.5392
+Epoch [17/30], Train Loss: 0.7052, Train Acc: 0.7723, Val Loss: 1.4052, Val Acc: 0.5438
+Epoch [18/30], Train Loss: 0.6628, Train Acc: 0.7854, Val Loss: 1.4333, Val Acc: 0.5485
+Epoch [19/30], Train Loss: 0.6206, Train Acc: 0.8010, Val Loss: 1.3997, Val Acc: 0.5600
+Epoch [20/30], Train Loss: 0.6009, Train Acc: 0.8124, Val Loss: 1.3907, Val Acc: 0.5546
+Epoch [21/30], Train Loss: 0.5609, Train Acc: 0.8294, Val Loss: 1.4129, Val Acc: 0.5623
+Epoch [22/30], Train Loss: 0.5467, Train Acc: 0.8306, Val Loss: 1.3873, Val Acc: 0.5592
+Epoch [23/30], Train Loss: 0.5503, Train Acc: 0.8328, Val Loss: 1.3853, Val Acc: 0.5538
+Epoch [24/30], Train Loss: 0.5336, Train Acc: 0.8354, Val Loss: 1.3870, Val Acc: 0.5585
+Epoch [25/30], Train Loss: 0.5084, Train Acc: 0.8517, Val Loss: 1.3996, Val Acc: 0.5546
+Epoch [26/30], Train Loss: 0.5105, Train Acc: 0.8505, Val Loss: 1.3729, Val Acc: 0.5615
+Epoch [27/30], Train Loss: 0.5060, Train Acc: 0.8490, Val Loss: 1.3842, Val Acc: 0.5615
+Epoch [28/30], Train Loss: 0.4816, Train Acc: 0.8595, Val Loss: 1.3835, Val Acc: 0.5585
+Epoch [29/30], Train Loss: 0.4942, Train Acc: 0.8478, Val Loss: 1.3867, Val Acc: 0.5531
+Epoch [30/30], Train Loss: 0.4978, Train Acc: 0.8544, Val Loss: 1.3847, Val Acc: 0.5569
+Held-out test accuracy: 0.5754, test loss: 1.3798
+Generating and saving predictions...
+Prediction segments -> train: 4120, val: 1300, test: 1300
+Combined predictions length: 13000
+Total training time for 30 epochs: 347.56 seconds
+Total Active Learning selection time: 0.00 seconds
+End-to-end wall time (data prep + selection + training + setup): 348.70 seconds
+
+Running model diagnostics on generated predictions...
+Model Test ACC: 0.5753846153846154
+Start detect_prediction_correlation
+
+ACC: 0.531250 	Rare Case: attribute "color", description "green"
+ACC: 0.508197 	Rare Case: attribute "color", description "pink"
+ACC: 0.528571 	Hard case: attribute "color", description "white"
+ACC: 0.535714 	Hard case: attribute "color", description "blue"
+ACC: 0.517857 	Rare Case: attribute "color", description "yellow"
+ACC: 0.545455 	Rare Case: attribute "background", description "sky"
+ACC: 0.428571 	Rare Case: attribute "background", description "buildings"
+ACC: 0.509434 	Hard case: attribute "background", description "grass"
+ACC: 0.500000 	Rare Case: attribute "background", description "bridge"
+ACC: 0.537736 	Rare Case: attribute "background", description "house"
+ACC: 0.551020 	Rare Case: attribute "texture", description "plastic"
+ACC: 0.550000 	Rare Case: attribute "texture", description "metallic"
+ACC: 0.537118 	Hard case: attribute "texture", description "glass"
+
+Comparing accuracy with log file: logs/compare/stat_imagenet_resnet_compare.log
+Overall accuracy: 0.718077 -> 0.562308: declined
+
+Attribute-specific accuracy comparison:
+color, green, 0.674419 -> 0.531250: declined
+color, pink, 0.699029 -> 0.508197: declined
+color, tan, 0.700000 -> 0.750000: improved
+color, orange, 0.690909 -> 0.600000: declined
+color, yellow, 0.688889 -> 0.517857: declined
+color, purple, 0.684211 -> 0.666667: declined
+color, black, 0.665289 -> 0.562914: declined
+background, sky, 0.698630 -> 0.545455: declined
+background, inside a house, 0.691684 -> 0.558692: declined
+background, buildings, 0.707317 -> 0.428571: declined
+background, rocks, 0.659091 -> 0.600000: declined
+background, street, 0.662162 -> 0.636364: declined
+texture, metallic, 0.676471 -> 0.550000: declined
+texture, wooden, 0.698393 -> 0.559006: declined
+texture, leather, 0.588235 -> 0.642857: improved
+texture, fabric, 0.658537 -> 0.611111: declined
+
+Compared 16 attribute-specific accuracies.
+Current time: 0220041154

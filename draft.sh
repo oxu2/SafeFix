@@ -1,3 +1,78 @@
+CUDA_VISIBLE_DEVICES=2 nohup python -u alpred.py \
+  --dataset imagenet --model resnet --num_added_img 1000 \
+  --attributes pinkcolor_fabrictexture --num_epochs 15 \
+  --sub_ratio 0.3 \
+  --resume_model model_imagenet_resnet_base.pth \
+  --al_strategy attribute \
+  --al_attribute_focus color,background,texture \
+  --al_attribute_balance_strength 5 \
+  --al_attribute_class_balance inf \
+  --verbose True \
+  > logs_imagenet/AL_attr_resume_base_resnet_imagenet_0.3_1000.log 2>&1 < /dev/null &
+
+CUDA_VISIBLE_DEVICES=1 nohup python -u alpred.py \
+  --dataset imagenet --model resnet --num_added_img 1000 \
+  --attributes pinkcolor_fabrictexture --num_epochs 30 \
+  --sub_ratio 0.3 \
+  --al_attribute_focus color,background,texture \
+  --verbose False \
+  --al_attribute_log_acc_scale 1 \
+  --num_epochs 30 \
+  --al_attribute_rarity_power 1 \
+  --al_attribute_log_acc_scale 1 \
+  --al_attribute_balance_strength 5 \
+  --al_attribute_class_balance inf \
+  > logs_imagenet/AL_resnet_attr_imagenet_0.3_R1_L1_B5_classINF_1000.log 2>&1 < /dev/null &
+
+CUDA_VISIBLE_DEVICES=2 nohup python -u alpred.py \
+  --dataset imagenet --model resnet --num_added_img 1000 \
+  --attributes pinkcolor_fabrictexture --num_epochs 30 \
+  --sub_ratio 0.3 \
+  --al_attribute_focus color,background,texture \
+  --verbose False \
+  --al_attribute_log_acc_scale 1 \
+  --num_epochs 30 \
+  --al_attribute_rarity_power 1 \
+  --al_attribute_log_acc_scale 1 \
+  --al_attribute_balance_strength 5 \
+  --al_attribute_class_balance inf \
+  > logs_imagenet/AL_resnet_attr_imagenet_0.3_R1_L1_B5_classINF_1000.log 2>&1 < /dev/null &
+
+CUDA_VISIBLE_DEVICES=3 nohup python -u alpred.py \
+  --dataset imagenet --model resnet --num_added_img 0 \
+  --attributes pinkcolor_fabrictexture --num_epochs 30 \
+  --save_model True \
+  --use_active_learning False \
+  --sub_ratio 1 \
+  > logs_imagenet/baseline_imagenet_0.log 2>&1 < /dev/null &
+
+CUDA_VISIBLE_DEVICES=3 nohup python -u alpred.py \
+  --dataset imagenet --model resnet --num_added_img 0 \
+  --attributes pinkcolor_fabrictexture --num_epochs 30 \
+  --save_model True \
+  --use_active_learning False \
+  --sub_ratio 1 \
+  --save_pred_model last \
+  > logs_imagenet/baseline_imagenet_last_0.log 2>&1 < /dev/null &
+
+
+
+CUDA_VISIBLE_DEVICES=3 nohup python -u alpred.py \
+  --dataset imagenet --model resnet --num_added_img 1000 \
+  --attributes pinkcolor_fabrictexture --num_epochs 30 \
+  --save_preds True \
+  --use_active_learning False \
+  --sub_ratio 1 \
+  > logs_imagenet/check_imagenet_1000.log 2>&1 < /dev/null &
+
+
+nohup ./test_al_strategies.sh --sub_ratio 0.05 > test_al_strategies_ratio0.05.log 2>&1 < /dev/null &
+
+
+nohup ./test_al_strategies.sh --sub_ratio 0.01 > test_al_strategies_ratio0.01.log 2>&1 < /dev/null &
+
+nohup ./test_al_strategies.sh --sub_ratio 0.02 > test_al_strategies_ratio0.02.log 2>&1 < /dev/null &
+
 CUDA_VISIBLE_DEVICES=3 nohup python -u alpred.py \
   --dataset imagenet --model resnet --num_added_img 1000 \
   --attributes pinkcolor_fabrictexture --num_epochs 30 \
@@ -85,6 +160,8 @@ CUDA_VISIBLE_DEVICES=1 nohup python -u alpred.py \
   --verbose False \
   --al_attribute_log_acc_scale 1 \
   --num_epochs 30 \
+  --al_attribute_rarity_power 1 \
+  --al_attribute_log_acc_scale 1 \
   --al_attribute_balance_strength 5 \
   --al_attribute_class_balance inf \
   > logs_imagenet/AL_resnet_attr_imagenet_0.3_scale1_B5_classINF_1000.log 2>&1 < /dev/null &

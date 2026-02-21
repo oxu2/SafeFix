@@ -1,0 +1,137 @@
+Random seed set to 42
+Adjusted al_embedding_dim for ResNet on ImageNet to 256
+Using fine-tuning learning rate 1e-05 for resumed model with frozen backbone
+Current time: 0220040121
+Loaded 1311 feasible pinkcolor_fabrictexture images
+Using generated image directory: exampleData/imagenet_pinkcolor_fabrictexture
+[DEBUG] Normal mode: looking for generated images in directory: exampleData/imagenet_pinkcolor_fabrictexture
+[DEBUG] Starting traversal of class subfolders for generated images...
+[DEBUG] Candidate images before feasible filtering: 1311
+[DEBUG] Total candidate generated images before sampling: 1311
+[DEBUG] Sampled generated images: 1000 items
+Added 1000 generated images.
+Using Active Learning strategy to select 3120 samples from 10400
+Starting Active Learning data selection using 'uncertainty_stratified' strategy...
+Dataset: imagenet, Model: resnet
+Train samples: 10400, Val samples: 1300
+Target selection ratio: 0.3
+Embedding dimension: 256
+Initial labeled samples: 400
+Using Uncertainty-Weighted Stratified Strategy
+/people/cs/o/oxx220000/.conda/envs/ad/lib/python3.9/site-packages/torchvision/models/_utils.py:208: UserWarning: The parameter 'pretrained' is deprecated since 0.13 and may be removed in the future, please use 'weights' instead.
+  warnings.warn(
+/people/cs/o/oxx220000/.conda/envs/ad/lib/python3.9/site-packages/torchvision/models/_utils.py:223: UserWarning: Arguments other than a weight enum or `None` for 'weights' are deprecated since 0.13 and may be removed in the future. The current behavior is equivalent to passing `weights=ResNet18_Weights.IMAGENET1K_V1`. You can also use `weights=ResNet18_Weights.DEFAULT` to get the most up-to-date weights.
+  warnings.warn(msg)
+Uncertainty-Stratified: choosing 3120 samples...
+  Class breakdown: 312 per class (+0 remainder)
+[TIMING] Active Learning selection (ImageNet) took 17.27 seconds
+
+[Active Learning subset (before adding generated images)] class distribution:
+  Class backpack: 312 samples (10.0%)
+  Class barber_chair: 312 samples (10.0%)
+  Class coffee_mug: 312 samples (10.0%)
+  Class desk: 312 samples (10.0%)
+  Class electric_guitar: 312 samples (10.0%)
+  Class park_bench: 312 samples (10.0%)
+  Class pitcher: 312 samples (10.0%)
+  Class purse: 312 samples (10.0%)
+  Class rocking_chair: 312 samples (10.0%)
+  Class water_bottle: 312 samples (10.0%)
+Added 1000 ImageNet pinkcolor_fabrictexture images using Active Learning (uncertainty_stratified): 3120 -> 4120
+Resumed model from save/models/model_imagenet_resnet_pinkcolor_fabrictexture_0imgs_0220032225.pth (best val acc: 0.7223076923076923)
+Froze 45 parameter groups, 17 remain trainable
+Epoch [1/15], Train Loss: 0.6081, Train Acc: 0.8015, Val Loss: 0.9264, Val Acc: 0.7215
+Epoch [2/15], Train Loss: 0.5640, Train Acc: 0.8150, Val Loss: 0.9378, Val Acc: 0.7162
+Epoch [3/15], Train Loss: 0.5545, Train Acc: 0.8197, Val Loss: 0.9299, Val Acc: 0.7138
+Epoch [4/15], Train Loss: 0.5644, Train Acc: 0.8143, Val Loss: 0.9245, Val Acc: 0.7169
+Epoch [5/15], Train Loss: 0.5401, Train Acc: 0.8303, Val Loss: 0.9315, Val Acc: 0.7131
+Epoch [6/15], Train Loss: 0.5422, Train Acc: 0.8272, Val Loss: 0.9250, Val Acc: 0.7208
+Epoch [7/15], Train Loss: 0.5303, Train Acc: 0.8391, Val Loss: 0.9240, Val Acc: 0.7154
+Epoch [8/15], Train Loss: 0.5271, Train Acc: 0.8391, Val Loss: 0.9254, Val Acc: 0.7146
+Epoch [9/15], Train Loss: 0.5181, Train Acc: 0.8357, Val Loss: 0.9295, Val Acc: 0.7185
+Epoch [10/15], Train Loss: 0.5064, Train Acc: 0.8410, Val Loss: 0.9241, Val Acc: 0.7169
+Epoch [11/15], Train Loss: 0.5137, Train Acc: 0.8415, Val Loss: 0.9242, Val Acc: 0.7123
+Epoch [12/15], Train Loss: 0.5094, Train Acc: 0.8381, Val Loss: 0.9257, Val Acc: 0.7100
+Epoch [13/15], Train Loss: 0.5145, Train Acc: 0.8400, Val Loss: 0.9350, Val Acc: 0.7069
+Epoch [14/15], Train Loss: 0.5217, Train Acc: 0.8386, Val Loss: 0.9311, Val Acc: 0.7146
+Epoch [15/15], Train Loss: 0.4980, Train Acc: 0.8456, Val Loss: 0.9264, Val Acc: 0.7108
+Held-out test accuracy: 0.7385, test loss: 0.8233
+Generating and saving predictions...
+Prediction segments -> train: 4120, val: 1300, test: 1300
+Combined predictions length: 13000
+Total training time for 15 epochs: 119.25 seconds
+Total Active Learning selection time: 17.27 seconds
+End-to-end wall time (data prep + selection + training + setup): 136.89 seconds
+
+Running model diagnostics on generated predictions...
+Model Test ACC: 0.7384615384615385
+Start detect_prediction_correlation
+
+ACC: 0.696429 	Hard case: attribute "color", description "white"
+ACC: 0.687500 	Rare Case: attribute "color", description "maroon"
+ACC: 0.682927 	Hard case: attribute "color", description "multicolored"
+ACC: 0.682119 	Hard case: attribute "color", description "black"
+ACC: 0.646341 	Hard case: attribute "background", description "trees"
+ACC: 0.500000 	Rare Case: attribute "background", description "buildings"
+ACC: 0.679245 	Hard case: attribute "background", description "grass"
+ACC: 0.640000 	Rare Case: attribute "background", description "rocks"
+ACC: 0.500000 	Rare Case: attribute "background", description "bridge"
+ACC: 0.642857 	Rare Case: attribute "background", description "water"
+ACC: 0.707547 	Rare Case: attribute "background", description "house"
+ACC: 0.685185 	Rare Case: attribute "texture", description "fabric"
+ACC: 0.698690 	Hard case: attribute "texture", description "glass"
+
+Comparing accuracy with log file: logs/compare/stat_imagenet_resnet_compare.log
+Overall accuracy: 0.718077 -> 0.721538: improved
+
+Attribute-specific accuracy comparison:
+color, green, 0.674419 -> 0.750000: improved
+color, pink, 0.699029 -> 0.786885: improved
+color, tan, 0.700000 -> 0.750000: improved
+color, orange, 0.690909 -> 0.800000: improved
+color, yellow, 0.688889 -> 0.732143: improved
+color, purple, 0.684211 -> 0.777778: improved
+color, black, 0.665289 -> 0.682119: improved
+background, sky, 0.698630 -> 0.727273: improved
+background, inside a house, 0.691684 -> 0.726597: improved
+background, buildings, 0.707317 -> 0.500000: declined
+background, rocks, 0.659091 -> 0.640000: declined
+background, street, 0.662162 -> 0.909091: improved
+texture, metallic, 0.676471 -> 0.750000: improved
+texture, wooden, 0.698393 -> 0.721739: improved
+texture, leather, 0.588235 -> 0.785714: improved
+texture, fabric, 0.658537 -> 0.685185: improved
+
+Compared 16 attribute-specific accuracies.
+Using log file: logs_imagenet/AL_random_resnet_imagenet_1000_ratio0.3.log
+
+================================================================================
+ACTIVE LEARNING vs RANDOM SELECTION COMPARISON
+================================================================================
+Comparing current Active Learning results with random selection: logs_imagenet/AL_random_resnet_imagenet_1000_ratio0.3.log
+Current Active Learning overall accuracy: 0.721538 (Random overall accuracy not found)
+
+Attribute-specific Active Learning vs Random Selection comparison:
+color, green, Random 0.531250 -> AL 0.750000 (Δ=+0.218750): AL WINS
+color, pink, Random 0.508197 -> AL 0.786885 (Δ=+0.278688): AL WINS
+color, white, Random 0.528571 -> AL 0.696429 (Δ=+0.167858): AL WINS
+color, blue, Random 0.535714 -> AL 0.803571 (Δ=+0.267857): AL WINS
+color, yellow, Random 0.517857 -> AL 0.732143 (Δ=+0.214286): AL WINS
+background, sky, Random 0.545455 -> AL 0.727273 (Δ=+0.181818): AL WINS
+background, buildings, Random 0.428571 -> AL 0.500000 (Δ=+0.071429): AL WINS
+background, grass, Random 0.509434 -> AL 0.679245 (Δ=+0.169811): AL WINS
+background, bridge, Random 0.500000 -> AL 0.500000 (Δ=+0.000000): TIE
+background, house, Random 0.537736 -> AL 0.707547 (Δ=+0.169811): AL WINS
+texture, plastic, Random 0.551020 -> AL 0.714286 (Δ=+0.163266): AL WINS
+texture, metallic, Random 0.550000 -> AL 0.750000 (Δ=+0.200000): AL WINS
+texture, glass, Random 0.537118 -> AL 0.698690 (Δ=+0.161572): AL WINS
+
+------------------------------------------------------------
+ACTIVE LEARNING vs RANDOM SELECTION SUMMARY:
+Total compared attributes: 13
+Active Learning wins: 12
+Random Selection wins: 0
+Ties: 1
+Active Learning win rate: 92.3%
+------------------------------------------------------------
+Current time: 0220040121

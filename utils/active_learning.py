@@ -1240,8 +1240,13 @@ def active_learning_selection(train_dataset, val_dataset, args, device, verbose=
         return random.sample(range(total_samples), target_samples)
     
     # Get AL strategy from args (default to 'coreset')
-    al_strategy = getattr(args, 'al_strategy', 'coreset')
-    
+    al_strategy = str(getattr(args, 'al_strategy', 'coreset') or 'random').lower().strip()
+
+    # Normalize falsy / alias values -> 'random'
+    _RANDOM_ALIASES = {'none', '0', 'false', 'no', 'random', ''}
+    if al_strategy in _RANDOM_ALIASES:
+        al_strategy = 'random'
+
     if verbose:
         print(f"Starting Active Learning data selection using '{al_strategy}' strategy...")
         print(f"Dataset: {args.dataset}, Model: {args.model}")
@@ -1249,11 +1254,18 @@ def active_learning_selection(train_dataset, val_dataset, args, device, verbose=
         print(f"Target selection ratio: {args.sub_ratio}")
         print(f"Embedding dimension: {args.al_embedding_dim}")
         print(f"Initial labeled samples: {args.al_initial_labeled}")
-    
+
     # Calculate target number of samples to select
     total_train_samples = len(train_dataset)
     target_samples = int(total_train_samples * args.sub_ratio)
-    
+
+    # Explicit random shortcut (also covers 'none'/'0'/'false' after normalization above)
+    if al_strategy == 'random':
+        if verbose:
+            print(f"Random selection: choosing {target_samples} samples from {total_train_samples}")
+        random.seed(args.seed)
+        return random.sample(range(total_train_samples), target_samples)
+
     # Handle pure stratified sampling (doesn't need embeddings)
     if al_strategy == 'stratified':
         try:
@@ -1400,6 +1412,91 @@ def active_learning_selection(train_dataset, val_dataset, args, device, verbose=
                 print(f"Attribute strategy failed ({exc}). Falling back to random selection.")
             random.seed(args.seed)
             return random.sample(range(total_train_samples), target_samples)
+
+    elif al_strategy == 'gen_probe':
+        if verbose:
+            print(f"Using Generation-Guided Active Learning (gen_probe) Strategy")
+        
+        probe_path = getattr(args, 'al_probe_model', None)
+        if not probe_path or not os.path.exists(probe_path):
+            if verbose:
+                print(f"Error: gen_probe requires --al_probe_model to point to a valid checkpoint. Found: {probe_path}")
+                print("Falling back to random selection.")
+            random.seed(args.seed)
+            return random.sample(range(total_train_samples), target_samples)
+
+        # 1. Load Probe Model
+        # Dynamically determine number of classes from target data
+        if hasattr(train_dataset, 'targets'):
+            num_classes = len(np.unique(train_dataset.targets))
+        elif hasattr(train_dataset, 'labels'):
+            num_classes = len(np.unique(train_dataset.labels))
+        elif args.dataset == 'imagenet':
+            num_classes = 10
+        else:
+            num_classes = 2 # fallback binary
+
+
+        if args.model == 'resnet':
+            probe_model = models.resnet18(pretrained=False) # Wait to load weights
+            # Resnet18 defaults to 1000 classes, but our checkpoint has num_classes
+            probe_model.fc = nn.Linear(probe_model.fc.in_features, num_classes)
+        else:
+            if verbose:
+                print(f"Warning: Model {args.model} gen_probe not fully supported yet, using ResNet18 proxy")
+            probe_model = models.resnet18(pretrained=False)
+            probe_model.fc = nn.Linear(probe_model.fc.in_features, num_classes)
+
+        if verbose:
+            print(f"Loading probe model from {probe_path}")
+        ckpt = torch.load(probe_path, map_location=device)
+        try:
+            probe_model.load_state_dict(ckpt['model_state_dict'])
+        except Exception as e:
+            if verbose:
+                print(f"Error loading probe model dict: {e}. Falling back to random.")
+            random.seed(args.seed)
+            return random.sample(range(total_train_samples), target_samples)
+
+        probe_model = probe_model.to(device)
+        probe_model.eval()
+
+        # 2. Iterate and score all training samples
+        al_batch_size = min(args.batch_size, 32)
+        train_loader = DataLoader(train_dataset, batch_size=al_batch_size, shuffle=False,
+                                 num_workers=args.workers, pin_memory=True)
+        
+        all_entropies = []
+        if verbose:
+            print(f"Scoring {total_train_samples} source samples using the probe model...")
+        
+        with torch.no_grad():
+            for batch_data in train_loader:
+                if isinstance(batch_data, list):
+                    inputs = batch_data[0].to(device, non_blocking=True)
+                else:
+                    inputs = batch_data.to(device, non_blocking=True)
+                
+                outputs = probe_model(inputs)
+                probs = F.softmax(outputs, dim=1)
+                # Calculate Entropy: -sum(p * log(p))
+                log_probs = F.log_softmax(outputs, dim=1)
+                entropy = -(probs * log_probs).sum(dim=1)
+                all_entropies.extend(entropy.cpu().numpy())
+        
+        all_entropies = np.array(all_entropies)
+
+        # 3. Select top K most uncertain (highest entropy)
+        # argsort is ascending, so [::-1] makes it descending
+        sorted_indices = np.argsort(all_entropies)[::-1]
+        selected_indices = sorted_indices[:target_samples].tolist()
+        
+        if verbose:
+            print(f"Generation-Guided Active Learning completed.")
+            print(f"Selected {len(selected_indices)} hardest samples (highest probe entropy).")
+            print(f"Max entropy: {all_entropies[selected_indices[0]]:.4f}, Min entropy in subset: {all_entropies[selected_indices[-1]]:.4f}")
+            
+        return selected_indices
 
     elif al_strategy == 'uncertainty_stratified':
         # Combined uncertainty + stratified sampling

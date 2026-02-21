@@ -1,0 +1,28 @@
+[2026-02-19 22:03:55] Starting Active Learning strategies comparison sweep...
+Using sub_ratio: 0.02
+=== GPU 0: Random & Stratified ===
+=== GPU 1: Core-set & Uncertainty-Stratified ===
+=== GPU 2: Diversity & Hierarchical ===
+=== GPU 3: Hybrid & Attribute-Focused ===
+[2026-02-19 22:03:55] Checking GPU 1 for availability...
+[2026-02-19 22:03:55] Checking GPU 0 for availability...
+[2026-02-19 22:03:55] Checking GPU 3 for availability...
+[2026-02-19 22:03:55] All experiment pipelines launched with sub_ratio=0.02.
+Check main log for progress or individual logs in logs_imagenet/ directory.
+[2026-02-19 22:03:55] Checking GPU 2 for availability...
+[2026-02-19 22:03:55] GPU 1 is free (memory usage: 9MB).
+--- [GPU 1] Starting Core-set Strategy ---
+[2026-02-19 22:03:55] GPU 0 is free (memory usage: 9MB).
+--- [GPU 0] Starting Random Baseline ---
+[2026-02-19 22:03:55] GPU 2 is free (memory usage: 102MB).
+--- [GPU 2] Starting Diversity Strategy ---
+[2026-02-19 22:03:55] GPU 3 is free (memory usage: 9MB).
+--- [GPU 3] Starting Hybrid Strategy ---
+--- [GPU 0] Starting Stratified Strategy ---
+--- [GPU 3] Starting Attribute Strategy ---
+--- [GPU 1] Starting Uncertainty-Stratified Strategy ---
+--- [GPU 2] Starting Hierarchical Strategy ---
+=== [GPU 0] Jobs finished ===
+=== [GPU 3] Jobs finished ===
+=== [GPU 1] Jobs finished ===
+=== [GPU 2] Jobs finished ===
