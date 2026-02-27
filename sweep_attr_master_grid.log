@@ -1,0 +1,9 @@
+[2026-02-27 07:14:17] Launching 4 independent GPU queues...
+[2026-02-27 07:14:17] GPU 0: Starting queue for ratio=0.1 (9 scenarios)
+[2026-02-27 07:14:17] GPU 3: Starting queue for ratio=0.9 (9 scenarios)
+[2026-02-27 07:14:17] GPU 1: Starting queue for ratio=0.3 (9 scenarios)
+[2026-02-27 07:14:17] GPU 2: Starting queue for ratio=0.5 (9 scenarios)
+[2026-02-27 07:14:17] GPU 0: baseline_def (R=0.01 P=5.0 C=inf E=False) -> logs_imagenet/sweep_attr_baseline_def_ratio0.1.log
+[2026-02-27 07:14:17] GPU 3: baseline_def (R=0.01 P=5.0 C=inf E=False) -> logs_imagenet/sweep_attr_baseline_def_ratio0.9.log
+[2026-02-27 07:14:17] GPU 2: baseline_def (R=0.01 P=5.0 C=inf E=False) -> logs_imagenet/sweep_attr_baseline_def_ratio0.5.log
+[2026-02-27 07:14:17] GPU 1: baseline_def (R=0.01 P=5.0 C=inf E=False) -> logs_imagenet/sweep_attr_baseline_def_ratio0.3.log

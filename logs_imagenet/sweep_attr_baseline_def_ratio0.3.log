@@ -1,0 +1,56 @@
+Current time: 0227071421
+Added 1000 generated images.
+
+Attribute distribution in selected samples:
+  [color] multicolored: 390 samples (12.5%)
+  [color] black: 354 samples (11.3%)
+  [color] white: 341 samples (10.9%)
+  [color] silver: 299 samples (9.6%)
+  [color] blue: 273 samples (8.8%)
+  [color] green: 223 samples (7.1%)
+  [color] red: 220 samples (7.1%)
+  [color] orange: 220 samples (7.1%)
+  [color] yellow: 153 samples (4.9%)
+  [color] gray: 143 samples (4.6%)
+  [color] pink: 140 samples (4.5%)
+  [color] brown: 134 samples (4.3%)
+  [color] tan: 88 samples (2.8%)
+  [color] purple: 80 samples (2.6%)
+  [color] maroon: 62 samples (2.0%)
+  [background] wall: 557 samples (17.9%)
+  [background] inside a house: 434 samples (13.9%)
+  [background] grass: 361 samples (11.6%)
+  [background] water: 355 samples (11.4%)
+  [background] snow: 282 samples (9.0%)
+  [background] buildings: 261 samples (8.4%)
+  [background] house: 192 samples (6.2%)
+  [background] sky: 172 samples (5.5%)
+  [background] trees: 140 samples (4.5%)
+  [background] rocks: 119 samples (3.8%)
+  [background] wild: 111 samples (3.6%)
+  [background] street: 96 samples (3.1%)
+  [background] bridge: 40 samples (1.3%)
+  [texture] glass: 779 samples (25.0%)
+  [texture] ceramic: 639 samples (20.5%)
+  [texture] plastic: 557 samples (17.9%)
+  [texture] wooden: 403 samples (12.9%)
+  [texture] metallic: 315 samples (10.1%)
+  [texture] leather: 216 samples (6.9%)
+  [texture] fabric: 211 samples (6.8%)
+
+[Active Learning subset (before adding generated images)] class distribution:
+  Class backpack: 312 samples (10.0%)
+  Class barber_chair: 312 samples (10.0%)
+  Class coffee_mug: 312 samples (10.0%)
+  Class desk: 312 samples (10.0%)
+  Class electric_guitar: 312 samples (10.0%)
+  Class park_bench: 312 samples (10.0%)
+  Class pitcher: 312 samples (10.0%)
+  Class purse: 312 samples (10.0%)
+  Class rocking_chair: 312 samples (10.0%)
+  Class water_bottle: 312 samples (10.0%)
+Added 1000 ImageNet pinkcolor_fabrictexture images using Active Learning (attribute): 3120 -> 4120
+Resumed model from save/models/model_imagenet_resnet_base.pth (best val acc: 0.7223076923076923)
+Epoch [1/15], Train Loss: 0.3994, Train Acc: 0.8782, Val Loss: 0.8926, Val Acc: 0.7215
+Epoch [2/15], Train Loss: 0.3704, Train Acc: 0.8864, Val Loss: 0.9032, Val Acc: 0.7123
+Epoch [3/15], Train Loss: 0.3554, Train Acc: 0.8879, Val Loss: 0.8953, Val Acc: 0.7215

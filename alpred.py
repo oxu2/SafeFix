@@ -91,8 +91,8 @@ parser.add_argument('--save_model', type=str2bool, default=False,
                     help='Save model checkpoint (.pth) to save/models/ after training (default: False)')
 parser.add_argument('--resume_model', type=str, default=None,
                     help='Path to a saved .pth checkpoint to resume/fine-tune from (default: None, train from scratch)')
-parser.add_argument('--freeze_backbone', type=str2bool, default=None,
-                    help='Freeze early backbone layers when fine-tuning from checkpoint (default: auto-True when --resume_model is set)')
+parser.add_argument('--freeze_backbone', type=str2bool, default=False,
+                    help='Freeze early backbone layers when fine-tuning from checkpoint (default: False)')
 parser.add_argument(
     '--save_pred_model',
     type=str,
@@ -177,18 +177,20 @@ parser.add_argument('--al_w_unc', type=float, default=0.4,
 # Attribute-driven strategy parameters
 parser.add_argument('--al_attribute_focus', type=str, default=None,
                     help='Comma-separated attribute keys to prioritize (defaults to all attributes in metadata)')
-parser.add_argument('--al_attribute_rarity_power', type=float, default=1.0,
-                    help='Exponent controlling emphasis on rare attribute values (default: 1.0)')
+parser.add_argument('--al_attribute_rarity_power', type=float, default=0.01,
+                    help='Exponent controlling emphasis on rare attribute values (default: 0.01)')
 parser.add_argument('--al_attribute_uncertainty_boost', type=float, default=1.0,
                     help='Score bonus for samples flagged as uncertain in attribute metadata (default: 1.0)')
+parser.add_argument('--al_attribute_use_entropy', type=str2bool, default=False,
+                    help='Attribute strategy: compute and use dynamic Information Entropy for the U term')
 parser.add_argument('--al_attribute_log_path', type=str, default=None,
                     help='Optional path to attribute diagnostics log for Rare Case accuracies')
-parser.add_argument('--al_attribute_log_acc_scale', type=float, default=1.0,
-                    help='Scaling factor applied to log-derived failure weights (default: 1.0)')
+parser.add_argument('--al_attribute_log_acc_scale', type=float, default=0.0,
+                    help='Scaling factor applied to log-derived failure weights (default: 0.0)')
 parser.add_argument('--al_attribute_extra_counts', type=str, default=None,
                     help='Extra counts per attribute value to reflect generated data (attr:value=count entries or JSON path)')
-parser.add_argument('--al_attribute_balance_strength', type=float, default=0.5,
-                    help='Penalty strength applied to over-represented attribute values (default: 0.5)')
+parser.add_argument('--al_attribute_frequency_penalty', type=float, default=5.0,
+                    help='Penalty strength applied to over-represented attribute values (default: 5.0)')
 parser.add_argument('--al_attribute_class_balance', type=str, default="inf",
                     help='Class-level stratified weight; pass "inf" to enforce hard per-class quotas (default: 0)')
 parser.add_argument('--al_alpha', type=float, default=0.4,
@@ -205,7 +207,7 @@ parser.add_argument('--al_min_slice_quota', type=int, default=5,
                     help='Minimum samples per slice in hierarchical AL (default: 5)')
 parser.add_argument('--al_max_slice_quota', type=int, default=100,
                     help='Maximum samples per slice in hierarchical AL (default: 100)')
-parser.add_argument('--al_conditional_rarity', type=str2bool, default=False,
+parser.add_argument('--al_conditional_rarity', type=str2bool, default=True,
                     help='Attribute strategy: use class-conditional rarity (P(val|class)) instead of global rarity')
 # Combined Active Learning arguments
 parser.add_argument('--al_combined', type=str2bool, default=False,
@@ -386,15 +388,14 @@ if args.dataset == 'imagenet' and args.model == 'vit' and args.pretrained:
             print(f"Specifically set learning rate for pretrained ViT on ImageNet to {args.lr}")
 
 if args.dataset == 'imagenet' and args.lr == 1e-4 and args.model == 'resnet':
-    # If resuming from checkpoint with frozen backbone, use much lower LR
-    if args.resume_model and args.freeze_backbone is not False:
+    # If resuming from checkpoint, use much lower LR
+    if args.resume_model:
         args.lr = 1e-5
         if verbose:
-            print(f"Using fine-tuning learning rate {args.lr} for resumed model with frozen backbone")
-    elif args.resume_model:
-        args.lr = 1e-4
-        if verbose:
-            print(f"Using fine-tuning learning rate {args.lr} for resumed model")
+            if args.freeze_backbone:
+                print(f"Using fine-tuning learning rate {args.lr} for resumed model with frozen backbone")
+            else:
+                print(f"Using fine-tuning learning rate {args.lr} for resumed model")
     else:
         args.lr = 1e-3
 
@@ -1349,13 +1350,10 @@ if args.resume_model:
     resumed_val_acc = ckpt.get('best_val_acc', 'N/A')
     print(f"Resumed model from {args.resume_model} (best val acc: {resumed_val_acc})")
 
-    # Auto-enable freeze_backbone if not explicitly set
-    if args.freeze_backbone is None:
-        args.freeze_backbone = True
+    # Backbone freezing controlled by --freeze_backbone
+    pass
 else:
     print(f"Using {args.model} model with {'pretrained' if args.pretrained else 'random'} weights")
-    if args.freeze_backbone is None:
-        args.freeze_backbone = False
 
 # Freeze early layers when fine-tuning to prevent catastrophic forgetting
 if args.freeze_backbone:

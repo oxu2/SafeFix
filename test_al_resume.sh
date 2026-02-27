@@ -95,7 +95,7 @@ COMMON_ARGS="--dataset imagenet --model resnet --num_added_img 1000 --attributes
 
 # Generate ratio string for filenames
 RATIO_STR="ratio${SUB_RATIO}"
-LOG_PREFIX="logs_imagenet/resume"
+LOG_PREFIX="logs_imagenet/resume_lr5_epoch15"
 
 # --- GPU 0: Random Baseline & Stratified ---
 (

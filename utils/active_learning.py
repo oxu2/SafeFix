@@ -602,9 +602,10 @@ class AttributeFocusedStrategy:
         value_weights=None,
         log_acc_scale=1.0,
         extra_counts=None,
-        balance_strength=0.0,
+        frequency_penalty=0.0,
         class_balance_weight=0.0,
         conditional_rarity=False,
+        use_entropy=False,
     ):
 
         """
@@ -620,7 +621,7 @@ class AttributeFocusedStrategy:
             log_acc_scale: Scaling factor applied to each log-based weight.
             extra_counts: Optional dict of additional counts per attribute value
                 used to augment observed frequencies (e.g., generated data).
-            balance_strength: Penalty multiplier for frequent attribute values.
+            frequency_penalty: Penalty multiplier for frequent attribute values.
             class_balance_weight: Non-negative weight controlling class-level
                 stratification (use float('inf') for strict round-robin quotas).
             conditional_rarity: If True, compute rarity relative to the class label
@@ -666,13 +667,14 @@ class AttributeFocusedStrategy:
             attr: {val: float(count) for val, count in value_map.items()}
             for attr, value_map in (extra_counts or {}).items()
         }
-        self.balance_strength = max(balance_strength, 0.0)
+        self.frequency_penalty = max(frequency_penalty, 0.0)
         try:
             parsed_balance = float(class_balance_weight)
         except (TypeError, ValueError):
             parsed_balance = 0.0
         self.class_balance_weight = parsed_balance if math.isinf(parsed_balance) else max(parsed_balance, 0.0)
         self.conditional_rarity = conditional_rarity
+        self.use_entropy = use_entropy
 
     def _log_attribute_distribution(self, metadata_indices, local_indices, label):
         if not local_indices:
@@ -978,7 +980,7 @@ class AttributeFocusedStrategy:
 
         return ordered[:n_select]
 
-    def select(self, dataset, n_select, random_seed=42, debug_attribute=None):
+    def select(self, dataset, n_select, random_seed=42, debug_attribute=None, model=None, unlabeled_dataloader=None, device=None):
         """
         Score each sample by attribute rarity and uncertainty, then pick the top ones.
 
@@ -997,15 +999,41 @@ class AttributeFocusedStrategy:
             raise RuntimeError("Metadata index mapping length mismatch with dataset")
 
         class_labels = None
-        class_labels = None
-        if self.class_balance_weight > 0 or self.conditional_rarity:
+        if self.conditional_rarity or self.class_balance_weight > 0:
             labels_candidate = self._resolve_class_labels(dataset)
             if labels_candidate and len(labels_candidate) == total_samples:
                 class_labels = labels_candidate
+        entropy_scores = None
+        if self.use_entropy:
+            if model is None or unlabeled_dataloader is None or device is None:
+                raise ValueError("model, unlabeled_dataloader, and device must be provided when use_entropy is True")
+            
+            model.eval()
+            entropy_list = []
+            
+            with torch.no_grad():
+                for batch in unlabeled_dataloader:
+                    inputs = batch[0] if isinstance(batch, (list, tuple)) else batch
+                    inputs = inputs.to(device)
+                    outputs = model(inputs)
+                    
+                    if outputs.dim() > 1 and outputs.shape[1] > 1:
+                        probs = torch.softmax(outputs, dim=1)
+                        entropy = -torch.sum(probs * torch.log(probs + 1e-8), dim=1)
+                    else:
+                        probs = torch.sigmoid(outputs.squeeze())
+                        confidence = torch.abs(probs - 0.5) * 2
+                        entropy = 1.0 - confidence
+                        
+                    entropy_list.extend(entropy.cpu().numpy())
+            
+            entropy_scores = np.array(entropy_list)
+            if len(entropy_scores) != total_samples:
+                print(f"Warning: Calculated {len(entropy_scores)} entropy scores but dataset has {total_samples} samples.")
 
         attribute_counts = self._compute_attribute_counts(metadata_indices)
         conditional_counts = None
-        if self.conditional_rarity and class_labels:
+        if self.conditional_rarity and class_labels is not None:
              conditional_counts = self._compute_conditional_attribute_counts(metadata_indices, class_labels)
 
         attribute_totals = {
@@ -1043,7 +1071,6 @@ class AttributeFocusedStrategy:
                 if meta_idx >= len(data):
                     continue
                 value = data[meta_idx]
-                value = data[meta_idx]
                 
                 if self.conditional_rarity and conditional_counts and class_labels[local_idx] is not None:
                     # Conditional Rarity: P(val | class)
@@ -1058,7 +1085,10 @@ class AttributeFocusedStrategy:
                     rarity = rarity ** self.rarity_power
                 sample_score += rarity
 
-                if meta_idx in attr_info["uncertain"]:
+                if self.use_entropy:
+                    if entropy_scores is not None and local_idx < len(entropy_scores):
+                        sample_score += self.uncertain_boost * entropy_scores[local_idx]
+                elif meta_idx in attr_info["uncertain"]:
                     sample_score += self.uncertain_boost
 
                 log_increment = 0.0
@@ -1068,20 +1098,20 @@ class AttributeFocusedStrategy:
                         log_increment = self.log_acc_scale * attr_weights.get(value, 0.0)
                         sample_score += log_increment
 
-                balance_component = 0.0
-                if self.balance_strength > 0:
+                penalty_component = 0.0
+                if self.frequency_penalty > 0:
                     total_count = attribute_totals.get(attr_name, 0.0)
                     if total_count > 0.0:
                         freq_ratio = frequency / total_count
-                        balance_component = -self.balance_strength * freq_ratio
-                        sample_score += balance_component
+                        penalty_component = -self.frequency_penalty * freq_ratio
+                        sample_score += penalty_component
 
                 if debug_attribute and attr_name == debug_attribute:
                     stats = per_attribute_breakdown[attr_name][value]
                     stats["frequency"] = frequency
                     stats["rarity"] = float(rarity)
                     stats["log"] = float(log_increment)
-                    stats["balance"] = float(balance_component)
+                    stats["penalty"] = float(penalty_component)
                     stats["indices"].append(meta_idx)
                     if meta_idx in attr_info["uncertain"]:
                         stats["uncertain_count"] += 1
@@ -1301,9 +1331,10 @@ def active_learning_selection(train_dataset, val_dataset, args, device, verbose=
         log_path = getattr(args, 'al_attribute_log_path', None)
         log_acc_scale = getattr(args, 'al_attribute_log_acc_scale', 1.0)
         extra_counts_raw = getattr(args, 'al_attribute_extra_counts', None)
-        balance_strength = getattr(args, 'al_attribute_balance_strength', 0.0)
+        frequency_penalty = getattr(args, 'al_attribute_frequency_penalty', 0.0)
         class_balance_raw = getattr(args, 'al_attribute_class_balance', 0.0)
         class_balance_weight = parse_float_with_infinity(class_balance_raw)
+        use_entropy = getattr(args, 'al_attribute_use_entropy', False)
 
         focus_attributes = None
         if isinstance(focus_raw, str) and focus_raw.strip():
@@ -1368,9 +1399,10 @@ def active_learning_selection(train_dataset, val_dataset, args, device, verbose=
                 value_weights=value_weights,
                 log_acc_scale=log_acc_scale,
                 extra_counts=extra_counts,
-                balance_strength=balance_strength,
+                frequency_penalty=frequency_penalty,
                 class_balance_weight=class_balance_weight,
                 conditional_rarity=getattr(args, 'al_conditional_rarity', False),
+                use_entropy=use_entropy,
             )
             debug_attr = None
             if verbose:
@@ -1383,11 +1415,30 @@ def active_learning_selection(train_dataset, val_dataset, args, device, verbose=
                             debug_attr = attr
                             break
 
+            model = None
+            train_loader = None
+            if use_entropy:
+                if verbose:
+                    print("Attribute strategy: Loading model and dataloader for dynamic entropy calculation...")
+                import torchvision.models as models
+                from torch.utils.data import DataLoader
+                if args.model == 'resnet':
+                    model = models.resnet18(pretrained=True).to(device)
+                else:
+                    model = models.resnet18(pretrained=True).to(device)
+                
+                al_batch_size = min(getattr(args, 'batch_size', 32), 32)
+                train_loader = DataLoader(train_dataset, batch_size=al_batch_size, shuffle=False,
+                                          num_workers=getattr(args, 'workers', 2), pin_memory=True)
+
             selected_indices = strategy.select(
                 train_dataset,
                 target_samples,
                 random_seed=args.seed,
                 debug_attribute=debug_attr,
+                model=model,
+                unlabeled_dataloader=train_loader,
+                device=device
             )
 
             if verbose:

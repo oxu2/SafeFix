@@ -30,3 +30,8 @@ imagenet*
 
 !exampleData/celebA/non_yellowhair_sademotion_indices.txt
 logs/control_yellowhair_brownskin.log
+.claude
+.trellis
+.cursor
+tasks
+AGENTS.md

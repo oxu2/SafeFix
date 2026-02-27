@@ -1,3 +1,28 @@
+# 2/27/2026 Update
+
+## Active Learning Resume-from-Base Comparison (lr=1e-5, 15 epochs)
+
+This table shows results from `test_al_resume.sh` with `freeze_backbone=False`, `lr=1e-5`, and `epoch=15`. All runs use `sub_ratio=0.3` and resume from `model_imagenet_resnet_base.pth` (base val acc: **0.7223**).
+
+| Strategy | Model Test ACC | Overall Val ACC Change | Status |
+| :--- | :--- | :--- | :--- |
+| Baseline | 0.7162 | 0.718077 | - |
+| Random | 0.7308 | 0.718077 → 0.720769 (+0.002692) | improved |
+| Stratified | 0.7365 | 0.718077 → 0.726154 (+0.008077) | improved |
+| Coreset | 0.7359 | 0.718077 → 0.719231 (+0.001154) | improved |
+| Diversity | 0.7362 | 0.718077 → 0.723846 (+0.005769) | improved |
+| Uncertainty Stratified | 0.7292 | 0.718077 → 0.719231 (+0.001154) | improved |
+| Hierarchical | 0.7346 | 0.718077 → 0.724615 (+0.006538) | improved |
+| `Attribute` | 0.7369 | 0.718077 → 0.722308 (+0.004231) | improved |
+
+
+### Observations:
+* **All strategies improved** over the baseline (0.718077) after fine-tuning with `lr=1e-5` for 15 epochs without backbone freezing.
+* **Best Test ACC**: `Hybrid` (0.7400).
+* **Best Val ACC improvement**: `Stratified` (+0.008077), benefiting from balanced class coverage during fine-tuning.
+* **Uncertainty Stratified** performed below expectation (0.7292 Test ACC), possibly due to using a generic pretrained proxy model (ResNet18 weights, not the actual resumed checkpoint) to compute entropy scores, leading to noisy uncertainty estimates.
+* **Attribute strategy** (with conditional rarity, R=0.01, B=5, class_balance=inf) achieved competitive performance (0.7369 Test ACC, +0.004231 val), demonstrating that metadata-driven selection can match geometry/diversity baselines when paired with proper fine-tuning LR.
+
 # 2/20/2026 Update
 ## Active Learning Resume-from-Base Comparison
 
@@ -88,34 +113,6 @@ When a model is trained from scratch using *only* the Top-K highest entropy samp
 
 
 
-# AttributeFocusedStrategy (Attribute-Driven Sampling)
-<!-- ```bash
-python alpred.py --al_strategy attribute --attribute_file save/attribute10.json \
-  --al_attribute_focus color,background --al_attribute_rarity_power 1.5 --al_attribute_uncertainty_boost 1.0
-```
-- **Principle**: Builds a score for every unlabeled sample by combining attribute rarity, metadata-level uncertainty, and optional diagnostic weights derived from logs.
-- **Use Cases**: Scenarios where human annotations describe attribute slices (color, background, hairstyle, etc.) and the model underperforms on specific combinations.
-- **Advantages**: Lightweight (no feature extraction), controllable focus on high-value slices, deterministic once metadata is fixed. -->
-
-Let $i$ index a candidate sample and $A$ denote the set of attributes contained in the metadata (e.g., $A = \{\text{color}, \text{background}\}$). For attribute $a \in A$, let $v_{i,a}$ be the attribute value of sample $i$, and $f_{a}(v)$ be the frequency of value $v$ among the current pool. The strategy computes three additive components:
-
-1. **Rarity term** (controlled by `--al_attribute_rarity_power`):
-  $$R_{i,a} = \left(\frac{1}{f_{a}(v_{i,a}) + \varepsilon}\right)^{\alpha}$$
-  where $\alpha \geq 0$ is the rarity power and $\varepsilon$ avoids division by zero. Higher $\alpha$ exaggerates the contrast between common and rare attributes.
-
-2. **Uncertainty bonus** :
-  $$U_{i,a} = \begin{cases}
-  \beta, & \text{if sample $i$ is marked uncertain for attribute $a$}\\
-  0, & \text{otherwise}
-  \end{cases}$$
-  with $\beta \geq 0$ set by `--al_attribute_uncertainty_boost`.
-
-3. **Log-derived weight**: diagnostic logs record rare cases along with their classification accuracy. The parser converts each entry into a failure weight $w_{a}(v) = 1 - \text{ACC}$. For attribute $a$ and value $v$, the contribution becomes
-  $$L_{i,a} = \gamma \cdot w_{a}(v_{i,a})$$
-  where $\gamma$ is the scaling factor. Lower accuracies therefore produce larger boosts, while missing entries default to zero.
-
-The total score for sample $i$ is the sum across all attributes:
-$$S_i = \sum_{a \in A} \big(R_{i,a} + U_{i,a} + L_{i,a}\big).$$
 
 ---
 
@@ -214,39 +211,35 @@ python alpred.py --al_strategy attribute --attribute_file save/attribute10.json 
 - **Use Cases**: Scenarios where human annotations describe attribute slices (color, background, hairstyle, etc.) and the model underperforms on specific combinations.
 - **Advantages**: Lightweight (no feature extraction), controllable focus on high-value slices, deterministic once metadata is fixed.
 
-Let $i$ index a candidate sample and $A$ denote the set of attributes contained in the metadata (e.g., $A = \{\text{color}, \text{background}\}$). For attribute $a \in A$, let $v_{i,a}$ be the attribute value of sample $i$, and $f_{a}(v)$ be the frequency of value $v$ among the current pool. The strategy computes four additive components:
+The total score $S_i$ for sample $i$ is the sum across all attributes $A$ of four components:
+$$S_i = \sum_{a \in A} \big( R_{i,a} + U_{i,a} + L_{i,a} + P_{i,a} \big)$$
 
-1. **Rarity term** (controlled by `--al_attribute_rarity_power`):
-  $$R_{i,a} = \left(\frac{1}{f_{a}(v_{i,a}) + \varepsilon}\right)^{\alpha}$$
-  where $\alpha \geq 0$ is the rarity power and $\varepsilon$ avoids division by zero. Higher $\alpha$ exaggerates the contrast between common and rare attributes.
-
-2. **Uncertainty bonus** (driven by the `uncertain_idx` list in the metadata):
-  $$U_{i,a} = \begin{cases}
-  \beta, & \text{if sample $i$ is marked uncertain for attribute $a$}\\
-  0, & \text{otherwise}
-  \end{cases}$$
-  with $\beta \geq 0$ set by `--al_attribute_uncertainty_boost`.
-
-3. **Log-derived weight** (optional, requires `--al_attribute_log_path` and `--al_attribute_log_acc_scale`): diagnostic logs record rare cases along with their classification accuracy. The parser converts each entry into a failure weight $w_{a}(v) = 1 - \text{ACC}$. For attribute $a$ and value $v$, the contribution becomes
-  $$L_{i,a} = \gamma \cdot w_{a}(v_{i,a})$$
-  where $\gamma$ is the scaling factor. Lower accuracies therefore produce larger boosts, while missing entries default to zero.
-
-4. **Balance penalty** (optional, requires `--al_attribute_extra_counts` and `--al_attribute_balance_strength`): when generated data injects thousands of samples with specific attribute values, pass those counts through `--al_attribute_extra_counts` (inline `attr:value=count` list or JSON file). Frequencies are augmented with the supplied counts, and the balance term subtracts
-  $$B_{i,a} = -\lambda \cdot \frac{f^{*}_{a}(v_{i,a})}{\sum_{v} f^{*}_{a}(v)}$$
-  where $\lambda$ is `--al_attribute_balance_strength` and $f^{*}$ denotes the augmented frequency. Larger augmented shares therefore receive a larger negative adjustment.
-
-The total score for sample $i$ is the sum across all attributes:
-  $$S_i = \sum_{a \in A} \big(R_{i,a} + U_{i,a} + L_{i,a} + B_{i,a}\big).$$
+Where:
+*   **$R_{i,a}$ (Class-Conditional Rarity)**: $\left( \frac{1}{f_{a}(v_{i,a} | y_i) + \varepsilon} \right)^{\alpha}$. Default $\alpha=0.01$. Measures how rare an attribute value is *within its predicted class*.
+*   **$U_{i,a}$ (Uncertainty)**: $\beta$ if marked uncertain in JSON, else $0$. If `--al_attribute_use_entropy True` is set, this is dynamically replaced by Information Entropy $\beta \cdot \big( -\sum P \log P \big)$ from model inference. Default $\beta=1.0$.
+*   **$L_{i,a}$ (Log Accuracy)**: $\gamma \cdot (1 - \text{ACC}_{a}(v_{i,a}))$. Default $\gamma=0.0$.
+*   **$P_{i,a}$ (Frequency Penalty)**: $-\lambda \cdot \text{FreqRatio}(v_{i,a})$. Default $\lambda=5.0$. This term continuously suppresses over-sampling from heavily flooded slices.
 
 Samples are sorted by $S_i$ (with a small injected noise term for tie breaking) and the top $n_{\text{select}}$ indices are returned. When a sample exhibits multiple rare or low-accuracy attributes, the contributions accumulate, ensuring multi-attribute failures are prioritized.
 
-Optionally, enable an additional **class stratification score** via `--al_attribute_class_balance`. After computing $S_i$, the selector performs a greedy re-ranking that rewards classes whose current selections fall below their per-class quota. When the flag is set to a finite value $w>0$, each class $c$ keeps a running count $n_c$ and target quota $t = n_{\text{select}} / N_{\text{classes}}$. The next candidate from class $c$ receives an additive bonus
-$$\Delta_{c} = w \times \frac{t - n_c}{t}$$
-which is added to its base score inside `_soft_class_selection` (see `utils/active_learning.py`). Classes under their quota get positive bonuses, while classes at or above the quota see the term shrink toward zero or become negative, letting pure attribute scores win. Candidates with unknown labels (e.g., synthetic-only entries) sit in a separate queue and are inserted only when their base score exceeds every class-adjusted option, so unlabeled data does not distort the balancing pass.
+**Understanding the Frequency Penalty ($P$) and Generated Images**
+While the formula for $P_{i,a}$ computes a simple frequency ratio, it perfectly neutralizes the bias introduced by injecting artificially generated data. Specifically, the ratio is calculated over the *combined* candidate pool:
+$$\text{FreqRatio}(v) = \frac{N_{\text{base}}(v) + N_{\text{gen}}(v)}{\sum_{v'} \big( N_{\text{base}}(v') + N_{\text{gen}}(v') \big)}$$
+Where $N_{\text{base}}$ represents the counts in the original unlabeled dataset, and $N_{\text{gen}}$ represents the newly injected synthetic bounding boxes (e.g., 1000 images focused purely on `color:pink` and `texture:fabric`). Because $N_{\text{gen}}$ concentrates an enormous mass into a few specific attribute values $(v)$, those specific values experience an artificially inflated $\text{FreqRatio}$. The $-\lambda \cdot \text{FreqRatio}$ penalty ensures that the active learning selector does not blindly exhaust its budget on the synthetic flood, forcing it to balance the newly injected data against naturally occurring hard cases.
+
+**The 2D Synergy: $R$ (Class-Conditional) vs. $P$ (Global)**
+At first glance, Rarity ($R$) rewarding low frequency and Penalty ($P$) penalizing high frequency seem contradictory. However, because $R$ evaluates *within a specific class* ($P(v|y)$) while $P$ evaluates *across the entire global pool* ($\text{FreqRatio}$), they form a powerful 2D filter:
+*   **High $R$ + Low $P$ (Class-rare, Global-rare)**: The most valuable "Hard Cases" (e.g., a "pink elephant"). They receive massive score boosts.
+*   **High $R$ + High $P$ (Class-rare, Global-common)**: Features that are generic globally but strange for this specific class. $R$ and $P$ partially offset, preventing the model from over-indexing on globally redundant background textures just because they appeared in a new class.
+*   **Low $R$ + High $P$ (Class-common, Global-common / Artificial Flooding)**: Boring redundant samples or the exact heavily-injected generated slices (e.g., 1000 synthetic `pink` dogs). The massive $P$ penalty sinks their total $S_i$ score, acting as an automatic spam filter to prevent them from exhausting the selection budget.
+
+Optionally, enable an additional **Class Stratification Score ($C$)** via `--al_attribute_class_balance`. After computing $S_i$, the selector performs a greedy re-ranking that rewards classes whose current selections fall below their per-class quota. When the flag is set to a finite value $w>0$, each class $c$ keeps a running count $n_c$ and target quota $t = n_{\text{select}} / N_{\text{classes}}$. The next candidate from class $c$ receives an additive bonus $C_{c}$:
+$$C_{c} = w \times \frac{t - n_c}{t}$$
+which is added to its base score $S_i$ inside `_soft_class_selection` (see `utils/active_learning.py`). Classes under their quota get positive bonuses, while classes at or above the quota see the term shrink toward zero or become negative, letting pure attribute scores win. Candidates with unknown labels (e.g., synthetic-only entries) sit in a separate queue and are inserted only when their base score exceeds every class-adjusted option, so unlabeled data does not distort the balancing pass.
 
 During iteration $k$ of `_soft_class_selection`, every labeled candidate $i$ from class $c = y_i$ uses the effective score
-$$\tilde{S}_i^{(k)} = S_i + w \times \frac{t - n_c^{(k)}}{t},$$
-where $n_c^{(k)}$ is the number of times class $c$ has already been chosen. The algorithm picks the candidate with the largest $\tilde{S}_i^{(k)}$ (breaking ties with the injected noise from the base ranking), appends it to the selection list, and then updates $n_c^{(k+1)} = n_c^{(k)} + 1$ for that class. If the highest raw-score unlabeled item $u$ satisfies $S_u > \max_i \tilde{S}_i^{(k)}$, the iteration chooses $u$ instead and leaves all class counts unchanged, where $S_u$ denotes the raw attribute score of the unlabeled candidate (no class bonus exists for unlabeled entries). That iteration simply appends $u$ to `selected`. The loop stops once either $|\text{selected}| = n_{\text{select}}$ or all class and unlabeled queues are empty; in the latter case `_finalize_balanced_selection` backfills the remaining slots from the global ranking. “All other class and unlabeled queues are empty” literally means every per-class list (and the unlabeled list) has been drained—no candidate remains to evaluate—so the loop has no further element to pull even if some deficits are still positive.
+$$\tilde{S}_i^{(k)} = S_i + C_{c}^{(k)}$$
+where $C_{c}^{(k)} = w \times \frac{t - n_c^{(k)}}{t}$, and $n_c^{(k)}$ is the number of times class $c$ has already been chosen. The algorithm picks the candidate with the largest $\tilde{S}_i^{(k)}$ (breaking ties with the injected noise from the base ranking), appends it to the selection list, and then updates $n_c^{(k+1)} = n_c^{(k)} + 1$ for that class. If the highest raw-score unlabeled item $u$ satisfies $S_u > \max_i \tilde{S}_i^{(k)}$, the iteration chooses $u$ instead and leaves all class counts unchanged, where $S_u$ denotes the raw attribute score of the unlabeled candidate (no class bonus exists for unlabeled entries). That iteration simply appends $u$ to `selected`. The loop stops once either $|\text{selected}| = n_{\text{select}}$ or all class and unlabeled queues are empty; in the latter case `_finalize_balanced_selection` backfills the remaining slots from the global ranking. “All other class and unlabeled queues are empty” literally means every per-class list (and the unlabeled list) has been drained—no candidate remains to evaluate—so the loop has no further element to pull even if some deficits are still positive.
 
 This deficit-based soft balancing is a contribution inspired by proportional-fair and deficit round-robin schedulers: we convert each class shortfall $(t - n_c)$ into a temporary additive bonus while preserving the metadata-driven ordering within every class, providing a controllable bridge between pure attribute scoring and hard stratification.
 The motivation was empirical: attribute scores alone over-pick head classes, yet strict round-robin ignores the large score spread across classes, so we needed a lightweight middle ground that can lean toward balance without throwing away the metadata signal—a criterion none of the standard AL heuristics offered out of the box.
@@ -262,7 +255,7 @@ This produces the same effect as traditional stratified sampling but preserves t
 
 **Example (ImageNet, `sub_ratio=0.3`, ten classes):** the quota is $t = 3{,}120 / 10 = 312$ samples per class. Running with `--al_attribute_class_balance 0` let the desk class drop to 133 samples (4.3 %) because it had few high attribute scores. Re-running the same configuration with `--al_attribute_class_balance 4` gave each desk candidate an early bonus of $4 \times (312-133)/312 \approx 2.29$, so they entered the greedy loop sooner. The final desk count rose to 273 samples (8.8 %), while large classes such as backpack and purse were nudged down toward the quota. Desk growth stopped at 273 because the global budget $n_{\text{select}} = 3{,}120$ was filled once the bonus had already reduced the biggest deficits; the algorithm cannot insert additional desk samples after the budget is exhausted even though $n_{\text{desk}} < t$. This illustrates how finite weights gently pull distributions toward balance without forcing perfect equality.
 
-**Weight tuning versus sub-ratio:** because $\Delta_c = w \times (t - n_c)/t$ scales with the quota $t = n_{\text{select}} / N_{\text{classes}}$, a fixed $w$ becomes weaker as the sub-sampling ratio grows. To preserve roughly the same maximum bonus seen at `sub_ratio = 0.3`, scale $w$ in proportion to $t$: $w_{\text{new}} \approx w_{0.3} \times (t_{\text{new}} / 312)$. For ImageNet’s ten classes this gives practical anchors:
+**Weight tuning versus sub-ratio:** because $C_c = w \times (t - n_c)/t$ scales with the quota $t = n_{\text{select}} / N_{\text{classes}}$, a fixed $w$ becomes weaker as the sub-sampling ratio grows. To preserve roughly the same maximum bonus seen at `sub_ratio = 0.3`, scale $w$ in proportion to $t$: $w_{\text{new}} \approx w_{0.3} \times (t_{\text{new}} / 312)$. For ImageNet’s ten classes this gives practical anchors:
 - `sub_ratio = 0.5` (quota $\approx 520$): use $w \approx 6$–7 instead of 4.
 - `sub_ratio = 0.7` (quota $\approx 728$): use $w \approx 9$–10.
 - `sub_ratio = 0.9` (quota $\approx 936$): use $w \approx 12$.
@@ -299,6 +292,7 @@ Because the method operates purely on metadata, it integrates cleanly with the r
 - `--al_attribute_focus`: Optional comma-separated attribute keys to prioritize (default: all keys in metadata)
 - `--al_attribute_rarity_power`: Emphasis on rare attribute values (>=0, higher = stronger focus on rare slices)
 - `--al_attribute_uncertainty_boost`: Score bonus for samples marked as uncertain in metadata (>=0)
+- `--al_attribute_use_entropy`: If True, computes Information Entropy from model inference and uses it for the $U$ term instead of static metadata flags (default: False)
 - `--al_attribute_log_path`: Optional path to diagnostic log providing Rare Case accuracies
 - `--al_attribute_log_acc_scale`: Scaling factor applied to each log-derived failure weight (default: 1.0)
 - `--al_attribute_extra_counts`: Inline list or JSON file describing additional counts to inject per attribute value (useful when synthetic data floods specific slices); inline entries without `=count` inherit `--num_added_img`, and when omitted entirely the code infers counts from `--attributes` tokens (value+attribute) using `--num_added_img`
@@ -396,23 +390,3 @@ python alpred.py --al_strategy uncertainty_stratified
     *   Select top $k_c$ samples.
 
 **Key Benefit**: Guarantees diversity across classes (like Stratified) whilst maximizing information gain (like Uncertainty).
-
-#### B. Class-Conditional Attribute Rarity (`conditional_rarity`)
-```bash
-python alpred.py --al_strategy attribute --al_conditional_rarity True
-```
-**Motivation**: Global rarity ($P(v)$) fails when an attribute is common globally but rare for a specific object (e.g., "Red" is common, but "Red Banana" is rare). We need to find *semantically* interesting outliers.
-
-**Algorithm** (Modification to `AttributeFocusedStrategy`):
-Instead of scoring based on global frequency $f_a(v)$, we score based on **class-conditional frequency** $f_a(v|y)$:
-$$S_{i} = \sum_{a \in Attributes} \left( \left( \frac{1}{f_a(v_{i,a} | y_i) + \epsilon} \right)^\alpha + L_{i,a} + B_{i,a} \right)$$
-
-1.  **Grouping**: Split the unlabeled pool and labeled metadata by class label $y$.
-2.  **Counting**: Inside each class group $c$, count attribute value frequencies $f_a(v|c)$.
-3.  **Scoring**: For a sample $i$ with predicted class $y_i$, use the frequencies of that class. A sample with value $v$ gets a high score only if $v$ is rare *within its specific class*.
-
-**Example**:
-*   *Global Rarity*: "White" is common -> Low score.
-*   *Conditional Rarity*: "White" is common for *Sheep*, but rare for *Crows*. A "White Crow" gets a massive score boost.
-
-**Key Benefit**: Discovers subtle, context-dependent anomalies that global statistics miss.

@@ -1,0 +1,30 @@
+[2026-02-27 06:06:24] Starting AL resume-from-base comparison sweep...
+Base model: save/models/model_imagenet_resnet_base.pth
+Sub ratio:  0.3
+Epochs:     15
+=== GPU 0: Random & Stratified (resume) ===
+=== GPU 1: Core-set & Uncertainty-Stratified (resume) ===
+=== GPU 2: Diversity & Hierarchical (resume) ===
+=== GPU 3: Hybrid & Attribute-Focused (resume) ===
+[2026-02-27 06:06:24] Checking GPU 0 for availability...
+[2026-02-27 06:06:24] Checking GPU 1 for availability...
+[2026-02-27 06:06:24] Checking GPU 2 for availability...
+[2026-02-27 06:06:24] All resume fine-tuning pipelines launched with sub_ratio=0.3.
+Log files: logs_imagenet/resume_lr5_epoch15_*_ratio0.3.log
+[2026-02-27 06:06:24] Checking GPU 3 for availability...
+[2026-02-27 06:06:24] GPU 3 is free (memory usage: 601MB).
+--- [GPU 3] Starting Hybrid Strategy (resume) ---
+[2026-02-27 06:06:24] GPU 1 is free (memory usage: 617MB).
+--- [GPU 1] Starting Core-set Strategy (resume) ---
+[2026-02-27 06:06:24] GPU 2 is free (memory usage: 710MB).
+--- [GPU 2] Starting Diversity Strategy (resume) ---
+[2026-02-27 06:06:24] GPU 0 is free (memory usage: 601MB).
+--- [GPU 0] Starting Random Baseline (resume) ---
+--- [GPU 0] Starting Stratified Strategy (resume) ---
+--- [GPU 3] Starting Attribute Strategy (resume) ---
+--- [GPU 2] Starting Hierarchical Strategy (resume) ---
+--- [GPU 1] Starting Uncertainty-Stratified Strategy (resume) ---
+=== [GPU 0] Jobs finished ===
+=== [GPU 3] Jobs finished ===
+=== [GPU 1] Jobs finished ===
+=== [GPU 2] Jobs finished ===

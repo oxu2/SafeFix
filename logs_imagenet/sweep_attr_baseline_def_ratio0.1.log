@@ -1,0 +1,65 @@
+Current time: 0227071421
+Added 1000 generated images.
+
+Attribute distribution in selected samples:
+  [color] silver: 136 samples (13.1%)
+  [color] white: 101 samples (9.7%)
+  [color] blue: 99 samples (9.5%)
+  [color] green: 94 samples (9.0%)
+  [color] red: 77 samples (7.4%)
+  [color] black: 77 samples (7.4%)
+  [color] multicolored: 76 samples (7.3%)
+  [color] orange: 73 samples (7.0%)
+  [color] yellow: 63 samples (6.1%)
+  [color] pink: 56 samples (5.4%)
+  [color] gray: 55 samples (5.3%)
+  [color] brown: 40 samples (3.8%)
+  [color] tan: 38 samples (3.7%)
+  [color] purple: 28 samples (2.7%)
+  [color] maroon: 27 samples (2.6%)
+  [background] grass: 151 samples (14.5%)
+  [background] snow: 118 samples (11.3%)
+  [background] buildings: 110 samples (10.6%)
+  [background] water: 105 samples (10.1%)
+  [background] wall: 105 samples (10.1%)
+  [background] house: 86 samples (8.3%)
+  [background] sky: 82 samples (7.9%)
+  [background] inside a house: 81 samples (7.8%)
+  [background] street: 49 samples (4.7%)
+  [background] rocks: 47 samples (4.5%)
+  [background] trees: 46 samples (4.4%)
+  [background] wild: 38 samples (3.7%)
+  [background] bridge: 22 samples (2.1%)
+  [texture] glass: 250 samples (24.0%)
+  [texture] ceramic: 209 samples (20.1%)
+  [texture] metallic: 173 samples (16.6%)
+  [texture] plastic: 172 samples (16.5%)
+  [texture] fabric: 91 samples (8.8%)
+  [texture] wooden: 74 samples (7.1%)
+  [texture] leather: 71 samples (6.8%)
+
+[Active Learning subset (before adding generated images)] class distribution:
+  Class backpack: 104 samples (10.0%)
+  Class barber_chair: 104 samples (10.0%)
+  Class coffee_mug: 104 samples (10.0%)
+  Class desk: 104 samples (10.0%)
+  Class electric_guitar: 104 samples (10.0%)
+  Class park_bench: 104 samples (10.0%)
+  Class pitcher: 104 samples (10.0%)
+  Class purse: 104 samples (10.0%)
+  Class rocking_chair: 104 samples (10.0%)
+  Class water_bottle: 104 samples (10.0%)
+Added 1000 ImageNet pinkcolor_fabrictexture images using Active Learning (attribute): 1040 -> 2040
+Resumed model from save/models/model_imagenet_resnet_base.pth (best val acc: 0.7223076923076923)
+Epoch [1/15], Train Loss: 0.4896, Train Acc: 0.8402, Val Loss: 0.9377, Val Acc: 0.7138
+Epoch [2/15], Train Loss: 0.4091, Train Acc: 0.8765, Val Loss: 0.9313, Val Acc: 0.7146
+Epoch [3/15], Train Loss: 0.4071, Train Acc: 0.8740, Val Loss: 0.9314, Val Acc: 0.7131
+Epoch [4/15], Train Loss: 0.3883, Train Acc: 0.8765, Val Loss: 0.9172, Val Acc: 0.7185
+Epoch [5/15], Train Loss: 0.3675, Train Acc: 0.8897, Val Loss: 0.9097, Val Acc: 0.7138
+Epoch [6/15], Train Loss: 0.3663, Train Acc: 0.8843, Val Loss: 0.9162, Val Acc: 0.7108
+Epoch [7/15], Train Loss: 0.3430, Train Acc: 0.8990, Val Loss: 0.9101, Val Acc: 0.7185
+Epoch [8/15], Train Loss: 0.3530, Train Acc: 0.8971, Val Loss: 0.9069, Val Acc: 0.7208
+Epoch [9/15], Train Loss: 0.3417, Train Acc: 0.8966, Val Loss: 0.9129, Val Acc: 0.7146
+Epoch [10/15], Train Loss: 0.3319, Train Acc: 0.9029, Val Loss: 0.9146, Val Acc: 0.7200
+Epoch [11/15], Train Loss: 0.3347, Train Acc: 0.9064, Val Loss: 0.9105, Val Acc: 0.7185
+Epoch [12/15], Train Loss: 0.3542, Train Acc: 0.8951, Val Loss: 0.9051, Val Acc: 0.7200
