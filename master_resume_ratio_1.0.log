@@ -1,0 +1,23 @@
+nohup: ignoring input
+[2026-03-02 14:59:30] Starting AL resume-from-base comparison sweep...
+Base model: save/models/model_imagenet_resnet_base.pth
+Sub ratio:  1.0
+Epochs:     15
+=== GPU 0: Random & Stratified (resume) ===
+=== GPU 1: Core-set & Uncertainty-Stratified (resume) ===
+=== GPU 2: Diversity & Hierarchical (resume) ===
+=== GPU 3: Hybrid & Attribute-Focused (resume) ===
+[2026-03-02 14:59:30] Checking GPU 0 for availability...
+[2026-03-02 14:59:30] Checking GPU 2 for availability...
+[2026-03-02 14:59:30] Checking GPU 1 for availability...
+[2026-03-02 14:59:30] All resume fine-tuning pipelines launched with sub_ratio=1.0.
+Log files: logs_imagenet/resume_lr5_epoch15_*_ratio1.0.log
+[2026-03-02 14:59:30] Checking GPU 3 for availability...
+[2026-03-02 14:59:30] GPU 3 is free (memory usage: 108MB).
+--- [GPU 3] Starting Hybrid Strategy (resume) ---
+[2026-03-02 14:59:30] GPU 2 is free (memory usage: 129MB).
+--- [GPU 2] Starting Diversity Strategy (resume) ---
+[2026-03-02 14:59:30] GPU 1 is free (memory usage: 80MB).
+--- [GPU 1] Starting Core-set Strategy (resume) ---
+[2026-03-02 14:59:30] GPU 0 is free (memory usage: 601MB).
+--- [GPU 0] Starting Random Baseline (resume) ---

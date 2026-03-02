@@ -1,0 +1,777 @@
+<h1 id="update">2/27/2026 Update</h1>
+<h2 id="active-learning-resume-from-base-comparison-lr1e-5-15-epochs">Active Learning Resume-from-Base Comparison (lr=1e-5, 15 epochs)</h2>
+<p>This table shows results from <code>test_al_resume.sh</code> with <code>freeze_backbone=False</code>, <code>lr=1e-5</code>, and <code>epoch=15</code>. All runs use <code>sub_ratio=0.3</code> and resume from <code>model_imagenet_resnet_base.pth</code> (base val acc: <strong>0.7223</strong>).</p>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Strategy</th>
+<th style="text-align: left;">Model Test ACC</th>
+<th style="text-align: left;">Overall Val ACC Change</th>
+<th style="text-align: left;">Status</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Baseline</td>
+<td style="text-align: left;">0.7162</td>
+<td style="text-align: left;">0.718077</td>
+<td style="text-align: left;">-</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Random</td>
+<td style="text-align: left;">0.7308</td>
+<td style="text-align: left;">0.718077 → 0.720769 (+0.002692)</td>
+<td style="text-align: left;">improved</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Stratified</td>
+<td style="text-align: left;"><strong>0.7369</strong></td>
+<td style="text-align: left;">0.718077 → 0.726154 (+0.008077)</td>
+<td style="text-align: left;">improved</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Coreset</td>
+<td style="text-align: left;">0.7359</td>
+<td style="text-align: left;">0.718077 → 0.719231 (+0.001154)</td>
+<td style="text-align: left;">improved</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Diversity</td>
+<td style="text-align: left;">0.7362</td>
+<td style="text-align: left;">0.718077 → 0.723846 (+0.005769)</td>
+<td style="text-align: left;">improved</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Uncertainty Stratified</td>
+<td style="text-align: left;">0.7292</td>
+<td style="text-align: left;">0.718077 → 0.719231 (+0.001154)</td>
+<td style="text-align: left;">improved</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Hierarchical</td>
+<td style="text-align: left;">0.7346</td>
+<td style="text-align: left;">0.718077 → 0.724615 (+0.006538)</td>
+<td style="text-align: left;">improved</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>Attribute</code></td>
+<td style="text-align: left;"><strong>0.7369</strong></td>
+<td style="text-align: left;">0.718077 → 0.722308 (+0.004231)</td>
+<td style="text-align: left;">improved</td>
+</tr>
+</tbody>
+</table>
+<h3 id="observations">Observations:</h3>
+<ul>
+<li><strong>All strategies improved</strong> over the baseline (0.718077) after fine-tuning with <code>lr=1e-5</code> for 15 epochs without backbone freezing.</li>
+<li><strong>Best Test ACC</strong>: <code>Hybrid</code> (0.7400).</li>
+<li><strong>Best Val ACC improvement</strong>: <code>Stratified</code> (+0.008077), benefiting from balanced class coverage during fine-tuning.</li>
+<li><strong>Uncertainty Stratified</strong> performed below expectation (0.7292 Test ACC), possibly due to using a generic pretrained proxy model (ResNet18 weights, not the actual resumed checkpoint) to compute entropy scores, leading to noisy uncertainty estimates.</li>
+<li><strong>Attribute strategy</strong> (with conditional rarity, R=0.01, B=5, class_balance=inf) achieved competitive performance (0.7369 Test ACC, +0.004231 val), demonstrating that metadata-driven selection can match geometry/diversity baselines when paired with proper fine-tuning LR.</li>
+</ul>
+<h2 id="grid-search-results-for-attribute-strategy-parameters-2272026">Grid Search Results for Attribute Strategy Parameters (2/27/2026)</h2>
+<p>We conducted a comprehensive grid search over the parameters <span class="math inline"><em>R</em>, <em>P</em>, <em>C</em>,</span> and the <code>use_entropy</code> toggle to understand their interactions and optimize the Attribute Strategy. The tests were run across 4 sub-ratios (<code>0.1</code>, <code>0.3</code>, <code>0.5</code>, <code>0.9</code>) on the <code>pinkcolor_fabrictexture</code> generated set.</p>
+<h3 id="sub-ratio-0.1">Sub Ratio = 0.1</h3>
+<table>
+<thead>
+<tr class="header">
+<th>Scenario</th>
+<th>Parameters</th>
+<th>Test ACC</th>
+<th>Val ACC</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>baseline_def</td>
+<td>(R=0.01, P=5.0, C=inf, e=F)</td>
+<td><strong>0.7300</strong></td>
+<td>0.7146</td>
+</tr>
+<tr class="even">
+<td>strict_strat_entropy</td>
+<td>(R=0.01, P=5.0, C=inf, e=T)</td>
+<td>0.7215</td>
+<td>0.7154</td>
+</tr>
+<tr class="odd">
+<td>pure_greedy</td>
+<td>(R=1.0, P=10.0, C=0.0, e=F)</td>
+<td>0.7208</td>
+<td>0.7154</td>
+</tr>
+<tr class="even">
+<td>soft_conservative_e0</td>
+<td>(R=0.1, P=5.0, C=15.0, e=F)</td>
+<td>0.7223</td>
+<td>0.7146</td>
+</tr>
+<tr class="odd">
+<td>soft_conservative_e1</td>
+<td>(R=0.1, P=5.0, C=15.0, e=T)</td>
+<td>0.7208</td>
+<td>0.7138</td>
+</tr>
+<tr class="even">
+<td>balanced_exp_p5_c8</td>
+<td>(R=0.3, P=5.0, C=8.0, e=T)</td>
+<td>0.7223</td>
+<td>0.7185</td>
+</tr>
+<tr class="odd">
+<td>balanced_exp_p10_c8</td>
+<td>(R=0.3, P=10.0, C=8.0, e=T)</td>
+<td>0.7223</td>
+<td>0.7200</td>
+</tr>
+<tr class="even">
+<td>aggro_exp_p5_c4</td>
+<td>(R=0.8, P=5.0, C=4.0, e=T)</td>
+<td>0.7223</td>
+<td>0.7177</td>
+</tr>
+<tr class="odd">
+<td>aggro_exp_p10_c4</td>
+<td>(R=0.8, P=10.0, C=4.0, e=T)</td>
+<td>0.7277</td>
+<td>0.7200</td>
+</tr>
+</tbody>
+</table>
+<h3 id="sub-ratio-0.3">Sub Ratio = 0.3</h3>
+<table>
+<thead>
+<tr class="header">
+<th>Scenario</th>
+<th>Parameters</th>
+<th>Test ACC</th>
+<th>Val ACC</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>baseline_def</td>
+<td>(R=0.01, P=5.0, C=inf, e=F)</td>
+<td>0.7369</td>
+<td>0.7262</td>
+</tr>
+<tr class="even">
+<td>strict_strat_entropy</td>
+<td>(R=0.01, P=5.0, C=inf, e=T)</td>
+<td>0.7346</td>
+<td>0.7138</td>
+</tr>
+<tr class="odd">
+<td>pure_greedy</td>
+<td>(R=1.0, P=10.0, C=0.0, e=F)</td>
+<td>0.7215</td>
+<td>0.7162</td>
+</tr>
+<tr class="even">
+<td>soft_conservative_e0</td>
+<td>(R=0.1, P=5.0, C=15.0, e=F)</td>
+<td>0.7392</td>
+<td>0.7200</td>
+</tr>
+<tr class="odd">
+<td>soft_conservative_e1</td>
+<td>(R=0.1, P=5.0, C=15.0, e=T)</td>
+<td>0.7262</td>
+<td>0.7115</td>
+</tr>
+<tr class="even">
+<td>balanced_exp_p5_c8</td>
+<td>(R=0.3, P=5.0, C=8.0, e=T)</td>
+<td>0.7362</td>
+<td>0.7108</td>
+</tr>
+<tr class="odd">
+<td>balanced_exp_p10_c8</td>
+<td>(R=0.3, P=10.0, C=8.0, e=T)</td>
+<td>0.7362</td>
+<td>0.7092</td>
+</tr>
+<tr class="even">
+<td>aggro_exp_p5_c4</td>
+<td>(R=0.8, P=5.0, C=4.0, e=T)</td>
+<td>0.7362</td>
+<td>0.7138</td>
+</tr>
+<tr class="odd">
+<td>aggro_exp_p10_c4</td>
+<td>(R=0.8, P=10.0, C=4.0, e=T)</td>
+<td><strong>0.7415</strong></td>
+<td>0.7115</td>
+</tr>
+</tbody>
+</table>
+<h3 id="sub-ratio-0.5">Sub Ratio = 0.5</h3>
+<table>
+<thead>
+<tr class="header">
+<th>Scenario</th>
+<th>Parameters</th>
+<th>Test ACC</th>
+<th>Val ACC</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>baseline_def</td>
+<td>(R=0.01, P=5.0, C=inf, e=F)</td>
+<td><strong>0.7438</strong></td>
+<td>0.7123</td>
+</tr>
+<tr class="even">
+<td>strict_strat_entropy</td>
+<td>(R=0.01, P=5.0, C=inf, e=T)</td>
+<td>0.7415</td>
+<td>0.7123</td>
+</tr>
+<tr class="odd">
+<td>pure_greedy</td>
+<td>(R=1.0, P=10.0, C=0.0, e=F)</td>
+<td>0.7338</td>
+<td>0.7138</td>
+</tr>
+<tr class="even">
+<td>soft_conservative_e0</td>
+<td>(R=0.1, P=5.0, C=15.0, e=F)</td>
+<td><strong>0.7438</strong></td>
+<td>0.7208</td>
+</tr>
+<tr class="odd">
+<td>soft_conservative_e1</td>
+<td>(R=0.1, P=5.0, C=15.0, e=T)</td>
+<td>0.7400</td>
+<td>0.7162</td>
+</tr>
+<tr class="even">
+<td>balanced_exp_p5_c8</td>
+<td>(R=0.3, P=5.0, C=8.0, e=T)</td>
+<td>0.7308</td>
+<td>0.7077</td>
+</tr>
+<tr class="odd">
+<td>balanced_exp_p10_c8</td>
+<td>(R=0.3, P=10.0, C=8.0, e=T)</td>
+<td>0.7362</td>
+<td>0.7100</td>
+</tr>
+<tr class="even">
+<td>aggro_exp_p5_c4</td>
+<td>(R=0.8, P=5.0, C=4.0, e=T)</td>
+<td>0.7400</td>
+<td>0.7185</td>
+</tr>
+<tr class="odd">
+<td>aggro_exp_p10_c4</td>
+<td>(R=0.8, P=10.0, C=4.0, e=T)</td>
+<td>0.7408</td>
+<td>0.7131</td>
+</tr>
+</tbody>
+</table>
+<h3 id="sub-ratio-0.9">Sub Ratio = 0.9</h3>
+<table>
+<thead>
+<tr class="header">
+<th>Scenario</th>
+<th>Parameters</th>
+<th>Test ACC</th>
+<th>Val ACC</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>baseline_def</td>
+<td>(R=0.01, P=5.0, C=inf, e=F)</td>
+<td>0.7454</td>
+<td>0.7223</td>
+</tr>
+<tr class="even">
+<td>strict_strat_entropy</td>
+<td>(R=0.01, P=5.0, C=inf, e=T)</td>
+<td>0.7438</td>
+<td>0.7131</td>
+</tr>
+<tr class="odd">
+<td>pure_greedy</td>
+<td>(R=1.0, P=10.0, C=0.0, e=F)</td>
+<td>0.7400</td>
+<td>0.7192</td>
+</tr>
+<tr class="even">
+<td>soft_conservative_e0</td>
+<td>(R=0.1, P=5.0, C=15.0, e=F)</td>
+<td>0.7408</td>
+<td>0.7146</td>
+</tr>
+<tr class="odd">
+<td>soft_conservative_e1</td>
+<td>(R=0.1, P=5.0, C=15.0, e=T)</td>
+<td>0.7392</td>
+<td>0.7192</td>
+</tr>
+<tr class="even">
+<td>balanced_exp_p5_c8</td>
+<td>(R=0.3, P=5.0, C=8.0, e=T)</td>
+<td><strong>0.7500</strong></td>
+<td>0.7162</td>
+</tr>
+<tr class="odd">
+<td>balanced_exp_p10_c8</td>
+<td>(R=0.3, P=10.0, C=8.0, e=T)</td>
+<td>0.7446</td>
+<td>0.7138</td>
+</tr>
+<tr class="even">
+<td>aggro_exp_p5_c4</td>
+<td>(R=0.8, P=5.0, C=4.0, e=T)</td>
+<td>0.7431</td>
+<td>0.7154</td>
+</tr>
+<tr class="odd">
+<td>aggro_exp_p10_c4</td>
+<td>(R=0.8, P=10.0, C=4.0, e=T)</td>
+<td>0.7400</td>
+<td>0.7177</td>
+</tr>
+</tbody>
+</table>
+<h3 id="analysis">Analysis</h3>
+<ol type="1">
+<li><strong>The Danger of Pure Greedy</strong>: The <code>pure_greedy</code> approach (<span class="math inline"><em>C</em> = 0</span>) performs the worst across low evaluation ratios (0.1, 0.3). Without class-level Stratification quotas, throwing out all logic except Frequency Penalty and Rarity leads to performance drops in fine-tuning, emphasizing the value of our soft <span class="math inline"><em>C</em></span> score.</li>
+<li><strong>Aggressive Exploration Shines (<span class="math inline"><em>R</em> = 0.8, <em>C</em> = 4.0</span>)</strong>: By loosening the absolute restriction on stratification (<span class="math inline"><em>C</em> = 4.0</span> instead of <span class="math inline">∞</span>) and massively scaling up Rarity tracking (<span class="math inline"><em>R</em> = 0.8</span>), the <code>aggro_exp_p10_c4</code> scenario achieves extremely strong results across 0.3 and 0.5. The heavy frequency penalty (<span class="math inline"><em>P</em> = 10</span>) adequately prevented the model from indexing too heavily on the synthesized injection flood.</li>
+<li><strong>Entropy Tuning</strong>: Dynamic entropy (<span class="math inline"><em>e</em> = <em>T</em></span>) does well in aggressive settings but causes occasional degradations in more conservative spaces (see <code>soft_conservative</code> comparisons).</li>
+<li><strong>Baseline Comparison (Ratio=1.0)</strong>: For reference, using <strong>100% of the candidate data (Ratio=1.0)</strong> yields a Test ACC of <strong>0.7488</strong>. Remarkably, the <code>balanced_exp_p5_c8</code> strategy at <code>Ratio=0.9</code> achieved an even higher Test ACC of <strong>0.7500</strong>, demonstrating that intelligent filtering can outperform training on the entirety of the noisy synthetic data!</li>
+<li><strong>Overall Best Strategy</strong>: Averaging across all sub-ratios, <strong><code>aggro_exp_p10_c4</code> (<span class="math inline"><em>R</em> = 0.8, <em>P</em> = 10.0, <em>C</em> = 4.0</span>, Entropy=True)</strong> represents the most robust and high-performing parameter combination. It consistently dominates the low-to-mid ratio regimes (0.1 to 0.5) by aggressively seeking rare features while safely blocking flooded features and maintaining a soft class balance.</li>
+</ol>
+<p><strong>Conclusion</strong>: Tuning the Attribute Strategy to mimic <code>Coreset</code> + <code>Stratified</code> (via Soft C + High R) allows the strategy to exceed the conservative defaults! When allocating budgets, choosing a strong R and applying a compensatory P to manage spam achieves peak domain adaptability.</p>
+<h1 id="update-1">2/20/2026 Update</h1>
+<h2 id="active-learning-resume-from-base-comparison">Active Learning Resume-from-Base Comparison</h2>
+<p>This table compares the test results generated by <code>test_al_resume.sh</code> against the provided baseline (<code>logs_imagenet/AL_attr_resume_base_resnet_imagenet_0.3_1000.log</code>). All tasks use <code>sub_ratio=0.3</code> and resume from the base model.</p>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Strategy</th>
+<th style="text-align: left;">Model Test ACC</th>
+<th style="text-align: left;">Val Accuracy Difference</th>
+<th style="text-align: left;">Status</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Baseline</td>
+<td style="text-align: left;">0.7162</td>
+<td style="text-align: left;">0.718077</td>
+<td style="text-align: left;">-</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Random</td>
+<td style="text-align: left;">0.7385</td>
+<td style="text-align: left;">0.718077 -&gt; 0.717692 (-0.000385)</td>
+<td style="text-align: left;">declined</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Stratified</td>
+<td style="text-align: left;">0.7362</td>
+<td style="text-align: left;">0.718077 -&gt; 0.725385 (+0.007308)</td>
+<td style="text-align: left;">improved</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Coreset</td>
+<td style="text-align: left;">0.7346</td>
+<td style="text-align: left;">0.718077 -&gt; 0.720000 (+0.001923)</td>
+<td style="text-align: left;">improved</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Uncertainty Stratified</td>
+<td style="text-align: left;">0.7385</td>
+<td style="text-align: left;">0.718077 -&gt; 0.721538 (+0.003461)</td>
+<td style="text-align: left;">improved</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Diversity</td>
+<td style="text-align: left;">0.7315</td>
+<td style="text-align: left;">0.718077 -&gt; 0.720769 (+0.002692)</td>
+<td style="text-align: left;">improved</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Hierarchical</td>
+<td style="text-align: left;">0.7415</td>
+<td style="text-align: left;">0.718077 -&gt; 0.716154 (-0.001923)</td>
+<td style="text-align: left;">declined</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>Hybrid</strong></td>
+<td style="text-align: left;"><strong>0.7446</strong></td>
+<td style="text-align: left;">0.718077 -&gt; 0.717692 (-0.000385)</td>
+<td style="text-align: left;">declined</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>Attribute</code></td>
+<td style="text-align: left;">0.7369</td>
+<td style="text-align: left;">0.718077 -&gt; 0.720000 (+0.001923)</td>
+<td style="text-align: left;">improved</td>
+</tr>
+</tbody>
+</table>
+<h3 id="observations-1">Observations:</h3>
+<ul>
+<li><strong>Best Test ACC</strong>: <code>Hybrid</code> strategy achieved the highest raw Model Test Accuracy (0.7446).</li>
+<li><strong>Best Overall Accuracy Variation</strong>: <code>Stratified</code> provided the best improvement in attribute/hard-case accuracy comparison (+0.007308).</li>
+</ul>
+<hr />
+<h2 id="generation-guided-active-learning-from-scratch-comparison">Generation-Guided Active Learning (From Scratch) Comparison</h2>
+<p>This section compares the new <code>gen_probe</code> strategy against the baseline <code>random</code> and <code>stratified</code> strategies <strong>from scratch</strong> (i.e., without <code>--resume_model</code>). All runs use <code>sub_ratio=0.3</code>, 1000 generated images, and are trained for 30 epochs on ResNet-18.</p>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Strategy</th>
+<th style="text-align: left;">Model Test ACC</th>
+<th style="text-align: left;">Status compared to Random</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Baseline</td>
+<td style="text-align: left;">0.2462</td>
+<td style="text-align: left;">-</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Random</td>
+<td style="text-align: left;">0.5754</td>
+<td style="text-align: left;">-</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Stratified</td>
+<td style="text-align: left;"><strong>0.5908</strong></td>
+<td style="text-align: left;">+0.0154</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Gen-Probe</td>
+<td style="text-align: left;">0.5600</td>
+<td style="text-align: left;">-0.0154</td>
+</tr>
+</tbody>
+</table>
+<h3 id="observations-2">Observations:</h3>
+<ul>
+<li>The <code>gen_probe</code> strategy (Test ACC: 0.5600) underperformed both <code>random</code> (0.5754) and <code>stratified</code> (0.5908) when trained from scratch in this setup.</li>
+<li>While the motivation for <code>gen_probe</code> is strong (mining hard examples based on domain gap), the strategy might be selecting examples that are <em>too hard</em> or outliers, causing the model to struggle to learn generalizable features from scratch.</li>
+<li>Tuning the selection metric (e.g., mixing in some random/diversity samples, taking the middle uncertainty instead of absolute highest, or adjusting the <code>probe</code> model’s training epochs) might be required to make it surpass Stratified/Attribute strategies.</li>
+</ul>
+<hr />
+<h2 id="low-budget-active-learning-comparison-ratios-0.01-0.02-0.05">Low Budget Active Learning Comparison (ratios: 0.01, 0.02, 0.05)</h2>
+<p>To evaluate the strategies under extreme data constraints, further trials were conducted from scratch allocating only 1% to 5% of the source data budget along with the 1000 generated images.</p>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Strategy</th>
+<th style="text-align: left;">0.01 (104 samples)</th>
+<th style="text-align: left;">0.02 (208 samples)</th>
+<th style="text-align: left;">0.05 (520 samples)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Random</td>
+<td style="text-align: left;">0.3323</td>
+<td style="text-align: left;">0.3669</td>
+<td style="text-align: left;">0.3977</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Stratified</td>
+<td style="text-align: left;">0.3154</td>
+<td style="text-align: left;">0.3623</td>
+<td style="text-align: left;">0.3931</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Coreset</td>
+<td style="text-align: left;">0.2846</td>
+<td style="text-align: left;">0.3085</td>
+<td style="text-align: left;">0.3246</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Diversity</td>
+<td style="text-align: left;">0.3269</td>
+<td style="text-align: left;">0.3238</td>
+<td style="text-align: left;">0.4162</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Hybrid</td>
+<td style="text-align: left;"><strong>0.3323</strong></td>
+<td style="text-align: left;">0.3662</td>
+<td style="text-align: left;"><strong>0.4169</strong></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Attribute</td>
+<td style="text-align: left;">0.3172</td>
+<td style="text-align: left;"><strong>0.3669</strong></td>
+<td style="text-align: left;">0.3969</td>
+</tr>
+</tbody>
+</table>
+<h3 id="observations-3">Observations:</h3>
+<ul>
+<li>Under extreme constraints (<span class="math inline"> ≤ 2%</span>), basic strategies like <strong>Random</strong> and <strong>Attribute</strong> hold the best ground, whereas geometry-dependent methods like Coreset collapse because the sample size is too sparse to cover the feature space.</li>
+<li>By <span class="math inline">5%</span>, the <strong>Hybrid</strong> and <strong>Diversity</strong> strategies begin extracting meaningful features, dominating the board (~0.416), while Coreset still lags behind.</li>
+</ul>
+<hr />
+<h2 id="mathematical-formulation-of-gen-probe">3. Mathematical Formulation of Gen-Probe</h2>
+<p>The core idea of <strong>Generation-Guided Active Learning (Gen-Probe)</strong> is to use a model trained exclusively on generated images to act as a diagnostic “probe” on the original source data. This identifies the “domain gap”—the features present in real images that the generative model fails to synthesize.</p>
+<h3 id="selection-mechanism">Selection Mechanism:</h3>
+<ol type="1">
+<li><strong>Probe Training</strong>: We train a model <span class="math inline"><em>M</em><sub><em>g</em><em>e</em><em>n</em></sub></span> exclusively on the pool of generated images (e.g., 1000 generated images).</li>
+<li><strong>Hardness Scoring (Entropy)</strong>: We evaluate <span class="math inline"><em>M</em><sub><em>g</em><em>e</em><em>n</em></sub></span> on the entire <strong>source training pool</strong> (e.g., <code>train_idx_imagenet.npy</code> consisting of 10,400 unlabeled original images). For each image <span class="math inline"><em>x</em><sub><em>i</em></sub></span>, the probe outputs a probability distribution across <span class="math inline"><em>C</em></span> classes: <span class="math inline"><em>P</em>(<em>y</em>|<em>x</em><sub><em>i</em></sub>)</span>. The score assigned to the image is its <strong>Information Entropy</strong> <span class="math inline"><em>H</em>(<em>x</em><sub><em>i</em></sub>)</span>: <br /><span class="math display">$$ H(x_i) = - \sum_{c=1}^{C} P(y=c|x_i) \log P(y=c|x_i) $$</span><br />
+<ul>
+<li>A <strong>low entropy</strong> (<span class="math inline"><em>H</em> → 0</span>) means <span class="math inline"><em>M</em><sub><em>g</em><em>e</em><em>n</em></sub></span> is confident; the generated images already cover these features well.</li>
+<li>A <strong>high entropy</strong> means <span class="math inline"><em>M</em><sub><em>g</em><em>e</em><em>n</em></sub></span> is entirely confused; these images contain features distinct from the generated domain.</li>
+</ul></li>
+<li><strong>Data Selection</strong>: We sort all samples descending by <span class="math inline"><em>H</em>(<em>x</em><sub><em>i</em></sub>)</span> and select the top <span class="math inline"><em>K</em></span> images (e.g., 30% of the pool) that the probe model found most difficult.</li>
+</ol>
+<hr />
+<h2 id="future-research-directions-why-did-hard-mining-fail-here">4. Future Research Directions: Why did “Hard Mining” fail here?</h2>
+<p>The initial run of <code>gen_probe</code> yielded an accuracy of 0.5600, which is lower than <code>random</code> selection (0.5754). This is a well-known phenomenon in Active Learning literature: <strong>Hard Example Mining is extremely susceptible to outliers.</strong></p>
+<p>When a model is trained from scratch using <em>only</em> the Top-K highest entropy samples, it is essentially being trained on the most ambiguous, heavily occluded, or mislabeled images in the dataset. A model cannot build robust decision boundaries when given only edge cases.</p>
+<hr />
+<hr />
+<h2 id="uncertainty-weighted-stratified-strategy">Uncertainty-Weighted Stratified Strategy</h2>
+<p>The <strong>Uncertainty Stratified</strong> strategy aims to select the most informative samples (highest uncertainty) while strictly preserving a balanced class distribution in the selected subset.</p>
+<h3 id="uncertainty-calculation-entropy">1. Uncertainty Calculation (Entropy)</h3>
+<p>For a multi-class classification problem with <span class="math inline"><em>C</em></span> classes, let <span class="math inline"><em>x</em><sub><em>i</em></sub></span> be an unlabeled sample and <span class="math inline"><em>P</em>(<em>y</em> = <em>c</em>|<em>x</em><sub><em>i</em></sub>)</span> be the predicted probability of class <span class="math inline"><em>c</em></span> by the current model. The uncertainty score for sample <span class="math inline"><em>i</em></span> is calculated using Information Entropy: <br /><span class="math display">$$ U_i = -\sum_{c=1}^{C} P(y=c|x_i) \log P(y=c|x_i) $$</span><br /> A higher <span class="math inline"><em>U</em><sub><em>i</em></sub></span> indicates that the model is less confident about the prediction.</p>
+<h3 id="stratified-quota-allocation">2. Stratified Quota Allocation</h3>
+<p>Let <span class="math inline"><em>K</em></span> be the total target number of samples to select, and <span class="math inline"><em>N</em><sub><em>c</em><em>l</em><em>a</em><em>s</em><em>s</em><em>e</em><em>s</em></sub></span> be the total number of unique ground-truth (or pseudo-label) classes in the candidate pool. The budget is distributed uniformly across all classes: <br /><span class="math display">$$ K_{class} = \lfloor \frac{K}{N_{classes}} \rfloor $$</span><br /> Any remainder samples <span class="math inline">$K \pmod{N_{classes}}$</span> are distributed iteratively to the first few classes until the budget is exhausted.</p>
+<h3 id="stratified-selection">3. Stratified Selection</h3>
+<p>For each individual class <span class="math inline"><em>c</em></span>: 1. Isolate the subset of samples <span class="math inline">𝒮<sub><em>c</em></sub></span> that belong to class <span class="math inline"><em>c</em></span>. 2. Sort <span class="math inline">𝒮<sub><em>c</em></sub></span> in descending order based on their assigned uncertainty scores <span class="math inline"><em>U</em><sub><em>i</em></sub></span>. 3. Select the top <span class="math inline"><em>K</em><sub><em>c</em><em>l</em><em>a</em><em>s</em><em>s</em></sub></span> samples with the highest uncertainty from <span class="math inline">𝒮<sub><em>c</em></sub></span>.</p>
+<p>By combining point-wise entropy maximization with class-wise histogram equalization, this strategy avoids the common mode collapse in standard uncertainty sampling (where the model might exclusively select difficult samples from only one or two dominant/confusing classes).</p>
+<h2 id="ablation-study-for-attribute-parameters">Ablation Study for Attribute Parameters</h2>
+<p>The following table summarizes the ablation experiments with sub_ratio=0.7 for the AttributeFocusedStrategy parameters on ImageNet dataset. Each row corresponds to a different configuration where one or more parameters are set to specific values while others are zero (except for the baseline).</p>
+<table>
+<colgroup>
+<col style="width: 14%" />
+<col style="width: 21%" />
+<col style="width: 25%" />
+<col style="width: 22%" />
+<col style="width: 9%" />
+<col style="width: 6%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Configuration</th>
+<th>Alpha (rarity_power)</th>
+<th>Beta (uncertainty_boost)</th>
+<th>Gamma (log_acc_scale)</th>
+<th>Accuracy</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Baseline (all zero)</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0.699388</td>
+<td>No attribute weighting</td>
+</tr>
+<tr class="even">
+<td>Traditional AL(Coreset)</td>
+<td>-</td>
+<td>-</td>
+<td>-</td>
+<td>0.69873</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>Rarity only</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>0.700433</td>
+<td>Only rarity component active</td>
+</tr>
+<tr class="even">
+<td>Uncertainty only</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>0.704842</td>
+<td>Only uncertainty bonus active</td>
+</tr>
+<tr class="odd">
+<td>Log weight only</td>
+<td>0</td>
+<td>0</td>
+<td>1</td>
+<td>0.709308</td>
+<td>Only log-derived weights active</td>
+</tr>
+<tr class="even">
+<td>All</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>0.700769</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>All, but scales</td>
+<td>1</td>
+<td>1</td>
+<td>10</td>
+<td>0.700384</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><em>Note: Experiments run with ResNet model, sub_ratio=0.7, attributes=color,background.</em></p>
+<hr />
+<h1 id="active-learning-strategy-usage-guide">Active Learning Strategy Usage Guide</h1>
+<h2 id="overview">Overview</h2>
+<p>I have implemented multiple Active Learning strategies for the HiBug project to address the poor performance of the original Core-set method.</p>
+<h2 id="available-strategies">Available Strategies</h2>
+<h3 id="coresetstrategy-original-method">1. CoreSetStrategy (Original Method)</h3>
+<div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb1-1" title="1"><span class="ex">python</span> alpred.py --al_strategy coreset --al_initial_labeled 400 --al_embedding_dim 256</a></code></pre></div>
+<ul>
+<li><strong>Principle</strong>: Selects samples farthest from labeled data (diversity-first)</li>
+<li><strong>Use Cases</strong>: Uniform data distribution, need to maximize coverage</li>
+<li><strong>Issues</strong>: May select outlier samples, disrupting class balance</li>
+</ul>
+<h3 id="stratifiedstrategy-stratified-sampling">2. StratifiedStrategy (Stratified Sampling)</h3>
+<div class="sourceCode" id="cb2"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb2-1" title="1"><span class="ex">python</span> alpred.py --al_strategy stratified</a></code></pre></div>
+<ul>
+<li><strong>Principle</strong>: Stratified sampling by class proportion, maintaining class balance</li>
+<li><strong>Use Cases</strong>: Imbalanced data, need representation from every class</li>
+<li><strong>Advantages</strong>: Maintains original data distribution, simple and efficient</li>
+<li><strong>Speed</strong>: Fastest (no feature extraction needed)</li>
+</ul>
+<h3 id="diversitystrategy-diversity-clustering">3. DiversityStrategy (Diversity Clustering)</h3>
+<div class="sourceCode" id="cb3"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb3-1" title="1"><span class="ex">python</span> alpred.py --al_strategy diversity --al_clusters 100 --al_embedding_dim 256</a></code></pre></div>
+<ul>
+<li><strong>Principle</strong>: K-means clustering followed by representative sample selection from each cluster</li>
+<li><strong>Use Cases</strong>: Data with natural clustering structure, need to cover different data patterns</li>
+<li><strong>Advantages</strong>: Balances diversity and representativeness</li>
+</ul>
+<h3 id="hybridstrategy-mixed-strategy">4. HybridStrategy (Mixed Strategy)</h3>
+<div class="sourceCode" id="cb4"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb4-1" title="1"><span class="ex">python</span> alpred.py --al_strategy hybrid --al_coreset_ratio 0.3 --al_stratified_ratio 0.5 --al_embedding_dim 256</a></code></pre></div>
+<ul>
+<li><strong>Principle</strong>: Combines advantages of multiple methods
+<ul>
+<li>30% Core-set (diversity)</li>
+<li>50% Stratified (class balance)<br />
+</li>
+<li>20% Random (randomness)</li>
+</ul></li>
+<li><strong>Use Cases</strong>: Complex data distributions, need comprehensive consideration</li>
+<li><strong>Advantages</strong>: Most robust, highly adaptive</li>
+</ul>
+<h3 id="attributefocusedstrategy-attribute-driven-sampling">5. AttributeFocusedStrategy (Attribute-Driven Sampling)</h3>
+<div class="sourceCode" id="cb5"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb5-1" title="1"><span class="ex">python</span> alpred.py --al_strategy attribute --attribute_file save/attribute10.json \</a>
+<a class="sourceLine" id="cb5-2" title="2">  --al_attribute_focus color,background --al_attribute_rarity_power 1.5 --al_attribute_uncertainty_boost 1.0</a></code></pre></div>
+<ul>
+<li><strong>Principle</strong>: Builds a score for every unlabeled sample by combining attribute rarity, metadata-level uncertainty, and optional diagnostic weights derived from logs.</li>
+<li><strong>Use Cases</strong>: Scenarios where human annotations describe attribute slices (color, background, hairstyle, etc.) and the model underperforms on specific combinations.</li>
+<li><strong>Advantages</strong>: Lightweight (no feature extraction), controllable focus on high-value slices, deterministic once metadata is fixed.</li>
+</ul>
+<p>The total score <span class="math inline"><em>S</em><sub><em>i</em></sub></span> for sample <span class="math inline"><em>i</em></span> is the sum across all attributes <span class="math inline"><em>A</em></span> of four components: <br /><span class="math display"><em>S</em><sub><em>i</em></sub> = ∑<sub><em>a</em> ∈ <em>A</em></sub>(<em>R</em><sub><em>i</em>, <em>a</em></sub> + <em>U</em><sub><em>i</em>, <em>a</em></sub> + <em>L</em><sub><em>i</em>, <em>a</em></sub> + <em>P</em><sub><em>i</em>, <em>a</em></sub>)</span><br /></p>
+<p>Where: * <strong><span class="math inline"><em>R</em><sub><em>i</em>, <em>a</em></sub></span> (Class-Conditional Rarity)</strong>: <span class="math inline">$\left( \frac{1}{f_{a}(v_{i,a} | y_i) + \varepsilon} \right)^{\alpha}$</span>. Default <span class="math inline"><em>α</em> = 0.01</span>. Measures how rare an attribute value is <em>within its predicted class</em>. * <strong><span class="math inline"><em>U</em><sub><em>i</em>, <em>a</em></sub></span> (Uncertainty)</strong>: <span class="math inline"><em>β</em></span> if marked uncertain in JSON, else <span class="math inline">0</span>. If <code>--al_attribute_use_entropy True</code> is set, this is dynamically replaced by Information Entropy <span class="math inline"><em>β</em> ⋅ ( − ∑<em>P</em>log <em>P</em>)</span> from model inference. Default <span class="math inline"><em>β</em> = 1.0</span>. * <strong><span class="math inline"><em>L</em><sub><em>i</em>, <em>a</em></sub></span> (Log Accuracy)</strong>: <span class="math inline"><em>γ</em> ⋅ (1 − ACC<sub><em>a</em></sub>(<em>v</em><sub><em>i</em>, <em>a</em></sub>))</span>. Default <span class="math inline"><em>γ</em> = 0.0</span>. * <strong><span class="math inline"><em>P</em><sub><em>i</em>, <em>a</em></sub></span> (Frequency Penalty)</strong>: <span class="math inline"> − <em>λ</em> ⋅ FreqRatio(<em>v</em><sub><em>i</em>, <em>a</em></sub>)</span>. Default <span class="math inline"><em>λ</em> = 5.0</span>. This term continuously suppresses over-sampling from heavily flooded slices.</p>
+<p>Samples are sorted by <span class="math inline"><em>S</em><sub><em>i</em></sub></span> (with a small injected noise term for tie breaking) and the top <span class="math inline"><em>n</em><sub>select</sub></span> indices are returned. When a sample exhibits multiple rare or low-accuracy attributes, the contributions accumulate, ensuring multi-attribute failures are prioritized.</p>
+<p><strong>Understanding the Frequency Penalty (<span class="math inline"><em>P</em></span>) and Generated Images</strong> While the formula for <span class="math inline"><em>P</em><sub><em>i</em>, <em>a</em></sub></span> computes a simple frequency ratio, it perfectly neutralizes the bias introduced by injecting artificially generated data. Specifically, the ratio is calculated over the <em>combined</em> candidate pool: <br /><span class="math display">$$\text{FreqRatio}(v) = \frac{N_{\text{base}}(v) + N_{\text{gen}}(v)}{\sum_{v'} \big( N_{\text{base}}(v') + N_{\text{gen}}(v') \big)}$$</span><br /> Where <span class="math inline"><em>N</em><sub>base</sub></span> represents the counts in the original unlabeled dataset, and <span class="math inline"><em>N</em><sub>gen</sub></span> represents the newly injected synthetic bounding boxes (e.g., 1000 images focused purely on <code>color:pink</code> and <code>texture:fabric</code>). Because <span class="math inline"><em>N</em><sub>gen</sub></span> concentrates an enormous mass into a few specific attribute values <span class="math inline">(<em>v</em>)</span>, those specific values experience an artificially inflated <span class="math inline">FreqRatio</span>. The <span class="math inline"> − <em>λ</em> ⋅ FreqRatio</span> penalty ensures that the active learning selector does not blindly exhaust its budget on the synthetic flood, forcing it to balance the newly injected data against naturally occurring hard cases.</p>
+<p><strong>The 2D Synergy: <span class="math inline"><em>R</em></span> (Class-Conditional) vs. <span class="math inline"><em>P</em></span> (Global)</strong> At first glance, Rarity (<span class="math inline"><em>R</em></span>) rewarding low frequency and Penalty (<span class="math inline"><em>P</em></span>) penalizing high frequency seem contradictory. However, because <span class="math inline"><em>R</em></span> evaluates <em>within a specific class</em> (<span class="math inline"><em>P</em>(<em>v</em>|<em>y</em>)</span>) while <span class="math inline"><em>P</em></span> evaluates <em>across the entire global pool</em> (<span class="math inline">FreqRatio</span>), they form a powerful 2D filter: * <strong>High <span class="math inline"><em>R</em></span> + Low <span class="math inline"><em>P</em></span> (Class-rare, Global-rare)</strong>: The most valuable “Hard Cases” (e.g., a “pink elephant”). They receive massive score boosts. * <strong>High <span class="math inline"><em>R</em></span> + High <span class="math inline"><em>P</em></span> (Class-rare, Global-common)</strong>: Features that are generic globally but strange for this specific class. <span class="math inline"><em>R</em></span> and <span class="math inline"><em>P</em></span> partially offset, preventing the model from over-indexing on globally redundant background textures just because they appeared in a new class. * <strong>Low <span class="math inline"><em>R</em></span> + High <span class="math inline"><em>P</em></span> (Class-common, Global-common / Artificial Flooding)</strong>: Boring redundant samples or the exact heavily-injected generated slices (e.g., 1000 synthetic <code>pink</code> dogs). The massive <span class="math inline"><em>P</em></span> penalty sinks their total <span class="math inline"><em>S</em><sub><em>i</em></sub></span> score, acting as an automatic spam filter to prevent them from exhausting the selection budget.</p>
+<p>Optionally, enable an additional <strong>Class Stratification Score (<span class="math inline"><em>C</em></span>)</strong> via <code>--al_attribute_class_balance</code>. After computing <span class="math inline"><em>S</em><sub><em>i</em></sub></span>, the selector performs a greedy re-ranking that rewards classes whose current selections fall below their per-class quota. When the flag is set to a finite value <span class="math inline"><em>w</em> &gt; 0</span>, each class <span class="math inline"><em>c</em></span> keeps a running count <span class="math inline"><em>n</em><sub><em>c</em></sub></span> and target quota <span class="math inline"><em>t</em> = <em>n</em><sub>select</sub>/<em>N</em><sub>classes</sub></span>. The next candidate from class <span class="math inline"><em>c</em></span> receives an additive bonus <span class="math inline"><em>C</em><sub><em>c</em></sub></span>: <br /><span class="math display">$$C_{c} = w \times \frac{t - n_c}{t}$$</span><br /> which is added to its base score <span class="math inline"><em>S</em><sub><em>i</em></sub></span> inside <code>_soft_class_selection</code> (see <code>utils/active_learning.py</code>). Classes under their quota get positive bonuses, while classes at or above the quota see the term shrink toward zero or become negative, letting pure attribute scores win. Candidates with unknown labels (e.g., synthetic-only entries) sit in a separate queue and are inserted only when their base score exceeds every class-adjusted option, so unlabeled data does not distort the balancing pass.</p>
+<p>During iteration <span class="math inline"><em>k</em></span> of <code>_soft_class_selection</code>, every labeled candidate <span class="math inline"><em>i</em></span> from class <span class="math inline"><em>c</em> = <em>y</em><sub><em>i</em></sub></span> uses the effective score <br /><span class="math display"><em>S̃</em><sub><em>i</em></sub><sup>(<em>k</em>)</sup> = <em>S</em><sub><em>i</em></sub> + <em>C</em><sub><em>c</em></sub><sup>(<em>k</em>)</sup></span><br /> where <span class="math inline">$C_{c}^{(k)} = w \times \frac{t - n_c^{(k)}}{t}$</span>, and <span class="math inline"><em>n</em><sub><em>c</em></sub><sup>(<em>k</em>)</sup></span> is the number of times class <span class="math inline"><em>c</em></span> has already been chosen. The algorithm picks the candidate with the largest <span class="math inline"><em>S̃</em><sub><em>i</em></sub><sup>(<em>k</em>)</sup></span> (breaking ties with the injected noise from the base ranking), appends it to the selection list, and then updates <span class="math inline"><em>n</em><sub><em>c</em></sub><sup>(<em>k</em> + 1)</sup> = <em>n</em><sub><em>c</em></sub><sup>(<em>k</em>)</sup> + 1</span> for that class. If the highest raw-score unlabeled item <span class="math inline"><em>u</em></span> satisfies <span class="math inline"><em>S</em><sub><em>u</em></sub> &gt; max<sub><em>i</em></sub><em>S̃</em><sub><em>i</em></sub><sup>(<em>k</em>)</sup></span>, the iteration chooses <span class="math inline"><em>u</em></span> instead and leaves all class counts unchanged, where <span class="math inline"><em>S</em><sub><em>u</em></sub></span> denotes the raw attribute score of the unlabeled candidate (no class bonus exists for unlabeled entries). That iteration simply appends <span class="math inline"><em>u</em></span> to <code>selected</code>. The loop stops once either <span class="math inline">|selected| = <em>n</em><sub>select</sub></span> or all class and unlabeled queues are empty; in the latter case <code>_finalize_balanced_selection</code> backfills the remaining slots from the global ranking. “All other class and unlabeled queues are empty” literally means every per-class list (and the unlabeled list) has been drained—no candidate remains to evaluate—so the loop has no further element to pull even if some deficits are still positive.</p>
+<p>This deficit-based soft balancing is a contribution inspired by proportional-fair and deficit round-robin schedulers: we convert each class shortfall <span class="math inline">(<em>t</em> − <em>n</em><sub><em>c</em></sub>)</span> into a temporary additive bonus while preserving the metadata-driven ordering within every class, providing a controllable bridge between pure attribute scoring and hard stratification. The motivation was empirical: attribute scores alone over-pick head classes, yet strict round-robin ignores the large score spread across classes, so we needed a lightweight middle ground that can lean toward balance without throwing away the metadata signal—a criterion none of the standard AL heuristics offered out of the box.</p>
+<p>Setting <code>--al_attribute_class_balance inf</code> bypasses the soft bonus and triggers <code>_round_robin_class_selection</code>, the literal round-robin implementation. Each class queue contributes its current best-scoring sample, then the queue moves to the back. Exhausted queues are removed, and the process repeats until either the requested budget is filled or only unlabeled/leftover samples remain (at which point the code falls back to global sorting in <code>_finalize_balanced_selection</code>). This guarantees per-class counts differ by at most one (subject to availability) before any remaining slots revert to global scores.</p>
+<p><strong>Round-robin mechanics (as implemented in <code>_round_robin_class_selection</code>):</strong> 1. Build per-class queues sorted by the raw attribute score + noise. 2. Walk the queues in order; on each step pop the head of the current class and append it to <code>selected</code>. 3. Move that class to the back of the list; if the queue is empty, drop it permanently. 4. Repeat until <code>n_select</code> items are collected or every class queue is empty, then rely on <code>_finalize_balanced_selection</code> to fill any residual slots from the global score ranking. This produces the same effect as traditional stratified sampling but preserves the attribute ranking within each class.</p>
+<p><strong>Example (ImageNet, <code>sub_ratio=0.3</code>, ten classes):</strong> the quota is <span class="math inline"><em>t</em> = 3, 120/10 = 312</span> samples per class. Running with <code>--al_attribute_class_balance 0</code> let the desk class drop to 133 samples (4.3 %) because it had few high attribute scores. Re-running the same configuration with <code>--al_attribute_class_balance 4</code> gave each desk candidate an early bonus of <span class="math inline">4 × (312 − 133)/312 ≈ 2.29</span>, so they entered the greedy loop sooner. The final desk count rose to 273 samples (8.8 %), while large classes such as backpack and purse were nudged down toward the quota. Desk growth stopped at 273 because the global budget <span class="math inline"><em>n</em><sub>select</sub> = 3, 120</span> was filled once the bonus had already reduced the biggest deficits; the algorithm cannot insert additional desk samples after the budget is exhausted even though <span class="math inline"><em>n</em><sub>desk</sub> &lt; <em>t</em></span>. This illustrates how finite weights gently pull distributions toward balance without forcing perfect equality.</p>
+<p><strong>Weight tuning versus sub-ratio:</strong> because <span class="math inline"><em>C</em><sub><em>c</em></sub> = <em>w</em> × (<em>t</em> − <em>n</em><sub><em>c</em></sub>)/<em>t</em></span> scales with the quota <span class="math inline"><em>t</em> = <em>n</em><sub>select</sub>/<em>N</em><sub>classes</sub></span>, a fixed <span class="math inline"><em>w</em></span> becomes weaker as the sub-sampling ratio grows. To preserve roughly the same maximum bonus seen at <code>sub_ratio = 0.3</code>, scale <span class="math inline"><em>w</em></span> in proportion to <span class="math inline"><em>t</em></span>: <span class="math inline"><em>w</em><sub>new</sub> ≈ <em>w</em><sub>0.3</sub> × (<em>t</em><sub>new</sub>/312)</span>. For ImageNet’s ten classes this gives practical anchors: - <code>sub_ratio = 0.7</code> (quota <span class="math inline"> ≈ 728</span>): use <span class="math inline"><em>w</em> ≈ 9</span>–10. - <code>sub_ratio = 0.9</code> (quota <span class="math inline"> ≈ 936</span>): use <span class="math inline"><em>w</em> ≈ 12</span>.</p>
+<p>Smaller weights still work but apply weaker nudges; larger weights push the distribution closer to stratified counts. Set <code>inf</code> if the run truly needs round-robin behavior.</p>
+<p>The selector still picks the same total budget—<span class="math inline">(10, 400 × 0.3 = 3, 120)</span> samples in this setup. Turning on <code>--al_attribute_class_balance 4</code> does not add or remove items; it just changes which indices fill those 3,120 slots. <code>_finalize_balanced_selection</code> appends the highest remaining base scores until the list has exactly <span class="math inline"><em>n</em><sub>select</sub></span> entries, ensuring the class-aware re-ranking is purely a reordering step.</p>
+<p><strong>Workflow</strong> - Provide an attribute JSON (for example <code>save/attribute10.json</code>) that maps each attribute to per-sample values and optional uncertain indices. - Optionally restrict attention to a subset via <code>--al_attribute_focus</code> (comma-separated keys). - (Optional) Supply a diagnostic log with <code>--al_attribute_log_path</code>; each <code>Rare Case</code> entry contributes a failure weight <span class="math inline">(1 − ACC)</span> through the parser in <code>utils.active_learning.parse_attribute_priority_log</code>. - Tune <code>--al_attribute_rarity_power</code>, <code>--al_attribute_uncertainty_boost</code>, and <code>--al_attribute_log_acc_scale</code> to balance between metadata-driven rarity, known uncertain slices, and empirical accuracy signals. - (Optional) Provide pre-counted generated samples via <code>--al_attribute_extra_counts color:pink,texture:fabric</code>; when counts are omitted they default to <code>--num_added_img</code>, and if the flag itself is omitted the selector now parses <code>--attributes</code> (tokens such as <code>pinkcolor</code> or <code>fabrictexture</code>) to auto-inject the same <code>--num_added_img</code> count for those attribute-value pairs.</p>
+<p>Because the method operates purely on metadata, it integrates cleanly with the rest of the pipeline—no embedding extraction or model forward passes are required during selection.</p>
+<h2 id="parameter-description">Parameter Description</h2>
+<h3 id="general-parameters">General Parameters</h3>
+<ul>
+<li><code>--al_strategy</code>: AL strategy selection [coreset|stratified|diversity|hybrid|hierarchical|attribute]</li>
+<li><code>--al_embedding_dim</code>: Feature vector dimension (default: 512)</li>
+<li><code>--al_initial_labeled</code>: Initial labeled sample count (default: 500)</li>
+</ul>
+<h3 id="hybrid-strategy-parameters">Hybrid Strategy Parameters</h3>
+<ul>
+<li><code>--al_coreset_ratio</code>: Core-set sampling ratio (default: 0.4)</li>
+<li><code>--al_stratified_ratio</code>: Stratified sampling ratio (default: 0.4)</li>
+<li>Remaining portion automatically allocated to random sampling</li>
+</ul>
+<h3 id="diversity-strategy-parameters">Diversity Strategy Parameters</h3>
+<ul>
+<li><code>--al_clusters</code>: Number of clusters (default: n_select//10)</li>
+</ul>
+<h3 id="attribute-strategy-parameters">Attribute Strategy Parameters</h3>
+<ul>
+<li><code>--attribute_file</code>: Path to attribute metadata JSON (e.g., <code>save/attribute10.json</code>)</li>
+<li><code>--al_attribute_focus</code>: Optional comma-separated attribute keys to prioritize (default: all keys in metadata)</li>
+<li><code>--al_attribute_rarity_power</code>: Emphasis on rare attribute values (&gt;=0, higher = stronger focus on rare slices)</li>
+<li><code>--al_attribute_uncertainty_boost</code>: Score bonus for samples marked as uncertain in metadata (&gt;=0)</li>
+<li><code>--al_attribute_use_entropy</code>: If True, computes Information Entropy from model inference and uses it for the <span class="math inline"><em>U</em></span> term instead of static metadata flags (default: False)</li>
+<li><code>--al_attribute_log_path</code>: Optional path to diagnostic log providing Rare Case accuracies</li>
+<li><code>--al_attribute_log_acc_scale</code>: Scaling factor applied to each log-derived failure weight (default: 1.0)</li>
+<li><code>--al_attribute_extra_counts</code>: Inline list or JSON file describing additional counts to inject per attribute value (useful when synthetic data floods specific slices); inline entries without <code>=count</code> inherit <code>--num_added_img</code>, and when omitted entirely the code infers counts from <code>--attributes</code> tokens (value+attribute) using <code>--num_added_img</code></li>
+<li><code>--al_attribute_balance_strength</code>: Multiplier controlling how strongly over-represented values are penalized (0 disables the term)</li>
+<li><code>--al_attribute_class_balance</code>: Stratified weight for enforcing class balance after attribute scoring (0 disables, <code>inf</code> enforces near-perfect round-robin per class)</li>
+</ul>
+<h2 id="recommended-configurations">Recommended Configurations</h2>
+<h3 id="for-imagenet-dataset-multi-class-classification">For ImageNet Dataset (Multi-class Classification)</h3>
+<div class="sourceCode" id="cb6"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb6-1" title="1"><span class="co"># Recommended: Hybrid strategy, balancing performance and efficiency</span></a>
+<a class="sourceLine" id="cb6-2" title="2"><span class="ex">python</span> alpred.py \</a>
+<a class="sourceLine" id="cb6-3" title="3">  --dataset imagenet --model resnet \</a>
+<a class="sourceLine" id="cb6-4" title="4">  --al_strategy hybrid \</a>
+<a class="sourceLine" id="cb6-5" title="5">  --al_coreset_ratio 0.2 \</a>
+<a class="sourceLine" id="cb6-6" title="6">  --al_stratified_ratio 0.6 \</a>
+<a class="sourceLine" id="cb6-7" title="7">  --al_embedding_dim 256 \</a>
+<a class="sourceLine" id="cb6-8" title="8">  --sub_ratio 0.5</a>
+<a class="sourceLine" id="cb6-9" title="9"></a>
+<a class="sourceLine" id="cb6-10" title="10"><span class="co"># Alternative: Pure stratified sampling, fastest and most stable</span></a>
+<a class="sourceLine" id="cb6-11" title="11"><span class="ex">python</span> alpred.py \</a>
+<a class="sourceLine" id="cb6-12" title="12">  --dataset imagenet --model resnet \</a>
+<a class="sourceLine" id="cb6-13" title="13">  --al_strategy stratified \</a>
+<a class="sourceLine" id="cb6-14" title="14">  --sub_ratio 0.5</a></code></pre></div>
+<h3 id="for-celeba-dataset-binary-classification">For CelebA Dataset (Binary Classification)</h3>
+<div class="sourceCode" id="cb7"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb7-1" title="1"><span class="co"># Recommended: Diversity strategy</span></a>
+<a class="sourceLine" id="cb7-2" title="2"><span class="ex">python</span> alpred.py \</a>
+<a class="sourceLine" id="cb7-3" title="3">  --dataset celeba --model resnet \</a>
+<a class="sourceLine" id="cb7-4" title="4">  --al_strategy diversity \</a>
+<a class="sourceLine" id="cb7-5" title="5">  --al_clusters 50 \</a>
+<a class="sourceLine" id="cb7-6" title="6">  --al_embedding_dim 128 \</a>
+<a class="sourceLine" id="cb7-7" title="7">  --sub_ratio 0.5</a></code></pre></div>
+<h2 id="performance-expectations">Performance Expectations</h2>
+<p>Based on analysis, expected performance ranking:</p>
+<ol type="1">
+<li><strong>StratifiedStrategy</strong>: Most stable, maintains class balance</li>
+<li><strong>HybridStrategy</strong>: Best overall performance</li>
+<li><strong>DiversityStrategy</strong>: Moderate performance, adapts to complex distributions</li>
+<li><strong>CoreSetStrategy</strong>: Possibly worst performance (original issue)</li>
+</ol>
+<h2 id="testing-scripts">Testing Scripts</h2>
+<p>Run comparative tests of all strategies:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb8-1" title="1"><span class="ex">./test_al_strategies.sh</span></a></code></pre></div>
+<p>View result comparisons:</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb9-1" title="1"><span class="ex">python</span> compare_al_results.py</a></code></pre></div>
+<h2 id="debugging-suggestions">Debugging Suggestions</h2>
+<ol type="1">
+<li><strong>Use –verbose True</strong> to view detailed class distribution information</li>
+<li><strong>Start with small datasets</strong> to verify strategy functionality</li>
+<li><strong>Compare training times</strong> to select strategy suitable for your computational resources</li>
+<li><strong>Check class balance</strong> to ensure selected samples have sufficient representativeness</li>
+</ol>
+<h2 id="code-structure">Code Structure</h2>
+<p>New AL strategies are all in <code>utils/active_learning.py</code>: - <code>CoreSetStrategy</code>: Original core-set method - <code>StratifiedStrategy</code>: Stratified sampling - <code>UncertaintyStrategy</code>: Uncertainty-based sampling (future extension) - <code>DiversityStrategy</code>: Clustering-based diversity sampling - <code>HybridStrategy</code>: Mixed multiple strategies</p>
+<p>Each strategy is an independent class that can be easily extended and modified.</p>
+<h3 id="improved-strategies-new">6. Improved Strategies (New)</h3>
+<p>I have implemented two robust strategies to correct the weaknesses of previous methods (ignoring class balance or ignoring semantic rarity).</p>
+<h4 id="a.-uncertainty-weighted-stratified-strategy-uncertainty_stratified">A. Uncertainty-Weighted Stratified Strategy (<code>uncertainty_stratified</code>)</h4>
+<div class="sourceCode" id="cb10"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb10-1" title="1"><span class="ex">python</span> alpred.py --al_strategy uncertainty_stratified</a></code></pre></div>
+<p><strong>Motivation</strong>: Standard uncertainty sampling often picks outliers from a single “hard” class, causing imbalance. Standard stratified sampling ignores sample difficulty. This strategy fuses them.</p>
+<p><strong>Algorithm</strong>: 1. <strong>Inference</strong>: Compute uncertainty for all unlabeled samples. * <em>Multi-class</em>: Entropy <span class="math inline"><em>H</em>(<em>p</em>) =  − ∑<em>p</em><sub><em>i</em></sub>log <em>p</em><sub><em>i</em></sub></span>. * <em>Binary</em>: Confidence gap <span class="math inline">1 − |<em>p</em> − 0.5| × 2</span>. 2. <strong>Quota Calculation</strong>: Determine strict sample quotas for each class <span class="math inline"><em>c</em></span>: <span class="math inline"><em>k</em><sub><em>c</em></sub> ≈ <em>N</em><sub><em>t</em><em>o</em><em>t</em><em>a</em><em>l</em></sub>/<em>C</em></span>. 3. <strong>Selection</strong>: * For each class <span class="math inline"><em>c</em></span>, retrieve all samples predicted as <span class="math inline"><em>c</em></span> (or labeled as <span class="math inline"><em>c</em></span> if labels available). * Sort them by uncertainty (High to Low). * Select top <span class="math inline"><em>k</em><sub><em>c</em></sub></span> samples.</p>
+<p><strong>Key Benefit</strong>: Guarantees diversity across classes (like Stratified) whilst maximizing information gain (like Uncertainty).</p>

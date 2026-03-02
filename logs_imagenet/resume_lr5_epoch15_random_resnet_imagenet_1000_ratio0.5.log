@@ -1,0 +1,82 @@
+Current time: 0227121039
+Added 1000 generated images.
+
+[Active Learning subset (before adding generated images)] class distribution:
+  Class backpack: 523 samples (10.1%)
+  Class barber_chair: 514 samples (9.9%)
+  Class coffee_mug: 496 samples (9.5%)
+  Class desk: 527 samples (10.1%)
+  Class electric_guitar: 503 samples (9.7%)
+  Class park_bench: 545 samples (10.5%)
+  Class pitcher: 522 samples (10.0%)
+  Class purse: 525 samples (10.1%)
+  Class rocking_chair: 517 samples (9.9%)
+  Class water_bottle: 528 samples (10.2%)
+Added 1000 ImageNet pinkcolor_fabrictexture images using Random sampling: 5200 -> 6200
+Resumed model from save/models/model_imagenet_resnet_base.pth (best val acc: 0.7223076923076923)
+Epoch [1/15], Train Loss: 0.3786, Train Acc: 0.8839, Val Loss: 0.8900, Val Acc: 0.7131
+Epoch [2/15], Train Loss: 0.3727, Train Acc: 0.8823, Val Loss: 0.8755, Val Acc: 0.7177
+Epoch [3/15], Train Loss: 0.3505, Train Acc: 0.8950, Val Loss: 0.8822, Val Acc: 0.7231
+Epoch [4/15], Train Loss: 0.3201, Train Acc: 0.9082, Val Loss: 0.8863, Val Acc: 0.7123
+Epoch [5/15], Train Loss: 0.3159, Train Acc: 0.9084, Val Loss: 0.8850, Val Acc: 0.7146
+Epoch [6/15], Train Loss: 0.3106, Train Acc: 0.9084, Val Loss: 0.8815, Val Acc: 0.7146
+Epoch [7/15], Train Loss: 0.3053, Train Acc: 0.9131, Val Loss: 0.8772, Val Acc: 0.7200
+Epoch [8/15], Train Loss: 0.3015, Train Acc: 0.9160, Val Loss: 0.8749, Val Acc: 0.7215
+Epoch [9/15], Train Loss: 0.3050, Train Acc: 0.9110, Val Loss: 0.8812, Val Acc: 0.7192
+Epoch [10/15], Train Loss: 0.2980, Train Acc: 0.9160, Val Loss: 0.8798, Val Acc: 0.7162
+Epoch [11/15], Train Loss: 0.2935, Train Acc: 0.9161, Val Loss: 0.8771, Val Acc: 0.7215
+Epoch [12/15], Train Loss: 0.2856, Train Acc: 0.9223, Val Loss: 0.8812, Val Acc: 0.7177
+Epoch [13/15], Train Loss: 0.2896, Train Acc: 0.9182, Val Loss: 0.8788, Val Acc: 0.7185
+Epoch [14/15], Train Loss: 0.2910, Train Acc: 0.9174, Val Loss: 0.8803, Val Acc: 0.7208
+Epoch [15/15], Train Loss: 0.2805, Train Acc: 0.9194, Val Loss: 0.8880, Val Acc: 0.7162
+Held-out test accuracy: 0.7400, test loss: 0.7930
+Generating and saving predictions...
+Combined predictions length: 13000
+Total training time for 15 epochs: 156.10 seconds
+Total Active Learning selection time: 0.00 seconds
+End-to-end wall time (data prep + selection + training + setup): 157.69 seconds
+
+Running model diagnostics on generated predictions...
+Model Test ACC: 0.74
+Start detect_prediction_correlation
+
+ACC: 0.698630 	Rare Case: attribute "color", description "red"
+ACC: 0.696429 	Hard case: attribute "color", description "white"
+ACC: 0.666667 	Rare Case: attribute "color", description "silver"
+ACC: 0.625000 	Rare Case: attribute "color", description "maroon"
+ACC: 0.691057 	Hard case: attribute "color", description "multicolored"
+ACC: 0.708609 	Hard case: attribute "color", description "black"
+ACC: 0.696970 	Rare Case: attribute "background", description "sky"
+ACC: 0.682927 	Hard case: attribute "background", description "trees"
+ACC: 0.642857 	Rare Case: attribute "background", description "buildings"
+ACC: 0.660377 	Hard case: attribute "background", description "grass"
+ACC: 0.680000 	Rare Case: attribute "background", description "rocks"
+ACC: 0.000000 	Rare Case: attribute "background", description "bridge"
+ACC: 0.660377 	Rare Case: attribute "background", description "house"
+ACC: 0.693878 	Rare Case: attribute "texture", description "plastic"
+ACC: 0.703704 	Rare Case: attribute "texture", description "fabric"
+ACC: 0.707424 	Hard case: attribute "texture", description "glass"
+
+Comparing accuracy with log file: logs/compare/stat_imagenet_resnet_compare.log
+Overall accuracy: 0.718077 -> 0.723077: improved
+
+Attribute-specific accuracy comparison:
+color, green, 0.674419 -> 0.750000: improved
+color, pink, 0.699029 -> 0.786885: improved
+color, tan, 0.700000 -> 0.750000: improved
+color, orange, 0.690909 -> 0.800000: improved
+color, yellow, 0.688889 -> 0.750000: improved
+color, purple, 0.684211 -> 0.777778: improved
+color, black, 0.665289 -> 0.708609: improved
+background, sky, 0.698630 -> 0.696970: declined
+background, inside a house, 0.691684 -> 0.728083: improved
+background, buildings, 0.707317 -> 0.642857: declined
+background, rocks, 0.659091 -> 0.680000: improved
+background, street, 0.662162 -> 0.818182: improved
+texture, metallic, 0.676471 -> 0.750000: improved
+texture, wooden, 0.698393 -> 0.729193: improved
+texture, leather, 0.588235 -> 0.857143: improved
+texture, fabric, 0.658537 -> 0.703704: improved
+
+Compared 16 attribute-specific accuracies.
+Current time: 0227121039

@@ -1,0 +1,145 @@
+Current time: 0227125821
+Added 1000 generated images.
+/people/cs/o/oxx220000/.conda/envs/ad/lib/python3.9/site-packages/torchvision/models/_utils.py:208: UserWarning: The parameter 'pretrained' is deprecated since 0.13 and may be removed in the future, please use 'weights' instead.
+  warnings.warn(
+/people/cs/o/oxx220000/.conda/envs/ad/lib/python3.9/site-packages/torchvision/models/_utils.py:223: UserWarning: Arguments other than a weight enum or `None` for 'weights' are deprecated since 0.13 and may be removed in the future. The current behavior is equivalent to passing `weights=ResNet18_Weights.IMAGENET1K_V1`. You can also use `weights=ResNet18_Weights.DEFAULT` to get the most up-to-date weights.
+  warnings.warn(msg)
+
+Class distribution in selected samples:
+  Class backpack: 141 samples (13.6%)
+  Class barber_chair: 79 samples (7.6%)
+  Class coffee_mug: 97 samples (9.3%)
+  Class desk: 82 samples (7.9%)
+  Class electric_guitar: 57 samples (5.5%)
+  Class park_bench: 84 samples (8.1%)
+  Class pitcher: 123 samples (11.8%)
+  Class purse: 167 samples (16.1%)
+  Class rocking_chair: 72 samples (6.9%)
+  Class water_bottle: 138 samples (13.3%)
+
+Class distribution in random baseline:
+  Class backpack: 98 samples (9.4%)
+  Class barber_chair: 93 samples (8.9%)
+  Class coffee_mug: 116 samples (11.2%)
+  Class desk: 96 samples (9.2%)
+  Class electric_guitar: 89 samples (8.6%)
+  Class park_bench: 116 samples (11.2%)
+  Class pitcher: 108 samples (10.4%)
+  Class purse: 120 samples (11.5%)
+  Class rocking_chair: 93 samples (8.9%)
+  Class water_bottle: 111 samples (10.7%)
+
+[Active Learning subset (before adding generated images)] class distribution:
+  Class backpack: 141 samples (13.6%)
+  Class barber_chair: 79 samples (7.6%)
+  Class coffee_mug: 97 samples (9.3%)
+  Class desk: 82 samples (7.9%)
+  Class electric_guitar: 57 samples (5.5%)
+  Class park_bench: 84 samples (8.1%)
+  Class pitcher: 123 samples (11.8%)
+  Class purse: 167 samples (16.1%)
+  Class rocking_chair: 72 samples (6.9%)
+  Class water_bottle: 138 samples (13.3%)
+Added 1000 ImageNet pinkcolor_fabrictexture images using Active Learning (hierarchical): 1040 -> 2040
+Resumed model from save/models/model_imagenet_resnet_base.pth (best val acc: 0.7223076923076923)
+Epoch [1/15], Train Loss: 0.5570, Train Acc: 0.8216, Val Loss: 0.9600, Val Acc: 0.7100
+Epoch [2/15], Train Loss: 0.4867, Train Acc: 0.8471, Val Loss: 0.9468, Val Acc: 0.7054
+Epoch [3/15], Train Loss: 0.4351, Train Acc: 0.8730, Val Loss: 0.9345, Val Acc: 0.7123
+Epoch [4/15], Train Loss: 0.4346, Train Acc: 0.8652, Val Loss: 0.9364, Val Acc: 0.7138
+Epoch [5/15], Train Loss: 0.4061, Train Acc: 0.8770, Val Loss: 0.9465, Val Acc: 0.7085
+Epoch [6/15], Train Loss: 0.4139, Train Acc: 0.8696, Val Loss: 0.9388, Val Acc: 0.7108
+Epoch [7/15], Train Loss: 0.4043, Train Acc: 0.8765, Val Loss: 0.9393, Val Acc: 0.7115
+Epoch [8/15], Train Loss: 0.3983, Train Acc: 0.8828, Val Loss: 0.9393, Val Acc: 0.7108
+Epoch [9/15], Train Loss: 0.3787, Train Acc: 0.8941, Val Loss: 0.9383, Val Acc: 0.7123
+Epoch [10/15], Train Loss: 0.3817, Train Acc: 0.8873, Val Loss: 0.9371, Val Acc: 0.7123
+Epoch [11/15], Train Loss: 0.3780, Train Acc: 0.8877, Val Loss: 0.9334, Val Acc: 0.7077
+Epoch [12/15], Train Loss: 0.3715, Train Acc: 0.8833, Val Loss: 0.9351, Val Acc: 0.7100
+Epoch [13/15], Train Loss: 0.3798, Train Acc: 0.8853, Val Loss: 0.9444, Val Acc: 0.7100
+Epoch [14/15], Train Loss: 0.3679, Train Acc: 0.8956, Val Loss: 0.9350, Val Acc: 0.7115
+Epoch [15/15], Train Loss: 0.3559, Train Acc: 0.8990, Val Loss: 0.9357, Val Acc: 0.7115
+Held-out test accuracy: 0.7269, test loss: 0.8454
+Generating and saving predictions...
+Combined predictions length: 13000
+Total training time for 15 epochs: 96.74 seconds
+Total Active Learning selection time: 298.72 seconds
+End-to-end wall time (data prep + selection + training + setup): 395.77 seconds
+
+Running model diagnostics on generated predictions...
+Model Test ACC: 0.726923076923077
+Start detect_prediction_correlation
+
+ACC: 0.684932 	Rare Case: attribute "color", description "red"
+ACC: 0.692557 	Rare Case: attribute "color", description "brown"
+ACC: 0.696429 	Hard case: attribute "color", description "white"
+ACC: 0.625000 	Rare Case: attribute "color", description "tan"
+ACC: 0.703704 	Rare Case: attribute "color", description "silver"
+ACC: 0.687500 	Rare Case: attribute "color", description "maroon"
+ACC: 0.682927 	Hard case: attribute "color", description "multicolored"
+ACC: 0.666667 	Rare Case: attribute "background", description "sky"
+ACC: 0.642857 	Rare Case: attribute "background", description "buildings"
+ACC: 0.660377 	Hard case: attribute "background", description "grass"
+ACC: 0.680000 	Rare Case: attribute "background", description "rocks"
+ACC: 0.500000 	Rare Case: attribute "background", description "bridge"
+ACC: 0.642857 	Rare Case: attribute "background", description "water"
+ACC: 0.650943 	Rare Case: attribute "background", description "house"
+ACC: 0.673469 	Rare Case: attribute "texture", description "plastic"
+ACC: 0.703704 	Rare Case: attribute "texture", description "fabric"
+ACC: 0.659389 	Hard case: attribute "texture", description "glass"
+
+Comparing accuracy with log file: logs/compare/stat_imagenet_resnet_compare.log
+Overall accuracy: 0.718077 -> 0.713846: declined
+
+Attribute-specific accuracy comparison:
+color, green, 0.674419 -> 0.734375: improved
+color, pink, 0.699029 -> 0.770492: improved
+color, tan, 0.700000 -> 0.625000: declined
+color, orange, 0.690909 -> 0.822222: improved
+color, yellow, 0.688889 -> 0.750000: improved
+color, purple, 0.684211 -> 0.777778: improved
+color, black, 0.665289 -> 0.721854: improved
+background, sky, 0.698630 -> 0.666667: declined
+background, inside a house, 0.691684 -> 0.711738: improved
+background, buildings, 0.707317 -> 0.642857: declined
+background, rocks, 0.659091 -> 0.680000: improved
+background, street, 0.662162 -> 0.818182: improved
+texture, metallic, 0.676471 -> 0.750000: improved
+texture, wooden, 0.698393 -> 0.727950: improved
+texture, leather, 0.588235 -> 0.857143: improved
+texture, fabric, 0.658537 -> 0.703704: improved
+
+Compared 16 attribute-specific accuracies.
+Using log file: logs_imagenet/AL_random_resnet_imagenet_1000_ratio0.1.log
+
+================================================================================
+ACTIVE LEARNING vs RANDOM SELECTION COMPARISON
+================================================================================
+Comparing current Active Learning results with random selection: logs_imagenet/AL_random_resnet_imagenet_1000_ratio0.1.log
+Current Active Learning overall accuracy: 0.713846 (Random overall accuracy not found)
+
+Attribute-specific Active Learning vs Random Selection comparison:
+color, red, Random 0.438356 -> AL 0.684932 (Δ=+0.246576): AL WINS
+color, blue, Random 0.428571 -> AL 0.767857 (Δ=+0.339286): AL WINS
+color, orange, Random 0.288889 -> AL 0.822222 (Δ=+0.533333): AL WINS
+color, yellow, Random 0.410714 -> AL 0.750000 (Δ=+0.339286): AL WINS
+color, multicolored, Random 0.390244 -> AL 0.682927 (Δ=+0.292683): AL WINS
+color, black, Random 0.430464 -> AL 0.721854 (Δ=+0.291390): AL WINS
+background, sky, Random 0.363636 -> AL 0.666667 (Δ=+0.303031): AL WINS
+background, buildings, Random 0.142857 -> AL 0.642857 (Δ=+0.500000): AL WINS
+background, rocks, Random 0.360000 -> AL 0.680000 (Δ=+0.320000): AL WINS
+background, bridge, Random 0.000000 -> AL 0.500000 (Δ=+0.500000): AL WINS
+background, water, Random 0.357143 -> AL 0.642857 (Δ=+0.285714): AL WINS
+background, snow, Random 0.421622 -> AL 0.735135 (Δ=+0.313513): AL WINS
+texture, plastic, Random 0.408163 -> AL 0.673469 (Δ=+0.265306): AL WINS
+texture, leather, Random 0.428571 -> AL 0.857143 (Δ=+0.428572): AL WINS
+texture, ceramic, Random 0.449612 -> AL 0.720930 (Δ=+0.271318): AL WINS
+texture, glass, Random 0.419214 -> AL 0.659389 (Δ=+0.240175): AL WINS
+
+------------------------------------------------------------
+ACTIVE LEARNING vs RANDOM SELECTION SUMMARY:
+Total compared attributes: 16
+Active Learning wins: 16
+Random Selection wins: 0
+Ties: 0
+Active Learning win rate: 100.0%
+------------------------------------------------------------
+Current time: 0227125821

@@ -1,0 +1,41 @@
+[2026-02-27 12:10:36] GPU 1: Starting ALL strategies for ratio=0.5
+[2026-02-27 12:10:36] GPU 0: Starting ALL strategies for ratio=0.1
+[2026-02-27 12:10:36] GPU 3: Starting ALL strategies for ratio=0.9
+[2026-02-27 12:10:36] GPU 1: Random Baseline
+[2026-02-27 12:10:36] GPU 0: Random Baseline
+[2026-02-27 12:10:36] GPU 3: Random Baseline
+[2026-02-27 12:10:36] GPU 2: Starting ALL strategies for ratio=0.7
+[2026-02-27 12:10:36] GPU 2: Random Baseline
+[2026-02-27 12:12:02] GPU 0: Stratified
+[2026-02-27 12:13:18] GPU 1: Stratified
+[2026-02-27 12:13:31] GPU 0: Coreset
+[2026-02-27 12:13:35] GPU 0: Uncertainty Stratified
+[2026-02-27 12:13:38] GPU 0: Diversity
+[2026-02-27 12:13:42] GPU 0: Hierarchical
+[2026-02-27 12:13:46] GPU 0: Hybrid
+[2026-02-27 12:13:50] GPU 0: Attribute (aggro_exp_p10_c4)
+[2026-02-27 12:13:57] GPU 2: Stratified
+[2026-02-27 12:15:37] GPU 0: ALL strategies DONE for ratio=0.1
+[2026-02-27 12:15:46] GPU 3: Stratified
+[2026-02-27 12:16:06] GPU 1: Coreset
+[2026-02-27 12:16:10] GPU 1: Uncertainty Stratified
+[2026-02-27 12:16:13] GPU 1: Diversity
+[2026-02-27 12:16:17] GPU 1: Hierarchical
+[2026-02-27 12:16:21] GPU 1: Hybrid
+[2026-02-27 12:16:25] GPU 1: Attribute (aggro_exp_p10_c4)
+[2026-02-27 12:17:21] GPU 2: Coreset
+[2026-02-27 12:17:25] GPU 2: Uncertainty Stratified
+[2026-02-27 12:17:29] GPU 2: Diversity
+[2026-02-27 12:17:32] GPU 2: Hierarchical
+[2026-02-27 12:17:36] GPU 2: Hybrid
+[2026-02-27 12:17:40] GPU 2: Attribute (aggro_exp_p10_c4)
+[2026-02-27 12:19:24] GPU 1: ALL strategies DONE for ratio=0.5
+[2026-02-27 12:20:53] GPU 3: Coreset
+[2026-02-27 12:20:57] GPU 3: Uncertainty Stratified
+[2026-02-27 12:21:00] GPU 3: Diversity
+[2026-02-27 12:21:03] GPU 3: Hierarchical
+[2026-02-27 12:21:07] GPU 3: Hybrid
+[2026-02-27 12:21:10] GPU 3: Attribute (aggro_exp_p10_c4)
+[2026-02-27 12:21:14] GPU 2: ALL strategies DONE for ratio=0.7
+[2026-02-27 12:26:29] GPU 3: ALL strategies DONE for ratio=0.9
+[2026-02-27 12:26:29] ALL 4 RATIOS COMPLETE

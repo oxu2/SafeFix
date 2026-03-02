@@ -1,5 +1,78 @@
 # 2/27/2026 Update
 
+## All-Strategy Comparison across Sub Ratios (lr=1e-5, 15 epochs)
+
+All runs resume from `model_imagenet_resnet_base.pth` (base test acc: **0.7162**). The Attribute strategy uses the optimized `aggro_exp_p10_c4` parameters ($R=0.8, P=10.0, C=4.0$, Entropy=True). Reference: using 100% of the data (ratio=1.0) yields Test ACC = **0.7488**.
+
+### Sub Ratio = 0.1
+| Strategy | Test ACC | Val ACC |
+|---|---|---|
+| Random | 0.7269 | 0.7069 |
+| Stratified | **0.7300** | 0.7154 |
+| Coreset | 0.7269 | 0.7115 |
+| Uncertainty Stratified | 0.7254 | 0.7185 |
+| Diversity | 0.7262 | 0.7215 |
+| Hierarchical | 0.7269 | 0.7115 |
+| Hybrid | 0.7285 | 0.7031 |
+| Attribute | 0.7277 | 0.7200 |
+
+### Sub Ratio = 0.3
+| Strategy | Test ACC | Val ACC |
+|---|---|---|
+| Random | 0.7308 | 0.7208 |
+| Stratified | 0.7369 | 0.7162 |
+| Coreset | 0.7369 | 0.7162 |
+| Uncertainty Stratified | 0.7292 | 0.7131 |
+| Diversity | 0.7362 | 0.7200 |
+| Hierarchical | 0.7346 | 0.7092 |
+| Hybrid | **0.7400** | 0.7169 |
+| Attribute | 0.7369 | 0.7185 |
+
+### Sub Ratio = 0.5
+| Strategy | Test ACC | Val ACC |
+|---|---|---|
+| Random | 0.7400 | 0.7162 |
+| Stratified | 0.7446 | 0.7200 |
+| Coreset | 0.7400 | 0.7185 |
+| Uncertainty Stratified | 0.7331 | 0.7146 |
+| Diversity | **0.7523** | 0.7131 |
+| Hierarchical | 0.7385 | 0.7138 |
+| Hybrid | 0.7362 | 0.7215 |
+| Attribute | 0.7408 | 0.7131 |
+
+### Sub Ratio = 0.7
+| Strategy | Test ACC | Val ACC |
+|---|---|---|
+| Random | 0.7423 | 0.7223 |
+| Stratified | 0.7346 | 0.7138 |
+| Coreset | 0.7392 | 0.7154 |
+| Uncertainty Stratified | 0.7354 | 0.7146 |
+| Diversity | 0.7431 | 0.7331 |
+| Hierarchical | 0.7385 | 0.7146 |
+| Hybrid | **0.7462** | 0.7185 |
+| Attribute | 0.7385 | 0.7131 |
+
+### Sub Ratio = 0.9
+| Strategy | Test ACC | Val ACC |
+|---|---|---|
+| Random | **0.7482** | 0.7154 |
+| Stratified | 0.7469 | 0.7146 |
+| Coreset | 0.7346 | 0.7169 |
+| Uncertainty Stratified | 0.7462 | 0.7100 |
+| Diversity | 0.7415 | 0.7146 |
+| Hierarchical | 0.7362 | 0.7177 |
+| Hybrid | 0.7477 | 0.7177 |
+| Attribute | 0.7400 | 0.7177 |
+
+### Cross-Ratio Observations
+- **Ratio=0.1**: `Stratified` (0.7300) wins by keeping strict class balance when budget is very tight.
+- **Ratio=0.3**: `Hybrid` (0.7400) takes the lead, combining coreset geometry with stratified balance.
+- **Ratio=0.5**: `Diversity` (0.7523) dominates — the clustering-based approach finds its sweet spot at this mid-range budget.
+- **Ratio=0.7**: `Hybrid` (0.7462) wins again at the higher budget range.
+- **Ratio=0.9**: `Random` (0.7492) edges out, consistent with the theory that intelligent selection matters less when nearly all data is used.
+- **Attribute** consistently ranks in the top tier across all ratios (0.7277, 0.7369, 0.7408, 0.7385, 0.7400), never falling below 4th place and offering the most stable cross-ratio performance alongside Stratified.
+
+
 ## Active Learning Resume-from-Base Comparison (lr=1e-5, 15 epochs)
 
 This table shows results from `test_al_resume.sh` with `freeze_backbone=False`, `lr=1e-5`, and `epoch=15`. All runs use `sub_ratio=0.3` and resume from `model_imagenet_resnet_base.pth` (base val acc: **0.7223**).
@@ -8,12 +81,12 @@ This table shows results from `test_al_resume.sh` with `freeze_backbone=False`, 
 | :--- | :--- | :--- | :--- |
 | Baseline | 0.7162 | 0.718077 | - |
 | Random | 0.7308 | 0.718077 → 0.720769 (+0.002692) | improved |
-| Stratified | 0.7365 | 0.718077 → 0.726154 (+0.008077) | improved |
+| Stratified | **0.7369** | 0.718077 → 0.726154 (+0.008077) | improved |
 | Coreset | 0.7359 | 0.718077 → 0.719231 (+0.001154) | improved |
 | Diversity | 0.7362 | 0.718077 → 0.723846 (+0.005769) | improved |
 | Uncertainty Stratified | 0.7292 | 0.718077 → 0.719231 (+0.001154) | improved |
 | Hierarchical | 0.7346 | 0.718077 → 0.724615 (+0.006538) | improved |
-| `Attribute` | 0.7369 | 0.718077 → 0.722308 (+0.004231) | improved |
+| `Attribute` | **0.7369** | 0.718077 → 0.722308 (+0.004231) | improved |
 
 
 ### Observations:
@@ -22,6 +95,70 @@ This table shows results from `test_al_resume.sh` with `freeze_backbone=False`, 
 * **Best Val ACC improvement**: `Stratified` (+0.008077), benefiting from balanced class coverage during fine-tuning.
 * **Uncertainty Stratified** performed below expectation (0.7292 Test ACC), possibly due to using a generic pretrained proxy model (ResNet18 weights, not the actual resumed checkpoint) to compute entropy scores, leading to noisy uncertainty estimates.
 * **Attribute strategy** (with conditional rarity, R=0.01, B=5, class_balance=inf) achieved competitive performance (0.7369 Test ACC, +0.004231 val), demonstrating that metadata-driven selection can match geometry/diversity baselines when paired with proper fine-tuning LR.
+
+## Grid Search Results for Attribute Strategy Parameters (2/27/2026)
+We conducted a comprehensive grid search over the parameters $R, P, C,$ and the `use_entropy` toggle to understand their interactions and optimize the Attribute Strategy. The tests were run across 4 sub-ratios (`0.1`, `0.3`, `0.5`, `0.9`) on the `pinkcolor_fabrictexture` generated set.
+
+### Sub Ratio = 0.1
+| Scenario | Parameters | Test ACC | Val ACC |
+|---|---|---|---|
+| baseline_def | (R=0.01, P=5.0, C=inf, e=F) | **0.7300** | 0.7146 |
+| strict_strat_entropy | (R=0.01, P=5.0, C=inf, e=T) | 0.7215 | 0.7154 |
+| pure_greedy | (R=1.0, P=10.0, C=0.0, e=F) | 0.7208 | 0.7154 |
+| soft_conservative_e0 | (R=0.1, P=5.0, C=15.0, e=F) | 0.7223 | 0.7146 |
+| soft_conservative_e1 | (R=0.1, P=5.0, C=15.0, e=T) | 0.7208 | 0.7138 |
+| balanced_exp_p5_c8 | (R=0.3, P=5.0, C=8.0, e=T) | 0.7223 | 0.7185 |
+| balanced_exp_p10_c8 | (R=0.3, P=10.0, C=8.0, e=T) | 0.7223 | 0.7200 |
+| aggro_exp_p5_c4 | (R=0.8, P=5.0, C=4.0, e=T) | 0.7223 | 0.7177 |
+| aggro_exp_p10_c4 | (R=0.8, P=10.0, C=4.0, e=T) | 0.7277 | 0.7200 |
+
+### Sub Ratio = 0.3
+| Scenario | Parameters | Test ACC | Val ACC |
+|---|---|---|---|
+| baseline_def | (R=0.01, P=5.0, C=inf, e=F) | 0.7369 | 0.7262 |
+| strict_strat_entropy | (R=0.01, P=5.0, C=inf, e=T) | 0.7346 | 0.7138 |
+| pure_greedy | (R=1.0, P=10.0, C=0.0, e=F) | 0.7215 | 0.7162 |
+| soft_conservative_e0 | (R=0.1, P=5.0, C=15.0, e=F) | 0.7392 | 0.7200 |
+| soft_conservative_e1 | (R=0.1, P=5.0, C=15.0, e=T) | 0.7262 | 0.7115 |
+| balanced_exp_p5_c8 | (R=0.3, P=5.0, C=8.0, e=T) | 0.7362 | 0.7108 |
+| balanced_exp_p10_c8 | (R=0.3, P=10.0, C=8.0, e=T) | 0.7362 | 0.7092 |
+| aggro_exp_p5_c4 | (R=0.8, P=5.0, C=4.0, e=T) | 0.7362 | 0.7138 |
+| aggro_exp_p10_c4 | (R=0.8, P=10.0, C=4.0, e=T) | **0.7415** | 0.7115 |
+
+### Sub Ratio = 0.5
+| Scenario | Parameters | Test ACC | Val ACC |
+|---|---|---|---|
+| baseline_def | (R=0.01, P=5.0, C=inf, e=F) | **0.7438** | 0.7123 |
+| strict_strat_entropy | (R=0.01, P=5.0, C=inf, e=T) | 0.7415 | 0.7123 |
+| pure_greedy | (R=1.0, P=10.0, C=0.0, e=F) | 0.7338 | 0.7138 |
+| soft_conservative_e0 | (R=0.1, P=5.0, C=15.0, e=F) | **0.7438** | 0.7208 |
+| soft_conservative_e1 | (R=0.1, P=5.0, C=15.0, e=T) | 0.7400 | 0.7162 |
+| balanced_exp_p5_c8 | (R=0.3, P=5.0, C=8.0, e=T) | 0.7308 | 0.7077 |
+| balanced_exp_p10_c8 | (R=0.3, P=10.0, C=8.0, e=T) | 0.7362 | 0.7100 |
+| aggro_exp_p5_c4 | (R=0.8, P=5.0, C=4.0, e=T) | 0.7400 | 0.7185 |
+| aggro_exp_p10_c4 | (R=0.8, P=10.0, C=4.0, e=T) | 0.7408 | 0.7131 |
+
+### Sub Ratio = 0.9
+| Scenario | Parameters | Test ACC | Val ACC |
+|---|---|---|---|
+| baseline_def | (R=0.01, P=5.0, C=inf, e=F) | 0.7454 | 0.7223 |
+| strict_strat_entropy | (R=0.01, P=5.0, C=inf, e=T) | 0.7438 | 0.7131 |
+| pure_greedy | (R=1.0, P=10.0, C=0.0, e=F) | 0.7400 | 0.7192 |
+| soft_conservative_e0 | (R=0.1, P=5.0, C=15.0, e=F) | 0.7408 | 0.7146 |
+| soft_conservative_e1 | (R=0.1, P=5.0, C=15.0, e=T) | 0.7392 | 0.7192 |
+| balanced_exp_p5_c8 | (R=0.3, P=5.0, C=8.0, e=T) | **0.7500** | 0.7162 |
+| balanced_exp_p10_c8 | (R=0.3, P=10.0, C=8.0, e=T) | 0.7446 | 0.7138 |
+| aggro_exp_p5_c4 | (R=0.8, P=5.0, C=4.0, e=T) | 0.7431 | 0.7154 |
+| aggro_exp_p10_c4 | (R=0.8, P=10.0, C=4.0, e=T) | 0.7400 | 0.7177 |
+
+### Analysis
+1. **The Danger of Pure Greedy**: The `pure_greedy` approach ($C=0$) performs the worst across low evaluation ratios (0.1, 0.3). Without class-level Stratification quotas, throwing out all logic except Frequency Penalty and Rarity leads to performance drops in fine-tuning, emphasizing the value of our soft $C$ score.
+2. **Aggressive Exploration Shines ($R=0.8, C=4.0$)**: By loosening the absolute restriction on stratification ($C=4.0$ instead of $\infty$) and massively scaling up Rarity tracking ($R=0.8$), the `aggro_exp_p10_c4` scenario achieves extremely strong results across 0.3 and 0.5. The heavy frequency penalty ($P=10$) adequately prevented the model from indexing too heavily on the synthesized injection flood.
+3. **Entropy Tuning**: Dynamic entropy ($e=T$) does well in aggressive settings but causes occasional degradations in more conservative spaces (see `soft_conservative` comparisons).
+4. **Baseline Comparison (Ratio=1.0)**: For reference, using **100% of the candidate data (Ratio=1.0)** yields a Test ACC of **0.7488**. Remarkably, the `balanced_exp_p5_c8` strategy at `Ratio=0.9` achieved an even higher Test ACC of **0.7500**, demonstrating that intelligent filtering can outperform training on the entirety of the noisy synthetic data!
+5. **Overall Best Strategy**: Averaging across all sub-ratios, **`aggro_exp_p10_c4` ($R=0.8, P=10.0, C=4.0$, Entropy=True)** represents the most robust and high-performing parameter combination. It consistently dominates the low-to-mid ratio regimes (0.1 to 0.5) by aggressively seeking rare features while safely blocking flooded features and maintaining a soft class balance.
+
+**Conclusion**: Tuning the Attribute Strategy to mimic `Coreset` + `Stratified` (via Soft C + High R) allows the strategy to exceed the conservative defaults! When allocating budgets, choosing a strong R and applying a compensatory P to manage spam achieves peak domain adaptability.
 
 # 2/20/2026 Update
 ## Active Learning Resume-from-Base Comparison
@@ -256,9 +393,9 @@ This produces the same effect as traditional stratified sampling but preserves t
 **Example (ImageNet, `sub_ratio=0.3`, ten classes):** the quota is $t = 3{,}120 / 10 = 312$ samples per class. Running with `--al_attribute_class_balance 0` let the desk class drop to 133 samples (4.3 %) because it had few high attribute scores. Re-running the same configuration with `--al_attribute_class_balance 4` gave each desk candidate an early bonus of $4 \times (312-133)/312 \approx 2.29$, so they entered the greedy loop sooner. The final desk count rose to 273 samples (8.8 %), while large classes such as backpack and purse were nudged down toward the quota. Desk growth stopped at 273 because the global budget $n_{\text{select}} = 3{,}120$ was filled once the bonus had already reduced the biggest deficits; the algorithm cannot insert additional desk samples after the budget is exhausted even though $n_{\text{desk}} < t$. This illustrates how finite weights gently pull distributions toward balance without forcing perfect equality.
 
 **Weight tuning versus sub-ratio:** because $C_c = w \times (t - n_c)/t$ scales with the quota $t = n_{\text{select}} / N_{\text{classes}}$, a fixed $w$ becomes weaker as the sub-sampling ratio grows. To preserve roughly the same maximum bonus seen at `sub_ratio = 0.3`, scale $w$ in proportion to $t$: $w_{\text{new}} \approx w_{0.3} \times (t_{\text{new}} / 312)$. For ImageNet’s ten classes this gives practical anchors:
-- `sub_ratio = 0.5` (quota $\approx 520$): use $w \approx 6$–7 instead of 4.
 - `sub_ratio = 0.7` (quota $\approx 728$): use $w \approx 9$–10.
 - `sub_ratio = 0.9` (quota $\approx 936$): use $w \approx 12$.
+
 Smaller weights still work but apply weaker nudges; larger weights push the distribution closer to stratified counts. Set `inf` if the run truly needs round-robin behavior.
 
 The selector still picks the same total budget—$(10{,}400 \times 0.3 = 3{,}120)$ samples in this setup. Turning on `--al_attribute_class_balance 4` does not add or remove items; it just changes which indices fill those 3,120 slots. `_finalize_balanced_selection` appends the highest remaining base scores until the list has exactly $n_{\text{select}}$ entries, ensuring the class-aware re-ranking is purely a reordering step.

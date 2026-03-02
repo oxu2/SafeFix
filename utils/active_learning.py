@@ -1420,8 +1420,6 @@ def active_learning_selection(train_dataset, val_dataset, args, device, verbose=
             if use_entropy:
                 if verbose:
                     print("Attribute strategy: Loading model and dataloader for dynamic entropy calculation...")
-                import torchvision.models as models
-                from torch.utils.data import DataLoader
                 if args.model == 'resnet':
                     model = models.resnet18(pretrained=True).to(device)
                 else:
