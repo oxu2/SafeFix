@@ -12,9 +12,11 @@ def inference(image_path, prompt, sys_prompt="You are a helpful assistant.", max
     image_local_path = "file://" + image_path
     messages = [
         {"role": "system", "content": sys_prompt},
-        {"role": "user", "content": [
-                {"type": "text", "text": prompt},
-                {"image": image_local_path},
+        {
+            "role": "user",
+            "content": [
+                {"type": "image", "url": image_local_path},
+                {"type": "text", "text": prompt}
             ]
         },
     ]
@@ -82,15 +84,15 @@ def inference_with_api(image_path, prompt, sys_prompt="You are a helpful assista
 
 
 import torch
-from transformers import Qwen2_5_VLForConditionalGeneration, AutoProcessor
-model_path = "Qwen/Qwen2.5-VL-7B-Instruct"
-model = Qwen2_5_VLForConditionalGeneration.from_pretrained(model_path, torch_dtype=torch.bfloat16, 
+from transformers import AutoModelForImageTextToText, AutoProcessor
+model_path = "Qwen/Qwen3-VL-8B-Instruct"  # You can also use "Qwen/Qwen2.5-VL-7B-Instruct"
+model = AutoModelForImageTextToText.from_pretrained(model_path, torch_dtype=torch.bfloat16, 
 # attn_implementation="flash_attention_2", 
 device_map="auto")
 processor = AutoProcessor.from_pretrained(model_path)
 
 
-image_path = ".vscode/140511748452820_.pic.jpg"
+image_path = "exampleData/bird.jpg"
 prompt = "What kind of bird is this? Please give its name in Chinese and English and 学名. I am living in Texas."
 
 image = Image.open(image_path)

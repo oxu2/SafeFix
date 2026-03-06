@@ -1,0 +1,16 @@
+nohup: ignoring input
+Loading Qwen2.5-VL-7B-Instruct model...
+Using 2 GPU(s) with 12GiB memory allocation each
+Model loaded.
+Found 10 classes: ['backpack', 'barber_chair', 'coffee_mug', 'desk', 'electric_guitar', 'park_bench', 'pitcher', 'purse', 'rocking_chair', 'water_bottle']
+Total images: 13000
+Corpus attributes: ['color', 'background', 'texture']
+
+Processing 13000 images across 3 attributes...
+Attributes: ['color', 'background', 'texture']
+/people/cs/o/oxx220000/.conda/envs/ad/lib/python3.9/site-packages/transformers/generation/configuration_utils.py:629: UserWarning: `do_sample` is set to `False`. However, `temperature` is set to `1e-06` -- this flag is only used in sample-based generation modes. You should set `do_sample=True` or unset `temperature`.
+  warnings.warn(
+[1/13000] Processed 1 images, 10.38s this image, avg 10.38s/img, ETA 2249.8min
+[100/13000] Processed 100 images, 5.78s this image, avg 6.81s/img, ETA 1464.3min
+[200/13000] Processed 200 images, 6.29s this image, avg 6.74s/img, ETA 1437.2min
+[300/13000] Processed 300 images, 8.44s this image, avg 6.60s/img, ETA 1396.9min

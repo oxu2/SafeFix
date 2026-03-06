@@ -38,3 +38,56 @@ Epoch [10/15], Train Loss: 0.2890, Train Acc: 0.9167, Val Loss: 0.8948, Val Acc:
 Epoch [11/15], Train Loss: 0.2806, Train Acc: 0.9213, Val Loss: 0.8919, Val Acc: 0.7123
 Epoch [12/15], Train Loss: 0.2797, Train Acc: 0.9189, Val Loss: 0.8859, Val Acc: 0.7185
 Epoch [13/15], Train Loss: 0.2791, Train Acc: 0.9224, Val Loss: 0.8888, Val Acc: 0.7185
+Epoch [14/15], Train Loss: 0.2774, Train Acc: 0.9228, Val Loss: 0.8847, Val Acc: 0.7100
+Epoch [15/15], Train Loss: 0.2741, Train Acc: 0.9262, Val Loss: 0.8834, Val Acc: 0.7169
+Held-out test accuracy: 0.7400, test loss: 0.7998
+Generating and saving predictions...
+Prediction segments -> train: 11400, val: 1300, test: 1300
+Combined predictions length: 13000
+Total training time for 15 epochs: 236.90 seconds
+Total Active Learning selection time: 0.00 seconds
+End-to-end wall time (data prep + selection + training + setup): 238.14 seconds
+
+Running model diagnostics on generated predictions...
+Model Test ACC: 0.74
+Start detect_prediction_correlation
+
+ACC: 0.684932 	Rare Case: attribute "color", description "red"
+ACC: 0.718447 	Rare Case: attribute "color", description "brown"
+ACC: 0.666667 	Rare Case: attribute "color", description "silver"
+ACC: 0.625000 	Rare Case: attribute "color", description "maroon"
+ACC: 0.674797 	Hard case: attribute "color", description "multicolored"
+ACC: 0.695122 	Hard case: attribute "background", description "trees"
+ACC: 0.571429 	Rare Case: attribute "background", description "buildings"
+ACC: 0.698113 	Hard case: attribute "background", description "grass"
+ACC: 0.680000 	Rare Case: attribute "background", description "rocks"
+ACC: 0.000000 	Rare Case: attribute "background", description "bridge"
+ACC: 0.714286 	Rare Case: attribute "background", description "water"
+ACC: 0.688679 	Rare Case: attribute "background", description "house"
+ACC: 0.693878 	Rare Case: attribute "texture", description "plastic"
+ACC: 0.685185 	Rare Case: attribute "texture", description "fabric"
+ACC: 0.711790 	Hard case: attribute "texture", description "glass"
+
+Comparing accuracy with log file: logs/compare/stat_imagenet_resnet_compare.log
+Overall accuracy: 0.718077 -> 0.729231: improved
+
+Attribute-specific accuracy comparison:
+color, green, 0.674419 -> 0.734375: improved
+color, pink, 0.699029 -> 0.786885: improved
+color, tan, 0.700000 -> 0.750000: improved
+color, orange, 0.690909 -> 0.800000: improved
+color, yellow, 0.688889 -> 0.732143: improved
+color, purple, 0.684211 -> 0.777778: improved
+color, black, 0.665289 -> 0.735099: improved
+background, sky, 0.698630 -> 0.727273: improved
+background, inside a house, 0.691684 -> 0.729569: improved
+background, buildings, 0.707317 -> 0.571429: declined
+background, rocks, 0.659091 -> 0.680000: improved
+background, street, 0.662162 -> 0.863636: improved
+texture, metallic, 0.676471 -> 0.850000: improved
+texture, wooden, 0.698393 -> 0.726708: improved
+texture, leather, 0.588235 -> 0.857143: improved
+texture, fabric, 0.658537 -> 0.685185: improved
+
+Compared 16 attribute-specific accuracies.
+Current time: 0302145933

@@ -8,13 +8,12 @@ All runs resume from `model_imagenet_resnet_base.pth` (base test acc: **0.7162**
 | Strategy | Test ACC | Val ACC |
 |---|---|---|
 | Random | 0.7269 | 0.7069 |
-| Stratified | **0.7300** | 0.7154 |
+| Stratified | 0.7271 | 0.7154 |
 | Coreset | 0.7269 | 0.7115 |
 | Uncertainty Stratified | 0.7254 | 0.7185 |
 | Diversity | 0.7262 | 0.7215 |
 | Hierarchical | 0.7269 | 0.7115 |
-| Hybrid | 0.7285 | 0.7031 |
-| Attribute | 0.7277 | 0.7200 |
+| Attribute | **0.7277** | 0.7200 |
 
 ### Sub Ratio = 0.3
 | Strategy | Test ACC | Val ACC |
@@ -25,7 +24,6 @@ All runs resume from `model_imagenet_resnet_base.pth` (base test acc: **0.7162**
 | Uncertainty Stratified | 0.7292 | 0.7131 |
 | Diversity | 0.7362 | 0.7200 |
 | Hierarchical | 0.7346 | 0.7092 |
-| Hybrid | **0.7400** | 0.7169 |
 | Attribute | 0.7369 | 0.7185 |
 
 ### Sub Ratio = 0.5
@@ -155,7 +153,7 @@ We conducted a comprehensive grid search over the parameters $R, P, C,$ and the 
 1. **The Danger of Pure Greedy**: The `pure_greedy` approach ($C=0$) performs the worst across low evaluation ratios (0.1, 0.3). Without class-level Stratification quotas, throwing out all logic except Frequency Penalty and Rarity leads to performance drops in fine-tuning, emphasizing the value of our soft $C$ score.
 2. **Aggressive Exploration Shines ($R=0.8, C=4.0$)**: By loosening the absolute restriction on stratification ($C=4.0$ instead of $\infty$) and massively scaling up Rarity tracking ($R=0.8$), the `aggro_exp_p10_c4` scenario achieves extremely strong results across 0.3 and 0.5. The heavy frequency penalty ($P=10$) adequately prevented the model from indexing too heavily on the synthesized injection flood.
 3. **Entropy Tuning**: Dynamic entropy ($e=T$) does well in aggressive settings but causes occasional degradations in more conservative spaces (see `soft_conservative` comparisons).
-4. **Baseline Comparison (Ratio=1.0)**: For reference, using **100% of the candidate data (Ratio=1.0)** yields a Test ACC of **0.7488**. Remarkably, the `balanced_exp_p5_c8` strategy at `Ratio=0.9` achieved an even higher Test ACC of **0.7500**, demonstrating that intelligent filtering can outperform training on the entirety of the noisy synthetic data!
+4. **Baseline Comparison (Ratio=1.0)**: For reference, using **100% of the candidate data (Ratio=1.0)** yields a Test ACC of **0.7400**. Using SafeFix’s method, updating all source data and generated images for 30 epochs results in a Test ACC of **0.7438**. Remarkably, the `balanced_exp_p5_c8` strategy at `Ratio=0.9` achieved an even higher Test ACC of **0.7500**, demonstrating that intelligent filtering can outperform training on the entirety of the noisy synthetic data!
 5. **Overall Best Strategy**: Averaging across all sub-ratios, **`aggro_exp_p10_c4` ($R=0.8, P=10.0, C=4.0$, Entropy=True)** represents the most robust and high-performing parameter combination. It consistently dominates the low-to-mid ratio regimes (0.1 to 0.5) by aggressively seeking rare features while safely blocking flooded features and maintaining a soft class balance.
 
 **Conclusion**: Tuning the Attribute Strategy to mimic `Coreset` + `Stratified` (via Soft C + High R) allows the strategy to exceed the conservative defaults! When allocating budgets, choosing a strong R and applying a compensatory P to manage spam achieves peak domain adaptability.

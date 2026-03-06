@@ -1,0 +1,86 @@
+nohup: ignoring input
+Using 2 GPU(s) with 12GiB memory allocation each
+Loading model: Qwen/Qwen2.5-VL-7B-Instruct (Qwen2.5 mode)...
+Model loaded.
+Found 10 classes: ['backpack', 'barber_chair', 'coffee_mug', 'desk', 'electric_guitar', 'park_bench', 'pitcher', 'purse', 'rocking_chair', 'water_bottle']
+Total images: 13000
+Will process only the first 20 images (--stop_at 20)
+Corpus attributes: ['color', 'background', 'texture']
+
+Processing 20 images across 3 attributes...
+Attributes: ['color', 'background', 'texture']
+/people/cs/o/oxx220000/.conda/envs/ad/lib/python3.9/site-packages/transformers/generation/configuration_utils.py:629: UserWarning: `do_sample` is set to `False`. However, `temperature` is set to `1e-06` -- this flag is only used in sample-based generation modes. You should set `do_sample=True` or unset `temperature`.
+  warnings.warn(
+  [0] color: 'black' -> black
+  [0] background: 'insideahouse' -> house
+  [0] texture: 'fabric' -> fabric
+[1/20] Processed 1 images, 10.50s this image, avg 10.50s/img, ETA 3.3min
+  [1] color: 'Green' -> green
+  [1] background: 'wall' -> wall
+  [1] texture: 'fabric' -> fabric
+  [2] color: 'orange' -> orange
+  [2] background: 'wall' -> wall
+  [2] texture: 'fabric' -> fabric
+  [3] color: 'black' -> black
+  [3] background: 'sand' not in list, asking Qwen to remap...
+  [3] background: remapped -> 'rocks'
+  [3] background: 'sand' -> rocks
+  [3] texture: 'fabric' -> fabric
+  [4] color: 'gray' -> gray
+  [4] background: 'wall' -> wall
+  [4] texture: 'Fabric' -> fabric
+  [5] color: 'Blue' -> blue
+  [5] background: 'inside a house' -> inside a house
+  [5] texture: 'Fabric' -> fabric
+  [6] color: 'Red' -> red
+  [6] background: 'white' not in list, asking Qwen to remap...
+  [6] background: remapped -> 'snow'
+  [6] background: 'white' -> snow
+  [6] texture: 'fabric' -> fabric
+  [7] color: 'brown' -> brown
+  [7] background: 'insideahouse' -> house
+  [7] texture: 'fabric' -> fabric
+  [8] color: 'black' -> black
+  [8] background: 'white' not in list, asking Qwen to remap...
+  [8] background: remapped -> 'snow'
+  [8] background: 'white' -> snow
+  [8] texture: 'fabric' -> fabric
+  [9] color: 'blue' -> blue
+  [9] background: 'insideahouse' -> house
+  [9] texture: 'fabric' -> fabric
+  [10] color: 'orange' -> orange
+  [10] background: 'sky' -> sky
+  [10] texture: 'Plastic' -> plastic
+  [11] color: 'Blue' -> blue
+  [11] background: 'wall' -> wall
+  [11] texture: 'fabric' -> fabric
+  [12] color: 'pink' -> pink
+  [12] background: 'inside a house' -> inside a house
+  [12] texture: 'fabric' -> fabric
+  [13] color: 'blue' -> blue
+  [13] background: 'inside a house' -> inside a house
+  [13] texture: 'fabric' -> fabric
+  [14] color: 'black' -> black
+  [14] background: 'insideahouse' -> house
+  [14] texture: 'fabric' -> fabric
+  [15] color: 'black' -> black
+  [15] background: 'insideahouse' -> house
+  [15] texture: 'fabric' -> fabric
+  [16] color: 'Red' -> red
+  [16] background: 'white' not in list, asking Qwen to remap...
+  [16] background: remapped -> 'snow'
+  [16] background: 'white' -> snow
+  [16] texture: 'fabric' -> fabric
+  [17] color: 'Green' -> green
+  [17] background: 'insideahouse' -> house
+  [17] texture: 'fabric' -> fabric
+  [18] color: 'green' -> green
+  [18] background: 'trees' -> trees
+  [18] texture: 'metallic' -> metallic
+  [19] color: 'black' -> black
+  [19] background: 'insideahouse' -> house
+  [19] texture: 'fabric' -> fabric
+
+Done. Processed 20 images in 2.5 minutes (0.04 hours)
+Average time per image: 7.46s
+Saved attribute annotations to save/attribute10_qwen.json

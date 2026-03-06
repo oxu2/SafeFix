@@ -1,0 +1,83 @@
+nohup: ignoring input
+Switching to conda environment 'qwen' (current: ad)
+`torch_dtype` is deprecated! Use `dtype` instead!
+The following generation flags are not valid and may be ignored: ['top_p', 'top_k']. Set `TRANSFORMERS_VERBOSITY=info` for more details.
+
+Output file: save/attribute10_qwen3_8B_20.json
+Partial file: save/attribute10_qwen3_8B_20_partial.json
+Using 2 GPU(s) with 12GiB memory allocation each
+Loading model: Qwen/Qwen3-VL-8B-Instruct (Qwen3 mode)...
+Model loaded.
+Found 10 classes: ['backpack', 'barber_chair', 'coffee_mug', 'desk', 'electric_guitar', 'park_bench', 'pitcher', 'purse', 'rocking_chair', 'water_bottle']
+Total images: 13000
+Will process only the first 20 images (--stop_at 20)
+Corpus attributes: ['color', 'background', 'texture']
+
+Processing 20 images across 3 attributes...
+Attributes: ['color', 'background', 'texture']
+  [0] color: 'black' -> black
+  [0] background: 'inside a house' -> inside a house
+  [0] texture: 'fabric' -> fabric
+[1/20] Processed 1 images, 2.85s this image, avg 2.85s/img, ETA 0.9min
+  [1] color: 'green' -> green
+  [1] background: 'wall' -> wall
+  [1] texture: 'fabric' -> fabric
+  [2] color: 'orange' -> orange
+  [2] background: 'wall' -> wall
+  [2] texture: 'fabric' -> fabric
+  [3] color: 'black' -> black
+  [3] background: 'wild' -> wild
+  [3] texture: 'fabric' -> fabric
+  [4] color: 'gray' -> gray
+  [4] background: 'wall' -> wall
+  [4] texture: 'fabric' -> fabric
+  [5] color: 'gray' -> gray
+  [5] background: 'wall' -> wall
+  [5] texture: 'fabric' -> fabric
+  [6] color: 'red' -> red
+  [6] background: 'wall' -> wall
+  [6] texture: 'fabric' -> fabric
+  [7] color: 'multicolored' -> multicolored
+  [7] background: 'inside a house' -> inside a house
+  [7] texture: 'fabric' -> fabric
+  [8] color: 'black' -> black
+  [8] background: 'wall' -> wall
+  [8] texture: 'fabric' -> fabric
+  [9] color: 'blue' -> blue
+  [9] background: 'wall' -> wall
+  [9] texture: 'fabric' -> fabric
+  [10] color: 'orange' -> orange
+  [10] background: 'wall' -> wall
+  [10] texture: 'ceramic' -> ceramic
+  [11] color: 'black' -> black
+  [11] background: 'wall' -> wall
+  [11] texture: 'fabric' -> fabric
+  [12] color: 'pink' -> pink
+  [12] background: 'wall' -> wall
+  [12] texture: 'fabric' -> fabric
+  [13] color: 'blue' -> blue
+  [13] background: 'inside a house' -> inside a house
+  [13] texture: 'fabric' -> fabric
+  [14] color: 'black' -> black
+  [14] background: 'wall' -> wall
+  [14] texture: 'fabric' -> fabric
+  [15] color: 'black' -> black
+  [15] background: 'inside a house' -> inside a house
+  [15] texture: 'fabric' -> fabric
+  [16] color: 'blue' -> blue
+  [16] background: 'wall' -> wall
+  [16] texture: 'fabric' -> fabric
+  [17] color: 'green' -> green
+  [17] background: 'wall' -> wall
+  [17] texture: 'fabric' -> fabric
+  [18] color: 'black' -> black
+  [18] background: 'wall' -> wall
+  [18] texture: 'fabric' -> fabric
+  [19] color: 'black' -> black
+  [19] background: 'wall' -> wall
+  [19] texture: 'fabric' -> fabric
+
+Done. Processed 20 images in 0.7 minutes (0.01 hours)
+Average time per image: 2.17s
+Saved attribute annotations to save/attribute10_qwen3_8B_20.json
+
