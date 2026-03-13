@@ -1,3 +1,47 @@
+# 3/13/2026 Update
+
+## Small Sub-Ratio Comparison (From-Scratch Training, 30 Epochs)
+
+Runs for sub_ratio = 0.01 and 0.05 train ResNet-18 **from scratch** (no pretrained base) for 30 epochs on the `pinkcolor_fabrictexture` ImageNet split with 1000 generated images. Sub-ratio = 0.1 results use the resume-from-base setting (lr=1e-5, 15 epochs) and are provided here alongside the smaller ratios for a unified small-budget view.
+
+### Sub Ratio = 0.01
+| Strategy | Test ACC | Val ACC |
+|---|---|---|
+| Random | 0.3323 | 0.3177 |
+| Stratified | 0.3154 | 0.3100 |
+| Diversity | 0.3269 | 0.3115 |
+| Hybrid | **0.3323** | 0.2931 |
+| Coreset | 0.2846 | 0.2462 |
+
+### Sub Ratio = 0.05
+| Strategy | Test ACC | Val ACC |
+|---|---|---|
+| Random | 0.3977 | 0.3777 |
+| Stratified | 0.3931 | 0.3762 |
+| Diversity | 0.4162 | 0.3800 |
+| **Hybrid** | **0.4169** | **0.3923** |
+| Coreset | 0.3246 | 0.3069 |
+
+### Sub Ratio = 0.1 (Resume from Base, lr=1e-5, 15 Epochs)
+| Strategy | Test ACC | Val ACC |
+|---|---|---|
+| Random | 0.7269 | 0.7069 |
+| **Stratified** | **0.7300** | 0.7154 |
+| Coreset | 0.7269 | 0.7115 |
+| Diversity | 0.7262 | **0.7215** |
+| Hybrid | 0.7285 | 0.7031 |
+| Hierarchical | 0.7269 | 0.7115 |
+| Uncertainty Stratified | 0.7254 | 0.7185 |
+| Attribute | 0.7277 | 0.7200 |
+
+### Cross-Ratio Observations
+- **Ratio=0.01**: Extremely sparse budget. `Random` and `Hybrid` tie for best Test ACC (0.3323). `Coreset` underperforms significantly (0.2846) — with so few samples the geometry-based coreset distances are noisy. From-scratch training at 1% data is close to chance for a 10-class problem (random chance ≈ 0.10), so all strategies still struggle.
+- **Ratio=0.05**: `Hybrid` (Test 0.4169, Val 0.3923) and `Diversity` (0.4162) pull ahead, benefiting from cluster-based coverage. `Coreset` again lags (0.3246), likely because the pool at 5% is still too thin to build a reliable geometry.
+- **Ratio=0.1**: Jumping to the resume setting yields a large accuracy boost (≈0.33 → 0.73) because the backbone starts from a well-trained base. `Stratified` (0.7300) takes the top Test ACC; `Diversity` achieves the highest Val ACC (0.7215), indicating better generalization on unseen validation data.
+- **Reasonable picks across the three ratios**: `Hybrid` at 0.01 and 0.05; `Stratified` or `Attribute` at 0.1 — all are stable, non-degenerate choices that consistently outperform or match `Random`.
+
+---
+
 # 2/27/2026 Update
 
 ## All-Strategy Comparison across Sub Ratios (lr=1e-5, 15 epochs)
