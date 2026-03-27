@@ -1,0 +1,5 @@
+--- [GPU 0] Starting Qwen3 Ratio 0.7 ---
+--- [GPU 1] Starting InternVL3 Ratio 0.7 ---
+=== [GPU 0] Qwen3 Runs Finished ===
+=== [GPU 1] InternVL3 Runs Finished ===
+All 0.7 runs completed.

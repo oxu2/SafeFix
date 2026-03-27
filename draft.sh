@@ -1,3 +1,7 @@
+nohup python3 predict_focal.py --dataset celeba --model resnet --ltl_baseline focal --gpu 2 > logs/focal_celeba_resnet.log 2>&1 &
+
+CUDA_VISIBLE_DEVICES=2 python predict_focal.py --dataset imagenet --model resnet --ltl_baseline focal --focal_gamma 3.0 --num_epochs 1 
+
 CUDA_VISIBLE_DEVICES=2 nohup python -u alpred.py \
   --dataset imagenet --model resnet --num_added_img 1000 \
   --attributes pinkcolor_fabrictexture --num_epochs 15 \

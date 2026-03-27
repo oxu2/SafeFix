@@ -1,52 +1,8 @@
 # 3/13/2026 Update
 
-## Small Sub-Ratio Comparison (From-Scratch Training, 30 Epochs)
-
-Runs for sub_ratio = 0.01 and 0.05 train ResNet-18 **from scratch** (no pretrained base) for 30 epochs on the `pinkcolor_fabrictexture` ImageNet split with 1000 generated images. Sub-ratio = 0.1 results use the resume-from-base setting (lr=1e-5, 15 epochs) and are provided here alongside the smaller ratios for a unified small-budget view.
-
-### Sub Ratio = 0.01
-| Strategy | Test ACC | Val ACC |
-|---|---|---|
-| Random | 0.3323 | 0.3177 |
-| Stratified | 0.3154 | 0.3100 |
-| Diversity | 0.3269 | 0.3115 |
-| Hybrid | **0.3323** | 0.2931 |
-| Coreset | 0.2846 | 0.2462 |
-
-### Sub Ratio = 0.05
-| Strategy | Test ACC | Val ACC |
-|---|---|---|
-| Random | 0.3977 | 0.3777 |
-| Stratified | 0.3931 | 0.3762 |
-| Diversity | 0.4162 | 0.3800 |
-| **Hybrid** | **0.4169** | **0.3923** |
-| Coreset | 0.3246 | 0.3069 |
-
-### Sub Ratio = 0.1 (Resume from Base, lr=1e-5, 15 Epochs)
-| Strategy | Test ACC | Val ACC |
-|---|---|---|
-| Random | 0.7269 | 0.7069 |
-| **Stratified** | **0.7300** | 0.7154 |
-| Coreset | 0.7269 | 0.7115 |
-| Diversity | 0.7262 | **0.7215** |
-| Hybrid | 0.7285 | 0.7031 |
-| Hierarchical | 0.7269 | 0.7115 |
-| Uncertainty Stratified | 0.7254 | 0.7185 |
-| Attribute | 0.7277 | 0.7200 |
-
-### Cross-Ratio Observations
-- **Ratio=0.01**: Extremely sparse budget. `Random` and `Hybrid` tie for best Test ACC (0.3323). `Coreset` underperforms significantly (0.2846) — with so few samples the geometry-based coreset distances are noisy. From-scratch training at 1% data is close to chance for a 10-class problem (random chance ≈ 0.10), so all strategies still struggle.
-- **Ratio=0.05**: `Hybrid` (Test 0.4169, Val 0.3923) and `Diversity` (0.4162) pull ahead, benefiting from cluster-based coverage. `Coreset` again lags (0.3246), likely because the pool at 5% is still too thin to build a reliable geometry.
-- **Ratio=0.1**: Jumping to the resume setting yields a large accuracy boost (≈0.33 → 0.73) because the backbone starts from a well-trained base. `Stratified` (0.7300) takes the top Test ACC; `Diversity` achieves the highest Val ACC (0.7215), indicating better generalization on unseen validation data.
-- **Reasonable picks across the three ratios**: `Hybrid` at 0.01 and 0.05; `Stratified` or `Attribute` at 0.1 — all are stable, non-degenerate choices that consistently outperform or match `Random`.
-
----
-
-# 2/27/2026 Update
-
 ## All-Strategy Comparison across Sub Ratios (lr=1e-5, 15 epochs)
 
-All runs resume from `model_imagenet_resnet_base.pth` (base test acc: **0.7162**). The Attribute strategy uses the optimized `aggro_exp_p10_c4` parameters ($R=0.8, P=10.0, C=4.0$, Entropy=True). Reference: using 100% of the data (ratio=1.0) yields Test ACC = **0.7488**.
+All runs resume from `model_imagenet_resnet_base.pth` (base test acc: **0.7162**). The Attribute strategy uses the optimized `aggro_exp_p10_c4` parameters ($R=0.8, P=10.0, C=4.0$, Entropy=True). Reference: using 100% of the data (ratio=1.0) yields Test ACC = **0.7488**. The 3/13 update adds two new LLM-based attribute generation results (`Qwen3` and `InternVL3`) to compare alongside the default BLIP-based attribute assignment.
 
 ### Sub Ratio = 0.1
 | Strategy | Test ACC | Val ACC |
@@ -57,7 +13,9 @@ All runs resume from `model_imagenet_resnet_base.pth` (base test acc: **0.7162**
 | Uncertainty Stratified | 0.7254 | 0.7185 |
 | Diversity | 0.7262 | 0.7215 |
 | Hierarchical | 0.7269 | 0.7115 |
-| Attribute | **0.7277** | 0.7200 |
+| Attribute (BLIP) | 0.7277 | 0.7200 |
+| Attribute (Qwen3) | 0.7331 | 0.7231 |
+| Attribute (InternVL3) | **0.7346** | 0.7285 |
 
 ### Sub Ratio = 0.3
 | Strategy | Test ACC | Val ACC |
@@ -68,7 +26,9 @@ All runs resume from `model_imagenet_resnet_base.pth` (base test acc: **0.7162**
 | Uncertainty Stratified | 0.7292 | 0.7131 |
 | Diversity | 0.7362 | 0.7200 |
 | Hierarchical | 0.7346 | 0.7092 |
-| Attribute | 0.7369 | 0.7185 |
+| Attribute (BLIP) | 0.7369 | 0.7185 |
+| Attribute (Qwen3) | 0.7354 | 0.7077 |
+| Attribute (InternVL3) | **0.7385** | 0.7108 |
 
 ### Sub Ratio = 0.5
 | Strategy | Test ACC | Val ACC |
@@ -77,42 +37,83 @@ All runs resume from `model_imagenet_resnet_base.pth` (base test acc: **0.7162**
 | Stratified | 0.7446 | 0.7200 |
 | Coreset | 0.7400 | 0.7185 |
 | Uncertainty Stratified | 0.7331 | 0.7146 |
-| Diversity | **0.7523** | 0.7131 |
 | Hierarchical | 0.7385 | 0.7138 |
 | Hybrid | 0.7362 | 0.7215 |
-| Attribute | 0.7408 | 0.7131 |
+| Attribute (BLIP) | 0.7408 | 0.7131 |
+| Attribute (Qwen3) | 0.7362 | 0.7138 |
+| Attribute (InternVL3) | **0.7495** | **0.7286** |
 
 ### Sub Ratio = 0.7
 | Strategy | Test ACC | Val ACC |
 |---|---|---|
-| Random | 0.7423 | 0.7223 |
+| Random | **0.7423** | **0.7223** |
 | Stratified | 0.7346 | 0.7138 |
 | Coreset | 0.7392 | 0.7154 |
 | Uncertainty Stratified | 0.7354 | 0.7146 |
-| Diversity | 0.7431 | 0.7331 |
 | Hierarchical | 0.7385 | 0.7146 |
-| Hybrid | **0.7462** | 0.7185 |
-| Attribute | 0.7385 | 0.7131 |
+| Attribute (BLIP) | 0.7385 | 0.7131 |
+| Attribute (Qwen3) | 0.7415 | 0.7192 |
+| Attribute (InternVL3) | 0.7413 | 0.7100 |
 
 ### Sub Ratio = 0.9
 | Strategy | Test ACC | Val ACC |
 |---|---|---|
-| Random | **0.7482** | 0.7154 |
+| Random | 0.7482 | 0.7154 |
 | Stratified | 0.7469 | 0.7146 |
 | Coreset | 0.7346 | 0.7169 |
 | Uncertainty Stratified | 0.7462 | 0.7100 |
 | Diversity | 0.7415 | 0.7146 |
 | Hierarchical | 0.7362 | 0.7177 |
 | Hybrid | 0.7477 | 0.7177 |
-| Attribute | 0.7400 | 0.7177 |
+| Attribute (BLIP) | 0.7400 | 0.7177 |
+| Attribute (Qwen3) | 0.7492 | 0.7108 |
+| Attribute (InternVL3) | **0.7531** | **0.7346** |
 
-### Cross-Ratio Observations
-- **Ratio=0.1**: `Stratified` (0.7300) wins by keeping strict class balance when budget is very tight.
-- **Ratio=0.3**: `Hybrid` (0.7400) takes the lead, combining coreset geometry with stratified balance.
-- **Ratio=0.5**: `Diversity` (0.7523) dominates — the clustering-based approach finds its sweet spot at this mid-range budget.
-- **Ratio=0.7**: `Hybrid` (0.7462) wins again at the higher budget range.
-- **Ratio=0.9**: `Random` (0.7492) edges out, consistent with the theory that intelligent selection matters less when nearly all data is used.
-- **Attribute** consistently ranks in the top tier across all ratios (0.7277, 0.7369, 0.7408, 0.7385, 0.7400), never falling below 4th place and offering the most stable cross-ratio performance alongside Stratified.
+
+---
+
+## Low Budget Active Learning Comparison (ratios: 0.01, 0.02, 0.05)
+
+**Manual Selection**: In these experiments, the "Manual Selection" method involves hand-picking images where the target object (e.g., backpack) is prominent. Because the ImageNet dataset often contains noisy images—some of which do not even feature the intended object—this manual process specifically selects images without cluttered backgrounds. It ensures the target object is large, highly visible, and clearly the main subject of the picture rather than a secondary element.
+
+Runs for sub_ratio = 0.01, 0.02, and 0.05 train ResNet-18 **from scratch** (no pretrained base) for 30 epochs on the `pinkcolor_fabrictexture` ImageNet split with 1000 generated images. Sub-ratio = 0.1 results use the resume-from-base setting (lr=1e-5, 15 epochs) and are provided here alongside the smaller ratios for a unified small-budget view.
+
+### Sub Ratio = 0.01
+| Strategy | Test ACC | Val ACC |
+|---|---|---|
+| Random | 0.3323 | 0.3177 |
+| Stratified | 0.3154 | 0.3100 |
+| Diversity | 0.3269 | 0.3115 |
+| Hybrid | 0.3353 | 0.2931 |
+| Coreset | 0.2846 | 0.2462 |
+| Manual Selection | 0.3385 | 0.3215 |
+
+### Sub Ratio = 0.02
+| Strategy | Test ACC | Val ACC |
+|---|---|---|
+| Random | 0.3669 | 0.3415 |
+| Stratified | 0.3623 | 0.3400 |
+| Diversity | 0.3238 | 0.3015 |
+| Hybrid | 0.3662 | 0.3450 |
+| Coreset | 0.3085 | 0.2815 |
+| Attribute | 0.3669 | 0.3480 |
+| Manual Selection | 0.3650 | 0.3440 |
+
+### Sub Ratio = 0.05
+| Strategy | Test ACC | Val ACC |
+|---|---|---|
+| Random | 0.3977 | 0.3777 |
+| Stratified | 0.3931 | 0.3762 |
+| Diversity | 0.4162 | 0.3800 |
+| Hybrid | 0.4169 | 0.3923 |
+| Coreset | 0.3246 | 0.3069 |
+| Manual Selection | 0.4115 | 0.3862 |
+
+
+
+# 2/27/2026 Update
+
+
 
 
 ## Active Learning Resume-from-Base Comparison (lr=1e-5, 15 epochs)
@@ -241,25 +242,6 @@ All runs use `sub_ratio=0.3`, 1000 generated images, and are trained for 30 epoc
 * The `gen_probe` strategy (Test ACC: 0.5600) underperformed both `random` (0.5754) and `stratified` (0.5908) when trained from scratch in this setup.
 * While the motivation for `gen_probe` is strong (mining hard examples based on domain gap), the strategy might be selecting examples that are *too hard* or outliers, causing the model to struggle to learn generalizable features from scratch. 
 * Tuning the selection metric (e.g., mixing in some random/diversity samples, taking the middle uncertainty instead of absolute highest, or adjusting the `probe` model's training epochs) might be required to make it surpass Stratified/Attribute strategies.
-
----
-
-## Low Budget Active Learning Comparison (ratios: 0.01, 0.02, 0.05)
-
-To evaluate the strategies under extreme data constraints, further trials were conducted from scratch allocating only 1% to 5% of the source data budget along with the 1000 generated images.
-
-| Strategy | 0.01 (104 samples) | 0.02 (208 samples) | 0.05 (520 samples) |
-| :--- | :--- | :--- | :--- |
-| Random | 0.3323 | 0.3669 | 0.3977 |
-| Stratified | 0.3154 | 0.3623 | 0.3931 |
-| Coreset | 0.2846 | 0.3085 | 0.3246 |
-| Diversity | 0.3269 | 0.3238 | 0.4162 |
-| Hybrid | **0.3323** | 0.3662 | **0.4169** |
-| Attribute | 0.3172 | **0.3669** | 0.3969 |
-
-### Observations:
-* Under extreme constraints ($\le 2\%$), basic strategies like **Random** and **Attribute** hold the best ground, whereas geometry-dependent methods like Coreset collapse because the sample size is too sparse to cover the feature space.
-* By $5\%$, the **Hybrid** and **Diversity** strategies begin extracting meaningful features, dominating the board (~0.416), while Coreset still lags behind.
 
 ---
 
