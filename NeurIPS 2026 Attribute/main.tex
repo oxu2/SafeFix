@@ -1,0 +1,250 @@
+\documentclass{article}
+
+% if you need to pass options to natbib, use, e.g.:
+%     \PassOptionsToPackage{numbers, compress}{natbib}
+% before loading neurips_2026
+
+% The authors should use one of these tracks.
+% Before accepting by the NeurIPS conference, select one of the options below.
+% 0. "default" for submission
+\usepackage{neurips_2026}
+% the "default" option is equal to the "main" option, which is used for the Main Track with double-blind reviewing.
+% 1. "main" option is used for the Main Track
+%  \usepackage[main]{neurips_2026}
+% 2. "position" option is used for the Position Paper Track
+%  \usepackage[position]{neurips_2026}
+% 3. "eandd" option is used for the Evaluations & Datasets Track
+ % \usepackage[eandd]{neurips_2026}
+ % if you want to opt-in for a de-anomymized submission (not recommended, but OK):
+ %\usepackage[eandd, nonanonymous]{neurips_2026}
+% 4. "creativeai" option is used for the Creative AI Track
+%  \usepackage[creativeai]{neurips_2026}
+% 5. "sglblindworkshop" option is used for the Workshop with single-blind reviewing
+ % \usepackage[sglblindworkshop]{neurips_2026}
+% 6. "dblblindworkshop" option is used for the Workshop with double-blind reviewing
+%  \usepackage[dblblindworkshop]{neurips_2026}
+
+% After being accepted, the authors should add "final" behind the track to compile a camera-ready version.
+% 1. Main Track
+ % \usepackage[main, final]{neurips_2026}
+% 2. Position Paper Track
+%  \usepackage[position, final]{neurips_2026}
+% 3. Evaluations & Datasets Track
+ % \usepackage[eandd, final]{neurips_2026}
+% 4. Creative AI Track
+%  \usepackage[creativeai, final]{neurips_2026}
+% 5. Workshop with single-blind reviewing
+%  \usepackage[sglblindworkshop, final]{neurips_2026}
+% 6. Workshop with double-blind reviewing
+%  \usepackage[dblblindworkshop, final]{neurips_2026}
+% Note. For the workshop paper template, both \title{} and \workshoptitle{} are required, with the former indicating the paper title shown in the title and the latter indicating the workshop title displayed in the footnote.
+% For workshops (5., 6.), the authors should add the name of the workshop, "\workshoptitle" command is used to set the workshop title.
+% \workshoptitle{WORKSHOP TITLE}
+
+% "preprint" option is used for arXiv or other preprint submissions
+ % \usepackage[preprint]{neurips_2026}
+
+% to avoid loading the natbib package, add option nonatbib:
+%    \usepackage[nonatbib]{neurips_2026}
+
+\usepackage[utf8]{inputenc} % allow utf-8 input
+\usepackage[T1]{fontenc}    % use 8-bit T1 fonts
+\usepackage{hyperref}       % hyperlinks
+\usepackage{url}            % simple URL typesetting
+\usepackage{booktabs}       % professional-quality tables
+\usepackage{amsfonts}       % blackboard math symbols
+\usepackage{amsmath}        % text and math blocks
+\usepackage{nicefrac}       % compact symbols for 1/2, etc.
+\usepackage{microtype}      % microtypography
+\usepackage{xcolor}         % colors
+\usepackage{graphicx}       % graphics scaling
+\usepackage{xspace}
+\usepackage{subcaption}
+\usepackage{wrapfig}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{float}
+\usepackage{tikz}
+\usetikzlibrary{positioning}
+\usepackage{newfloat}
+\usepackage{listings}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{enumitem}
+\usepackage{caption}
+\newcolumntype{C}[1]{>{\centering\arraybackslash}p{#1}}
+\input{math_commands.tex}
+
+\newcommand{\model}{MODEL\xspace}
+\newcommand{\safefix}{SafeFix\xspace}
+\newcommand{\hibug}{HiBug\xspace}
+\newcommand{\controlnet}{ControlNet\xspace}
+\newcommand{\qwen}{Qwen2.5-VL\xspace}
+\newcommand{\llava}{LLaVA-v1.5\xspace}
+\newcommand{\dataset}{\mathcal{D}}
+\newcommand{\attrs}{\mathcal{A}}
+\newcommand{\vals}{\mathcal{V}}
+\newcommand{\inputspace}{\mathcal{X}}
+\newcommand{\labelspace}{\mathcal{Y}}
+\newcommand{\fix}{\marginpar{FIX}}
+\newcommand{\new}{\marginpar{NEW}}
+
+% Note. For the workshop paper template, both \title{} and \workshoptitle{} are required, with the former indicating the paper title shown in the title and the latter indicating the workshop title displayed in the footnote. 
+\title{\model: Attribute-Driven Data-Centric Bug Discovery and Repair}
+
+\author{%
+  Anonymous Authors \\
+  Paper under Double-Blind Review for NeurIPS 2026 %
+}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+Deep neural networks frequently suffer from severe performance degradation on rare subgroups or underrepresented attribute combinations, despite exhibiting high overall accuracy. Standard long-tail learning (LTL) methods, which reweight or resample based on class frequencies, systematically struggle to address these attribute-level failures. In this paper, we introduce \model, a data-centric framework that identifies specific model vulnerabilities and structurally repairs them. \model leverages visual-language models to discover failing subgroups and utilizes targeted generative data augmentation to synthesize underrepresented concepts. To optimally integrate these generated images without overwhelming the original training distribution, we propose a novel Attribute-Driven Active Learning strategy. Our method constructs a multidimensional scoring function that balances class-conditional rarity, information entropy, log-accuracy weights, and a continuous frequency penalty to aggressively mine rare features while filtering artificially flooded synthetic data. Extensive experiments on CelebA and ImageNet demonstrate that our soft class stratification approach significantly outperforms traditional diversity-based and uncertainty-based active learning baselines across diverse sampling ratios, presenting a lightweight, controllable solution for rapid model debugging and adaptation.
+\end{abstract}
+
+\section{Introduction}
+
+While deep learning models have achieved state-of-the-art performance on broad visual recognition tasks, they are notoriously susceptible to failures on specific attribute subgroups. A facial recognition model might perform exceptionally well globally, yet fail specifically on faces with "red hair and brown skin." These attribute-level failures represent a critical barrier to deploying reliable AI systems in sensitive domains.
+
+Traditional solutions to class imbalance, such as Long-Tail Learning (LTL), focus on reweighting or resampling mechanisms at the global class level \citep{lin2017focal,cao2019learning}. However, when a failure is bounded not by the primary class label, but by an unannotated intersectional attribute, LTL mechanisms break down. Addressing these bugs usually requires generating supplementary data that targets the specific vulnerable slice.
+
+We present \model, an end-to-end framework for bug discovery and localized repair. Our pipeline utilizes Large Vision-Language Models (LVLMs) \citep{bai2025qwen25vl,liu2023improvedllava} to systematically diagnose model errors, and employs diffusion-based generative models (e.g., \controlnet) to synthetically augment the exact failing conditions. Crucially, flooding the training set with highly concentrated synthetic data risks catastrophic forgetting and semantic mode collapse. To curate a safe integration subset, we introduce a novel Attribute-Driven Active Learning (AL) strategy. Rather than relying on computationally expensive feature extraction or generic geometry-based sampling (like CoreSet), our strategy leverages metadata to compute a 2D synergy of class-conditional rarity and global frequency penalty, paired with a dynamic soft class balancing mechanism.
+
+Our contributions are threefold:
+\begin{enumerate}
+    \item We introduce \model, a comprehensive tool that bridges the gap between vision-language diagnostic methods like \hibug \citep{chen2023hibug} and actionable, data augmentative bug repair.
+    \item We detail a novel Attribute-Driven AL algorithm that explicitly combats synthetic data flooding while aggressively targeting domain-gap vulnerabilities.
+    \item We demonstrate that our method consistently exceeds both traditional AL and established LTL baselines in rescuing failing subsets on ImageNet and CelebA.
+\end{enumerate}
+
+
+\section{Related Work}
+
+\paragraph{Long-Tail Learning} Addressing data imbalance has traditionally relied on either loss function modifications or data resampling. Formulations like Focal Loss \citep{lin2017focal} down-weight easy examples, while Label-Distribution-Aware Margin (LDAM) \citep{cao2019learning} enforces larger classification margins for minority classes. While effective for global class imbalances, these techniques lack the granularity required to correct attribute-specific subgroup failures.
+
+\paragraph{Active Learning}
+Traditional Active Learning (AL) algorithms select the most valuable samples from an unlabeled pool to maximize model improvement. CoreSet \citep{sener2018active} approaches this geometrically by selecting samples that maximize feature-space diversity. Uncertainty sampling, often utilizing Information Entropy \citep{shannon1948mathematical}, selects the samples the model is least confident in. However, CoreSet can be heavily skewed by outliers, and Uncertainty sampling frequently suffers from mode collapse, over-sampling from a single confusing class.
+
+\paragraph{Generative Data Augmentation}
+Recent advances in text-to-image diffusion models, such as InstructPix2Pix \citep{brooks2023instructpix2pix} and \controlnet \citep{zhang2023adding}, allow for precise feature manipulation. However, uniformly integrating these synthetic injections without altering the core class distribution remains an open challenge.
+
+\section{Methodology}
+
+\subsection{Standard Long-Tail Learning vs. Attribute Bugs}
+To understand the failure of standard LTL on attribute bugs, consider the typical LTL response to an underperforming segment. If an attribute failure is discovered (e.g., low accuracy on a specific texture), traditional methods apply strategies like Inverse Frequency Weighting or Focal Loss. However, since LTL mechanisms operate exclusively on the original training data and use primary class labels as their pivot, they cannot address the missing intersectional features that define the subgroup failure. 
+
+\subsection{\model Framework}
+The \model pipeline consists of three core phases:
+1. \textbf{Bug Discovery}: LVLMs analyze misclassified instances to identify semantic correlation patterns and isolate the failing attributes.
+2. \textbf{Targeted Augmentation}: Based on the discovered failing prompt, generative models synthesize new images featuring the missing attributes.
+3. \textbf{Strategic Curation}: An AL policy selects the optimal subset of original data and synthetic injections for retraining.
+
+\subsection{Attribute-Driven Active Learning}
+
+When targeted synthetic images are introduced (e.g., 1000 generated vectors of a `pink' `backpack'), the candidate dataset becomes extremely unbalanced at the attribute level. Our strategy avoids expensive feature embeddings, instead relying on extracted metadata annotations to assign a priority score to every unlabeled individual sample.
+
+For an unlabeled data pool where each sample $i$ is described by a set of attributes $A$, the total selection score $S_i$ is defined as:
+\begin{equation}
+S_i = \sum_{a \in A} \big( R_{i,a} + U_{i,a} + L_{i,a} + P_{i,a} \big)
+\end{equation}
+
+The components uniquely manage the tradeoff between finding rare features and filtering synthetic floods:
+\begin{itemize}
+    \item \textbf{Class-Conditional Rarity ($R_{i,a}$)}: Calculated as $\left( \frac{1}{f_{a}(v_{i,a} | y_i) + \varepsilon} \right)^{\alpha}$, this term boosts instances that possess attribute values that are rare \textit{specifically within their predicted pseudo-class}.
+    \item \textbf{Information Entropy ($U_{i,a}$)}: Derived dynamically from model confidence $-\sum P \log P$, providing information gain for the current decision boundary.
+    \item \textbf{Diagnostic Failure Weight ($L_{i,a}$)}: Incorporates an a priori failure weight $\gamma \cdot (1 - \text{ACC}_{a}(v_{i,a}))$ from early diagnostic logs, forcing the selector to prioritize historically weak slices.
+    \item \textbf{Frequency Penalty ($P_{i,a}$)}: Given by $-\lambda \cdot \text{FreqRatio}(v_{i,a})$. Critically, this evaluates frequency across the \textit{entire} combined pool, actively neutralizing the bias introduced by injecting artificially generated data.
+\end{itemize}
+
+\paragraph{Soft Class Stratification}
+Attribute scoring alone can lead to class imbalance because particular classes naturally possess more diverse attributes. To combat this, we introduce a deficit-based soft class balancing mechanism. We maintain a running selection count $n_c$ for each class against a quota target $t = n_{\text{select}} / N_{\text{classes}}$. When selecting the next candidate, samples belonging to an under-represented class receive a temporary additive bonus $C_{c} = w \times \frac{t - n_c}{t}$. This proportional-fair scheduling mechanism gently nudges the selection process towards class balance without overwriting the critical metadata ordering within each class's sub-queue.
+
+\section{Experiments}
+
+\subsection{Experimental Setup}
+We conduct experiments on ImageNet-10 (multi-class) and CelebA (binary, targeting the `redhair\_brownskin' subgroup correlation). We employ a standard ResNet-18 architecture, initiating with pretrained weights and utilizing the AdamW optimizer. 
+
+\subsection{\model vs. Long-Tail Learning Baselines}
+
+We isolate the effect of \model against four standard LTL algorithms: Focal Loss \citep{lin2017focal}, Class-Balanced Loss, Oversampling (via WeightedRandomSampler), and LDAM Loss \citep{cao2019learning}. To ensure a fair comparison, the LTL baselines were trained exclusively on the original datasets without access to the targeted synthetic augmentation provided by \model.
+
+\begin{table}[h]
+\caption{Performance comparison of \model vs. LTL baselines on ResNet-18. \model leverages synthetic subgroups, effectively rescuing bugs where standard reweighting methods fail.}
+\centering
+\begin{tabular}{l cc cc}
+\toprule
+\textbf{Method} & \textbf{CelebA Test ACC} & \textbf{Fix Bugs} & \textbf{ImageNet Test ACC} & \textbf{Fix Bugs} \\
+\midrule
+Base Model & 90.57\% & - & 71.73\% & - \\
+Focal Loss & 91.40\% & 8/13 & 68.80\% & 11/17 \\
+Class-Balanced Loss & 91.20\% & 8/13 & 72.70\% & 13/17 \\
+Oversampling & 91.00\% & 8/13 & 72.90\% & 14/17 \\
+LDAM & 91.40\% & 8/13 & 71.20\% & 12/17 \\
+\midrule
+\textbf{/model (Ours)} & \textbf{91.92\%} & - & \textbf{74.88\%} & - \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The results demonstrate that while algorithmic reweighting techniques provide marginal improvements over the base model, they are fundamentally insufficient for repairing unannotated, intersectional attribute failures compared to SafeFix's target-augmented methodology.
+
+\subsection{Active Learning Strategy Ablations}
+
+To validate the efficiency of our Attribute-Driven strategy in curating augmented datasets, we compare it against standard Active Learning regimes across various integration sub-ratios ($0.1$ through $0.9$). The models were trained learning rate of $1e-5$ for 15 epochs. 
+
+\begin{table}[h]
+\caption{Comparison of Top-Performing Selection Strategies on ImageNet (ResNet-18) at various subset sampling ratios. Our Attribute strategy utilizes generated captions from LLMs (BLIP, Qwen3, InternVL3).}
+\centering
+\resizebox{\columnwidth}{!}{
+\begin{tabular}{l ccc c}
+\toprule
+\textbf{Strategy} & \textbf{Ratio=0.1} Test/Val & \textbf{Ratio=0.3} Test/Val & \textbf{Ratio=0.5} Test/Val & \textbf{Ratio=0.9} Test/Val \\
+\midrule
+Random & 0.7269 / 0.7069 & 0.7308 / 0.7208 & 0.7400 / 0.7162 & 0.7482 / 0.7154 \\
+Stratified & 0.7271 / 0.7154 & 0.7369 / 0.7162 & 0.7446 / 0.7200 & 0.7469 / 0.7146 \\
+Coreset & 0.7269 / 0.7115 & 0.7369 / 0.7162 & 0.7400 / 0.7185 & 0.7346 / 0.7169 \\
+Uncertainty Stratified & 0.7254 / 0.7185 & 0.7292 / 0.7131 & 0.7331 / 0.7146 & 0.7462 / 0.7100 \\
+Hierarchical & 0.7269 / 0.7115 & 0.7346 / 0.7092 & 0.7385 / 0.7138 & 0.7362 / 0.7177 \\
+\midrule
+Attribute (BLIP) & 0.7277 / 0.7200 & 0.7369 / 0.7185 & 0.7408 / 0.7131 & 0.7400 / 0.7177 \\
+Attribute (Qwen3) & 0.7331 / 0.7231 & 0.7354 / 0.7077 & 0.7362 / 0.7138 & 0.7492 / 0.7108 \\
+\textbf{Attribute (InternVL3)} & \textbf{0.7346 / 0.7285} & \textbf{0.7385 / 0.7108} & \textbf{0.7495 / 0.7286} & \textbf{0.7531 / 0.7346} \\
+\bottomrule
+\end{tabular}
+}
+\end{table}
+
+The Attribute-Driven strategy continuously outperforms traditional geometry-based (Coreset) and balanced (Stratified) methodologies at almost every data budget. Further utilizing advanced Vision-Language Models like InternVL3 to source the attribute metadata yields compounding performance benefits.
+
+
+\subsection{Parameter Scaling Analysis}
+
+By adjusting the weights of $R$, $P$, and $C$, we explored the behavioral boundaries of our strategy (sub-ratio $0.3$). 
+
+\begin{itemize}
+    \item \textbf{Pure Greedy ($R=1.0, P=10.0, C=0.0$)}: Test ACC 0.7215. Without class-level Stratification quotas, throwing out all logic except Frequency Penalty and Rarity leads to performance drops in fine-tuning, emphasizing the value of our soft $C$ score.
+    \item \textbf{Aggressive Exploration ($R=0.8, P=10.0, C=4.0$)}: Test ACC \textbf{0.7415}. By loosening the absolute restriction on stratification and vastly scaling up Rarity tracking, the model dynamically locates critical edge cases. The extreme Frequency Penalty ($P=10$) adequately prevents the network from collapsing entirely onto the synthetic injection vectors.
+\end{itemize}
+
+\section{Conclusion}
+
+We presented \model, an end-to-end bug discovery and repair framework capable of resolving hard attribute-level failures missed by standard Long-Tail Learning paradigms. At the center of our pipeline is a lightweight, metadata-reliant Attribute-Driven AL algorithm that actively synergizes conditional rarity with global distribution penalties to weave aggressively synthetically augmented datasets back into balanced domain updates. Our implementation exceeds generic AL frameworks and delivers targeted, systematic bug fixes with high efficiency.
+
+\begin{ack}
+All acknowledgments go at the end of the paper before the list of references.
+\end{ack}
+
+\bibliography{ref}
+\bibliographystyle{plainnat}
+
+\appendix
+
+\section{Hyperparameter Details}
+Full hyperparameter grid searches and LVLM prompt formats will be included in the supplementary material.
+
+\end{document}

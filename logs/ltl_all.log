@@ -1,0 +1,22 @@
+Starting LTL baseline experiments at Fri 27 Mar 2026 01:38:03 AM CDT
+All jobs launched. PIDs: GPU0=713504, GPU1=713505, GPU2=713507, GPU3=713509
+Monitor with: tail -f logs/ltl_*.log
+[GPU 0] focal - imagenet starting at Fri 27 Mar 2026 01:38:03 AM CDT
+[GPU 2] resample - imagenet starting at Fri 27 Mar 2026 01:38:03 AM CDT
+[GPU 3] ldam - imagenet starting at Fri 27 Mar 2026 01:38:03 AM CDT
+[GPU 1] class_weight - imagenet starting at Fri 27 Mar 2026 01:38:03 AM CDT
+[GPU 0] focal - imagenet finished at Fri 27 Mar 2026 01:38:59 AM CDT
+[GPU 0] focal - celeba starting at Fri 27 Mar 2026 01:38:59 AM CDT
+[GPU 0] focal - celeba finished at Fri 27 Mar 2026 01:40:23 AM CDT
+[GPU 2] resample - imagenet finished at Fri 27 Mar 2026 02:45:54 AM CDT
+[GPU 2] resample - celeba starting at Fri 27 Mar 2026 02:45:54 AM CDT
+[GPU 3] ldam - imagenet finished at Fri 27 Mar 2026 02:46:04 AM CDT
+[GPU 3] ldam - celeba starting at Fri 27 Mar 2026 02:46:04 AM CDT
+[GPU 1] class_weight - imagenet finished at Fri 27 Mar 2026 02:46:11 AM CDT
+[GPU 1] class_weight - celeba starting at Fri 27 Mar 2026 02:46:11 AM CDT
+[GPU 3] ldam - celeba finished at Fri 27 Mar 2026 02:47:00 AM CDT
+[GPU 1] class_weight - celeba finished at Fri 27 Mar 2026 06:25:26 AM CDT
+[GPU 2] resample - celeba finished at Fri 27 Mar 2026 06:28:21 AM CDT
+All LTL experiments completed at Fri 27 Mar 2026 06:28:21 AM CDT
+run_ltl.sh: line 86: ll: command not found
+All LTL experiments completed at Fri 27 Mar 2026 06:28:21 AM CDT

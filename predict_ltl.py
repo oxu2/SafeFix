@@ -4,6 +4,11 @@ import torch.optim as optim
 import torchvision.transforms as transforms
 from torchvision import models
 from torch.utils.data import Dataset, DataLoader, Subset
+
+# GPUs are heavily utilized (~21GB used by other processes). Prevent 
+# cuDNN from trying to allocate huge temporary workspaces for convolution profiling.
+torch.backends.cudnn.benchmark = False
+torch.backends.cudnn.deterministic = True
 from PIL import Image
 import numpy as np
 import os
@@ -117,6 +122,14 @@ class SmoothBCEWithLogitsLoss(nn.Module):
         # Smooth targets: positive labels -> 1 - smoothing/2, negatives -> smoothing/2
         smoothed = targets * (1 - self.smoothing) + 0.5 * self.smoothing
         return F.binary_cross_entropy_with_logits(logits, smoothed, pos_weight=self.pos_weight)
+class IndexDataset(torch.utils.data.Dataset):
+    def __init__(self, dataset):
+        self.dataset = dataset
+    def __len__(self):
+        return len(self.dataset)
+    def __getitem__(self, idx):
+        img, target = self.dataset[idx]
+        return img, target, idx
 
 
 class FocalLoss(nn.Module):
@@ -125,12 +138,6 @@ class FocalLoss(nn.Module):
     FL(p_t) = -alpha_t * (1 - p_t)^gamma * log(p_t)
 
     Args:
-        alpha: Per-class weight tensor of shape (num_classes,), or None for
-               uniform weighting. When provided, each class c gets weight
-               alpha[c] in the loss computation.
-        gamma: Focusing parameter. gamma=0 recovers standard cross-entropy.
-               Higher gamma down-weights easy (well-classified) examples.
-        reduction: 'mean' | 'sum' | 'none'.
     """
     def __init__(self, alpha=None, gamma=2.0, reduction='mean'):
         super().__init__()
@@ -199,12 +206,80 @@ class BinaryFocalLoss(nn.Module):
             return loss.sum()
         return loss
 
+
+class LDAMLoss(nn.Module):
+    """
+    Label-Distribution-Aware Margin Loss (Cao et al., NeurIPS 2019).
+    Enforces larger classification margins for minority classes.
+
+    The per-class margin is: delta_j = C / n_j^(1/4)
+    where n_j is the number of training samples in class j.
+
+    Args:
+        cls_num_list: List/array of per-class sample counts.
+        max_m: Maximum margin value (default: 0.5).
+        s: Scaling factor for logits (default: 30).
+        weight: Optional per-class weight tensor for the CE component.
+    """
+    def __init__(self, cls_num_list, max_m=0.5, s=30.0, weight=None):
+        super().__init__()
+        cls_num = np.array(cls_num_list, dtype=float)
+        # Per-class margins: larger margin for rarer classes
+        m_list = 1.0 / np.sqrt(np.sqrt(np.maximum(cls_num, 1.0)))
+        m_list = m_list * (max_m / m_list.max())
+        self.m_list = torch.FloatTensor(m_list)
+        self.s = s
+        self.weight = weight
+
+    def forward(self, logits, targets):
+        # Subtract class-specific margins from the true-class logits
+        m = self.m_list.to(logits.device)
+        index = torch.zeros_like(logits, dtype=torch.bool)
+        index.scatter_(1, targets.unsqueeze(1).long(), True)
+        logits_m = logits.clone()
+        logits_m[index] -= m[targets]
+        logits_m *= self.s
+        return F.cross_entropy(logits_m, targets, weight=self.weight)
+
+
+class BinaryLDAMLoss(nn.Module):
+    """
+    LDAM Loss adapted for binary classification with logits.
+    Applies a margin shift to the logit for the true class.
+
+    Args:
+        cls_num_list: [n_negative, n_positive] counts.
+        max_m: Maximum margin (default: 0.5).
+        s: Logit scaling factor (default: 30).
+    """
+    def __init__(self, cls_num_list, max_m=0.5, s=30.0):
+        super().__init__()
+        cls_num = np.array(cls_num_list, dtype=float)
+        m_list = 1.0 / np.sqrt(np.sqrt(np.maximum(cls_num, 1.0)))
+        m_list = m_list * (max_m / m_list.max())
+        # m_list[0] = margin for class 0 (negative), m_list[1] = margin for class 1 (positive)
+        self.m_neg = float(m_list[0])
+        self.m_pos = float(m_list[1])
+        self.s = s
+
+    def forward(self, logits, targets):
+        # logits: (N,1), targets: (N,1) in {0,1}
+        # For positive targets: subtract m_pos from logit (make it harder)
+        # For negative targets: add m_neg to logit (subtract -m_neg, make it harder)
+        margin = targets * self.m_pos + (1 - targets) * (-self.m_neg)
+        logits_m = (logits - margin) * self.s
+        return F.binary_cross_entropy_with_logits(logits_m, targets)
+
 # Parse command-line arguments
 parser = argparse.ArgumentParser(description='Train model on CelebA dataset')
 parser.add_argument('--verbose', type=str2bool, default=False,
                     help='Enable verbose output (default: False)')
 parser.add_argument('--feasible_file', type=str, default=None,
                     help='(Optional) Path to the feasible images JSON file. Defaults to save/feasible_<attributes>.json')
+parser.add_argument('--ltl_level', type=str, default='class', choices=['class', 'attribute'],
+                    help='LTL computing level (class or attribute)')
+parser.add_argument('--ltl_attributes', type=str, default='color,texture',
+                    help='Comma-separated attributes to group by when ltl_level=attribute')
 # parser.add_argument('--olabel', type=str2bool, default=False,
 #                     help='Use original dataset labels (default: False); if False, uses labels from feasible_file')
 parser.add_argument('--gen_image_dir', type=str, default=None,
@@ -265,12 +340,19 @@ parser.add_argument(
 )
 parser.add_argument(
     '--ltl_baseline',
-    choices=['none', 'focal'],
+    choices=['none', 'focal', 'class_weight', 'resample', 'ldam'],
     default='none',
-    help='Long-tail learning baseline: none (default) or focal (Focal Loss)'
+    help='Long-tail learning baseline: none (default), focal (Focal Loss), '
+         'class_weight (inverse-frequency weighted loss), '
+         'resample (oversampling minority classes via WeightedRandomSampler), '
+         'ldam (Label-Distribution-Aware Margin loss, Cao et al. NeurIPS 2019)'
 )
 parser.add_argument('--focal_gamma', type=float, default=2.0,
                     help='Gamma (focusing) parameter for Focal Loss (default: 2.0)')
+parser.add_argument('--ldam_max_m', type=float, default=0.5,
+                    help='Maximum margin for LDAM loss (default: 0.5)')
+parser.add_argument('--ldam_s', type=float, default=30.0,
+                    help='Logit scaling factor for LDAM loss (default: 30.0)')
 # Add batch_size argument here
 # Add batch_size argument here
 parser.add_argument('--batch_size', type=int, default=64,
@@ -536,15 +618,31 @@ if args.dataset == 'imagenet':
     full_ds = ImageFolder(data_dir)
     train_idx = np.load('save/train_idx_imagenet.npy')
     val_idx = np.load('save/val_idx_imagenet.npy')
+    test_idx_path = Path('save/test_idx_imagenet.npy')
+    if test_idx_path.exists():
+        test_idx = np.load(test_idx_path)
+    else:
+        test_idx = np.array([], dtype=int)
     valid_idx = val_idx  # alias for diagnostics compatibility
     train_ds = Subset(ImageFolder(data_dir, transform=train_transform), train_idx)
     val_ds   = Subset(ImageFolder(data_dir, transform=val_transform), val_idx)
+    test_ds = Subset(ImageFolder(data_dir, transform=val_transform), test_idx) if len(test_idx) else None
     valid_loader = make_loader(val_ds, shuffle=False)
+    test_loader = make_loader(test_ds, shuffle=False) if test_ds is not None else None
     valid_dataset = val_ds
     num_classes = len(full_ds.classes)
 
     # --- ImageNet augmentation modes ---
-    if args.augmentation_baseline:
+    if args.ltl_baseline != 'none':
+        # LTL baselines: use original training data only, no generated images
+        train_dataset = train_ds
+        if args.ltl_level == 'attribute':
+            train_dataset = IndexDataset(train_ds)
+        train_loader = make_loader(train_dataset, shuffle=True)
+        modified_image_paths = []
+        modified_image_labels = []
+        print(f"LTL baseline '{args.ltl_baseline}' active: training on original ImageNet subset only.")
+    elif args.augmentation_baseline:
         train_dataset = train_ds
         train_loader = make_loader(train_ds, shuffle=True)
         if verbose:
@@ -885,16 +983,16 @@ elif args.dataset == 'celeba':
     test_labels = np.array([labels[i] for i in range(len(all_datas)) if split[i] == TEST])
     unlabeled_labels = np.array([labels[i] for i in range(len(all_datas)) if split[i] == UNLABELED])
 
-    # Add the modified hair images to the training set
-    # These images' labels will be the same as their corresponding original images
+    # When running LTL baselines, skip generated image loading entirely.
+    # LTL baselines only reweight/resample the original training data.
     modified_image_paths = []
     modified_image_labels = []
     sample_keys = []
     selected_filenames = []
 
-    #
-    # Prepare sample keys for ablation mode (was hibug mode)
-    if args.augmentation_baseline:
+    if args.ltl_baseline != 'none':
+        print(f"LTL baseline '{args.ltl_baseline}' active: skipping generated image loading.")
+    elif args.augmentation_baseline:
         if verbose:
             print("Augmentation baseline enabled: skipping generated image loading.")
     else:
@@ -1180,38 +1278,159 @@ model = model.to(device)
 print(f"Using {args.model} model with {'pretrained' if args.pretrained else 'random'} weights")
 
 # For consistency, handle pos_weight and loss for both datasets
-if args.ltl_baseline == 'focal':
-    # --- Focal Loss baseline ---
-    if args.dataset == 'imagenet':
-        # Compute per-class inverse frequency weights for alpha
-        # Collect all training labels
-        _train_labels_list = []
-        for _, lbl in train_dataset:
-            _train_labels_list.append(lbl if isinstance(lbl, int) else lbl.item())
-        _train_labels_arr = np.array(_train_labels_list)
+# --- Compute class counts (used by multiple LTL baselines) ---
+if args.dataset == 'imagenet':
+    # Use pre-loaded targets from ImageFolder (no image loading needed)
+    _train_labels_arr = np.array(full_ds.targets)[train_idx]
+    if args.ltl_level == 'attribute':
+        # Load attribute json
+        import json
+        with open('save/attribute10.json', 'r') as f:
+            attr_data = json.load(f)
+        attrs_to_use = args.ltl_attributes.split(',')
+        
+        # Build unique subgroup list 
+        subgroup_strings = []
+        for i in train_idx:
+            c_label = full_ds.targets[i]
+            attr_str = f"class{c_label}"
+            for attr in attrs_to_use:
+                if attr in attr_data:
+                    val = attr_data[attr]['data'][i]
+                    attr_str += f"_{attr}:{val}"
+            subgroup_strings.append(attr_str)
+            
+        # Convert to integer IDs
+        unique_groups = list(set(subgroup_strings))
+        group_to_id = {g: idx for idx, g in enumerate(unique_groups)}
+        _subgroup_labels_arr = np.array([group_to_id[g] for g in subgroup_strings])
+        _class_counts = np.bincount(_subgroup_labels_arr).astype(float)
+        _num_subgroups = len(unique_groups)
+        if verbose:
+            print(f"Attribute-level LTL identified {_num_subgroups} unique subgroups (class + {args.ltl_attributes}).")
+            # Print top 5 rarest groups
+            rarest_idx = np.argsort(_class_counts)[:5]
+            print("Rarest subgroups:")
+            for ri in rarest_idx:
+                print(f"  {unique_groups[ri]}: {int(_class_counts[ri])} samples")
+    else:
+        _subgroup_labels_arr = _train_labels_arr
         _class_counts = np.bincount(_train_labels_arr, minlength=num_classes).astype(float)
-        # Inverse frequency, normalized so they sum to num_classes
+        _num_subgroups = num_classes
+else:
+    _num_negative = float((all_train_labels == 0).sum())
+    _num_positive = float((all_train_labels == 1).sum())
+    _class_counts = np.array([_num_negative, _num_positive])
+    _subgroup_labels_arr = all_train_labels
+    _num_subgroups = 2
+
+# --- Select loss function based on LTL baseline ---
+if args.ltl_baseline == 'focal':
+    if args.dataset == 'imagenet':
         _inv_freq = 1.0 / np.maximum(_class_counts, 1.0)
         _alpha = _inv_freq / _inv_freq.sum() * num_classes
         alpha_tensor = torch.tensor(_alpha, dtype=torch.float32).to(device)
         criterion = FocalLoss(alpha=alpha_tensor, gamma=args.focal_gamma)
         print(f"Using Focal Loss (multiclass) with gamma={args.focal_gamma}")
     else:
-        # Binary focal loss for CelebA
-        num_negative = (all_train_labels == 0).sum()
-        num_positive = (all_train_labels == 1).sum()
-        # alpha = proportion of negatives, so positive class gets higher weight
-        alpha_val = float(num_negative) / float(num_negative + num_positive)
+        alpha_val = _num_negative / (_num_negative + _num_positive)
         criterion = BinaryFocalLoss(alpha=alpha_val, gamma=args.focal_gamma)
         print(f"Using Binary Focal Loss with alpha={alpha_val:.4f}, gamma={args.focal_gamma}")
+
+elif args.ltl_baseline == 'class_weight':
+    # Class-Balanced Loss: inverse-frequency weights
+    if args.dataset == 'imagenet':
+        if args.ltl_level == 'attribute':
+            _inv_freq = 1.0 / np.maximum(_class_counts, 1.0)
+            _weights = _inv_freq / _inv_freq.sum() * _num_subgroups
+            # Map weights to each training sample
+            train_dataset_sample_weights = torch.tensor(_weights[_subgroup_labels_arr], dtype=torch.float32).to(device)
+            # Use reduction='none' so we can weight per-sample in the training loop
+            criterion = nn.CrossEntropyLoss(reduction='none')
+            print(f"Using Attribute-Weighted CE Loss, {_num_subgroups} subgroup weights injected into Dataset.")
+        else:
+            _inv_freq = 1.0 / np.maximum(_class_counts, 1.0)
+            _weights = _inv_freq / _inv_freq.sum() * num_classes
+            weight_tensor = torch.tensor(_weights, dtype=torch.float32).to(device)
+            criterion = nn.CrossEntropyLoss(weight=weight_tensor)
+            print(f"Using Class-Weighted CrossEntropyLoss, weights={_weights.round(4)}")
+    else:
+        pos_weight = torch.tensor([_num_negative / _num_positive]).to(device)
+        criterion = nn.BCEWithLogitsLoss(pos_weight=pos_weight)
+        print(f"Using Class-Weighted BCEWithLogitsLoss, pos_weight={_num_negative/_num_positive:.4f}")
+
+elif args.ltl_baseline == 'resample':
+    # Oversampling: use standard (unweighted) loss; balancing is done via the sampler
+    if args.dataset == 'imagenet':
+        criterion = nn.CrossEntropyLoss()
+    else:
+        criterion = nn.BCEWithLogitsLoss()
+    # Build WeightedRandomSampler for the training set
+    if args.dataset == 'imagenet':
+        _sample_weights = 1.0 / np.maximum(_class_counts[_subgroup_labels_arr], 1.0)
+    else:
+        _sample_weights = np.where(all_train_labels == 1,
+                                   1.0 / max(_num_positive, 1.0),
+                                   1.0 / max(_num_negative, 1.0))
+    _sample_weights_t = torch.DoubleTensor(_sample_weights)
+    _sampler = torch.utils.data.WeightedRandomSampler(
+        weights=_sample_weights_t,
+        num_samples=len(_sample_weights_t),
+        replacement=True
+    )
+    # Rebuild train_loader with the sampler (sampler is mutually exclusive with shuffle)
+    if args.dataset == 'imagenet' and args.ltl_level == 'attribute':
+        train_loader = DataLoader(
+            train_dataset, batch_size=args.batch_size, sampler=_sampler,
+            num_workers=args.workers, pin_memory=True
+        )
+    else:
+        train_loader = DataLoader(
+            train_dataset, batch_size=args.batch_size, sampler=_sampler,
+            num_workers=args.workers, pin_memory=True
+        )
+    print(f"Using Resample baseline with WeightedRandomSampler (class counts: {_class_counts.astype(int).tolist()})")
+
+elif args.ltl_baseline == 'ldam':
+    # LDAM: Label-Distribution-Aware Margin Loss (Cao et al., NeurIPS 2019)
+    if args.dataset == 'imagenet':
+        if args.ltl_level == 'attribute':
+            # Subgroup LDAM: margin based on subgroup count, computed in custom loop
+            _inv_freq = 1.0 / np.maximum(_class_counts, 1.0)
+            _weights = _inv_freq / _inv_freq.sum() * _num_subgroups
+            train_dataset_sample_weights = torch.tensor(_weights[_subgroup_labels_arr], dtype=torch.float32).to(device)
+            # Margins per subgroup
+            _m_list = 1.0 / np.sqrt(np.sqrt(np.maximum(_class_counts, 1.0)))
+            _m_list = _m_list * (args.ldam_max_m / _m_list.max())
+            train_dataset_margins = torch.tensor(_m_list[_subgroup_labels_arr], dtype=torch.float32).to(device)
+
+            # Standard reduction None CE, we will subtract margin manually in training loop
+            criterion = nn.CrossEntropyLoss(reduction='none')
+            print(f"Using Attribute-Level LDAM Loss, {_num_subgroups} subgroups. Margins embedded in Dataset.")
+        else:
+            _inv_freq = 1.0 / np.maximum(_class_counts, 1.0)
+            _weights = _inv_freq / _inv_freq.sum() * num_classes
+            weight_tensor = torch.tensor(_weights, dtype=torch.float32).to(device)
+            criterion = LDAMLoss(
+                cls_num_list=_class_counts.tolist(),
+                max_m=args.ldam_max_m, s=args.ldam_s,
+                weight=weight_tensor
+            )
+            print(f"Using LDAM Loss (multiclass) with max_m={args.ldam_max_m}, s={args.ldam_s}")
+    else:
+        criterion = BinaryLDAMLoss(
+            cls_num_list=[_num_negative, _num_positive],
+            max_m=args.ldam_max_m, s=args.ldam_s
+        )
+        print(f"Using Binary LDAM Loss with max_m={args.ldam_max_m}, s={args.ldam_s}, "
+              f"class counts=[{int(_num_negative)}, {int(_num_positive)}]")
+
 elif args.dataset == 'imagenet':
-    # Multi-class classification: use CrossEntropyLoss
+    # Default: unweighted CrossEntropyLoss
     criterion = nn.CrossEntropyLoss()
 else:
-    num_negative = (all_train_labels == 0).sum()
-    num_positive = (all_train_labels == 1).sum()
-    pos_weight = torch.tensor([num_negative / num_positive]).to(device)
-    # Use smoothed BCE loss since label_smoothing param is unavailable
+    # Default: SmoothBCEWithLogitsLoss with pos_weight (original predict.py behavior)
+    pos_weight = torch.tensor([_num_negative / _num_positive]).to(device)
     criterion = SmoothBCEWithLogitsLoss(pos_weight=pos_weight, smoothing=0.1)
 
 # Optimize all model parameters for all architectures
@@ -1255,11 +1474,18 @@ def evaluate(model, data_loader, save_preds=False):
     all_labels = []
 
     with torch.no_grad():
-        for images, labels in data_loader:
+        for batch_data in data_loader:
+            if len(batch_data) == 3:
+                images, labels, _ = batch_data
+            else:
+                images, labels = batch_data
+                
             if args.dataset == 'imagenet':
                 images, labels = images.to(device), labels.to(device)
                 outputs = model(images)
                 loss = criterion(outputs, labels)
+                if loss.dim() > 0:
+                    loss = loss.mean()
                 total_loss += loss.item()
                 preds = outputs.argmax(dim=1)
                 total_correct += (preds == labels).sum().item()
@@ -1271,6 +1497,8 @@ def evaluate(model, data_loader, save_preds=False):
                 images, labels = images.to(device), labels.to(device).unsqueeze(1)
                 outputs = model(images)
                 loss = criterion(outputs, labels)
+                if loss.dim() > 0:
+                    loss = loss.mean()
                 total_loss += loss.item()
                 preds = (torch.sigmoid(outputs) > 0.5).int()
                 total_correct += (preds == labels.int()).sum().item()
@@ -1301,20 +1529,24 @@ def save_predictions(model, train_loader, valid_loader, test_loader=None):
         test_acc, test_preds, _ = evaluate(model, test_loader, save_preds=True)
 
     if args.dataset == 'imagenet':
-        original_count = len(train_idx)
-        # Number of subsampled original predictions available
-        sub_count = len(getattr(args, "selected_indices", []))
-        # Subsampled original preds come first in train_preds
-        sub_preds = train_preds[:sub_count]
-        if getattr(args, 'pad_missing', False):
-            # Initialize full-length original predictions with -1 (int) instead of NaN
-            full_orig_preds = np.full((original_count,), -1, dtype=int)
-            # Fill in the subsampled predictions at correct indices
-            for idx, pred in zip(args.selected_indices, sub_preds):
-                full_orig_preds[idx] = pred
-            combined_preds = np.concatenate((full_orig_preds.flatten(), valid_preds.flatten()))
+        selected_indices = getattr(args, "selected_indices", None)
+        if selected_indices is None:
+            # No subsampling (e.g., LTL baselines): train_preds covers all training samples
+            combined_preds = np.concatenate((train_preds.flatten(), valid_preds.flatten()))
         else:
-            combined_preds = np.concatenate((sub_preds.flatten(), valid_preds.flatten()))
+            original_count = len(train_idx)
+            sub_count = len(selected_indices)
+            sub_preds = train_preds[:sub_count]
+            if getattr(args, 'pad_missing', False):
+                full_orig_preds = np.full((original_count,), -1, dtype=int)
+                for idx, pred in zip(selected_indices, sub_preds):
+                    full_orig_preds[idx] = pred
+                combined_preds = np.concatenate((full_orig_preds.flatten(), valid_preds.flatten()))
+            else:
+                combined_preds = np.concatenate((sub_preds.flatten(), valid_preds.flatten()))
+        # Append test predictions if available
+        if test_preds is not None:
+            combined_preds = np.concatenate((combined_preds, test_preds.flatten()))
     else:
         # Handle celeba or other cases
         if len(modified_image_paths) > 0:
@@ -1401,12 +1633,38 @@ def train_model(model, train_loader, valid_loader, criterion, optimizer, schedul
         model.train()
         total_loss, total_correct = 0, 0
         
-        for images, labels in train_loader:
+        for batch_data in train_loader:
+            if len(batch_data) == 3:
+                images, labels, batch_idx = batch_data
+            else:
+                images, labels = batch_data
+                batch_idx = None
+                
             if args.dataset == 'imagenet':
                 images, labels = images.to(device), labels.to(device)
                 optimizer.zero_grad()
                 outputs = model(images)
-                loss = criterion(outputs, labels)
+                
+                # Attribute-Level manual loss adjustments
+                if args.ltl_level == 'attribute' and batch_idx is not None:
+                    if args.ltl_baseline == 'ldam':
+                        m = train_dataset_margins[batch_idx]
+                        idx_mask = torch.zeros_like(outputs, dtype=torch.bool)
+                        idx_mask.scatter_(1, labels.unsqueeze(1).long(), True)
+                        outputs[idx_mask] -= m
+                        outputs *= args.ldam_s
+                        raw_loss = criterion(outputs, labels)
+                        w = train_dataset_sample_weights[batch_idx]
+                        loss = (raw_loss * w).mean()
+                    elif args.ltl_baseline == 'class_weight':
+                        raw_loss = criterion(outputs, labels)
+                        w = train_dataset_sample_weights[batch_idx]
+                        loss = (raw_loss * w).mean()
+                    else:
+                        loss = criterion(outputs, labels)
+                else:
+                    loss = criterion(outputs, labels)
+                
                 loss.backward()
                 # Apply gradient clipping only for CLIP and ViT models
                 if args.model in ('clip', 'vit'):
@@ -1582,9 +1840,38 @@ if args.dataset == 'imagenet':
     data_dir = Path("exampleData/imagenet_subset")
     full_ds = ImageFolder(data_dir)
     labels_all = np.array(full_ds.targets)
-    # Build labels for train and validation splits
-    labels_to_diagnose = np.concatenate([labels_all[train_idx], labels_all[val_idx]])
-    split = [TRAIN] * len(train_idx) + [VALID] * len(val_idx)
+    # Dynamically check whether predictions include the test split
+    expected_train = len(train_idx)
+    expected_val = len(val_idx)
+    test_idx_path = Path('save/test_idx_imagenet.npy')
+    if test_idx_path.exists():
+        _test_idx = np.load(test_idx_path)
+    else:
+        _test_idx = np.array([], dtype=int)
+    expected_test = len(_test_idx)
+    total_predictions = len(predictions)
+    total_without_test = expected_train + expected_val
+    total_with_test = total_without_test + expected_test
+
+    if expected_test and total_predictions == total_with_test:
+        labels_to_diagnose = np.concatenate([labels_all[train_idx], labels_all[val_idx], labels_all[_test_idx]])
+        split = [TRAIN] * expected_train + [VALID] * expected_val + [TEST] * expected_test
+    elif total_predictions == total_without_test:
+        labels_to_diagnose = np.concatenate([labels_all[train_idx], labels_all[val_idx]])
+        split = [TRAIN] * expected_train + [VALID] * expected_val
+        if expected_test:
+            print(
+                "Warning: Predictions file omits test samples (expected total "
+                f"{total_with_test}, got {total_predictions}). Diagnostics run on train+val only."
+            )
+    else:
+        print(
+            "Warning: Predictions length ({}) does not match expected counts ({}/{}).".format(
+                total_predictions, total_without_test, total_with_test
+            )
+        )
+        labels_to_diagnose = np.concatenate([labels_all[train_idx], labels_all[val_idx]])
+        split = [TRAIN] * expected_train + [VALID] * expected_val
 
     # Instantiate ModelDiagnose and run diagnostics
     MD = ModelDiagnose(
