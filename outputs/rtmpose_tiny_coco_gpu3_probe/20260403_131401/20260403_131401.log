@@ -1,0 +1,579 @@
+2026/04/03 13:14:03 - mmengine - INFO - 
+------------------------------------------------------------
+System environment:
+    sys.platform: linux
+    Python: 3.9.20 (main, Oct  3 2024, 07:27:41) [GCC 11.2.0]
+    CUDA available: True
+    MUSA available: False
+    numpy_random_seed: 21
+    GPU 0: NVIDIA RTX A5000
+    CUDA_HOME: /usr/local/cuda-12.0
+    NVCC: Cuda compilation tools, release 12.0, V12.0.76
+    GCC: gcc (Ubuntu 9.4.0-1ubuntu1~20.04.3) 9.4.0
+    PyTorch: 1.13.1+cu117
+    PyTorch compiling details: PyTorch built with:
+  - GCC 9.3
+  - C++ Version: 201402
+  - Intel(R) Math Kernel Library Version 2020.0.0 Product Build 20191122 for Intel(R) 64 architecture applications
+  - Intel(R) MKL-DNN v2.6.0 (Git Hash 52b5f107dd9cf10910aaa19cb47f3abf9b349815)
+  - OpenMP 201511 (a.k.a. OpenMP 4.5)
+  - LAPACK is enabled (usually provided by MKL)
+  - NNPACK is enabled
+  - CPU capability usage: AVX2
+  - CUDA Runtime 11.7
+  - NVCC architecture flags: -gencode;arch=compute_37,code=sm_37;-gencode;arch=compute_50,code=sm_50;-gencode;arch=compute_60,code=sm_60;-gencode;arch=compute_70,code=sm_70;-gencode;arch=compute_75,code=sm_75;-gencode;arch=compute_80,code=sm_80;-gencode;arch=compute_86,code=sm_86
+  - CuDNN 8.2.2  (built against CUDA 11.4)
+    - Built with CuDNN 8.5
+  - Magma 2.6.1
+  - Build settings: BLAS_INFO=mkl, BUILD_TYPE=Release, CUDA_VERSION=11.7, CUDNN_VERSION=8.5.0, CXX_COMPILER=/opt/rh/devtoolset-9/root/usr/bin/c++, CXX_FLAGS= -fabi-version=11 -Wno-deprecated -fvisibility-inlines-hidden -DUSE_PTHREADPOOL -fopenmp -DNDEBUG -DUSE_KINETO -DUSE_FBGEMM -DUSE_QNNPACK -DUSE_PYTORCH_QNNPACK -DUSE_XNNPACK -DSYMBOLICATE_MOBILE_DEBUG_HANDLE -DEDGE_PROFILER_USE_KINETO -O2 -fPIC -Wno-narrowing -Wall -Wextra -Werror=return-type -Werror=non-virtual-dtor -Wno-missing-field-initializers -Wno-type-limits -Wno-array-bounds -Wno-unknown-pragmas -Wunused-local-typedefs -Wno-unused-parameter -Wno-unused-function -Wno-unused-result -Wno-strict-overflow -Wno-strict-aliasing -Wno-error=deprecated-declarations -Wno-stringop-overflow -Wno-psabi -Wno-error=pedantic -Wno-error=redundant-decls -Wno-error=old-style-cast -fdiagnostics-color=always -faligned-new -Wno-unused-but-set-variable -Wno-maybe-uninitialized -fno-math-errno -fno-trapping-math -Werror=format -Werror=cast-function-type -Wno-stringop-overflow, LAPACK_INFO=mkl, PERF_WITH_AVX=1, PERF_WITH_AVX2=1, PERF_WITH_AVX512=1, TORCH_VERSION=1.13.1, USE_CUDA=ON, USE_CUDNN=ON, USE_EXCEPTION_PTR=1, USE_GFLAGS=OFF, USE_GLOG=OFF, USE_MKL=ON, USE_MKLDNN=ON, USE_MPI=OFF, USE_NCCL=ON, USE_NNPACK=ON, USE_OPENMP=ON, USE_ROCM=OFF, 
+
+    TorchVision: 0.14.1+cu117
+    OpenCV: 4.10.0
+    MMEngine: 0.10.7
+
+Runtime environment:
+    cudnn_benchmark: False
+    mp_cfg: {'mp_start_method': 'fork', 'opencv_num_threads': 0}
+    dist_cfg: {'backend': 'nccl'}
+    seed: 21
+    Distributed launcher: none
+    Distributed training: False
+    GPU number: 1
+------------------------------------------------------------
+
+2026/04/03 13:14:03 - mmengine - INFO - Config:
+auto_scale_lr = dict(base_batch_size=1024)
+backend_args = dict(backend='local')
+base_lr = 0.004
+codec = dict(
+    input_size=(
+        192,
+        256,
+    ),
+    normalize=False,
+    sigma=(
+        4.9,
+        5.66,
+    ),
+    simcc_split_ratio=2.0,
+    type='SimCCLabel',
+    use_dark=False)
+custom_hooks = [
+    dict(
+        switch_epoch=390,
+        switch_pipeline=[
+            dict(backend_args=dict(backend='local'), type='LoadImage'),
+            dict(type='GetBBoxCenterScale'),
+            dict(direction='horizontal', type='RandomFlip'),
+            dict(type='RandomHalfBody'),
+            dict(
+                rotate_factor=60,
+                scale_factor=[
+                    0.75,
+                    1.25,
+                ],
+                shift_factor=0.0,
+                type='RandomBBoxTransform'),
+            dict(input_size=(
+                192,
+                256,
+            ), type='TopdownAffine'),
+            dict(type='mmdet.YOLOXHSVRandomAug'),
+            dict(
+                transforms=[
+                    dict(p=0.1, type='Blur'),
+                    dict(p=0.1, type='MedianBlur'),
+                    dict(
+                        max_height=0.4,
+                        max_holes=1,
+                        max_width=0.4,
+                        min_height=0.2,
+                        min_holes=1,
+                        min_width=0.2,
+                        p=0.5,
+                        type='CoarseDropout'),
+                ],
+                type='Albumentation'),
+            dict(
+                encoder=dict(
+                    input_size=(
+                        192,
+                        256,
+                    ),
+                    normalize=False,
+                    sigma=(
+                        4.9,
+                        5.66,
+                    ),
+                    simcc_split_ratio=2.0,
+                    type='SimCCLabel',
+                    use_dark=False),
+                type='GenerateTarget'),
+            dict(type='PackPoseInputs'),
+        ],
+        type='mmdet.PipelineSwitchHook'),
+]
+data_mode = 'topdown'
+data_root = '/data/oxx220000/coco/'
+dataset_type = 'CocoDataset'
+default_hooks = dict(
+    badcase=dict(
+        badcase_thr=5,
+        enable=False,
+        metric_type='loss',
+        out_dir='badcase',
+        type='BadCaseAnalysisHook'),
+    checkpoint=dict(
+        interval=10,
+        max_keep_ckpts=1,
+        rule='greater',
+        save_best='coco/AP',
+        type='CheckpointHook'),
+    logger=dict(interval=50, type='LoggerHook'),
+    param_scheduler=dict(type='ParamSchedulerHook'),
+    sampler_seed=dict(type='DistSamplerSeedHook'),
+    timer=dict(type='IterTimerHook'),
+    visualization=dict(enable=False, type='PoseVisualizationHook'))
+default_scope = 'mmpose'
+env_cfg = dict(
+    cudnn_benchmark=False,
+    dist_cfg=dict(backend='nccl'),
+    mp_cfg=dict(mp_start_method='fork', opencv_num_threads=0))
+launcher = 'none'
+load_from = 'pose_estimation/rtmpose_assets/rtmpose-tiny_simcc-coco_pt-aic-coco_420e-256x192-e613ba3f_20230127.pth'
+log_level = 'INFO'
+log_processor = dict(
+    by_epoch=True, num_digits=6, type='LogProcessor', window_size=50)
+max_epochs = 420
+model = dict(
+    backbone=dict(
+        _scope_='mmdet',
+        act_cfg=dict(type='SiLU'),
+        arch='P5',
+        channel_attention=True,
+        deepen_factor=0.167,
+        expand_ratio=0.5,
+        init_cfg=dict(
+            checkpoint=
+            'https://download.openmmlab.com/mmpose/v1/projects/rtmposev1/cspnext-tiny_udp-aic-coco_210e-256x192-cbed682d_20230130.pth',
+            prefix='backbone.',
+            type='Pretrained'),
+        norm_cfg=dict(type='SyncBN'),
+        out_indices=(4, ),
+        type='CSPNeXt',
+        widen_factor=0.375),
+    data_preprocessor=dict(
+        bgr_to_rgb=True,
+        mean=[
+            123.675,
+            116.28,
+            103.53,
+        ],
+        std=[
+            58.395,
+            57.12,
+            57.375,
+        ],
+        type='PoseDataPreprocessor'),
+    head=dict(
+        decoder=dict(
+            input_size=(
+                192,
+                256,
+            ),
+            normalize=False,
+            sigma=(
+                4.9,
+                5.66,
+            ),
+            simcc_split_ratio=2.0,
+            type='SimCCLabel',
+            use_dark=False),
+        final_layer_kernel_size=7,
+        gau_cfg=dict(
+            act_fn='SiLU',
+            drop_path=0.0,
+            dropout_rate=0.0,
+            expansion_factor=2,
+            hidden_dims=256,
+            pos_enc=False,
+            s=128,
+            use_rel_bias=False),
+        in_channels=384,
+        in_featuremap_size=(
+            6,
+            8,
+        ),
+        input_size=(
+            192,
+            256,
+        ),
+        loss=dict(
+            beta=10.0,
+            label_softmax=True,
+            type='KLDiscretLoss',
+            use_target_weight=True),
+        out_channels=17,
+        simcc_split_ratio=2.0,
+        type='RTMCCHead'),
+    test_cfg=dict(flip_test=True),
+    type='TopdownPoseEstimator')
+optim_wrapper = dict(
+    optimizer=dict(lr=0.004, type='AdamW', weight_decay=0.0),
+    paramwise_cfg=dict(
+        bias_decay_mult=0, bypass_duplicate=True, norm_decay_mult=0),
+    type='OptimWrapper')
+param_scheduler = [
+    dict(
+        begin=0, by_epoch=False, end=1000, start_factor=1e-05,
+        type='LinearLR'),
+    dict(
+        T_max=210,
+        begin=210,
+        by_epoch=True,
+        convert_to_iter_based=True,
+        end=420,
+        eta_min=0.0002,
+        type='CosineAnnealingLR'),
+]
+randomness = dict(seed=21)
+resume = False
+stage2_num_epochs = 30
+test_cfg = dict()
+test_dataloader = dict(
+    batch_size=8,
+    dataset=dict(
+        ann_file='annotations/person_keypoints_val2017.json',
+        data_mode='topdown',
+        data_prefix=dict(img='val2017/'),
+        data_root='/data/oxx220000/coco/',
+        pipeline=[
+            dict(backend_args=dict(backend='local'), type='LoadImage'),
+            dict(type='GetBBoxCenterScale'),
+            dict(input_size=(
+                192,
+                256,
+            ), type='TopdownAffine'),
+            dict(type='PackPoseInputs'),
+        ],
+        test_mode=True,
+        type='CocoDataset'),
+    drop_last=False,
+    num_workers=2,
+    persistent_workers=True,
+    sampler=dict(round_up=False, shuffle=False, type='DefaultSampler'))
+test_evaluator = dict(
+    ann_file='/data/oxx220000/coco/annotations/person_keypoints_val2017.json',
+    type='CocoMetric')
+train_cfg = dict(by_epoch=True, max_epochs=420, val_interval=10)
+train_dataloader = dict(
+    batch_size=256,
+    dataset=dict(
+        ann_file='annotations/person_keypoints_train2017.json',
+        data_mode='topdown',
+        data_prefix=dict(img='train2017/'),
+        data_root='data/coco/',
+        pipeline=[
+            dict(backend_args=dict(backend='local'), type='LoadImage'),
+            dict(type='GetBBoxCenterScale'),
+            dict(direction='horizontal', type='RandomFlip'),
+            dict(type='RandomHalfBody'),
+            dict(
+                rotate_factor=80,
+                scale_factor=[
+                    0.6,
+                    1.4,
+                ],
+                type='RandomBBoxTransform'),
+            dict(input_size=(
+                192,
+                256,
+            ), type='TopdownAffine'),
+            dict(type='mmdet.YOLOXHSVRandomAug'),
+            dict(
+                transforms=[
+                    dict(p=0.1, type='Blur'),
+                    dict(p=0.1, type='MedianBlur'),
+                    dict(
+                        max_height=0.4,
+                        max_holes=1,
+                        max_width=0.4,
+                        min_height=0.2,
+                        min_holes=1,
+                        min_width=0.2,
+                        p=1.0,
+                        type='CoarseDropout'),
+                ],
+                type='Albumentation'),
+            dict(
+                encoder=dict(
+                    input_size=(
+                        192,
+                        256,
+                    ),
+                    normalize=False,
+                    sigma=(
+                        4.9,
+                        5.66,
+                    ),
+                    simcc_split_ratio=2.0,
+                    type='SimCCLabel',
+                    use_dark=False),
+                type='GenerateTarget'),
+            dict(type='PackPoseInputs'),
+        ],
+        type='CocoDataset'),
+    num_workers=10,
+    persistent_workers=True,
+    sampler=dict(shuffle=True, type='DefaultSampler'))
+train_pipeline = [
+    dict(backend_args=dict(backend='local'), type='LoadImage'),
+    dict(type='GetBBoxCenterScale'),
+    dict(direction='horizontal', type='RandomFlip'),
+    dict(type='RandomHalfBody'),
+    dict(
+        rotate_factor=80,
+        scale_factor=[
+            0.6,
+            1.4,
+        ],
+        type='RandomBBoxTransform'),
+    dict(input_size=(
+        192,
+        256,
+    ), type='TopdownAffine'),
+    dict(type='mmdet.YOLOXHSVRandomAug'),
+    dict(
+        transforms=[
+            dict(p=0.1, type='Blur'),
+            dict(p=0.1, type='MedianBlur'),
+            dict(
+                max_height=0.4,
+                max_holes=1,
+                max_width=0.4,
+                min_height=0.2,
+                min_holes=1,
+                min_width=0.2,
+                p=1.0,
+                type='CoarseDropout'),
+        ],
+        type='Albumentation'),
+    dict(
+        encoder=dict(
+            input_size=(
+                192,
+                256,
+            ),
+            normalize=False,
+            sigma=(
+                4.9,
+                5.66,
+            ),
+            simcc_split_ratio=2.0,
+            type='SimCCLabel',
+            use_dark=False),
+        type='GenerateTarget'),
+    dict(type='PackPoseInputs'),
+]
+train_pipeline_stage2 = [
+    dict(backend_args=dict(backend='local'), type='LoadImage'),
+    dict(type='GetBBoxCenterScale'),
+    dict(direction='horizontal', type='RandomFlip'),
+    dict(type='RandomHalfBody'),
+    dict(
+        rotate_factor=60,
+        scale_factor=[
+            0.75,
+            1.25,
+        ],
+        shift_factor=0.0,
+        type='RandomBBoxTransform'),
+    dict(input_size=(
+        192,
+        256,
+    ), type='TopdownAffine'),
+    dict(type='mmdet.YOLOXHSVRandomAug'),
+    dict(
+        transforms=[
+            dict(p=0.1, type='Blur'),
+            dict(p=0.1, type='MedianBlur'),
+            dict(
+                max_height=0.4,
+                max_holes=1,
+                max_width=0.4,
+                min_height=0.2,
+                min_holes=1,
+                min_width=0.2,
+                p=0.5,
+                type='CoarseDropout'),
+        ],
+        type='Albumentation'),
+    dict(
+        encoder=dict(
+            input_size=(
+                192,
+                256,
+            ),
+            normalize=False,
+            sigma=(
+                4.9,
+                5.66,
+            ),
+            simcc_split_ratio=2.0,
+            type='SimCCLabel',
+            use_dark=False),
+        type='GenerateTarget'),
+    dict(type='PackPoseInputs'),
+]
+val_cfg = dict()
+val_dataloader = dict(
+    batch_size=8,
+    dataset=dict(
+        ann_file='annotations/person_keypoints_val2017.json',
+        data_mode='topdown',
+        data_prefix=dict(img='val2017/'),
+        data_root='/data/oxx220000/coco/',
+        pipeline=[
+            dict(backend_args=dict(backend='local'), type='LoadImage'),
+            dict(type='GetBBoxCenterScale'),
+            dict(input_size=(
+                192,
+                256,
+            ), type='TopdownAffine'),
+            dict(type='PackPoseInputs'),
+        ],
+        test_mode=True,
+        type='CocoDataset'),
+    drop_last=False,
+    num_workers=2,
+    persistent_workers=True,
+    sampler=dict(round_up=False, shuffle=False, type='DefaultSampler'))
+val_evaluator = dict(
+    ann_file='/data/oxx220000/coco/annotations/person_keypoints_val2017.json',
+    type='CocoMetric')
+val_pipeline = [
+    dict(backend_args=dict(backend='local'), type='LoadImage'),
+    dict(type='GetBBoxCenterScale'),
+    dict(input_size=(
+        192,
+        256,
+    ), type='TopdownAffine'),
+    dict(type='PackPoseInputs'),
+]
+vis_backends = [
+    dict(type='LocalVisBackend'),
+]
+visualizer = dict(
+    name='visualizer',
+    type='PoseLocalVisualizer',
+    vis_backends=[
+        dict(type='LocalVisBackend'),
+    ])
+work_dir = 'outputs/rtmpose_tiny_coco_gpu3_probe'
+
+2026/04/03 13:14:06 - mmengine - INFO - Distributed training is not used, all SyncBatchNorm (SyncBN) layers in the model will be automatically reverted to BatchNormXd layers if they are used.
+2026/04/03 13:14:06 - mmengine - INFO - Hooks will be executed in the following order:
+before_run:
+(VERY_HIGH   ) RuntimeInfoHook                    
+(BELOW_NORMAL) LoggerHook                         
+ -------------------- 
+before_train:
+(VERY_HIGH   ) RuntimeInfoHook                    
+(NORMAL      ) IterTimerHook                      
+(VERY_LOW    ) CheckpointHook                     
+ -------------------- 
+before_train_epoch:
+(VERY_HIGH   ) RuntimeInfoHook                    
+(NORMAL      ) IterTimerHook                      
+(NORMAL      ) DistSamplerSeedHook                
+(NORMAL      ) PipelineSwitchHook                 
+ -------------------- 
+before_train_iter:
+(VERY_HIGH   ) RuntimeInfoHook                    
+(NORMAL      ) IterTimerHook                      
+ -------------------- 
+after_train_iter:
+(VERY_HIGH   ) RuntimeInfoHook                    
+(NORMAL      ) IterTimerHook                      
+(BELOW_NORMAL) LoggerHook                         
+(LOW         ) ParamSchedulerHook                 
+(VERY_LOW    ) CheckpointHook                     
+ -------------------- 
+after_train_epoch:
+(NORMAL      ) IterTimerHook                      
+(LOW         ) ParamSchedulerHook                 
+(VERY_LOW    ) CheckpointHook                     
+ -------------------- 
+before_val:
+(VERY_HIGH   ) RuntimeInfoHook                    
+ -------------------- 
+before_val_epoch:
+(NORMAL      ) IterTimerHook                      
+ -------------------- 
+before_val_iter:
+(NORMAL      ) IterTimerHook                      
+ -------------------- 
+after_val_iter:
+(NORMAL      ) IterTimerHook                      
+(NORMAL      ) PoseVisualizationHook              
+(BELOW_NORMAL) LoggerHook                         
+ -------------------- 
+after_val_epoch:
+(VERY_HIGH   ) RuntimeInfoHook                    
+(NORMAL      ) IterTimerHook                      
+(BELOW_NORMAL) LoggerHook                         
+(LOW         ) ParamSchedulerHook                 
+(VERY_LOW    ) CheckpointHook                     
+ -------------------- 
+after_val:
+(VERY_HIGH   ) RuntimeInfoHook                    
+ -------------------- 
+after_train:
+(VERY_HIGH   ) RuntimeInfoHook                    
+(VERY_LOW    ) CheckpointHook                     
+ -------------------- 
+before_test:
+(VERY_HIGH   ) RuntimeInfoHook                    
+ -------------------- 
+before_test_epoch:
+(NORMAL      ) IterTimerHook                      
+ -------------------- 
+before_test_iter:
+(NORMAL      ) IterTimerHook                      
+ -------------------- 
+after_test_iter:
+(NORMAL      ) IterTimerHook                      
+(NORMAL      ) PoseVisualizationHook              
+(NORMAL      ) BadCaseAnalysisHook                
+(BELOW_NORMAL) LoggerHook                         
+ -------------------- 
+after_test_epoch:
+(VERY_HIGH   ) RuntimeInfoHook                    
+(NORMAL      ) IterTimerHook                      
+(NORMAL      ) BadCaseAnalysisHook                
+(BELOW_NORMAL) LoggerHook                         
+ -------------------- 
+after_test:
+(VERY_HIGH   ) RuntimeInfoHook                    
+ -------------------- 
+after_run:
+(BELOW_NORMAL) LoggerHook                         
+ -------------------- 
+2026/04/03 13:14:08 - mmengine - INFO - Load checkpoint from pose_estimation/rtmpose_assets/rtmpose-tiny_simcc-coco_pt-aic-coco_420e-256x192-e613ba3f_20230127.pth
+2026/04/03 13:14:19 - mmengine - INFO - Epoch(test) [ 50/794]    eta: 0:02:39  time: 0.213787  data_time: 0.005204  memory: 53  
+2026/04/03 13:14:21 - mmengine - INFO - Epoch(test) [100/794]    eta: 0:01:25  time: 0.032635  data_time: 0.002236  memory: 53  
+2026/04/03 13:14:22 - mmengine - INFO - Epoch(test) [150/794]    eta: 0:01:00  time: 0.035082  data_time: 0.002236  memory: 53  
+2026/04/03 13:14:24 - mmengine - INFO - Epoch(test) [200/794]    eta: 0:00:47  time: 0.035636  data_time: 0.002238  memory: 53  
+2026/04/03 13:14:26 - mmengine - INFO - Epoch(test) [250/794]    eta: 0:00:38  time: 0.035895  data_time: 0.002265  memory: 53  
+2026/04/03 13:14:28 - mmengine - INFO - Epoch(test) [300/794]    eta: 0:00:32  time: 0.035818  data_time: 0.002210  memory: 53  
+2026/04/03 13:14:30 - mmengine - INFO - Epoch(test) [350/794]    eta: 0:00:26  time: 0.035539  data_time: 0.002264  memory: 53  
+2026/04/03 13:14:31 - mmengine - INFO - Epoch(test) [400/794]    eta: 0:00:22  time: 0.035700  data_time: 0.002339  memory: 53  
+2026/04/03 13:14:33 - mmengine - INFO - Epoch(test) [450/794]    eta: 0:00:18  time: 0.035853  data_time: 0.002304  memory: 53  
+2026/04/03 13:14:35 - mmengine - INFO - Epoch(test) [500/794]    eta: 0:00:15  time: 0.035461  data_time: 0.002289  memory: 53  
+2026/04/03 13:14:37 - mmengine - INFO - Epoch(test) [550/794]    eta: 0:00:12  time: 0.036070  data_time: 0.002296  memory: 53  
+2026/04/03 13:14:38 - mmengine - INFO - Epoch(test) [600/794]    eta: 0:00:09  time: 0.035081  data_time: 0.002227  memory: 53  
+2026/04/03 13:14:40 - mmengine - INFO - Epoch(test) [650/794]    eta: 0:00:07  time: 0.034194  data_time: 0.002201  memory: 53  
+2026/04/03 13:14:42 - mmengine - INFO - Epoch(test) [700/794]    eta: 0:00:04  time: 0.035384  data_time: 0.002322  memory: 53  
+2026/04/03 13:14:44 - mmengine - INFO - Epoch(test) [750/794]    eta: 0:00:02  time: 0.035852  data_time: 0.002222  memory: 53  
+2026/04/03 13:14:46 - mmengine - INFO - Evaluating CocoMetric...
+2026/04/03 13:14:48 - mmengine - INFO - Epoch(test) [794/794]    coco/AP: 0.696678  coco/AP .5: 0.905611  coco/AP .75: 0.775518  coco/AP (M): 0.673424  coco/AP (L): 0.738539  coco/AR: 0.725425  coco/AR .5: 0.915145  coco/AR .75: 0.795025  coco/AR (M): 0.693144  coco/AR (L): 0.773950  data_time: 0.002447  time: 0.046576

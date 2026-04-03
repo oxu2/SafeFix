@@ -1,3 +1,123 @@
+# 4/3/2026 Update — Multi-Task Baseline Training (Pose Estimation & Object Detection)
+
+Following the HiBug2 paper (arXiv:2501.16751), we train baseline models for pose estimation (COCO) and object detection (KITTI) to support error slice discovery across multiple vision tasks.
+
+---
+
+## 1. COCO Pose Estimation — Keypoint R-CNN (Pretrained, 2 epochs)
+
+**Model**: `keypointrcnn_resnet50_fpn` (torchvision, COCO pretrained)
+**Dataset**: COCO 2017 person keypoints (train: ~57K images, val: ~5K images)
+**Training**: 2 epochs, batch_size=2, lr schedule from torchvision defaults
+**GPU**: GPU 3 | **Env**: `ad` conda (torch 1.13.1+cu117)
+**Output**: `outputs/pose_keypointrcnn_ad_gpu3_e2/`
+**Log**: `logs/pose_coco_pretrained_gpu3_ad_e2.log`
+
+### Per-Epoch Results (OKS-based COCO Keypoint Metrics)
+
+| Epoch | Train Loss | AP | AP50 | AP75 | AP (M) | AP (L) | AR | AR50 | AR75 | AR (M) | AR (L) | Time |
+|-------|-----------|------|------|------|--------|--------|------|------|------|--------|--------|------|
+| 0 | 4.239 | 0.481 | 0.752 | 0.504 | — | — | 0.564 | — | — | — | — | 3.88h |
+| **1** | **4.321** | **0.489** | **0.764** | **0.513** | **0.447** | **0.553** | **0.564** | **0.821** | **0.599** | **0.516** | **0.632** | **3.91h** |
+
+**Total wall time**: ~7.8 hours (2 epochs). Best checkpoint saved at epoch 1.
+
+> [!NOTE]
+> The pretrained Keypoint R-CNN already achieves AP=0.489 after just 2 epochs of fine-tuning on COCO. Longer training (12 epochs per README) would improve results further, but 2 epochs are sufficient for establishing the baseline for error slice debugging.
+
+---
+
+## 2. COCO Pose Estimation — RTMPose-Tiny (Pretrained Evaluation)
+
+**Model**: RTMPose-Tiny (SimCC head, pretrained on AIC+COCO, 420 epochs)
+**Checkpoint**: `rtmpose-tiny_simcc-coco_pt-aic-coco_420e-256x192-e613ba3f_20230127.pth`
+**Dataset**: COCO 2017 val2017 (794 batches)
+**GPU**: GPU 3 | **Env**: `ad` conda (mmengine + mmpose)
+**Log**: `outputs/rtmpose_tiny_coco_gpu3_probe/20260403_131401/20260403_131401.log`
+
+### Evaluation Results (OKS-based COCO Keypoint Metrics)
+
+| Metric | Value |
+|--------|-------|
+| AP (IoU=0.50:0.95) | **0.697** |
+| AP (IoU=0.50) | 0.906 |
+| AP (IoU=0.75) | 0.776 |
+| AP (Medium) | 0.673 |
+| AP (Large) | 0.739 |
+| AR (IoU=0.50:0.95) | **0.725** |
+| AR (IoU=0.50) | 0.915 |
+| AR (IoU=0.75) | 0.795 |
+| AR (Medium) | 0.693 |
+| AR (Large) | 0.774 |
+
+> [!NOTE]
+> RTMPose-Tiny (AP=0.697) significantly outperforms Keypoint R-CNN (AP=0.489 after 2 epochs) as expected, since RTMPose was trained for 420 epochs on AIC+COCO with a specialized SimCC head. Per the HiBug2 paper, the tiny/small/medium/large RTMPose variants are all used for error slice analysis on pose estimation.
+
+---
+
+## 3. KITTI Object Detection — YOLOv8n (First 5000 Images, Pretrained)
+
+**Model**: YOLOv8n (pretrained on COCO, `yolov8n.pt`)
+**Dataset**: KITTI first 5000 training images → YOLO format (train: 5000, val: 500)
+**Training**: 100 epochs, batch=16, imgsz=640, AdamW optimizer (lr=0.000833)
+**GPU**: GPU 3 (CUDA_VISIBLE_DEVICES=3) | **Env**: `fp` conda (torch 2.9.1+cu128)
+**Output**: `runs/detect/runs/kitti_yolov8/first5000/`
+**Log**: `logs/yolov8_kitti_first5000_gpu3.log`
+
+### Final Validation Results (Best Epoch 96)
+
+| Metric | Value |
+|--------|-------|
+| Precision | 0.922 |
+| Recall | 0.787 |
+| mAP@50 | **0.890** |
+| mAP@50-95 | **0.636** |
+| Fitness | 0.636 |
+
+### Per-Class Detection Results (Epoch 100, Final Eval)
+
+| Class | Images | Instances | Precision | Recall | mAP@50 | mAP@50-95 |
+|-------|--------|-----------|-----------|--------|--------|-----------|
+| **all** | **500** | **2869** | **0.922** | **0.787** | **0.890** | **0.636** |
+| Car | 466 | 2062 | 0.926 | 0.909 | 0.962 | 0.785 |
+| Van | 161 | 227 | 0.952 | 0.894 | 0.969 | 0.760 |
+| Truck | 79 | 86 | 0.931 | 0.942 | 0.970 | 0.812 |
+| Pedestrian | 121 | 300 | 0.834 | 0.627 | 0.730 | 0.382 |
+| Person_sitting | 4 | 5 | 1.000 | 0.533 | 0.866 | 0.532 |
+| Cyclist | 66 | 93 | 0.854 | 0.752 | 0.814 | 0.541 |
+| Tram | 20 | 25 | 0.961 | 0.840 | 0.920 | 0.653 |
+| Misc | 57 | 71 | 0.919 | 0.797 | 0.885 | 0.626 |
+
+**Total training time**: 1h 36m 52s (100 epochs).
+
+> [!IMPORTANT]
+> Per the HiBug2 paper: "For object detection, YOLOv8 is trained on the first 5000 images of the KITTI training set. The remaining 2481 images are used for error slice identification." The per-class mAP@50-95 results show clear performance disparities — **Pedestrian (0.382)** and **Person_sitting (0.532)** are notably weaker than **Car (0.785)** and **Truck (0.812)**, which are prime candidates for error slice analysis.
+
+### Training Convergence
+
+| Epoch | Precision | Recall | mAP@50 | mAP@50-95 | val/box_loss | val/cls_loss |
+|-------|-----------|--------|--------|-----------|-------------|-------------|
+| 10 | 0.726 | 0.624 | 0.700 | 0.430 | 1.061 | 0.791 |
+| 25 | 0.834 | 0.702 | 0.792 | 0.530 | 0.929 | 0.609 |
+| 50 | 0.912 | 0.713 | 0.845 | 0.579 | 0.829 | 0.494 |
+| 75 | 0.904 | 0.778 | 0.861 | 0.603 | 0.776 | 0.457 |
+| 96 (best) | 0.920 | 0.790 | 0.895 | **0.640** | 0.761 | 0.444 |
+| 100 | 0.944 | 0.780 | 0.882 | 0.634 | 0.758 | 0.440 |
+
+---
+
+## Summary of Multi-Task Baselines
+
+| Task | Model | Dataset | Key Metric | Value | Status |
+|------|-------|---------|------------|-------|--------|
+| Pose Estimation | Keypoint R-CNN | COCO 2017 | AP (OKS) | 0.489 | 2 epochs, pretrained |
+| Pose Estimation | RTMPose-Tiny | COCO 2017 | AP (OKS) | 0.697 | Pretrained eval only |
+| Object Detection | YOLOv8n | KITTI first 5000 | mAP@50-95 | 0.636 | 100 epochs, pretrained |
+
+These baselines are ready for error slice discovery and model debugging with HiBug2/DebugAgent.
+
+---
+
 # 3/27/2026 Update
 ## Long-Tail Learning Baselines
 
