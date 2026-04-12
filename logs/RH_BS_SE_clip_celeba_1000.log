@@ -18,7 +18,7 @@ Epoch [13/15], Train Loss: 0.1932, Train Acc: 0.9982, Val Loss: 0.4228, Val Acc:
 Epoch [14/15], Train Loss: 0.1925, Train Acc: 0.9987, Val Loss: 0.4284, Val Acc: 0.9001
 Epoch [15/15], Train Loss: 0.1921, Train Acc: 0.9988, Val Loss: 0.4251, Val Acc: 0.9010
 Generating and saving predictions...
-/people/cs/o/oxx220000/HiBug/predict.py:1060: DeprecationWarning: Conversion of an array with ndim > 0 to a scalar is deprecated, and will error in future. Ensure you extract a single element from your array before performing this operation. (Deprecated NumPy 1.25.)
+/people/cs/o/oxx220000/safefix/predict.py:1060: DeprecationWarning: Conversion of an array with ndim > 0 to a scalar is deprecated, and will error in future. Ensure you extract a single element from your array before performing this operation. (Deprecated NumPy 1.25.)
   full_orig_preds[idx] = pred
 Combined predictions length: 181000 (should match combined_labels length: 181000)
 Total training time for 15 epochs: 4197.96 seconds

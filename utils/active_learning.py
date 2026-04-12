@@ -1,5 +1,5 @@
 """
-Active Learning utilities for the HiBug project.
+Active Learning utilities for the safefix project.
 This module contains multiple active learning strategies and related functions.
 """
 

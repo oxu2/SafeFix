@@ -1,17 +1,194 @@
+# 4/12/2026 Update — COCO Gemini Attributes and Pose Slice Analysis
+
+### Summary of Recent Report Updates
+
+Based on the completed runs and report updates consolidated on 4/12, the main recent work was:
+
+- Established the COCO pose-estimation baseline stack, including Keypoint R-CNN fine-tuning and RTMPose-Tiny evaluation for later slice analysis.
+- Refined the KITTI object-detection baseline around the focused `Car` / `Pedestrian` setup and updated the supporting training/report artifacts.
+- Built the COCO pose attribute-assignment workflow for VLMs: added COCO pose corpora, updated `utils/assign_attribute.py` for COCO loading/filtering plus `--stop_at` and CSV-oriented output handling, and generated Qwen3 / InternVL3 attribute-assignment results.
+- Added the BLIP-based COCO pose attribute-assignment path, completed a full run with the Gemini-defined corpus, and extended BLIP output handling to support CSV export.
+- Finished the Gemini-corpus Qwen3 / InternVL3 validation runs on the COCO pose `val2017` split and recorded their runtimes, logs, and CSV outputs.
+- Finished the Gemini-corpus Qwen3 / InternVL3 train-split runs on the first `20,000` valid `train2017` images and recorded their runtimes, logs, and CSV outputs.
+- Finished three `train_pose_estimation.py` probe runs on the first `20,000` valid `train2017` images, added a reproducible held-out `val/test` split inside valid `val2017`, and recorded both the held-out keypoint metrics and the main slice-level failure cases.
+
+### Recent COCO Gemini Workflow Updates
+
+- Updated `utils/blip.py` so the COCO pose path defaults to `save/corpus_coco_pose_gemini.json` while still allowing override via `--corpus save/corpus_coco_pose.json`.
+- Added CSV export support to `utils/blip.py` via `--csv_output`, with the default CSV path derived from the JSON output path.
+- Updated `utils/blipFeature.py` to use configurable `BLIP_NUM_WORKERS` (default `0`) so BLIP inference does not fail in restricted execution environments.
+
+### COCO Pose Corpus and Split Notes
+
+- Rewrote `save/corpus_coco_pose.json` so the COCO pose attribute vocabulary is closer to **HiBug2 Appendix Table 5** and more suitable for **ControlNet / generative editing** rather than diagnosis-only tagging.
+- The current COCO pose corpus contains **18 editable attributes**:
+  - `pose`
+  - `pose_complexity`
+  - `head_orientation`
+  - `clothes_color`
+  - `is_arm_crossing`
+  - `is_carrying_something`
+  - `is_standing_on_one_leg`
+  - `is_on_all_fours`
+  - `is_sitting`
+  - `is_dynamic`
+  - `background_style`
+  - `background_color`
+  - `is_containing_other_people`
+  - `indoor_lighting`
+  - `is_indoor`
+  - `weather`
+  - `occlusion`
+  - `viewpoint`
+- These attributes cover pose state, body configuration, scene context, and imaging conditions, making them more directly usable for controlled generation and downstream bug-repair experiments.
+- For the COCO pose pipeline, the repository currently uses:
+  - **train**: `train2017` + `person_keypoints_train2017.json`
+  - **val**: `val2017` + `person_keypoints_val2017.json`
+  - **test**: `val2017` + `person_keypoints_val2017.json`
+- This follows standard local COCO practice: because official test ground truth is not public, `val2017` is reused as the local held-out test set.
+- After filtering to valid person-keypoint images, the current effective COCO pose pool contains **56,599 train images** and **2,346 val images**, for a total of **58,945 valid COCO pose images**.
+
+### Full COCO Run
+
+- Launched a full BLIP attribute-assignment run on COCO pose with the Gemini-defined corpus.
+- Final JSON result was successfully produced at `save/attribute_coco_pose_gemini_blip.json`.
+- The completed file contains `58,945` entries for each of the 6 Gemini-corpus attributes:
+  - `clothes_color`
+  - `clothes_type`
+  - `background_style`
+  - `time_of_day`
+  - `weather`
+  - `pose`
+- Quick inspection confirmed all 6 attributes have non-empty assignments for all `58,945` samples.
+
+### Gemini-Corpus VLM Val Runs (`utils/assign_attribute.py`)
+
+- Completed the earlier Qwen3 and InternVL3 COCO pose attribute-assignment runs with the Gemini corpus using `utils/assign_attribute.py`.
+- These runs used the script's default `coco_pose` split behavior, so they covered **val2017 only** rather than the combined train+val pool.
+- Both runs loaded `person_keypoints_val2017.json`, filtered to **2,346 valid images**, and finished with both JSON and CSV outputs.
+
+| Model | Split | Valid Images | Runtime | JSON Output | CSV Output | Log |
+|-------|-------|--------------|---------|-------------|------------|-----|
+| Qwen3-VL-8B | val2017 | 2,346 | 45.8 min | `save/attribute_coco_pose_gemini_qwen3_8B.json` | `save/attribute_coco_pose_gemini_qwen3_8B.csv` | `log_pose/assign_attribute_coco_pose_qwen3_8B_gemini_gpu3_20260410_193102.log` |
+| InternVL3-8B | val2017 | 2,346 | 208.8 min | `save/attribute_coco_pose_gemini_internvl3_8B.json` | `save/attribute_coco_pose_gemini_internvl3_8B.csv` | `log_pose/assign_attribute_coco_pose_internvl3_8B_gemini_gpu2_20260410_193102.log` |
+
+- Log endings confirm both jobs completed successfully:
+  - Qwen3: `Done. Processed 2346 images in 45.8 minutes` and `Saved attribute annotations to save/attribute_coco_pose_gemini_qwen3_8B.json`
+  - InternVL3: `Done. Processed 2346 images in 208.8 minutes` and `Saved attribute annotations to save/attribute_coco_pose_gemini_internvl3_8B.json`
+- CSV validation passed for both outputs: each file contains `2,346` data rows plus a header row, and a quick missing-cell check found no empty attribute fields.
+
+### Gemini-Corpus VLM Train Runs (`utils/assign_attribute.py`, 20k subset)
+
+- Completed the follow-up Qwen3 and InternVL3 COCO pose train-split runs with the Gemini corpus using `--split train --stop_at 20000`.
+- Both runs loaded `person_keypoints_train2017.json`, detected **56,599 valid train images**, and then processed the first **20,000** samples as requested.
+- Both jobs finished with JSON and CSV outputs for the 6-attribute Gemini corpus.
+
+| Model | Split | Source Pool | Processed Images | Runtime | JSON Output | CSV Output | Log |
+|-------|-------|-------------|------------------|---------|-------------|------------|-----|
+| Qwen3-VL-8B | train2017 | 56,599 valid images | 20,000 | 399.7 min (6.66 h) | `save/attribute_coco_pose_gemini_train20k_qwen3_8B.json` | `save/attribute_coco_pose_gemini_train20k_qwen3_8B.csv` | `log_pose/assign_attribute_coco_pose_qwen3_8B_gemini_train20k_gpu0_20260410_193459.log` |
+| InternVL3-8B | train2017 | 56,599 valid images | 20,000 | 1709.6 min (28.49 h) | `save/attribute_coco_pose_gemini_train20k_internvl3_8B.json` | `save/attribute_coco_pose_gemini_train20k_internvl3_8B.csv` | `log_pose/assign_attribute_coco_pose_internvl3_8B_gemini_train20k_gpu1_20260410_193459.log` |
+
+- Log endings confirm both jobs completed successfully:
+  - Qwen3: `Done. Processed 20000 images in 399.7 minutes` and `Saved attribute annotations to save/attribute_coco_pose_gemini_train20k_qwen3_8B.json`
+  - InternVL3: `Done. Processed 20000 images in 1709.6 minutes` and `Saved attribute annotations to save/attribute_coco_pose_gemini_train20k_internvl3_8B.json`
+- CSV validation passed for both train outputs: each file contains `20,000` data rows plus a header row.
+
+### Canonical Train20k Artifacts To Check Next
+
+- For the next `report.md` update after the Gemini corpus cleanup (`weather=unknown` removed), use the following three train-only logs and outputs as the primary sources of truth.
+- These runs are the canonical post-cleanup train20k artifacts; do not rely on the older `20260410` train logs if the goal is to summarize the revised corpus outputs.
+
+| Model | Status | Canonical JSON Output | Canonical CSV Output | Primary Log |
+|-------|--------|-----------------------|----------------------|-------------|
+| Qwen3-VL-8B | running on GPU 0 | `save/attribute_coco_pose_gemini_train20k_qwen3_8B.json` | `save/attribute_coco_pose_gemini_train20k_qwen3_8B.csv` | `log_pose/assign_attribute_coco_pose_qwen3_8B_gemini_train20k_only_gpu0_20260412_162135.log` |
+| InternVL3-8B | running on GPU 3 | `save/attribute_coco_pose_gemini_train20k_internvl3_8B.json` | `save/attribute_coco_pose_gemini_train20k_internvl3_8B.csv` | `log_pose/assign_attribute_coco_pose_internvl3_8B_gemini_train20k_only_gpu3_20260412_162238.log` |
+| BLIP | completed on 2026-04-12 16:38 CDT | `save/attribute_coco_pose_gemini_train20k_blip.json` | `save/attribute_coco_pose_gemini_train20k_blip.csv` | `log_pose/blip_coco_pose_gemini_train20k_gpu2_20260412_162538.log` |
+
+- The BLIP train20k run was launched with:
+  - `--dataset coco_pose --split train --stop_at 20000 --with_attribute_selection --corpus save/corpus_coco_pose_gemini.json`
+- BLIP train20k artifact side files are:
+  - `save/labels_coco_pose_gemini_train20k_blip.npy`
+  - `save/label_coco_pose_gemini_train20k_blip.npy`
+  - `save/train_idx_coco_pose_gemini_train20k_blip.npy`
+  - `save/val_idx_coco_pose_gemini_train20k_blip.npy`
+- For quick completion checks later:
+  - Qwen3 / InternVL3 logs should end with `Done. Processed 20000 images ...` plus `Saved attribute annotations to ...`
+  - BLIP log should end with `Saved attributes to save/attribute_coco_pose_gemini_train20k_blip.json` and `Saved attribute CSV to save/attribute_coco_pose_gemini_train20k_blip.csv`
+- BLIP train20k completion is now verified:
+  - `Saved attributes to save/attribute_coco_pose_gemini_train20k_blip.json`
+  - `Saved attribute CSV to save/attribute_coco_pose_gemini_train20k_blip.csv`
+
+### Status Note
+
+- The long-running `nohup` job finished successfully and the log ended with `Saved attributes to save/attribute_coco_pose_gemini_blip.json`.
+- That particular background job was started before CSV export was added, so it produced JSON only, not CSV.
+
+### CSV Validation
+
+- After adding CSV support, a `--stop_at 1` smoke run on the Gemini corpus succeeded and produced both:
+  - `save/attribute_coco_pose_gemini_blip_smoke_csv_gpu2.json`
+  - `save/attribute_coco_pose_gemini_blip_smoke_csv_gpu2.csv`
+- Example CSV row from the smoke run:
+
+```csv
+image_id,clothes_color,clothes_type,background_style,time_of_day,weather,pose
+139,yellow,formal,indoors,morning,sunny,standing
+```
+
+### Follow-Up
+
+- If a full CSV matching `save/attribute_coco_pose_gemini_blip.json` is needed, it can now be generated with the updated BLIP code in a rerun, or converted directly from the finished JSON in a short post-process step.
+- The dedicated BLIP `train20k` rerun with JSON+CSV output completed at `log_pose/blip_coco_pose_gemini_train20k_gpu2_20260412_162538.log`.
+- The dedicated BLIP `val` rerun with the cleaned corpus completed at `log_pose/blip_coco_pose_gemini_val_gpu2_20260412_171035.log` and produced:
+  - `save/attribute_coco_pose_gemini_blip_val.json`
+  - `save/attribute_coco_pose_gemini_blip_val.csv`
+- A clean BLIP held-out `test` slice analysis now exists at:
+  - `log_pose/pose_keypointrcnn_train20k_blip_bs8_e2_rare0p97_20260412_021252/slice_analysis/blip_postcleanup_clean/test_slice_stats.json`
+  - `log_pose/pose_keypointrcnn_train20k_blip_bs8_e2_rare0p97_20260412_021252/slice_analysis/blip_postcleanup_clean/test_slice_stats.csv`
+- In this clean BLIP reanalysis, `weather=unknown` no longer appears; the weather slices are now `sunny`, `clear`, `cloudy`, `rainy`, and `snowy`.
+
+### COCO Pose 20k Probe Runs with Held-Out Slice Analysis
+
+- Extended `train_pose_estimation.py` so the current probe workflow trains on the first `20,000` valid `train2017` images by default, splits the `2,346` valid `val2017` images into reproducible held-out `val` / `test` halves (`1,173` each, seed `42`), evaluates the best checkpoint on both halves, and runs automatic slice analysis from Gemini-corpus attribute annotations.
+- Pose-related logs and experiment artifact directories are now consolidated under `log_pose/` instead of being split across `logs/` and `outputs/`.
+- These results are useful as fast slice-analysis probes, but they are not direct replacements for the earlier full-val baseline because the train cap, batch size, and evaluation split are different.
+- The three runs below should be read as end-to-end run variants rather than a strict attribute-source-only ablation, because the `BLIP` run used `batch_size=8` while the `Qwen3` and `InternVL3` runs used `batch_size=4`.
+
+| Run Tag | Batch | Train Images | Held-out Val AP | Held-out Test AP | Test AP50 | Test AP75 | Test AR | Train Time | End-to-End |
+|---------|-------|--------------|-----------------|------------------|-----------|-----------|---------|------------|------------|
+| Qwen3-VL-8B | 4 | 20,000 | 0.5985 | 0.5968 | 0.8371 | 0.6470 | 0.6675 | 01:22:46 | 01:22:52 |
+| InternVL3-8B | 4 | 20,000 | 0.6436 | 0.6340 | 0.8620 | 0.6922 | 0.7002 | 01:29:00 | 01:29:07 |
+| BLIP | 8 | 20,000 | 0.6427 | 0.6370 | 0.8614 | 0.6902 | 0.7009 | 01:30:28 | 01:30:35 |
+
+- Main artifact roots:
+  - Qwen3: `log_pose/pose_keypointrcnn_train20k_qwen3_bs4_e2_rare0p97_20260412_015524/`
+  - InternVL3: `log_pose/pose_keypointrcnn_train20k_internvl3_bs4_e2_rare0p97_gpuX_20260412_015632/`
+  - BLIP: `log_pose/pose_keypointrcnn_train20k_blip_bs8_e2_rare0p97_20260412_021252/`
+- On the held-out test split, the strongest AP came from the `BLIP`-tagged run (`0.6370`), closely followed by `InternVL3` (`0.6340`); `Qwen3` reached `0.5968`.
+- The clearest repeated failure slice across all three variants was `pose=lying`:
+  - Qwen3: `AP=0.2796` (`delta=-0.3172`, `34` images)
+  - InternVL3: `AP=0.2924` (`delta=-0.3416`, `32` images)
+  - BLIP: `AP=0.4195` (`delta=-0.2175`, `68` images)
+- `pose=sitting` was the most consistent high-support hard case in every run, with held-out test AP between `0.5225` and `0.5633`.
+- Secondary failure slices depended on the annotation source: Qwen3 emphasized `time_of_day=unknown/morning` and `weather=unknown`; InternVL3 emphasized `background_style=rural` and `time_of_day=night/evening`; BLIP emphasized `background_style=indoors`, `weather=unknown`, and `clothes_type=formal`.
+
+---
+
 # 4/3/2026 Update — Multi-Task Baseline Training (Pose Estimation & Object Detection)
 
-Following the HiBug2 paper (arXiv:2501.16751), we train baseline models for pose estimation (COCO) and object detection (KITTI) to support error slice discovery across multiple vision tasks.
+Following the safefix2 paper (arXiv:2501.16751), we train baseline models for pose estimation (COCO) and object detection (KITTI) to support error slice discovery across multiple vision tasks.
 
 ---
 
 ## 1. COCO Pose Estimation — Keypoint R-CNN (Pretrained, 2 epochs)
 
 **Model**: `keypointrcnn_resnet50_fpn` (torchvision, COCO pretrained)
-**Dataset**: COCO 2017 person keypoints (train: ~57K images, val: ~5K images)
+**Dataset**: COCO 2017 person keypoints, filtered to valid person-keypoint images (`train=56,599`, `val=2,346`, total `58,945`)
+**Split**: train=`train2017` + `person_keypoints_train2017.json`; val=`val2017` + `person_keypoints_val2017.json`; local test also uses `val2017` by COCO convention because official test ground truth is not public
 **Training**: 2 epochs, batch_size=2, lr schedule from torchvision defaults
 **GPU**: GPU 3 | **Env**: `ad` conda (torch 1.13.1+cu117)
-**Output**: `outputs/pose_keypointrcnn_ad_gpu3_e2/`
-**Log**: `logs/pose_coco_pretrained_gpu3_ad_e2.log`
+**Output**: `log_pose/pose_keypointrcnn_ad_gpu3_e2/`
+**Log**: `log_pose/pose_coco_pretrained_gpu3_ad_e2.log`
 
 ### Per-Epoch Results (OKS-based COCO Keypoint Metrics)
 
@@ -33,7 +210,7 @@ Following the HiBug2 paper (arXiv:2501.16751), we train baseline models for pose
 **Checkpoint**: `rtmpose-tiny_simcc-coco_pt-aic-coco_420e-256x192-e613ba3f_20230127.pth`
 **Dataset**: COCO 2017 val2017 (794 batches)
 **GPU**: GPU 3 | **Env**: `ad` conda (mmengine + mmpose)
-**Log**: `outputs/rtmpose_tiny_coco_gpu3_probe/20260403_131401/20260403_131401.log`
+**Log**: `log_pose/rtmpose_tiny_coco_gpu3_probe/20260403_131401/20260403_131401.log`
 
 ### Evaluation Results (OKS-based COCO Keypoint Metrics)
 
@@ -51,58 +228,64 @@ Following the HiBug2 paper (arXiv:2501.16751), we train baseline models for pose
 | AR (Large) | 0.774 |
 
 > [!NOTE]
-> RTMPose-Tiny (AP=0.697) significantly outperforms Keypoint R-CNN (AP=0.489 after 2 epochs) as expected, since RTMPose was trained for 420 epochs on AIC+COCO with a specialized SimCC head. Per the HiBug2 paper, the tiny/small/medium/large RTMPose variants are all used for error slice analysis on pose estimation.
+> RTMPose-Tiny (AP=0.697) significantly outperforms Keypoint R-CNN (AP=0.489 after 2 epochs) as expected, since RTMPose was trained for 420 epochs on AIC+COCO with a specialized SimCC head. Per the safefix2 paper, the tiny/small/medium/large RTMPose variants are all used for error slice analysis on pose estimation.
 
 ---
 
-## 3. KITTI Object Detection — YOLOv8n (First 5000 Images, Pretrained)
+## 3. KITTI Object Detection — YOLOv8n (Updated 2026-04-09, Car/Pedestrian Split)
 
-**Model**: YOLOv8n (pretrained on COCO, `yolov8n.pt`)
-**Dataset**: KITTI first 5000 training images → YOLO format (train: 5000, val: 500)
-**Training**: 100 epochs, batch=16, imgsz=640, AdamW optimizer (lr=0.000833)
-**GPU**: GPU 3 (CUDA_VISIBLE_DEVICES=3) | **Env**: `fp` conda (torch 2.9.1+cu128)
-**Output**: `runs/detect/runs/kitti_yolov8/first5000/`
-**Log**: `logs/yolov8_kitti_first5000_gpu3.log`
+**Model**: YOLOv8n (pretrained on COCO, `weights/yolov8n.pt`)
+**Dataset**: KITTI training split in deterministic filename order, converted to YOLO format with only `Car` and `Pedestrian`
+**Split**: first 5000 images for train, next 1240 for val, remaining 1241 for test
+**Implementation note**: all three splits are derived from the KITTI `training/` set in deterministic filename order, then exported to YOLO-format `images/{train,val,test}` and `labels/{train,val,test}`
+**Training**: 30 epochs, batch=4, imgsz=640, optimizer=`auto` -> AdamW (`lr=0.001667`, momentum=0.9)
+**GPU**: NVIDIA RTX A5000 | **Env**: Ultralytics 8.4.33, torch 2.9.1+cu128
+**Output**: `runs/kitti_yolov8/first5000_gpu1_e30_20260409_194735/`
+**Log**: `logs/yolov8_kitti_gpu1_e30_20260409_194735.log`
 
-### Final Validation Results (Best Epoch 96)
+### Best Validation Checkpoint (Epoch 29)
 
 | Metric | Value |
 |--------|-------|
-| Precision | 0.922 |
-| Recall | 0.787 |
-| mAP@50 | **0.890** |
-| mAP@50-95 | **0.636** |
-| Fitness | 0.636 |
+| Precision | 0.849 |
+| Recall | 0.712 |
+| mAP@50 | **0.808** |
+| mAP@50-95 | **0.545** |
+| Fitness | 0.545 |
 
-### Per-Class Detection Results (Epoch 100, Final Eval)
+### Held-Out Test Results (`best.pt` on `test`)
+
+| Metric | Value |
+|--------|-------|
+| Precision | 0.864 |
+| Recall | 0.750 |
+| mAP@50 | **0.831** |
+| mAP@50-95 | **0.563** |
+| Fitness | 0.563 |
+
+### Per-Class Test Results
 
 | Class | Images | Instances | Precision | Recall | mAP@50 | mAP@50-95 |
 |-------|--------|-----------|-----------|--------|--------|-----------|
-| **all** | **500** | **2869** | **0.922** | **0.787** | **0.890** | **0.636** |
-| Car | 466 | 2062 | 0.926 | 0.909 | 0.962 | 0.785 |
-| Van | 161 | 227 | 0.952 | 0.894 | 0.969 | 0.760 |
-| Truck | 79 | 86 | 0.931 | 0.942 | 0.970 | 0.812 |
-| Pedestrian | 121 | 300 | 0.834 | 0.627 | 0.730 | 0.382 |
-| Person_sitting | 4 | 5 | 1.000 | 0.533 | 0.866 | 0.532 |
-| Cyclist | 66 | 93 | 0.854 | 0.752 | 0.814 | 0.541 |
-| Tram | 20 | 25 | 0.961 | 0.840 | 0.920 | 0.653 |
-| Misc | 57 | 71 | 0.919 | 0.797 | 0.885 | 0.626 |
+| **all** | **1241** | **5369** | **0.864** | **0.750** | **0.831** | **0.563** |
+| Car | 1107 | 4666 | 0.899 | 0.883 | 0.936 | 0.731 |
+| Pedestrian | 283 | 703 | 0.829 | 0.617 | 0.726 | 0.394 |
 
-**Total training time**: 1h 36m 52s (100 epochs).
+**Total training time**: 1h 01m 38s (30 epochs). **End-to-end wall time**: 1h 01m 43s. **Test evaluation time**: 43s.
 
 > [!IMPORTANT]
-> Per the HiBug2 paper: "For object detection, YOLOv8 is trained on the first 5000 images of the KITTI training set. The remaining 2481 images are used for error slice identification." The per-class mAP@50-95 results show clear performance disparities — **Pedestrian (0.382)** and **Person_sitting (0.532)** are notably weaker than **Car (0.785)** and **Truck (0.812)**, which are prime candidates for error slice analysis.
+> This run supersedes the earlier 8-class `train=5000 / val=500` YOLO baseline in the previous report draft. With the new deterministic `train=5000 / val=1240 / test=1241` split and a focused `Car`/`Pedestrian` label space, the held-out test results still show a clear class gap: **Pedestrian (0.394 mAP@50-95)** remains substantially weaker than **Car (0.731)**, making pedestrian-heavy slices the clearest target for safefix-style debugging.
 
-### Training Convergence
+### Validation Convergence
 
 | Epoch | Precision | Recall | mAP@50 | mAP@50-95 | val/box_loss | val/cls_loss |
 |-------|-----------|--------|--------|-----------|-------------|-------------|
-| 10 | 0.726 | 0.624 | 0.700 | 0.430 | 1.061 | 0.791 |
-| 25 | 0.834 | 0.702 | 0.792 | 0.530 | 0.929 | 0.609 |
-| 50 | 0.912 | 0.713 | 0.845 | 0.579 | 0.829 | 0.494 |
-| 75 | 0.904 | 0.778 | 0.861 | 0.603 | 0.776 | 0.457 |
-| 96 (best) | 0.920 | 0.790 | 0.895 | **0.640** | 0.761 | 0.444 |
-| 100 | 0.944 | 0.780 | 0.882 | 0.634 | 0.758 | 0.440 |
+| 1 | 0.728 | 0.571 | 0.638 | 0.375 | 1.218 | 0.908 |
+| 5 | 0.772 | 0.603 | 0.685 | 0.424 | 1.108 | 0.729 |
+| 10 | 0.846 | 0.634 | 0.738 | 0.470 | 1.029 | 0.657 |
+| 20 | 0.839 | 0.682 | 0.774 | 0.513 | 0.923 | 0.562 |
+| 29 (best) | 0.849 | 0.712 | 0.808 | **0.545** | 0.861 | 0.516 |
+| 30 | 0.844 | 0.704 | 0.802 | 0.545 | 0.854 | 0.513 |
 
 ---
 
@@ -112,9 +295,9 @@ Following the HiBug2 paper (arXiv:2501.16751), we train baseline models for pose
 |------|-------|---------|------------|-------|--------|
 | Pose Estimation | Keypoint R-CNN | COCO 2017 | AP (OKS) | 0.489 | 2 epochs, pretrained |
 | Pose Estimation | RTMPose-Tiny | COCO 2017 | AP (OKS) | 0.697 | Pretrained eval only |
-| Object Detection | YOLOv8n | KITTI first 5000 | mAP@50-95 | 0.636 | 100 epochs, pretrained |
+| Object Detection | YOLOv8n | KITTI 5000/1240/1241 (`Car`, `Pedestrian`) | mAP@50-95 (test) | 0.563 | 30 epochs, pretrained |
 
-These baselines are ready for error slice discovery and model debugging with HiBug2/DebugAgent.
+These baselines are ready for error slice discovery and model debugging with safefix2/DebugAgent.
 
 ---
 
@@ -123,9 +306,9 @@ These baselines are ready for error slice discovery and model debugging with HiB
 
 ### Motivation
 
-Reviewer feedback noted that once the failing subgroup is identified (via HiBug), the remaining task—generating more data for a rare slice and retraining—resembles long-tail learning with synthetic augmentation. To address this, we implement four standard Long-Tail Learning (LTL) baselines as controlled comparisons. These baselines operate **exclusively on the original training data** without any generated images, isolating the effect of each LTL strategy from SafeFix's targeted synthetic augmentation.
+Reviewer feedback noted that once the failing subgroup is identified (via safefix), the remaining task—generating more data for a rare slice and retraining—resembles long-tail learning with synthetic augmentation. To address this, we implement four standard Long-Tail Learning (LTL) baselines as controlled comparisons. These baselines operate **exclusively on the original training data** without any generated images, isolating the effect of each LTL strategy from Safefix's targeted synthetic augmentation.
 
-The comparison demonstrates that class-level reweighting and resampling (standard LTL) cannot fix **attribute-level** subgroup failures (e.g., "red hair + brown skin" faces failing in a lipstick classifier), whereas SafeFix's targeted generation can.
+The comparison demonstrates that class-level reweighting and resampling (standard LTL) cannot fix **attribute-level** subgroup failures (e.g., "red hair + brown skin" faces failing in a lipstick classifier), whereas Safefix's targeted generation can.
 
 
 
@@ -235,7 +418,7 @@ All LTL baselines use **only the original training data**:
 - CelebA: 80,000 training images (no generated redhair_brownskin images)
 - ImageNet: 10,400 training images (no generated images)
 
-This ensures a fair comparison: LTL methods address class imbalance through algorithmic means only, while SafeFix adds targeted synthetic data for specific attribute subgroups.
+This ensures a fair comparison: LTL methods address class imbalance through algorithmic means only, while Safefix adds targeted synthetic data for specific attribute subgroups.
 
 ### Run Commands
 
@@ -262,8 +445,8 @@ nohup /people/cs/o/oxx220000/.conda/envs/ad/bin/python -u predict_ltl.py \
 
 ### Results Comparison
 
-The following table summarizes the performance of LTL baselines vs. SafeFix. 
-**Note**: Paper baseline accuracy for ResNet-18 on ImageNet10 is **71.73%**. SafeFix results are cited from Table 2 and Table 8 of the paper.
+The following table summarizes the performance of LTL baselines vs. Safefix. 
+**Note**: Paper baseline accuracy for ResNet-18 on ImageNet10 is **71.73%**. Safefix results are cited from Table 2 and Table 8 of the paper.
 
 | Baseline | CelebA Test ACC | CelebA Fix Bugs | ImageNet Test ACC | ImageNet Fix Bugs |
 |---|---|---|---|---|
@@ -272,13 +455,13 @@ The following table summarizes the performance of LTL baselines vs. SafeFix.
 | Class-Balanced Loss | 91.2% | 8/13  | 72.7% | 13/17  |
 | Oversampling | 91.0% | 8/13  | 72.9% | 14/17  |
 | LDAM | 91.4% | 8/13  | 71.2% | 12/17  |
-| **SafeFix (Paper Ours)** | **91.92%** |  | **74.88%** |  |
+| **Safefix (Paper Ours)** | **91.92%** |  | **74.88%** |  |
 
 ---
 
 ### Experiment Status (as of 03/27 12:30)
 
-All ImageNet and CelebA LTL baseline runs are complete. Results indicate that while LTL methods can provide modest boosts to overall accuracy on balanced splits, they are significantly less effective than SafeFix at addressing specific attribute-level failures discovered by HiBug.
+All ImageNet and CelebA LTL baseline runs are complete. Results indicate that while LTL methods can provide modest boosts to overall accuracy on balanced splits, they are significantly less effective than Safefix at addressing specific attribute-level failures discovered by safefix.
 
 > [!IMPORTANT]
 > **OOM Mitigation**: To address the `Unable to find a valid cuDNN algorithm` and `CUBLAS_STATUS_NOT_INITIALIZED` errors occurring on the heavily utilized shared GPUs, we successfully completed these runs by disabling `cudnn.benchmark` and reducing batch sizes to 32.
@@ -289,7 +472,7 @@ All ImageNet and CelebA LTL baseline runs are complete. Results indicate that wh
 # 3/13/2026 Update
 ## All-Strategy Comparison across Sub Ratios (lr=1e-5, 15 epochs)
 
-All runs resume from `model_imagenet_resnet_base.pth` (base test acc: **0.7162**). The Attribute strategy uses the optimized `aggro_exp_p10_c4` parameters ($R=0.8, P=10.0, C=4.0$, Entropy=True). Reference: using 100% of the data (ratio=1.0) yields Test ACC = **0.7488**. The 3/13 update adds two new LLM-based attribute generation results (`Qwen3` and `InternVL3`) to compare alongside the default BLIP-based attribute assignment.
+All runs resume from `weights/model_imagenet_resnet_base.pth` (base test acc: **0.7162**). The Attribute strategy uses the optimized `aggro_exp_p10_c4` parameters ($R=0.8, P=10.0, C=4.0$, Entropy=True). Reference: using 100% of the data (ratio=1.0) yields Test ACC = **0.7488**. The 3/13 update adds two new LLM-based attribute generation results (`Qwen3` and `InternVL3`) to compare alongside the default BLIP-based attribute assignment.
 
 ### Sub Ratio = 0.1
 | Strategy | Test ACC | Val ACC |
@@ -405,7 +588,7 @@ Runs for sub_ratio = 0.01, 0.02, and 0.05 train ResNet-18 **from scratch** (no p
 
 ## Active Learning Resume-from-Base Comparison (lr=1e-5, 15 epochs)
 
-This table shows results from `test_al_resume.sh` with `freeze_backbone=False`, `lr=1e-5`, and `epoch=15`. All runs use `sub_ratio=0.3` and resume from `model_imagenet_resnet_base.pth` (base val acc: **0.7223**).
+This table shows results from `test_al_resume.sh` with `freeze_backbone=False`, `lr=1e-5`, and `epoch=15`. All runs use `sub_ratio=0.3` and resume from `weights/model_imagenet_resnet_base.pth` (base val acc: **0.7223**).
 
 | Strategy | Model Test ACC | Overall Val ACC Change | Status |
 | :--- | :--- | :--- | :--- |
@@ -485,7 +668,7 @@ We conducted a comprehensive grid search over the parameters $R, P, C,$ and the 
 1. **The Danger of Pure Greedy**: The `pure_greedy` approach ($C=0$) performs the worst across low evaluation ratios (0.1, 0.3). Without class-level Stratification quotas, throwing out all logic except Frequency Penalty and Rarity leads to performance drops in fine-tuning, emphasizing the value of our soft $C$ score.
 2. **Aggressive Exploration Shines ($R=0.8, C=4.0$)**: By loosening the absolute restriction on stratification ($C=4.0$ instead of $\infty$) and massively scaling up Rarity tracking ($R=0.8$), the `aggro_exp_p10_c4` scenario achieves extremely strong results across 0.3 and 0.5. The heavy frequency penalty ($P=10$) adequately prevented the model from indexing too heavily on the synthesized injection flood.
 3. **Entropy Tuning**: Dynamic entropy ($e=T$) does well in aggressive settings but causes occasional degradations in more conservative spaces (see `soft_conservative` comparisons).
-4. **Baseline Comparison (Ratio=1.0)**: For reference, using **100% of the candidate data (Ratio=1.0)** yields a Test ACC of **0.7400**. Using SafeFix’s method, updating all source data and generated images for 30 epochs results in a Test ACC of **0.7438**. Remarkably, the `balanced_exp_p5_c8` strategy at `Ratio=0.9` achieved an even higher Test ACC of **0.7500**, demonstrating that intelligent filtering can outperform training on the entirety of the noisy synthetic data!
+4. **Baseline Comparison (Ratio=1.0)**: For reference, using **100% of the candidate data (Ratio=1.0)** yields a Test ACC of **0.7400**. Using Safefix’s method, updating all source data and generated images for 30 epochs results in a Test ACC of **0.7438**. Remarkably, the `balanced_exp_p5_c8` strategy at `Ratio=0.9` achieved an even higher Test ACC of **0.7500**, demonstrating that intelligent filtering can outperform training on the entirety of the noisy synthetic data!
 5. **Overall Best Strategy**: Averaging across all sub-ratios, **`aggro_exp_p10_c4` ($R=0.8, P=10.0, C=4.0$, Entropy=True)** represents the most robust and high-performing parameter combination. It consistently dominates the low-to-mid ratio regimes (0.1 to 0.5) by aggressively seeking rare features while safely blocking flooded features and maintaining a soft class balance.
 
 **Conclusion**: Tuning the Attribute Strategy to mimic `Coreset` + `Stratified` (via Soft C + High R) allows the strategy to exceed the conservative defaults! When allocating budgets, choosing a strong R and applying a compensatory P to manage spam achieves peak domain adaptability.
@@ -610,7 +793,7 @@ The following table summarizes the ablation experiments with sub_ratio=0.7 for t
 
 ## Overview
 
-I have implemented multiple Active Learning strategies for the HiBug project to address the poor performance of the original Core-set method.
+I have implemented multiple Active Learning strategies for the safefix project to address the poor performance of the original Core-set method.
 
 ## Available Strategies
 
@@ -796,7 +979,7 @@ Run comparative tests of all strategies:
 
 View result comparisons:
 ```bash
-python compare_al_results.py
+python utils/compare_al_results.py
 ```
 
 ## Debugging Suggestions

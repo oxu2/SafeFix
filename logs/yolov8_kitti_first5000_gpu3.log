@@ -5,7 +5,7 @@ View Ultralytics Settings with 'yolo settings' or at '/people/cs/o/oxx220000/.co
 Update Settings with 'yolo settings key=value', i.e. 'yolo settings runs_dir=path/to/dir'. For help see https://docs.ultralytics.com/quickstart/#ultralytics-settings.
 [KDownloading https://github.com/ultralytics/assets/releases/download/v8.4.0/yolov8n.pt to 'yolov8n.pt': 100% ━━━━━━━━━━━━ 6.2MB 103.4MB/s 0.1s
 Ultralytics 8.4.33 🚀 Python-3.10.18 torch-2.9.1+cu128 CUDA:0 (NVIDIA RTX A5000, 24248MiB)
-[34m[1mengine/trainer: [0magnostic_nms=False, amp=True, angle=1.0, augment=False, auto_augment=randaugment, batch=16, bgr=0.0, box=7.5, cache=False, cfg=None, classes=None, close_mosaic=10, cls=0.5, compile=False, conf=None, copy_paste=0.0, copy_paste_mode=flip, cos_lr=False, cutmix=0.0, data=/data/oxx220000/kitti_yolov8_first5000/kitti_first5000.yaml, degrees=0.0, deterministic=True, device=0, dfl=1.5, dnn=False, dropout=0.0, dynamic=False, embed=None, end2end=None, epochs=100, erasing=0.4, exist_ok=False, fliplr=0.5, flipud=0.0, format=torchscript, fraction=1.0, freeze=None, half=False, hsv_h=0.015, hsv_s=0.7, hsv_v=0.4, imgsz=640, int8=False, iou=0.7, keras=False, kobj=1.0, line_width=None, lr0=0.01, lrf=0.01, mask_ratio=4, max_det=300, mixup=0.0, mode=train, model=yolov8n.pt, momentum=0.937, mosaic=1.0, multi_scale=0.0, name=first5000, nbs=64, nms=False, opset=None, optimize=False, optimizer=auto, overlap_mask=True, patience=100, perspective=0.0, plots=True, pose=12.0, pretrained=True, profile=False, project=runs/kitti_yolov8, rect=False, resume=False, retina_masks=False, rle=1.0, save=True, save_conf=False, save_crop=False, save_dir=/people/cs/o/oxx220000/HiBug/runs/detect/runs/kitti_yolov8/first5000, save_frames=False, save_json=False, save_period=-1, save_txt=False, scale=0.5, seed=42, shear=0.0, show=False, show_boxes=True, show_conf=True, show_labels=True, simplify=True, single_cls=False, source=None, split=val, stream_buffer=False, task=detect, time=None, tracker=botsort.yaml, translate=0.1, val=True, verbose=True, vid_stride=1, visualize=False, warmup_bias_lr=0.1, warmup_epochs=3.0, warmup_momentum=0.8, weight_decay=0.0005, workers=8, workspace=None
+[34m[1mengine/trainer: [0magnostic_nms=False, amp=True, angle=1.0, augment=False, auto_augment=randaugment, batch=16, bgr=0.0, box=7.5, cache=False, cfg=None, classes=None, close_mosaic=10, cls=0.5, compile=False, conf=None, copy_paste=0.0, copy_paste_mode=flip, cos_lr=False, cutmix=0.0, data=/data/oxx220000/kitti_yolov8_first5000/kitti_first5000.yaml, degrees=0.0, deterministic=True, device=0, dfl=1.5, dnn=False, dropout=0.0, dynamic=False, embed=None, end2end=None, epochs=100, erasing=0.4, exist_ok=False, fliplr=0.5, flipud=0.0, format=torchscript, fraction=1.0, freeze=None, half=False, hsv_h=0.015, hsv_s=0.7, hsv_v=0.4, imgsz=640, int8=False, iou=0.7, keras=False, kobj=1.0, line_width=None, lr0=0.01, lrf=0.01, mask_ratio=4, max_det=300, mixup=0.0, mode=train, model=yolov8n.pt, momentum=0.937, mosaic=1.0, multi_scale=0.0, name=first5000, nbs=64, nms=False, opset=None, optimize=False, optimizer=auto, overlap_mask=True, patience=100, perspective=0.0, plots=True, pose=12.0, pretrained=True, profile=False, project=runs/kitti_yolov8, rect=False, resume=False, retina_masks=False, rle=1.0, save=True, save_conf=False, save_crop=False, save_dir=/people/cs/o/oxx220000/safefix/runs/detect/runs/kitti_yolov8/first5000, save_frames=False, save_json=False, save_period=-1, save_txt=False, scale=0.5, seed=42, shear=0.0, show=False, show_boxes=True, show_conf=True, show_labels=True, simplify=True, single_cls=False, source=None, split=val, stream_buffer=False, task=detect, time=None, tracker=botsort.yaml, translate=0.1, val=True, verbose=True, vid_stride=1, visualize=False, warmup_bias_lr=0.1, warmup_epochs=3.0, warmup_momentum=0.8, weight_decay=0.0005, workers=8, workspace=None
 [KDownloading https://ultralytics.com/assets/Arial.ttf to '/people/cs/o/oxx220000/.config/Ultralytics/Arial.ttf': 100% ━━━━━━━━━━━━ 755.1KB 64.6MB/s 0.0s
 Overriding model.yaml nc=80 with nc=8
 
@@ -48,10 +48,10 @@ Freezing layer 'model.22.dfl.conv.weight'
 [34m[1mval: [0mNew cache created: /data/oxx220000/kitti_yolov8_first5000/labels/val.cache
 [34m[1moptimizer:[0m 'optimizer=auto' found, ignoring 'lr0=0.01' and 'momentum=0.937' and determining best 'optimizer', 'lr0' and 'momentum' automatically... 
 [34m[1moptimizer:[0m AdamW(lr=0.000833, momentum=0.9) with parameter groups 57 weight(decay=0.0), 64 weight(decay=0.0005), 63 bias(decay=0.0)
-Plotting labels to /people/cs/o/oxx220000/HiBug/runs/detect/runs/kitti_yolov8/first5000/labels.jpg... 
+Plotting labels to /people/cs/o/oxx220000/safefix/runs/detect/runs/kitti_yolov8/first5000/labels.jpg... 
 Image sizes 640 train, 640 val
 Using 8 dataloader workers
-Logging results to [1m/people/cs/o/oxx220000/HiBug/runs/detect/runs/kitti_yolov8/first5000[0m
+Logging results to [1m/people/cs/o/oxx220000/safefix/runs/detect/runs/kitti_yolov8/first5000[0m
 Starting training for 100 epochs...
 
       Epoch    GPU_mem   box_loss   cls_loss   dfl_loss  Instances       Size
@@ -556,10 +556,10 @@ Closing dataloader mosaic
                    all        500       2869      0.944       0.78      0.882      0.634
 
 100 epochs completed in 1.604 hours.
-Optimizer stripped from /people/cs/o/oxx220000/HiBug/runs/detect/runs/kitti_yolov8/first5000/weights/last.pt, 6.2MB
-Optimizer stripped from /people/cs/o/oxx220000/HiBug/runs/detect/runs/kitti_yolov8/first5000/weights/best.pt, 6.2MB
+Optimizer stripped from /people/cs/o/oxx220000/safefix/runs/detect/runs/kitti_yolov8/first5000/weights/last.pt, 6.2MB
+Optimizer stripped from /people/cs/o/oxx220000/safefix/runs/detect/runs/kitti_yolov8/first5000/weights/best.pt, 6.2MB
 
-Validating /people/cs/o/oxx220000/HiBug/runs/detect/runs/kitti_yolov8/first5000/weights/best.pt...
+Validating /people/cs/o/oxx220000/safefix/runs/detect/runs/kitti_yolov8/first5000/weights/best.pt...
 Ultralytics 8.4.33 🚀 Python-3.10.18 torch-2.9.1+cu128 CUDA:0 (NVIDIA RTX A5000, 24248MiB)
 Model summary (fused): 73 layers, 3,007,208 parameters, 0 gradients, 8.1 GFLOPs
 [K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 6% ╸─────────── 1/16 3.2s/it 1.0s<47.6s[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 12% ━─────────── 2/16 2.0s/it 2.0s<27.7s[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 19% ━━────────── 3/16 1.6s/it 3.1s<20.5s[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 25% ━━━───────── 4/16 1.3s/it 4.0s<15.7s[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 31% ━━━╸──────── 5/16 1.2s/it 5.0s<13.1s[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 38% ━━━━──────── 6/16 1.1s/it 5.8s<10.6s[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 44% ━━━━━─────── 7/16 1.1s/it 6.9s<9.5s[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 50% ━━━━━━────── 8/16 1.0s/it 7.8s<8.1s[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 56% ━━━━━━╸───── 9/16 1.0s/it 8.8s<7.0s[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 62% ━━━━━━━───── 10/16 1.0s/it 9.8s<6.1s[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 69% ━━━━━━━━──── 11/16 1.0it/s 10.7s<4.8s[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 75% ━━━━━━━━━─── 12/16 1.0it/s 11.7s<3.9s[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 81% ━━━━━━━━━╸── 13/16 1.0it/s 12.7s<2.9s[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 88% ━━━━━━━━━━── 14/16 1.1it/s 13.6s<1.9s[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 94% ━━━━━━━━━━━─ 15/16 1.0it/s 14.6s<1.0s[K                 Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 100% ━━━━━━━━━━━━ 16/16 1.1it/s 15.2s
@@ -573,7 +573,7 @@ Model summary (fused): 73 layers, 3,007,208 parameters, 0 gradients, 8.1 GFLOPs
                   Tram         20         25      0.961       0.84       0.92      0.653
                   Misc         57         71      0.919      0.797      0.885      0.626
 Speed: 0.3ms preprocess, 0.5ms inference, 0.0ms loss, 5.0ms postprocess per image
-Results saved to [1m/people/cs/o/oxx220000/HiBug/runs/detect/runs/kitti_yolov8/first5000[0m
+Results saved to [1m/people/cs/o/oxx220000/safefix/runs/detect/runs/kitti_yolov8/first5000[0m
 Total training time for 100 epochs: 5811.96 seconds
 End-to-end wall time (setup + training): 5814.59 seconds
 Training end timestamp: 2026-04-03 15:02:12
@@ -781,6 +781,6 @@ names: {0: 'Car', 1: 'Van', 2: 'Truck', 3: 'Pedestrian', 4: 'Person_sitting', 5:
 nt_per_class: array([2062,  227,   86,  300,    5,   93,   25,   71])
 nt_per_image: array([466, 161,  79, 121,   4,  66,  20,  57])
 results_dict: {'metrics/precision(B)': 0.9220714485974894, 'metrics/recall(B)': 0.7866141865549792, 'metrics/mAP50(B)': 0.8896177656508255, 'metrics/mAP50-95(B)': 0.6363350328428317, 'fitness': 0.6363350328428317}
-save_dir: PosixPath('/people/cs/o/oxx220000/HiBug/runs/detect/runs/kitti_yolov8/first5000')
+save_dir: PosixPath('/people/cs/o/oxx220000/safefix/runs/detect/runs/kitti_yolov8/first5000')
 speed: {'preprocess': 0.29374026227742434, 'inference': 0.5212602880783379, 'loss': 0.00017313403077423573, 'postprocess': 4.967589064966887}
 stats: {'tp': [], 'conf': [], 'pred_cls': [], 'target_cls': [], 'target_img': []}

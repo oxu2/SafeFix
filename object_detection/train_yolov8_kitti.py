@@ -42,6 +42,12 @@ def parse_args():
     parser.add_argument("--project", type=str, default="runs/kitti_yolov8")
     parser.add_argument("--name", type=str, default="first5000")
     parser.add_argument("--seed", type=int, default=42)
+    parser.add_argument(
+        "--eval-test",
+        type=str2bool,
+        default=True,
+        help="Run a final evaluation on the dataset test split if it exists in the dataset yaml.",
+    )
     return parser.parse_args()
 
 
@@ -55,6 +61,18 @@ def _format_duration(seconds: float) -> str:
 
 def _timestamp_str(ts: float) -> str:
     return datetime.datetime.fromtimestamp(ts).strftime("%Y-%m-%d %H:%M:%S")
+
+
+def _dataset_has_split(data_yaml: Path, split_name: str) -> bool:
+    split_prefix = f"{split_name}:"
+    for raw_line in data_yaml.read_text(encoding="utf-8").splitlines():
+        line = raw_line.strip()
+        if not line or line.startswith("#"):
+            continue
+        if line.startswith(split_prefix):
+            value = line.split(":", 1)[1].strip()
+            return len(value) > 0
+    return False
 
 
 def main():
@@ -94,6 +112,37 @@ def main():
     print(f"Training elapsed (HH:MM:SS): {_format_duration(train_elapsed)}")
     print(f"End-to-end elapsed (HH:MM:SS): {_format_duration(overall_elapsed)}")
     print(train_results)
+
+    if args.eval_test and _dataset_has_split(args.data_yaml, "test"):
+        save_dir = None
+        if hasattr(model, "trainer") and model.trainer is not None:
+            save_dir = Path(model.trainer.save_dir)
+
+        best_weights = None
+        if save_dir is not None:
+            candidate = save_dir / "weights" / "best.pt"
+            if candidate.exists():
+                best_weights = candidate
+
+        eval_model = YOLO(str(best_weights)) if best_weights is not None else model
+        print("Running final evaluation on dataset test split...")
+        test_start_time = time.time()
+        test_results = eval_model.val(
+            data=str(args.data_yaml),
+            split="test",
+            imgsz=args.imgsz,
+            batch=args.batch,
+            device=args.device,
+            workers=args.workers,
+            project=args.project,
+            name=f"{args.name}_test",
+        )
+        test_elapsed = time.time() - test_start_time
+        print(f"Test evaluation elapsed: {test_elapsed:.2f} seconds")
+        print(f"Test evaluation elapsed (HH:MM:SS): {_format_duration(test_elapsed)}")
+        print(test_results)
+    elif args.eval_test:
+        print("Dataset yaml has no test split configured; skipping final test evaluation.")
 
 
 if __name__ == "__main__":

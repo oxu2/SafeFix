@@ -38,13 +38,13 @@ python train_pose_estimation.py train \
   --epochs 12 \
   --batch-size 2 \
   --num-workers 4 \
-  --output-dir outputs/pose_keypointrcnn
+  --output-dir log_pose/pose_keypointrcnn
 
 # From scratch baseline:
 python train_pose_estimation.py train \
   --data-root /data/oxx220000/coco \
   --pretrained false \
-  --output-dir outputs/pose_keypointrcnn_scratch
+  --output-dir log_pose/pose_keypointrcnn_scratch
 ```
 
 ## 3) Evaluate
@@ -52,8 +52,8 @@ python train_pose_estimation.py train \
 ```bash
 python train_pose_estimation.py eval \
   --data-root /data/oxx220000/coco \
-  --checkpoint outputs/pose_keypointrcnn/best.pth \
-  --output-json outputs/pose_eval_results.json
+  --checkpoint log_pose/pose_keypointrcnn/best.pth \
+  --output-json log_pose/pose_eval_results.json
 ```
 
 ## 4) Inference visualization
@@ -61,8 +61,8 @@ python train_pose_estimation.py eval \
 ```bash
 python train_pose_estimation.py infer \
   --image /path/to/image.jpg \
-  --checkpoint outputs/pose_keypointrcnn/best.pth \
-  --output outputs/pose_infer.jpg
+  --checkpoint log_pose/pose_keypointrcnn/best.pth \
+  --output log_pose/pose_infer.jpg
 ```
 
 ## Dependencies

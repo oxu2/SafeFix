@@ -87,7 +87,7 @@ class HierarchicalActiveStrategy:
                 'skin': ['pale', 'medium', 'dark']
             }
             # Load attribute data from JSON file
-            self.attribute_data_path = 'exampleData/celebA/attribute.json'
+            self.attribute_data_path = 'data/celebA/attribute.json'
         
         # Load attribute data at initialization
         self.attribute_data = None

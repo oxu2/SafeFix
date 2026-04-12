@@ -1,4 +1,4 @@
-(hibug) oxx220000@csr-93601:~/HiBug$ python resnet18.py 
+(hibug) oxx220000@csr-93601:~/Safefix$ python resnet18.py 
 [1]+  Done                    CUDA_VISIBLE_DEVICES=1 nohup python -u filter.py > ./logs/filter.log 2>&1
 Loaded 3 feasible yellow hair images: {'006_yellow': 'yellow', '016_yellow': 'yellow', '007_yellow': 'yellow'}
 Warning: Could not find original image for 006_yellow

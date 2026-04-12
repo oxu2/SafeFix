@@ -1,10 +1,10 @@
-mkdir -p /people/cs/o/oxx220000/HiBug/hibug_simple
+mkdir -p /people/cs/o/oxx220000/safefix/safefix_simple
 
-for dir in hibug_simple2 hibug_simple3; do
-  src_dir="/people/cs/o/oxx220000/HiBug/$dir"
+for dir in safefix_simple2 safefix_simple3; do
+  src_dir="/people/cs/o/oxx220000/safefix/$dir"
   for file in "$src_dir"/*.png; do
     base_name=$(basename "$file")
-    dest="/people/cs/o/oxx220000/HiBug/hibug_simple/$base_name"
+    dest="/people/cs/o/oxx220000/safefix/safefix_simple/$base_name"
     
     if [ ! -e "$dest" ]; then
       mv "$file" "$dest"

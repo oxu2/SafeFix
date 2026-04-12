@@ -119,6 +119,32 @@ class CocoPersonKeypointsDataset(Dataset):
         return image_tensor, target
 
 
+def clone_dataset_with_image_ids(
+    dataset: CocoPersonKeypointsDataset,
+    image_ids: List[int],
+    *,
+    train: Optional[bool] = None,
+    hflip_prob: Optional[float] = None,
+) -> CocoPersonKeypointsDataset:
+    subset = CocoPersonKeypointsDataset.__new__(CocoPersonKeypointsDataset)
+    subset.image_dir = dataset.image_dir
+    subset.train = dataset.train if train is None else train
+    subset.hflip_prob = dataset.hflip_prob if hflip_prob is None else hflip_prob
+    subset.coco = dataset.coco
+    subset.image_ids = list(image_ids)
+    return subset
+
+
+def split_eval_image_ids(image_ids: List[int], seed: int = 42) -> Tuple[List[int], List[int]]:
+    shuffled = list(image_ids)
+    rng = random.Random(seed)
+    rng.shuffle(shuffled)
+    midpoint = len(shuffled) // 2
+    val_ids = sorted(shuffled[:midpoint])
+    test_ids = sorted(shuffled[midpoint:])
+    return val_ids, test_ids
+
+
 def horizontal_flip(
     image: torch.Tensor, target: Dict[str, torch.Tensor]
 ) -> Tuple[torch.Tensor, Dict[str, torch.Tensor]]:
@@ -148,11 +174,17 @@ def collate_fn(batch):
 
 
 def default_coco_paths(data_root: str) -> Dict[str, str]:
+    # In COCO pose estimation, val2017 is the standard test set.
+    # There is no public ground-truth for test-dev; researchers report
+    # results on val2017 for local evaluation and submit to the COCO
+    # eval server for test-dev scores.
     return {
         "train_images": f"{data_root}/train2017",
         "val_images": f"{data_root}/val2017",
+        "test_images": f"{data_root}/val2017",
         "train_annotations": f"{data_root}/annotations/person_keypoints_train2017.json",
         "val_annotations": f"{data_root}/annotations/person_keypoints_val2017.json",
+        "test_annotations": f"{data_root}/annotations/person_keypoints_val2017.json",
     }
 
 
@@ -163,7 +195,32 @@ def build_datasets(
     train_annotations: Optional[str] = None,
     val_annotations: Optional[str] = None,
     hflip_prob: float = 0.5,
+    seed: int = 42,
+    max_train_samples: int = 0,
 ) -> Tuple[CocoPersonKeypointsDataset, CocoPersonKeypointsDataset]:
+    train_dataset, val_dataset, _ = build_train_val_test_datasets(
+        data_root=data_root,
+        train_images=train_images,
+        val_images=val_images,
+        train_annotations=train_annotations,
+        val_annotations=val_annotations,
+        hflip_prob=hflip_prob,
+        seed=seed,
+        max_train_samples=max_train_samples,
+    )
+    return train_dataset, val_dataset
+
+
+def build_train_val_test_datasets(
+    data_root: str,
+    train_images: Optional[str] = None,
+    val_images: Optional[str] = None,
+    train_annotations: Optional[str] = None,
+    val_annotations: Optional[str] = None,
+    hflip_prob: float = 0.5,
+    seed: int = 42,
+    max_train_samples: int = 0,
+) -> Tuple[CocoPersonKeypointsDataset, CocoPersonKeypointsDataset, CocoPersonKeypointsDataset]:
     paths = default_coco_paths(data_root)
     train_dataset = CocoPersonKeypointsDataset(
         image_dir=train_images or paths["train_images"],
@@ -179,4 +236,28 @@ def build_datasets(
         hflip_prob=0.0,
         filter_empty=True,
     )
-    return train_dataset, val_dataset
+    if max_train_samples > 0:
+        train_dataset.image_ids = train_dataset.image_ids[:max_train_samples]
+
+    val_image_ids, test_image_ids = split_eval_image_ids(val_dataset.image_ids, seed=seed)
+    val_dataset = clone_dataset_with_image_ids(val_dataset, val_image_ids, train=False, hflip_prob=0.0)
+    test_dataset = clone_dataset_with_image_ids(val_dataset, test_image_ids, train=False, hflip_prob=0.0)
+    return train_dataset, val_dataset, test_dataset
+
+
+def build_test_dataset(
+    data_root: str,
+    test_images: Optional[str] = None,
+    test_annotations: Optional[str] = None,
+    seed: int = 42,
+) -> CocoPersonKeypointsDataset:
+    """Build the held-out test dataset from the random half of valid val2017 images."""
+    _, _, test_dataset = build_train_val_test_datasets(
+        data_root=data_root,
+        val_images=test_images,
+        val_annotations=test_annotations,
+        hflip_prob=0.0,
+        seed=seed,
+        max_train_samples=0,
+    )
+    return test_dataset

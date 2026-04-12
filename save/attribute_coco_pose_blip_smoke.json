@@ -1,0 +1,326 @@
+{
+    "pose": {
+        "data": [
+            "standing"
+        ],
+        "word": [
+            "standing",
+            "sitting",
+            "jumping",
+            "lying_down",
+            "crouching",
+            "kneeling"
+        ],
+        "prompt": [
+            "a person in a #1 pose"
+        ],
+        "type": "description",
+        "question": "What is the main pose of the person?",
+        "uncertain_idx": [
+            0
+        ]
+    },
+    "pose_complexity": {
+        "data": [
+            "not_visible"
+        ],
+        "word": [
+            "simple",
+            "medium",
+            "complex",
+            "not_visible"
+        ],
+        "prompt": [
+            "a person with a #1 pose"
+        ],
+        "type": "description",
+        "question": "How complex is the person's pose?",
+        "uncertain_idx": [
+            0
+        ]
+    },
+    "head_orientation": {
+        "data": [
+            "downward"
+        ],
+        "word": [
+            "front",
+            "back",
+            "sideways",
+            "upward",
+            "downward"
+        ],
+        "prompt": [
+            "a person facing #1"
+        ],
+        "type": "description",
+        "question": "What is the orientation of the person's head?",
+        "uncertain_idx": [
+            0
+        ]
+    },
+    "clothes_color": {
+        "data": [
+            "yellow"
+        ],
+        "word": [
+            "red",
+            "blue",
+            "green",
+            "yellow",
+            "black",
+            "white",
+            "gray",
+            "brown",
+            "pink",
+            "purple"
+        ],
+        "prompt": [
+            "a person wearing #1 clothes"
+        ],
+        "type": "description",
+        "question": "What is the dominant color of the person's clothing?",
+        "uncertain_idx": [
+            0
+        ]
+    },
+    "is_arm_crossing": {
+        "data": [
+            "yes"
+        ],
+        "word": [
+            "yes",
+            "no"
+        ],
+        "prompt": [
+            "a person with arms crossed: #1"
+        ],
+        "type": "binary",
+        "question": "Is the person's arm crossing visible?",
+        "uncertain_idx": []
+    },
+    "is_carrying_something": {
+        "data": [
+            "carrying"
+        ],
+        "word": [
+            "yes",
+            "no"
+        ],
+        "prompt": [
+            "a person carrying something: #1"
+        ],
+        "type": "binary",
+        "question": "Is the person carrying or holding something?",
+        "uncertain_idx": []
+    },
+    "is_standing_on_one_leg": {
+        "data": [
+            "no"
+        ],
+        "word": [
+            "yes",
+            "no"
+        ],
+        "prompt": [
+            "a person standing on one leg: #1"
+        ],
+        "type": "binary",
+        "question": "Is the person standing on one leg?",
+        "uncertain_idx": []
+    },
+    "is_on_all_fours": {
+        "data": [
+            "no"
+        ],
+        "word": [
+            "yes",
+            "no"
+        ],
+        "prompt": [
+            "a person on all fours: #1"
+        ],
+        "type": "binary",
+        "question": "Is the person on all fours?",
+        "uncertain_idx": []
+    },
+    "is_sitting": {
+        "data": [
+            "no"
+        ],
+        "word": [
+            "yes",
+            "no"
+        ],
+        "prompt": [
+            "a sitting person: #1"
+        ],
+        "type": "binary",
+        "question": "Is the person sitting?",
+        "uncertain_idx": []
+    },
+    "is_dynamic": {
+        "data": [
+            "active"
+        ],
+        "word": [
+            "yes",
+            "no"
+        ],
+        "prompt": [
+            "a dynamic person: #1"
+        ],
+        "type": "binary",
+        "question": "Is the person in a dynamic or active state?",
+        "uncertain_idx": []
+    },
+    "background_style": {
+        "data": [
+            "indoors"
+        ],
+        "word": [
+            "urban",
+            "rural",
+            "natural",
+            "artificial",
+            "indoors"
+        ],
+        "prompt": [
+            "a #1 background"
+        ],
+        "type": "description",
+        "question": "What is the style of the background?",
+        "uncertain_idx": [
+            0
+        ]
+    },
+    "background_color": {
+        "data": [
+            "yellow"
+        ],
+        "word": [
+            "red",
+            "blue",
+            "green",
+            "yellow",
+            "black",
+            "white",
+            "gray",
+            "brown"
+        ],
+        "prompt": [
+            "a scene with a #1 background"
+        ],
+        "type": "description",
+        "question": "What is the dominant background color?",
+        "uncertain_idx": [
+            0
+        ]
+    },
+    "is_containing_other_people": {
+        "data": [
+            "no"
+        ],
+        "word": [
+            "yes",
+            "no"
+        ],
+        "prompt": [
+            "a scene containing other people: #1"
+        ],
+        "type": "binary",
+        "question": "Does the scene contain other people besides the main person?",
+        "uncertain_idx": []
+    },
+    "indoor_lighting": {
+        "data": [
+            "bright"
+        ],
+        "word": [
+            "bright",
+            "dim",
+            "natural",
+            "artificial",
+            "mixed"
+        ],
+        "prompt": [
+            "a scene with #1 lighting"
+        ],
+        "type": "description",
+        "question": "What best describes the lighting condition?",
+        "uncertain_idx": [
+            0
+        ]
+    },
+    "is_indoor": {
+        "data": [
+            "yes"
+        ],
+        "word": [
+            "yes",
+            "no"
+        ],
+        "prompt": [
+            "an indoor scene: #1"
+        ],
+        "type": "binary",
+        "question": "Is the scene indoors?",
+        "uncertain_idx": []
+    },
+    "weather": {
+        "data": [
+            "sunny"
+        ],
+        "word": [
+            "sunny",
+            "cloudy",
+            "rainy",
+            "snowy",
+            "foggy",
+            "clear"
+        ],
+        "prompt": [
+            "a #1 scene"
+        ],
+        "type": "description",
+        "question": "What is the weather or outdoor condition in the scene?",
+        "uncertain_idx": [
+            0
+        ]
+    },
+    "occlusion": {
+        "data": [
+            "no"
+        ],
+        "word": [
+            "yes",
+            "no"
+        ],
+        "prompt": [
+            "an occluded person: #1"
+        ],
+        "type": "binary",
+        "question": "Is the person noticeably occluded by objects, other people, or self-occlusion?",
+        "uncertain_idx": []
+    },
+    "viewpoint": {
+        "data": [
+            "back"
+        ],
+        "word": [
+            "front",
+            "side",
+            "back",
+            "top_down",
+            "low_angle"
+        ],
+        "prompt": [
+            "a person viewed from the #1"
+        ],
+        "type": "description",
+        "question": "What is the viewing angle of the person?",
+        "uncertain_idx": [
+            0
+        ]
+    }
+}

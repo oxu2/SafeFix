@@ -104,6 +104,9 @@ def evaluate_coco_keypoints(
 
     coco_dt = coco_gt.loadRes(results)
     coco_eval = COCOeval(coco_gt, coco_dt, "keypoints")
+    eval_image_ids = getattr(getattr(data_loader, "dataset", None), "image_ids", None)
+    if eval_image_ids is not None:
+        coco_eval.params.imgIds = list(eval_image_ids)
     coco_eval.evaluate()
     coco_eval.accumulate()
     coco_eval.summarize()
@@ -154,4 +157,3 @@ def load_checkpoint(
     start_epoch = int(payload.get("epoch", -1)) + 1
     print(f"Loaded checkpoint: {checkpoint_path} (resume from epoch {start_epoch})")
     return start_epoch
-

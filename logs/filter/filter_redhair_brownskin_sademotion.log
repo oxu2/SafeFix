@@ -5,15 +5,15 @@ Stop condition active: stop after processing 15000 images.
 Found 3341 images with file type(s): jpg
 [1000/3341] Processed...
 Traceback (most recent call last):
-  File "/people/cs/o/oxx220000/HiBug/filter.py", line 599, in <module>
+  File "/people/cs/o/oxx220000/safefix/filter.py", line 599, in <module>
     main(
-  File "/people/cs/o/oxx220000/HiBug/filter.py", line 503, in main
+  File "/people/cs/o/oxx220000/safefix/filter.py", line 503, in main
     results, processed_count, stopped_early, stop_filename = process_directory(
-  File "/people/cs/o/oxx220000/HiBug/filter.py", line 244, in process_directory
+  File "/people/cs/o/oxx220000/safefix/filter.py", line 244, in process_directory
     result = process_image(image_path, model, processor, tags, attributes, verbose=verbose)
-  File "/people/cs/o/oxx220000/HiBug/filter.py", line 159, in process_image
+  File "/people/cs/o/oxx220000/safefix/filter.py", line 159, in process_image
     response = inference(image_path, prompt, verbose=verbose)
-  File "/people/cs/o/oxx220000/HiBug/filter.py", line 58, in inference
+  File "/people/cs/o/oxx220000/safefix/filter.py", line 58, in inference
     inputs = processor(text=[text], images=[image], padding=True, return_tensors="pt")
   File "/people/cs/o/oxx220000/.conda/envs/ad/lib/python3.9/site-packages/transformers/models/qwen2_5_vl/processing_qwen2_5_vl.py", line 123, in __call__
     image_inputs = self.image_processor(images=images, videos=None, **output_kwargs["images_kwargs"])

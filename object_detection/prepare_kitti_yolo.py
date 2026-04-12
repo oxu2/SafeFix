@@ -6,7 +6,7 @@ from typing import Dict, List, Tuple
 
 from PIL import Image
 
-KITTI_CLASSES = [
+ALL_KITTI_CLASSES = [
     "Car",
     "Van",
     "Truck",
@@ -16,7 +16,7 @@ KITTI_CLASSES = [
     "Tram",
     "Misc",
 ]
-CLASS_TO_ID = {name: idx for idx, name in enumerate(KITTI_CLASSES)}
+DEFAULT_TARGET_CLASSES = ["Car", "Pedestrian"]
 
 
 def parse_args():
@@ -33,20 +33,46 @@ def parse_args():
         "--subset-size",
         type=int,
         default=5000,
-        help="Use first N images (sorted by filename) from KITTI training split.",
+        help="Use first N images (sorted by filename) from KITTI training split for training.",
     )
     parser.add_argument(
         "--val-size",
         type=int,
-        default=500,
-        help="Use next M images after subset for validation. Set 0 for no validation split.",
+        default=1240,
+        help="Use next M images after training subset for validation. Set 0 for no validation split.",
+    )
+    parser.add_argument(
+        "--test-size",
+        type=int,
+        default=None,
+        help="Use next K images after validation for test. Defaults to all remaining images.",
     )
     parser.add_argument(
         "--copy-images",
         action="store_true",
         help="Copy images instead of symlink/hardlink.",
     )
-    return parser.parse_args()
+    parser.add_argument(
+        "--target-classes",
+        nargs="+",
+        default=DEFAULT_TARGET_CLASSES,
+        help="KITTI classes to keep in the YOLO dataset. Defaults to Car and Pedestrian.",
+    )
+    args = parser.parse_args()
+
+    invalid_classes = [cls_name for cls_name in args.target_classes if cls_name not in ALL_KITTI_CLASSES]
+    if invalid_classes:
+        raise ValueError(
+            f"Unknown target classes: {invalid_classes}. "
+            f"Valid classes: {ALL_KITTI_CLASSES}"
+        )
+
+    deduped_classes: List[str] = []
+    for cls_name in args.target_classes:
+        if cls_name not in deduped_classes:
+            deduped_classes.append(cls_name)
+    args.target_classes = deduped_classes
+    return args
 
 
 def safe_link_or_copy(src: Path, dst: Path, copy_images: bool):
@@ -64,6 +90,7 @@ def safe_link_or_copy(src: Path, dst: Path, copy_images: bool):
 def convert_kitti_label_to_yolo(
     label_path: Path,
     image_size: Tuple[int, int],
+    class_to_id: Dict[str, int],
 ) -> List[str]:
     width, height = image_size
     lines: List[str] = []
@@ -75,7 +102,7 @@ def convert_kitti_label_to_yolo(
             cls_name = parts[0]
             if cls_name == "DontCare":
                 continue
-            if cls_name not in CLASS_TO_ID:
+            if cls_name not in class_to_id:
                 continue
 
             left = float(parts[4])
@@ -94,7 +121,7 @@ def convert_kitti_label_to_yolo(
             box_w = min(max(box_w, 0.0), 1.0)
             box_h = min(max(box_h, 0.0), 1.0)
 
-            class_id = CLASS_TO_ID[cls_name]
+            class_id = class_to_id[cls_name]
             lines.append(f"{class_id} {x_center:.6f} {y_center:.6f} {box_w:.6f} {box_h:.6f}")
     return lines
 
@@ -105,6 +132,7 @@ def write_split(
     src_label_dir: Path,
     dst_image_dir: Path,
     dst_label_dir: Path,
+    class_to_id: Dict[str, int],
     copy_images: bool,
 ):
     dst_image_dir.mkdir(parents=True, exist_ok=True)
@@ -119,7 +147,7 @@ def write_split(
         with Image.open(src_image) as img:
             width, height = img.size
 
-        yolo_lines = convert_kitti_label_to_yolo(src_label, (width, height))
+        yolo_lines = convert_kitti_label_to_yolo(src_label, (width, height), class_to_id=class_to_id)
         if len(yolo_lines) == 0:
             # Keep image without labels for background negatives.
             yolo_lines = []
@@ -133,25 +161,32 @@ def write_split(
                 f.write("\n")
 
 
-def write_dataset_yaml(output_root: Path, has_val: bool):
+def write_dataset_yaml(output_root: Path, class_names: List[str], has_val: bool, has_test: bool):
     yaml_path = output_root / "kitti_first5000.yaml"
-    names = ", ".join([f"'{name}'" for name in KITTI_CLASSES])
+    names = ", ".join([f"'{name}'" for name in class_names])
     val_line = "val: images/val" if has_val else "val: images/train"
-    content = "\n".join(
+    lines = [
+        f"path: {output_root}",
+        "train: images/train",
+        val_line,
+    ]
+    if has_test:
+        lines.append("test: images/test")
+    lines.extend(
         [
-            f"path: {output_root}",
-            "train: images/train",
-            val_line,
             f"names: [{names}]",
             "",
         ]
     )
+    content = "\n".join(lines)
     yaml_path.write_text(content, encoding="utf-8")
     return yaml_path
 
 
 def main():
     args = parse_args()
+    class_names = list(args.target_classes)
+    class_to_id = {name: idx for idx, name in enumerate(class_names)}
 
     src_image_dir = args.kitti_root / "training" / "image_2"
     src_label_dir = args.kitti_root / "training" / "label_2"
@@ -170,11 +205,18 @@ def main():
     remaining = image_ids[subset_size:]
     val_size = max(0, min(args.val_size, len(remaining)))
     val_ids = remaining[:val_size]
+    remaining_after_val = remaining[val_size:]
+    default_test_size = len(remaining_after_val)
+    test_size_arg = default_test_size if args.test_size is None else args.test_size
+    test_size = max(0, min(test_size_arg, len(remaining_after_val)))
+    test_ids = remaining_after_val[:test_size]
 
     images_train = args.output_root / "images" / "train"
     labels_train = args.output_root / "labels" / "train"
     images_val = args.output_root / "images" / "val"
     labels_val = args.output_root / "labels" / "val"
+    images_test = args.output_root / "images" / "test"
+    labels_test = args.output_root / "labels" / "test"
 
     write_split(
         image_ids=train_ids,
@@ -182,6 +224,7 @@ def main():
         src_label_dir=src_label_dir,
         dst_image_dir=images_train,
         dst_label_dir=labels_train,
+        class_to_id=class_to_id,
         copy_images=args.copy_images,
     )
 
@@ -192,27 +235,47 @@ def main():
             src_label_dir=src_label_dir,
             dst_image_dir=images_val,
             dst_label_dir=labels_val,
+            class_to_id=class_to_id,
             copy_images=args.copy_images,
         )
 
-    yaml_path = write_dataset_yaml(args.output_root, has_val=len(val_ids) > 0)
+    if len(test_ids) > 0:
+        write_split(
+            image_ids=test_ids,
+            src_image_dir=src_image_dir,
+            src_label_dir=src_label_dir,
+            dst_image_dir=images_test,
+            dst_label_dir=labels_test,
+            class_to_id=class_to_id,
+            copy_images=args.copy_images,
+        )
+
+    yaml_path = write_dataset_yaml(
+        args.output_root,
+        class_names=class_names,
+        has_val=len(val_ids) > 0,
+        has_test=len(test_ids) > 0,
+    )
 
     (args.output_root / "train_ids.txt").write_text("\n".join(train_ids) + "\n", encoding="utf-8")
     if len(val_ids) > 0:
         (args.output_root / "val_ids.txt").write_text("\n".join(val_ids) + "\n", encoding="utf-8")
+    if len(test_ids) > 0:
+        (args.output_root / "test_ids.txt").write_text("\n".join(test_ids) + "\n", encoding="utf-8")
 
     summary: Dict[str, int] = {
         "total_images_in_kitti_train": len(image_ids),
-        "subset_size_train": len(train_ids),
+        "train_size": len(train_ids),
         "val_size": len(val_ids),
+        "test_size": len(test_ids),
     }
     print("Prepared KITTI YOLO dataset:")
     for key, value in summary.items():
         print(f"- {key}: {value}")
+    print(f"- target_classes: {class_names}")
     print(f"- dataset_yaml: {yaml_path}")
     print(f"- output_root: {args.output_root}")
 
 
 if __name__ == "__main__":
     main()
-

@@ -323,7 +323,7 @@ class ModelDiagnose():
 
         return final_selection[:budget]
         
-    def date_generation(self, combine_num=5, attribute_num=200, address="exampleData/Imagenet10/generation.json", label_specific=True):
+    def date_generation(self, combine_num=5, attribute_num=200, address="data/Imagenet10/generation.json", label_specific=True):
         generation_dict = {}
         for label in range(len(self.label_number)):
             generate_used = [i['combination'][0] for i in MD.report.suggestion_for_combinations_by_rate()[:attribute_num]]

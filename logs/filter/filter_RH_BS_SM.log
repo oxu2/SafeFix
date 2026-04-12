@@ -1,7 +1,7 @@
 Loading checkpoint shards:   0%|          | 0/5 [00:00<?, ?it/s]Loading checkpoint shards:  20%|██        | 1/5 [00:01<00:04,  1.13s/it]Loading checkpoint shards:  40%|████      | 2/5 [00:01<00:02,  1.04it/s]Loading checkpoint shards:  60%|██████    | 3/5 [00:02<00:01,  1.11it/s]Loading checkpoint shards:  80%|████████  | 4/5 [00:03<00:00,  1.14it/s]Loading checkpoint shards: 100%|██████████| 5/5 [00:04<00:00,  1.35it/s]Loading checkpoint shards: 100%|██████████| 5/5 [00:04<00:00,  1.21it/s]
-/tmp/tmpzn8zma3f: line 3: 4092945 Killed                  python /people/cs/o/oxx220000/HiBug/filter.py --max_memory 23 --attributes redhair_brownskin_sademotion
+/tmp/tmpzn8zma3f: line 3: 4092945 Killed                  python /people/cs/o/oxx220000/safefix/filter.py --max_memory 23 --attributes redhair_brownskin_sademotion
 
-ERROR conda.cli.main_run:execute(49): `conda run python /people/cs/o/oxx220000/HiBug/filter.py --max_memory 23 --attributes redhair_brownskhuggingface/tokenizers: The current process just got forked, after parallelism has already been used. Disabling parallelism to avoid deadlocks...
+ERROR conda.cli.main_run:execute(49): `conda run python /people/cs/o/oxx220000/safefix/filter.py --max_memory 23 --attributes redhair_brownskhuggingface/tokenizers: The current process just got forked, after parallelism has already been used. Disabling parallelism to avoid deadlocks...
 To disable this warning, you can either:
 	- Avoid using `tokenizers` before the fork if possible
 	- Explicitly set the environment variable TOKENIZERS_PARALLELISM=(true | false)
@@ -448,8 +448,8 @@ Image processing using Qwen VL model complete.
 --- Processing Summary ---
 Processed all 10855 found images.
 Traceback (most recent call last):
-  File "/people/cs/o/oxx220000/HiBug/filter.py", line 896, in <module>
+  File "/people/cs/o/oxx220000/safefix/filter.py", line 896, in <module>
     help='Path to existing results JSON file (used with --feasible_only).')
-  File "/people/cs/o/oxx220000/HiBug/filter.py", line 773, in main
+  File "/people/cs/o/oxx220000/safefix/filter.py", line 773, in main
     save_dir = "save/json"
 TypeError: object of type 'NoneType' has no len()

@@ -1,3 +1,103 @@
+mkdir -p log_pose && \
+ts=$(date +%Y%m%d_%H%M%S) && \
+suffix="blip_bs8_e2_rare0p97" && \
+outdir="log_pose/pose_keypointrcnn_train20k_${suffix}_${ts}" && \
+logfile="log_pose/pose_train20k_${suffix}_${ts}.log" && \
+CUDA_VISIBLE_DEVICES=0 nohup python -u train_pose_estimation.py train \
+  --output-dir "${outdir}" \
+  --assigner blip \
+  --analysis-rare-label-threshold 0.97 \
+  > "${logfile}" 2>&1 & echo "${logfile}"
+
+
+
+mkdir -p log_pose && \
+ts=$(date +%Y%m%d_%H%M%S) && \
+suffix="qwen3_bs4_e2_rare0p97" && \
+outdir="log_pose/pose_keypointrcnn_train20k_${suffix}_${ts}" && \
+logfile="log_pose/pose_train20k_${suffix}_${ts}.log" && \
+CUDA_VISIBLE_DEVICES=1 nohup python -u train_pose_estimation.py train \
+  --data-root /data/oxx220000/coco \
+  --pretrained true \
+  --device cuda \
+  --batch-size 4 \
+  --num-workers 4 \
+  --epochs 2 \
+  --seed 42 \
+  --max-train-samples 20000 \
+  --output-dir "${outdir}" \
+  --analyze-after-train true \
+  --analysis-attribute-file save/attribute_coco_pose_gemini_qwen3_8B.json \
+  --analysis-attribute-split val_full \
+  --analysis-train-attribute-file save/attribute_coco_pose_gemini_train20k_qwen3_8B.json \
+  --analysis-train-attribute-split train \
+  --analysis-corpus save/corpus_coco_pose_gemini.json \
+  --analysis-min-images 25 \
+  --analysis-top-k 20 \
+  --analysis-acc-diff-threshold 0.005 \
+  --analysis-distribution-diff-threshold 0.15 \
+  --analysis-rare-label-threshold 0.97 \
+  > "${logfile}" 2>&1 & echo "${logfile}"
+
+mkdir -p log_pose && \
+ts=$(date +%Y%m%d_%H%M%S) && \
+suffix="internvl3_bs4_e2_rare0p97_gpuX" && \
+outdir="log_pose/pose_keypointrcnn_train20k_${suffix}_${ts}" && \
+logfile="log_pose/pose_train20k_${suffix}_${ts}.log" && \
+CUDA_VISIBLE_DEVICES=2 nohup python -u train_pose_estimation.py train \
+  --data-root /data/oxx220000/coco \
+  --pretrained true \
+  --device cuda \
+  --batch-size 4 \
+  --num-workers 4 \
+  --epochs 2 \
+  --seed 42 \
+  --max-train-samples 20000 \
+  --output-dir "${outdir}" \
+  --analyze-after-train true \
+  --analysis-attribute-file save/attribute_coco_pose_gemini_internvl3_8B.json \
+  --analysis-attribute-split val_full \
+  --analysis-train-attribute-file save/attribute_coco_pose_gemini_train20k_internvl3_8B.json \
+  --analysis-train-attribute-split train \
+  --analysis-corpus save/corpus_coco_pose_gemini.json \
+  --analysis-min-images 25 \
+  --analysis-top-k 20 \
+  --analysis-acc-diff-threshold 0.005 \
+  --analysis-distribution-diff-threshold 0.15 \
+  --analysis-rare-label-threshold 0.97 \
+  > "${logfile}" 2>&1 & echo "${logfile}"
+
+
+mkdir -p log_pose && \
+ts=$(date +%Y%m%d_%H%M%S) && \
+suffix="internvl3_bs4_e2_rare0p97_gpuX" && \
+outdir="log_pose/pose_keypointrcnn_train20k_${suffix}_${ts}" && \
+logfile="log_pose/pose_train20k_${suffix}_${ts}.log" && \
+CUDA_VISIBLE_DEVICES=3 nohup python -u train_pose_estimation.py train \
+  --data-root /data/oxx220000/coco \
+  --pretrained true \
+  --device cuda \
+  --batch-size 8 \
+  --num-workers 4 \
+  --epochs 2 \
+  --seed 42 \
+  --max-train-samples 20000 \
+  --output-dir "${outdir}" \
+  --analyze-after-train true \
+  --analysis-attribute-file save/attribute_coco_pose_gemini_internvl3_8B.json \
+  --analysis-attribute-split val_full \
+  --analysis-train-attribute-file save/attribute_coco_pose_gemini_train20k_internvl3_8B.json \
+  --analysis-train-attribute-split train \
+  --analysis-corpus save/corpus_coco_pose_gemini.json \
+  --analysis-min-images 25 \
+  --analysis-top-k 20 \
+  --analysis-acc-diff-threshold 0.005 \
+  --analysis-distribution-diff-threshold 0.15 \
+  --analysis-rare-label-threshold 0.93 \
+  > "${logfile}" 2>&1 & echo "${logfile}"
+
+
+
 nohup python3 predict_focal.py --dataset celeba --model resnet --ltl_baseline focal --gpu 2 > logs/focal_celeba_resnet.log 2>&1 &
 
 CUDA_VISIBLE_DEVICES=2 python predict_ltl.py --dataset imagenet --model resnet --ltl_baseline focal --focal_gamma 3.0 --num_epochs 1 
@@ -6,7 +106,7 @@ CUDA_VISIBLE_DEVICES=2 nohup python -u alpred.py \
   --dataset imagenet --model resnet --num_added_img 1000 \
   --attributes pinkcolor_fabrictexture --num_epochs 15 \
   --sub_ratio 0.3 \
-  --resume_model model_imagenet_resnet_base.pth \
+  --resume_model weights/model_imagenet_resnet_base.pth \
   --al_strategy attribute \
   --al_attribute_focus color,background,texture \
   --al_attribute_balance_strength 5 \
@@ -642,7 +742,7 @@ CUDA_VISIBLE_DEVICES=1 nohup ./run_active_learning.sh coreset resnet 5 > logs/co
 
 mv logs_imagenet/RH_BS_SE_*_celeba_*.log logs/
 
-CUDA_VISIBLE_DEVICES=0 nohup python -u filter.py \
+CUDA_VISIBLE_DEVICES=0 nohup python -u utils/filter.py \
   --attributes orangecolor_fabrictexture \
   --dataset imagenet \
   --lvlm llava-7b \
@@ -696,26 +796,26 @@ CUDA_VISIBLE_DEVICES=2 nohup python -u predict.py --dataset celeba --model resne
 
 CUDA_VISIBLE_DEVICES=3 nohup python -u predict.py --dataset celeba --model resnet --num_added_img 10000  --save_pred_model best --attributes redhair_brownskin_sademotion --num_epochs 20 --seed 12376  > logs_imagenet/RH_BS_SE_resnet_celeba_10000.log 2>&1 < /dev/null &
 
-CUDA_VISIBLE_DEVICES=3 nohup python -u filter.py \
+CUDA_VISIBLE_DEVICES=3 nohup python -u utils/filter.py \
   --attributes pinkcolor_fabrictexture \
   --dataset imagenet \
   --lvlm llava-7b \
   > logs/filter/filter_pinkcolor_fabrictexture_llava.log 2>&1 < /dev/null &
 
-CUDA_VISIBLE_DEVICES=1 nohup python -u filter.py \
+CUDA_VISIBLE_DEVICES=1 nohup python -u utils/filter.py \
   --attributes pinkcolor_fabrictexture \
   --dataset imagenet \
   --lvlm qwen \
   > logs/filter/filter_pinkcolor_fabrictexture_qwen.log 2>&1 < /dev/null &
 
 
-CUDA_VISIBLE_DEVICES=3 nohup python -u filter.py \
+CUDA_VISIBLE_DEVICES=3 nohup python -u utils/filter.py \
   --max_memory 23 \
   --attributes redhair_brownskin_sademotion \
   > logs/filter/filter_RH_BS_SM.log 2>&1 < /dev/null &
 
 
-CUDA_VISIBLE_DEVICES=1 nohup python -u filter.py \
+CUDA_VISIBLE_DEVICES=1 nohup python -u utils/filter.py \
   --max_memory 23 \
   --attributes redhair \
   --stop_at 5000 \
@@ -782,7 +882,7 @@ nohup ./batch.sh -m vit -a redhair_brownskin -d 3 -g \
 
 
 nohup ./batch.sh -m clip -a simple -d 2 -u true \
-  > logs/hibug_clip_simple.log 2>&1 < /dev/null &
+  > logs/safefix_clip_simple.log 2>&1 < /dev/null &
 
 nohup ./batch.sh -m clip -a yellowcolor -d 1 \
   > logs/batch/batch_clip_yellowcolor.log 2>&1 < /dev/null &
@@ -829,19 +929,19 @@ CUDA_VISIBLE_DEVICES=1 python predict.py --dataset imagenet --model resnet --num
 
 CUDA_VISIBLE_DEVICES=2 python predict.py --dataset imagenet --model resnet --num_added_img 100  --save_pred_model last --num_epochs 10 
 
-CUDA_VISIBLE_DEVICES=3 python filter.py
+CUDA_VISIBLE_DEVICES=3 python utils/filter.py
 
 
-CUDA_VISIBLE_DEVICES=0 nohup python -u filter.py \
+CUDA_VISIBLE_DEVICES=0 nohup python -u utils/filter.py \
   --attributes pinkcolor \
   --max_memory 22 \
   > logs/filter/filter_pinkcolor.log 2>&1 < /dev/null &
 
-CUDA_VISIBLE_DEVICES=2 nohup python -u filter.py \
+CUDA_VISIBLE_DEVICES=2 nohup python -u utils/filter.py \
   --attributes pinkcolor \
   > logs/filter/filter_pinkcolor.log 2>&1 < /dev/null &
 
-CUDA_VISIBLE_DEVICES=0 nohup python -u filter.py \
+CUDA_VISIBLE_DEVICES=0 nohup python -u utils/filter.py \
   --max_memory 23 \
   --attributes redhair_brownskin_sademotion \
   > logs/filter/filter_redhair_brownskin_sademotion.log 2>&1 < /dev/null &
@@ -897,7 +997,7 @@ nohup ./batch.sh -m clip -a yellowhair_brownskin -d 0 -n 10000 \
 
 
 nohup ./batch.sh -m clip -a simple -d 0 -s \
-  > logs/hibug_clip_simple.log 2>&1 < /dev/null &
+  > logs/safefix_clip_simple.log 2>&1 < /dev/null &
 
 
 nohup ./batch.sh -m clip -a redhair_brownskin -d 2 -g -s \
@@ -910,7 +1010,7 @@ CUDA_VISIBLE_DEVICES=0 nohup  python -u predict.py --dataset imagenet --model re
 
 CUDA_VISIBLE_DEVICES=0 nohup python -u predict.py --model resnet --num_added_img 10  --save_pred_model best --num_epochs 1 --attributes redhair_brownskin_sademotion > logs/1_resnet.log 2>&1 < /dev/null &
 
-CUDA_VISIBLE_DEVICES=0 nohup python -u predict.py --model resnet --num_added_img 5230  --save_pred_model best --num_epochs 1 --attributes yellowhair --gen_image_dir exampleData/yellowhair > logs/y.log 2>&1 < /dev/null &
+CUDA_VISIBLE_DEVICES=0 nohup python -u predict.py --model resnet --num_added_img 5230  --save_pred_model best --num_epochs 1 --attributes yellowhair --gen_image_dir data/yellowhair > logs/y.log 2>&1 < /dev/null &
 
 nohup ./batch.sh -m clip -a redhair_brownskin_sademotion -d 0 \
   > logs/batch/batch_clip_redhair_brownskin_sademotion.log 2>&1 < /dev/null &
@@ -920,7 +1020,7 @@ nohup ./batch.sh -m vit -a redhair_brownskin_sademotion -d 1 \
   > logs/batch/batch_vit_redhair_brownskin_sademotion.log 2>&1 < /dev/null &
 
 
-CUDA_VISIBLE_DEVICES=0 nohup python -u filter.py \
+CUDA_VISIBLE_DEVICES=0 nohup python -u utils/filter.py \
   --max_memory 23 \
   --attributes redhair_brownskin_sademotion \
   > logs/filter/filter_redhair_brownskin_sademotion.log 2>&1 < /dev/null &
@@ -954,13 +1054,13 @@ CUDA_VISIBLE_DEVICES=1 nohup  python -u predict.py --dataset imagenet --model re
 
 CUDA_VISIBLE_DEVICES=2 nohup  python -u predict.py --dataset imagenet --model clip --num_added_img 0  --save_pred_model last --num_epochs 40 > logs/imgnet_clip_40.log 2>&1 < /dev/null &
 
-python count_and_split.py --data-dir /people/cs/o/oxx220000/HiBug/imagenet7
+python count_and_split.py --data-dir /people/cs/o/oxx220000/safefix/imagenet7
 No train/val dirs found; showing 80:20 split suggestion.
 
 n02791124        total: 1300   
 
 
-CUDA_VISIBLE_DEVICES=1 nohup python -u filter.py \
+CUDA_VISIBLE_DEVICES=1 nohup python -u utils/filter.py \
   --max_memory 23 \
   --attributes redhair_sademotion \
   > logs/filter/filter_redhair_sademotion.log 2>&1 < /dev/null &
@@ -990,12 +1090,12 @@ nohup ./batch.sh -m clip -a redhair -d 2 -g \
 nohup ./batch.sh -m clip -a redhair_brownskin -d 0 -g \
   > logs/g_clip_redhair_brownskin.log 2>&1 < /dev/null &
 
-python g_log_compare.py    \
+python utils/g_log_compare.py    \
   --prefix g_simple \
   --model clip \
   --attributes redhair
 
-python g_log_compare.py    \
+python utils/g_log_compare.py    \
   --prefix g_simple \
   --model clip \
   --attributes redhair_brownskin
@@ -1058,29 +1158,29 @@ nohup ./batch.sh -m resnet -a redhair -d 3 -g \
 CUDA_VISIBLE_DEVICES=1 nohup python -u controlnet.py > logs/control_redhair_sademotion.log 2>&1 < /dev/null &
 
 
-CUDA_VISIBLE_DEVICES=1 nohup python -u filter.py \
+CUDA_VISIBLE_DEVICES=1 nohup python -u utils/filter.py \
   --max_memory 33 \
   --attributes sademotion \
   > logs/filter/filter_sademotion.log 2>&1 < /dev/null &
 
-❯ CUDA_VISIBLE_DEVICES=1 nohup python -u filter.py \
+❯ CUDA_VISIBLE_DEVICES=1 nohup python -u utils/filter.py \
   --max_memory 33 \
   --attributes brownskin \
   > logs/filter/filter_brownskin2.log 2>&1 < /dev/null &
 [1] 2528585
-❯ CUDA_VISIBLE_DEVICES=1 nohup python -u filter.py \
+❯ CUDA_VISIBLE_DEVICES=1 nohup python -u utils/filter.py \
   --max_memory 33 \
   --attributes sademotion \
   > logs/filter/filter_sademotion.log 2>&1 < /dev/null &
 [2] 2529199
 
 
-CUDA_VISIBLE_DEVICES=1 nohup python -u filter.py \
+CUDA_VISIBLE_DEVICES=1 nohup python -u utils/filter.py \
   --max_memory 33 \
   --attributes yellowhair \
   > logs/filter/filter_yellowhair.log 2>&1 < /dev/null &
 
-CUDA_VISIBLE_DEVICES=1 nohup python -u filter.py \
+CUDA_VISIBLE_DEVICES=1 nohup python -u utils/filter.py \
   --max_memory 33 \
   --attributes brownskin \
   > logs/filter/filter_brownskin2.log 2>&1 < /dev/null &
@@ -1101,16 +1201,16 @@ nohup ./batch.sh -m vit -a redhair -d 2 \
   > logs/batch/batch_vit_redhair.log 2>&1 < /dev/null &
 
 nohup ./batch.sh -m vit -a simple -d 1 -u true \
-  > logs/hibug_vit_simple.log 2>&1 < /dev/null &
+  > logs/safefix_vit_simple.log 2>&1 < /dev/null &
 
 nohup ./batch.sh -m vit -a simple -d 0 -u true \
-  > logs/hibug_vit_simple_last.log 2>&1 < /dev/null &
+  > logs/safefix_vit_simple_last.log 2>&1 < /dev/null &
 
 nohup ./batch.sh -m resnet -a simple -d 0 -u true \
-  > logs/hibug_resnet_simple.log 2>&1 < /dev/null &
+  > logs/safefix_resnet_simple.log 2>&1 < /dev/null &
 
 nohup ./batch.sh -m resnet -a simple -d 2 -u true \
-  > logs/hibug_resnet_simple_last.log 2>&1 < /dev/null &
+  > logs/safefix_resnet_simple_last.log 2>&1 < /dev/null &
 
 CUDA_VISIBLE_DEVICES=3 nohup bash time_run.sh sd15.py --num_added_img 12340 > logs/sd_simple_12340.log 2>&1 < /dev/null &
 
@@ -1127,10 +1227,10 @@ nohup ./batch.sh -m resnet -a redhair -d 0 -n 10000 \
 
 
 nohup ./batch.sh -m resnet -a redhair -d 0 -u true \
-  > logs/hibug_resnet_redhair.log 2>&1 < /dev/null &
+  > logs/safefix_resnet_redhair.log 2>&1 < /dev/null &
 
 nohup ./batch.sh -m resnet -a redhair_brownskin -d 3 -u true \
-  > logs/hibug_resnet_redhair_brownskin.log 2>&1 < /dev/null &
+  > logs/safefix_resnet_redhair_brownskin.log 2>&1 < /dev/null &
 
 nohup ./batch.sh -m resnet -a redhair -d 0 \
   > logs/batch/batch_resnet_redhair.log 2>&1 < /dev/null &
@@ -1142,47 +1242,47 @@ CUDA_VISIBLE_DEVICES=3 python predict.py --model resnet --num_added_img 1000 --a
 CUDA_VISIBLE_DEVICES=2 python -u predict.py --model resnet --num_added_img 1000 --attributes redhair  > logs/test.log 2>&1 < /dev/null &
 
 
-CUDA_VISIBLE_DEVICES=0 nohup python -u filter.py \
-  --dir exampleData/sad \
+CUDA_VISIBLE_DEVICES=0 nohup python -u utils/filter.py \
+  --dir data/sad \
   --attributes sademotion \
   > logs/filter/filter_sad.log 2>&1 < /dev/null &
 
-CUDA_VISIBLE_DEVICES=0  python filter.py --max_memory 23 --dir exampleData/redhair --attributes redhair
-CUDA_VISIBLE_DEVICES=0  python filter.py --max_memory 23 --dir exampleData/sad --attributes sademotion
+CUDA_VISIBLE_DEVICES=0  python utils/filter.py --max_memory 23 --dir data/redhair --attributes redhair
+CUDA_VISIBLE_DEVICES=0  python utils/filter.py --max_memory 23 --dir data/sad --attributes sademotion
 
 CUDA_VISIBLE_DEVICES=3 nohup bash time_run.sh sd15.py --attributes yellowhair --num_added_img 12340 > logs/sd_yellowhair_12340.log 2>&1 < /dev/null &
 
 nohup ./batch.sh -m vit -a redhair -d 1 -u \
-  > logs/hibug_vit_redhair.log 2>&1 < /dev/null &
+  > logs/safefix_vit_redhair.log 2>&1 < /dev/null &
 
 nohup ./batch.sh -m vit -a redhair_brownskin -d 2 -u true \
-  > logs/hibug_vit_redhair.log 2>&1 < /dev/null &
+  > logs/safefix_vit_redhair.log 2>&1 < /dev/null &
 
-CUDA_VISIBLE_DEVICES=2 python -u predict.py --model resnet --num_added_img 1000 --hibug true --attributes redhair  > logs/test.log 2>&1 < /dev/null &
+CUDA_VISIBLE_DEVICES=2 python -u predict.py --model resnet --num_added_img 1000 --safefix true --attributes redhair  > logs/test.log 2>&1 < /dev/null &
 
-python filter_hibug_images.py --attributes redhair
+python filter_safefix_images.py --attributes redhair
 
 CUDA_VISIBLE_DEVICES=2 nohup python -u predict.py  > logs/resnet18_no_data_added.log 2>&1 < /dev/null &
 
 nohup ./batch.sh -m resnet -a redhair -d 1 -u \
-  > logs/hibug_resnet_redhair.log 2>&1 < /dev/null &
+  > logs/safefix_resnet_redhair.log 2>&1 < /dev/null &
 
 nohup ./batch.sh -m resnet -a redhair_brownskin -d 2 -u true \
-  > logs/hibug_resnet_redhair.log 2>&1 < /dev/null &
+  > logs/safefix_resnet_redhair.log 2>&1 < /dev/null &
 
-CUDA_VISIBLE_DEVICES=2 nohup python -u filter.py \
+CUDA_VISIBLE_DEVICES=2 nohup python -u utils/filter.py \
   --max_memory 23 \
-  --dir hibug_redhair_brownskin \
+  --dir safefix_redhair_brownskin \
   --attributes redhair_brownskin \
   --stop_at 15000 \
-  > logs/filter/filter_hibug_redhair_brownskin_15000.log 2>&1 < /dev/null &
+  > logs/filter/filter_safefix_redhair_brownskin_15000.log 2>&1 < /dev/null &
 
-CUDA_VISIBLE_DEVICES=1 nohup python -u filter.py \
+CUDA_VISIBLE_DEVICES=1 nohup python -u utils/filter.py \
   --max_memory 23 \
-  --dir hibug_redhair \
+  --dir safefix_redhair \
   --attributes redhair \
   --stop_at 15000 \
-  > logs/filter/filter_hibug_redhair_12340.log 2>&1 < /dev/null &
+  > logs/filter/filter_safefix_redhair_12340.log 2>&1 < /dev/null &
 
 
 CUDA_VISIBLE_DEVICES=2 nohup bash time_run.sh sd15.py --attributes brownskin --num_added_img 12340 > logs/sd_brownskin_12340.log 2>&1 < /dev/null &
@@ -1194,8 +1294,8 @@ nohup ./for.sh -n 10000 -a redhair -d 3 > logs/for_redhair_10000.log 2>&1 &
 nohup ./for.sh -n 10000 -a redhair_brownskin -d 1 -g > logs/g_redhair_brownskin_10000.log 2>&1 &
 nohup ./for.sh -n 10000 -a redhair_brownskin -d 2 > logs/for_redhair_brownskin_10000.log 2>&1 &
 
-CUDA_VISIBLE_DEVICES=3 nohup python -u filter.py \
-  --dir exampleData/redhair_brownskin \
+CUDA_VISIBLE_DEVICES=3 nohup python -u utils/filter.py \
+  --dir data/redhair_brownskin \
   --attributes redhair_brownskin \
   --max_memory 23 \
   --feasible_only \
@@ -1203,31 +1303,31 @@ CUDA_VISIBLE_DEVICES=3 nohup python -u filter.py \
   > logs/filter/filter_redhairb_feasible.log 2>&1 < /dev/null &
 
 
-CUDA_VISIBLE_DEVICES=3 nohup python -u filter.py \
-  --dir exampleData/redhair \
+CUDA_VISIBLE_DEVICES=3 nohup python -u utils/filter.py \
+  --dir data/redhair \
   --attributes redhair \
   --max_memory 23 \
   --feasible_only \
   --results_file save/json/redhair_results_04260005.json \
   > logs/filter/filter_redhair_feasible.log 2>&1 < /dev/null &
 
-CUDA_VISIBLE_DEVICES=2 nohup python -u filter.py \
+CUDA_VISIBLE_DEVICES=2 nohup python -u utils/filter.py \
   --max_memory 23 \
-  --dir exampleData/redhair_brownskin \
+  --dir data/redhair_brownskin \
   --attributes redhair_brownskin \
   --stop_at 15000 \
   > logs/filter/filter_redhair_brownskin_15000.log 2>&1 < /dev/null &
 
 
-CUDA_VISIBLE_DEVICES=2 nohup python -u filter.py \
+CUDA_VISIBLE_DEVICES=2 nohup python -u utils/filter.py \
   --max_memory 23 \
-  --dir exampleData/redhair_brownskin \
+  --dir data/redhair_brownskin \
   --attributes redhair_brownskin \
   --stop_at 21111 \
   > logs/filter/filter_redhair_brownskin_21111.log 2>&1 < /dev/null &
-CUDA_VISIBLE_DEVICES=0 nohup python -u filter.py \
+CUDA_VISIBLE_DEVICES=0 nohup python -u utils/filter.py \
   --max_memory 23 \
-  --dir exampleData/redhair \
+  --dir data/redhair \
   --attributes redhair \
   --stop_at 20000 \
   > logs/filter/filter_redhair_20000.log 2>&1 < /dev/null &
@@ -1239,17 +1339,17 @@ nohup ./for.sh -n 10000 -a redhair_brownskin -d 1 -g > logs/g_redhair_brownskin_
 nohup ./batch.sh -m clip -a redhair_brownskin -d 2 -g > logs/g_batch_vit_redhair_brownskin.log 2>&1 < /dev/null &
 CUDA_VISIBLE_DEVICES=0 nohup bash time_run.sh predict.py --model resnet --num_added_img 12340 > logs/resnet_12340.log 2>&1 < /dev/null &
 
-CUDA_VISIBLE_DEVICES=0 nohup python -u filter.py --max_memory 23 --dir exampleData/redhair --attributes redhair > logs/filter/filter_redhair_20000.log 2>&1 < /dev/null &
+CUDA_VISIBLE_DEVICES=0 nohup python -u utils/filter.py --max_memory 23 --dir data/redhair --attributes redhair > logs/filter/filter_redhair_20000.log 2>&1 < /dev/null &
 
 CUDA_VISIBLE_DEVICES=3 nohup bash time_run.sh predict.py --model clip --num_added_img 0 --plot 1 > logs/clip_0imgs.log 2>&1 < /dev/null &
 CUDA_VISIBLE_DEVICES=0 nohup bash time_run.sh predict.py --model resnet --num_added_img 0 > logs/resnet_0.log 2>&1 < /dev/null &
 CUDA_VISIBLE_DEVICES=3 nohup bash time_run.sh predict.py --model resnet --num_added_img 0 > logs/resnet_0.log 2>&1 < /dev/null &
 CUDA_VISIBLE_DEVICES=2 nohup bash time_run.sh predict.py --model vit --num_added_img 0 > logs/vit_0.log 2>&1 < /dev/null &
-CUDA_VISIBLE_DEVICES=2,3 python filter.py
+CUDA_VISIBLE_DEVICES=2,3 python utils/filter.py
 
 nohup ./for.sh -n 0 -a redhair_brownskin -d 3 > logs/for_redhair_brownskin_0.log 2>&1 &
 nohup ./for.sh -n 0 -a redhair -d 2 > logs/for_redhair_0.log 2>&1 &
-CUDA_VISIBLE_DEVICES=0,2,3 nohup python -u filter.py --max_memory 11GiB --dir exampleData/redhair_brownskin_46703 > logs/filter/filter_redhair_brownskin_46703.log 2>&1 < /dev/null &
+CUDA_VISIBLE_DEVICES=0,2,3 nohup python -u utils/filter.py --max_memory 11GiB --dir data/redhair_brownskin_46703 > logs/filter/filter_redhair_brownskin_46703.log 2>&1 < /dev/null &
 
 nohup ./batch.sh -m clip -a redhair -d 1 > logs/batch/batch_clip_redhair.log 2>&1 < /dev/null &
 nohup ./batch.sh -m vit -a redhair -d 1 > logs/batch/batch_vit_redhair.log 2>&1 < /dev/null &
@@ -1286,12 +1386,12 @@ CUDA_VISIBLE_DEVICES=3 nohup python -u compare_acc.py \
   > logs/compare_vit_redhair_20.log 2>&1 < /dev/null &
 
 CUDA_VISIBLE_DEVICES=0 \
-nohup bash time_run.sh stat.py \
+nohup bash time_run.sh utils/stat.py \
   --predictions predictions_vit_origin_0421030925.npy \
   > logs/stat_vit_origin_0421030925.log 2>&1 < /dev/null &
 
 CUDA_VISIBLE_DEVICES=3 \
-nohup bash time_run.sh stat.py \
+nohup bash time_run.sh utils/stat.py \
   --predictions predictions_vit_04080238_0421030927.npy \
   > logs/stat_vit_redhair_0421030927.log 2>&1 < /dev/null &
 
@@ -1322,18 +1422,18 @@ CUDA_VISIBLE_DEVICES=3 nohup python -u compare_acc.py \
 CUDA_VISIBLE_DEVICES=1 nohup bash time_run.sh predict.py --model clip --feasible-file a.txt > logs/clip_origin_10.log 2>&1 < /dev/null &
 
 CUDA_VISIBLE_DEVICES=0 \
-nohup bash time_run.sh stat.py \
+nohup bash time_run.sh utils/stat.py \
   --predictions predictions_clip_origin_0421030416.npy \
   > logs/stat_clip_origin_0421030416.log 2>&1 < /dev/null &
 
 CUDA_VISIBLE_DEVICES=0 \
-nohup bash time_run.sh stat.py \
+nohup bash time_run.sh utils/stat.py \
   --predictions pred/predictions_vit_origin_0421030925.npy \
   > logs/compare/predictions_vit_origin_0421030925.log 2>&1 < /dev/null &
 
 
 CUDA_VISIBLE_DEVICES=3 \
-nohup bash time_run.sh stat.py \
+nohup bash time_run.sh utils/stat.py \
   --predictions predictions_04080238_clip_0421025340.npy \
   > logs/stat_clip_redhair_0421025340.log 2>&1 < /dev/null &
 
@@ -1359,7 +1459,7 @@ CUDA_VISIBLE_DEVICES=2 nohup bash time_run.sh predict.py --model vit > logs/vit_
 
 CUDA_VISIBLE_DEVICES=2 nohup bash time_run.sh predict.py --model resnet18 --feasible-file a.txt > logs/resnet18_no_pretrained.log 2>&1 < /dev/null &
 
-CUDA_VISIBLE_DEVICES=3 nohup bash time_run.sh stat.py > logs/stat_vit_no_data.log 2>&1 < /dev/null &
+CUDA_VISIBLE_DEVICES=3 nohup bash time_run.sh utils/stat.py > logs/stat_vit_no_data.log 2>&1 < /dev/null &
 
 CUDA_VISIBLE_DEVICES=0 nohup bash time_run.sh predict.py --model resnet18 > logs/resnet18_redhair_15.log 2>&1 < /dev/null &
 
@@ -1379,10 +1479,10 @@ CUDA_VISIBLE_DEVICES=0 nohup bash time_run.sh predict.py --model resnet18 > logs
 
 CUDA_VISIBLE_DEVICES=3 nohup bash time_run.sh predict.py > logs/resnet18_no_data.log 2>&1 < /dev/null &
 
-CUDA_VISIBLE_DEVICES=3 nohup bash time_run.sh stat.py > logs/red.log 2>&1 < /dev/null &
+CUDA_VISIBLE_DEVICES=3 nohup bash time_run.sh utils/stat.py > logs/red.log 2>&1 < /dev/null &
 
 
-CUDA_VISIBLE_DEVICES=3 nohup bash time_run.sh stat.py > logs/red.log 2>&1 < /dev/null &
+CUDA_VISIBLE_DEVICES=3 nohup bash time_run.sh utils/stat.py > logs/red.log 2>&1 < /dev/null &
 
 
 
@@ -1392,7 +1492,7 @@ CUDA_VISIBLE_DEVICES=2 nohup bash time_run.sh predict.py > logs/vit_no_data.log 
 
 CUDA_VISIBLE_DEVICES=2 nohup bash time_run.sh predict.py > logs/resnet18_no_data_added.log 2>&1 < /dev/null &
 
-conda activate hibug
+conda activate safefix
 conda activate ad
 
 CUDA_VISIBLE_DEVICES=2 nohup python -u predict.py  > logs/resnet18_no_data_added.log 2>&1 < /dev/null &
@@ -1409,20 +1509,20 @@ CUDA_VISIBLE_DEVICES=1 nohup python -u predict.py  > logs/test_resnet18.log 2>&1
 CUDA_VISIBLE_DEVICES=1 nohup python -u predict.py  > logs/B64_resnet18.log 2>&1 < /dev/null &
 
 
-CUDA_VISIBLE_DEVICES=3 python stat.py
+CUDA_VISIBLE_DEVICES=3 python utils/stat.py
 
-CUDA_VISIBLE_DEVICES=0 python filter.py
+CUDA_VISIBLE_DEVICES=0 python utils/filter.py
 
-CUDA_VISIBLE_DEVICES=0,2,3 python filter.py
+CUDA_VISIBLE_DEVICES=0,2,3 python utils/filter.py
 
 
-CUDA_VISIBLE_DEVICES=1 nohup python -u filter.py  > logs/filter.log 2>&1 < /dev/null &
+CUDA_VISIBLE_DEVICES=1 nohup python -u utils/filter.py  > logs/filter.log 2>&1 < /dev/null &
 
 CUDA_VISIBLE_DEVICES=1 nohup python -u map.py  > logs/map.log 2>&1 < /dev/null &
 
-# CONDA_ENV=myenv python filter.py --dir /path/to/images --file-type jpg
-CONDA_ENV=control python filter.py
+# CONDA_ENV=myenv python utils/filter.py --dir /path/to/images --file-type jpg
+CONDA_ENV=control python utils/filter.py
 
-CUDA_VISIBLE_DEVICES=1,2,3 python filter.py
+CUDA_VISIBLE_DEVICES=1,2,3 python utils/filter.py
 
-CUDA_VISIBLE_DEVICES=1,2,3 python filter.py --verbose True
+CUDA_VISIBLE_DEVICES=1,2,3 python utils/filter.py --verbose True
