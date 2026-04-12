@@ -1,0 +1,46 @@
+{
+    "Corpus": {
+        "clothes_color": {
+            "data": [],
+            "word": ["red", "blue", "green", "yellow", "black", "white", "gray", "brown", "pink"],
+            "prompt": ["a person wearing #1 clothes"],
+            "type": "description",
+            "question": "What is the dominant color of the main person's clothes?"
+        },
+        "clothes_type": {
+            "data": [],
+            "word": ["casual", "formal", "sportswear", "swimwear", "winterwear", "uniform"],
+            "prompt": ["a person wearing #1 clothing"],
+            "type": "description",
+            "question": "What type of clothing is the main person wearing?"
+        },
+        "background_style": {
+            "data": [],
+            "word": ["urban", "rural", "natural", "artificial", "indoors"],
+            "prompt": ["a photo taken in an #1 background"],
+            "type": "description",
+            "question": "What is the background style of the scene?"
+        },
+        "time_of_day": {
+            "data": [],
+            "word": ["morning", "afternoon", "evening", "night", "unknown"],
+            "prompt": ["a photo taken in the #1"],
+            "type": "description",
+            "question": "What time of day does it appear to be in the image?"
+        },
+        "weather": {
+            "data": [],
+            "word": ["sunny", "cloudy", "rainy", "snowy", "clear"],
+            "prompt": ["a photo taken in #1 weather"],
+            "type": "description",
+            "question": "What is the weather condition like in the image?"
+        },
+        "pose": {
+            "data": [],
+            "word": ["sitting", "jumping", "lying", "standing", "walking", "crouching", "running", "kneeling"],
+            "prompt": ["a person who is #1"],
+            "type": "description",
+            "question": "What is the main body pose of the main person?"
+        }
+    }
+}
