@@ -1,0 +1,80 @@
+Current time: 0327014627
+LTL baseline 'focal' active: training on original ImageNet subset only.
+Using resnet model with random weights
+Using Focal Loss (multiclass) with gamma=2.0
+Epoch [1/30], Train Loss: 1.7259, Train Acc: 0.2103, Val Loss: 1.6849, Val Acc: 0.2354
+Epoch [2/30], Train Loss: 1.5565, Train Acc: 0.2667, Val Loss: 1.7334, Val Acc: 0.2092
+Epoch [3/30], Train Loss: 1.4862, Train Acc: 0.2907, Val Loss: 1.6929, Val Acc: 0.2508
+Epoch [4/30], Train Loss: 1.2890, Train Acc: 0.3746, Val Loss: 1.5426, Val Acc: 0.3000
+Epoch [5/30], Train Loss: 1.1926, Train Acc: 0.4158, Val Loss: 1.2324, Val Acc: 0.4185
+Epoch [6/30], Train Loss: 1.1091, Train Acc: 0.4446, Val Loss: 1.1198, Val Acc: 0.4669
+Epoch [7/30], Train Loss: 0.9497, Train Acc: 0.5113, Val Loss: 0.9893, Val Acc: 0.5069
+Epoch [8/30], Train Loss: 0.8946, Train Acc: 0.5404, Val Loss: 0.9624, Val Acc: 0.5038
+Epoch [9/30], Train Loss: 0.8370, Train Acc: 0.5651, Val Loss: 0.8543, Val Acc: 0.5477
+Epoch [10/30], Train Loss: 0.7283, Train Acc: 0.6115, Val Loss: 0.7666, Val Acc: 0.5962
+Epoch [11/30], Train Loss: 0.6744, Train Acc: 0.6342, Val Loss: 0.7767, Val Acc: 0.5915
+Epoch [12/30], Train Loss: 0.6444, Train Acc: 0.6467, Val Loss: 0.7371, Val Acc: 0.6185
+Epoch [13/30], Train Loss: 0.5766, Train Acc: 0.6829, Val Loss: 0.6787, Val Acc: 0.6377
+Epoch [14/30], Train Loss: 0.5514, Train Acc: 0.6896, Val Loss: 0.6727, Val Acc: 0.6377
+Epoch [15/30], Train Loss: 0.5181, Train Acc: 0.7056, Val Loss: 0.6974, Val Acc: 0.6308
+Epoch [16/30], Train Loss: 0.4746, Train Acc: 0.7266, Val Loss: 0.6248, Val Acc: 0.6515
+Epoch [17/30], Train Loss: 0.4535, Train Acc: 0.7360, Val Loss: 0.6246, Val Acc: 0.6677
+Epoch [18/30], Train Loss: 0.4501, Train Acc: 0.7368, Val Loss: 0.6333, Val Acc: 0.6608
+Epoch [19/30], Train Loss: 0.4224, Train Acc: 0.7534, Val Loss: 0.6254, Val Acc: 0.6623
+Epoch [20/30], Train Loss: 0.4111, Train Acc: 0.7631, Val Loss: 0.6071, Val Acc: 0.6738
+Epoch [21/30], Train Loss: 0.4035, Train Acc: 0.7640, Val Loss: 0.6028, Val Acc: 0.6692
+Epoch [22/30], Train Loss: 0.3942, Train Acc: 0.7696, Val Loss: 0.5822, Val Acc: 0.6823
+Epoch [23/30], Train Loss: 0.3849, Train Acc: 0.7731, Val Loss: 0.6065, Val Acc: 0.6808
+Epoch [24/30], Train Loss: 0.3832, Train Acc: 0.7729, Val Loss: 0.5989, Val Acc: 0.6885
+Epoch [25/30], Train Loss: 0.3751, Train Acc: 0.7816, Val Loss: 0.5973, Val Acc: 0.6869
+Epoch [26/30], Train Loss: 0.3661, Train Acc: 0.7833, Val Loss: 0.5877, Val Acc: 0.6854
+Epoch [27/30], Train Loss: 0.3669, Train Acc: 0.7811, Val Loss: 0.5850, Val Acc: 0.6877
+Epoch [28/30], Train Loss: 0.3654, Train Acc: 0.7825, Val Loss: 0.5821, Val Acc: 0.6838
+Epoch [29/30], Train Loss: 0.3703, Train Acc: 0.7818, Val Loss: 0.6000, Val Acc: 0.6762
+Epoch [30/30], Train Loss: 0.3627, Train Acc: 0.7867, Val Loss: 0.5947, Val Acc: 0.6831
+Generating and saving predictions...
+Combined predictions length: 13000
+Total training time for 30 epochs: 4279.44 seconds
+
+Running model diagnostics on generated predictions...
+Model Test ACC: 0.6992307692307692
+Start detect_prediction_correlation
+
+ACC: 0.653722 	Rare Case: attribute "color", description "brown"
+ACC: 0.666667 	Rare Case: attribute "color", description "silver"
+ACC: 0.625000 	Rare Case: attribute "color", description "maroon"
+ACC: 0.601626 	Hard case: attribute "color", description "multicolored"
+ACC: 0.675497 	Hard case: attribute "color", description "black"
+ACC: 0.636364 	Rare Case: attribute "background", description "sky"
+ACC: 0.609756 	Hard case: attribute "background", description "trees"
+ACC: 0.357143 	Rare Case: attribute "background", description "buildings"
+ACC: 0.500000 	Rare Case: attribute "background", description "bridge"
+ACC: 0.642857 	Rare Case: attribute "background", description "water"
+ACC: 0.632075 	Rare Case: attribute "background", description "house"
+ACC: 0.612245 	Rare Case: attribute "texture", description "plastic"
+ACC: 0.650000 	Rare Case: attribute "texture", description "metallic"
+ACC: 0.663755 	Hard case: attribute "texture", description "glass"
+
+Comparing accuracy with log file: logs/compare/stat_imagenet_resnet_compare.log
+Overall accuracy: 0.718077 -> 0.688462: declined
+
+Attribute-specific accuracy comparison:
+color, green, 0.674419 -> 0.765625: improved
+color, pink, 0.699029 -> 0.737705: improved
+color, tan, 0.700000 -> 0.750000: improved
+color, orange, 0.690909 -> 0.755556: improved
+color, yellow, 0.688889 -> 0.750000: improved
+color, purple, 0.684211 -> 0.777778: improved
+color, black, 0.665289 -> 0.675497: improved
+background, sky, 0.698630 -> 0.636364: declined
+background, inside a house, 0.691684 -> 0.683507: declined
+background, buildings, 0.707317 -> 0.357143: declined
+background, rocks, 0.659091 -> 0.840000: improved
+background, street, 0.662162 -> 0.863636: improved
+texture, metallic, 0.676471 -> 0.650000: declined
+texture, wooden, 0.698393 -> 0.694410: declined
+texture, leather, 0.588235 -> 0.714286: improved
+texture, fabric, 0.658537 -> 0.722222: improved
+
+Compared 16 attribute-specific accuracies.
+Current time: 0327014627

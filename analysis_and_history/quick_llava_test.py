@@ -5,12 +5,12 @@ os.environ['CUDA_VISIBLE_DEVICES'] = '2'
 
 # Quick test for LLaVA response format
 import sys
-sys.path.append('/people/cs/o/oxx220000/HiBug')
+sys.path.append('/people/cs/o/oxx220000/safefix')
 
 from PIL import Image
 
 # Test image path
-test_image = "exampleData/imagenet_pinkcolor_fabrictexture/backpack/n02769748_1032.JPEG"
+test_image = "data/imagenet_pinkcolor_fabrictexture/backpack/n02769748_1032.JPEG"
 
 # Load image and display info
 image = Image.open(test_image)

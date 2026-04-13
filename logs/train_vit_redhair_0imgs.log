@@ -31,11 +31,11 @@ Current time: 0423063639
 Running model diagnostics on generated predictions...
 Model Validation ACC: 0.8947
 Traceback (most recent call last):
-  File "/people/cs/o/oxx220000/HiBug/predict.py", line 595, in <module>
+  File "/people/cs/o/oxx220000/safefix/predict.py", line 595, in <module>
     MD = ModelDiagnose(labels=diag_labels,
-  File "/people/cs/o/oxx220000/HiBug/utils/stat.py", line 112, in __init__
+  File "/people/cs/o/oxx220000/safefix/utils/stat.py", line 112, in __init__
     self.init_data_static()
-  File "/people/cs/o/oxx220000/HiBug/utils/stat.py", line 162, in init_data_static
+  File "/people/cs/o/oxx220000/safefix/utils/stat.py", line 162, in init_data_static
     if self.split[i] == TRAIN:
 IndexError: list index out of range
 Start Time: 2025-04-23 06:36:37

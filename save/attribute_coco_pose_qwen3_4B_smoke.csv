@@ -1,0 +1,2 @@
+index,image_path,image_id,file_name,split,occlusion_level,truncation,person_scale,crowd_level,person_overlap,pose_type,motion_type,scene_type,background_complexity,object_interaction
+0,/data/oxx220000/coco/val2017/000000000139.jpg,139,000000000139.jpg,val,none,partial_body,medium,few,none,standing,static,indoor,medium,holding

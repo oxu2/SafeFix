@@ -1,8 +1,8 @@
 import os
 import shutil
 
-src_dir = "exampleData/imagenet_simple3"
-dst_dir = "exampleData/imagenet_simple"
+src_dir = "data/imagenet_simple3"
+dst_dir = "data/imagenet_simple"
 
 # Ensure destination exists
 os.makedirs(dst_dir, exist_ok=True)

@@ -1,0 +1,2 @@
+image_id,pose,pose_complexity,head_orientation,clothes_color,is_arm_crossing,is_carrying_something,is_standing_on_one_leg,is_on_all_fours,is_sitting,is_dynamic,background_style,background_color,is_containing_other_people,indoor_lighting,is_indoor,weather,occlusion,viewpoint
+139,standing,simple,sideways,black,no,no,no,no,no,no,indoors,yellow,yes,natural,yes,sunny,no,side

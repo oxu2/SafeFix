@@ -1,0 +1,80 @@
+Current time: 0327013807
+LTL baseline 'ldam' active: training on original ImageNet subset only.
+Using resnet model with random weights
+Using LDAM Loss (multiclass) with max_m=0.5, s=30.0
+Epoch [1/30], Train Loss: 21.6536, Train Acc: 0.1973, Val Loss: 23.6885, Val Acc: 0.1762
+Epoch [2/30], Train Loss: 17.9656, Train Acc: 0.2517, Val Loss: 29.3964, Val Acc: 0.2285
+Epoch [3/30], Train Loss: 17.3311, Train Acc: 0.2946, Val Loss: 16.5679, Val Acc: 0.2777
+Epoch [4/30], Train Loss: 16.3297, Train Acc: 0.3746, Val Loss: 15.7667, Val Acc: 0.4000
+Epoch [5/30], Train Loss: 15.8942, Train Acc: 0.4036, Val Loss: 19.8310, Val Acc: 0.3485
+Epoch [6/30], Train Loss: 15.6893, Train Acc: 0.4319, Val Loss: 16.0269, Val Acc: 0.3831
+Epoch [7/30], Train Loss: 14.3901, Train Acc: 0.5049, Val Loss: 17.3570, Val Acc: 0.4369
+Epoch [8/30], Train Loss: 13.8080, Train Acc: 0.5428, Val Loss: 14.5378, Val Acc: 0.5208
+Epoch [9/30], Train Loss: 13.2025, Train Acc: 0.5748, Val Loss: 14.3563, Val Acc: 0.5500
+Epoch [10/30], Train Loss: 11.4798, Train Acc: 0.6397, Val Loss: 13.6857, Val Acc: 0.5992
+Epoch [11/30], Train Loss: 10.8870, Train Acc: 0.6627, Val Loss: 13.5359, Val Acc: 0.5923
+Epoch [12/30], Train Loss: 10.1879, Train Acc: 0.6867, Val Loss: 12.0218, Val Acc: 0.6346
+Epoch [13/30], Train Loss: 8.9499, Train Acc: 0.7336, Val Loss: 11.6763, Val Acc: 0.6477
+Epoch [14/30], Train Loss: 8.5685, Train Acc: 0.7414, Val Loss: 11.7057, Val Acc: 0.6623
+Epoch [15/30], Train Loss: 8.0716, Train Acc: 0.7632, Val Loss: 11.7589, Val Acc: 0.6677
+Epoch [16/30], Train Loss: 7.1458, Train Acc: 0.7932, Val Loss: 11.5245, Val Acc: 0.6769
+Epoch [17/30], Train Loss: 6.8092, Train Acc: 0.8063, Val Loss: 10.9944, Val Acc: 0.6808
+Epoch [18/30], Train Loss: 6.5417, Train Acc: 0.8152, Val Loss: 11.2957, Val Acc: 0.6723
+Epoch [19/30], Train Loss: 6.0484, Train Acc: 0.8322, Val Loss: 10.9530, Val Acc: 0.6908
+Epoch [20/30], Train Loss: 5.8018, Train Acc: 0.8356, Val Loss: 10.8782, Val Acc: 0.6962
+Epoch [21/30], Train Loss: 5.6520, Train Acc: 0.8390, Val Loss: 10.9574, Val Acc: 0.6954
+Epoch [22/30], Train Loss: 5.3034, Train Acc: 0.8525, Val Loss: 10.9017, Val Acc: 0.6938
+Epoch [23/30], Train Loss: 5.2113, Train Acc: 0.8552, Val Loss: 11.0520, Val Acc: 0.6962
+Epoch [24/30], Train Loss: 5.1651, Train Acc: 0.8563, Val Loss: 10.9044, Val Acc: 0.6962
+Epoch [25/30], Train Loss: 4.9633, Train Acc: 0.8623, Val Loss: 11.0324, Val Acc: 0.6992
+Epoch [26/30], Train Loss: 4.8922, Train Acc: 0.8666, Val Loss: 10.9814, Val Acc: 0.7000
+Epoch [27/30], Train Loss: 4.8437, Train Acc: 0.8652, Val Loss: 10.9138, Val Acc: 0.7015
+Epoch [28/30], Train Loss: 4.8403, Train Acc: 0.8690, Val Loss: 11.0035, Val Acc: 0.7023
+Epoch [29/30], Train Loss: 4.8016, Train Acc: 0.8693, Val Loss: 10.9333, Val Acc: 0.7062
+Epoch [30/30], Train Loss: 4.7137, Train Acc: 0.8717, Val Loss: 11.0464, Val Acc: 0.7054
+Generating and saving predictions...
+Combined predictions length: 13000
+Total training time for 30 epochs: 4060.78 seconds
+
+Running model diagnostics on generated predictions...
+Model Test ACC: 0.7123076923076923
+Start detect_prediction_correlation
+
+ACC: 0.671233 	Rare Case: attribute "color", description "red"
+ACC: 0.678571 	Hard case: attribute "color", description "white"
+ACC: 0.625000 	Rare Case: attribute "color", description "maroon"
+ACC: 0.666667 	Hard case: attribute "color", description "multicolored"
+ACC: 0.666667 	Rare Case: attribute "background", description "sky"
+ACC: 0.658537 	Hard case: attribute "background", description "trees"
+ACC: 0.428571 	Rare Case: attribute "background", description "buildings"
+ACC: 0.660377 	Hard case: attribute "background", description "grass"
+ACC: 0.680000 	Rare Case: attribute "background", description "rocks"
+ACC: 0.500000 	Rare Case: attribute "background", description "bridge"
+ACC: 0.693878 	Rare Case: attribute "texture", description "plastic"
+ACC: 0.650000 	Rare Case: attribute "texture", description "metallic"
+ACC: 0.571429 	Rare Case: attribute "texture", description "leather"
+ACC: 0.685590 	Hard case: attribute "texture", description "glass"
+
+Comparing accuracy with log file: logs/compare/stat_imagenet_resnet_compare.log
+Overall accuracy: 0.718077 -> 0.706154: declined
+
+Attribute-specific accuracy comparison:
+color, green, 0.674419 -> 0.718750: improved
+color, pink, 0.699029 -> 0.786885: improved
+color, tan, 0.700000 -> 0.750000: improved
+color, orange, 0.690909 -> 0.800000: improved
+color, yellow, 0.688889 -> 0.696429: improved
+color, purple, 0.684211 -> 0.777778: improved
+color, black, 0.665289 -> 0.721854: improved
+background, sky, 0.698630 -> 0.666667: declined
+background, inside a house, 0.691684 -> 0.707281: improved
+background, buildings, 0.707317 -> 0.428571: declined
+background, rocks, 0.659091 -> 0.680000: improved
+background, street, 0.662162 -> 0.818182: improved
+texture, metallic, 0.676471 -> 0.650000: declined
+texture, wooden, 0.698393 -> 0.706832: improved
+texture, leather, 0.588235 -> 0.571429: declined
+texture, fabric, 0.658537 -> 0.722222: improved
+
+Compared 16 attribute-specific accuracies.
+Current time: 0327013807

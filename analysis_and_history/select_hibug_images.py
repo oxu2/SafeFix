@@ -4,9 +4,9 @@ import shutil
 import argparse
 import re
 
-def filter_images_by_train_idx(attribute_name, train_idx_path="exampleData/celebA/train_idx.npy", train_idx_limit=80000):
+def filter_images_by_train_idx(attribute_name, train_idx_path="data/celebA/train_idx.npy", train_idx_limit=80000):
     """
-    Moves images from hibug_<attribute_name> to hibug_<attribute_name>_deleted
+    Moves images from safefix_<attribute_name> to safefix_<attribute_name>_deleted
     if their base number does not correspond to an index in the first `train_idx_limit`
     entries of the specified train_idx file.
 
@@ -15,8 +15,8 @@ def filter_images_by_train_idx(attribute_name, train_idx_path="exampleData/celeb
         train_idx_path (str): Path to the train_idx.npy file.
         train_idx_limit (int): The number of initial indices to consider from train_idx.npy.
     """
-    source_dir = f"hibug_{attribute_name}"
-    dest_dir = f"hibug_{attribute_name}_deleted"
+    source_dir = f"safefix_{attribute_name}"
+    dest_dir = f"safefix_{attribute_name}_deleted"
 
     if not os.path.isdir(source_dir):
         print(f"Error: Source directory '{source_dir}' not found.")
@@ -90,10 +90,10 @@ def filter_images_by_train_idx(attribute_name, train_idx_path="exampleData/celeb
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Filter hibug images based on CelebA train_idx.")
+    parser = argparse.ArgumentParser(description="Filter safefix images based on CelebA train_idx.")
     parser.add_argument('--attributes', type=str, required=True,
                         help='Attribute name used in directory naming (e.g., "redhair").')
-    parser.add_argument('--train_idx_path', type=str, default="exampleData/celebA/train_idx.npy",
+    parser.add_argument('--train_idx_path', type=str, default="data/celebA/train_idx.npy",
                         help='Path to the train_idx.npy file.')
     parser.add_argument('--train_idx_limit', type=int, default=80000,
                         help='Limit for indices loaded from train_idx.npy.')

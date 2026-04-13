@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-DST_DIR="/people/cs/o/oxx220000/HiBug/imagenet_subset"
+DST_DIR="/people/cs/o/oxx220000/safefix/imagenet_subset"
 mkdir -p "$DST_DIR"
 
 SRC_DIR="/data/oxx220000/imagenet_train"

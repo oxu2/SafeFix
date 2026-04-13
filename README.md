@@ -1,8 +1,8 @@
-# SafeFix
+# Safefix
 
-This repo is the implementation of SafeFix. SafeFix is a data-centric tool for investigating bugs in visual deep learning, such as rare cases in datasets and model correlations on visual features.
+This repo is the implementation of Safefix. Safefix is a data-centric tool for investigating bugs in visual deep learning, such as rare cases in datasets and model correlations on visual features.
 
-<!-- ![Workflow](save/plot/pictures/SafeFix.png) -->
+<!-- ![Workflow](save/plot/pictures/Safefix.png) -->
 
 ## Features
 
@@ -22,8 +22,8 @@ This repo is the implementation of SafeFix. SafeFix is a data-centric tool for i
 2. Set up the environment.
 
 ```bash
-conda create -n SafeFix python=3.7
-conda activate SafeFix
+conda create -n Safefix python=3.7
+conda activate Safefix
 pip install -r requirements.txt
 ```
 
@@ -92,7 +92,7 @@ python alpred.py --dataset celeba --model resnet --use_llm_selection True --llm_
 | `--gen_only` | str | `false` | Generated-image usage mode: `false`, `train_only`, or `train_val_test` |
 | `--sub_ratio` | float | `1.0` | Subsampling ratio (0-1) for original training data when combining with generated images |
 | `--no_controlnet` | bool | `False` | Ablation: disable ControlNet-based augmentation |
-| `--simple` | bool | `False` | Simple mode: disable ControlNet and attribute editing (original SafeFix behavior) |
+| `--simple` | bool | `False` | Simple mode: disable ControlNet and attribute editing (original Safefix behavior) |
 | `--skip_feasible` | bool | `False` | Skip loading feasible JSON for any attributes |
 
 #### Feasible Images
@@ -322,7 +322,7 @@ python alpred.py --sub_ratio 0.3 --al_strategy hierarchical \
 ### Project Structure
 
 ```
-SafeFix/
+Safefix/
 ├── alpred.py                    # Main training & evaluation pipeline
 ├── train.py                     # Standalone training script
 ├── predict.py                   # Prediction scripts

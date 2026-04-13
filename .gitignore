@@ -1,37 +1,49 @@
 *.pyc
-*.pth
+__pycache__/
+.pytest_cache/
 .DS_Store
+
+# Weights
+*.pth
+*.pt
+weights/
+
+# Data
+data/
+*.tar.gz
+*.zip
 img_align_celeba
 pictures
-exampleData
-downloaded_data
-/hibug_*
-# Ignore all files and directories under save/...
-/save/*
-# ...but keep top-level JSON files in save/
-!/save/*.json
-!/save/*.npy
-!/save/plot/*.png
 yellowhair*
 redhair*
 redhair_sademotion*
 redhair_brownskin_sademotion
-.vscode
 pinkcolor_fabrictexture_instruct_pix2pix
-*.tar.gz
-
-imagenet_subset
-.vscode
-
 imagenet*
+!data/celebA/*.txt
+!data/celebA/non_yellowhair_sademotion_indices.txt
 
-# except .txt in exampleData/CelebA
-!exampleData/celebA/*.txt
+# Outputs & Results
+outputs/
+log_pose/
+!outputs/save/*.json
+!outputs/save/*.npy
+!outputs/save/plot/*.png
+/safefix_*
 
-!exampleData/celebA/non_yellowhair_sademotion_indices.txt
-logs/control_yellowhair_brownskin.log
+# Logs
+logs/
+
+# IDE & AI Tools
+.vscode
 .claude
 .trellis
 .cursor
-tasks
-AGENTS.md
+.opencode
+
+# Other
+tasks/
+runs/*
+*.npy
+
+TMLR_26_SafeFix

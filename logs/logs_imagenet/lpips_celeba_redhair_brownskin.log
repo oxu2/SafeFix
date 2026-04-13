@@ -1,0 +1,9 @@
+LPIPS Diversity - safefix: 0.7166, Safefix: 0.5663
+CLIP Consistency - safefix: 0.2087, Safefix: 0.2021
+FID baseline computed on real images: mean dim 2048
+FID (Real->safefix): 0.0819
+FID (Real->Safefix): 0.0151
+CLIP stats dims: mean 512, cov (512, 512)
+KL Divergence (Real->safefix): 8059141.0423
+KL Divergence (Real->Safefix): 10233410.6037
+KL Divergence: 8042274.8895

@@ -5,7 +5,7 @@ os.environ['CUDA_VISIBLE_DEVICES'] = '1'
 
 # Set up the environment
 import sys
-sys.path.append('/people/cs/o/oxx220000/HiBug')
+sys.path.append('/people/cs/o/oxx220000/safefix')
 
 from filter import main
 
@@ -15,7 +15,7 @@ if __name__ == "__main__":
     
     # Run with redhair_brownskin_sademotion - should detect all 3 attributes
     results, feature_mapping = main(
-        directory_path="exampleData/redhair_brownskin_sademotion",
+        directory_path="data/redhair_brownskin_sademotion",
         verbose=True,
         attributes="redhair_brownskin_sademotion", 
         lvlm="llava-7b",

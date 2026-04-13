@@ -19,7 +19,7 @@ model = LlavaForConditionalGeneration.from_pretrained(
 processor = LlavaProcessor.from_pretrained(model_path, use_fast=True)
 
 # Test with a sample image
-test_image = "exampleData/imagenet_pinkcolor_fabrictexture/backpack/n02769748_1032.JPEG"
+test_image = "data/imagenet_pinkcolor_fabrictexture/backpack/n02769748_1032.JPEG"
 print(f"Testing with image: {test_image}")
 
 if not os.path.exists(test_image):
@@ -77,7 +77,7 @@ except Exception as e:
     traceback.print_exc()
 
 # Test with a sample image
-test_image = "exampleData/imagenet_pinkcolor_fabrictexture/backpack/n02769748_1032.JPEG"
+test_image = "data/imagenet_pinkcolor_fabrictexture/backpack/n02769748_1032.JPEG"
 print(f"Testing with image: {test_image}")
 
 if not os.path.exists(test_image):

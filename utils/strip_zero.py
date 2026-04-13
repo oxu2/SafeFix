@@ -50,4 +50,4 @@ if __name__ == "__main__":
         sys.exit(1)
     main(sys.argv[1])
     # To rename image files, uncomment and set the correct directory:
-    # rename_images_in_dir("/people/cs/o/oxx220000/HiBug/exampleData/redhair_brownskin")
+    # rename_images_in_dir("/people/cs/o/oxx220000/safefix/data/redhair_brownskin")

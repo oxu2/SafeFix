@@ -1,0 +1,6 @@
+image_id,occlusion_level,truncation,person_scale,crowd_level,person_overlap,pose_type,motion_type,scene_type,background_complexity,object_interaction
+139,none,full_body,small,single,none,standing,static,indoor,clean,none
+785,none,full_body,small,single,none,standing,static,indoor,clean,none
+872,mild,partial_body,large,few,mild,jumping,running,outdoor,cluttered,sports_equipment
+885,none,full_body,small,single,none,standing,static,indoor,clean,none
+1000,none,full_body,small,single,none,standing,static,indoor,clean,none

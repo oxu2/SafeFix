@@ -21,4 +21,4 @@ def inspect_attributes(json_path):
         print()
 
 if __name__ == "__main__":
-    inspect_attributes("exampleData/celebA/attribute.json")
+    inspect_attributes("data/celebA/attribute.json")

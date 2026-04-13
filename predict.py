@@ -26,7 +26,7 @@ from transformers import CLIPConfig
 import random
 import re  # Added for log parsing
 import copy  # Added for saving best model state
-from utils.stat import ModelDiagnose  # Import ModelDiagnose from local stat.py
+from utils.stat import ModelDiagnose  # Import ModelDiagnose from local utils/stat.py
 from itertools import combinations
 from processData.report import ReportGenerator
 from torchvision.datasets import ImageFolder
@@ -146,8 +146,8 @@ parser.add_argument('--num_added_img', type=int, default=1000,
 parser.add_argument('--augmentation_baseline', type=str2bool, default=False,
                     help='Use strong data augmentation baseline without adding generated images (default: False)')
 # Add argument for attribute file path
-parser.add_argument('--attribute_file', type=str, default="exampleData/celebA/attribute.json",
-                    help='Path to the attribute JSON file (default: exampleData/celebA/attribute.json)')
+parser.add_argument('--attribute_file', type=str, default="data/celebA/attribute.json",
+                    help='Path to the attribute JSON file (default: data/celebA/attribute.json)')
 parser.add_argument('--gpu', type=int, default=0,
                     help='Index of the CUDA GPU to use (default: 0)')
 parser.add_argument('--save_report', type=str2bool, default=False,
@@ -169,7 +169,7 @@ parser.add_argument('--skip_feasible', type=str2bool, default=False,
                     help='Skip loading feasible JSON for any attributes (default: False)')
 parser.add_argument(
     '--simple', type=str2bool, default=False,
-    help='Simple mode: disable ControlNet and attribute editing (original HiBug behavior) (default: True).'
+    help='Simple mode: disable ControlNet and attribute editing (original safefix behavior) (default: True).'
 )
 parser.add_argument(
     '--dataset',
@@ -419,13 +419,13 @@ if args.dataset == 'imagenet':
         args.skip_feasible = True
         default_imagenet_gen_dir = f"exampleData/{attributes}_instruct_pix2pix"
     else:
-        default_imagenet_gen_dir = f"exampleData/imagenet_{attributes}"
+        default_imagenet_gen_dir = f"data/imagenet_{attributes}"
     if os.path.isdir(default_imagenet_gen_dir):
         args.gen_image_dir = default_imagenet_gen_dir
     elif not os.path.isdir(args.gen_image_dir):
         args.gen_image_dir = default_imagenet_gen_dir
     # Load ImageNet subset from folders
-    data_dir = Path("exampleData/imagenet_subset")
+    data_dir = Path("data/imagenet_subset")
     feature_extractor = CLIPImageProcessor.from_pretrained("openai/clip-vit-base-patch32")
     if args.model == 'clip':
         if args.augmentation_baseline:
@@ -504,8 +504,8 @@ if args.dataset == 'imagenet':
         valid_loader = make_loader(val_ds, shuffle=False)
         print(f"Using only generated images for ImageNet: train={len(train_ds)}, valid={len(val_ds)}")
     elif args.simple:
-        # Simple mode: augment from exampleData/imagenet_simple
-        simple_root = Path("exampleData/imagenet_simple")
+        # Simple mode: augment from data/imagenet_simple
+        simple_root = Path("data/imagenet_simple")
         simple_paths, simple_labels = [], []
         for cls_name, cls_idx in full_ds.class_to_idx.items():
             cls_dir = simple_root / cls_name
@@ -546,7 +546,7 @@ if args.dataset == 'imagenet':
                 f"/data/oxx220000/{attributes}_instruct_pix2pix"
             ]
         else:
-            default_gen_dir = f"exampleData/imagenet_{attributes}"
+            default_gen_dir = f"data/imagenet_{attributes}"
             fallback_dirs = [
                 f"/home/jovyan/ouser/imagenet_{attributes}",
                 f"/data/oxx220000/imagenet_{attributes}"
@@ -674,7 +674,7 @@ if args.dataset == 'imagenet':
     unlabeled_predictions = np.array([])
     # Jump to model setup
 elif args.dataset == 'celeba':
-    with open("exampleData/celebA/list_attr_celeba.txt") as f:
+    with open("data/celebA/list_attr_celeba.txt") as f:
         lines = [line.strip('\n').split(' ')[0] for line in f.readlines()]
         
 
@@ -684,7 +684,7 @@ elif args.dataset == 'celeba':
         input_dir = '/data/oxx220000/img_align_celeba/'    
     all_datas = [input_dir + line for line in lines][1:]
 
-    train_idx = np.load("exampleData/celebA/train_idx.npy")[:80000]
+    train_idx = np.load("data/celebA/train_idx.npy")[:80000]
 
     split_cache_dir = "save"
     val_idx_path = os.path.join(split_cache_dir, "val_idx_celeba.npy")
@@ -731,7 +731,7 @@ elif args.dataset == 'celeba':
             }, meta_file)
 
     idxs = np.concatenate([train_idx, valid_idx, test_idx, unlabel_idx], axis=0)
-    labels = np.load("exampleData/celebA/labels.npy")[idxs]
+    labels = np.load("data/celebA/labels.npy")[idxs]
 
     all_datas = [all_datas[i] for i in idxs]
     split = (
@@ -802,15 +802,15 @@ elif args.dataset == 'celeba':
     selected_filenames = []
 
     #
-    # Prepare sample keys for ablation mode (was hibug mode)
+    # Prepare sample keys for ablation mode (was safefix mode)
     if args.augmentation_baseline:
         if verbose:
             print("Augmentation baseline enabled: skipping generated image loading.")
     else:
         if args.no_controlnet:
             if args.simple:
-                # Simple mode: read all PNGs from hibug_simple folder
-                args.gen_image_dir = "hibug_simple"
+                # Simple mode: read all PNGs from safefix_simple folder
+                args.gen_image_dir = "safefix_simple"
                 files = os.listdir(args.gen_image_dir)
                 sample_keys = [os.path.splitext(f)[0] for f in files if f.lower().endswith('.png')]
                 print(f"Simple ablation (no_controlnet) mode: Found {len(sample_keys)} images in {args.gen_image_dir}")
@@ -918,7 +918,7 @@ elif args.dataset == 'celeba':
         print("Finish sampling for generated images")
 
     # Load unlabeled predictions
-    unlabeled_predictions = np.load("exampleData/celebA/predictions.npy")[idxs]
+    unlabeled_predictions = np.load("data/celebA/predictions.npy")[idxs]
     unlabeled_predictions = np.array([unlabeled_predictions[i] for i in range(len(all_datas)) if split[i] == UNLABELED])
     if verbose:
         print(f"Unlabeled predictions length: {len(unlabeled_predictions)}")
@@ -1450,7 +1450,7 @@ if args.dataset == 'imagenet':
     # Prepare labels and split for diagnostics
     # Derive ground-truth labels from the ImageFolder ordering
     from pathlib import Path
-    data_dir = Path("exampleData/imagenet_subset")
+    data_dir = Path("data/imagenet_subset")
     full_ds = ImageFolder(data_dir)
     labels_all = np.array(full_ds.targets)
     # Build labels for train and validation splits

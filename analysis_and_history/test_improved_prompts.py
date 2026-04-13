@@ -19,7 +19,7 @@ model = LlavaForConditionalGeneration.from_pretrained(
 processor = LlavaProcessor.from_pretrained(model_path, use_fast=True)
 
 # Test image
-test_image = "exampleData/imagenet_pinkcolor_fabrictexture/backpack/n02769748_1032.JPEG"
+test_image = "data/imagenet_pinkcolor_fabrictexture/backpack/n02769748_1032.JPEG"
 image = Image.open(test_image)
 print(f"Testing with image: {test_image}")
 

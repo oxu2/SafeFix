@@ -46,7 +46,7 @@ def main():
     attribute_file = "" # Initialize attribute file path
 
     if dataset == 'celeba':
-        with open("exampleData/celebA/list_attr_celeba.txt") as f:
+        with open("data/celebA/list_attr_celeba.txt") as f:
             lines = [line.strip('\n').split(' ')[0] for line in f.readlines()]
 
         if os.path.exists('/home/jovyan/ouser/dataset/img_align_celeba/'):
@@ -55,7 +55,7 @@ def main():
             input_dir = '/data/oxx220000/img_align_celeba/'
 
         all_datas = [input_dir + line for line in lines][1:]
-        train_idx = np.load("exampleData/celebA/train_idx.npy")[:80000]
+        train_idx = np.load("data/celebA/train_idx.npy")[:80000]
 
         split_cache_dir = "save"
         val_idx_path = os.path.join(split_cache_dir, "val_idx_celeba.npy")
@@ -102,8 +102,8 @@ def main():
                 }, meta_file)
 
         idxs = np.concatenate([train_idx, valid_idx, test_idx, unlabel_idx], axis=0)
-        labels = np.load("exampleData/celebA/labels.npy")[idxs]
-        predictions_path = args.predictions if os.path.isabs(args.predictions) else os.path.join("./save", args.predictions)
+        labels = np.load("data/celebA/labels.npy")[idxs]
+        predictions_path = args.predictions if os.path.isabs(args.predictions) else os.path.join("./", args.predictions)
         predictions = np.load(predictions_path)
         if len(predictions) != len(labels):
             if len(predictions) > len(labels):
@@ -120,34 +120,19 @@ def main():
             [TEST for _ in test_idx] +
             [UNLABELED for _ in unlabel_idx]
         )
-        attribute_file = "exampleData/celebA/attribute.json"
+        attribute_file = "data/celebA/attribute.json"
     elif dataset == 'imagenet':
         print("Loading ImageNet data...")
         # Load pre-split ImageNet indices
         train_idx = np.load('save/train_idx_imagenet.npy')
         valid_idx = np.load('save/val_idx_imagenet.npy')
-        print(f"Loaded train/val splits: {len(train_idx)} train, {len(valid_idx)} val")
-        test_idx_path = 'save/test_idx_imagenet.npy'
-        if os.path.exists(test_idx_path):
-            test_idx = np.load(test_idx_path)
-            print(f"Loaded test split: {len(test_idx)} samples")
-        else:
-            test_idx = np.array([], dtype=int)
-            print("No test split file found; proceeding without test set")
         # ImageNet doesn't have a predefined unlabeled set in this context
         unlabel_idx = np.array([], dtype=int)
 
         # Load provided labels for ImageNet subset
         all_labels_full = np.load('save/labels10.npy')
         # Concatenate labels for train and validation sets based on provided labels
-        label_segments = [all_labels_full[train_idx], all_labels_full[valid_idx]]
-        expected_total_no_test = sum(len(seg) for seg in label_segments)
-        include_test = False
-        if test_idx.size:
-            expected_total_with_test = expected_total_no_test + len(test_idx)
-        else:
-            expected_total_with_test = expected_total_no_test
-        labels = None  # placeholder before aligning with predictions
+        labels = np.concatenate([all_labels_full[train_idx], all_labels_full[valid_idx]])
         # Build mapping from numeric labels to folder names
         import os as _os  # alias to avoid shadowing
         folder_path = 'imagenet_subset'
@@ -161,25 +146,13 @@ def main():
             # Predictions should correspond to the concatenated train+valid indices order
             predictions = np.load(os.path.join("./save", args.predictions))
             # Ensure predictions match the number of labels
-            pred_count = len(predictions)
-            print(f"Predictions count: {pred_count}")
-            if test_idx.size and pred_count == expected_total_with_test:
-                include_test = True
-                label_segments.append(all_labels_full[test_idx])
-                labels = np.concatenate(label_segments)
-            elif pred_count == expected_total_no_test:
-                include_test = False
-                labels = np.concatenate(label_segments)
-                if test_idx.size:
-                    print("Warning: Test indices present but predictions do not include them; proceeding with train+val only.")
-            else:
-                labels = np.concatenate(label_segments)
-                print(f"Warning: Number of predictions ({pred_count}) does not match expected samples ({expected_total_no_test} without test, {expected_total_with_test} with test).")
-                # Attempt to slice if predictions seem to cover more data (e.g., including unlabeled)
-                if pred_count > len(labels):
+            if len(predictions) != len(labels):
+                 print(f"Warning: Number of predictions ({len(predictions)}) does not match number of labels ({len(labels)}). Ensure the prediction file corresponds to the train+validation set.")
+                 # Attempt to slice if predictions seem to cover more data (e.g., including unlabeled)
+                 if len(predictions) > len(labels):
                      print(f"Attempting to use the first {len(labels)} predictions.")
                      predictions = predictions[:len(labels)]
-                else:
+                 else:
                      print("Cannot proceed with mismatched prediction/label counts.")
                      exit()
 
@@ -194,13 +167,7 @@ def main():
 
         # Create split list corresponding to the order of 'labels' and 'predictions'
         split = [TRAIN] * len(train_idx) + [VALID] * len(valid_idx)
-        if include_test and test_idx.size:
-            split += [TEST] * len(test_idx)
-        split_summary = f"Created split list: {len(split)} entries ({split.count(TRAIN)} TRAIN, {split.count(VALID)} VALID"
-        if test_idx.size:
-            split_summary += f", {split.count(TEST)} TEST"
-        split_summary += ")"
-        print(split_summary)
+        print(f"Created split list: {len(split)} entries ({split.count(TRAIN)} TRAIN, {split.count(VALID)} VALID)")
 
         # Define attribute file for ImageNet
         attribute_file = "save/attribute10.json"
@@ -321,21 +288,14 @@ class ModelDiagnose():
         self.top_error = top_error
 
     def init_data_static(self):
-        if self.data_length != len(self.split):
-            self.print_output(
-                f"Warning: data length ({self.data_length}) does not match split length ({len(self.split)})."
-            )
         # Get train/valid indexs
         self.train_idx = []
         self.valid_idx = []
-        self.test_idx = []
         for i in range(self.data_length):
             if self.split[i] == TRAIN:
                 self.train_idx.append(i)
             elif self.split[i] == VALID:
                 self.valid_idx.append(i)
-            elif self.split[i] == TEST:
-                self.test_idx.append(i)
         self.train_confusion_matrix = np.zeros([len(self.label_number),len(self.label_number)])
         self.valid_confusion_matrix = np.zeros([len(self.label_number),len(self.label_number)])
         self.train_labels_distribution = np.zeros(len(self.label_number))
@@ -361,9 +321,7 @@ class ModelDiagnose():
             if label != prediction:
                 self.error_binary_list[i] = 1
 
-        if self.test_idx:
-            test_correct = 1 - np.sum(self.error_binary_list[self.test_idx]) / len(self.test_idx)
-            self.print_output("Model Test ACC:", test_correct)
+        self.print_output("Model Validation ACC:",1-np.sum(self.error_binary_list[self.valid_idx])/len(self.valid_idx))
 
         # Attribute distribution
         for attribute_name in self.attributes.keys():
@@ -934,7 +892,7 @@ class ModelDiagnose():
         return final_selection[:budget] # Ensure exactly budget size is returned
 
 
-    def date_generation(self, combine_num=5, attribute_num=200, address="exampleData/Imagenet10/generation.json", label_specific=True):
+    def date_generation(self, combine_num=5, attribute_num=200, address="data/Imagenet10/generation.json", label_specific=True):
         # Ensure report has suggestions before proceeding
         if not hasattr(self.report, 'suggestion_for_combinations_by_rate'):
             self.print_output("Report suggestions not generated. Run combination analysis first.")

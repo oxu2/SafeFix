@@ -96,13 +96,13 @@ Epoch 8/10: Train Acc: 98.16%, Val Acc: 78.00%
 Epoch 9/10: Train Acc: 96.42%, Val Acc: 87.58%
 Epoch 10/10: Train Acc: 98.68%, Val Acc: 81.88%
 Traceback (most recent call last):
-  File "/people/cs/o/oxx220000/HiBug/active_learning_coreset.py", line 696, in <module>
+  File "/people/cs/o/oxx220000/safefix/active_learning_coreset.py", line 696, in <module>
     main()
-  File "/people/cs/o/oxx220000/HiBug/active_learning_coreset.py", line 670, in main
+  File "/people/cs/o/oxx220000/safefix/active_learning_coreset.py", line 670, in main
     history = trainer.active_learning_loop(
-  File "/people/cs/o/oxx220000/HiBug/active_learning_coreset.py", line 455, in active_learning_loop
+  File "/people/cs/o/oxx220000/safefix/active_learning_coreset.py", line 455, in active_learning_loop
     train_acc, val_acc = self.train_model(train_loader, val_loader)
-  File "/people/cs/o/oxx220000/HiBug/active_learning_coreset.py", line 356, in train_model
+  File "/people/cs/o/oxx220000/safefix/active_learning_coreset.py", line 356, in train_model
     self.model.load_state_dict(torch.load('best_model.pth', map_location=self.device))
   File "/people/cs/o/oxx220000/.conda/envs/ad/lib/python3.9/site-packages/torch/nn/modules/module.py", line 1671, in load_state_dict
     raise RuntimeError('Error(s) in loading state_dict for {}:\n\t{}'.format(

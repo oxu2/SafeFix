@@ -1,0 +1,168 @@
+{
+    "occlusion_level": {
+        "data": [
+            "none"
+        ],
+        "word": [
+            "none",
+            "mild",
+            "heavy"
+        ],
+        "prompt": [
+            "a photo of a person with #1 occlusion"
+        ],
+        "type": "description",
+        "question": "How much is the main person occluded by objects, other people, or self-occlusion?",
+        "uncertain_idx": []
+    },
+    "truncation": {
+        "data": [
+            "partial_body"
+        ],
+        "word": [
+            "full_body",
+            "partial_body",
+            "heavily_truncated"
+        ],
+        "prompt": [
+            "a photo of a #1 person in the frame"
+        ],
+        "type": "description",
+        "question": "How much of the main person is cut off by the image boundary?",
+        "uncertain_idx": []
+    },
+    "person_scale": {
+        "data": [
+            "medium"
+        ],
+        "word": [
+            "small",
+            "medium",
+            "large"
+        ],
+        "prompt": [
+            "a photo of a #1 person in the frame"
+        ],
+        "type": "description",
+        "question": "What is the scale of the main person in the image?",
+        "uncertain_idx": []
+    },
+    "crowd_level": {
+        "data": [
+            "few"
+        ],
+        "word": [
+            "single",
+            "few",
+            "crowded"
+        ],
+        "prompt": [
+            "a #1 person scene"
+        ],
+        "type": "description",
+        "question": "How crowded is the scene around the main person?",
+        "uncertain_idx": []
+    },
+    "person_overlap": {
+        "data": [
+            "none"
+        ],
+        "word": [
+            "none",
+            "mild",
+            "severe"
+        ],
+        "prompt": [
+            "a photo with #1 overlap between people"
+        ],
+        "type": "description",
+        "question": "How much does the main person overlap with other people?",
+        "uncertain_idx": []
+    },
+    "pose_type": {
+        "data": [
+            "standing"
+        ],
+        "word": [
+            "standing",
+            "sitting",
+            "crouching",
+            "lying",
+            "kneeling",
+            "jumping"
+        ],
+        "prompt": [
+            "a person who is #1"
+        ],
+        "type": "description",
+        "question": "What is the main body pose of the main person?",
+        "uncertain_idx": []
+    },
+    "motion_type": {
+        "data": [
+            "static"
+        ],
+        "word": [
+            "static",
+            "walking",
+            "running",
+            "sports",
+            "riding"
+        ],
+        "prompt": [
+            "a person doing #1"
+        ],
+        "type": "description",
+        "question": "What best describes the motion or activity of the main person?",
+        "uncertain_idx": []
+    },
+    "scene_type": {
+        "data": [
+            "indoor"
+        ],
+        "word": [
+            "indoor",
+            "outdoor"
+        ],
+        "prompt": [
+            "a photo taken #1"
+        ],
+        "type": "description",
+        "question": "Is the main person in an indoor or outdoor scene?",
+        "uncertain_idx": []
+    },
+    "background_complexity": {
+        "data": [
+            "medium"
+        ],
+        "word": [
+            "clean",
+            "medium",
+            "cluttered"
+        ],
+        "prompt": [
+            "a scene with a #1 background"
+        ],
+        "type": "description",
+        "question": "How visually busy is the background around the main person?",
+        "uncertain_idx": []
+    },
+    "object_interaction": {
+        "data": [
+            "holding"
+        ],
+        "word": [
+            "none",
+            "holding",
+            "carrying",
+            "riding",
+            "sports_equipment"
+        ],
+        "prompt": [
+            "a person #1 an object"
+        ],
+        "type": "description",
+        "question": "How is the main person interacting with objects?",
+        "uncertain_idx": []
+    }
+}

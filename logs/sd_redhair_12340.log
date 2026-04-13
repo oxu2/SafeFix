@@ -35521,13 +35521,13 @@ Saved image: hibug_redhair_04290148/redhair_013413.png
 Loading pipeline components...:   0%|          | 0/7 [00:00<?, ?it/s]Loading pipeline components...:  57%|█████▋    | 4/7 [00:00<00:00, 14.80it/s]Loading pipeline components...:  86%|████████▌ | 6/7 [00:00<00:00,  8.90it/s]Loading pipeline components...: 100%|██████████| 7/7 [00:00<00:00, 11.26it/s]
   0%|          | 0/50 [00:00<?, ?it/s]  2%|▏         | 1/50 [00:00<00:06,  7.54it/s]  6%|▌         | 3/50 [00:00<00:03, 11.80it/s] 10%|█         | 5/50 [00:00<00:03, 13.14it/s] 14%|█▍        | 7/50 [00:00<00:03, 13.75it/s] 18%|█▊        | 9/50 [00:00<00:02, 14.08it/s] 22%|██▏       | 11/50 [00:00<00:02, 14.29it/s] 26%|██▌       | 13/50 [00:00<00:02, 14.36it/s] 30%|███       | 15/50 [00:01<00:02, 14.46it/s] 34%|███▍      | 17/50 [00:01<00:02, 14.52it/s] 38%|███▊      | 19/50 [00:01<00:02, 14.56it/s] 42%|████▏     | 21/50 [00:01<00:01, 14.60it/s] 46%|████▌     | 23/50 [00:01<00:01, 14.63it/s] 50%|█████     | 25/50 [00:01<00:01, 14.64it/s] 54%|█████▍    | 27/50 [00:01<00:01, 14.63it/s] 58%|█████▊    | 29/50 [00:02<00:01, 14.62it/s] 62%|██████▏   | 31/50 [00:02<00:01, 14.63it/s] 66%|██████▌   | 33/50 [00:02<00:01, 14.64it/s] 70%|███████   | 35/50 [00:02<00:01, 14.65it/s] 74%|███████▍  | 37/50 [00:02<00:00, 14.66it/s] 78%|███████▊  | 39/50 [00:02<00:00, 14.65it/s] 82%|████████▏ | 41/50 [00:02<00:00, 14.64it/s] 86%|████████▌ | 43/50 [00:02<00:00, 14.62it/s] 90%|█████████ | 45/50 [00:03<00:00, 14.63it/s] 94%|█████████▍| 47/50 [00:03<00:00, 14.62it/s] 98%|█████████▊| 49/50 [00:03<00:00, 14.63it/s]100%|██████████| 50/50 [00:03<00:00, 14.38it/s]
 Traceback (most recent call last):
-  File "/people/cs/o/oxx220000/HiBug/sd15.py", line 127, in <module>
+  File "/people/cs/o/oxx220000/safefix/sd15.py", line 127, in <module>
     img.save(filename)
-  File "/people/cs/o/oxx220000/HiBug/sd15.py", line 116, in generate_images
+  File "/people/cs/o/oxx220000/safefix/sd15.py", line 116, in generate_images
     
   File "/people/cs/o/oxx220000/.conda/envs/ad/lib/python3.9/site-packages/PIL/Image.py", line 2600, in save
     fp = builtins.open(filename, "w+b")
-FileNotFoundError: [Errno 2] No such file or directory: '/people/cs/o/oxx220000/HiBug/hibug_redhair_04290148/redhair_013415.png'
+FileNotFoundError: [Errno 2] No such file or directory: '/people/cs/o/oxx220000/safefix/hibug_redhair_04290148/redhair_013415.png'
 Start Time: 2025-04-29 01:48:00
 End Time:   2025-04-29 23:46:29
 Duration:   21:58:29

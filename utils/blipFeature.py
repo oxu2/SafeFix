@@ -1,3 +1,5 @@
+import os
+
 from lavis.models import load_model_and_preprocess
 import torch
 from torch.utils.data import Dataset
@@ -6,7 +8,9 @@ from PIL import Image
 import numpy as np
 from torch.utils.data import DataLoader
 import tqdm
+
 device = "cuda" if torch.cuda.is_available() else "cpu"
+BLIP_NUM_WORKERS = int(os.environ.get("BLIP_NUM_WORKERS", "0"))
 
 class blipImageDataset(Dataset):
     def __init__(self, data, transform=None):
@@ -60,7 +64,7 @@ class blipImageDataset_with_label(Dataset):
 def get_image_features(imgs):
     model, vis_processors, txt_processors = load_model_and_preprocess(name="blip_feature_extractor", model_type="base", is_eval=True, device=device)
     data_loader = DataLoader(blipImageDataset(imgs,vis_processors["eval"]), pin_memory=True, 
-                shuffle=False, batch_size=50, num_workers=2, drop_last=False)
+                shuffle=False, batch_size=50, num_workers=BLIP_NUM_WORKERS, drop_last=False)
     
     all_image_features = []
 
@@ -85,7 +89,7 @@ def get_captions(imgs):
     device = "cuda" if torch.cuda.is_available() else "cpu"
     model, vis_processors, _ = load_model_and_preprocess(name="blip_caption", model_type="base_coco", is_eval=True, device=device)
     data_loader = DataLoader(blipImageDataset(imgs,vis_processors["eval"]), pin_memory=True, 
-                shuffle=False, batch_size=100, num_workers=2, drop_last=False)
+                shuffle=False, batch_size=100, num_workers=BLIP_NUM_WORKERS, drop_last=False)
     print('Get captions..')
 
     with torch.no_grad():
@@ -121,7 +125,7 @@ def get_img_text_similarity(imgs, texts):
     model, vis_processors, txt_processors = load_model_and_preprocess(name="blip_feature_extractor", model_type="base", is_eval=True, device=device)
     
     data_loader = DataLoader(blipImageDataset(imgs,vis_processors["eval"]), pin_memory=True, 
-                shuffle=False, batch_size=128, num_workers=2, drop_last=False)
+                shuffle=False, batch_size=128, num_workers=BLIP_NUM_WORKERS, drop_last=False)
     
     text_input = [txt_processors["eval"](text) for text in texts]
     all_logits_per_image = []
@@ -141,7 +145,7 @@ def get_img_text_similarity_with_features(imgs, text):
 def question_answering(imgs, question):
     model, vis_processors, txt_processors = load_model_and_preprocess(name="blip_vqa", model_type="vqav2", is_eval=True, device=device)
     data_loader = DataLoader(blipImageDataset(imgs,vis_processors["eval"]), pin_memory=True, 
-                shuffle=False, batch_size=128, num_workers=2, drop_last=False)
+                shuffle=False, batch_size=128, num_workers=BLIP_NUM_WORKERS, drop_last=False)
     question = txt_processors["eval"](question)
     all_answer_per_image = []
     with torch.no_grad():
@@ -155,7 +159,7 @@ def question_answering(imgs, question):
 def question_answering_list(imgs, question):
     model, vis_processors, txt_processors = load_model_and_preprocess(name="blip_vqa", model_type="vqav2", is_eval=True, device=device)
     data_loader = DataLoader(blipImageDataset_with_label(imgs,question,vis_processors["eval"],txt_processors["eval"]), pin_memory=True, 
-                shuffle=False, batch_size=128, num_workers=2, drop_last=False)
+                shuffle=False, batch_size=128, num_workers=BLIP_NUM_WORKERS, drop_last=False)
     all_answer_per_image = []
     with torch.no_grad():
         for imgs, question in tqdm.tqdm(data_loader):
