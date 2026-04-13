@@ -81,8 +81,8 @@ parser.add_argument('--num_epochs', type=int, default=20,
 parser.add_argument('--num_added_img', type=int, default=1000,
                     help='Number of generated images to add (default: 4000)')
 # Add argument for attribute file path
-parser.add_argument('--attribute_file', type=str, default="exampleData/celebA/attribute.json",
-                    help='Path to the attribute JSON file (default: exampleData/celebA/attribute.json)')
+parser.add_argument('--attribute_file', type=str, default="data/celebA/attribute.json",
+                    help='Path to the attribute JSON file (default: data/celebA/attribute.json)')
 parser.add_argument('--gpu', type=int, default=0,
                     help='Index of the CUDA GPU to use (default: 0)')
 parser.add_argument('--save_report', type=str2bool, default=False,
@@ -104,7 +104,7 @@ parser.add_argument('--skip_feasible', type=str2bool, default=False,
                     help='Skip loading feasible JSON for any attributes (default: False)')
 parser.add_argument(
     '--simple', type=str2bool, default=False,
-    help='Simple mode: disable ControlNet and attribute editing (original HiBug behavior) (default: True).'
+    help='Simple mode: disable ControlNet and attribute editing (original safefix behavior) (default: True).'
 )
 parser.add_argument(
     '--dataset',
@@ -299,17 +299,17 @@ if args.dataset == 'imagenet':
     unlabeled_predictions = np.array([])
     # Jump to model setup
 else:
-    with open("exampleData/celebA/list_attr_celeba.txt") as f:
+    with open("data/celebA/list_attr_celeba.txt") as f:
         lines = [line.strip('\n').split(' ')[0] for line in f.readlines()]
         
     all_datas = ['/data/oxx220000/img_align_celeba/' + line for line in lines][1:]
 
-    train_idx = np.load("exampleData/celebA/train_idx.npy")[:80000]
+    train_idx = np.load("data/celebA/train_idx.npy")[:80000]
     valid_idx = np.arange(len(all_datas))[-100000:-80000]
     unlabel_idx = np.arange(len(all_datas))[-80000:]
 
     idxs = np.concatenate([train_idx, valid_idx, unlabel_idx], axis=0)
-    labels = np.load("exampleData/celebA/labels.npy")[idxs]
+    labels = np.load("data/celebA/labels.npy")[idxs]
 
     all_datas = [all_datas[i] for i in idxs]
     split = (
@@ -368,11 +368,11 @@ else:
     modified_image_labels = []
 
     #
-    # Prepare sample keys for ablation mode (was hibug mode)
+    # Prepare sample keys for ablation mode (was safefix mode)
     if args.no_controlnet:
         if args.simple:
-            # Simple mode: read all PNGs from hibug_simple folder
-            args.gen_image_dir = "hibug_simple"
+            # Simple mode: read all PNGs from safefix_simple folder
+            args.gen_image_dir = "safefix_simple"
             files = os.listdir(args.gen_image_dir)
             sample_keys = [os.path.splitext(f)[0] for f in files if f.lower().endswith('.png')]
             print(f"Simple ablation (no_controlnet) mode: Found {len(sample_keys)} images in {args.gen_image_dir}")
@@ -486,7 +486,7 @@ else:
               f"now {len(train_labels) + added_count}")
             
     # Load unlabeled predictions - moved outside conditional block
-    unlabeled_predictions = np.load("exampleData/celebA/predictions.npy")[idxs]
+    unlabeled_predictions = np.load("data/celebA/predictions.npy")[idxs]
     unlabeled_predictions = np.array([unlabeled_predictions[i] for i in range(len(all_datas)) if split[i] == UNLABELED])
     if verbose:
         print(f"Unlabeled predictions length: {len(unlabeled_predictions)}")

@@ -26,7 +26,7 @@ The improved validation accuracy (from 90.02% to 91.47%) for red-haired images c
 	•	Does this Still Qualify as “Rare-Case Debugging”?
 Yes. The key conceptual point is:
 	•	“Rare case” (in practical debugging) typically refers to subsets that are rare in real-world or evaluation scenarios and have poor accuracy.
-	•	The aim is precisely to increase the training representation of such subsets. In other words, the fact that red hair is now well-represented in your training set is not a bug—it’s a feature. This approach is standard and recommended (as shown in the HiBug paper and related literature): deliberately oversampling rare subsets to improve generalization.
+	•	The aim is precisely to increase the training representation of such subsets. In other words, the fact that red hair is now well-represented in your training set is not a bug—it’s a feature. This approach is standard and recommended (as shown in the safefix paper and related literature): deliberately oversampling rare subsets to improve generalization.
 	•	Why Validation Set Rare Proportion Remains Important:
 Your unchanged validation set remains a useful indicator for generalization to rare cases. Because the validation set’s composition mirrors the original real-world distribution (where red hair remains rare), it continues to serve as a good proxy for real-world performance.
 

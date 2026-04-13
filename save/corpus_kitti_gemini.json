@@ -1,0 +1,46 @@
+{
+    "Corpus": {
+        "time_of_day": {
+            "data": [],
+            "word": ["morning", "afternoon", "evening", "night", "unknown"],
+            "prompt": ["a driving scene in the #1"],
+            "type": "description",
+            "question": "What time of day does it appear to be in the driving scene?"
+        },
+        "weather": {
+            "data": [],
+            "word": ["sunny", "cloudy", "rainy", "foggy", "clear", "snowy"],
+            "prompt": ["a driving scene in #1 weather"],
+            "type": "description",
+            "question": "What is the weather condition like in the scene?"
+        },
+        "background_style": {
+            "data": [],
+            "word": ["urban city", "rural", "natural", "highway", "residential"],
+            "prompt": ["a driving scene in an #1 area"],
+            "type": "description",
+            "question": "What is the background style or location type of the driving scene?"
+        },
+        "traffic_density": {
+            "data": [],
+            "word": ["empty", "light", "moderate", "heavy"],
+            "prompt": ["a driving scene with #1 traffic"],
+            "type": "description",
+            "question": "What is the level of traffic density in the scene?"
+        },
+        "lighting_condition": {
+            "data": [],
+            "word": ["bright", "dim", "strong shadows", "overcast", "glare"],
+            "prompt": ["a driving scene with #1 lighting"],
+            "type": "description",
+            "question": "What best describes the overall lighting condition in the scene?"
+        },
+        "road_condition": {
+            "data": [],
+            "word": ["dry", "wet", "snowy", "muddy", "unknown"],
+            "prompt": ["a driving scene on a #1 road"],
+            "type": "description",
+            "question": "What is the surface condition of the road?"
+        }
+    }
+}

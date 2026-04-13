@@ -1,4 +1,4 @@
-name: hibug
+name: safefix
 channels:
   - pytorch
   - defaults
@@ -268,4 +268,4 @@ dependencies:
     - wrapt==1.10.11
     - yarl==1.9.2
     - zipp==3.15.0
-prefix: /people/cs/o/oxx220000/.conda/envs/hibug
+prefix: /people/cs/o/oxx220000/.conda/envs/safefix

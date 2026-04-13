@@ -24,8 +24,8 @@ parser = argparse.ArgumentParser(description="Stable Diffusion v1.5 image genera
 parser.add_argument('--num_added_img', type=int, default=10, help='Number of images to generate.')
 parser.add_argument('--attributes', type=str, default="redhair_brownskin", 
                     help='attributes to detect, e.g. redhair_brownskin, redhair, etc.')
-parser.add_argument('--attribute_file', type=str, default="exampleData/celebA/attribute.json",
-                    help='Path to the attribute JSON file (default: exampleData/celebA/attribute.json)')
+parser.add_argument('--attribute_file', type=str, default="data/celebA/attribute.json",
+                    help='Path to the attribute JSON file (default: data/celebA/attribute.json)')
 parser.add_argument('--gpu', type=int, default=0,
                     help='Index of the CUDA GPU to use (default: 0)')
 parser.add_argument(
@@ -95,16 +95,16 @@ else:
     with open(args.attribute_file, 'r') as f:
         attr_json = json.load(f)
 
-    indices_file = f"exampleData/celebA/non_{args.attributes}_indices.txt"
+    indices_file = f"data/celebA/non_{args.attributes}_indices.txt"
     with open(indices_file, 'r') as f:
         selected_indices = [int(line.strip()) for line in f if line.strip()][:args.num_added_img]
 
     # Load mapping from original to filtered indices
-    with open("exampleData/celebA/idx_mapping.json", 'r') as f:
+    with open("data/celebA/idx_mapping.json", 'r') as f:
         original_to_filtered = json.load(f)["original_to_filtered"]
 
     # Load lipstick labels (1 = wearing lipstick, 0 = no lipstick)
-    labels = np.load("exampleData/celebA/labels.npy")
+    labels = np.load("data/celebA/labels.npy")
 
     prompts = []
     for original_idx in selected_indices:
@@ -190,14 +190,14 @@ if __name__ == "__main__":
             # use lipstick label to name files
             lip_flag = lipstick_flags[i]
             lip_label = "yes" if lip_flag == 1 else "no"
-            output_prefix = f"exampleData/hibug_simple/{lip_label}"
+            output_prefix = f"data/safefix_simple/{lip_label}"
             # Ensure output directory exists
             output_dir = os.path.dirname(output_prefix)
             os.makedirs(output_dir, exist_ok=True)
             generate_images(user_prompt, num_images=args.batch, output_prefix=output_prefix)
         else:
             original_idx = selected_indices[i]
-            output_prefix = f"exampleData/hibug_{args.attributes}/{args.attributes}_{original_idx:06d}"
+            output_prefix = f"data/safefix_{args.attributes}/{args.attributes}_{original_idx:06d}"
             # Ensure output directory exists
             output_dir = os.path.dirname(output_prefix)
             os.makedirs(output_dir, exist_ok=True)

@@ -1,5 +1,5 @@
 """
-Common imports for the HiBug project.
+Common imports for the safefix project.
 This module consolidates all frequently used imports to reduce redundancy.
 """
 

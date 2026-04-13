@@ -92,7 +92,7 @@ device_map="auto")
 processor = AutoProcessor.from_pretrained(model_path)
 
 
-image_path = "exampleData/bird.jpg"
+image_path = "data/bird.jpg"
 prompt = "What kind of bird is this? Please give its name in Chinese and English and 学名. I am living in Texas."
 
 image = Image.open(image_path)

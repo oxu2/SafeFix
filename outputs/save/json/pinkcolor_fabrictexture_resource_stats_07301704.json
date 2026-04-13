@@ -1,0 +1,27 @@
+{
+    "total_processing_time_seconds": 22.21786856651306,
+    "total_processing_time_minutes": 0.37029780944188434,
+    "total_processing_time_hours": 0.006171630157364739,
+    "num_images_processed": 32,
+    "avg_time_per_image_seconds": 0.6943083927035332,
+    "model_size_mb": 13472.42261505127,
+    "model_size_gb": 13.156662710011005,
+    "inference_statistics": {
+        "total_inferences": 32,
+        "avg_inference_time_seconds": 0.5361672267317772,
+        "min_inference_time_seconds": 0.2213118076324463,
+        "max_inference_time_seconds": 2.4523074626922607,
+        "total_inference_time_seconds": 17.15735125541687
+    },
+    "memory_statistics": {
+        "avg_cpu_memory_gb": 105.19325256347656,
+        "max_cpu_memory_gb": 105.19325256347656,
+        "avg_gpu_memory_gb": 13.7626953125,
+        "max_gpu_memory_gb": 13.7626953125
+    },
+    "estimated_cost_per_1k_images": {
+        "time_seconds": 694.3083927035332,
+        "time_minutes": 11.571806545058886,
+        "time_hours": 0.1928634424176481
+    }
+}

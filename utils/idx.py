@@ -16,7 +16,7 @@ import json
 import time
 
 os.environ['CUDA_VISIBLE_DEVICES'] = '0'
-with open("exampleData/celebA/list_attr_celeba.txt") as f:
+with open("data/celebA/list_attr_celeba.txt") as f:
     lines = [line.strip('\n').split(' ')[0] for line in f.readlines()]
 
 if os.path.exists('/home/jovyan/ouser/dataset/img_align_celeba/'):
@@ -25,7 +25,7 @@ else:
     input_dir = '/data/oxx220000/img_align_celeba/'
 
 all_datas = [input_dir + line for line in lines][1:]
-train_idx = np.load("exampleData/celebA/train_idx.npy")[:80000]
+train_idx = np.load("data/celebA/train_idx.npy")[:80000]
 
 split_cache_dir = "save"
 val_idx_path = os.path.join(split_cache_dir, "val_idx_celeba.npy")
@@ -73,8 +73,8 @@ else:
         }, meta_file)
 
 idxs = np.concatenate([train_idx, valid_idx, test_idx, unlabel_idx], axis=0)
-labels = np.load("exampleData/celebA/labels.npy")[idxs]
-predictions = np.load("exampleData/celebA/predictions.npy")[idxs]
+labels = np.load("data/celebA/labels.npy")[idxs]
+predictions = np.load("data/celebA/predictions.npy")[idxs]
 all_datas = [all_datas[i] for i in idxs]
 split = (
     [TRAIN for _ in train_idx] +
@@ -97,10 +97,10 @@ mapping_dict = {
     "filtered_to_original": filtered_to_original
 }
 
-with open("exampleData/celebA/idx_mapping.json", "w") as f:
+with open("data/celebA/idx_mapping.json", "w") as f:
     json.dump(mapping_dict, f, indent=4)
 
-print("Index mapping saved to exampleData/celebA/idx_mapping.json")
+print("Index mapping saved to data/celebA/idx_mapping.json")
 print(f"Example mapping: original idx 0 -> filtered idx {original_to_filtered.get(0)}")
 
 # detect which idx is 
@@ -117,7 +117,7 @@ print (train_idx[:300])
 #  122609 122610 122611 122612 122613 122614 122615 122616 122617 122618
 #  122619 122620 122621 122622 122623 122624 122625 122626 122627 122628]
 # ['Train', 'Train', 'Train', 'Train', 'Train', 'Train', 'Train', 'Train', 'Train', 'Train', 'Train', 'Train', 'Train', 'Train', 'Train', 'Train', 'Train', 'Train', 'Train', 'Train', 'Train', 'Train', 'Train', 'Train', 'Train', 'Train', 'Train', 'Train', 'Train', 'Train', 'Train', 'Train', 'Train', 'Train', 'Train', 'Train', 'Train', 'Train', 'Train', 'Train', 'Train', 'Train', 'Train', 'Train', 'Train', 'Train', 'Train', 'Train', 'Train', 'Train', 'Train', 'Train', 'Train', 'Train', 'Train', 'Train', 'Train', 'Train', 'Train', 'Train', 'Train', 'Train', 'Train', 'Train', 'Train', 'Train', 'Train', 'Train', 'Train', 'Train']
-with open("exampleData/celebA/attribute.json", 'r') as f:
+with open("data/celebA/attribute.json", 'r') as f:
     attr_json = json.load(f)
     print("Beard attribute data length:", len(attr_json["beard"]["data"]))
     print("Beard attribute uncertain_idx:", len(attr_json["beard"]["uncertain_idx"]))
@@ -150,7 +150,7 @@ print(f"Red hair samples distribution: Train: {train_count}, Valid: {valid_count
 # Verify image filenames for red hair samples
 print("\nVerifying image filenames for red hair samples:")
 # Get the original filenames from the list_attr_celeba.txt file
-with open("exampleData/celebA/list_attr_celeba.txt") as f:
+with open("data/celebA/list_attr_celeba.txt") as f:
     all_filenames = list(f.readlines())
     # First line is a count, so skip it
     all_filenames = [line.strip('\n').split(' ')[0] for line in all_filenames[1:]]
@@ -295,8 +295,8 @@ def get_original_indices_by_attribute(attribute_name, attr_assigned, attr_data, 
 red_hair_indices = get_original_indices_by_attribute(
     "hair color", 
     "red",
-    "exampleData/celebA/attribute.json",
-    "exampleData/celebA/idx_mapping.json"
+    "data/celebA/attribute.json",
+    "data/celebA/idx_mapping.json"
 )
 
 
@@ -647,7 +647,7 @@ class ModelDiagnose():
 
         return final_selection[:budget]
         
-    def date_generation(self, combine_num=5, attribute_num=200, address="exampleData/Imagenet10/generation.json", label_specific=True):
+    def date_generation(self, combine_num=5, attribute_num=200, address="data/Imagenet10/generation.json", label_specific=True):
         generation_dict = {}
         for label in range(len(self.label_number)):
             generate_used = [i['combination'][0] for i in MD.report.suggestion_for_combinations_by_rate()[:attribute_num]]
@@ -662,5 +662,5 @@ class ModelDiagnose():
 
 
 
-# MD = ModelDiagnose(labels, predictions, split, "exampleData/celebA/attribute.json")
+# MD = ModelDiagnose(labels, predictions, split, "data/celebA/attribute.json")
 

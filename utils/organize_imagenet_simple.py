@@ -1,7 +1,7 @@
 import os
 import shutil
 
-root_dir = 'exampleData/imagenet_simple'
+root_dir = 'data/imagenet_simple'
 
 class_mapping = {
     'backpack': 0,

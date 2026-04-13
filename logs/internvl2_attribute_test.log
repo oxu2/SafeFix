@@ -5,7 +5,7 @@ Unrecognized keys in `rope_parameters` for 'rope_type'='dynamic': {'rope_theta'}
 /people/cs/o/oxx220000/.conda/envs/qwen/lib/python3.10/site-packages/timm/models/layers/__init__.py:49: FutureWarning: Importing from timm.models.layers is deprecated, please import via timm.layers
   warnings.warn(f"Importing from {__name__} is deprecated, please import via timm.layers", FutureWarning)
 Traceback (most recent call last):
-  File "/people/cs/o/oxx220000/HiBug/assign_attribute.py", line 267, in <module>
+  File "/people/cs/o/oxx220000/safefix/assign_attribute.py", line 267, in <module>
     model = AutoModel.from_pretrained(
   File "/people/cs/o/oxx220000/.conda/envs/qwen/lib/python3.10/site-packages/transformers/models/auto/auto_factory.py", line 367, in from_pretrained
     return model_class.from_pretrained(
@@ -25,7 +25,7 @@ Traceback (most recent call last):
     raise RuntimeError("Tensor.item() cannot be called on meta tensors")
 RuntimeError: Tensor.item() cannot be called on meta tensors
 
-ERROR conda.cli.main_run:execute(49): `conda run python -u /people/cs/o/oxx220000/HiBug/assign_attribute.py --model OpenGVLab/InternVL2-8B --max_memory_per_gpu 12 --stop_at 5 --verbose` failed. (See above for error)
+ERROR conda.cli.main_run:execute(49): `conda run python -u /people/cs/o/oxx220000/safefix/assign_attribute.py --model OpenGVLab/InternVL2-8B --max_memory_per_gpu 12 --stop_at 5 --verbose` failed. (See above for error)
 Output file: save/attribute10_internvl2_8B_5.json
 Partial file: save/attribute10_internvl2_8B_5_partial.json
 Using 2 GPU(s) with 12GiB memory allocation each

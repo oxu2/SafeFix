@@ -1,0 +1,11 @@
+--- [GPU 2] Starting Qwen3 Ratio 0.1 ---
+--- [GPU 3] Starting InternVL3 Ratio 0.1 ---
+--- [GPU 3] Starting InternVL3 Ratio 0.3 ---
+--- [GPU 2] Starting Qwen3 Ratio 0.3 ---
+--- [GPU 3] Starting InternVL3 Ratio 0.5 ---
+--- [GPU 2] Starting Qwen3 Ratio 0.5 ---
+--- [GPU 2] Starting Qwen3 Ratio 0.9 ---
+=== [GPU 2] Qwen3 Runs Finished ===
+--- [GPU 3] Starting InternVL3 Ratio 0.9 ---
+=== [GPU 3] InternVL3 Runs Finished ===
+All runs completed.
