@@ -2,6 +2,7 @@
 import argparse
 import datetime
 import json
+import os
 import random
 import subprocess
 import sys
@@ -9,9 +10,12 @@ import time
 from pathlib import Path
 from typing import Dict, List, Optional, Sequence
 
+os.environ.setdefault("CUBLAS_WORKSPACE_CONFIG", ":4096:8")
+
 import numpy as np
 import torch
 from PIL import Image
+from torch.backends import cudnn
 from torch.utils.data import DataLoader
 
 from pose_estimation.dataset import (
@@ -21,7 +25,15 @@ from pose_estimation.dataset import (
     collate_fn,
     default_coco_paths,
 )
-from pose_estimation.engine import evaluate_coco_keypoints, load_checkpoint, save_checkpoint, train_one_epoch
+from pose_estimation.engine import (
+    evaluate_coco_keypoints,
+    load_checkpoint,
+    load_model_checkpoint,
+    read_checkpoint_metadata,
+    save_model_checkpoint,
+    save_checkpoint,
+    train_one_epoch,
+)
 from pose_estimation.modeling import create_keypointrcnn_model
 from pose_estimation.visualize import draw_pose_predictions, image_to_tensor
 from utils.stat_pose_estimation import run_analysis as run_pose_slice_analysis
@@ -85,6 +97,16 @@ def parse_args():
     train_parser.add_argument("--eval-every", type=int, default=1)
     train_parser.add_argument("--output-dir", type=Path, default=POSE_LOG_ROOT / "pose_keypointrcnn")
     train_parser.add_argument("--resume", type=Path, default=None)
+    train_parser.add_argument(
+        "--resume-model",
+        type=Path,
+        default=None,
+        help=(
+            "Load only model weights from a checkpoint and continue training with a fresh "
+            "optimizer / scheduler. If the checkpoint stores an epoch, training resumes "
+            "from the next epoch index."
+        ),
+    )
     train_parser.add_argument("--score-threshold", type=float, default=0.05)
     train_parser.add_argument("--seed", type=int, default=42)
     train_parser.add_argument("--max-train-samples", type=int, default=20000)
@@ -145,6 +167,24 @@ def parse_args():
     train_parser.add_argument("--assigner-save-every", type=int, default=500)
     train_parser.add_argument("--assigner-max-memory-per-gpu", type=float, default=23.0)
     train_parser.add_argument("--assigner-verbose", type=str2bool, default=False)
+    train_parser.add_argument(
+        "--save-resume-checkpoint",
+        type=str2bool,
+        default=False,
+        help=(
+            "Also save a full optimizer/scheduler resume checkpoint as last_resume.pth. "
+            "Default is False to reduce disk usage."
+        ),
+    )
+    train_parser.add_argument(
+        "--save-last-checkpoint",
+        type=str2bool,
+        default=False,
+        help=(
+            "Save a compact last.pth model checkpoint after each epoch. "
+            "Default is False because best.pth is usually sufficient for this pose workflow."
+        ),
+    )
 
     eval_parser = subparsers.add_parser("eval", help="Evaluate model on COCO val keypoints.")
     _add_common_data_args(eval_parser)
@@ -208,6 +248,21 @@ def set_seed(seed: int):
     np.random.seed(seed)
     torch.manual_seed(seed)
     torch.cuda.manual_seed_all(seed)
+    cudnn.deterministic = True
+    cudnn.benchmark = False
+    torch.use_deterministic_algorithms(True, warn_only=True)
+
+
+def seed_worker(worker_id: int) -> None:
+    worker_seed = torch.initial_seed() % (2**32)
+    random.seed(worker_seed)
+    np.random.seed(worker_seed)
+
+
+def build_loader_generator(seed: int) -> torch.Generator:
+    generator = torch.Generator()
+    generator.manual_seed(seed)
+    return generator
 
 
 def resolve_device(device_str: str) -> torch.device:
@@ -236,6 +291,8 @@ def build_loaders(args) -> Dict[str, DataLoader]:
         num_workers=args.num_workers,
         pin_memory=True,
         collate_fn=collate_fn,
+        worker_init_fn=seed_worker,
+        generator=build_loader_generator(args.seed),
     )
     val_loader = DataLoader(
         val_dataset,
@@ -244,6 +301,8 @@ def build_loaders(args) -> Dict[str, DataLoader]:
         num_workers=args.num_workers,
         pin_memory=True,
         collate_fn=collate_fn,
+        worker_init_fn=seed_worker,
+        generator=build_loader_generator(args.seed + 1),
     )
 
     test_loader = DataLoader(
@@ -253,6 +312,8 @@ def build_loaders(args) -> Dict[str, DataLoader]:
         num_workers=args.num_workers,
         pin_memory=True,
         collate_fn=collate_fn,
+        worker_init_fn=seed_worker,
+        generator=build_loader_generator(args.seed + 2),
     )
 
     print(
@@ -556,7 +617,14 @@ def run_train(args):
     print("Current time:", datetime.datetime.now().strftime("%m%d%H%M%S"))
     print(f"Training start timestamp: {_timestamp_str(overall_start_time)}")
 
+    if args.resume is not None and args.resume_model is not None:
+        raise ValueError("Use only one of --resume or --resume-model.")
+
     set_seed(args.seed)
+    print(
+        f"Deterministic settings: seed={args.seed}, cudnn.deterministic={cudnn.deterministic}, "
+        f"cudnn.benchmark={cudnn.benchmark}, CUBLAS_WORKSPACE_CONFIG={os.environ.get('CUBLAS_WORKSPACE_CONFIG')}"
+    )
     device = resolve_device(args.device)
     loaders = build_loaders(args)
     train_loader = loaders["train"]
@@ -579,7 +647,18 @@ def run_train(args):
     )
 
     start_epoch = 0
+    best_ap = -1.0
     if args.resume is not None:
+        resume_metadata = read_checkpoint_metadata(
+            checkpoint_path=args.resume,
+            map_location="cpu",
+        )
+        if not resume_metadata.get("has_optimizer", False):
+            raise ValueError(
+                f"{args.resume} does not contain optimizer state. "
+                "Use --resume-model for model-only continuation, or rerun training with "
+                "--save-resume-checkpoint true and resume from last_resume.pth."
+            )
         start_epoch = load_checkpoint(
             checkpoint_path=args.resume,
             model=model,
@@ -587,14 +666,40 @@ def run_train(args):
             lr_scheduler=lr_scheduler,
             map_location="cpu",
         )
+        if resume_metadata.get("best_ap") is not None:
+            best_ap = float(resume_metadata["best_ap"])
+    elif args.resume_model is not None:
+        resume_metadata = load_model_checkpoint(
+            checkpoint_path=args.resume_model,
+            model=model,
+            map_location="cpu",
+        )
+        if resume_metadata.get("epoch") is not None:
+            start_epoch = int(resume_metadata["epoch"]) + 1
+        if resume_metadata.get("best_ap") is not None:
+            best_ap = float(resume_metadata["best_ap"])
+
+        print(
+            "Using fresh optimizer / scheduler state after --resume-model. "
+            f"Training will start from epoch index {start_epoch} with the current "
+            f"optimizer hyperparameters (lr={args.lr}, momentum={args.momentum}, "
+            f"weight_decay={args.weight_decay}, step_size={args.lr_step_size}, gamma={args.lr_gamma})."
+        )
+
+    if start_epoch >= args.epochs:
+        print(
+            f"Warning: start_epoch={start_epoch} is already >= args.epochs={args.epochs}. "
+            "No additional training epochs will run unless you increase --epochs."
+        )
 
     args.output_dir.mkdir(parents=True, exist_ok=True)
-    best_ap = -1.0
     history = []
     total_train_time = 0.0
     total_eval_time = 0.0
     train_loop_start_time = time.time()
     best_checkpoint_path = args.output_dir / "best.pth"
+    last_checkpoint_path = args.output_dir / "last.pth"
+    last_resume_checkpoint_path = args.output_dir / "last_resume.pth"
     assigner_artifacts: Dict[str, Dict[str, Dict[str, Path]]] = {}
 
     for epoch in range(start_epoch, args.epochs):
@@ -627,23 +732,29 @@ def run_train(args):
             eval_metrics["eval_time_sec"] = eval_duration
             if eval_metrics["AP"] > best_ap:
                 best_ap = eval_metrics["AP"]
-                save_checkpoint(
+                save_model_checkpoint(
                     checkpoint_path=best_checkpoint_path,
                     model=model,
-                    optimizer=optimizer,
-                    lr_scheduler=lr_scheduler,
                     epoch=epoch,
                     extra={"best_ap": best_ap},
                 )
 
-        save_checkpoint(
-            checkpoint_path=args.output_dir / "last.pth",
-            model=model,
-            optimizer=optimizer,
-            lr_scheduler=lr_scheduler,
-            epoch=epoch,
-            extra={"best_ap": best_ap},
-        )
+        if args.save_last_checkpoint:
+            save_model_checkpoint(
+                checkpoint_path=last_checkpoint_path,
+                model=model,
+                epoch=epoch,
+                extra={"best_ap": best_ap},
+            )
+        if args.save_resume_checkpoint:
+            save_checkpoint(
+                checkpoint_path=last_resume_checkpoint_path,
+                model=model,
+                optimizer=optimizer,
+                lr_scheduler=lr_scheduler,
+                epoch=epoch,
+                extra={"best_ap": best_ap},
+            )
 
         row = {"epoch": epoch, **metrics, **eval_metrics}
         history.append(row)
@@ -652,15 +763,18 @@ def run_train(args):
     with (args.output_dir / "history.json").open("w", encoding="utf-8") as f:
         json.dump(history, f, indent=2)
 
-    final_eval_checkpoint = best_checkpoint_path if best_checkpoint_path.exists() else args.output_dir / "last.pth"
+    final_eval_checkpoint: Optional[Path] = None
+    if best_checkpoint_path.exists():
+        final_eval_checkpoint = best_checkpoint_path
+    elif last_checkpoint_path.exists():
+        final_eval_checkpoint = last_checkpoint_path
+
     best_val_predictions_path: Optional[Path] = None
     test_predictions_path: Optional[Path] = None
-    if final_eval_checkpoint.exists():
-        load_checkpoint(
+    if final_eval_checkpoint is not None:
+        load_model_checkpoint(
             checkpoint_path=final_eval_checkpoint,
             model=model,
-            optimizer=None,
-            lr_scheduler=None,
             map_location="cpu",
         )
         best_val_predictions_path = args.output_dir / "val_predictions_best.json"
@@ -697,6 +811,59 @@ def run_train(args):
             json.dump(
                 {
                     "checkpoint": str(final_eval_checkpoint),
+                    "metrics": test_metrics,
+                },
+                f,
+                indent=2,
+            )
+        print("Held-out test metrics:")
+        print(json.dumps(test_metrics, ensure_ascii=False, indent=2))
+        assigner_artifacts = maybe_run_assigners_after_train(args)
+        maybe_run_post_train_analysis(
+            args,
+            val_predictions_path=best_val_predictions_path,
+            test_predictions_path=test_predictions_path,
+            assigner_artifacts=assigner_artifacts,
+        )
+    else:
+        print(
+            "No saved best/last model checkpoint was found after training. "
+            "Skipping the post-train reload step and using the in-memory final model for evaluation."
+        )
+        best_val_predictions_path = args.output_dir / "val_predictions_best.json"
+        best_val_metrics = evaluate_coco_keypoints(
+            model=model,
+            data_loader=val_loader,
+            coco_gt=val_loader.dataset.coco,
+            device=device,
+            score_threshold=args.score_threshold,
+            result_json_path=best_val_predictions_path,
+        )
+        with (args.output_dir / "val_metrics_best.json").open("w", encoding="utf-8") as f:
+            json.dump(
+                {
+                    "checkpoint": None,
+                    "metrics": best_val_metrics,
+                },
+                f,
+                indent=2,
+            )
+        print("Held-out val metrics (final in-memory model):")
+        print(json.dumps(best_val_metrics, ensure_ascii=False, indent=2))
+
+        test_predictions_path = args.output_dir / "test_predictions.json"
+        test_metrics = evaluate_coco_keypoints(
+            model=model,
+            data_loader=test_loader,
+            coco_gt=test_loader.dataset.coco,
+            device=device,
+            score_threshold=args.score_threshold,
+            result_json_path=test_predictions_path,
+        )
+        with (args.output_dir / "test_metrics.json").open("w", encoding="utf-8") as f:
+            json.dump(
+                {
+                    "checkpoint": None,
                     "metrics": test_metrics,
                 },
                 f,

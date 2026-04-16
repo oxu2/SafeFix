@@ -23,7 +23,7 @@
         },
         "time_of_day": {
             "data": [],
-            "word": ["morning", "afternoon", "evening", "night", "unknown"],
+            "word": ["morning", "afternoon", "evening", "night"],
             "prompt": ["a photo taken in the #1"],
             "type": "description",
             "question": "What time of day does it appear to be in the image?"

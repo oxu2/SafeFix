@@ -1,0 +1,214 @@
+Using 1 GPU(s) with 22.5GiB memory allocation each
+Loading model: Qwen/Qwen3-VL-8B-Instruct (Qwen3 mode)...
+`torch_dtype` is deprecated! Use `dtype` instead!
+Model loaded.
+Loaded COCO pose split 'train' from /data/oxx220000/coco/annotations/person_keypoints_train2017.json: 56599 valid images
+Will process only the first 20000 images (--stop_at 20000)
+Total images: 20000
+Corpus attributes: ['clothes_color', 'clothes_type', 'background_style', 'time_of_day', 'weather', 'pose']
+Resuming from CSV checkpoint: 4000 images already processed
+Resuming from partial checkpoint: save/attribute_coco_pose_gemini_train20k_qwen3_8B_partial.json
+Remaining images to process: 16000
+
+Processing 16000 images across 6 attributes...
+Attributes: ['clothes_color', 'clothes_type', 'background_style', 'time_of_day', 'weather', 'pose']
+The following generation flags are not valid and may be ignored: ['top_p', 'top_k']. Set `TRANSFORMERS_VERBOSITY=info` for more details.
+[1/16000] Processed 1 images, 1.78s this image, avg 1.78s/img, ETA 475.5min
+[100/16000] Processed 100 images, 1.21s this image, avg 1.57s/img, ETA 414.8min
+[200/16000] Processed 200 images, 1.68s this image, avg 1.57s/img, ETA 414.2min
+[300/16000] Processed 300 images, 1.33s this image, avg 1.56s/img, ETA 408.0min
+[400/16000] Processed 400 images, 1.73s this image, avg 1.55s/img, ETA 403.8min
+[500/16000] Processed 500 images, 1.61s this image, avg 1.55s/img, ETA 400.4min
+  Checkpoint saved to save/attribute_coco_pose_gemini_train20k_qwen3_8B_partial.json (500 images done)
+[600/16000] Processed 600 images, 1.36s this image, avg 1.55s/img, ETA 396.6min
+[700/16000] Processed 700 images, 1.60s this image, avg 1.55s/img, ETA 394.4min
+[800/16000] Processed 800 images, 1.55s this image, avg 1.54s/img, ETA 391.0min
+[900/16000] Processed 900 images, 1.23s this image, avg 1.54s/img, ETA 388.4min
+[1000/16000] Processed 1000 images, 1.51s this image, avg 1.54s/img, ETA 385.6min
+  Checkpoint saved to save/attribute_coco_pose_gemini_train20k_qwen3_8B_partial.json (1000 images done)
+[1100/16000] Processed 1100 images, 1.44s this image, avg 1.54s/img, ETA 382.7min
+[1200/16000] Processed 1200 images, 1.54s this image, avg 1.54s/img, ETA 380.0min
+[1300/16000] Processed 1300 images, 1.55s this image, avg 1.54s/img, ETA 377.7min
+[1400/16000] Processed 1400 images, 1.53s this image, avg 1.54s/img, ETA 375.4min
+[1500/16000] Processed 1500 images, 1.52s this image, avg 1.54s/img, ETA 373.2min
+  Checkpoint saved to save/attribute_coco_pose_gemini_train20k_qwen3_8B_partial.json (1500 images done)
+[1600/16000] Processed 1600 images, 1.35s this image, avg 1.54s/img, ETA 370.7min
+[1700/16000] Processed 1700 images, 1.56s this image, avg 1.54s/img, ETA 368.2min
+[1800/16000] Processed 1800 images, 1.60s this image, avg 1.54s/img, ETA 365.3min
+[1900/16000] Processed 1900 images, 1.54s this image, avg 1.54s/img, ETA 362.8min
+[2000/16000] Processed 2000 images, 1.57s this image, avg 1.54s/img, ETA 360.2min
+  Checkpoint saved to save/attribute_coco_pose_gemini_train20k_qwen3_8B_partial.json (2000 images done)
+[2100/16000] Processed 2100 images, 1.87s this image, avg 1.54s/img, ETA 357.4min
+[2200/16000] Processed 2200 images, 1.49s this image, avg 1.54s/img, ETA 354.7min
+[2300/16000] Processed 2300 images, 1.53s this image, avg 1.54s/img, ETA 351.9min
+[2400/16000] Processed 2400 images, 1.51s this image, avg 1.54s/img, ETA 349.5min
+[2500/16000] Processed 2500 images, 1.49s this image, avg 1.54s/img, ETA 346.8min
+  Checkpoint saved to save/attribute_coco_pose_gemini_train20k_qwen3_8B_partial.json (2500 images done)
+[2600/16000] Processed 2600 images, 1.60s this image, avg 1.54s/img, ETA 344.1min
+[2700/16000] Processed 2700 images, 1.55s this image, avg 1.54s/img, ETA 341.6min
+[2800/16000] Processed 2800 images, 1.64s this image, avg 1.54s/img, ETA 339.2min
+[2900/16000] Processed 2900 images, 1.41s this image, avg 1.54s/img, ETA 336.7min
+[3000/16000] Processed 3000 images, 1.69s this image, avg 1.54s/img, ETA 334.0min
+  Checkpoint saved to save/attribute_coco_pose_gemini_train20k_qwen3_8B_partial.json (3000 images done)
+[3100/16000] Processed 3100 images, 1.59s this image, avg 1.54s/img, ETA 331.4min
+[3200/16000] Processed 3200 images, 1.48s this image, avg 1.54s/img, ETA 328.8min
+[3300/16000] Processed 3300 images, 1.77s this image, avg 1.54s/img, ETA 326.2min
+[3400/16000] Processed 3400 images, 1.57s this image, avg 1.54s/img, ETA 323.7min
+[3500/16000] Processed 3500 images, 1.53s this image, avg 1.54s/img, ETA 321.3min
+  Checkpoint saved to save/attribute_coco_pose_gemini_train20k_qwen3_8B_partial.json (3500 images done)
+[3600/16000] Processed 3600 images, 1.70s this image, avg 1.54s/img, ETA 318.9min
+[3700/16000] Processed 3700 images, 1.30s this image, avg 1.54s/img, ETA 316.1min
+[3800/16000] Processed 3800 images, 1.52s this image, avg 1.54s/img, ETA 313.4min
+[3900/16000] Processed 3900 images, 1.61s this image, avg 1.54s/img, ETA 310.9min
+[4000/16000] Processed 4000 images, 1.47s this image, avg 1.54s/img, ETA 308.5min
+  Checkpoint saved to save/attribute_coco_pose_gemini_train20k_qwen3_8B_partial.json (4000 images done)
+[4100/16000] Processed 4100 images, 1.73s this image, avg 1.54s/img, ETA 306.0min
+[4200/16000] Processed 4200 images, 1.46s this image, avg 1.54s/img, ETA 303.3min
+[4300/16000] Processed 4300 images, 1.17s this image, avg 1.54s/img, ETA 300.7min
+[4400/16000] Processed 4400 images, 1.76s this image, avg 1.54s/img, ETA 298.2min
+[4500/16000] Processed 4500 images, 1.44s this image, avg 1.54s/img, ETA 295.6min
+  Checkpoint saved to save/attribute_coco_pose_gemini_train20k_qwen3_8B_partial.json (4500 images done)
+[4600/16000] Processed 4600 images, 1.67s this image, avg 1.54s/img, ETA 292.9min
+[4700/16000] Processed 4700 images, 1.52s this image, avg 1.54s/img, ETA 290.4min
+[4800/16000] Processed 4800 images, 1.58s this image, avg 1.54s/img, ETA 287.8min
+[4900/16000] Processed 4900 images, 1.72s this image, avg 1.54s/img, ETA 285.3min
+[5000/16000] Processed 5000 images, 1.69s this image, avg 1.54s/img, ETA 282.8min
+  Checkpoint saved to save/attribute_coco_pose_gemini_train20k_qwen3_8B_partial.json (5000 images done)
+[5100/16000] Processed 5100 images, 1.58s this image, avg 1.54s/img, ETA 280.2min
+[5200/16000] Processed 5200 images, 1.63s this image, avg 1.54s/img, ETA 277.7min
+[5300/16000] Processed 5300 images, 1.43s this image, avg 1.54s/img, ETA 275.1min
+[5400/16000] Processed 5400 images, 1.57s this image, avg 1.54s/img, ETA 272.5min
+[5500/16000] Processed 5500 images, 1.68s this image, avg 1.54s/img, ETA 269.9min
+  Checkpoint saved to save/attribute_coco_pose_gemini_train20k_qwen3_8B_partial.json (5500 images done)
+[5600/16000] Processed 5600 images, 1.73s this image, avg 1.54s/img, ETA 267.2min
+[5700/16000] Processed 5700 images, 1.59s this image, avg 1.54s/img, ETA 264.7min
+[5800/16000] Processed 5800 images, 1.52s this image, avg 1.54s/img, ETA 262.1min
+[5900/16000] Processed 5900 images, 1.31s this image, avg 1.54s/img, ETA 259.5min
+[6000/16000] Processed 6000 images, 1.73s this image, avg 1.54s/img, ETA 257.0min
+  Checkpoint saved to save/attribute_coco_pose_gemini_train20k_qwen3_8B_partial.json (6000 images done)
+[6100/16000] Processed 6100 images, 1.48s this image, avg 1.54s/img, ETA 254.4min
+[6200/16000] Processed 6200 images, 1.65s this image, avg 1.54s/img, ETA 251.8min
+[6300/16000] Processed 6300 images, 1.38s this image, avg 1.54s/img, ETA 249.2min
+[6400/16000] Processed 6400 images, 1.48s this image, avg 1.54s/img, ETA 246.7min
+[6500/16000] Processed 6500 images, 1.45s this image, avg 1.54s/img, ETA 244.1min
+  Checkpoint saved to save/attribute_coco_pose_gemini_train20k_qwen3_8B_partial.json (6500 images done)
+[6600/16000] Processed 6600 images, 1.71s this image, avg 1.54s/img, ETA 241.5min
+[6700/16000] Processed 6700 images, 1.53s this image, avg 1.54s/img, ETA 238.9min
+[6800/16000] Processed 6800 images, 1.68s this image, avg 1.54s/img, ETA 236.3min
+[6900/16000] Processed 6900 images, 1.58s this image, avg 1.54s/img, ETA 233.7min
+[7000/16000] Processed 7000 images, 1.53s this image, avg 1.54s/img, ETA 231.1min
+  Checkpoint saved to save/attribute_coco_pose_gemini_train20k_qwen3_8B_partial.json (7000 images done)
+[7100/16000] Processed 7100 images, 1.50s this image, avg 1.54s/img, ETA 228.5min
+[7200/16000] Processed 7200 images, 1.54s this image, avg 1.54s/img, ETA 225.9min
+[7300/16000] Processed 7300 images, 1.51s this image, avg 1.54s/img, ETA 223.3min
+[7400/16000] Processed 7400 images, 1.55s this image, avg 1.54s/img, ETA 220.8min
+[7500/16000] Processed 7500 images, 1.42s this image, avg 1.54s/img, ETA 218.2min
+  Checkpoint saved to save/attribute_coco_pose_gemini_train20k_qwen3_8B_partial.json (7500 images done)
+[7600/16000] Processed 7600 images, 1.49s this image, avg 1.54s/img, ETA 215.6min
+[7700/16000] Processed 7700 images, 1.61s this image, avg 1.54s/img, ETA 213.0min
+[7800/16000] Processed 7800 images, 1.56s this image, avg 1.54s/img, ETA 210.4min
+[7900/16000] Processed 7900 images, 1.37s this image, avg 1.54s/img, ETA 207.8min
+[8000/16000] Processed 8000 images, 1.52s this image, avg 1.54s/img, ETA 205.2min
+  Checkpoint saved to save/attribute_coco_pose_gemini_train20k_qwen3_8B_partial.json (8000 images done)
+[8100/16000] Processed 8100 images, 1.44s this image, avg 1.54s/img, ETA 202.7min
+[8200/16000] Processed 8200 images, 1.38s this image, avg 1.54s/img, ETA 200.1min
+[8300/16000] Processed 8300 images, 1.49s this image, avg 1.54s/img, ETA 197.5min
+[8400/16000] Processed 8400 images, 1.54s this image, avg 1.54s/img, ETA 194.9min
+[8500/16000] Processed 8500 images, 1.62s this image, avg 1.54s/img, ETA 192.4min
+  Checkpoint saved to save/attribute_coco_pose_gemini_train20k_qwen3_8B_partial.json (8500 images done)
+[8600/16000] Processed 8600 images, 1.43s this image, avg 1.54s/img, ETA 189.8min
+[8700/16000] Processed 8700 images, 1.59s this image, avg 1.54s/img, ETA 187.2min
+[8800/16000] Processed 8800 images, 1.58s this image, avg 1.54s/img, ETA 184.6min
+[8900/16000] Processed 8900 images, 1.60s this image, avg 1.54s/img, ETA 182.0min
+[9000/16000] Processed 9000 images, 1.15s this image, avg 1.54s/img, ETA 179.4min
+  Checkpoint saved to save/attribute_coco_pose_gemini_train20k_qwen3_8B_partial.json (9000 images done)
+[9100/16000] Processed 9100 images, 1.48s this image, avg 1.54s/img, ETA 176.9min
+[9200/16000] Processed 9200 images, 1.62s this image, avg 1.54s/img, ETA 174.3min
+[9300/16000] Processed 9300 images, 1.54s this image, avg 1.54s/img, ETA 171.7min
+[9400/16000] Processed 9400 images, 1.54s this image, avg 1.54s/img, ETA 169.1min
+[9500/16000] Processed 9500 images, 1.60s this image, avg 1.54s/img, ETA 166.6min
+  Checkpoint saved to save/attribute_coco_pose_gemini_train20k_qwen3_8B_partial.json (9500 images done)
+[9600/16000] Processed 9600 images, 1.62s this image, avg 1.54s/img, ETA 164.0min
+[9700/16000] Processed 9700 images, 1.59s this image, avg 1.54s/img, ETA 161.4min
+[9800/16000] Processed 9800 images, 1.56s this image, avg 1.54s/img, ETA 158.9min
+[9900/16000] Processed 9900 images, 1.62s this image, avg 1.54s/img, ETA 156.3min
+[10000/16000] Processed 10000 images, 1.81s this image, avg 1.54s/img, ETA 153.7min
+  Checkpoint saved to save/attribute_coco_pose_gemini_train20k_qwen3_8B_partial.json (10000 images done)
+[10100/16000] Processed 10100 images, 1.63s this image, avg 1.54s/img, ETA 151.2min
+[10200/16000] Processed 10200 images, 1.49s this image, avg 1.54s/img, ETA 148.6min
+[10300/16000] Processed 10300 images, 1.52s this image, avg 1.54s/img, ETA 146.0min
+[10400/16000] Processed 10400 images, 1.48s this image, avg 1.54s/img, ETA 143.5min
+[10500/16000] Processed 10500 images, 1.47s this image, avg 1.54s/img, ETA 140.9min
+  Checkpoint saved to save/attribute_coco_pose_gemini_train20k_qwen3_8B_partial.json (10500 images done)
+[10600/16000] Processed 10600 images, 1.50s this image, avg 1.54s/img, ETA 138.3min
+[10700/16000] Processed 10700 images, 1.63s this image, avg 1.54s/img, ETA 135.8min
+[10800/16000] Processed 10800 images, 1.51s this image, avg 1.54s/img, ETA 133.2min
+[10900/16000] Processed 10900 images, 1.56s this image, avg 1.54s/img, ETA 130.6min
+[11000/16000] Processed 11000 images, 1.61s this image, avg 1.54s/img, ETA 128.1min
+  Checkpoint saved to save/attribute_coco_pose_gemini_train20k_qwen3_8B_partial.json (11000 images done)
+[11100/16000] Processed 11100 images, 1.64s this image, avg 1.54s/img, ETA 125.5min
+[11200/16000] Processed 11200 images, 1.64s this image, avg 1.54s/img, ETA 122.9min
+[11300/16000] Processed 11300 images, 1.47s this image, avg 1.54s/img, ETA 120.4min
+[11400/16000] Processed 11400 images, 1.53s this image, avg 1.54s/img, ETA 117.8min
+[11500/16000] Processed 11500 images, 1.54s this image, avg 1.54s/img, ETA 115.2min
+  Checkpoint saved to save/attribute_coco_pose_gemini_train20k_qwen3_8B_partial.json (11500 images done)
+[11600/16000] Processed 11600 images, 1.51s this image, avg 1.54s/img, ETA 112.7min
+[11700/16000] Processed 11700 images, 1.71s this image, avg 1.54s/img, ETA 110.1min
+[11800/16000] Processed 11800 images, 1.24s this image, avg 1.54s/img, ETA 107.5min
+[11900/16000] Processed 11900 images, 1.68s this image, avg 1.54s/img, ETA 105.0min
+[12000/16000] Processed 12000 images, 1.48s this image, avg 1.54s/img, ETA 102.4min
+  Checkpoint saved to save/attribute_coco_pose_gemini_train20k_qwen3_8B_partial.json (12000 images done)
+[12100/16000] Processed 12100 images, 1.47s this image, avg 1.54s/img, ETA 99.8min
+[12200/16000] Processed 12200 images, 1.69s this image, avg 1.54s/img, ETA 97.3min
+[12300/16000] Processed 12300 images, 1.41s this image, avg 1.54s/img, ETA 94.7min
+[12400/16000] Processed 12400 images, 1.61s this image, avg 1.54s/img, ETA 92.2min
+[12500/16000] Processed 12500 images, 1.56s this image, avg 1.54s/img, ETA 89.6min
+  Checkpoint saved to save/attribute_coco_pose_gemini_train20k_qwen3_8B_partial.json (12500 images done)
+[12600/16000] Processed 12600 images, 1.73s this image, avg 1.54s/img, ETA 87.1min
+[12700/16000] Processed 12700 images, 1.55s this image, avg 1.54s/img, ETA 84.5min
+[12800/16000] Processed 12800 images, 1.54s this image, avg 1.54s/img, ETA 81.9min
+[12900/16000] Processed 12900 images, 1.55s this image, avg 1.54s/img, ETA 79.4min
+[13000/16000] Processed 13000 images, 1.50s this image, avg 1.54s/img, ETA 76.8min
+  Checkpoint saved to save/attribute_coco_pose_gemini_train20k_qwen3_8B_partial.json (13000 images done)
+[13100/16000] Processed 13100 images, 1.77s this image, avg 1.54s/img, ETA 74.3min
+[13200/16000] Processed 13200 images, 1.16s this image, avg 1.54s/img, ETA 71.7min
+[13300/16000] Processed 13300 images, 1.26s this image, avg 1.54s/img, ETA 69.1min
+[13400/16000] Processed 13400 images, 1.41s this image, avg 1.54s/img, ETA 66.6min
+[13500/16000] Processed 13500 images, 1.68s this image, avg 1.54s/img, ETA 64.0min
+  Checkpoint saved to save/attribute_coco_pose_gemini_train20k_qwen3_8B_partial.json (13500 images done)
+[13600/16000] Processed 13600 images, 1.54s this image, avg 1.54s/img, ETA 61.4min
+[13700/16000] Processed 13700 images, 1.51s this image, avg 1.54s/img, ETA 58.9min
+[13800/16000] Processed 13800 images, 1.69s this image, avg 1.54s/img, ETA 56.3min
+[13900/16000] Processed 13900 images, 1.77s this image, avg 1.54s/img, ETA 53.8min
+[14000/16000] Processed 14000 images, 1.13s this image, avg 1.54s/img, ETA 51.2min
+  Checkpoint saved to save/attribute_coco_pose_gemini_train20k_qwen3_8B_partial.json (14000 images done)
+[14100/16000] Processed 14100 images, 1.62s this image, avg 1.54s/img, ETA 48.6min
+[14200/16000] Processed 14200 images, 1.51s this image, avg 1.54s/img, ETA 46.1min
+[14300/16000] Processed 14300 images, 1.53s this image, avg 1.54s/img, ETA 43.5min
+[14400/16000] Processed 14400 images, 1.56s this image, avg 1.54s/img, ETA 40.9min
+[14500/16000] Processed 14500 images, 1.39s this image, avg 1.54s/img, ETA 38.4min
+  Checkpoint saved to save/attribute_coco_pose_gemini_train20k_qwen3_8B_partial.json (14500 images done)
+[14600/16000] Processed 14600 images, 1.43s this image, avg 1.54s/img, ETA 35.8min
+[14700/16000] Processed 14700 images, 1.60s this image, avg 1.54s/img, ETA 33.3min
+[14800/16000] Processed 14800 images, 1.62s this image, avg 1.54s/img, ETA 30.7min
+[14900/16000] Processed 14900 images, 1.53s this image, avg 1.54s/img, ETA 28.1min
+[15000/16000] Processed 15000 images, 1.65s this image, avg 1.54s/img, ETA 25.6min
+  Checkpoint saved to save/attribute_coco_pose_gemini_train20k_qwen3_8B_partial.json (15000 images done)
+[15100/16000] Processed 15100 images, 1.66s this image, avg 1.54s/img, ETA 23.0min
+[15200/16000] Processed 15200 images, 1.29s this image, avg 1.54s/img, ETA 20.5min
+[15300/16000] Processed 15300 images, 1.56s this image, avg 1.54s/img, ETA 17.9min
+[15400/16000] Processed 15400 images, 1.56s this image, avg 1.54s/img, ETA 15.4min
+[15500/16000] Processed 15500 images, 1.53s this image, avg 1.54s/img, ETA 12.8min
+  Checkpoint saved to save/attribute_coco_pose_gemini_train20k_qwen3_8B_partial.json (15500 images done)
+[15600/16000] Processed 15600 images, 1.68s this image, avg 1.54s/img, ETA 10.2min
+[15700/16000] Processed 15700 images, 1.52s this image, avg 1.54s/img, ETA 7.7min
+[15800/16000] Processed 15800 images, 1.48s this image, avg 1.54s/img, ETA 5.1min
+[15900/16000] Processed 15900 images, 1.62s this image, avg 1.54s/img, ETA 2.6min
+[16000/16000] Processed 16000 images, 1.70s this image, avg 1.54s/img, ETA 0.0min
+  Checkpoint saved to save/attribute_coco_pose_gemini_train20k_qwen3_8B_partial.json (16000 images done)
+
+Done. Processed 16000 images in 409.4 minutes (6.82 hours)
+Average time per image: 1.54s
+Saved attribute annotations to save/attribute_coco_pose_gemini_train20k_qwen3_8B.json
+Saved attribute CSV to save/attribute_coco_pose_gemini_train20k_qwen3_8B.csv
+Removed partial checkpoint save/attribute_coco_pose_gemini_train20k_qwen3_8B_partial.json
