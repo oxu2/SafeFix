@@ -5,6 +5,685 @@
 
 ---
 
+## Session 45: Complete `outputs/save` to `save` artifact-root migration
+
+**Date**: 2026-04-16
+**Task**: save-root-migration-completion
+
+### Summary
+
+The user asked whether the remaining `outputs/save` tree could now be moved into `save/`, and requested a repo-wide check for any code that still used or wrote to `outputs/save`. Verified the current state, removed the last code/config dependency on the legacy path, merged the remaining legacy artifacts into `save/`, and removed the stale `outputs/save/` tree.
+
+### Main Changes
+
+- Updated:
+  - `.gitignore`
+  - `utils/path_utils.py`
+- Filesystem migration:
+  - moved `319` files that still existed only under `outputs/save/` into `save/`
+  - removed `686` duplicate legacy files after confirming they matched the `save/` copies
+  - removed `1` older legacy file after confirming the `save/` copy was newer:
+    - `celeba_split_meta.json`
+  - removed the now-empty `outputs/save/` directory tree
+
+### Main Findings
+
+- Before this cleanup:
+  - executable-code search for literal `outputs/save` references returned only one stale config match:
+    - `.gitignore`
+  - `utils/path_utils.py` still had a legacy read fallback that could resolve artifacts from `outputs/save/`
+  - `save/` was already partially populated, so this was a merge rather than a simple rename
+- Overlap analysis before the migration:
+  - `319` files existed only in `outputs/save/`
+  - `687` relative paths existed in both trees
+  - only `1` overlapping file actually differed in content:
+    - `celeba_split_meta.json`
+  - the `save/celeba_split_meta.json` copy was newer than the legacy one, so the legacy copy was discarded
+- After the cleanup:
+  - `utils/path_utils.py` no longer falls back to `outputs/save/`
+  - passing either `save/...` or `outputs/save/...` into the resolver now canonicalizes to `save/...`
+  - the repo no longer contains an `outputs/save/` directory
+
+### Validation
+
+- [OK] executable-code search for legacy path:
+  - `rg -n --hidden --glob '!**/*.md' --glob '!**/*.html' --glob '!**/*.log' --glob '!**/*.json' --glob '!**/*.csv' --glob '!**/*.npy' --glob '!**/*.txt' --glob '!**/*.ipynb' "outputs/save" .`
+  - returned no matches
+- [OK] filesystem check:
+  - `find outputs -maxdepth 3 \( -type d -o -type l \) | sort`
+  - no longer shows `outputs/save`
+- [OK] path-resolution probe:
+  - `python3 - <<'PY' ...`
+  - `resolve_artifact_path('save/attribute10.json')`
+  - `resolve_artifact_path('outputs/save/attribute10.json')`
+  - `resolve_existing_artifact('save/attribute10.json')`
+  - all resolve to:
+    - `/people/cs/o/oxx220000/safefix/save/attribute10.json`
+- [OK] `git diff --check`
+
+### Important Notes
+
+- `report.md` was not updated because this session changed artifact-path behavior and filesystem layout, not a stable human-facing experiment result.
+- The repo now expects `save/` to be the single canonical artifact root.
+- Historical notes and old report text may still mention `outputs/save/` when describing past states, but active code/config resolution should not rely on that path anymore.
+
+### Status
+
+[OK] **Completed**
+
+---
+
+## Session 44: Confirm CelebA base completion and add stable result to `report.md`
+
+**Date**: 2026-04-16
+**Task**: celeba-base-result-report-update
+
+### Summary
+
+The user asked whether the earlier CelebA base run had finished, where its real log lives, and requested that the stable result be written into `report.md`. Verified that the original GPU `0` PID is no longer alive, located the complete training log, confirmed the saved checkpoint and prediction artifact, and added a new report section summarizing the finished CelebA ResNet base run.
+
+### Main Findings
+
+- The short startup log:
+  - `logs/celeba_resnet_base_redhair_brownskin_sademotion_0imgs_gpu0.log`
+  - only contains the initial launch lines and is not the full training record
+- The complete finished log is:
+  - `logs/celeba_resnet_base_redhair_brownskin_sademotion_0imgs_20260416_022317.log`
+- The completed run used:
+  - dataset: `CelebA`
+  - model: `ResNet`
+  - attributes: `redhair_brownskin_sademotion`
+  - generated images: `0`
+  - initialization: random weights
+  - epochs: `20`
+- Extracted stable metrics:
+  - best val acc: `0.9140`
+  - best-val epoch: `12`
+  - final val acc: `0.9066`
+  - held-out test acc: `0.9140`
+  - test loss: `0.3242`
+  - train time: `1939.07 s`
+  - end-to-end time: `1944.28 s`
+- Saved artifacts confirmed:
+  - checkpoint:
+    - `save/models/model_celeba_resnet_redhair_brownskin_sademotion_0imgs_0416022326.pth`
+  - predictions:
+    - `save/pred/predictions_celeba_resnet_redhair_brownskin_sademotion_0imgs_0416022326.npy`
+- The run failed only after the main outputs were already produced:
+  - diagnostics crashed because `save/attribute10.json` was missing
+  - this happened after checkpoint save, test evaluation, and prediction dump
+
+### Files Updated
+
+- `report.md`
+
+### Validation
+
+- [OK] `ps -fp 2646523`
+  - original run PID is no longer alive
+- [OK] inspected complete log:
+  - `logs/celeba_resnet_base_redhair_brownskin_sademotion_0imgs_20260416_022317.log`
+- [OK] confirmed checkpoint timestamp:
+  - `save/models/model_celeba_resnet_redhair_brownskin_sademotion_0imgs_0416022326.pth`
+- [OK] confirmed prediction artifact exists:
+  - `save/pred/predictions_celeba_resnet_redhair_brownskin_sademotion_0imgs_0416022326.npy`
+
+### Important Notes
+
+- This finished base checkpoint is the intended `--resume_model` candidate for the upcoming CelebA AL follow-up runs.
+- `report.md` now records the complete log path explicitly so later sessions do not mistake the short `gpu0` launch log for the real training log.
+
+### Status
+
+[OK] **Completed**
+
+---
+
+## Session 43: Change CelebA launcher `all` mode to per-GPU sequential queues
+
+**Date**: 2026-04-16
+**Task**: celeba-launcher-all-mode-per-gpu
+
+### Summary
+
+After reviewing the initial `all` implementation for `scripts/run_celeba_resume_baselines.sh`, the user clarified that each GPU should be treated independently. Updated `all` mode so it no longer waits for all four ratio jobs of one baseline to finish before moving on. Instead, each GPU now runs its own baseline queue sequentially for its assigned ratio.
+
+### Main Changes
+
+- Updated:
+  - `scripts/run_celeba_resume_baselines.sh`
+- Added per-GPU sequence helpers so `all` mode now behaves as:
+  - GPU `0`, ratio `0.1`:
+    - `random -> stratified -> coreset -> badge -> hierarchical`
+  - GPU `1`, ratio `0.3`:
+    - `random -> stratified -> coreset -> badge -> hierarchical`
+  - GPU `2`, ratio `0.5`:
+    - `random -> stratified -> coreset -> badge -> hierarchical`
+  - GPU `3`, ratio `0.7`:
+    - `random -> stratified -> coreset -> badge -> hierarchical`
+- Updated script help text to state explicitly that `all` mode is per-GPU sequential.
+
+### Validation
+
+- [OK] `bash -n scripts/run_celeba_resume_baselines.sh`
+- [OK] `./scripts/run_celeba_resume_baselines.sh all --base-model weights/model_imagenet_resnet_base.pth --dry-run`
+- [OK] `git diff --check`
+
+### Important Notes
+
+- `all` mode now launches four controller shells in parallel, one per `(gpu, ratio)` pair.
+- Within each controller, the next baseline starts only after the previous baseline on that same GPU exits.
+- The dry-run output is still printed sequentially for readability; the real `all` run uses background controller processes.
+- `report.md` was not updated because this change only affects launch orchestration.
+
+### Status
+
+[OK] **Completed**
+
+---
+
+## Session 42: Add CelebA resume baseline launcher and fix CelebA hierarchical / resume LR handling
+
+**Date**: 2026-04-16
+**Task**: celeba-resume-baselines-script-and-fixes
+
+### Summary
+
+The user asked for a new executable shell script, not `draft.sh`, that prepares the CelebA resume-from-base baselines for `random`, `stratified`, `coreset`, `badge`, and `hierarchical`, with ratio `0.1/0.3/0.5/0.7` pinned to GPUs `0/1/2/3`. The user also asked to complete two follow-up code tasks: fix the broken CelebA hierarchical mapping and make resumed CelebA ResNet runs automatically drop to `lr=1e-5`. Implemented all three.
+
+### Main Changes
+
+- Added a new executable launcher script:
+  - `scripts/run_celeba_resume_baselines.sh`
+- Updated `alpred.py`:
+  - resumed CelebA ResNet runs now automatically switch from the default `lr=1e-4` to `lr=1e-5`
+- Updated `utils/hierarchical_al.py`:
+  - CelebA hierarchical groups now use real attribute keys that exist in `data/celebA/attribute.json`
+  - generic attribute-JSON conversion now supports the repo's common `attribute -> {"data": [...]}` layout
+  - hierarchical selection now loads CelebA samplewise metadata instead of treating the raw JSON as if it were already sample-index keyed
+
+### Main Findings
+
+- The old CelebA hierarchical implementation was effectively misaligned with the current metadata:
+  - old group keys included:
+    - `hair`
+    - `facial`
+    - `skin`
+  - but the actual CelebA attribute file uses keys such as:
+    - `hair color`
+    - `emotion`
+    - `skin`
+    - `beard`
+- After the fix, instantiating `HierarchicalActiveStrategy(dataset='celeba')` reports:
+  - group keys:
+    - `hair color`
+    - `emotion`
+    - `skin`
+    - `beard`
+  - group sizes:
+    - `hair color: 7`
+    - `emotion: 9`
+    - `skin: 3`
+    - `beard: 2`
+  - samplewise metadata coverage:
+    - `180000` samples
+- The new shell launcher is intentionally strategy-at-a-time:
+  - one invocation launches one baseline across four GPUs
+  - this avoids accidentally dumping all `5 x 4 = 20` jobs onto the same four GPUs at once
+
+### Commands and Artifacts
+
+- New script usage:
+  - `./scripts/run_celeba_resume_baselines.sh random`
+  - `./scripts/run_celeba_resume_baselines.sh stratified`
+  - `./scripts/run_celeba_resume_baselines.sh coreset`
+  - `./scripts/run_celeba_resume_baselines.sh badge`
+  - `./scripts/run_celeba_resume_baselines.sh hierarchical`
+- The script auto-discovers the latest matching base model under:
+  - `save/models/model_celeba_resnet_redhair_brownskin_sademotion_0imgs_*.pth`
+  - falling back to:
+    - `outputs/save/models/model_celeba_resnet_redhair_brownskin_sademotion_0imgs_*.pth`
+- Strategy-specific parameters baked into the launcher:
+  - `random`
+    - `--use_active_learning False`
+  - `stratified`
+    - `--al_strategy stratified`
+  - `coreset`
+    - `--al_strategy coreset --al_embedding_dim 512 --al_initial_labeled 1000`
+  - `badge`
+    - `--al_strategy badge --al_embedding_dim 512`
+  - `hierarchical`
+    - `--al_strategy hierarchical --al_embedding_dim 512`
+    - `--al_round1_ratio 0.8`
+    - `--al_alpha 0.5 --al_beta 0.35 --al_gamma 0.15`
+    - `--al_lambda_div 0.3`
+    - `--al_min_slice_quota 20 --al_max_slice_quota 500`
+
+### Validation
+
+- [OK] `python3 -m py_compile alpred.py utils/hierarchical_al.py`
+- [OK] `bash -n scripts/run_celeba_resume_baselines.sh`
+- [OK] `git diff --check`
+- [OK] dry-run launcher probe:
+  - `./scripts/run_celeba_resume_baselines.sh badge --base-model weights/model_imagenet_resnet_base.pth --dry-run`
+- [OK] CelebA hierarchical metadata probe:
+  - confirmed real keys and samplewise conversion from `data/celebA/attribute.json`
+
+### Important Notes
+
+- The launcher hard-codes the intended CelebA setup:
+  - `attributes=redhair_brownskin_sademotion`
+  - `num_added_img=1000`
+  - `num_epochs=15`
+  - `freeze_backbone=False`
+  - `lr=1e-5`
+- The launcher now also supports:
+  - `./scripts/run_celeba_resume_baselines.sh all`
+- `all` mode is sequential, not parallel across strategies:
+  - launch order:
+    - `random`
+    - `stratified`
+    - `coreset`
+    - `badge`
+    - `hierarchical`
+  - each strategy launches its four GPU-specific ratio jobs first
+  - then the script waits for all four launched PIDs to finish before starting the next strategy
+- The script is ready to use after the base model checkpoint exists; it does not itself wait for the base run to finish.
+- `report.md` was not updated because this session changed launch tooling and selector correctness, not stable experiment results.
+
+### Status
+
+[OK] **Completed**
+
+---
+
+## Session 41: Restore `save/pred` compatibility and relaunch CelebA ResNet base run
+
+**Date**: 2026-04-16
+**Task**: celeba-base-relaunch-and-save-pred-compat
+
+### Summary
+
+The user asked whether an earlier CelebA ResNet checkpoint still exists for `--resume_model`, and if not, to relaunch a fresh CelebA ResNet run on GPU `0`. Investigation showed that the repo still contains many saved CelebA prediction arrays, but no reusable CelebA ResNet `.pth` checkpoint. While checking the ongoing ImageNet BADGE resume runs, the ratio-`0.1` job had already crashed after training finished because `alpred.py` tried to save predictions into `save/pred/`, but the current repo state only kept the predictions under `outputs/save/pred/`. Restored backward compatibility by recreating `save/pred` as a symlink to `outputs/save/pred` and hardened `alpred.py` so it now creates `save/pred` before writing predictions. Then launched a new from-scratch CelebA ResNet baseline on GPU `0` with `--save_model True` so a reusable checkpoint will exist after completion.
+
+### Main Findings
+
+- No reusable CelebA ResNet checkpoint is currently present in the repo:
+  - no `model_celeba_resnet*.pth` was found under the workspace
+- Existing CelebA prediction artifacts are present under:
+  - `outputs/save/pred/`
+  - examples include:
+    - `outputs/save/pred/predictions_celeba_resnet_redhair_brownskin_0imgs_1112234817.npy`
+    - `outputs/save/pred/predictions_celeba_resnet_redhair_brownskin_sademotion_1000imgs_0730193801.npy`
+- The ImageNet BADGE resume run for ratio `0.1` already completed training and test evaluation, then failed only at prediction saving:
+  - log: `logs_imagenet/resume_lr5_epoch15_badge_resnet_imagenet_1000_ratio0.1.log`
+  - final printed held-out test accuracy before the crash:
+    - `0.7323`
+  - crash cause:
+    - missing directory `save/pred/`
+- The other BADGE ImageNet resume jobs were still alive after the compatibility fix:
+  - ratio `0.3`: PID `2634921`
+  - ratio `0.5`: PID `2634930`
+  - ratio `0.7`: PID `2634936`
+
+### Main Changes
+
+- Restored legacy prediction output path compatibility:
+  - created symlink:
+    - `save/pred -> ../outputs/save/pred`
+- Hardened prediction saving in:
+  - `alpred.py`
+  - `save_predictions()` now ensures `save/pred` exists before calling `np.save`
+
+### Commands and Artifacts
+
+- Confirmed missing CelebA checkpoints and existing predictions with targeted `find` / `rg` queries.
+- Relaunched fresh CelebA ResNet base run on GPU `0`:
+  - command:
+    - `CUDA_VISIBLE_DEVICES=0 /people/cs/o/oxx220000/.conda/envs/ad/bin/python -u alpred.py --dataset celeba --model resnet --attributes redhair_brownskin_sademotion --gen_image_dir data/redhair_brownskin_sademotion --num_added_img 0 --use_active_learning False --sub_ratio 1.0 --num_epochs 20 --gpu 0 --save_model True`
+  - live Python PID:
+    - `2646523`
+  - launch PID file:
+    - `logs/pids/celeba_resnet_base_redhair_brownskin_sademotion_0imgs_gpu0.pid`
+  - log:
+    - `logs/celeba_resnet_base_redhair_brownskin_sademotion_0imgs_gpu0.log`
+
+### Validation
+
+- [OK] `python3 -m py_compile alpred.py`
+- [OK] `git diff --check`
+- [OK] `readlink -f save/pred`
+  - resolves to `outputs/save/pred`
+- [OK] `ps -fp 2646523 2634921 2634930 2634936`
+
+### Important Notes
+
+- The ratio-`0.1` ImageNet BADGE run is already dead, so restoring `save/pred` cannot retroactively generate its missing prediction `.npy`. If that file is needed, that ratio must be rerun.
+- The new CelebA base run was launched with `--save_model True`; once it finishes, its checkpoint path should follow:
+  - `save/models/model_celeba_resnet_redhair_brownskin_sademotion_0imgs_<timestamp>.pth`
+- `report.md` was not updated because neither the relaunched CelebA baseline nor the remaining BADGE runs have stable final summarized results yet.
+
+### Status
+
+[OK] **In Progress**
+
+---
+
+## Session 42: Stop new artifacts from flowing into `outputs/save`
+
+**Date**: 2026-04-16
+**Task**: stop-outputs-save-writes
+
+### Summary
+
+The user asked whether the repo still had executable code writing into `outputs/save`, and requested that this be fixed to prevent future outputs from landing there. Searched the repo excluding docs/logs/artifacts, found that the remaining practical problem was not broad hard-coded writes but path aliasing: `save/pred` was a symlink to `outputs/save/pred`, so any code writing to `save/pred/...` still created new files under `outputs/save/pred`. Also found one remaining executable script that explicitly searched `outputs/save/models`.
+
+### Main Changes
+
+- Removed the last explicit executable-script reference to `outputs/save`:
+  - updated `scripts/run_celeba_resume_baselines.sh`
+  - it now searches only `save/models/...`
+- Stopped new prediction outputs from being redirected into `outputs/save/pred`:
+  - removed the `save/pred -> ../outputs/save/pred` symlink
+  - created a real `save/pred/` directory
+  - copied the existing prediction files from `outputs/save/pred/` into `save/pred/`
+- Normalized model discovery under `save/models/`:
+  - copied the old ImageNet model files from `outputs/save/models/` into `save/models/`
+  - avoided leaving model symlinks in place, so future writes do not bounce back into `outputs/save/models`
+
+### Validation
+
+- [OK] Literal `outputs/save` references in executable code:
+  - `rg -n "outputs/save" . --glob '!**/*.md' --glob '!**/*.html' --glob '!**/*.log' --glob '!**/*.json' --glob '!**/*.csv' --glob '!**/*.npy' --glob '!**/*.txt'`
+  - returned no matches after the cleanup
+- [OK] No symlinks remain under `save/`:
+  - `find save -type l -ls`
+- [OK] Prediction directory migrated:
+  - `save/pred` now contains `678` files
+- [OK] Model directory normalized:
+  - `save/models` now contains `6` real files
+- [OK] `git diff --check`
+
+### Important Notes
+
+- The repo still keeps `utils/path_utils.py` with a legacy read fallback for `outputs/save` so older moved artifacts can still be found if they were not copied yet.
+- The important behavior change is that active write paths now resolve to `save/`, not `outputs/save/`.
+
+### Status
+
+[OK] **Completed**
+
+---
+
+## Session 41: Add completed ImageNet10 BADGE results to `report.md`
+
+**Date**: 2026-04-16
+**Task**: report-badge-results
+
+### Summary
+
+The user noticed that the four ImageNet10 BADGE resume runs appeared to be finished and asked for the report to be updated. Verified that all four BADGE jobs had exited, extracted the final held-out metrics from the logs, and added a new `04/16/2026` section to `report.md` summarizing the ratio sweep over `sub_ratio = 0.1, 0.3, 0.5, 0.7`.
+
+### Main Findings
+
+- All four BADGE runs produced usable held-out test metrics before failing in post-processing.
+- Extracted main results:
+  - `sub_ratio=0.1`
+    - best val acc: `0.7208`
+    - test acc: `0.7323`
+    - AL selection time: `272.65 s`
+  - `sub_ratio=0.3`
+    - best val acc: `0.7215`
+    - test acc: `0.7423`
+    - AL selection time: `787.57 s`
+    - end-to-end time: `1308.12 s`
+  - `sub_ratio=0.5`
+    - best val acc: `0.7223`
+    - test acc: `0.7469`
+    - AL selection time: `1281.51 s`
+    - end-to-end time: `1654.63 s`
+  - `sub_ratio=0.7`
+    - best val acc: `0.7215`
+    - test acc: `0.7477`
+    - AL selection time: `1603.43 s`
+    - end-to-end time: `1835.02 s`
+- Test accuracy increased monotonically with the retained original-data ratio:
+  - `0.7323 -> 0.7423 -> 0.7469 -> 0.7477`
+- At the directly comparable `sub_ratio=0.3` resume setting, BADGE outperformed the earlier 2/27 resume-table entries recorded in `report.md`, including the previously cited `Hybrid` value `0.7400`.
+
+### Failure Boundary
+
+- The metrics are still valid because each run failed only after the evaluation lines were printed:
+  - ratio `0.1`: crashed while saving predictions because `save/pred/` was missing
+  - ratios `0.3`, `0.5`, `0.7`: crashed during diagnostics because `save/attribute10.json` was missing
+
+### Files Updated
+
+- `report.md`
+
+### Validation
+
+- [OK] confirmed the launch PIDs are no longer alive
+- [OK] extracted the final metric lines from:
+  - `logs_imagenet/resume_lr5_epoch15_badge_resnet_imagenet_1000_ratio0.1.log`
+  - `logs_imagenet/resume_lr5_epoch15_badge_resnet_imagenet_1000_ratio0.3.log`
+  - `logs_imagenet/resume_lr5_epoch15_badge_resnet_imagenet_1000_ratio0.5.log`
+  - `logs_imagenet/resume_lr5_epoch15_badge_resnet_imagenet_1000_ratio0.7.log`
+- [OK] `git diff --check`
+
+### Status
+
+[OK] **Completed**
+
+---
+
+## Session 40: Merge duplicate Active Learning Markdown docs
+
+**Date**: 2026-04-16
+**Task**: merge-active-learning-docs
+
+### Summary
+
+The user asked whether `md/README_ActiveLearning.md` and `md/README_ActiveLearning_Strategies.md` should be merged. After comparing both files, the strategy guide was clearly the richer and more current document, so it was kept as the canonical Active Learning doc. Merged the small amount of still-useful legacy overview content from the old file into the strategy guide, then removed the duplicate overview file.
+
+### Main Changes
+
+- Kept:
+  - `md/README_ActiveLearning_Strategies.md`
+- Removed:
+  - `md/README_ActiveLearning.md`
+- Updated the surviving document to:
+  - rename the title from "Active Learning Strategy Usage Guide" to "Active Learning Guide"
+  - state explicitly that it is now the single canonical Active Learning document
+  - retain the current `alpred.py` strategy documentation
+  - absorb the useful legacy content about older round-based demos and the CelebA-oriented layout
+
+### Validation
+
+- [OK] `git diff --check`
+- [OK] `rg -n "README_ActiveLearning\\.md|README_ActiveLearning_Strategies\\.md" -S .`
+  - no live references to the removed Markdown file remain
+
+### Important Notes
+
+- The generated HTML file `md/README_ActiveLearning_Strategies.html` still points to the surviving Markdown source and does not require changes for this merge.
+- `report.md` was not updated because this change only restructures documentation.
+
+### Status
+
+[OK] **Completed**
+
+---
+
+## Session 39: Launch ImageNet10 BADGE resume sweep and harden `alpred.py` runtime paths
+
+**Date**: 2026-04-16
+**Task**: imagenet-badge-launch-and-runtime-fixes
+
+### Summary
+
+The user asked to run BADGE on the ImageNet10 setup using the same resume-from-base recipe as the earlier Active Learning experiments, with one `sub_ratio` per GPU: `0.1`, `0.3`, `0.5`, and `0.7` on GPUs `0`, `1`, `2`, and `3`. Before the runs could start, `alpred.py` failed in two unrelated runtime paths: a top-level import of `utils.llm_selection` crashed even when `--use_llm_selection False`, and ImageNet split indices were looked up only under `save/` even though the current repo state stores them in `outputs/save/`. Fixed both issues, then launched four detached BADGE runs and verified that all four Python processes remained alive and entered BADGE feature extraction.
+
+### Main Changes
+
+- Hardened `alpred.py` against optional LLM dependency failures:
+  - replaced the top-level `from utils.llm_selection import llm_data_selection`
+  - added lazy import helper `_require_llm_data_selection()`
+  - now only raises an import error when `--use_llm_selection True`
+- Hardened ImageNet split resolution in `alpred.py`:
+  - added `_resolve_existing_path()`
+  - ImageNet now searches split files in:
+    - `save/`
+    - `outputs/save/`
+  - verbose runs print which directory is used when the fallback path is taken
+
+### Commands and Artifacts
+
+- Front-run probe that confirmed the run now reaches BADGE selection:
+  - `timeout 20s env MPLCONFIGDIR=/tmp/matplotlib-safefix CUDA_VISIBLE_DEVICES=0 /people/cs/o/oxx220000/.conda/envs/ad/bin/python -u alpred.py --dataset imagenet --model resnet --num_added_img 1000 --attributes pinkcolor_fabrictexture --num_epochs 15 --verbose True --resume_model weights/model_imagenet_resnet_base.pth --use_active_learning True --sub_ratio 0.1 --al_strategy badge --al_embedding_dim 256`
+- Detached BADGE runs launched with `setsid + nohup`:
+  - ratio `0.1`, GPU `0`
+    - PID: `2634097`
+    - log: `logs_imagenet/resume_lr5_epoch15_badge_resnet_imagenet_1000_ratio0.1.log`
+    - pid file: `logs_imagenet/pids/resume_lr5_epoch15_badge_ratio0.1.pid`
+  - ratio `0.3`, GPU `1`
+    - PID: `2634921`
+    - log: `logs_imagenet/resume_lr5_epoch15_badge_resnet_imagenet_1000_ratio0.3.log`
+    - pid file: `logs_imagenet/pids/resume_lr5_epoch15_badge_ratio0.3.pid`
+  - ratio `0.5`, GPU `2`
+    - PID: `2634930`
+    - log: `logs_imagenet/resume_lr5_epoch15_badge_resnet_imagenet_1000_ratio0.5.log`
+    - pid file: `logs_imagenet/pids/resume_lr5_epoch15_badge_ratio0.5.pid`
+  - ratio `0.7`, GPU `3`
+    - PID: `2634936`
+    - log: `logs_imagenet/resume_lr5_epoch15_badge_resnet_imagenet_1000_ratio0.7.log`
+    - pid file: `logs_imagenet/pids/resume_lr5_epoch15_badge_ratio0.7.pid`
+
+### Main Findings
+
+- The previous runtime blocker was not BADGE itself:
+  - `alpred.py` crashed at import time because `utils.llm_selection` required a `transformers` symbol (`Qwen2_5_VLForConditionalGeneration`) unavailable in the current `ad` environment
+- The current ImageNet split files are present under:
+  - `outputs/save/train_idx_imagenet.npy`
+  - `outputs/save/val_idx_imagenet.npy`
+  - `outputs/save/test_idx_imagenet.npy`
+- All four launched BADGE runs entered the expected setup path:
+  - ImageNet split fallback resolved correctly
+  - generated image directory resolved to `data/imagenet_pinkcolor_fabrictexture`
+  - BADGE selection started with the expected budgets:
+    - `0.1 -> 1040 / 10400`
+    - `0.3 -> 3120 / 10400`
+    - `0.5 -> 5200 / 10400`
+    - `0.7 -> 7279 / 10400`
+- GPU occupancy after launch:
+  - GPUs `0`, `1`, `3` each showed the new BADGE Python process using about `1588 MiB`
+  - GPU `2` already had another user process:
+    - PID `2629402`
+    - memory about `9054 MiB`
+  - the BADGE ratio-`0.5` run still launched successfully on GPU `2` and allocated about `1588 MiB`
+
+### Validation
+
+- [OK] Syntax check:
+  - `python3 -m py_compile alpred.py`
+- [OK] Front-run smoke test reached BADGE embedding extraction without crashing
+- [OK] Detached processes survived shell exit:
+  - `ps -fp 2634097 2634921 2634930 2634936`
+- [OK] GPU visibility confirmed:
+  - `nvidia-smi --query-compute-apps=gpu_uuid,pid,process_name,used_memory --format=csv,noheader`
+
+### Important Notes
+
+- The detached launch required `setsid + nohup`; plain backgrounding from the command runner did not keep the Python workers alive.
+- `report.md` was not updated in this session because no BADGE result metrics are complete yet.
+
+### Next Steps
+
+- Monitor the four BADGE logs until training and evaluation finish.
+- Extract the final val / test metrics from each ratio-specific log.
+- Update `report.md` with the completed ImageNet10 BADGE results and compare them against the existing resume-from-base baselines.
+
+### Status
+
+[OK] **In Progress**
+
+---
+
+## Session 38: Implement BADGE in `alpred.py` and refresh Active Learning docs
+
+**Date**: 2026-04-16
+**Task**: alpred-badge-and-doc-refresh
+
+### Summary
+
+The user asked for another popular Active Learning method beyond core-set, approved `badge`, and then requested that the implementation and the current understanding of `alpred.py` be documented in the repo Markdown files. Added a BADGE selector to the main `alpred.py` Active Learning path, using the repo's existing pretrained embedding extraction plus a lightweight validation-centroid proxy classifier to form BADGE-style gradient embeddings before batch selection. Updated the main `README.md`, the Active Learning strategy guide, the legacy Active Learning overview, and `report.md` so the docs now explain how `alpred.py` dispatches selection, where `badge` fits, and why the `attribute` strategy is methodologically different from standard AL baselines.
+
+### Main Changes
+
+- Added BADGE support to the main CLI in:
+  - `alpred.py`
+- Added reusable target extraction helpers and a new BADGE implementation in:
+  - `utils/active_learning.py`
+- Updated high-level and AL-specific docs in:
+  - `README.md`
+  - `report.md`
+  - `md/README_ActiveLearning.md`
+  - `md/README_ActiveLearning_Strategies.md`
+
+### Main Findings
+
+- `alpred.py` now exposes `badge` directly through `--al_strategy`.
+- The BADGE implementation is adapted to this repo's pre-training-first selection flow:
+  - train and validation embeddings are extracted using the same pretrained feature models already used by `coreset` / `diversity`
+  - validation embeddings plus validation labels define per-class centroids
+  - centroid-induced class probabilities drive BADGE-style gradient embeddings
+  - k-means++ seeding over those gradient embeddings selects the final batch
+- This is intentionally different from a fully task-trained BADGE loop:
+  - the repo performs subset selection before downstream fine-tuning
+  - therefore a lightweight proxy classifier is needed at selection time
+- The docs now explicitly distinguish three families in `alpred.py`:
+  - geometry / coverage-driven
+  - uncertainty-aware batch selection
+  - metadata / slice-driven
+- The docs now state the main Safefix-specific points of the `attribute` method:
+  - class-conditional rarity
+  - generated-data frequency penalty
+  - log-aware failure weighting
+  - deficit-based class balancing
+
+### Validation
+
+- [OK] Syntax check:
+  - `python3 -m py_compile alpred.py utils/active_learning.py`
+- [OK] In-memory BADGE sanity probe in the `ad` environment:
+  - `/people/cs/o/oxx220000/.conda/envs/ad/bin/python -c "import numpy as np; from utils.active_learning import BadgeStrategy; ..."`
+  - returned a valid 5-index selection and populated `last_proxy_stats`
+- [OK] `git diff --check`
+
+### Important Notes
+
+- The default shell `python3` environment currently has a broken local PyTorch/CUDA stack:
+  - importing `torch` failed with `libcusparse.so.12: undefined symbol: __nvJitLinkAddData_12_1`
+- Because of that environment issue, runtime verification that imports `torch` should use the working conda environment instead:
+  - `/people/cs/o/oxx220000/.conda/envs/ad/bin/python`
+- The BADGE implementation in this repo is best described as:
+  - BADGE-style batch selection over pretrained embeddings with a validation-centroid proxy classifier
+- No benchmark run was launched in this session, so the docs position BADGE as a new baseline / comparison method rather than claiming measured wins.
+
+### Next Steps
+
+- If the user wants empirical comparison next, run `badge` against:
+  - `attribute`
+  - `hybrid`
+  - `stratified`
+- If stronger BADGE fidelity is needed later, replace the centroid proxy with a lightweight trained probe head before selection.
+
+### Status
+
+[OK] **Completed**
+
+---
+
 ## Session 37: Add Qwen3 train20k image-id filter for non-brown and non-rainy images
 
 **Date**: 2026-04-15

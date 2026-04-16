@@ -1,8 +1,22 @@
-# Active Learning Strategy Usage Guide
+# Active Learning Guide
 
 ## Overview
 
-I have implemented multiple Active Learning strategies for the Safefix project to address the poor performance of the original Core-set method.
+This is the canonical Active Learning document for the Safefix repository. The older `md/README_ActiveLearning.md` overview has been merged into this file so the current `alpred.py` workflow and the older round-based demos are documented in one place.
+
+The repository contains multiple Active Learning strategies for the Safefix project to address the poor performance of the original Core-set method.
+
+`alpred.py` applies data selection before training. The dispatch order is:
+
+1. `--use_llm_selection True`: use the VLM-based selector and disable traditional AL.
+2. `--use_active_learning True`: run the requested AL strategy on either the original train pool or the combined pool when `--al_combined True`.
+3. Otherwise: use random sub-sampling when `--sub_ratio < 1.0`.
+
+Within the AL branch, the current strategies fall into three families:
+
+- **Geometry / coverage-driven**: `coreset`, `diversity`, `hybrid`
+- **Uncertainty-aware batch selection**: `badge`, `uncertainty_stratified`, `gen_probe`
+- **Metadata / slice-driven**: `attribute`, `hierarchical`
 
 ## Available Strategies
 
@@ -14,7 +28,16 @@ python alpred.py --al_strategy coreset --al_initial_labeled 400 --al_embedding_d
 - **Use Cases**: Uniform data distribution, need to maximize coverage
 - **Issues**: May select outlier samples, disrupting class balance
 
-### 2. StratifiedStrategy (Stratified Sampling)
+### 2. BadgeStrategy (Gradient-Embedding Batch Selection)
+```bash
+python alpred.py --al_strategy badge --al_embedding_dim 256
+```
+- **Principle**: Builds BADGE-style gradient embeddings and uses k-means++ seeding to choose a batch that is both uncertain and diverse.
+- **Current Implementation Detail**: `alpred.py` estimates the class probabilities from validation-set class centroids in the pretrained embedding space, so BADGE can run before task-specific fine-tuning.
+- **Use Cases**: Strong baseline when a batch selector should mix uncertainty with diversity rather than optimizing either one alone.
+- **Advantages**: Closer to a standard batch-AL baseline than pure coreset or pure clustering.
+
+### 3. StratifiedStrategy (Stratified Sampling)
 ```bash
 python alpred.py --al_strategy stratified
 ```
@@ -23,7 +46,7 @@ python alpred.py --al_strategy stratified
 - **Advantages**: Maintains original data distribution, simple and efficient
 - **Speed**: Fastest (no feature extraction needed)
 
-### 3. DiversityStrategy (Diversity Clustering)
+### 4. DiversityStrategy (Diversity Clustering)
 ```bash
 python alpred.py --al_strategy diversity --al_clusters 100 --al_embedding_dim 256
 ```
@@ -31,7 +54,7 @@ python alpred.py --al_strategy diversity --al_clusters 100 --al_embedding_dim 25
 - **Use Cases**: Data with natural clustering structure, need to cover different data patterns
 - **Advantages**: Balances diversity and representativeness
 
-### 4. HybridStrategy (Mixed Strategy)
+### 5. HybridStrategy (Mixed Strategy)
 ```bash
 python alpred.py --al_strategy hybrid --al_coreset_ratio 0.3 --al_stratified_ratio 0.5 --al_embedding_dim 256
 ```
@@ -42,7 +65,7 @@ python alpred.py --al_strategy hybrid --al_coreset_ratio 0.3 --al_stratified_rat
 - **Use Cases**: Complex data distributions, need comprehensive consideration
 - **Advantages**: Most robust, highly adaptive
 
-### 5. AttributeFocusedStrategy (Attribute-Driven Sampling)
+### 6. AttributeFocusedStrategy (Attribute-Driven Sampling)
 ```bash
 python alpred.py --al_strategy attribute --attribute_file save/attribute10.json \
   --al_attribute_focus color,background --al_attribute_rarity_power 1.5 --al_attribute_uncertainty_boost 1.0
@@ -68,9 +91,9 @@ Let $i$ index a candidate sample and $A$ denote the set of attributes contained 
   $$L_{i,a} = \gamma \cdot w_{a}(v_{i,a})$$
   where $\gamma$ is the scaling factor. Lower accuracies therefore produce larger boosts, while missing entries default to zero.
 
-4. **Balance penalty** (optional, requires `--al_attribute_extra_counts` and `--al_attribute_balance_strength`): when generated data injects thousands of samples with specific attribute values, pass those counts through `--al_attribute_extra_counts` (inline `attr:value=count` list or JSON file). Frequencies are augmented with the supplied counts, and the balance term subtracts
+4. **Frequency penalty** (optional, requires `--al_attribute_extra_counts` and `--al_attribute_frequency_penalty`): when generated data injects thousands of samples with specific attribute values, pass those counts through `--al_attribute_extra_counts` (inline `attr:value=count` list or JSON file). Frequencies are augmented with the supplied counts, and the balance term subtracts
   $$B_{i,a} = -\lambda \cdot \frac{f^{*}_{a}(v_{i,a})}{\sum_{v} f^{*}_{a}(v)}$$
-  where $\lambda$ is `--al_attribute_balance_strength` and $f^{*}$ denotes the augmented frequency. Larger augmented shares therefore receive a larger negative adjustment.
+  where $\lambda$ is `--al_attribute_frequency_penalty` and $f^{*}$ denotes the augmented frequency. Larger augmented shares therefore receive a larger negative adjustment.
 
 The total score for sample $i$ is the sum across all attributes:
   $$S_i = \sum_{a \in A} \big(R_{i,a} + U_{i,a} + L_{i,a} + B_{i,a}\big).$$
@@ -116,10 +139,30 @@ The selector still picks the same total budget—$(10{,}400 \times 0.3 = 3{,}120
 
 Because the method operates purely on metadata, it integrates cleanly with the rest of the pipeline—no embedding extraction or model forward passes are required during selection.
 
+## Why the Attribute Strategy Is Different
+
+The `attribute` strategy is not just another uncertainty or diversity heuristic. Standard AL methods in this repo behave as follows:
+
+- `coreset` / `diversity`: rank samples from geometry in feature space.
+- `badge` / `uncertainty_stratified` / `gen_probe`: rank samples from uncertainty-like signals or gradient embeddings.
+- `hybrid`: mixes geometric coverage, class balance, and randomness.
+- `hierarchical`: allocates budget over slices, but still uses model-side uncertainty and embeddings during selection.
+
+By contrast, `attribute` starts from **semantic metadata** rather than feature geometry. It explicitly asks: which human-named slices are rare, uncertain, underperforming, or artificially flooded by generated data? The selector then scores each image by those slice-level signals.
+
+The main methodological contributions in the current `attribute` path are:
+
+- **Class-conditional rarity**: prefer values that are rare within a class, not merely rare globally.
+- **Generated-data frequency penalty**: suppress oversampling of slices that were already heavily injected by synthetic data.
+- **Log-aware failure weighting**: upweight samples from attribute values that earlier diagnostics marked as low-accuracy rare cases.
+- **Deficit-based class balancing**: interpolate between pure attribute ranking and hard stratification without discarding the metadata signal.
+
+This makes the method a better fit for Safefix than standard AL baselines when the goal is not only to improve average accuracy, but also to surface and repair semantically interpretable failure slices.
+
 ## Parameter Description
 
 ### General Parameters
-- `--al_strategy`: AL strategy selection [coreset|stratified|diversity|hybrid|hierarchical|attribute]
+- `--al_strategy`: AL strategy selection [attribute|badge|coreset|stratified|diversity|hybrid|hierarchical|uncertainty_stratified|gen_probe]
 - `--al_embedding_dim`: Feature vector dimension (default: 512)
 - `--al_initial_labeled`: Initial labeled sample count (default: 500)
 
@@ -136,11 +179,13 @@ Because the method operates purely on metadata, it integrates cleanly with the r
 - `--al_attribute_focus`: Optional comma-separated attribute keys to prioritize (default: all keys in metadata)
 - `--al_attribute_rarity_power`: Emphasis on rare attribute values (>=0, higher = stronger focus on rare slices)
 - `--al_attribute_uncertainty_boost`: Score bonus for samples marked as uncertain in metadata (>=0)
+- `--al_attribute_use_entropy`: If True, computes Information Entropy from model inference and uses it for the uncertainty term instead of static metadata flags
 - `--al_attribute_log_path`: Optional path to diagnostic log providing Rare Case accuracies
-- `--al_attribute_log_acc_scale`: Scaling factor applied to each log-derived failure weight (default: 1.0)
+- `--al_attribute_log_acc_scale`: Scaling factor applied to each log-derived failure weight (default: 0.0)
 - `--al_attribute_extra_counts`: Inline list or JSON file describing additional counts to inject per attribute value (useful when synthetic data floods specific slices); inline entries without `=count` inherit `--num_added_img`, and when omitted entirely the code infers counts from `--attributes` tokens (value+attribute) using `--num_added_img`
-- `--al_attribute_balance_strength`: Multiplier controlling how strongly over-represented values are penalized (0 disables the term)
+- `--al_attribute_frequency_penalty`: Multiplier controlling how strongly over-represented values are penalized (0 disables the term)
 - `--al_attribute_class_balance`: Stratified weight for enforcing class balance after attribute scoring (0 disables, `inf` enforces near-perfect round-robin per class)
+- `--al_conditional_rarity`: Use class-conditional rarity `P(value | class)` instead of global rarity
 
 ## Recommended Configurations
 
@@ -182,6 +227,54 @@ Based on analysis, expected performance ranking:
 3. **DiversityStrategy**: Moderate performance, adapts to complex distributions
 4. **CoreSetStrategy**: Possibly worst performance (original issue)
 
+## Legacy Round-Based Demos
+
+The production selector now lives in `alpred.py`, but the repo still contains earlier round-based demos that can be useful for debugging or small-scale checks.
+
+### Quick Start
+
+```bash
+python demo_active_learning.py
+```
+
+```bash
+chmod +x run_active_learning.sh
+./run_active_learning.sh
+./run_active_learning.sh coreset resnet 10
+```
+
+```bash
+python active_learning_coreset.py \
+  --model resnet \
+  --batch-size 32 \
+  --learning-rate 1e-4 \
+  --num-epochs 10 \
+  --initial-labeled 1000 \
+  --al-rounds 5 \
+  --samples-per-round 500 \
+  --device cuda
+```
+
+```bash
+python enhanced_active_learning.py
+```
+
+### Legacy CelebA Layout
+
+The older demos follow the original CelebA-oriented layout:
+
+```text
+data/celebA/
+├── list_attr_celeba.txt
+├── train_idx.npy
+├── labels.npy
+└── predictions.npy
+```
+
+Image directories used by those demos:
+- `/data/oxx220000/img_align_celeba/`
+- `/home/jovyan/ouser/dataset/img_align_celeba/`
+
 ## Testing Scripts
 
 Run comparative tests of all strategies:
@@ -205,6 +298,7 @@ python compare_al_results.py
 
 New AL strategies are all in `utils/active_learning.py`:
 - `CoreSetStrategy`: Original core-set method
+- `BadgeStrategy`: BADGE-style gradient-embedding batch selection
 - `StratifiedStrategy`: Stratified sampling
 - `UncertaintyStrategy`: Uncertainty-based sampling (future extension)
 - `DiversityStrategy`: Clustering-based diversity sampling

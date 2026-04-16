@@ -194,6 +194,85 @@ def infer_generated_attribute_counts(metadata, attribute_string, default_count, 
     return {attr: values for attr, values in inferred.items() if values}
 
 
+def _coerce_targets_array(candidates):
+    """Convert common target containers into a 1D integer numpy array."""
+    if candidates is None:
+        return None
+
+    if torch.is_tensor(candidates):
+        candidates = candidates.detach().cpu().numpy()
+    elif not isinstance(candidates, np.ndarray):
+        candidates = np.asarray(list(candidates))
+
+    if candidates.ndim == 0:
+        candidates = candidates.reshape(1)
+
+    if candidates.ndim != 1:
+        try:
+            candidates = candidates.reshape(-1)
+        except ValueError:
+            return None
+
+    try:
+        return candidates.astype(int)
+    except (TypeError, ValueError):
+        cleaned = []
+        for item in candidates.tolist():
+            if torch.is_tensor(item):
+                if item.numel() != 1:
+                    return None
+                item = item.item()
+            elif isinstance(item, np.ndarray):
+                if item.size != 1:
+                    return None
+                item = item.item()
+            try:
+                cleaned.append(int(item))
+            except (TypeError, ValueError):
+                return None
+        return np.array(cleaned, dtype=int)
+
+
+def extract_targets_from_dataset(dataset):
+    """Extract per-sample class labels from common dataset wrappers."""
+    from torch.utils.data import ConcatDataset, Subset
+
+    if isinstance(dataset, Subset):
+        parent_targets = extract_targets_from_dataset(dataset.dataset)
+        if parent_targets is None:
+            return None
+        return np.array([parent_targets[int(idx)] for idx in dataset.indices], dtype=int)
+
+    if isinstance(dataset, ConcatDataset):
+        all_targets = []
+        for sub_dataset in dataset.datasets:
+            sub_targets = extract_targets_from_dataset(sub_dataset)
+            if sub_targets is None:
+                return None
+            all_targets.append(np.asarray(sub_targets, dtype=int))
+        if not all_targets:
+            return np.array([], dtype=int)
+        return np.concatenate(all_targets, axis=0)
+
+    for attr_name in ("targets", "labels"):
+        if hasattr(dataset, attr_name):
+            targets = _coerce_targets_array(getattr(dataset, attr_name))
+            if targets is not None:
+                return targets
+
+    if hasattr(dataset, "samples"):
+        targets = _coerce_targets_array([sample[1] for sample in dataset.samples])
+        if targets is not None:
+            return targets
+
+    if hasattr(dataset, "imgs"):
+        targets = _coerce_targets_array([sample[1] for sample in dataset.imgs])
+        if targets is not None:
+            return targets
+
+    return None
+
+
 class CoreSetStrategy:
     """
     Core-set selection strategy for Active Learning
@@ -356,6 +435,132 @@ class UncertaintyStrategy:
         
         print(f"Selected samples with uncertainty range: {uncertainties[selected_indices].min():.4f} - {uncertainties[selected_indices].max():.4f}")
         return selected_indices
+
+
+class BadgeStrategy:
+    """
+    BADGE selection via gradient embeddings and k-means++ seeding.
+
+    This implementation uses a lightweight centroid classifier over the same
+    pretrained embeddings already extracted for other AL strategies. That keeps
+    the method usable before any task-specific fine-tuning has happened while
+    still coupling uncertainty and diversity in the batch selection stage.
+    """
+
+    def __init__(self, temperature=1.0):
+        self.temperature = max(float(temperature), 1e-6)
+        self.last_proxy_stats = {}
+
+    def _normalize_rows(self, array):
+        norms = np.linalg.norm(array, axis=1, keepdims=True)
+        norms = np.maximum(norms, 1e-12)
+        return array / norms
+
+    def _softmax(self, logits):
+        stabilized = logits - np.max(logits, axis=1, keepdims=True)
+        exp_logits = np.exp(stabilized)
+        normalizer = np.sum(exp_logits, axis=1, keepdims=True)
+        return exp_logits / np.maximum(normalizer, 1e-12)
+
+    def _build_centroids(self, labeled_embeddings, labeled_targets):
+        unique_targets = np.unique(labeled_targets)
+        if unique_targets.size < 2:
+            raise ValueError("BADGE requires at least two classes in the labeled proxy set")
+
+        centroids = []
+        centroid_labels = []
+        for target in unique_targets:
+            mask = labeled_targets == target
+            if not np.any(mask):
+                continue
+            centroids.append(np.mean(labeled_embeddings[mask], axis=0))
+            centroid_labels.append(int(target))
+
+        if len(centroids) < 2:
+            raise ValueError("BADGE could not form at least two class centroids")
+
+        return np.stack(centroids, axis=0), np.array(centroid_labels, dtype=int)
+
+    def _compute_gradient_embeddings(self, labeled_embeddings, unlabeled_embeddings, labeled_targets):
+        labeled_embeddings = self._normalize_rows(np.asarray(labeled_embeddings, dtype=np.float32))
+        unlabeled_embeddings = self._normalize_rows(np.asarray(unlabeled_embeddings, dtype=np.float32))
+        labeled_targets = np.asarray(labeled_targets, dtype=int)
+
+        centroids, centroid_labels = self._build_centroids(labeled_embeddings, labeled_targets)
+        distances = euclidean_distances(unlabeled_embeddings, centroids, squared=True)
+        probs = self._softmax(-distances / self.temperature)
+        predicted_classes = np.argmax(probs, axis=1)
+
+        n_samples, embedding_dim = unlabeled_embeddings.shape
+        n_classes = probs.shape[1]
+        gradient_embeddings = np.zeros((n_samples, embedding_dim * n_classes), dtype=np.float32)
+
+        for class_idx in range(n_classes):
+            coeff = probs[:, class_idx].copy()
+            coeff[predicted_classes == class_idx] -= 1.0
+            start = class_idx * embedding_dim
+            end = start + embedding_dim
+            gradient_embeddings[:, start:end] = unlabeled_embeddings * coeff[:, None]
+
+        uncertainty = 1.0 - np.max(probs, axis=1)
+        predicted_labels = centroid_labels[predicted_classes]
+        self.last_proxy_stats = {
+            "n_proxy_classes": int(len(centroid_labels)),
+            "uncertainty_min": float(np.min(uncertainty)),
+            "uncertainty_mean": float(np.mean(uncertainty)),
+            "uncertainty_max": float(np.max(uncertainty)),
+            "predicted_class_hist": {
+                int(label): int(count)
+                for label, count in zip(*np.unique(predicted_labels, return_counts=True))
+            },
+        }
+
+        return gradient_embeddings
+
+    def _kmeanspp_seeding(self, embeddings, n_select, random_seed=42):
+        n_samples = embeddings.shape[0]
+        if n_select >= n_samples:
+            return list(range(n_samples))
+
+        rng = np.random.default_rng(random_seed)
+        selected = [int(np.argmax(np.sum(embeddings * embeddings, axis=1)))]
+        min_distances = euclidean_distances(
+            embeddings, embeddings[selected[0]:selected[0] + 1], squared=True
+        ).reshape(-1)
+        min_distances[selected[0]] = 0.0
+
+        while len(selected) < n_select:
+            total_distance = float(np.sum(min_distances))
+            if not np.isfinite(total_distance) or total_distance <= 1e-12:
+                remaining = np.setdiff1d(np.arange(n_samples), np.array(selected), assume_unique=False)
+                if remaining.size == 0:
+                    break
+                next_idx = int(rng.choice(remaining))
+            else:
+                probs = min_distances / total_distance
+                next_idx = int(rng.choice(n_samples, p=probs))
+                if next_idx in selected:
+                    remaining = np.setdiff1d(np.arange(n_samples), np.array(selected), assume_unique=False)
+                    if remaining.size == 0:
+                        break
+                    next_idx = int(remaining[np.argmax(min_distances[remaining])])
+
+            selected.append(next_idx)
+            new_distances = euclidean_distances(
+                embeddings, embeddings[next_idx:next_idx + 1], squared=True
+            ).reshape(-1)
+            min_distances = np.minimum(min_distances, new_distances)
+            min_distances[selected] = 0.0
+
+        return selected
+
+    def select(self, labeled_embeddings, unlabeled_embeddings, labeled_targets, n_select, random_seed=42):
+        gradient_embeddings = self._compute_gradient_embeddings(
+            labeled_embeddings=labeled_embeddings,
+            unlabeled_embeddings=unlabeled_embeddings,
+            labeled_targets=labeled_targets,
+        )
+        return self._kmeanspp_seeding(gradient_embeddings, n_select, random_seed=random_seed)
 
 
 class HybridStrategy:
@@ -1299,12 +1504,8 @@ def active_learning_selection(train_dataset, val_dataset, args, device, verbose=
     # Handle pure stratified sampling (doesn't need embeddings)
     if al_strategy == 'stratified':
         try:
-            # Get targets from dataset
-            if hasattr(train_dataset, 'targets'):
-                targets = np.array([train_dataset.dataset.targets[i] for i in train_dataset.indices])
-            elif hasattr(train_dataset, 'dataset') and hasattr(train_dataset.dataset, 'targets'):
-                targets = np.array([train_dataset.dataset.targets[i] for i in train_dataset.indices])
-            else:
+            targets = extract_targets_from_dataset(train_dataset)
+            if targets is None:
                 if verbose:
                     print("Warning: Could not extract targets for stratified sampling, falling back to random")
                 random.seed(args.seed)
@@ -1647,6 +1848,56 @@ def active_learning_selection(train_dataset, val_dataset, args, device, verbose=
             n_select=target_samples
         )
         
+    elif al_strategy == 'badge':
+        val_loader = DataLoader(val_dataset, batch_size=al_batch_size, shuffle=False,
+                               num_workers=args.workers, pin_memory=True)
+
+        if verbose:
+            print(f"Extracting embeddings from {len(val_dataset)} validation samples for BADGE...")
+        val_embeddings = extract_embeddings_for_al(feature_model, val_loader, device,
+                                                   args.model, args.al_embedding_dim)
+
+        val_targets = extract_targets_from_dataset(val_dataset)
+        if val_targets is None:
+            if verbose:
+                print("BADGE failed: could not extract validation targets for the proxy classifier. Falling back to diversity.")
+            strategy = DiversityStrategy(n_clusters=getattr(args, 'al_clusters', target_samples // 10))
+            selected_indices = strategy.diversity_sample(
+                embeddings=train_embeddings,
+                n_select=target_samples,
+                random_seed=args.seed
+            )
+        else:
+            try:
+                strategy = BadgeStrategy()
+                selected_indices = strategy.select(
+                    labeled_embeddings=val_embeddings,
+                    unlabeled_embeddings=train_embeddings,
+                    labeled_targets=val_targets,
+                    n_select=target_samples,
+                    random_seed=args.seed
+                )
+                if verbose and strategy.last_proxy_stats:
+                    stats = strategy.last_proxy_stats
+                    print(
+                        "BADGE proxy classifier: "
+                        f"{stats['n_proxy_classes']} classes, "
+                        f"uncertainty min/mean/max="
+                        f"{stats['uncertainty_min']:.4f}/"
+                        f"{stats['uncertainty_mean']:.4f}/"
+                        f"{stats['uncertainty_max']:.4f}"
+                    )
+                    print(f"BADGE predicted class histogram: {stats['predicted_class_hist']}")
+            except Exception as exc:
+                if verbose:
+                    print(f"BADGE selection failed ({exc}). Falling back to diversity.")
+                strategy = DiversityStrategy(n_clusters=getattr(args, 'al_clusters', target_samples // 10))
+                selected_indices = strategy.diversity_sample(
+                    embeddings=train_embeddings,
+                    n_select=target_samples,
+                    random_seed=args.seed
+                )
+
     elif al_strategy == 'diversity':
         # Diversity-based clustering
         n_clusters = getattr(args, 'al_clusters', target_samples // 10)
@@ -1661,11 +1912,8 @@ def active_learning_selection(train_dataset, val_dataset, args, device, verbose=
         # Hybrid approach combining multiple methods
         # Get targets for stratified component
         try:
-            if hasattr(train_dataset, 'targets'):
-                targets = np.array([train_dataset.dataset.targets[i] for i in train_dataset.indices])
-            elif hasattr(train_dataset, 'dataset') and hasattr(train_dataset.dataset, 'targets'):
-                targets = np.array([train_dataset.dataset.targets[i] for i in train_dataset.indices])
-            else:
+            targets = extract_targets_from_dataset(train_dataset)
+            if targets is None:
                 # Fallback to diversity if no targets available
                 if verbose:
                     print("No targets available for hybrid, falling back to diversity")

@@ -4,11 +4,55 @@ from utils.defines import *
 
 # Modular imports
 from utils.active_learning import CoreSetStrategy, extract_embeddings_for_al, active_learning_selection
-from utils.llm_selection import llm_data_selection
 from utils.models import CLIPForBinary, SmoothBCEWithLogitsLoss
+from utils.path_utils import (
+    LEGACY_SAVE_ROOT,
+    canonical_save_path,
+    dataset_default_attribute_path,
+    resolve_artifact_path,
+    resolve_existing_artifact,
+)
 from utils.data_utils import (default_img_transform, clip_processor_transform, make_loader, 
                              CelebADataset, GeneratedImageDataset, SimpleImageDataset, GeneratedDataset)
 from utils.training import evaluate, train_model, save_predictions, parse_log
+
+
+_llm_data_selection = None
+_LLM_SELECTION_IMPORT_ERROR = None
+
+
+def _require_llm_data_selection():
+    """Import LLM selection lazily so non-LLM runs do not depend on LVLM packages."""
+    global _llm_data_selection, _LLM_SELECTION_IMPORT_ERROR
+
+    if _llm_data_selection is None:
+        try:
+            from utils.llm_selection import llm_data_selection as imported_llm_data_selection
+        except Exception as exc:
+            _LLM_SELECTION_IMPORT_ERROR = exc
+        else:
+            _llm_data_selection = imported_llm_data_selection
+            _LLM_SELECTION_IMPORT_ERROR = None
+
+    if _llm_data_selection is None:
+        raise ImportError(
+            "LLM-based selection requires optional LVLM dependencies. "
+            "Install a compatible transformers/LVLM stack or run with --use_llm_selection False."
+        ) from _LLM_SELECTION_IMPORT_ERROR
+
+    return _llm_data_selection
+
+
+def _resolve_existing_path(*candidates):
+    """Return the first existing path from a small ordered candidate list."""
+    for candidate in candidates:
+        path = Path(candidate)
+        if path.exists():
+            return path
+    raise FileNotFoundError(
+        "Could not find any of the required files: "
+        + ", ".join(str(Path(candidate)) for candidate in candidates)
+    )
 
 
 def _print_class_distribution(subset, description, verbose=False):
@@ -79,8 +123,12 @@ parser.add_argument('--num_epochs', type=int, default=20,
 parser.add_argument('--num_added_img', type=int, default=1000,
                     help='Number of generated images to add (default: 4000)')
 # Add argument for attribute file path
-parser.add_argument('--attribute_file', type=str, default="save/attribute10.json",
-                    help='Path to the attribute JSON file (default: save/attribute10.json)')
+parser.add_argument(
+    '--attribute_file',
+    type=str,
+    default=None,
+    help='Path to the attribute JSON file (default: auto; ImageNet -> save/attribute10.json, CelebA -> save/attribute.json)',
+)
 parser.add_argument('--gpu', type=int, default=0,
                     help='Index of the CUDA GPU to use (default: 0)')
 parser.add_argument('--save_report', type=str2bool, default=False,
@@ -150,10 +198,10 @@ parser.add_argument('--lr_backbone', type=float, default=None,
 parser.add_argument('--use_active_learning', type=str2bool, default=True,
                     help='Use Active Learning strategy for data selection (default: True)')
 parser.add_argument('--al_strategy', type=str, default='attribute',
-                    choices=['coreset', 'stratified', 'diversity', 'hybrid', 'hierarchical',
+                    choices=['coreset', 'badge', 'stratified', 'diversity', 'hybrid', 'hierarchical',
                              'attribute', 'uncertainty_stratified', 'gen_probe',
                              'random', 'none', '0', 'false', 'no'],
-                    help='Active Learning strategy: coreset, stratified, diversity, hybrid, hierarchical, '
+                    help='Active Learning strategy: coreset, badge, stratified, diversity, hybrid, hierarchical, '
                          'attribute, uncertainty_stratified, gen_probe, or random/none/0/false (all map to plain random selection)')
 parser.add_argument('--al_probe_model', type=str, default=None,
                     help='Path to the model trained ONLY on generated images, used for the gen_probe AL strategy.')
@@ -262,12 +310,14 @@ if getattr(args, 'verbose', False):
 overall_start_time = time.time()
 # Accumulator for total selection time (Active Learning or LLM-based selection)
 al_total_time = 0.0
-# Override attribute file for ImageNet dataset
 diag_labels_imagenet = None
 diag_split_imagenet = None
 
-if args.dataset == 'imagenet':
-    args.attribute_file = 'save/attribute10.json'
+if args.attribute_file is None:
+    args.attribute_file = str(dataset_default_attribute_path(args.dataset))
+else:
+    args.attribute_file = str(resolve_artifact_path(args.attribute_file))
+
 # Automatically enable pretrained weights for CLIP and ViT on ImageNet
 if args.dataset == 'imagenet' and args.model in ('clip', 'vit'):
     args.pretrained = True
@@ -317,9 +367,11 @@ if args.feasible_file is None:
     if args.lvlm == 'llava':
         if args.verbose:
             print(f"Using LLAVA model: setting feasible_file to save/feasible_{attributes}_{args.lvlm}.json")
-        args.feasible_file = f"save/feasible_{attributes}_{args.lvlm}.json"
+        args.feasible_file = str(resolve_artifact_path(f"save/feasible_{attributes}_{args.lvlm}.json"))
     else: #qwen
-        args.feasible_file = f"save/feasible_{attributes}.json"
+        args.feasible_file = str(resolve_artifact_path(f"save/feasible_{attributes}.json"))
+else:
+    args.feasible_file = str(resolve_artifact_path(args.feasible_file))
 # Set default gen_image_dir based on attributes if not provided
 # Ablation: disable ControlNet-based augmentation if no_controlnet is True
 if args.no_controlnet:
@@ -371,6 +423,9 @@ if args.use_active_learning and args.use_llm_selection:
     print("Disabling Active Learning in favor of LLM selection.")
     args.use_active_learning = False
 
+if args.use_llm_selection:
+    _require_llm_data_selection()
+
 # Adjust learning rate default for ViT if not manually overridden
 if args.model == 'vit' and args.lr == 1e-4:
     args.lr = 5e-5
@@ -398,6 +453,15 @@ if args.dataset == 'imagenet' and args.lr == 1e-4 and args.model == 'resnet':
                 print(f"Using fine-tuning learning rate {args.lr} for resumed model")
     else:
         args.lr = 1e-3
+
+elif args.dataset == 'celeba' and args.lr == 1e-4 and args.model == 'resnet':
+    if args.resume_model:
+        args.lr = 1e-5
+        if verbose:
+            if args.freeze_backbone:
+                print(f"Using fine-tuning learning rate {args.lr} for resumed CelebA ResNet with frozen backbone")
+            else:
+                print(f"Using fine-tuning learning rate {args.lr} for resumed CelebA ResNet")
 
 # Adjust LR for CLIP on ImageNet based on pretrained flag
 elif args.dataset == 'imagenet' and args.model == 'clip' and args.lr == 1e-4:
@@ -472,13 +536,23 @@ if args.dataset == 'imagenet':
         val_transform = default_img_transform(train=False)
     # Use no transform for index mapping, then create train/val datasets with correct transforms
     full_ds = ImageFolder(data_dir)
-    train_idx = np.load('save/train_idx_imagenet.npy')
-    val_idx = np.load('save/val_idx_imagenet.npy')
-    test_idx_path = Path('save/test_idx_imagenet.npy')
-    if test_idx_path.exists():
+    train_idx_path = resolve_existing_artifact('save/train_idx_imagenet.npy')
+    val_idx_path = resolve_existing_artifact('save/val_idx_imagenet.npy')
+    train_idx = np.load(train_idx_path)
+    val_idx = np.load(val_idx_path)
+    try:
+        test_idx_path = resolve_existing_artifact('save/test_idx_imagenet.npy')
+    except FileNotFoundError:
+        test_idx_path = None
+    if test_idx_path is not None:
         test_idx = np.load(test_idx_path)
     else:
         test_idx = np.array([], dtype=int)
+    if verbose and (train_idx_path.parent == LEGACY_SAVE_ROOT or val_idx_path.parent == LEGACY_SAVE_ROOT):
+        print(
+            "Using ImageNet split files from "
+            f"{train_idx_path.parent} (train) and {val_idx_path.parent} (val)"
+        )
     valid_idx = val_idx  # alias for diagnostics compatibility
     train_ds = Subset(ImageFolder(data_dir, transform=train_transform), train_idx)
     val_ds   = Subset(ImageFolder(data_dir, transform=val_transform), val_idx)
@@ -771,7 +845,8 @@ if args.dataset == 'imagenet':
                 
                 # Use LLM-based selection (timed)
                 llm_select_start = time.time()
-                selected_indices = llm_data_selection(
+                llm_data_selection_fn = _require_llm_data_selection()
+                selected_indices = llm_data_selection_fn(
                     image_paths=image_paths,
                     labels=dataset_labels,
                     sub_ratio=args.sub_ratio,
@@ -1192,7 +1267,8 @@ elif args.dataset == 'celeba':
                 
                 # Use LLM-based selection (timed)
                 llm_select_start = time.time()
-                selected_indices = llm_data_selection(
+                llm_data_selection_fn = _require_llm_data_selection()
+                selected_indices = llm_data_selection_fn(
                     image_paths=train_imgs,
                     labels=train_labels,
                     sub_ratio=args.sub_ratio,
@@ -1246,8 +1322,8 @@ elif args.dataset == 'celeba':
         # Determine naming for simple vs attribute-based cases
         name_key = "simple" if args.no_controlnet and args.simple else attributes
         if verbose:
-            train_idx_path = f"save/idx/train_idx_{name_key}_{args.num_added_img}imgs.npy"
-            labels_path    = f"save/labels/labels_{name_key}_{args.num_added_img}imgs.npy"
+            train_idx_path = str(canonical_save_path(f"idx/train_idx_{name_key}_{args.num_added_img}imgs.npy", create_parent=True))
+            labels_path = str(canonical_save_path(f"labels/labels_{name_key}_{args.num_added_img}imgs.npy", create_parent=True))
             if not os.path.exists(train_idx_path):
                 np.save(train_idx_path, combined_train_idx)
                 print(f"Saved combined train indices to {train_idx_path}")
@@ -1343,6 +1419,7 @@ model = model.to(device)
 
 # Load saved checkpoint if --resume_model is provided
 if args.resume_model:
+    args.resume_model = str(resolve_artifact_path(args.resume_model))
     if not os.path.exists(args.resume_model):
         raise FileNotFoundError(f"Resume model not found: {args.resume_model}")
     ckpt = torch.load(args.resume_model, map_location=device)
@@ -1564,8 +1641,13 @@ def save_predictions(model, train_loader, valid_loader, test_loader=None):
 
     # Use simple naming if in simple ablation mode
     pred_key = "simple" if args.no_controlnet and args.simple else attributes
+    pred_dir = canonical_save_path("pred")
+    os.makedirs(pred_dir, exist_ok=True)
     np.save(
-        f"save/pred/predictions_{args.dataset}_{args.model}_{pred_key}_{args.num_added_img}imgs{suffix}_{time_now}.npy",
+        os.path.join(
+            pred_dir,
+            f"predictions_{args.dataset}_{args.model}_{pred_key}_{args.num_added_img}imgs{suffix}_{time_now}.npy",
+        ),
         combined_preds
     )
 
@@ -1675,7 +1757,11 @@ def train_model(model, train_loader, valid_loader, criterion, optimizer, schedul
         axes[1,1].set_ylabel("Accuracy")
 
         plt.tight_layout()
-        plt.savefig(f"save/plot/plot_{args.model}_{attributes}_{args.num_added_img}imgs_{time_now}.png")
+        plot_path = canonical_save_path(
+            f"plot/plot_{args.model}_{attributes}_{args.num_added_img}imgs_{time_now}.png",
+            create_parent=True,
+        )
+        plt.savefig(plot_path)
         if args.dataset == 'imagenet':
             plt.savefig(f"./plot_{args.dataset}_{args.model}_{attributes}_{args.num_added_img}imgs_{time_now}.png")
         plt.close()
@@ -1686,10 +1772,9 @@ def train_model(model, train_loader, valid_loader, criterion, optimizer, schedul
 
     # Save model checkpoint if requested
     if args.save_model:
-        os.makedirs("save/models", exist_ok=True)
-        model_path = (
-            f"save/models/model_{args.dataset}_{args.model}_{attributes}"
-            f"_{args.num_added_img}imgs_{time_now}.pth"
+        model_path = canonical_save_path(
+            f"models/model_{args.dataset}_{args.model}_{attributes}_{args.num_added_img}imgs_{time_now}.pth",
+            create_parent=True,
         )
         torch.save({
             'model_state_dict': model.state_dict(),
@@ -1804,7 +1889,11 @@ if args.no_controlnet:
     suffix += "_h"  # Add 'h' for ablation/no_controlnet
 
 # Load the predictions we just saved
-prediction_file = f"save/pred/predictions_{args.dataset}_{args.model}_{attributes}_{args.num_added_img}imgs{suffix}_{time_now}.npy"
+prediction_file = str(
+    canonical_save_path(
+        f"pred/predictions_{args.dataset}_{args.model}_{attributes}_{args.num_added_img}imgs{suffix}_{time_now}.npy"
+    )
+)
 predictions = np.load(prediction_file)
 
 # Prepare labels and split for diagnostics based on dataset
@@ -1892,7 +1981,7 @@ if not gen_use_generated and not args.al_combined:
 
     # Optionally save a report
     if args.save_report:
-        report_dir = "save/reports"
+        report_dir = canonical_save_path("reports")
         os.makedirs(report_dir, exist_ok=True)
         MD.generate_report(f"{report_dir}/{args.dataset}_{args.model}_{attributes}_{args.num_added_img}imgs{suffix}_{time_now}")
         print(f"Diagnostic report saved to {report_dir}/{args.dataset}_{args.model}_{attributes}_{args.num_added_img}imgs{suffix}_{time_now}")

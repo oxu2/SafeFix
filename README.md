@@ -11,7 +11,7 @@ This repo is the implementation of Safefix. Safefix is a data-centric tool for i
 - Equipped with a user interface.
 - Supports multiple model architectures: **ResNet-18**, **ViT**, and **CLIP**.
 - Supports multiple datasets: **CelebA** (binary classification) and **ImageNet** (multi-class classification).
-- Active Learning strategies for intelligent data selection (CoreSet, Stratified, Diversity, Hybrid, Hierarchical, Attribute-driven).
+- Active Learning strategies for intelligent data selection (CoreSet, BADGE, Stratified, Diversity, Hybrid, Hierarchical, Attribute-driven).
 - LLM-based data selection as an alternative to traditional Active Learning (Qwen, LLaVA).
 - ControlNet-based data augmentation for targeted bug repair.
 - Automated model diagnostics and accuracy comparison.
@@ -41,6 +41,29 @@ We provide a use case on the CelebA dataset in [celebA_use_case.ipynb](celebA_us
 ## `alpred.py` - Active Learning Prediction Pipeline
 
 `alpred.py` is the main training and evaluation script. It integrates data loading, Active Learning / LLM-based data selection, model training, prediction saving, and model diagnostics into a single end-to-end pipeline.
+
+### How `alpred.py` Works
+
+At a high level, `alpred.py` follows this execution order:
+
+1. Build the source dataset (`celeba` or `imagenet`) and optionally collect generated images.
+2. Decide the selection path:
+   - `--use_llm_selection True`: use the VLM-driven selector and disable traditional AL.
+   - `--use_active_learning True`: run the chosen AL strategy before training.
+   - Otherwise: fall back to plain random sub-sampling when `--sub_ratio < 1.0`.
+3. Apply the selected subset either:
+   - to the original training set only, or
+   - to the combined pool when `--al_combined True`.
+4. Train the requested classifier (`resnet`, `vit`, or `clip`) on the resulting data.
+5. Evaluate, save predictions, and optionally generate reports.
+
+The implemented AL strategies fall into three families:
+
+- **Geometry / coverage-driven**: `coreset`, `diversity`, `hybrid`
+- **Uncertainty-aware batch selection**: `badge`, `uncertainty_stratified`, `gen_probe`
+- **Metadata / slice-driven**: `attribute`, `hierarchical`
+
+The `attribute` path is the main Safefix-specific contribution. Unlike standard AL baselines that rank samples from features or prediction scores, it ranks samples using explicit semantic attributes, rarity within a class, optional uncertainty flags, optional log-derived failure weights, and penalties for synthetic slice flooding.
 
 ### Quick Start
 
@@ -107,7 +130,7 @@ python alpred.py --dataset celeba --model resnet --use_llm_selection True --llm_
 | Argument | Type | Default | Description |
 |---|---|---|---|
 | `--use_active_learning` | bool | `True` | Enable Active Learning strategy for data selection |
-| `--al_strategy` | str | `attribute` | Strategy: `coreset`, `stratified`, `diversity`, `hybrid`, `hierarchical`, or `attribute` |
+| `--al_strategy` | str | `attribute` | Strategy: `attribute`, `badge`, `coreset`, `stratified`, `diversity`, `hybrid`, `hierarchical`, `uncertainty_stratified`, `gen_probe`, or random aliases |
 | `--al_embedding_dim` | int | `512` | Embedding dimension for Active Learning |
 | `--al_initial_labeled` | int | `400` | Initial number of labeled samples |
 | `--al_combined` | bool | `False` | Apply AL on combined dataset (generated + original) |
@@ -145,13 +168,15 @@ python alpred.py --dataset celeba --model resnet --use_llm_selection True --llm_
 | Argument | Type | Default | Description |
 |---|---|---|---|
 | `--al_attribute_focus` | str | `None` | Comma-separated attribute keys to prioritize |
-| `--al_attribute_rarity_power` | float | `1.0` | Exponent controlling emphasis on rare attribute values |
+| `--al_attribute_rarity_power` | float | `0.01` | Exponent controlling emphasis on rare attribute values |
 | `--al_attribute_uncertainty_boost` | float | `1.0` | Score bonus for uncertain samples in attribute metadata |
+| `--al_attribute_use_entropy` | bool | `False` | Replace static uncertainty flags with dynamic entropy from model inference |
 | `--al_attribute_log_path` | str | `None` | Path to attribute diagnostics log for Rare Case accuracies |
-| `--al_attribute_log_acc_scale` | float | `1.0` | Scaling factor for log-derived failure weights |
+| `--al_attribute_log_acc_scale` | float | `0.0` | Scaling factor for log-derived failure weights |
 | `--al_attribute_extra_counts` | str | `None` | Extra counts per attribute value (JSON path or inline entries) |
-| `--al_attribute_balance_strength` | float | `0.5` | Penalty strength for over-represented attribute values |
+| `--al_attribute_frequency_penalty` | float | `5.0` | Penalty strength for over-represented attribute values |
 | `--al_attribute_class_balance` | str | `0` | Class-level stratified weight (`"inf"` for hard per-class quotas) |
+| `--al_conditional_rarity` | bool | `True` | Use class-conditional rarity `P(value | class)` instead of global rarity |
 
 #### LLM-Based Selection
 
@@ -232,11 +257,14 @@ python alpred.py --dataset celeba --model resnet --use_llm_selection True --llm_
 
 1. **Active Learning** (`--use_active_learning True`): Uses the specified `--al_strategy` to intelligently select training samples. Available strategies:
    - `attribute`: Attribute-driven selection prioritizing rare attribute values
+   - `badge`: BADGE-style batch selection using gradient embeddings
    - `coreset`: Core-set selection for maximum coverage
    - `stratified`: Stratified sampling across classes
    - `diversity`: Cluster-based diversity sampling
    - `hybrid`: Combines coreset + stratified + diversity
    - `hierarchical`: Two-round selection with difficulty and coverage prioritization
+   - `uncertainty_stratified`: Class-balanced uncertainty sampling
+   - `gen_probe`: Domain-gap-guided sampling from a generated-data probe model
 
 2. **LLM-Based Selection** (`--use_llm_selection True`): Uses a vision-language model (Qwen or LLaVA) to analyze images and select diverse/difficult samples. Strategies: `diversity`, `difficulty`, `diversity_difficulty`, `llm_random`.
 
@@ -362,5 +390,4 @@ Safefix/
 ## Citing
 
 If you find this repository useful for your work, please consider citing it as follows:
-
 
