@@ -17,8 +17,8 @@ for ratio in ratios:
         with open(log_file, 'r') as f:
             content = f.read()
             
-        # Try to find Held-out test accuracy
-        test_match = re.search(r'Held-out test accuracy: (\d+\.\d+)', content)
+        # Try to find the test accuracy line in either the new or older wording
+        test_match = re.search(r'(?:Model Test ACC|Held-out test accuracy): (\d+\.\d+)', content)
         test_acc = test_match.group(1) if test_match else "N/A"
         
         # Try to find Epoch [15/15] Val Acc

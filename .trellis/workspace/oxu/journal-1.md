@@ -5,6 +5,1493 @@
 
 ---
 
+## Session 65: Summarize completed CelebA attribute ratio-0.1 probe
+
+**Date**: 2026-04-16
+**Task**: celeba-attribute-ratio0p1-results-summary
+
+### Summary
+
+The user reported that the three CelebA attribute-AL hyperparameter runs at `ratio=0.1` appeared finished and asked for the results. Verified that all three launched workers had exited, extracted the final held-out test accuracies, selection times, and wall times from their logs, compared them against the completed CelebA `ratio=0.1` baselines, and recorded the stable outcome in `report.md`.
+
+### Main Changes
+
+- Updated:
+  - `report.md`
+
+### Main Findings
+
+- Completed attribute configs (`E=False` for all):
+  - `baseline_def_e0_r001_p5_cinf`
+    - `R=0.01`, `P=5.0`, `C=inf`
+    - held-out test accuracy `0.9059`
+    - AL selection time `0.72 s`
+    - end-to-end wall time `237.61 s`
+    - log:
+      - `logs_celeba/attr_ratio0.1_baseline_def_e0_r001_p5_cinf_gpu0_20260416_140026.log`
+  - `soft_e0_r01_p5_c15`
+    - `R=0.1`, `P=5.0`, `C=15.0`
+    - held-out test accuracy `0.9055`
+    - AL selection time `0.70 s`
+    - end-to-end wall time `236.93 s`
+    - log:
+      - `logs_celeba/attr_ratio0.1_soft_e0_r01_p5_c15_gpu1_20260416_140026.log`
+  - `aggro_e0_r08_p10_c4`
+    - `R=0.8`, `P=10.0`, `C=4.0`
+    - held-out test accuracy `0.9047`
+    - AL selection time `0.71 s`
+    - end-to-end wall time `236.35 s`
+    - log:
+      - `logs_celeba/attr_ratio0.1_aggro_e0_r08_p10_c4_gpu2_20260416_140026.log`
+- Ranking within this probe:
+  - best:
+    - `baseline_def_e0_r001_p5_cinf`
+    - `90.59%`
+  - second:
+    - `soft_e0_r01_p5_c15`
+    - `90.55%`
+  - third:
+    - `aggro_e0_r08_p10_c4`
+    - `90.47%`
+- Comparison against completed CelebA `ratio=0.1` baselines already in the report:
+  - `random`: `91.15%`
+  - `badge`: `91.12%`
+  - `stratified`: `90.95%`
+  - `coreset`: `90.29%`
+- Interpretation:
+  - the best attribute configuration barely matches the manually reported base reference (`90.57%`)
+  - none of the three attribute configurations beat the completed `random`, `badge`, or `stratified` baselines at `ratio=0.1`
+  - runtime is excellent, but current accuracy is not yet competitive
+
+### Validation
+
+- [OK] `ps -fp 3040154,3040157,3040160` showed the three launch PIDs had exited
+- [OK] inspected the final metric blocks and tails of all three logs
+- [OK] `git diff --check -- report.md .trellis/workspace/oxu/journal-1.md .handoff.md`
+
+### Important Notes
+
+- These runs completed cleanly enough to use their `Model Test ACC` lines as the current CelebA attribute-probe outcome.
+- The existing deprecation warning in `alpred.py:1705` still appears during prediction saving, but it did not prevent completion.
+- The next sensible follow-up is not a wider ratio sweep with the aggressive setting; if the user wants to continue CelebA attribute experiments, start from the conservative `R=0.01, P=5.0, C=inf, E=False` setting or revisit the attribute scoring design.
+
+### Status
+
+[OK] **Completed**
+
+---
+
+## Session 64: Launch CelebA attribute-AL ratio-0.1 RPC sweep
+
+**Date**: 2026-04-16
+**Task**: celeba-attribute-ratio0p1-rpc-launch
+
+### Summary
+
+The user asked to start CelebA attribute-driven Active Learning experiments in `alpred.py`, matching the ImageNet workflow but first sweeping a few hyperparameter settings at `ratio=0.1`, with entropy fixed off and three `R/P/C` groups run in parallel on GPUs `0/1/2`. Audited the ImageNet attribute sweep outcomes, inspected the CelebA attribute metadata and selector code, found that the CelebA metadata keys use spaced names (`hair color`, `skin`, `emotion`) so the ImageNet-style auto-inferred synthetic counts would not trigger, created a dedicated launch script, and started three background resume-from-base runs.
+
+### Main Changes
+
+- Added:
+  - `scripts/run_celeba_attribute_ratio0.1_rpc.sh`
+- Launched:
+  - GPU `0`, `baseline_def_e0_r001_p5_cinf`
+  - GPU `1`, `soft_e0_r01_p5_c15`
+  - GPU `2`, `aggro_e0_r08_p10_c4`
+
+### Main Findings
+
+- ImageNet reference used to choose the grid:
+  - `ratio=0.1` best completed attribute sweep log was:
+    - `logs/logs_imagenet/sweep_attr_baseline_def_ratio0.1.log`
+    - held-out test accuracy `0.7300`
+  - `ratio=0.3` best completed attribute sweep log was:
+    - `logs/logs_imagenet/sweep_attr_aggro_exp_p10_c4_ratio0.3.log`
+    - held-out test accuracy `0.7415`
+- Chosen CelebA `R/P/C` groups with `E=False`:
+  - conservative strict balance:
+    - `R=0.01`, `P=5.0`, `C=inf`
+  - soft conservative:
+    - `R=0.1`, `P=5.0`, `C=15.0`
+  - aggressive:
+    - `R=0.8`, `P=10.0`, `C=4.0`
+- CelebA-specific selector caveat found during inspection:
+  - `save/attribute.json` uses keys:
+    - `hair color`
+    - `skin`
+    - `emotion`
+  - therefore `infer_generated_attribute_counts()` does not automatically map the string `redhair_brownskin_sademotion` onto those keys
+  - the launched runs therefore pass explicit:
+    - `--al_attribute_focus "hair color,skin,emotion"`
+    - `--al_attribute_extra_counts "hair color:red=1000,skin:brown=1000,emotion:sad=1000"`
+- Quick selection-only CelebA probe before launch showed strong enrichment over random at `ratio=0.1`:
+  - random `8000`-sample reference:
+    - `red`: `258`
+    - `brown skin`: `2415`
+    - `sad`: `363`
+  - selected `8000`-sample ranges across the three configs:
+    - `red`: `979` to `1016`
+    - `brown skin`: `3430` to `3501`
+    - `sad`: `771` to `823`
+- Active runs launched from:
+  - base checkpoint:
+    - `weights/model_celeba_resnet_base.pth`
+  - launcher:
+    - `scripts/run_celeba_attribute_ratio0.1_rpc.sh`
+- Live run details:
+  - GPU `0`
+    - PID `3040154`
+    - log `logs_celeba/attr_ratio0.1_baseline_def_e0_r001_p5_cinf_gpu0_20260416_140026.log`
+    - pid file `logs_celeba/pids/attr_ratio0.1_baseline_def_e0_r001_p5_cinf_gpu0_20260416_140026.pid`
+  - GPU `1`
+    - PID `3040157`
+    - log `logs_celeba/attr_ratio0.1_soft_e0_r01_p5_c15_gpu1_20260416_140026.log`
+    - pid file `logs_celeba/pids/attr_ratio0.1_soft_e0_r01_p5_c15_gpu1_20260416_140026.pid`
+  - GPU `2`
+    - PID `3040160`
+    - log `logs_celeba/attr_ratio0.1_aggro_e0_r08_p10_c4_gpu2_20260416_140026.log`
+    - pid file `logs_celeba/pids/attr_ratio0.1_aggro_e0_r08_p10_c4_gpu2_20260416_140026.pid`
+- Immediate post-launch status:
+  - all three logs already passed attribute selection
+  - each log contains:
+    - `CelebA: Combined 8000 selected samples with 1000 generated images using Active Learning`
+    - `Resumed model from /people/cs/o/oxx220000/safefix/weights/model_celeba_resnet_base.pth ...`
+
+### Validation
+
+- [OK] `bash -n scripts/run_celeba_attribute_ratio0.1_rpc.sh`
+- [OK] `bash scripts/run_celeba_attribute_ratio0.1_rpc.sh --dry-run`
+- [OK] verified launched PIDs with:
+  - `ps -fp 3040154,3040157,3040160`
+- [OK] tailed all three logs and confirmed selection finished plus resumed training startup
+
+### Important Notes
+
+- `report.md` was not updated because these runs are still in progress and there are no stable held-out test results yet.
+- The new launcher fixes a CelebA-specific metadata mismatch that would otherwise make the frequency-penalty term ignore the injected `1000` synthetic `red/brown/sad` samples.
+- Recommended follow-up:
+  - monitor the three logs for `Held-out test accuracy`
+  - pick the best `R/P/C` setting at `ratio=0.1`
+  - only then extend the attribute sweep to larger ratios
+
+### Status
+
+[OK] **Completed**
+
+---
+
+## Session 62: Summarize completed CelebA baselines in report
+
+**Date**: 2026-04-16
+**Task**: celeba-baseline-report-summary
+
+### Summary
+
+The user said that most previously run CelebA baselines were already finished and asked to summarize them in `report.md`. Audited the completed non-hierarchical CelebA resume logs, extracted the held-out test accuracies and selection times, chose canonical rerun logs where patched large-job selectors replaced stalled originals, and added a compact results section plus observations to the report.
+
+### Main Changes
+
+- Updated:
+  - `report.md`
+
+### Main Findings
+
+- Completed and summarized in the report:
+  - `random` ratios `0.1`, `0.3`, `0.5`, `0.7`
+  - `stratified` ratios `0.1`, `0.3`, `0.5`, `0.7`
+  - `coreset` ratios `0.1`, `0.3`, `0.5`, patched rerun `0.7`
+  - `badge` ratio `0.1`, patched reruns `0.3`, `0.5`, `0.7`
+- Best completed resume result:
+  - `badge` at ratio `0.7`
+  - held-out test accuracy `0.9131`
+  - canonical log:
+    - `logs_celeba/resume_lr1e-5_epoch15_badge_resnet_celeba_1000_ratio0.7_gpu0_20260416_122047.log`
+- Base checkpoint remains slightly better:
+  - base held-out test accuracy `0.9140`
+- Runtime finding preserved in the report:
+  - pre-patch `coreset` and `badge` selection became very expensive at higher ratios
+  - patched large-job reruns reduced selector time sharply while keeping the sweep practical
+
+### Validation
+
+- [OK] inspected final tails and metrics from the canonical logs listed in the new report table
+- [OK] confirmed `report.md` now contains the new CelebA resume-baseline summary section
+
+### Important Notes
+
+- `hierarchical` remains deferred and was intentionally not summarized as a completed baseline set.
+- `.handoff.md` was not updated because the active baton-pass state did not change; this step only documented already completed results.
+
+### Status
+
+[OK] **Completed**
+
+---
+
+## Session 63: Reformat CelebA report tables and time display
+
+**Date**: 2026-04-16
+**Task**: celeba-report-reformat-and-manual-base-acc
+
+### Summary
+
+The user asked to manually change the CelebA ResNet base test accuracy in `report.md` to `90.57`, to stop reporting long durations in seconds when they exceed ten minutes, and to split the CelebA baseline summary into four separate tables by ratio (`0.1`, `0.3`, `0.5`, `0.7`). Updated the report accordingly and recorded the new formatting convention in this journal entry.
+
+### Main Changes
+
+- Updated:
+  - `report.md`
+
+### Main Findings
+
+- The CelebA base held-out test accuracy is now manually reported as:
+  - `90.57%`
+- The CelebA resume-baseline summary is now organized as four separate ratio-specific tables:
+  - `ratio = 0.1`
+  - `ratio = 0.3`
+  - `ratio = 0.5`
+  - `ratio = 0.7`
+- The CelebA baseline table values were reformatted from decimal accuracies to percentage display for readability.
+- Time-display convention applied in the updated report sections:
+  - durations longer than ten minutes are written as `X min` or `Y h Z min`
+  - shorter durations keep second-level display
+
+### Validation
+
+- [OK] visually checked the updated top report sections after the patch
+- [OK] `git diff --check -- report.md .trellis/workspace/oxu/journal-1.md`
+
+### Important Notes
+
+- This step follows the user's manual reporting preference for the CelebA base test accuracy rather than recomputing from the underlying log.
+- `.handoff.md` was not updated because the active baton-pass state did not change.
+
+### Status
+
+[OK] **Completed**
+
+---
+
+## Session 58: Diagnose stuck CelebA AL baselines and stop the queue
+
+**Date**: 2026-04-16
+**Task**: celeba-al-stall-diagnosis-and-kill
+
+### Summary
+
+The user reported that the ongoing CelebA resume baseline sweep appeared stuck around the `hierarchical` stage and asked to find the issue and kill the affected jobs. Inspected the active controller, worker logs, and AL strategy implementations, confirmed that multiple Active Learning strategies were stalled in the selection phase before training started, and terminated the active controller plus the stuck workers.
+
+### Main Changes
+
+- Stopped active controller:
+  - PID `2728053`
+- Stopped stuck workers:
+  - `coreset`, ratio `0.7`, PID `2754132`
+  - `hierarchical`, ratio `0.1`, PID `2776030`
+  - `badge`, ratio `0.3`, PID `2779384`
+  - `badge`, ratio `0.5`, PID `2820373`
+
+### Main Findings
+
+- Completed successfully before the stall:
+  - `random` ratios `0.1`, `0.3`, `0.5`, `0.7`
+  - `stratified` ratios `0.1`, `0.3`, `0.5`, `0.7`
+  - `coreset` ratios `0.1`, `0.3`, `0.5`
+  - `badge` ratio `0.1`
+- The queue reached `hierarchical` for ratio `0.1` at:
+  - `logs_celeba/run_all_resume_baselines_20260416_040048.log`
+  - launch line for worker PID `2776030`
+- The stuck `hierarchical` worker log never advanced beyond:
+  - `Current time: 0416071719`
+  - `Selected 1000 filenames for sampling`
+  - `Added 1000 generated redhair_brownskin_sademotion images...`
+  - file:
+    - `logs_celeba/resume_lr1e-5_epoch15_hierarchical_resnet_celeba_1000_ratio0.1.log`
+- The later stuck `badge` workers showed the same symptom:
+  - `logs_celeba/resume_lr1e-5_epoch15_badge_resnet_celeba_1000_ratio0.3.log`
+  - `logs_celeba/resume_lr1e-5_epoch15_badge_resnet_celeba_1000_ratio0.5.log`
+  - both stopped after the same three startup lines with no selection or epoch output
+- The active `coreset` ratio `0.7` worker was not deadlocked but still impractically expensive:
+  - log:
+    - `logs_celeba/resume_lr1e-5_epoch15_coreset_resnet_celeba_1000_ratio0.7.log`
+  - it had only progressed through the core-set progress bar up to:
+    - `47600/56000`
+  - and was still consuming a full CPU core
+- Root-cause diagnosis from code inspection:
+  - `utils/active_learning.py` `CoreSetStrategy.greedy_k_center()` performs a full `euclidean_distances()` pass over all unlabeled samples on every selection step
+  - for CelebA ratio `0.7`, this means selecting `56000` of `80000` samples, which is prohibitively expensive
+  - `utils/active_learning.py` `BadgeStrategy._kmeanspp_seeding()` has the same repeated full-distance update structure for each selected point
+  - `utils/hierarchical_al.py` adds another expensive layer by repeatedly scanning all samples for slice membership and then running greedy within-slice distance-based selection
+- This is therefore an algorithmic scalability issue in the AL selectors, not a GPU assignment problem and not a training deadlock
+
+### Validation
+
+- [OK] inspected active controller tail:
+  - `logs_celeba/run_all_resume_baselines_20260416_040048.log`
+- [OK] inspected stuck worker logs listed above
+- [OK] verified the terminated PIDs no longer appear in:
+  - `ps -fp 2728053,2754132,2776030,2779384,2820373`
+
+### Important Notes
+
+- `badge` ratio `0.1` did complete, but it still recorded a very large AL selection time:
+  - `Total Active Learning selection time: 6695.79 seconds`
+  - log:
+    - `logs_celeba/resume_lr1e-5_epoch15_badge_resnet_celeba_1000_ratio0.1.log`
+- That long-but-finished ratio `0.1` run is consistent with the same scaling problem that caused the larger-ratio `badge` runs to appear hung.
+- `report.md` was not updated because this step diagnosed and stopped an incomplete sweep; there are no new stable report-level results.
+
+### Status
+
+[OK] **Completed**
+
+---
+
+## Session 59: Relaunch remaining non-BADGE/Hierarchical run and patch BADGE scaling
+
+**Date**: 2026-04-16
+**Task**: celeba-relaunch-coreset-and-rerun-badge03
+
+### Summary
+
+The user asked to first restart any unfinished CelebA baselines excluding `badge` and `hierarchical`, then modify the code and rerun `badge` at ratio `0.3`. Confirmed that the only unfinished non-`badge`/non-`hierarchical` job was `coreset` at ratio `0.7`, relaunched it, patched the BADGE strategy to avoid the quadratic-style large-run kmeans++ selection path, and launched a fresh `badge` `0.3` rerun.
+
+### Main Changes
+
+- Updated:
+  - `utils/active_learning.py`
+- Relaunched unfinished non-`badge`/non-`hierarchical` run:
+  - `coreset`, ratio `0.7`, GPU `3`
+  - PID `2873191`
+  - log `logs_celeba/resume_lr1e-5_epoch15_coreset_resnet_celeba_1000_ratio0.7_rerun.log`
+  - pid file `logs_celeba/pids/resume_lr1e-5_epoch15_coreset_ratio0.7_rerun.pid`
+- Launched patched BADGE rerun:
+  - `badge`, ratio `0.3`, GPU `1`
+  - PID `2875339`
+  - log `logs_celeba/resume_lr1e-5_epoch15_badge_resnet_celeba_1000_ratio0.3_rerun_20260416_115621.log`
+  - pid file `logs_celeba/pids/resume_lr1e-5_epoch15_badge_ratio0.3_rerun_20260416_115621.pid`
+
+### Main Findings
+
+- Completion audit before relaunch:
+  - completed:
+    - all `random`
+    - all `stratified`
+    - `coreset` ratios `0.1`, `0.3`, `0.5`
+    - `badge` ratio `0.1`
+  - unfinished excluding `badge` and `hierarchical`:
+    - only `coreset` ratio `0.7`
+- BADGE patch details:
+  - kept exact BADGE kmeans++ selection for smaller jobs
+  - added a fast path for larger jobs in `BadgeStrategy.select()`
+  - the fast path switches to gradient-norm weighted sampling without replacement instead of repeated full-distance kmeans++ updates
+  - this change specifically targets the CelebA large-ratio stall pattern where exact BADGE selection was too slow to finish
+- Immediate post-launch status:
+  - `coreset 0.7` rerun log already reached:
+    - `Core-set selection: choosing 56000 from 80000 samples...`
+  - patched `badge 0.3` rerun is alive and has written the initial dataset-setup lines to its log
+  - because worker logs run with `--verbose False`, the BADGE selection stage still does not print intermediate progress, so success should be checked later from the same rerun log
+
+### Validation
+
+- [OK] `/people/cs/o/oxx220000/.conda/envs/ad/bin/python -m py_compile utils/active_learning.py`
+- [OK] `git diff --check -- utils/active_learning.py .trellis/workspace/oxu/journal-1.md .handoff.md`
+- [OK] verified relaunch PIDs:
+  - `ps -fp 2873191`
+  - `ps -fp 2875339`
+
+### Important Notes
+
+- The BADGE patch is an approximation for large jobs, not the original exact BADGE kmeans++ batch seeding.
+- This was chosen intentionally so the CelebA ratio `0.3` rerun can finish in practical time instead of stalling in selection.
+- `report.md` was not updated because these are in-progress reruns, not stable final results.
+
+### Status
+
+[OK] **Completed**
+
+---
+
+## Session 60: Launch BADGE ratios 0.5 and 0.7 on GPU 0 and confirm hierarchical status
+
+**Date**: 2026-04-16
+**Task**: celeba-badge-gpu0-05-07
+
+### Summary
+
+The user reported that BADGE was now able to run and asked to launch ratios `0.5` and `0.7` on GPU `0`, then asked whether the hierarchical code had also been modified. Started BADGE `0.5` on GPU `0`, then created a lightweight controller that waits for that run to finish before starting BADGE `0.7` on the same GPU to avoid overlapping two training jobs on one card. Hierarchical code was not modified in this step.
+
+### Main Changes
+
+- Active BADGE run on GPU `0`:
+  - ratio `0.5`
+  - PID `2898496`
+  - log `logs_celeba/resume_lr1e-5_epoch15_badge_resnet_celeba_1000_ratio0.5_gpu0_20260416_120554.log`
+- Waiting controller for the follow-up BADGE run:
+  - waits for PID `2898496`
+  - controller PID `2901712`
+  - controller log `logs_celeba/run_badge_gpu0_ratio0.7_after_0.5_20260416_120710.log`
+  - controller pid file `logs_celeba/pids/run_badge_gpu0_ratio0.7_after_0.5_20260416_120710.pid`
+- Planned next run from the controller:
+  - BADGE ratio `0.7`
+  - GPU `0`
+  - output log path will be emitted by the controller after launch
+
+### Main Findings
+
+- The active GPU `0` BADGE `0.5` run has passed dataset setup and is alive.
+- The `0.7` run is intentionally queued rather than launched concurrently so both runs use GPU `0` as requested without stepping on each other.
+- Hierarchical status:
+  - `utils/hierarchical_al.py` has **not** been modified yet
+  - only `utils/active_learning.py` BADGE logic was changed previously
+
+### Validation
+
+- [OK] verified active BADGE `0.5` process:
+  - `ps -fp 2898496`
+- [OK] verified queued controller:
+  - `ps -fp 2901712`
+- [OK] inspected active BADGE `0.5` log:
+  - `logs_celeba/resume_lr1e-5_epoch15_badge_resnet_celeba_1000_ratio0.5_gpu0_20260416_120554.log`
+
+### Important Notes
+
+- The GPU `2` verbose BADGE debug run remains separate from these GPU `0` runs.
+- `report.md` was not updated because these runs are still in progress.
+
+### Status
+
+[OK] **Completed**
+
+---
+
+## Session 61: Point local HiBug generated-data paths to shared /data mount
+
+**Date**: 2026-04-16
+**Task**: hibug-generated-data-relocation
+
+### Summary
+
+The user asked to move four HiBug-generated dataset folders from `./data/` to `/data/oxx220000/hibug_generated`, then update any code that references the old paths. In this workspace, those four folders were already present under `/data/oxx220000/hibug_generated/` and were not present as real directories under `./data/`. To keep the repo-local relative paths working (and avoid scattered hard-coded absolute paths), created symlinks under `data/` that point to the shared `/data` mount.
+
+### Main Changes
+
+- Added symlinks:
+  - `data/hibug_redhair` -> `/data/oxx220000/hibug_generated/hibug_redhair`
+  - `data/hibug_brownskin` -> `/data/oxx220000/hibug_generated/hibug_brownskin`
+  - `data/hibug_redhair_brownskin` -> `/data/oxx220000/hibug_generated/hibug_redhair_brownskin`
+  - `data/hibug_yellowhair_04300231` -> `/data/oxx220000/hibug_generated/hibug_yellowhair_04300231`
+
+### Reference Search
+
+- No tracked code/config in this repo referenced these four paths directly (search for `data/hibug_*` and `./data/hibug_*` returned no matches).
+- The only mentions of `hibug_redhair` / `hibug_redhair_brownskin` were in `scripts/nvidia_draft.sh` (draft commands), and those lines were not used by the current training pipelines.
+
+### Validation
+
+- [OK] verified symlinks exist via `ls -la data/` and point to `/data/oxx220000/hibug_generated/...`
+
+### Status
+
+[OK] **Completed**
+
+### Follow-up
+
+- Updated `scripts/nvidia_draft.sh` to pass `--dir data/hibug_*` (so it follows the new `data/hibug_*` symlinks instead of relying on CWD-relative `hibug_*`).
+
+
+## Session 61: Stop stuck CoreSet on GPU 3 and patch large-run CoreSet scaling
+
+**Date**: 2026-04-16
+**Task**: celeba-coreset-kill-and-patch
+
+### Summary
+
+The user observed that the GPU `3` CelebA `coreset` rerun also appeared stuck and asked to handle both stopping it and modifying the code. Confirmed that the active run was still pinned in the `Core-set selection: choosing 56000 from 80000 samples...` stage with no further log progress, stopped it, and patched `CoreSetStrategy` so large jobs use a fast approximate selection path instead of the exact repeated full-distance greedy k-center loop.
+
+### Main Changes
+
+- Updated:
+  - `utils/active_learning.py`
+- Stopped stuck run:
+  - `coreset`, ratio `0.7`, GPU `3`
+  - former PID `2873191`
+  - log `logs_celeba/resume_lr1e-5_epoch15_coreset_resnet_celeba_1000_ratio0.7_rerun.log`
+
+### Main Findings
+
+- Before termination, the stuck run was still:
+  - consuming ~`99%` CPU
+  - using GPU `3`
+  - with log frozen at:
+    - `Core-set selection: choosing 56000 from 80000 samples...`
+    - progress `0/56000`
+- Root cause matched the earlier diagnosis:
+  - `CoreSetStrategy.greedy_k_center()` updated distances against the full unlabeled pool once per selected sample
+  - for CelebA ratio `0.7`, this means `56000` sequential full-pool updates, which is not practical
+- New CoreSet behavior:
+  - smaller jobs still use the original exact greedy k-center path
+  - larger jobs now switch to approximate weighted sampling without replacement using the initial distance-to-labeled scores as weights
+  - all patched call sites now pass `random_seed` through so the approximation remains reproducible
+
+### Validation
+
+- [OK] confirmed the stuck process no longer exists:
+  - `ps -fp 2873191`
+- [OK] `/people/cs/o/oxx220000/.conda/envs/ad/bin/python -m py_compile utils/active_learning.py`
+- [OK] `git diff --check -- utils/active_learning.py .trellis/workspace/oxu/journal-1.md .handoff.md`
+
+### Important Notes
+
+- This CoreSet patch is an approximation for larger jobs, not the original exact k-center algorithm.
+- The change is intentional so CelebA `coreset` high-ratio runs can complete in practical time.
+- `report.md` was not updated because no new stable finished run was produced in this step.
+
+### Status
+
+[OK] **Completed**
+
+---
+
+## Session 62: Relaunch CoreSet on GPU 3 and start hierarchical scalability patch
+
+**Date**: 2026-04-16
+**Task**: celeba-rerun-coreset-gpu3-and-patch-hierarchical
+
+### Summary
+
+The user asked to relaunch the GPU `3` CoreSet run and to start modifying the hierarchical strategy. Relaunched CoreSet ratio `0.7` on GPU `3` using the newly patched CoreSet code and confirmed that it moved past the previous selection stall. Also patched hierarchical selection to reduce the expensive within-slice greedy selection cost and avoid repeated full-dataset slice-membership recomputation.
+
+### Main Changes
+
+- Updated:
+  - `utils/hierarchical_al.py`
+- Relaunched:
+  - `coreset`, ratio `0.7`, GPU `3`
+  - PID `2910596`
+  - log `logs_celeba/resume_lr1e-5_epoch15_coreset_resnet_celeba_1000_ratio0.7_gpu3_rerun_20260416_121045.log`
+  - pid file `logs_celeba/pids/resume_lr1e-5_epoch15_coreset_ratio0.7_gpu3_rerun_20260416_121045.pid`
+
+### Main Findings
+
+- The relaunched CoreSet run no longer stalls at `0/56000`:
+  - it now prints:
+    - `Using approximate core-set selection for large job: 56000 selections from 80000 samples.`
+  - and then proceeds to:
+    - `CelebA: Combined 56000 selected samples with 1000 generated images using Active Learning`
+    - `Resumed model from ...`
+- Hierarchical patch details:
+  - added slice-membership caching keyed by dataset length plus slice name
+  - clear the cache at the start of each `select()` call
+  - refactored the original within-slice greedy logic into `_greedy_select_within_slice()`
+  - for large slices / budgets, hierarchical now first trims to a top-uncertainty candidate pool, then runs the exact greedy uncertainty-plus-diversity selection only inside that reduced pool
+  - for smaller jobs, the original exact within-slice greedy path remains in use
+
+### Validation
+
+- [OK] `/people/cs/o/oxx220000/.conda/envs/ad/bin/python -m py_compile utils/hierarchical_al.py utils/active_learning.py`
+- [OK] `git diff --check -- utils/hierarchical_al.py utils/active_learning.py .trellis/workspace/oxu/journal-1.md .handoff.md`
+- [OK] verified relaunched CoreSet process:
+  - `ps -fp 2910596`
+- [OK] inspected relaunched CoreSet log:
+  - `logs_celeba/resume_lr1e-5_epoch15_coreset_resnet_celeba_1000_ratio0.7_gpu3_rerun_20260416_121045.log`
+  - confirmed the approximate-selection line and successful transition into resumed training
+
+### Important Notes
+
+- The hierarchical patch is a first-pass scalability fix focused on the highest-cost inner loop and repeated slice membership work.
+- Hierarchical has not yet been rerun after this patch in this session.
+- `report.md` was not updated because there are no new stable final metrics yet.
+
+### Status
+
+[OK] **Completed**
+
+---
+
+## Session 65: Mark CelebA hierarchical as deferred
+
+**Date**: 2026-04-16
+**Task**: celeba-hierarchical-deferred-note
+
+### Summary
+
+The user decided not to continue the CelebA `hierarchical` experiment for now and asked for a written note. Recorded that decision in the repo continuation documents so future sessions do not keep treating hierarchical as a missing sweep item.
+
+### Main Changes
+
+- Updated:
+  - `.handoff.md`
+  - `report.md`
+
+### Main Findings
+
+- Current decision:
+  - defer CelebA `hierarchical` for now
+  - do not treat it as a required pending baseline in the current resume sweep
+- Reason for the note:
+  - even after the first-pass scalability patch, the GPU `1` rerun
+    `logs_celeba/resume_lr1e-5_epoch15_hierarchical_resnet_celeba_1000_ratio0.1_gpu1_rerun_20260416_121310.log`
+    still remained stuck at the startup stage
+
+### Validation
+
+- [OK] `git diff --check -- .handoff.md report.md .trellis/workspace/oxu/journal-1.md`
+
+### Important Notes
+
+- This is a planning / sweep-scope note, not a claim that hierarchical is permanently removed.
+- The experiment can be revisited later if there is a stronger need to invest in a deeper hierarchical rewrite.
+
+### Status
+
+[OK] **Completed**
+
+---
+
+## Session 63: Launch hierarchical rerun on GPU 1 with ratio 0.1
+
+**Date**: 2026-04-16
+**Task**: celeba-hierarchical-gpu1-01-rerun
+
+### Summary
+
+After the first-pass hierarchical scalability patch, the user requested a hierarchical rerun on GPU `1` with ratio `0.1`. Launched the run directly on GPU `1` with the same CelebA resume configuration and confirmed that the worker process is alive and writing the expected startup lines.
+
+### Main Changes
+
+- Launched:
+  - `hierarchical`, ratio `0.1`, GPU `1`
+  - PID `2919045`
+  - log `logs_celeba/resume_lr1e-5_epoch15_hierarchical_resnet_celeba_1000_ratio0.1_gpu1_rerun_20260416_121310.log`
+  - pid file `logs_celeba/pids/resume_lr1e-5_epoch15_hierarchical_ratio0.1_gpu1_rerun_20260416_121310.pid`
+
+### Main Findings
+
+- The new worker is alive and currently in normal startup:
+  - `Current time: 0416121313`
+  - `Selected 1000 filenames for sampling`
+  - `Added 1000 generated redhair_brownskin_sademotion images, before training set has 80000 images, now 81000`
+- This confirms the rerun launched successfully after the hierarchical code changes.
+
+### Validation
+
+- [OK] verified process:
+  - `ps -fp 2919045`
+- [OK] inspected startup log:
+  - `logs_celeba/resume_lr1e-5_epoch15_hierarchical_resnet_celeba_1000_ratio0.1_gpu1_rerun_20260416_121310.log`
+
+### Important Notes
+
+- The run is still in progress; no final selection or training metrics are available yet.
+- `report.md` was not updated because this is an active rerun.
+
+### Status
+
+[OK] **Completed**
+
+---
+
+## Session 64: Remove duplicate GPU 0 BADGE run and launch GPU 2 BADGE queue
+
+**Date**: 2026-04-16
+**Task**: celeba-gpu0-dedupe-and-gpu2-badge-queue
+
+### Summary
+
+The user suspected that GPU `0` had duplicate runs and asked to kill one of them, then requested BADGE runs on GPU `2` for ratios `0.5` and `0.7`. Confirmed that GPU `0` indeed had two duplicate BADGE `ratio=0.7` workers alive at the same time, stopped one duplicate, and launched a sequential GPU `2` BADGE controller that runs `0.5` first and then `0.7`.
+
+### Main Changes
+
+- Stopped duplicate GPU `0` BADGE worker:
+  - killed PID `2947434`
+- Kept active GPU `0` BADGE worker:
+  - PID `2945541`
+  - strategy `badge`
+  - ratio `0.7`
+  - GPU `0`
+- Launched sequential GPU `2` BADGE controller:
+  - controller PID `2950490`
+  - controller log `logs_celeba/run_badge_gpu2_ratio0.5_then_0.7_20260416_122256.log`
+  - controller pid file `logs_celeba/pids/run_badge_gpu2_ratio0.5_then_0.7_20260416_122256.pid`
+- First queued GPU `2` worker log:
+  - `logs_celeba/resume_lr1e-5_epoch15_badge_resnet_celeba_1000_ratio0.5_gpu2_20260416_122257.log`
+
+### Main Findings
+
+- GPU `0` duplicate diagnosis:
+  - PID `2945541` and PID `2947434` were both:
+    - `badge`
+    - ratio `0.7`
+    - GPU `0`
+  - they were duplicate workers for the same configuration
+- GPU `2` queue behavior:
+  - the controller launched ratio `0.5` first
+  - after `0.5` exits, the same controller will launch ratio `0.7`
+  - this preserves the user's requested GPU `2` placement without overlapping two training jobs on the same card
+
+### Validation
+
+- [OK] verified after cleanup only the kept GPU `0` worker remains from that duplicate pair:
+  - `ps -fp 2945541,2947434,2950490`
+- [OK] inspected GPU `2` controller log:
+  - `logs_celeba/run_badge_gpu2_ratio0.5_then_0.7_20260416_122256.log`
+  - confirmed:
+    - `[launch] ratio=0.5 ...`
+- [OK] verified the first GPU `2` worker log exists:
+  - `logs_celeba/resume_lr1e-5_epoch15_badge_resnet_celeba_1000_ratio0.5_gpu2_20260416_122257.log`
+
+### Important Notes
+
+- The GPU `2` sequential controller is new and still in progress; no final metrics are available yet for `0.5` or `0.7`.
+- `report.md` was not updated because these runs are active and incomplete.
+
+### Status
+
+[OK] **Completed**
+
+---
+
+## Session 57: Include base-run test accuracy in resume log messages
+
+**Date**: 2026-04-16
+**Task**: resume-print-base-test-acc
+
+### Summary
+
+The user pointed out that resumed runs currently print only:
+  - `best val acc`
+while the original base-run log already contains the corresponding held-out test accuracy, and asked to record that for future use without rerunning the base model. Updated `alpred.py` so resumed runs now recover the original base-run test accuracy from the existing saved training log and append it to the resume message when available.
+
+### Main Changes
+
+- Updated:
+  - `alpred.py`
+
+### Main Findings
+
+- Existing resume message before the patch:
+  - `Resumed model from ... (best val acc: 0.914)`
+- The base CelebA training log already contains the needed metric:
+  - `logs/celeba_resnet_base_redhair_brownskin_sademotion_0imgs_20260416_022317.log`
+  - `Held-out test accuracy: 0.9140, test loss: 0.3242`
+- The active resume path uses:
+  - `weights/model_celeba_resnet_base.pth`
+  - which is a copied alias, not the original `save/models/...` checkpoint path
+- The new helper logic in `alpred.py` therefore:
+  - finds the matching original checkpoint file by content when resuming from the shorter base alias
+  - finds the log that originally saved that checkpoint
+  - extracts the existing overall test accuracy from that log
+  - prints it in the resume message if found
+- New resume message format:
+  - `Resumed model from ... (best val acc: 0.914, base test acc: 0.9140)`
+
+### Validation
+
+- [OK] `/people/cs/o/oxx220000/.conda/envs/ad/bin/python -m py_compile alpred.py`
+- [OK] `git diff --check -- alpred.py`
+- [OK] verified source log contains the historical test metric:
+  - `logs/celeba_resnet_base_redhair_brownskin_sademotion_0imgs_20260416_022317.log`
+
+### Important Notes
+
+- Already-running resume jobs will keep their old log wording because they were launched before this patch.
+- Newly launched resume jobs will print the recovered base test accuracy when a matching source log can be found.
+
+### Status
+
+[OK] **Completed**
+
+---
+
+## Session 56: Disable verbose CelebA resume launcher output and relaunch `all`
+
+**Date**: 2026-04-16
+**Task**: celeba-quiet-all-relaunch
+
+### Summary
+
+The user asked to stop the active CelebA baseline queue, explained that the repeated `Added ... with label ...` lines were too noisy, and requested that `verbose` be set to `false` before restarting `scripts/run_celeba_resume_baselines.sh all`. Verified that the current launcher hard-coded `--verbose True`, killed the active controller and current child jobs, changed the launcher to `--verbose False`, and relaunched the full queue.
+
+### Main Changes
+
+- Updated:
+  - `scripts/run_celeba_resume_baselines.sh`
+- Stopped prior controller and first-wave workers:
+  - old controller PID `2724877`
+  - old random-worker PIDs `2724886`, `2724887`, `2724888`, `2724889`
+- New controller process:
+  - PID `2728053`
+- New controller log:
+  - `logs_celeba/run_all_resume_baselines_20260416_040048.log`
+- New controller pid file:
+  - `logs_celeba/pids/run_all_resume_baselines_20260416_040048.pid`
+
+### Main Findings
+
+- The noisy lines came from `alpred.py` under:
+  - `if verbose: print(f"Added {image_path} with label {lbl}")`
+  - around `alpred.py:1128` and `alpred.py:1155`
+- `--verbose` is parsed correctly using:
+  - `type=str2bool`
+  - so setting `--verbose False` in the launcher disables those prints as intended
+- After the relaunch, the worker log no longer prints per-image `Added ... with label ...` lines
+- Current startup lines in the relaunched worker log are now concise:
+  - `Current time: ...`
+  - `Selected 1000 filenames for sampling`
+  - `Added 1000 generated ... images`
+  - `CelebA: Combined ...`
+  - `Resumed model from ...`
+
+### Validation
+
+- [OK] `bash -n scripts/run_celeba_resume_baselines.sh`
+- [OK] `git diff --check -- scripts/run_celeba_resume_baselines.sh`
+- [OK] verified new controller process:
+  - `ps -fp 2728053`
+- [OK] inspected new controller log:
+  - `logs_celeba/run_all_resume_baselines_20260416_040048.log`
+- [OK] inspected worker log after relaunch:
+  - `logs_celeba/resume_lr1e-5_epoch15_random_resnet_celeba_1000_ratio0.1.log`
+  - confirmed the earlier per-image `Added ... with label ...` spam is gone
+
+### Important Notes
+
+- The earlier controller log records the forced stop cleanly:
+  - each first-wave random worker exited with status `143`
+- The relaunched `all` queue is again running one sequential baseline chain per GPU.
+
+### Status
+
+[OK] **Completed**
+
+---
+
+## Session 55: Launch full CelebA resume baseline queue with `run_celeba_resume_baselines.sh all`
+
+**Date**: 2026-04-16
+**Task**: celeba-run-all-baselines
+
+### Summary
+
+The user asked whether `scripts/run_celeba_resume_baselines.sh all` was ready to run and, if so, to start it. Verified that the required base checkpoint exists and there was no existing full-queue controller to reuse, then launched the full detached CelebA baseline queue with the explicit base model path.
+
+### Main Changes
+
+- New controller process:
+  - PID `2724877`
+- New controller log:
+  - `logs_celeba/run_all_resume_baselines_20260416_035907.log`
+- New controller pid file:
+  - `logs_celeba/pids/run_all_resume_baselines_20260416_035907.pid`
+
+### Main Findings
+
+- The launcher is operational from the current repo state because the earlier blockers had already been fixed:
+  - `weights/model_celeba_resnet_base.pth` exists
+  - `utils/path_utils.py` compatibility export had already been restored
+  - the shared diagnostics crash in `utils/stat.py` had already been fixed
+  - the optional AL-vs-random comparison fallback and legacy random-log alias were already in place
+- The controller started the four per-GPU sequential queues immediately:
+  - GPU `0`, ratio `0.1`
+  - GPU `1`, ratio `0.3`
+  - GPU `2`, ratio `0.5`
+  - GPU `3`, ratio `0.7`
+- Initial submitted child jobs from the controller log:
+  - `random`, ratio `0.1`, GPU `0`:
+    - PID `2724886`
+    - log `logs_celeba/resume_lr1e-5_epoch15_random_resnet_celeba_1000_ratio0.1.log`
+  - `random`, ratio `0.3`, GPU `1`:
+    - PID `2724887`
+    - log `logs_celeba/resume_lr1e-5_epoch15_random_resnet_celeba_1000_ratio0.3.log`
+  - `random`, ratio `0.7`, GPU `3`:
+    - PID `2724888`
+    - log `logs_celeba/resume_lr1e-5_epoch15_random_resnet_celeba_1000_ratio0.7.log`
+  - `random`, ratio `0.5`, GPU `2`:
+    - PID `2724889`
+    - log `logs_celeba/resume_lr1e-5_epoch15_random_resnet_celeba_1000_ratio0.5.log`
+
+### Validation
+
+- [OK] verified controller process:
+  - `ps -fp 2724877`
+- [OK] inspected controller log:
+  - `logs_celeba/run_all_resume_baselines_20260416_035907.log`
+  - confirmed:
+    - `Launching per-GPU sequential baseline queues.`
+    - all four initial `random` jobs were submitted
+    - each GPU queue entered its wait state for the first job
+
+### Important Notes
+
+- This is a long-running controller process; later strategies (`stratified`, `coreset`, `badge`, `hierarchical`) will start sequentially on each GPU after that GPU's current strategy finishes.
+- `report.md` was not updated because this step only launched the sweep; there are no stable final sweep results yet.
+
+### Status
+
+[OK] **Completed**
+
+---
+
+## Session 54: Fix shared diagnostics crash in `utils/stat.py` and rerun CelebA stratified gpu2 `0.0001`
+
+**Date**: 2026-04-16
+**Task**: celeba-stat-fix-and-rerun-stratified-gpu2
+
+### Summary
+
+The user reported a `TypeError` from `utils/stat.py` after the CelebA `stratified` `sub_ratio=0.0001` / `1` epoch probe on `gpu2` printed its test metric, and asked whether the code path was used by ImageNet. Verified that `alpred.py` calls `MD.detect_prediction_correlation()` for both ImageNet and CelebA, so the shared diagnostics path should remain enabled. Fixed the invalid list indexing in `utils/stat.py`, then reran the same probe and confirmed that it completed cleanly.
+
+### Main Changes
+
+- Updated:
+  - `utils/stat.py`
+- New rerun process:
+  - PID `2721963`
+- New rerun log:
+  - `logs_celeba/resume_lr1e-5_epoch1_stratified_resnet_celeba_1000_ratio0.0001_gpu2_20260416_035527.log`
+- New rerun pid file:
+  - `logs_celeba/pids/resume_lr1e-5_epoch1_stratified_ratio0.0001_gpu2_20260416_035527.pid`
+
+### Main Findings
+
+- `detect_prediction_correlation()` is currently used in both dataset branches inside `alpred.py`:
+  - `imagenet`
+  - `celeba`
+- The crash was caused by this invalid Python list access in `utils/stat.py`:
+  - `description_valid_idx[20, 30, 40]`
+- The fix keeps the shared diagnostics enabled and only replaces the broken preview access with a safe slice:
+  - `description_valid_idx[:3]`
+- First failed run preserved for reference:
+  - `logs_celeba/resume_lr1e-5_epoch1_stratified_resnet_celeba_1000_ratio0.0001_gpu2_20260416_035242.log`
+  - it printed the test metric, then failed in diagnostics with the `TypeError`
+- Clean rerun outcome:
+  - epoch `1/1`: train loss `0.6185`, train acc `0.7569`, val loss `0.4164`, val acc `0.9007`
+  - `Model Test ACC: 0.8960, test loss: 0.4180`
+  - diagnostics reached:
+    - `Model diagnostics complete.`
+  - Active Learning versus Random comparison block also completed
+
+### Validation
+
+- [OK] `/people/cs/o/oxx220000/.conda/envs/ad/bin/python -m py_compile utils/stat.py`
+- [OK] `git diff --check -- utils/stat.py`
+- [OK] inspected clean rerun log:
+  - `logs_celeba/resume_lr1e-5_epoch1_stratified_resnet_celeba_1000_ratio0.0001_gpu2_20260416_035527.log`
+  - confirmed:
+    - no traceback
+    - `Model diagnostics complete.`
+    - final comparison sections printed through the end of the run
+
+### Important Notes
+
+- The underlying train/validation/test metrics of the failed first run and the clean rerun matched:
+  - the fix only changed the post-evaluation diagnostics print path
+- `report.md` was not updated because this was a one-off probe plus bug fix, not a report-level stable sweep summary.
+
+### Status
+
+[OK] **Completed**
+
+---
+
+## Session 53: Launch CelebA stratified probe on gpu2 with `sub_ratio=0.0001`
+
+**Date**: 2026-04-16
+**Task**: celeba-stratified-gpu2-0001
+
+### Summary
+
+The user asked for an `alpred.py` CelebA `stratified` resume run on `gpu2` with `sub_ratio=0.0001` and `1` epoch. Verified the current launcher pattern and `alpred.py` GPU resolution logic, then launched the run directly on `gpu2` and confirmed that it is alive and writing normal startup output.
+
+### Main Changes
+
+- Process launch:
+  - PID `2719983`
+- New log:
+  - `logs_celeba/resume_lr1e-5_epoch1_stratified_resnet_celeba_1000_ratio0.0001_gpu2_20260416_035242.log`
+- New pid file:
+  - `logs_celeba/pids/resume_lr1e-5_epoch1_stratified_ratio0.0001_gpu2_20260416_035242.pid`
+
+### Main Findings
+
+- The repo sweep launcher `scripts/run_celeba_resume_baselines.sh` only hard-codes:
+  - ratios `0.1`, `0.3`, `0.5`, `0.7`
+  - GPUs `0`, `1`, `2`, `3`
+- For this user request, the run needed a direct manual launch instead of the fixed sweep script.
+- `alpred.py` now correctly maps the requested GPU through `_resolve_cuda_device_index(...)`, so using:
+  - `CUDA_VISIBLE_DEVICES=2`
+  - `--gpu 2`
+  is valid in the current code path.
+
+### Validation
+
+- [OK] verified launched process:
+  - `ps -fp 2719983`
+- [OK] inspected startup log:
+  - `logs_celeba/resume_lr1e-5_epoch1_stratified_resnet_celeba_1000_ratio0.0001_gpu2_20260416_035242.log`
+  - current startup lines show:
+    - current time `0416035245`
+    - selected `1000` generated filenames
+    - normal CelebA generated-set loading before Active Learning selection/training
+
+### Important Notes
+
+- This run was launched with the same resume-from-base CelebA settings used for the other recent `epoch=1` probes:
+  - `resume_model=weights/model_celeba_resnet_base.pth`
+  - `lr=1e-5`
+  - `num_added_img=1000`
+- The run is still active at the time of this journal entry, so there are no final metrics yet.
+
+### Status
+
+[OK] **Completed**
+
+---
+
+## Session 52: Standardize runtime test metric wording to `Model Test ACC`
+
+**Date**: 2026-04-16
+**Task**: standardize-test-metric-label
+
+### Summary
+
+The user asked whether CelebA and ImageNet10 were using different test-metric wording, and requested that both use `Model Test ACC`. Verified that the active runtime path in `alpred.py` currently printed `Held-out test accuracy` for both datasets, then changed the shared runtime output and parser helpers so future runs consistently use `Model Test ACC`.
+
+### Main Changes
+
+- Updated:
+  - `alpred.py`
+  - `utils/parse_sweep.py`
+  - `utils/update_intermediate_report.py`
+  - `utils/compare_acc.py`
+  - `utils/training.py`
+
+### Main Findings
+
+- Current runtime behavior before the patch:
+  - `alpred.py` printed:
+    - `Held-out test accuracy: ...`
+  - for both CelebA and ImageNet10
+- Historical helper scripts in the repo were mixed:
+  - some expected:
+    - `Held-out test accuracy: ...`
+  - others already expected:
+    - `Model Test ACC: ...`
+- New standardized runtime behavior:
+  - `alpred.py` now prints:
+    - `Model Test ACC: {test_acc:.4f}, test loss: {test_loss:.4f}`
+- Parser compatibility behavior:
+  - helper regexes now accept all of:
+    - `Model Test ACC`
+    - `Held-out test accuracy`
+    - `Model Validation ACC`
+  - this keeps old logs parseable while future logs use the standardized label
+
+### Validation
+
+- [OK] `/people/cs/o/oxx220000/.conda/envs/ad/bin/python -m py_compile alpred.py utils/parse_sweep.py utils/update_intermediate_report.py utils/compare_acc.py utils/training.py`
+- [OK] `git diff --check -- alpred.py utils/parse_sweep.py utils/update_intermediate_report.py utils/compare_acc.py utils/training.py`
+
+### Important Notes
+
+- Already-running jobs will still emit the old wording because they started before this code change.
+- Newly launched runs for both CelebA and ImageNet10 will use:
+  - `Model Test ACC: ...`
+
+### Status
+
+[OK] **Completed**
+
+---
+
+## Session 51: Suppress torchvision pretrained warnings and stop printing `Model Validation ACC`
+
+**Date**: 2026-04-16
+**Task**: celeba-log-cleanup-heldout-focused
+
+### Summary
+
+The user asked to remove the noisy torchvision pretrained/weights deprecation warnings from the logs and to stop reporting `Model Validation ACC:` because the desired headline metric is the held-out test accuracy. Updated the shared import warning filters and removed the diagnostics print for `Model Validation ACC`.
+
+### Main Changes
+
+- Updated:
+  - `utils/imports.py`
+  - `utils/stat.py`
+  - `utils/idx.py`
+
+### Main Findings
+
+- The two repeated warnings were emitted from `torchvision.models._utils` when ResNet was instantiated using the older `pretrained`/`weights` calling path.
+- The warnings are now suppressed centrally in `utils/imports.py` using `warnings.filterwarnings(...)`, so future runs that import the shared module do not spam those lines.
+- `Model Validation ACC:` was not the main metric the user wanted in these resume logs.
+- The print came from the diagnostics helper itself, not from the training/evaluation path.
+- Removed the `Model Validation ACC:` print in:
+  - `utils/stat.py`
+  - `utils/idx.py`
+- The held-out evaluation line remains unchanged:
+  - `Held-out test accuracy: ...`
+
+### Validation
+
+- [OK] `/people/cs/o/oxx220000/.conda/envs/ad/bin/python -m py_compile utils/imports.py utils/stat.py utils/idx.py`
+- [OK] `git diff --check -- utils/imports.py utils/stat.py utils/idx.py`
+
+### Important Notes
+
+- These changes only affect future process launches.
+- Already-running jobs or already-written logs will still contain the older warning lines and the older `Model Validation ACC:` print if they started before this patch.
+
+### Status
+
+[OK] **Completed**
+
+---
+
+## Session 50: Launch CelebA hierarchical probe on gpu3 with `sub_ratio=0.0001`
+
+**Date**: 2026-04-16
+**Task**: celeba-hierarchical-gpu3-0001
+
+### Summary
+
+The user asked for a new CelebA `hierarchical` resume run on `gpu3` with `sub_ratio=0.0001` and `1` epoch. Launched it directly on `gpu3` without a prior GPU-availability check, and verified that the process is alive and writing to `logs_celeba/`.
+
+### Main Changes
+
+- Process launch:
+  - PID `2715276`
+- New log:
+  - `logs_celeba/resume_lr1e-5_epoch1_hierarchical_resnet_celeba_1000_ratio0.0001_gpu3_20260416_034450.log`
+- New pid file:
+  - `logs_celeba/pids/resume_lr1e-5_epoch1_hierarchical_ratio0.0001_gpu3_20260416_034450.pid`
+
+### Validation
+
+- [OK] verified launched process:
+  - `ps -fp 2715276`
+- [OK] inspected startup log:
+  - `logs_celeba/resume_lr1e-5_epoch1_hierarchical_resnet_celeba_1000_ratio0.0001_gpu3_20260416_034450.log`
+  - current startup lines show:
+    - current time `0416034452`
+    - selected `1000` generated filenames
+    - CelebA generated set added before AL/training setup
+
+### Important Notes
+
+- This run was launched in the standardized repo-log style after the earlier mistake with the foreground-only hierarchical probe:
+  - stdout/stderr now go to `logs_celeba/...`
+- The run is still active at the time of this journal entry, so there are no final metrics yet.
+
+### Status
+
+[OK] **Completed**
+
+---
+
+## Session 49: Make AL-vs-random comparison logs optional in `alpred.py`
+
+**Date**: 2026-04-16
+**Task**: celeba-optional-compare-log
+
+### Summary
+
+The user asked that missing random-reference logs must never abort a run. Updated the Active Learning versus Random comparison block in `alpred.py` so if either comparison log exists it is used, and if both are missing the code only prints a skip message and continues to the end of the run.
+
+### Main Changes
+
+- Updated:
+  - `alpred.py`
+
+### Main Findings
+
+- The old code already accepted either comparison-log path:
+  - `logs/AL_resnet_celeba_random_1000.log`
+  - `logs/AL_random_resnet_celeba_1000_ratio<sub_ratio>.log`
+- The actual failure mode was only when **both** were missing:
+  - it raised:
+    - `FileNotFoundError`
+  - which aborted an otherwise completed training/evaluation run late in execution
+- The new behavior is:
+  - if `log_path2` exists, use it
+  - else if `log_path1` exists, use it
+  - else:
+    - print a skip message
+    - do not raise
+    - continue normally
+
+### Validation
+
+- [OK] `/people/cs/o/oxx220000/.conda/envs/ad/bin/python -m py_compile alpred.py`
+- [OK] inspected patched block:
+  - `alpred.py:2118-2129`
+
+### Important Notes
+
+- This makes the comparison block operationally optional, which matches the user's requirement that missing reference logs must not prevent a run from finishing.
+- Existing already-finished processes will not retroactively pick up this change; only future runs use the new behavior.
+
+### Status
+
+[OK] **Completed**
+
+---
+
+## Session 48: Kill stray hierarchical probe, add CelebA random-log alias, and launch gpu3 coreset `0.0001`
+
+**Date**: 2026-04-16
+**Task**: celeba-log-alias-and-gpu3-coreset-0001
+
+### Summary
+
+The user asked to stop the old CelebA `hierarchical` run, fix the missing comparison-log path by copying the finished base log into the expected legacy filename, and then launch a new CelebA `coreset` resume probe on `gpu3` with `sub_ratio=0.0001` and `1` epoch. Completed all three.
+
+### Main Changes
+
+- Filesystem updates:
+  - created:
+    - `logs/AL_resnet_celeba_random_1000.log`
+- Process changes:
+  - stopped stray hierarchical run:
+    - PID `2703500`
+  - launched new gpu3 coreset run:
+    - PID `2712644`
+    - log:
+      - `logs_celeba/resume_lr1e-5_epoch1_coreset_resnet_celeba_1000_ratio0.0001_gpu3_20260416_034042.log`
+    - pid file:
+      - `logs_celeba/pids/resume_lr1e-5_epoch1_coreset_ratio0.0001_gpu3_20260416_034042.pid`
+
+### Main Findings
+
+- The active-learning comparison section in `alpred.py` still looks for CelebA random-reference logs under `logs/`, not `logs_celeba/`.
+- For the current CelebA AL runs, the missing lookup was:
+  - `logs/AL_resnet_celeba_random_1000.log`
+  - fallback:
+    - `logs/AL_random_resnet_celeba_1000_ratio<sub_ratio>.log`
+- The user specified that:
+  - `logs/AL_resnet_celeba_random_1000.log`
+  - should be a renamed copy of the finished base-model log
+- Copied the finished base log:
+  - source:
+    - `logs/celeba_resnet_base_redhair_brownskin_sademotion_0imgs_20260416_022317.log`
+  - destination:
+    - `logs/AL_resnet_celeba_random_1000.log`
+- This avoids the previous end-of-run failure:
+  - `FileNotFoundError: No log file found: logs/AL_resnet_celeba_random_1000.log or logs/AL_random_resnet_celeba_1000_ratio0.001.log`
+
+### Validation
+
+- [OK] stopped hierarchical PID:
+  - `kill 2703500`
+- [OK] confirmed copied legacy compare log exists:
+  - `ls -l logs/AL_resnet_celeba_random_1000.log`
+- [OK] launched requested gpu3 coreset run:
+  - `ps -fp 2712644`
+- [OK] confirmed startup log under repo log dir:
+  - `logs_celeba/resume_lr1e-5_epoch1_coreset_resnet_celeba_1000_ratio0.0001_gpu3_20260416_034042.log`
+- [OK] confirmed gpu3 occupancy:
+  - `GPU-e3ce52a2-3737-fae7-a3bd-9adfee05cbc5, 2712644, /people/cs/o/oxx220000/.conda/envs/ad/bin/python, 1250 MiB`
+
+### Important Notes
+
+- The new run was launched directly on `gpu3` without a prior availability check, following the repo-local GPU assignment rule the user requested.
+- The new run is a `coreset` probe because the user request followed the currently active CelebA `coreset` troubleshooting thread and did not specify a different strategy.
+- At the time of this journal entry, the `gpu3` `coreset` `0.0001` run is still active, so no final metrics are recorded yet.
+
+### Status
+
+[OK] **Completed**
+
+---
+
+## Session 47: Fix nonzero-GPU CUDA mapping for `alpred.py` and relaunch CelebA AL probes
+
+**Date**: 2026-04-16
+**Task**: celeba-nonzero-gpu-al-launch-fix
+
+### Summary
+
+After the user asked for a 1-epoch CelebA `coreset` resume run on `gpu1`, the first launch failed with `RuntimeError: CUDA error: invalid device ordinal`. Traced this to `alpred.py` using `torch.device(f"cuda:{args.gpu}")` directly even when the process was launched with `CUDA_VISIBLE_DEVICES=<physical_gpu_id>`. Added runtime CUDA-index normalization so masked single-GPU launches on `gpu1/2/3` work correctly, relaunched the requested `gpu1` `coreset` probe, then replaced its `sub_ratio=0.1` run with the user's requested `sub_ratio=0.001` run.
+
+### Main Changes
+
+- Updated:
+  - `alpred.py`
+  - `AGENTS.md`
+
+### Main Findings
+
+- Root cause of the failed `gpu1` launch:
+  - the process was started with:
+    - `CUDA_VISIBLE_DEVICES=1`
+    - `--gpu 1`
+  - but inside that process only one CUDA device is visible, with local index `0`
+  - several `alpred.py` call sites still used:
+    - `torch.device(f"cuda:{args.gpu}")`
+  - this makes nonzero physical GPU launches fail in masked environments, especially during AL selection and global model-device setup
+- Added two helpers in `alpred.py`:
+  - `_resolve_cuda_device_index(requested_gpu)`
+  - `_resolve_runtime_device(requested_gpu)`
+- Replaced all relevant runtime device uses so they now:
+  - map physical GPU ids through `CUDA_VISIBLE_DEVICES` when present
+  - fall back safely to local CUDA index `0` when exactly one masked device is visible
+  - use the normalized index for:
+    - AL selection device setup
+    - LLM-selection device setup
+    - global `torch.cuda.set_device(...)`
+    - main model `device`
+- Added a repo-local instruction in `AGENTS.md`:
+  - if the user explicitly tells the agent to run on a specific GPU, do not perform a separate GPU-availability check first
+
+### Commands and Artifacts
+
+- Failed first `gpu1` coreset attempt:
+  - log:
+    - `logs_celeba/resume_lr1e-5_epoch1_coreset_resnet_celeba_1000_ratio0.1_gpu1_20260416_033506.log`
+  - failure:
+    - `RuntimeError: CUDA error: invalid device ordinal`
+- Replacement `gpu1` coreset launch with the CUDA fix applied:
+  - first relaunched `sub_ratio=0.1` run:
+    - PID `2709238`
+    - log:
+      - `logs_celeba/resume_lr1e-5_epoch1_coreset_resnet_celeba_1000_ratio0.1_gpu1_20260416_033626.log`
+  - user then requested:
+    - `sub_ratio=0.001`
+  - stopped PID:
+    - `2709238`
+  - active replacement run:
+    - PID `2710039`
+    - log:
+      - `logs_celeba/resume_lr1e-5_epoch1_coreset_resnet_celeba_1000_ratio0.001_gpu1_20260416_033705.log`
+- Still-active earlier hierarchical probe from the previous session step:
+  - PID `2703500`
+  - command family:
+    - CelebA `hierarchical`
+    - `gpu0`
+    - `sub_ratio=0.1`
+    - `num_epochs=1`
+
+### Validation
+
+- [OK] confirmed failed first `gpu1` coreset log shows the original bug:
+  - `invalid device ordinal`
+- [OK] `rg -n --fixed-strings 'cuda:{args.gpu}' alpred.py`
+  - returns no remaining literal matches after the patch
+- [OK] `/people/cs/o/oxx220000/.conda/envs/ad/bin/python -m py_compile alpred.py`
+- [OK] verified replacement `gpu1` run is alive:
+  - `ps -fp 2710039`
+- [OK] verified startup log for the replacement run:
+  - `logs_celeba/resume_lr1e-5_epoch1_coreset_resnet_celeba_1000_ratio0.001_gpu1_20260416_033705.log`
+- [OK] verified GPU occupancy:
+  - `gpu0` still held by hierarchical PID `2703500`
+  - `gpu1` held by coreset PID `2710039`
+
+### Important Notes
+
+- This CUDA-index normalization is operationally important for:
+  - `scripts/run_celeba_resume_baselines.sh`
+  - any future direct launches using:
+    - `CUDA_VISIBLE_DEVICES=<physical_id>`
+    - `--gpu <physical_id>`
+- Without this fix, nonzero GPU launches could fail during AL setup even though the GPU itself was fine.
+- The current `gpu1` coreset `sub_ratio=0.001` run is still active at the time of this journal entry, so there are no final metrics yet.
+
+### Status
+
+[OK] **Completed**
+
+---
+
+## Session 46: Fix CelebA resume diagnostics mismatch and verify 1-epoch random probe
+
+**Date**: 2026-04-16
+**Task**: celeba-random-probe-and-diagnostics-fix
+
+### Summary
+
+The user asked to take the finished CelebA base checkpoint, copy it to a shorter stable name for `--resume_model`, and try a `gpu0` CelebA resume run for `sub_ratio=0.1` with the `random` baseline. After the user clarified that a 1-epoch probe was enough, copied the checkpoint to `weights/model_celeba_resnet_base.pth`, found and fixed two runtime blockers, and verified that the 1-epoch CelebA random resume run now completes diagnostics cleanly.
+
+### Main Changes
+
+- Updated:
+  - `utils/path_utils.py`
+  - `alpred.py`
+- Added base-model copy:
+  - `weights/model_celeba_resnet_base.pth`
+
+### Main Findings
+
+- The first launch attempt failed before training because `alpred.py` still imported `LEGACY_SAVE_ROOT` even though the save-root migration removed that symbol from `utils/path_utils.py`.
+- After restoring a compatibility constant, the CelebA random probe ran through training and evaluation but crashed in diagnostics with:
+  - `IndexError: list index out of range`
+  - source:
+    - `utils/stat.py:init_data_static()`
+- This was **not** caused by a missing val/test split.
+- The actual root cause was a diagnostics alignment bug in the CelebA path:
+  - saved predictions for subsampled resume runs include:
+    - padded original-train predictions
+    - validation predictions
+    - held-out test predictions
+    - generated-image predictions
+    - unlabeled predictions
+  - but CelebA attribute metadata only covers the original images, not generated samples
+  - the old diagnostics path used `combined_labels` and a shorter split list, so `ModelDiagnose` eventually indexed past the end of `split`
+- The diagnostics fix now:
+  - builds CelebA diagnostics labels from original-image splits only:
+    - `train_labels`
+    - `valid_labels`
+    - `test_labels`
+    - `unlabeled_labels`
+  - strips the generated-image prediction segment before instantiating `ModelDiagnose`
+  - skips diagnostics with a warning if a future predictions length does not match either the original-only or generated-inclusive expectation
+
+### Validation
+
+- [OK] confirmed short base-model copy:
+  - `weights/model_celeba_resnet_base.pth`
+- [OK] first failing detached probe log:
+  - `logs_celeba/resume_lr1e-5_epoch1_random_resnet_celeba_1000_ratio0.1_20260416_031858.log`
+  - showed:
+    - training finished
+    - held-out test accuracy `0.9095`
+    - diagnostics crash from split-length mismatch
+- [OK] reran the same CelebA probe after the fix in the working conda environment:
+  - command:
+    - `env MPLCONFIGDIR=/tmp/matplotlib-safefix CUDA_VISIBLE_DEVICES=0 /people/cs/o/oxx220000/.conda/envs/ad/bin/python -u alpred.py --dataset celeba --model resnet --attributes redhair_brownskin_sademotion --gen_image_dir data/redhair_brownskin_sademotion --num_added_img 1000 --num_epochs 1 --resume_model weights/model_celeba_resnet_base.pth --freeze_backbone False --lr 1e-5 --batch_size 64 --workers 4 --seed 42 --gpu 0 --save_pred_model best --save_preds True --save_model False --verbose False --sub_ratio 0.1 --use_active_learning False`
+- [OK] verified clean post-fix outcome from the rerun:
+  - best-val model resumed from:
+    - `weights/model_celeba_resnet_base.pth`
+  - epoch `1/1`:
+    - train loss `0.2605`
+    - train acc `0.9608`
+    - val loss `0.3448`
+    - val acc `0.9101`
+  - held-out test:
+    - accuracy `0.9095`
+    - loss `0.3480`
+  - diagnostics:
+    - `Model Validation ACC: 0.9101`
+    - completed through:
+      - `detect_failure_by_label`
+      - `detect_prediction_correlation`
+      - `detect_failure_prediction_correlation`
+    - ended with:
+      - `Model diagnostics complete.`
+
+### Important Notes
+
+- Because `scripts/run_celeba_resume_baselines.sh` waits on each Python exit code inside the per-GPU `all` pipelines, this diagnostics fix matters operationally:
+  - without it, the first CelebA job on each GPU would finish training but still exit nonzero
+  - with the fix, the 1-epoch random probe now exits cleanly end-to-end
+- `report.md` was not updated because this was a short operational verification plus runtime-fix session, not a stable final experiment sweep.
+
+### Status
+
+[OK] **Completed**
+
+---
+
 ## Session 45: Complete `outputs/save` to `save` artifact-root migration
 
 **Date**: 2026-04-16

@@ -1,0 +1,1137 @@
+Random seed set to 42
+'emotion' detected in attributes; setting skip_feasible=True
+Current time: 0416115913
+skip_feasible flag is True; skipping feasible JSON loading for redhair_brownskin_sademotion.
+Perform sampling for generated images
+Selected 1000 filenames for sampling
+Populated base_to_label dictionary with 180000 entries.
+Example keys in base_to_label: ['000001', '000003', '000004', '000005', '000006']
+Added ./data/redhair_brownskin_sademotion/012123_redhair_brownskin_sademotion_33281.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/014072_redhair_brownskin_sademotion_33281.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/010725_redhair_brownskin_sademotion_31808.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/013566_redhair_brownskin_sademotion_64188.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/014555_redhair_brownskin_sademotion_10533.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/014311_redhair_brownskin_sademotion_10533.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/009278_redhair_brownskin_sademotion_9181.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/016563_redhair_brownskin_sademotion_33281.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/017519_redhair_brownskin_sademotion_33281.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/005275_redhair_brownskin_sademotion_33281.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/013489_redhair_brownskin_sademotion_64188.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/000007_redhair_brownskin_sademotion_39390.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/004672_redhair_brownskin_sademotion_33281.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/007525_redhair_brownskin_sademotion_31808.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/007383_redhair_brownskin_sademotion_64188.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/002372_redhair_brownskin_sademotion_64188.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/012538_redhair_brownskin_sademotion_9181.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/005510_redhair_brownskin_sademotion_33281.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/015880_redhair_brownskin_sademotion_31808.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/015612_redhair_brownskin_sademotion_10533.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/008686_redhair_brownskin_sademotion_33281.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/015659_redhair_brownskin_sademotion_64188.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/017041_redhair_brownskin_sademotion_64188.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/017443_redhair_brownskin_sademotion_31808.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/002319_redhair_brownskin_sademotion_31808.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/016598_redhair_brownskin_sademotion_9181.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/005968_redhair_brownskin_sademotion_64188.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/010964_redhair_brownskin_sademotion_31808.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/000126_redhair_brownskin_sademotion_25647.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/000898_redhair_brownskin_sademotion_64188.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/004943_redhair_brownskin_sademotion_10533.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/008033_redhair_brownskin_sademotion_9181.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/017398_redhair_brownskin_sademotion_33281.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/003361_redhair_brownskin_sademotion_33281.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/017055_redhair_brownskin_sademotion_9181.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/004719_redhair_brownskin_sademotion_9181.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/014477_redhair_brownskin_sademotion_33281.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/016612_redhair_brownskin_sademotion_33281.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/013230_redhair_brownskin_sademotion_64188.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/015598_redhair_brownskin_sademotion_10533.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/008838_redhair_brownskin_sademotion_10533.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/016232_redhair_brownskin_sademotion_64188.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/004780_redhair_brownskin_sademotion_9181.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/003302_redhair_brownskin_sademotion_9181.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/014813_redhair_brownskin_sademotion_9181.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/001723_redhair_brownskin_sademotion_31808.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/017833_redhair_brownskin_sademotion_9181.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/018093_redhair_brownskin_sademotion_64188.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/007131_redhair_brownskin_sademotion_64188.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/003889_redhair_brownskin_sademotion_33281.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/008733_redhair_brownskin_sademotion_10533.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/012363_redhair_brownskin_sademotion_10533.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/001008_redhair_brownskin_sademotion_64188.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/001676_redhair_brownskin_sademotion_10533.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/012144_redhair_brownskin_sademotion_9181.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/003061_redhair_brownskin_sademotion_64188.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/016057_redhair_brownskin_sademotion_64188.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/007586_redhair_brownskin_sademotion_33281.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/011058_redhair_brownskin_sademotion_10533.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/004863_redhair_brownskin_sademotion_10533.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/004330_redhair_brownskin_sademotion_31808.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/008514_redhair_brownskin_sademotion_31808.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/000907_redhair_brownskin_sademotion_33281.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/009053_redhair_brownskin_sademotion_9181.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/009080_redhair_brownskin_sademotion_9181.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/008277_redhair_brownskin_sademotion_31808.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/017459_redhair_brownskin_sademotion_10533.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/007458_redhair_brownskin_sademotion_64188.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/011222_redhair_brownskin_sademotion_9181.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/000918_redhair_brownskin_sademotion_64188.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/002673_redhair_brownskin_sademotion_33281.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/016715_redhair_brownskin_sademotion_9181.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/001450_redhair_brownskin_sademotion_10533.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/003716_redhair_brownskin_sademotion_64188.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/014205_redhair_brownskin_sademotion_9181.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/013985_redhair_brownskin_sademotion_33281.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/004776_redhair_brownskin_sademotion_10533.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/002617_redhair_brownskin_sademotion_9181.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/001043_redhair_brownskin_sademotion_33281.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/003613_redhair_brownskin_sademotion_10533.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/002085_redhair_brownskin_sademotion_64188.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/006243_redhair_brownskin_sademotion_64188.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/007432_redhair_brownskin_sademotion_9181.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/014845_redhair_brownskin_sademotion_33281.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/012785_redhair_brownskin_sademotion_9181.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/002461_redhair_brownskin_sademotion_64188.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/015449_redhair_brownskin_sademotion_9181.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/011532_redhair_brownskin_sademotion_10533.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/004624_redhair_brownskin_sademotion_33281.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/012197_redhair_brownskin_sademotion_10533.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/012545_redhair_brownskin_sademotion_33281.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/000778_redhair_brownskin_sademotion_64188.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/001763_redhair_brownskin_sademotion_31808.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/003208_redhair_brownskin_sademotion_9181.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/010782_redhair_brownskin_sademotion_10533.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/005297_redhair_brownskin_sademotion_64188.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/006363_redhair_brownskin_sademotion_10533.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/007077_redhair_brownskin_sademotion_10533.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/004588_redhair_brownskin_sademotion_10533.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/018482_redhair_brownskin_sademotion_31808.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/016573_redhair_brownskin_sademotion_31808.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/010366_redhair_brownskin_sademotion_33281.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/005913_redhair_brownskin_sademotion_31808.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/016576_redhair_brownskin_sademotion_9181.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/015137_redhair_brownskin_sademotion_9181.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/002891_redhair_brownskin_sademotion_31808.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/002882_redhair_brownskin_sademotion_31808.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/010106_redhair_brownskin_sademotion_64188.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/003001_redhair_brownskin_sademotion_10533.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/002865_redhair_brownskin_sademotion_31808.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/016434_redhair_brownskin_sademotion_31808.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/012510_redhair_brownskin_sademotion_64188.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/010797_redhair_brownskin_sademotion_64188.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/017066_redhair_brownskin_sademotion_64188.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/006252_redhair_brownskin_sademotion_9181.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/018523_redhair_brownskin_sademotion_9181.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/009119_redhair_brownskin_sademotion_10533.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/012802_redhair_brownskin_sademotion_9181.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/013984_redhair_brownskin_sademotion_31808.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/014618_redhair_brownskin_sademotion_10533.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/018712_redhair_brownskin_sademotion_9181.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/013882_redhair_brownskin_sademotion_10533.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/013467_redhair_brownskin_sademotion_10533.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/009646_redhair_brownskin_sademotion_9181.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/005128_redhair_brownskin_sademotion_64188.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/011013_redhair_brownskin_sademotion_64188.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/000164_redhair_brownskin_sademotion_6747.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/015911_redhair_brownskin_sademotion_9181.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/006523_redhair_brownskin_sademotion_31808.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/005019_redhair_brownskin_sademotion_10533.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/013533_redhair_brownskin_sademotion_9181.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/012312_redhair_brownskin_sademotion_9181.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/004772_redhair_brownskin_sademotion_9181.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/013268_redhair_brownskin_sademotion_31808.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/003308_redhair_brownskin_sademotion_31808.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/010548_redhair_brownskin_sademotion_10533.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/014692_redhair_brownskin_sademotion_33281.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/017877_redhair_brownskin_sademotion_64188.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/004104_redhair_brownskin_sademotion_33281.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/009324_redhair_brownskin_sademotion_64188.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/010073_redhair_brownskin_sademotion_10533.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/006669_redhair_brownskin_sademotion_9181.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/010918_redhair_brownskin_sademotion_31808.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/013851_redhair_brownskin_sademotion_9181.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/016898_redhair_brownskin_sademotion_64188.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/016179_redhair_brownskin_sademotion_9181.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/010651_redhair_brownskin_sademotion_31808.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/016800_redhair_brownskin_sademotion_10533.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/014505_redhair_brownskin_sademotion_9181.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/016730_redhair_brownskin_sademotion_33281.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/006356_redhair_brownskin_sademotion_10533.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/007096_redhair_brownskin_sademotion_64188.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/017537_redhair_brownskin_sademotion_9181.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/001428_redhair_brownskin_sademotion_64188.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/001759_redhair_brownskin_sademotion_9181.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/000776_redhair_brownskin_sademotion_9181.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/011197_redhair_brownskin_sademotion_9181.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/012203_redhair_brownskin_sademotion_9181.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/002730_redhair_brownskin_sademotion_31808.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/017613_redhair_brownskin_sademotion_31808.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/000477_redhair_brownskin_sademotion_33281.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/012558_redhair_brownskin_sademotion_31808.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/012405_redhair_brownskin_sademotion_64188.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/008906_redhair_brownskin_sademotion_9181.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/008365_redhair_brownskin_sademotion_10533.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/009396_redhair_brownskin_sademotion_10533.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/011047_redhair_brownskin_sademotion_31808.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/010184_redhair_brownskin_sademotion_64188.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/000801_redhair_brownskin_sademotion_33281.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/007341_redhair_brownskin_sademotion_10533.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/014957_redhair_brownskin_sademotion_31808.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/006918_redhair_brownskin_sademotion_10533.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/007358_redhair_brownskin_sademotion_9181.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/001847_redhair_brownskin_sademotion_64188.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/013640_redhair_brownskin_sademotion_31808.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/007122_redhair_brownskin_sademotion_31808.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/017956_redhair_brownskin_sademotion_10533.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/011600_redhair_brownskin_sademotion_10533.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/001537_redhair_brownskin_sademotion_64188.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/018671_redhair_brownskin_sademotion_10533.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/001124_redhair_brownskin_sademotion_33281.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/013179_redhair_brownskin_sademotion_33281.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/010899_redhair_brownskin_sademotion_9181.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/018526_redhair_brownskin_sademotion_10533.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/012412_redhair_brownskin_sademotion_9181.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/018045_redhair_brownskin_sademotion_64188.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/013007_redhair_brownskin_sademotion_64188.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/012678_redhair_brownskin_sademotion_31808.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/016564_redhair_brownskin_sademotion_9181.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/004452_redhair_brownskin_sademotion_31808.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/000508_redhair_brownskin_sademotion_33281.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/016137_redhair_brownskin_sademotion_10533.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/015920_redhair_brownskin_sademotion_10533.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/006016_redhair_brownskin_sademotion_64188.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/010728_redhair_brownskin_sademotion_9181.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/002570_redhair_brownskin_sademotion_33281.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/012604_redhair_brownskin_sademotion_31808.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/018460_redhair_brownskin_sademotion_31808.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/011305_redhair_brownskin_sademotion_64188.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/008653_redhair_brownskin_sademotion_33281.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/011311_redhair_brownskin_sademotion_64188.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/002142_redhair_brownskin_sademotion_33281.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/008744_redhair_brownskin_sademotion_10533.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/018435_redhair_brownskin_sademotion_9181.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/002733_redhair_brownskin_sademotion_33281.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/000461_redhair_brownskin_sademotion_33281.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/012974_redhair_brownskin_sademotion_31808.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/001878_redhair_brownskin_sademotion_9181.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/004702_redhair_brownskin_sademotion_31808.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/011114_redhair_brownskin_sademotion_9181.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/009721_redhair_brownskin_sademotion_10533.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/014536_redhair_brownskin_sademotion_64188.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/011392_redhair_brownskin_sademotion_33281.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/017623_redhair_brownskin_sademotion_9181.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/002346_redhair_brownskin_sademotion_10533.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/009907_redhair_brownskin_sademotion_31808.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/011556_redhair_brownskin_sademotion_10533.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/005265_redhair_brownskin_sademotion_31808.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/010351_redhair_brownskin_sademotion_33281.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/008049_redhair_brownskin_sademotion_9181.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/001027_redhair_brownskin_sademotion_31808.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/009193_redhair_brownskin_sademotion_64188.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/002553_redhair_brownskin_sademotion_33281.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/010398_redhair_brownskin_sademotion_9181.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/005587_redhair_brownskin_sademotion_31808.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/001770_redhair_brownskin_sademotion_10533.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/005875_redhair_brownskin_sademotion_64188.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/009293_redhair_brownskin_sademotion_9181.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/006762_redhair_brownskin_sademotion_9181.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/017845_redhair_brownskin_sademotion_9181.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/018529_redhair_brownskin_sademotion_33281.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/011794_redhair_brownskin_sademotion_9181.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/013101_redhair_brownskin_sademotion_64188.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/014064_redhair_brownskin_sademotion_9181.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/005540_redhair_brownskin_sademotion_10533.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/016545_redhair_brownskin_sademotion_10533.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/010960_redhair_brownskin_sademotion_64188.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/007012_redhair_brownskin_sademotion_33281.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/005544_redhair_brownskin_sademotion_31808.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/010600_redhair_brownskin_sademotion_31808.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/016001_redhair_brownskin_sademotion_64188.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/013925_redhair_brownskin_sademotion_31808.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/007259_redhair_brownskin_sademotion_9181.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/017307_redhair_brownskin_sademotion_64188.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/007673_redhair_brownskin_sademotion_64188.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/012007_redhair_brownskin_sademotion_31808.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/010992_redhair_brownskin_sademotion_9181.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/014282_redhair_brownskin_sademotion_10533.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/016891_redhair_brownskin_sademotion_10533.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/008837_redhair_brownskin_sademotion_64188.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/006563_redhair_brownskin_sademotion_9181.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/009856_redhair_brownskin_sademotion_10533.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/012044_redhair_brownskin_sademotion_33281.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/017911_redhair_brownskin_sademotion_33281.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/011581_redhair_brownskin_sademotion_9181.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/014901_redhair_brownskin_sademotion_33281.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/000059_redhair_brownskin_sademotion_32419.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/000464_redhair_brownskin_sademotion_64188.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/010915_redhair_brownskin_sademotion_64188.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/018299_redhair_brownskin_sademotion_10533.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/005302_redhair_brownskin_sademotion_10533.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/007559_redhair_brownskin_sademotion_10533.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/013419_redhair_brownskin_sademotion_9181.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/007351_redhair_brownskin_sademotion_9181.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/010480_redhair_brownskin_sademotion_33281.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/010790_redhair_brownskin_sademotion_10533.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/014332_redhair_brownskin_sademotion_64188.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/010862_redhair_brownskin_sademotion_33281.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/003818_redhair_brownskin_sademotion_10533.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/000733_redhair_brownskin_sademotion_64188.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/016438_redhair_brownskin_sademotion_10533.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/010330_redhair_brownskin_sademotion_9181.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/004227_redhair_brownskin_sademotion_10533.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/009756_redhair_brownskin_sademotion_10533.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/000250_redhair_brownskin_sademotion_42265.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/016771_redhair_brownskin_sademotion_64188.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/012840_redhair_brownskin_sademotion_9181.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/002374_redhair_brownskin_sademotion_31808.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/000908_redhair_brownskin_sademotion_9181.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/007772_redhair_brownskin_sademotion_64188.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/007783_redhair_brownskin_sademotion_64188.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/002160_redhair_brownskin_sademotion_9181.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/013679_redhair_brownskin_sademotion_31808.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/016651_redhair_brownskin_sademotion_10533.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/014424_redhair_brownskin_sademotion_10533.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/001207_redhair_brownskin_sademotion_31808.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/018486_redhair_brownskin_sademotion_9181.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/004740_redhair_brownskin_sademotion_9181.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/004108_redhair_brownskin_sademotion_64188.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/003408_redhair_brownskin_sademotion_64188.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/016733_redhair_brownskin_sademotion_10533.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/013647_redhair_brownskin_sademotion_33281.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/011276_redhair_brownskin_sademotion_31808.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/003480_redhair_brownskin_sademotion_10533.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/005016_redhair_brownskin_sademotion_9181.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/013585_redhair_brownskin_sademotion_33281.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/015041_redhair_brownskin_sademotion_31808.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/016745_redhair_brownskin_sademotion_31808.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/014919_redhair_brownskin_sademotion_64188.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/006960_redhair_brownskin_sademotion_64188.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/010491_redhair_brownskin_sademotion_31808.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/007282_redhair_brownskin_sademotion_33281.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/003746_redhair_brownskin_sademotion_31808.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/009614_redhair_brownskin_sademotion_33281.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/018230_redhair_brownskin_sademotion_9181.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/013432_redhair_brownskin_sademotion_31808.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/007402_redhair_brownskin_sademotion_33281.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/004155_redhair_brownskin_sademotion_31808.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/002689_redhair_brownskin_sademotion_31808.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/008390_redhair_brownskin_sademotion_9181.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/005862_redhair_brownskin_sademotion_10533.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/002552_redhair_brownskin_sademotion_31808.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/008486_redhair_brownskin_sademotion_10533.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/003978_redhair_brownskin_sademotion_64188.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/008399_redhair_brownskin_sademotion_31808.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/010847_redhair_brownskin_sademotion_33281.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/005876_redhair_brownskin_sademotion_10533.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/013689_redhair_brownskin_sademotion_33281.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/009934_redhair_brownskin_sademotion_64188.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/018344_redhair_brownskin_sademotion_33281.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/007563_redhair_brownskin_sademotion_64188.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/011517_redhair_brownskin_sademotion_31808.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/011871_redhair_brownskin_sademotion_64188.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/016787_redhair_brownskin_sademotion_64188.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/005695_redhair_brownskin_sademotion_33281.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/007189_redhair_brownskin_sademotion_9181.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/005697_redhair_brownskin_sademotion_9181.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/002116_redhair_brownskin_sademotion_9181.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/001628_redhair_brownskin_sademotion_33281.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/018372_redhair_brownskin_sademotion_33281.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/011579_redhair_brownskin_sademotion_33281.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/016972_redhair_brownskin_sademotion_31808.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/000702_redhair_brownskin_sademotion_31808.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/008457_redhair_brownskin_sademotion_64188.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/018111_redhair_brownskin_sademotion_31808.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/001613_redhair_brownskin_sademotion_31808.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/001267_redhair_brownskin_sademotion_31808.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/006989_redhair_brownskin_sademotion_64188.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/003565_redhair_brownskin_sademotion_31808.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/007496_redhair_brownskin_sademotion_64188.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/004794_redhair_brownskin_sademotion_33281.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/003435_redhair_brownskin_sademotion_33281.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/006100_redhair_brownskin_sademotion_31808.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/010239_redhair_brownskin_sademotion_33281.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/006017_redhair_brownskin_sademotion_10533.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/011551_redhair_brownskin_sademotion_33281.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/017336_redhair_brownskin_sademotion_31808.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/004714_redhair_brownskin_sademotion_10533.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/017407_redhair_brownskin_sademotion_31808.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/011779_redhair_brownskin_sademotion_31808.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/011778_redhair_brownskin_sademotion_10533.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/009314_redhair_brownskin_sademotion_64188.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/002716_redhair_brownskin_sademotion_31808.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/012157_redhair_brownskin_sademotion_33281.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/008717_redhair_brownskin_sademotion_31808.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/013471_redhair_brownskin_sademotion_9181.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/012448_redhair_brownskin_sademotion_31808.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/013697_redhair_brownskin_sademotion_31808.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/003792_redhair_brownskin_sademotion_33281.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/010186_redhair_brownskin_sademotion_10533.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/018039_redhair_brownskin_sademotion_10533.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/005464_redhair_brownskin_sademotion_31808.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/010469_redhair_brownskin_sademotion_33281.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/007340_redhair_brownskin_sademotion_64188.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/008840_redhair_brownskin_sademotion_33281.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/007805_redhair_brownskin_sademotion_9181.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/000301_redhair_brownskin_sademotion_28099.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/017943_redhair_brownskin_sademotion_33281.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/002811_redhair_brownskin_sademotion_33281.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/002856_redhair_brownskin_sademotion_10533.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/012291_redhair_brownskin_sademotion_9181.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/018389_redhair_brownskin_sademotion_9181.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/011336_redhair_brownskin_sademotion_31808.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/017065_redhair_brownskin_sademotion_9181.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/008275_redhair_brownskin_sademotion_10533.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/016115_redhair_brownskin_sademotion_64188.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/014537_redhair_brownskin_sademotion_10533.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/016949_redhair_brownskin_sademotion_31808.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/017720_redhair_brownskin_sademotion_64188.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/015565_redhair_brownskin_sademotion_9181.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/001229_redhair_brownskin_sademotion_10533.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/006150_redhair_brownskin_sademotion_31808.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/014476_redhair_brownskin_sademotion_31808.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/005547_redhair_brownskin_sademotion_64188.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/012550_redhair_brownskin_sademotion_64188.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/007246_redhair_brownskin_sademotion_31808.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/000912_redhair_brownskin_sademotion_10533.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/008149_redhair_brownskin_sademotion_10533.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/004360_redhair_brownskin_sademotion_33281.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/012912_redhair_brownskin_sademotion_10533.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/013353_redhair_brownskin_sademotion_9181.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/008031_redhair_brownskin_sademotion_31808.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/007339_redhair_brownskin_sademotion_9181.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/011975_redhair_brownskin_sademotion_10533.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/010868_redhair_brownskin_sademotion_9181.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/012583_redhair_brownskin_sademotion_9181.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/015850_redhair_brownskin_sademotion_33281.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/014733_redhair_brownskin_sademotion_33281.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/013705_redhair_brownskin_sademotion_10533.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/011655_redhair_brownskin_sademotion_10533.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/003139_redhair_brownskin_sademotion_33281.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/008750_redhair_brownskin_sademotion_64188.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/014606_redhair_brownskin_sademotion_31808.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/016141_redhair_brownskin_sademotion_9181.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/005452_redhair_brownskin_sademotion_64188.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/000805_redhair_brownskin_sademotion_10533.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/013072_redhair_brownskin_sademotion_33281.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/003816_redhair_brownskin_sademotion_9181.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/010143_redhair_brownskin_sademotion_10533.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/017958_redhair_brownskin_sademotion_33281.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/008610_redhair_brownskin_sademotion_64188.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/000173_redhair_brownskin_sademotion_54534.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/011694_redhair_brownskin_sademotion_9181.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/006693_redhair_brownskin_sademotion_10533.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/000604_redhair_brownskin_sademotion_10533.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/000971_redhair_brownskin_sademotion_31808.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/018802_redhair_brownskin_sademotion_33281.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/004832_redhair_brownskin_sademotion_64188.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/009890_redhair_brownskin_sademotion_33281.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/005426_redhair_brownskin_sademotion_31808.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/017289_redhair_brownskin_sademotion_64188.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/014455_redhair_brownskin_sademotion_9181.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/014878_redhair_brownskin_sademotion_64188.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/009051_redhair_brownskin_sademotion_31808.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/013070_redhair_brownskin_sademotion_31808.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/007667_redhair_brownskin_sademotion_10533.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/008253_redhair_brownskin_sademotion_9181.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/011217_redhair_brownskin_sademotion_31808.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/012249_redhair_brownskin_sademotion_9181.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/009490_redhair_brownskin_sademotion_64188.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/015249_redhair_brownskin_sademotion_10533.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/018548_redhair_brownskin_sademotion_33281.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/001383_redhair_brownskin_sademotion_33281.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/011210_redhair_brownskin_sademotion_33281.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/003804_redhair_brownskin_sademotion_31808.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/017335_redhair_brownskin_sademotion_10533.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/010155_redhair_brownskin_sademotion_64188.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/017643_redhair_brownskin_sademotion_33281.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/003472_redhair_brownskin_sademotion_64188.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/017798_redhair_brownskin_sademotion_33281.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/004325_redhair_brownskin_sademotion_64188.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/014198_redhair_brownskin_sademotion_10533.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/018349_redhair_brownskin_sademotion_10533.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/016981_redhair_brownskin_sademotion_9181.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/004080_redhair_brownskin_sademotion_64188.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/004680_redhair_brownskin_sademotion_31808.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/004849_redhair_brownskin_sademotion_31808.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/012976_redhair_brownskin_sademotion_9181.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/000755_redhair_brownskin_sademotion_9181.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/011273_redhair_brownskin_sademotion_9181.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/006342_redhair_brownskin_sademotion_31808.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/012214_redhair_brownskin_sademotion_9181.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/011829_redhair_brownskin_sademotion_31808.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/014163_redhair_brownskin_sademotion_10533.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/015558_redhair_brownskin_sademotion_9181.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/016560_redhair_brownskin_sademotion_31808.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/001699_redhair_brownskin_sademotion_31808.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/007198_redhair_brownskin_sademotion_10533.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/012739_redhair_brownskin_sademotion_64188.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/015638_redhair_brownskin_sademotion_10533.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/005845_redhair_brownskin_sademotion_33281.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/002582_redhair_brownskin_sademotion_64188.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/013390_redhair_brownskin_sademotion_9181.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/015311_redhair_brownskin_sademotion_9181.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/012299_redhair_brownskin_sademotion_9181.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/016194_redhair_brownskin_sademotion_31808.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/016717_redhair_brownskin_sademotion_64188.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/012134_redhair_brownskin_sademotion_9181.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/013433_redhair_brownskin_sademotion_33281.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/016872_redhair_brownskin_sademotion_33281.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/007419_redhair_brownskin_sademotion_64188.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/012290_redhair_brownskin_sademotion_33281.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/009480_redhair_brownskin_sademotion_10533.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/002997_redhair_brownskin_sademotion_9181.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/004642_redhair_brownskin_sademotion_64188.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/008229_redhair_brownskin_sademotion_64188.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/004871_redhair_brownskin_sademotion_10533.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/018115_redhair_brownskin_sademotion_33281.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/014315_redhair_brownskin_sademotion_33281.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/014970_redhair_brownskin_sademotion_64188.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/003848_redhair_brownskin_sademotion_10533.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/006913_redhair_brownskin_sademotion_31808.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/008484_redhair_brownskin_sademotion_9181.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/007389_redhair_brownskin_sademotion_9181.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/012554_redhair_brownskin_sademotion_9181.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/007564_redhair_brownskin_sademotion_10533.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/003580_redhair_brownskin_sademotion_9181.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/011231_redhair_brownskin_sademotion_33281.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/005405_redhair_brownskin_sademotion_10533.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/007356_redhair_brownskin_sademotion_31808.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/007400_redhair_brownskin_sademotion_31808.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/003414_redhair_brownskin_sademotion_9181.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/009787_redhair_brownskin_sademotion_64188.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/004788_redhair_brownskin_sademotion_9181.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/000543_redhair_brownskin_sademotion_33281.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/016244_redhair_brownskin_sademotion_9181.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/006642_redhair_brownskin_sademotion_10533.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/013251_redhair_brownskin_sademotion_31808.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/000132_redhair_brownskin_sademotion_52773.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/001209_redhair_brownskin_sademotion_9181.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/008594_redhair_brownskin_sademotion_33281.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/016638_redhair_brownskin_sademotion_9181.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/013506_redhair_brownskin_sademotion_64188.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/005244_redhair_brownskin_sademotion_64188.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/001539_redhair_brownskin_sademotion_31808.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/000659_redhair_brownskin_sademotion_9181.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/018385_redhair_brownskin_sademotion_64188.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/018294_redhair_brownskin_sademotion_33281.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/005908_redhair_brownskin_sademotion_64188.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/003202_redhair_brownskin_sademotion_64188.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/012977_redhair_brownskin_sademotion_64188.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/017659_redhair_brownskin_sademotion_31808.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/013590_redhair_brownskin_sademotion_31808.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/004236_redhair_brownskin_sademotion_33281.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/002492_redhair_brownskin_sademotion_10533.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/017960_redhair_brownskin_sademotion_64188.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/013280_redhair_brownskin_sademotion_31808.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/014309_redhair_brownskin_sademotion_64188.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/017067_redhair_brownskin_sademotion_10533.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/001112_redhair_brownskin_sademotion_64188.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/008174_redhair_brownskin_sademotion_31808.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/006888_redhair_brownskin_sademotion_10533.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/014524_redhair_brownskin_sademotion_9181.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/000449_redhair_brownskin_sademotion_64188.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/011675_redhair_brownskin_sademotion_31808.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/011650_redhair_brownskin_sademotion_9181.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/000500_redhair_brownskin_sademotion_31808.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/017670_redhair_brownskin_sademotion_10533.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/012523_redhair_brownskin_sademotion_64188.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/005395_redhair_brownskin_sademotion_9181.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/010352_redhair_brownskin_sademotion_9181.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/011635_redhair_brownskin_sademotion_10533.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/007708_redhair_brownskin_sademotion_31808.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/004121_redhair_brownskin_sademotion_64188.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/014732_redhair_brownskin_sademotion_31808.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/017664_redhair_brownskin_sademotion_10533.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/006002_redhair_brownskin_sademotion_10533.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/013509_redhair_brownskin_sademotion_31808.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/000966_redhair_brownskin_sademotion_31808.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/007231_redhair_brownskin_sademotion_33281.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/015078_redhair_brownskin_sademotion_33281.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/000695_redhair_brownskin_sademotion_31808.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/006384_redhair_brownskin_sademotion_31808.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/018026_redhair_brownskin_sademotion_33281.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/012501_redhair_brownskin_sademotion_9181.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/009460_redhair_brownskin_sademotion_31808.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/001769_redhair_brownskin_sademotion_64188.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/013214_redhair_brownskin_sademotion_64188.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/004059_redhair_brownskin_sademotion_33281.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/001595_redhair_brownskin_sademotion_10533.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/011360_redhair_brownskin_sademotion_9181.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/001007_redhair_brownskin_sademotion_9181.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/018814_redhair_brownskin_sademotion_10533.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/010735_redhair_brownskin_sademotion_31808.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/018317_redhair_brownskin_sademotion_33281.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/015833_redhair_brownskin_sademotion_31808.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/001637_redhair_brownskin_sademotion_64188.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/008841_redhair_brownskin_sademotion_9181.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/011692_redhair_brownskin_sademotion_33281.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/003297_redhair_brownskin_sademotion_64188.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/008782_redhair_brownskin_sademotion_33281.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/003229_redhair_brownskin_sademotion_64188.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/018411_redhair_brownskin_sademotion_31808.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/000958_redhair_brownskin_sademotion_31808.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/012733_redhair_brownskin_sademotion_33281.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/008239_redhair_brownskin_sademotion_64188.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/003960_redhair_brownskin_sademotion_10533.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/008902_redhair_brownskin_sademotion_10533.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/012250_redhair_brownskin_sademotion_64188.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/002744_redhair_brownskin_sademotion_9181.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/004156_redhair_brownskin_sademotion_33281.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/002762_redhair_brownskin_sademotion_31808.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/007247_redhair_brownskin_sademotion_33281.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/013210_redhair_brownskin_sademotion_10533.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/001071_redhair_brownskin_sademotion_9181.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/014371_redhair_brownskin_sademotion_9181.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/008984_redhair_brownskin_sademotion_31808.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/012371_redhair_brownskin_sademotion_64188.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/016753_redhair_brownskin_sademotion_33281.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/016492_redhair_brownskin_sademotion_9181.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/012609_redhair_brownskin_sademotion_31808.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/016520_redhair_brownskin_sademotion_10533.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/013144_redhair_brownskin_sademotion_64188.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/006133_redhair_brownskin_sademotion_10533.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/008359_redhair_brownskin_sademotion_10533.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/009283_redhair_brownskin_sademotion_31808.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/007528_redhair_brownskin_sademotion_9181.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/013894_redhair_brownskin_sademotion_33281.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/006660_redhair_brownskin_sademotion_33281.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/002722_redhair_brownskin_sademotion_10533.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/017196_redhair_brownskin_sademotion_10533.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/011374_redhair_brownskin_sademotion_64188.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/008746_redhair_brownskin_sademotion_31808.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/003417_redhair_brownskin_sademotion_10533.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/004434_redhair_brownskin_sademotion_64188.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/011126_redhair_brownskin_sademotion_31808.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/013534_redhair_brownskin_sademotion_64188.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/004478_redhair_brownskin_sademotion_10533.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/001727_redhair_brownskin_sademotion_9181.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/011961_redhair_brownskin_sademotion_31808.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/009041_redhair_brownskin_sademotion_10533.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/005022_redhair_brownskin_sademotion_33281.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/002685_redhair_brownskin_sademotion_64188.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/011391_redhair_brownskin_sademotion_31808.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/016808_redhair_brownskin_sademotion_64188.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/009645_redhair_brownskin_sademotion_33281.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/010756_redhair_brownskin_sademotion_33281.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/006381_redhair_brownskin_sademotion_9181.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/012058_redhair_brownskin_sademotion_33281.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/005060_redhair_brownskin_sademotion_33281.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/013400_redhair_brownskin_sademotion_64188.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/001445_redhair_brownskin_sademotion_33281.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/003914_redhair_brownskin_sademotion_33281.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/005253_redhair_brownskin_sademotion_31808.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/016255_redhair_brownskin_sademotion_31808.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/015859_redhair_brownskin_sademotion_33281.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/012862_redhair_brownskin_sademotion_33281.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/015140_redhair_brownskin_sademotion_10533.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/004738_redhair_brownskin_sademotion_33281.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/006096_redhair_brownskin_sademotion_9181.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/011146_redhair_brownskin_sademotion_64188.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/016083_redhair_brownskin_sademotion_9181.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/017752_redhair_brownskin_sademotion_33281.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/014984_redhair_brownskin_sademotion_33281.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/003004_redhair_brownskin_sademotion_33281.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/001258_redhair_brownskin_sademotion_64188.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/008627_redhair_brownskin_sademotion_31808.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/012519_redhair_brownskin_sademotion_33281.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/010863_redhair_brownskin_sademotion_9181.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/014727_redhair_brownskin_sademotion_33281.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/005449_redhair_brownskin_sademotion_33281.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/014155_redhair_brownskin_sademotion_64188.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/012703_redhair_brownskin_sademotion_10533.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/011902_redhair_brownskin_sademotion_9181.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/015528_redhair_brownskin_sademotion_64188.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/005012_redhair_brownskin_sademotion_64188.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/000854_redhair_brownskin_sademotion_9181.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/004387_redhair_brownskin_sademotion_9181.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/000261_redhair_brownskin_sademotion_28578.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/017008_redhair_brownskin_sademotion_31808.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/014708_redhair_brownskin_sademotion_10533.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/014971_redhair_brownskin_sademotion_10533.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/011388_redhair_brownskin_sademotion_64188.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/009273_redhair_brownskin_sademotion_10533.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/016210_redhair_brownskin_sademotion_33281.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/009634_redhair_brownskin_sademotion_10533.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/001161_redhair_brownskin_sademotion_9181.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/018720_redhair_brownskin_sademotion_10533.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/004564_redhair_brownskin_sademotion_31808.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/016555_redhair_brownskin_sademotion_64188.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/005410_redhair_brownskin_sademotion_64188.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/008407_redhair_brownskin_sademotion_33281.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/007979_redhair_brownskin_sademotion_9181.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/001865_redhair_brownskin_sademotion_33281.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/015962_redhair_brownskin_sademotion_33281.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/013450_redhair_brownskin_sademotion_33281.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/000751_redhair_brownskin_sademotion_31808.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/016166_redhair_brownskin_sademotion_33281.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/007583_redhair_brownskin_sademotion_31808.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/007447_redhair_brownskin_sademotion_31808.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/016807_redhair_brownskin_sademotion_9181.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/001578_redhair_brownskin_sademotion_64188.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/010628_redhair_brownskin_sademotion_10533.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/003533_redhair_brownskin_sademotion_10533.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/018088_redhair_brownskin_sademotion_31808.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/004202_redhair_brownskin_sademotion_9181.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/002884_redhair_brownskin_sademotion_9181.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/001629_redhair_brownskin_sademotion_9181.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/005103_redhair_brownskin_sademotion_10533.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/000022_redhair_brownskin_sademotion_11815.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/008315_redhair_brownskin_sademotion_31808.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/014413_redhair_brownskin_sademotion_33281.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/007592_redhair_brownskin_sademotion_31808.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/006039_redhair_brownskin_sademotion_33281.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/007872_redhair_brownskin_sademotion_10533.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/003261_redhair_brownskin_sademotion_9181.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/007850_redhair_brownskin_sademotion_9181.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/002863_redhair_brownskin_sademotion_10533.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/003271_redhair_brownskin_sademotion_64188.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/016334_redhair_brownskin_sademotion_10533.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/005987_redhair_brownskin_sademotion_31808.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/015099_redhair_brownskin_sademotion_33281.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/016867_redhair_brownskin_sademotion_9181.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/012033_redhair_brownskin_sademotion_10533.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/016159_redhair_brownskin_sademotion_31808.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/006509_redhair_brownskin_sademotion_64188.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/007110_redhair_brownskin_sademotion_9181.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/008877_redhair_brownskin_sademotion_9181.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/013479_redhair_brownskin_sademotion_64188.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/011147_redhair_brownskin_sademotion_10533.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/007674_redhair_brownskin_sademotion_10533.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/018270_redhair_brownskin_sademotion_9181.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/016858_redhair_brownskin_sademotion_9181.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/013678_redhair_brownskin_sademotion_10533.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/011560_redhair_brownskin_sademotion_33281.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/001402_redhair_brownskin_sademotion_33281.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/006110_redhair_brownskin_sademotion_31808.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/010980_redhair_brownskin_sademotion_10533.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/017894_redhair_brownskin_sademotion_9181.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/006404_redhair_brownskin_sademotion_31808.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/000341_redhair_brownskin_sademotion_443.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/018350_redhair_brownskin_sademotion_31808.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/005117_redhair_brownskin_sademotion_9181.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/008464_redhair_brownskin_sademotion_9181.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/002724_redhair_brownskin_sademotion_31808.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/010178_redhair_brownskin_sademotion_64188.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/012204_redhair_brownskin_sademotion_64188.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/005133_redhair_brownskin_sademotion_33281.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/018781_redhair_brownskin_sademotion_33281.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/009204_redhair_brownskin_sademotion_33281.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/001934_redhair_brownskin_sademotion_31808.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/005977_redhair_brownskin_sademotion_31808.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/000783_redhair_brownskin_sademotion_33281.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/011950_redhair_brownskin_sademotion_9181.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/000269_redhair_brownskin_sademotion_38960.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/004367_redhair_brownskin_sademotion_33281.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/003188_redhair_brownskin_sademotion_31808.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/012452_redhair_brownskin_sademotion_9181.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/016473_redhair_brownskin_sademotion_10533.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/004687_redhair_brownskin_sademotion_31808.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/012310_redhair_brownskin_sademotion_33281.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/014554_redhair_brownskin_sademotion_64188.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/016786_redhair_brownskin_sademotion_9181.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/003231_redhair_brownskin_sademotion_10533.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/007660_redhair_brownskin_sademotion_31808.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/011031_redhair_brownskin_sademotion_33281.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/015154_redhair_brownskin_sademotion_33281.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/000325_redhair_brownskin_sademotion_37237.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/017238_redhair_brownskin_sademotion_31808.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/016841_redhair_brownskin_sademotion_10533.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/007847_redhair_brownskin_sademotion_31808.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/001287_redhair_brownskin_sademotion_64188.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/001634_redhair_brownskin_sademotion_33281.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/000747_redhair_brownskin_sademotion_10533.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/001022_redhair_brownskin_sademotion_10533.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/001342_redhair_brownskin_sademotion_10533.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/007818_redhair_brownskin_sademotion_64188.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/011981_redhair_brownskin_sademotion_64188.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/001442_redhair_brownskin_sademotion_31808.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/016478_redhair_brownskin_sademotion_9181.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/013227_redhair_brownskin_sademotion_31808.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/009547_redhair_brownskin_sademotion_31808.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/011561_redhair_brownskin_sademotion_9181.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/010832_redhair_brownskin_sademotion_31808.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/015632_redhair_brownskin_sademotion_31808.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/003871_redhair_brownskin_sademotion_10533.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/013913_redhair_brownskin_sademotion_9181.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/012494_redhair_brownskin_sademotion_10533.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/000039_redhair_brownskin_sademotion_56877.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/008759_redhair_brownskin_sademotion_10533.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/004525_redhair_brownskin_sademotion_10533.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/014019_redhair_brownskin_sademotion_64188.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/009642_redhair_brownskin_sademotion_10533.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/001205_redhair_brownskin_sademotion_10533.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/012169_redhair_brownskin_sademotion_64188.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/006325_redhair_brownskin_sademotion_10533.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/011183_redhair_brownskin_sademotion_31808.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/012713_redhair_brownskin_sademotion_33281.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/017982_redhair_brownskin_sademotion_64188.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/008162_redhair_brownskin_sademotion_9181.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/012837_redhair_brownskin_sademotion_10533.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/012190_redhair_brownskin_sademotion_33281.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/002819_redhair_brownskin_sademotion_9181.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/006857_redhair_brownskin_sademotion_31808.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/004662_redhair_brownskin_sademotion_10533.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/004052_redhair_brownskin_sademotion_33281.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/018057_redhair_brownskin_sademotion_10533.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/002399_redhair_brownskin_sademotion_31808.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/004231_redhair_brownskin_sademotion_33281.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/000160_redhair_brownskin_sademotion_15064.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/016623_redhair_brownskin_sademotion_33281.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/006011_redhair_brownskin_sademotion_33281.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/005116_redhair_brownskin_sademotion_33281.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/003285_redhair_brownskin_sademotion_33281.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/016071_redhair_brownskin_sademotion_33281.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/012578_redhair_brownskin_sademotion_10533.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/001588_redhair_brownskin_sademotion_31808.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/001028_redhair_brownskin_sademotion_33281.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/010991_redhair_brownskin_sademotion_33281.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/004709_redhair_brownskin_sademotion_33281.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/009587_redhair_brownskin_sademotion_33281.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/009271_redhair_brownskin_sademotion_64188.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/011199_redhair_brownskin_sademotion_64188.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/006352_redhair_brownskin_sademotion_33281.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/004033_redhair_brownskin_sademotion_10533.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/010025_redhair_brownskin_sademotion_9181.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/013500_redhair_brownskin_sademotion_31808.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/003747_redhair_brownskin_sademotion_33281.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/013380_redhair_brownskin_sademotion_31808.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/018335_redhair_brownskin_sademotion_10533.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/002593_redhair_brownskin_sademotion_64188.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/018622_redhair_brownskin_sademotion_64188.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/002403_redhair_brownskin_sademotion_64188.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/009511_redhair_brownskin_sademotion_33281.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/017350_redhair_brownskin_sademotion_33281.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/014851_redhair_brownskin_sademotion_64188.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/004454_redhair_brownskin_sademotion_33281.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/012395_redhair_brownskin_sademotion_9181.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/014926_redhair_brownskin_sademotion_64188.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/011319_redhair_brownskin_sademotion_64188.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/017493_redhair_brownskin_sademotion_10533.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/000503_redhair_brownskin_sademotion_64188.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/001615_redhair_brownskin_sademotion_9181.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/016272_redhair_brownskin_sademotion_9181.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/018132_redhair_brownskin_sademotion_9181.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/018571_redhair_brownskin_sademotion_10533.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/000333_redhair_brownskin_sademotion_39540.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/012078_redhair_brownskin_sademotion_10533.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/007711_redhair_brownskin_sademotion_9181.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/009086_redhair_brownskin_sademotion_33281.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/018709_redhair_brownskin_sademotion_31808.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/001690_redhair_brownskin_sademotion_9181.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/005359_redhair_brownskin_sademotion_10533.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/004616_redhair_brownskin_sademotion_31808.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/003000_redhair_brownskin_sademotion_64188.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/016782_redhair_brownskin_sademotion_31808.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/015102_redhair_brownskin_sademotion_64188.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/001850_redhair_brownskin_sademotion_31808.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/015138_redhair_brownskin_sademotion_64188.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/002991_redhair_brownskin_sademotion_10533.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/002212_redhair_brownskin_sademotion_10533.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/003065_redhair_brownskin_sademotion_31808.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/011758_redhair_brownskin_sademotion_33281.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/000214_redhair_brownskin_sademotion_18751.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/016336_redhair_brownskin_sademotion_33281.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/006288_redhair_brownskin_sademotion_9181.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/003826_redhair_brownskin_sademotion_9181.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/011930_redhair_brownskin_sademotion_10533.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/009227_redhair_brownskin_sademotion_64188.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/006238_redhair_brownskin_sademotion_31808.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/017740_redhair_brownskin_sademotion_64188.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/011489_redhair_brownskin_sademotion_9181.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/001801_redhair_brownskin_sademotion_33281.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/016302_redhair_brownskin_sademotion_10533.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/014481_redhair_brownskin_sademotion_64188.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/007503_redhair_brownskin_sademotion_64188.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/014321_redhair_brownskin_sademotion_33281.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/003928_redhair_brownskin_sademotion_31808.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/008144_redhair_brownskin_sademotion_9181.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/010571_redhair_brownskin_sademotion_31808.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/018019_redhair_brownskin_sademotion_9181.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/014709_redhair_brownskin_sademotion_31808.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/017453_redhair_brownskin_sademotion_33281.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/015639_redhair_brownskin_sademotion_31808.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/012790_redhair_brownskin_sademotion_31808.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/012384_redhair_brownskin_sademotion_10533.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/014790_redhair_brownskin_sademotion_9181.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/007204_redhair_brownskin_sademotion_31808.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/005095_redhair_brownskin_sademotion_10533.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/009226_redhair_brownskin_sademotion_9181.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/010023_redhair_brownskin_sademotion_31808.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/009705_redhair_brownskin_sademotion_31808.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/009236_redhair_brownskin_sademotion_33281.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/009594_redhair_brownskin_sademotion_33281.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/011129_redhair_brownskin_sademotion_33281.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/016592_redhair_brownskin_sademotion_64188.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/002883_redhair_brownskin_sademotion_33281.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/002537_redhair_brownskin_sademotion_10533.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/008946_redhair_brownskin_sademotion_31808.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/001033_redhair_brownskin_sademotion_10533.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/006614_redhair_brownskin_sademotion_10533.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/012794_redhair_brownskin_sademotion_33281.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/004889_redhair_brownskin_sademotion_10533.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/017150_redhair_brownskin_sademotion_31808.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/000572_redhair_brownskin_sademotion_31808.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/002275_redhair_brownskin_sademotion_64188.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/015049_redhair_brownskin_sademotion_10533.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/011799_redhair_brownskin_sademotion_33281.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/000724_redhair_brownskin_sademotion_64188.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/005698_redhair_brownskin_sademotion_64188.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/016818_redhair_brownskin_sademotion_9181.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/016128_redhair_brownskin_sademotion_31808.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/017947_redhair_brownskin_sademotion_64188.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/000443_redhair_brownskin_sademotion_10533.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/005689_redhair_brownskin_sademotion_10533.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/000393_redhair_brownskin_sademotion_38883.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/014656_redhair_brownskin_sademotion_31808.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/017547_redhair_brownskin_sademotion_10533.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/011235_redhair_brownskin_sademotion_9181.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/018555_redhair_brownskin_sademotion_10533.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/014035_redhair_brownskin_sademotion_10533.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/010301_redhair_brownskin_sademotion_10533.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/010677_redhair_brownskin_sademotion_64188.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/009388_redhair_brownskin_sademotion_10533.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/002145_redhair_brownskin_sademotion_10533.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/002951_redhair_brownskin_sademotion_10533.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/017087_redhair_brownskin_sademotion_10533.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/018483_redhair_brownskin_sademotion_33281.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/017820_redhair_brownskin_sademotion_31808.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/000523_redhair_brownskin_sademotion_10533.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/005753_redhair_brownskin_sademotion_9181.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/016878_redhair_brownskin_sademotion_33281.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/002308_redhair_brownskin_sademotion_64188.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/014753_redhair_brownskin_sademotion_9181.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/013428_redhair_brownskin_sademotion_64188.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/009487_redhair_brownskin_sademotion_31808.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/015150_redhair_brownskin_sademotion_10533.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/015564_redhair_brownskin_sademotion_33281.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/008651_redhair_brownskin_sademotion_31808.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/000790_redhair_brownskin_sademotion_33281.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/013856_redhair_brownskin_sademotion_31808.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/016321_redhair_brownskin_sademotion_33281.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/006832_redhair_brownskin_sademotion_33281.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/009114_redhair_brownskin_sademotion_9181.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/003865_redhair_brownskin_sademotion_10533.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/000952_redhair_brownskin_sademotion_9181.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/012891_redhair_brownskin_sademotion_33281.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/003312_redhair_brownskin_sademotion_10533.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/002604_redhair_brownskin_sademotion_33281.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/015370_redhair_brownskin_sademotion_64188.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/009290_redhair_brownskin_sademotion_31808.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/017494_redhair_brownskin_sademotion_31808.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/002547_redhair_brownskin_sademotion_10533.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/009409_redhair_brownskin_sademotion_33281.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/002378_redhair_brownskin_sademotion_10533.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/000857_redhair_brownskin_sademotion_64188.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/016401_redhair_brownskin_sademotion_9181.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/004266_redhair_brownskin_sademotion_9181.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/017989_redhair_brownskin_sademotion_31808.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/005046_redhair_brownskin_sademotion_31808.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/013881_redhair_brownskin_sademotion_64188.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/009404_redhair_brownskin_sademotion_64188.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/013609_redhair_brownskin_sademotion_10533.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/015705_redhair_brownskin_sademotion_33281.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/011171_redhair_brownskin_sademotion_9181.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/010661_redhair_brownskin_sademotion_9181.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/008789_redhair_brownskin_sademotion_10533.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/004317_redhair_brownskin_sademotion_64188.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/006570_redhair_brownskin_sademotion_33281.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/007363_redhair_brownskin_sademotion_31808.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/001499_redhair_brownskin_sademotion_9181.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/004733_redhair_brownskin_sademotion_9181.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/011243_redhair_brownskin_sademotion_31808.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/006903_redhair_brownskin_sademotion_9181.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/008451_redhair_brownskin_sademotion_10533.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/001329_redhair_brownskin_sademotion_9181.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/018628_redhair_brownskin_sademotion_33281.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/009620_redhair_brownskin_sademotion_31808.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/003829_redhair_brownskin_sademotion_64188.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/001365_redhair_brownskin_sademotion_33281.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/004088_redhair_brownskin_sademotion_9181.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/010047_redhair_brownskin_sademotion_64188.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/010057_redhair_brownskin_sademotion_33281.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/011710_redhair_brownskin_sademotion_9181.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/003616_redhair_brownskin_sademotion_33281.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/018164_redhair_brownskin_sademotion_10533.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/009765_redhair_brownskin_sademotion_33281.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/016928_redhair_brownskin_sademotion_33281.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/012189_redhair_brownskin_sademotion_31808.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/005276_redhair_brownskin_sademotion_9181.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/009016_redhair_brownskin_sademotion_33281.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/012498_redhair_brownskin_sademotion_33281.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/011209_redhair_brownskin_sademotion_31808.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/004900_redhair_brownskin_sademotion_31808.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/012969_redhair_brownskin_sademotion_33281.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/006740_redhair_brownskin_sademotion_31808.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/005988_redhair_brownskin_sademotion_33281.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/012985_redhair_brownskin_sademotion_9181.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/014710_redhair_brownskin_sademotion_33281.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/009159_redhair_brownskin_sademotion_9181.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/015970_redhair_brownskin_sademotion_31808.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/016506_redhair_brownskin_sademotion_10533.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/002401_redhair_brownskin_sademotion_9181.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/017349_redhair_brownskin_sademotion_31808.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/013316_redhair_brownskin_sademotion_33281.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/001848_redhair_brownskin_sademotion_10533.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/003727_redhair_brownskin_sademotion_31808.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/010745_redhair_brownskin_sademotion_31808.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/000287_redhair_brownskin_sademotion_37678.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/015469_redhair_brownskin_sademotion_10533.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/002454_redhair_brownskin_sademotion_10533.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/008441_redhair_brownskin_sademotion_9181.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/012633_redhair_brownskin_sademotion_9181.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/003374_redhair_brownskin_sademotion_31808.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/004153_redhair_brownskin_sademotion_64188.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/017106_redhair_brownskin_sademotion_10533.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/008037_redhair_brownskin_sademotion_31808.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/017647_redhair_brownskin_sademotion_31808.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/009931_redhair_brownskin_sademotion_31808.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/007008_redhair_brownskin_sademotion_64188.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/008647_redhair_brownskin_sademotion_33281.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/016722_redhair_brownskin_sademotion_31808.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/009127_redhair_brownskin_sademotion_31808.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/017176_redhair_brownskin_sademotion_10533.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/013119_redhair_brownskin_sademotion_9181.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/018739_redhair_brownskin_sademotion_33281.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/015486_redhair_brownskin_sademotion_31808.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/000915_redhair_brownskin_sademotion_31808.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/000329_redhair_brownskin_sademotion_30206.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/011353_redhair_brownskin_sademotion_9181.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/001953_redhair_brownskin_sademotion_33281.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/000106_redhair_brownskin_sademotion_13724.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/006621_redhair_brownskin_sademotion_64188.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/017548_redhair_brownskin_sademotion_31808.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/011131_redhair_brownskin_sademotion_9181.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/005241_redhair_brownskin_sademotion_31808.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/015395_redhair_brownskin_sademotion_64188.jpg with label 1
+Added ./data/redhair_brownskin_sademotion/008834_redhair_brownskin_sademotion_31808.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/003428_redhair_brownskin_sademotion_31808.jpg with label 0
+Added ./data/redhair_brownskin_sademotion/010788_redhair_brownskin_sademotion_64188.jpg with label 1
+Finish sampling for generated images
+Added 1000 generated redhair_brownskin_sademotion images, before training set has 80000 images, now 81000
+Unlabeled predictions length: 80000
+Using Active Learningstrategy to select 24000 samples from 80000 for CelebA
+Starting Active Learning data selection using 'badge' strategy...
+Dataset: celeba, Model: resnet
+Train samples: 80000, Val samples: 10000
+Target selection ratio: 0.3
+Embedding dimension: 512
+Initial labeled samples: 400
+Using batch size 32 for Active Learning feature extraction
+Extracting embeddings from 80000 training samples...
+Train embeddings shape: torch.Size([80000, 512])
+Extracting embeddings from 10000 validation samples for BADGE...
+BADGE proxy classifier: 2 classes, uncertainty min/mean/max=0.4379/0.4775/0.5000
+BADGE predicted class histogram: {0: 40544, 1: 39456}
+Active Learning selection completed. Selected 24000 samples using 'badge' strategy.
+[TIMING] Active Learning selection (CelebA) took 116.78 seconds
+CelebA: Combined 24000 selected samples with 1000 generated images using Active Learning
+/people/cs/o/oxx220000/safefix/save/idx/train_idx_redhair_brownskin_sademotion_1000imgs.npy already exists, skipping save.
+/people/cs/o/oxx220000/safefix/save/labels/labels_redhair_brownskin_sademotion_1000imgs.npy already exists, skipping save.
+Training images: 25000, Labels: 25000
+Validation images: 10000, Labels: 10000
+Resumed model from /people/cs/o/oxx220000/safefix/weights/model_celeba_resnet_base.pth (best val acc: 0.914, base test acc: 0.9140)
+Recovered base test acc from log: logs/celeba_resnet_base_redhair_brownskin_sademotion_0imgs_20260416_022317.log
+Epoch [1/15], Train Loss: 0.2371, Train Acc: 0.9783, Val Loss: 0.3460, Val Acc: 0.9081
+Epoch [2/15], Train Loss: 0.2369, Train Acc: 0.9783, Val Loss: 0.3689, Val Acc: 0.9042
+Epoch [3/15], Train Loss: 0.2357, Train Acc: 0.9800, Val Loss: 0.3910, Val Acc: 0.8965
+Epoch [4/15], Train Loss: 0.2339, Train Acc: 0.9815, Val Loss: 0.3521, Val Acc: 0.9089
+Epoch [5/15], Train Loss: 0.2333, Train Acc: 0.9817, Val Loss: 0.3481, Val Acc: 0.9104
+Epoch [6/15], Train Loss: 0.2333, Train Acc: 0.9804, Val Loss: 0.3585, Val Acc: 0.9059
+Epoch [7/15], Train Loss: 0.2325, Train Acc: 0.9822, Val Loss: 0.3630, Val Acc: 0.9068
+Epoch [8/15], Train Loss: 0.2320, Train Acc: 0.9822, Val Loss: 0.3647, Val Acc: 0.9053
+Epoch [9/15], Train Loss: 0.2321, Train Acc: 0.9824, Val Loss: 0.3562, Val Acc: 0.9070
+Epoch [10/15], Train Loss: 0.2310, Train Acc: 0.9830, Val Loss: 0.3605, Val Acc: 0.9066
+Epoch [11/15], Train Loss: 0.2307, Train Acc: 0.9836, Val Loss: 0.3526, Val Acc: 0.9086
+Epoch [12/15], Train Loss: 0.2303, Train Acc: 0.9835, Val Loss: 0.3598, Val Acc: 0.9079
+Epoch [13/15], Train Loss: 0.2297, Train Acc: 0.9844, Val Loss: 0.3608, Val Acc: 0.9057
+Epoch [14/15], Train Loss: 0.2310, Train Acc: 0.9828, Val Loss: 0.3725, Val Acc: 0.9022
+Epoch [15/15], Train Loss: 0.2321, Train Acc: 0.9822, Val Loss: 0.3530, Val Acc: 0.9093
+Model Test ACC: 0.9075, test loss: 0.3513
+Generating and saving predictions...
+/people/cs/o/oxx220000/safefix/alpred.py:1705: DeprecationWarning: Conversion of an array with ndim > 0 to a scalar is deprecated, and will error in future. Ensure you extract a single element from your array before performing this operation. (Deprecated NumPy 1.25.)
+  full_orig_preds[idx] = pred
+Combined predictions length: 181000 (should match combined_labels length: 125000)
+Total training time for 15 epochs: 733.79 seconds
+Total Active Learning selection time: 116.78 seconds
+End-to-end wall time (data prep + selection + training + setup): 854.32 seconds
+
+Running model diagnostics on generated predictions...
+Start detect_failure_by_label
+
+Start detect_prediction_correlation
+
+Indices with hair color=white in validation set: [80015, 80018, 80019]...
+The accuracy with "hair color" = "white" is 0.9090909090909091
+Correct predictions: 220/242
+Indices with hair color=yellow in validation set: [80254, 80275, 80742]...
+The accuracy with "hair color" = "yellow" is 0.8333333333333334
+Correct predictions: 25/30
+ACC: 0.833333 	Rare Case: attribute "hair color", description "yellow"
+Indices with hair color=blonde in validation set: [80002, 80022, 80023]...
+The accuracy with "hair color" = "blonde" is 0.9156855298139005
+Correct predictions: 2411/2633
+Indices with hair color=black in validation set: [80000, 80004, 80008]...
+The accuracy with "hair color" = "black" is 0.9092553512209828
+Correct predictions: 3016/3317
+Indices with hair color=gray in validation set: [80006, 80009, 80025]...
+The accuracy with "hair color" = "gray" is 0.9174311926605505
+Correct predictions: 500/545
+Indices with hair color=brown in validation set: [80001, 80005, 80007]...
+The accuracy with "hair color" = "brown" is 0.9112627986348123
+Correct predictions: 2670/2930
+Indices with hair color=red in validation set: [80003, 80011, 80013]...
+The accuracy with "hair color" = "red" is 0.8646864686468647
+Correct predictions: 262/303
+ACC: 0.864686 	Rare Case: attribute "hair color", description "red"
+Indices with skin=white in validation set: [80000, 80001, 80002]...
+The accuracy with "skin" = "white" is 0.9120617944147356
+Correct predictions: 4605/5049
+Indices with skin=black in validation set: [80003, 80006, 80012]...
+The accuracy with "skin" = "black" is 0.9089521871820956
+Correct predictions: 1787/1966
+Indices with skin=brown in validation set: [80004, 80007, 80010]...
+The accuracy with "skin" = "brown" is 0.9085427135678392
+Correct predictions: 2712/2985
+ACC: 0.897756 	Hard case: attribute "emotion", description "surprised"
+ACC: 0.891304 	Rare Case: attribute "emotion", description "angry"
+Start detect_failure_prediction_correlation
+
+Model diagnostics complete.
+
+Comparing accuracy with log file: logs/compare/stat_origin_resnet_compare.log
+Overall accuracy: 0.906750 -> 0.910400: improved
+
+Attribute-specific accuracy comparison:
+beard, No, 0.893557 -> 0.910272: improved
+gender, female, 0.849626 -> 0.911149: improved
+hair color, white, 0.930328 -> 0.909091: declined
+hair color, yellow, 0.918919 -> 0.833333: declined
+hair color, blonde, 0.880229 -> 0.915686: improved
+hair color, black, 0.921358 -> 0.909255: declined
+hair color, gray, 0.977444 -> 0.917431: declined
+hair color, brown, 0.899712 -> 0.911263: improved
+hair color, red, 0.900161 -> 0.864686: declined
+skin, brown, 0.889450 -> 0.908543: improved
+emotion, sad, 0.851711 -> 0.919926: improved
+emotion, surprised, 0.882006 -> 0.897756: improved
+emotion, pensive, 0.859833 -> 0.907975: improved
+
+Compared 13 attribute-specific accuracies.
+Using log file: logs/AL_resnet_celeba_random_1000.log
+
+================================================================================
+ACTIVE LEARNING vs RANDOM SELECTION COMPARISON
+================================================================================
+Comparing current Active Learning results with random selection: logs/AL_resnet_celeba_random_1000.log
+Overall accuracy: Random 0.914000 -> Active Learning 0.910400 (Δ=-0.003600): RANDOM SELECTION WINS
+
+Attribute-specific Active Learning vs Random Selection comparison:
+
+------------------------------------------------------------
+ACTIVE LEARNING vs RANDOM SELECTION SUMMARY:
+Total compared attributes: 0
+Active Learning wins: 0
+Random Selection wins: 0
+Ties: 0
+------------------------------------------------------------
+Current time: 0416115913

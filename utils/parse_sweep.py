@@ -18,7 +18,7 @@ for f in log_files:
     with open(f, "r") as file:
         content = file.read()
 
-    test_acc_m = re.search(r"Held-out test accuracy: ([\d\.]+)", content)
+    test_acc_m = re.search(r"(?:Model Test ACC|Held-out test accuracy): ([\d\.]+)", content)
     test_acc = test_acc_m.group(1) if test_acc_m else "N/A"
 
     val_acc_matches = re.findall(r"Val Acc: ([\d\.]+)", content)

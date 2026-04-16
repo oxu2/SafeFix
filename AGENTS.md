@@ -44,3 +44,7 @@ After any meaningful implementation, modification, or completed investigation th
 3. Update `report.md` only for stable, human-facing results worth preserving.
 4. Do not leave meaningful code, workflow, experiment, or configuration changes undocumented if they matter for continuation by another agent.
 5. If no documentation file needs updating, be prepared to state why.
+
+## Repo-Specific GPU Assignment Rule
+
+When the user explicitly tells the agent to run a job on a specific GPU, do not spend time checking whether that GPU is available first. Assume the user has already verified that the named GPU is ready, and launch directly on the requested GPU unless the user asks for a check.

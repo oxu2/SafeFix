@@ -67,6 +67,11 @@ class HierarchicalActiveStrategy:
         self.embedding_dim = embedding_dim
         self.dataset = dataset
         self.preferred_attribute_keys = []
+        self.exact_slice_greedy_max_budget = 128
+        self.exact_slice_greedy_max_candidates = 4096
+        self.approx_slice_candidate_multiplier = 4
+        self.approx_slice_candidate_min = 2048
+        self._slice_membership_cache = {}
         
         # Define attribute groups based on dataset
         if dataset == 'imagenet':
@@ -187,6 +192,17 @@ class HierarchicalActiveStrategy:
         Returns:
             Boolean mask indicating slice membership
         """
+        cache_key = None
+        if (
+            len(data_indices) > 0
+            and np.array_equal(data_indices, np.arange(len(data_indices)))
+            and 'name' in slice_def
+        ):
+            cache_key = (len(data_indices), slice_def['name'])
+            cached_mask = self._slice_membership_cache.get(cache_key)
+            if cached_mask is not None:
+                return cached_mask.copy()
+
         mask = np.zeros(len(data_indices), dtype=bool)
         
         if self.attribute_data is None:
@@ -195,6 +211,8 @@ class HierarchicalActiveStrategy:
             np.random.seed(slice_hash % 1000)
             membership_prob = 0.1 + (slice_hash % 100) / 1000  # 0.1 to 0.199
             mask = np.random.random(len(data_indices)) < membership_prob
+            if cache_key is not None:
+                self._slice_membership_cache[cache_key] = mask.copy()
             return mask
         
         # Use real attribute data for slice membership
@@ -218,7 +236,46 @@ class HierarchicalActiveStrategy:
             
             mask[i] = is_member
         
+        if cache_key is not None:
+            self._slice_membership_cache[cache_key] = mask.copy()
         return mask
+
+    def _greedy_select_within_slice(self,
+                                  slice_indices: np.ndarray,
+                                  slice_uncertainties: np.ndarray,
+                                  slice_embeddings: np.ndarray,
+                                  budget: int) -> np.ndarray:
+        selected_local = []
+        remaining_local = list(range(len(slice_indices)))
+
+        first_idx = int(np.argmax(slice_uncertainties))
+        selected_local.append(first_idx)
+        remaining_local.remove(first_idx)
+
+        for _ in range(budget - 1):
+            if not remaining_local:
+                break
+
+            best_score = -float('inf')
+            best_idx = None
+            selected_embeddings = slice_embeddings[selected_local]
+
+            for idx in remaining_local:
+                uncertainty_score = slice_uncertainties[idx]
+                current_embedding = slice_embeddings[idx:idx + 1]
+                distances = euclidean_distances(current_embedding, selected_embeddings)[0]
+                diversity_score = np.min(distances) if len(distances) > 0 else 0.0
+                total_score = uncertainty_score + self.lambda_div * diversity_score
+
+                if total_score > best_score:
+                    best_score = total_score
+                    best_idx = idx
+
+            if best_idx is not None:
+                selected_local.append(best_idx)
+                remaining_local.remove(best_idx)
+
+        return slice_indices[selected_local]
     
     def compute_difficulty(self, slice_mask: np.ndarray, 
                           validation_errors: np.ndarray,
@@ -501,49 +558,37 @@ class HierarchicalActiveStrategy:
         # Extract slice-specific data
         slice_uncertainties = uncertainties[slice_indices]
         slice_embeddings = embeddings[slice_indices]
-        
-        # Greedy selection maximizing uncertainty + diversity
-        selected_local = []
-        remaining_local = list(range(len(slice_indices)))
-        
-        # Select first sample with highest uncertainty
-        first_idx = np.argmax(slice_uncertainties)
-        selected_local.append(first_idx)
-        remaining_local.remove(first_idx)
-        
-        # Greedy selection for remaining samples
-        for _ in range(budget - 1):
-            if not remaining_local:
-                break
-            
-            best_score = -float('inf')
-            best_idx = None
-            
-            for idx in remaining_local:
-                uncertainty_score = slice_uncertainties[idx]
-                
-                # Compute diversity score (minimum distance to selected samples)
-                if len(selected_local) > 0:
-                    selected_embeddings = slice_embeddings[selected_local]
-                    current_embedding = slice_embeddings[idx:idx+1]
-                    distances = euclidean_distances(current_embedding, selected_embeddings)[0]
-                    diversity_score = np.min(distances)
-                else:
-                    diversity_score = 0.0
-                
-                total_score = uncertainty_score + self.lambda_div * diversity_score
-                
-                if total_score > best_score:
-                    best_score = total_score
-                    best_idx = idx
-            
-            if best_idx is not None:
-                selected_local.append(best_idx)
-                remaining_local.remove(best_idx)
-        
-        # Convert local indices back to global indices
-        selected_global = slice_indices[selected_local]
-        return selected_global
+
+        use_exact_greedy = (
+            budget <= self.exact_slice_greedy_max_budget
+            and len(slice_indices) <= self.exact_slice_greedy_max_candidates
+        )
+
+        if use_exact_greedy:
+            return self._greedy_select_within_slice(
+                slice_indices,
+                slice_uncertainties,
+                slice_embeddings,
+                budget,
+            )
+
+        candidate_pool_size = min(
+            len(slice_indices),
+            self.exact_slice_greedy_max_candidates,
+            max(self.approx_slice_candidate_min, budget * self.approx_slice_candidate_multiplier),
+        )
+        candidate_order = np.argsort(slice_uncertainties)[::-1][:candidate_pool_size]
+
+        reduced_slice_indices = slice_indices[candidate_order]
+        reduced_uncertainties = slice_uncertainties[candidate_order]
+        reduced_embeddings = slice_embeddings[candidate_order]
+
+        return self._greedy_select_within_slice(
+            reduced_slice_indices,
+            reduced_uncertainties,
+            reduced_embeddings,
+            budget,
+        )
     
     def select(self, dataset, val_dataset, model, device, n_select: int, verbose: bool = False):
         """
@@ -562,6 +607,8 @@ class HierarchicalActiveStrategy:
         """
         if verbose:
             print(f"Starting hierarchical active learning selection for {n_select} samples")
+
+        self._slice_membership_cache.clear()
         
         # Create data loaders
         from torch.utils.data import DataLoader

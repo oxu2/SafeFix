@@ -212,7 +212,7 @@ launch_ratio() {
     --save_pred_model best
     --save_preds True
     --save_model False
-    --verbose True
+    --verbose False
     --sub_ratio "${ratio}"
     "${STRATEGY_ARGS[@]}"
   )

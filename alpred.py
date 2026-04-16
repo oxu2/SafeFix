@@ -55,6 +55,119 @@ def _resolve_existing_path(*candidates):
     )
 
 
+def _files_match(path_a, path_b, chunk_size=1024 * 1024):
+    """Return True when two files have identical contents."""
+    path_a = Path(path_a)
+    path_b = Path(path_b)
+
+    if not path_a.exists() or not path_b.exists():
+        return False
+    if path_a.stat().st_size != path_b.stat().st_size:
+        return False
+
+    with path_a.open("rb") as fa, path_b.open("rb") as fb:
+        while True:
+            chunk_a = fa.read(chunk_size)
+            chunk_b = fb.read(chunk_size)
+            if chunk_a != chunk_b:
+                return False
+            if not chunk_a:
+                return True
+
+
+def _find_resume_log_for_checkpoint(checkpoint_path):
+    """Find the training log that originally saved the checkpoint, if available."""
+    checkpoint_path = Path(checkpoint_path).resolve()
+    candidate_model_paths = [checkpoint_path]
+
+    if checkpoint_path.name == "model_celeba_resnet_base.pth":
+        for candidate in sorted(Path("save/models").glob("model_celeba_resnet_*_0imgs_*.pth")):
+            if _files_match(checkpoint_path, candidate):
+                candidate_model_paths.append(candidate.resolve())
+
+    candidate_log_paths = list(Path("logs").rglob("*.log"))
+    for candidate_model_path in candidate_model_paths:
+        model_rel = candidate_model_path.relative_to(Path.cwd()) if candidate_model_path.is_relative_to(Path.cwd()) else None
+        model_markers = {str(candidate_model_path)}
+        if model_rel is not None:
+            model_markers.add(str(model_rel))
+
+        for log_path in candidate_log_paths:
+            try:
+                with log_path.open("r") as handle:
+                    for line in handle:
+                        if "Model saved to" not in line:
+                            continue
+                        if any(marker in line for marker in model_markers):
+                            return log_path
+            except OSError:
+                continue
+
+    return None
+
+
+def _lookup_resume_test_acc(checkpoint_path):
+    """Extract the saved run's overall test accuracy from its training log, if available."""
+    resume_log = _find_resume_log_for_checkpoint(checkpoint_path)
+    if resume_log is None:
+        return None, None
+
+    pattern_overall = re.compile(
+        r'(?:Model Test ACC|Held-out test accuracy|Model Validation ACC):\s*(?P<acc>\d+\.\d+)'
+    )
+    overall_acc = None
+    try:
+        with resume_log.open("r") as handle:
+            for line in handle:
+                match = pattern_overall.search(line)
+                if match:
+                    overall_acc = float(match.group("acc"))
+                    break
+    except OSError:
+        return None, None
+
+    return overall_acc, resume_log
+
+
+def _resolve_cuda_device_index(requested_gpu):
+    """Map a requested GPU id to the process-local CUDA index."""
+    if not torch.cuda.is_available():
+        return None
+
+    device_count = torch.cuda.device_count()
+    if device_count <= 0:
+        return None
+
+    try:
+        requested_idx = int(requested_gpu)
+    except (TypeError, ValueError):
+        requested_idx = 0
+
+    visible = os.environ.get("CUDA_VISIBLE_DEVICES", "")
+    visible_tokens = [token.strip() for token in visible.split(",") if token.strip()]
+    if visible_tokens:
+        requested_str = str(requested_idx)
+        if requested_str in visible_tokens:
+            mapped_idx = visible_tokens.index(requested_str)
+            if mapped_idx < device_count:
+                return mapped_idx
+        if device_count == 1:
+            return 0
+
+    if 0 <= requested_idx < device_count:
+        return requested_idx
+
+    return 0
+
+
+def _resolve_runtime_device(requested_gpu):
+    """Return the correct torch.device for the current process visibility mask."""
+    resolved_idx = _resolve_cuda_device_index(requested_gpu)
+    if resolved_idx is None:
+        return torch.device("cpu")
+    return torch.device(f"cuda:{resolved_idx}")
+
+
 def _print_class_distribution(subset, description, verbose=False):
     """Log per-class counts for a torch.utils.data.Subset built on ImageFolder."""
     from torch.utils.data import Subset as TorchSubset
@@ -237,6 +350,8 @@ parser.add_argument('--al_attribute_log_acc_scale', type=float, default=0.0,
                     help='Scaling factor applied to log-derived failure weights (default: 0.0)')
 parser.add_argument('--al_attribute_extra_counts', type=str, default=None,
                     help='Extra counts per attribute value to reflect generated data (attr:value=count entries or JSON path)')
+parser.add_argument('--al_attribute_extra_count_scale', type=float, default=1.0,
+                    help='Multiplier applied to parsed/inferred extra counts before scoring (default: 1.0)')
 parser.add_argument('--al_attribute_frequency_penalty', type=float, default=5.0,
                     help='Penalty strength applied to over-represented attribute values (default: 5.0)')
 parser.add_argument('--al_attribute_class_balance', type=str, default="inf",
@@ -781,10 +896,7 @@ if args.dataset == 'imagenet':
                 print(f"Combined AL approach: selecting {combined_target_count} samples from {combined_count} (original: {orig_count}, generated: {gen_count})")
             
             # Define device for Active Learning
-            if torch.cuda.is_available():
-                al_device = torch.device(f"cuda:{args.gpu}")
-            else:
-                al_device = torch.device("cpu")
+            al_device = _resolve_runtime_device(args.gpu)
             
             # Use Active Learning for data selection on combined dataset (timed)
             al_select_start = time.time()
@@ -817,10 +929,7 @@ if args.dataset == 'imagenet':
                 if verbose:
                     print(f"Using Active Learning strategy to select {sub_count} samples from {orig_count}")
                 # Define device for Active Learning if not already defined
-                if torch.cuda.is_available():
-                    al_device = torch.device(f"cuda:{args.gpu}")
-                else:
-                    al_device = torch.device("cpu")
+                al_device = _resolve_runtime_device(args.gpu)
                 # Use Active Learning for data selection (timed)
                 al_select_start = time.time()
                 selected_indices = active_learning_selection(train_ds, val_ds, args, al_device, verbose)
@@ -853,7 +962,7 @@ if args.dataset == 'imagenet':
                     dataset_type='imagenet',
                     lvlm_model=args.llm_model,
                     strategy=args.llm_strategy,
-                    device=torch.device(f"cuda:{args.gpu}") if torch.cuda.is_available() else torch.device("cpu"),
+                    device=_resolve_runtime_device(args.gpu),
                     random_seed=args.seed,
                     verbose=verbose
                 )
@@ -1193,10 +1302,7 @@ elif args.dataset == 'celeba':
                 print(f"Combined AL approach (CelebA): selecting {combined_target_count} samples from {combined_count} (original: {orig_count}, generated: {gen_count})")
             
             # Define device for Active Learning
-            if torch.cuda.is_available():
-                al_device = torch.device(f"cuda:{args.gpu}")
-            else:
-                al_device = torch.device("cpu")
+            al_device = _resolve_runtime_device(args.gpu)
             
             # Use Active Learning for data selection on combined dataset (timed)
             al_select_start = time.time()
@@ -1241,10 +1347,7 @@ elif args.dataset == 'celeba':
                 if verbose:
                     print(f"Using Active Learningstrategy to select {sub_count} samples from {orig_count} for CelebA")
                 # Define device for Active Learning if not already defined
-                if torch.cuda.is_available():
-                    al_device = torch.device(f"cuda:{args.gpu}")
-                else:
-                    al_device = torch.device("cpu")
+                al_device = _resolve_runtime_device(args.gpu)
                     
                 # Create temporary datasets for Active Learning
                 temp_train_dataset = CelebADataset(train_imgs, train_labels, val_transform)
@@ -1275,7 +1378,7 @@ elif args.dataset == 'celeba':
                     dataset_type='celeba',
                     lvlm_model=args.llm_model,
                     strategy=args.llm_strategy,
-                    device=torch.device(f"cuda:{args.gpu}") if torch.cuda.is_available() else torch.device("cpu"),
+                    device=_resolve_runtime_device(args.gpu),
                     random_seed=args.seed,
                     verbose=verbose
                 )
@@ -1358,8 +1461,9 @@ elif args.dataset == 'celeba':
 
 # Define model, loss, and optimizer
 if torch.cuda.is_available():
-    torch.cuda.set_device(args.gpu)
-    device = torch.device(f"cuda:{args.gpu}")
+    runtime_gpu_index = _resolve_cuda_device_index(args.gpu)
+    torch.cuda.set_device(runtime_gpu_index)
+    device = torch.device(f"cuda:{runtime_gpu_index}")
 else:
     device = torch.device("cpu")
 # if verbose and device.type == "cuda":
@@ -1425,7 +1529,14 @@ if args.resume_model:
     ckpt = torch.load(args.resume_model, map_location=device)
     model.load_state_dict(ckpt['model_state_dict'])
     resumed_val_acc = ckpt.get('best_val_acc', 'N/A')
-    print(f"Resumed model from {args.resume_model} (best val acc: {resumed_val_acc})")
+    resumed_test_acc, resume_log_path = _lookup_resume_test_acc(args.resume_model)
+    resume_msg = f"Resumed model from {args.resume_model} (best val acc: {resumed_val_acc}"
+    if resumed_test_acc is not None:
+        resume_msg += f", base test acc: {resumed_test_acc:.4f}"
+    resume_msg += ")"
+    print(resume_msg)
+    if resumed_test_acc is not None and resume_log_path is not None:
+        print(f"Recovered base test acc from log: {resume_log_path}")
 
     # Backbone freezing controlled by --freeze_backbone
     pass
@@ -1786,7 +1897,7 @@ def train_model(model, train_loader, valid_loader, criterion, optimizer, schedul
     # Evaluate on test set (when available) before saving predictions
     if test_loader is not None:
         test_acc, test_loss = evaluate(model, test_loader)
-        print(f"Held-out test accuracy: {test_acc:.4f}, test loss: {test_loss:.4f}")
+        print(f"Model Test ACC: {test_acc:.4f}, test loss: {test_loss:.4f}")
 
     # Save predictions after training (can be disabled with --save_preds False)
     if args.save_preds:
@@ -1810,7 +1921,9 @@ def parse_log(log_path):
     pattern2 = re.compile(
         r'The accuracy with\s+"(?P<attr>[^"]+)"\s*=\s*"(?P<desc>[^"]+)"\s*is\s*(?P<acc>\d+\.\d+)'
     )
-    pattern_overall = re.compile(r'Model Validation ACC:\s*(?P<acc>\d+\.\d+)')
+    pattern_overall = re.compile(
+        r'(?:Model Test ACC|Held-out test accuracy|Model Validation ACC):\s*(?P<acc>\d+\.\d+)'
+    )
     overall_acc = None
 
     results = []
@@ -1895,6 +2008,7 @@ prediction_file = str(
     )
 )
 predictions = np.load(prediction_file)
+run_diagnostics = True
 
 # Prepare labels and split for diagnostics based on dataset
 if args.dataset == 'imagenet':
@@ -1933,17 +2047,41 @@ if args.dataset == 'imagenet':
             labels_to_diagnose = np.concatenate([labels_all[train_idx], labels_all[val_idx]])
             split = [TRAIN] * expected_train + [VALID] * expected_val
 elif args.dataset == 'celeba':
-    # Use combined_labels and adjust split to match (including modified images in the training split)
-    labels_to_diagnose = combined_labels
+    # CelebA attribute metadata only covers the original images, not generated samples.
+    # Saved predictions may include a generated-image segment, so strip it back out before diagnostics.
+    orig_train_count = len(train_labels)
+    valid_count = len(valid_labels)
+    test_count = len(test_labels)
+    unlabeled_count = len(unlabeled_labels)
+    generated_count = len(modified_image_labels)
+
+    labels_to_diagnose = np.concatenate((train_labels, valid_labels, test_labels, unlabeled_labels))
     split = (
-        [TRAIN] * len(all_train_labels) +
-        [VALID] * len(valid_labels) +
-        [TEST] * len(test_labels) +
-        [UNLABELED] * len(unlabeled_labels)
+        [TRAIN] * orig_train_count +
+        [VALID] * valid_count +
+        [TEST] * test_count +
+        [UNLABELED] * unlabeled_count
     )
 
+    expected_original_total = len(labels_to_diagnose)
+    expected_with_generated = expected_original_total + generated_count
+
+    if generated_count > 0 and len(predictions) == expected_with_generated:
+        train_end = orig_train_count
+        valid_end = train_end + valid_count
+        test_end = valid_end + test_count
+        generated_end = test_end + generated_count
+        predictions = np.concatenate((predictions[:test_end], predictions[generated_end:]))
+    elif len(predictions) != expected_original_total:
+        print(
+            "Warning: Skipping CelebA diagnostics because predictions length "
+            f"({len(predictions)}) does not match expected original-only length "
+            f"({expected_original_total}) or generated-inclusive length ({expected_with_generated})."
+        )
+        run_diagnostics = False
+
 # Run diagnostics for both datasets (skip for any generated-only mode or combined AL mode)
-if not gen_use_generated and not args.al_combined:
+if run_diagnostics and not gen_use_generated and not args.al_combined:
     # Instantiate ModelDiagnose and run diagnostics
     MD = ModelDiagnose(
         labels=labels_to_diagnose,
@@ -2062,16 +2200,19 @@ if not gen_use_generated and not args.al_combined:
             log_path1 = os.path.join(log_dir, log_name1)
             log_path2 = os.path.join(log_dir, log_name2)
 
+            random_log_path = None
             if os.path.exists(log_path2):
                 random_log_path = log_path2
             elif os.path.exists(log_path1):
                 random_log_path = log_path1
             else:
-                raise FileNotFoundError(f"No log file found: {log_path1} or {log_path2}")
+                print(
+                    "Skipping Active Learning vs Random comparison: "
+                    f"no log file found at {log_path1} or {log_path2}"
+                )
 
-            print(f"Using log file: {random_log_path}")
-            
-            if os.path.exists(random_log_path):
+            if random_log_path is not None:
+                print(f"Using log file: {random_log_path}")
                 print(f"\n" + "="*80)
                 print(f"ACTIVE LEARNING vs RANDOM SELECTION COMPARISON")
                 print(f"="*80)

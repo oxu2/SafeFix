@@ -321,8 +321,6 @@ class ModelDiagnose():
             if label != prediction:
                 self.error_binary_list[i] = 1
 
-        self.print_output("Model Validation ACC:",1-np.sum(self.error_binary_list[self.valid_idx])/len(self.valid_idx))
-
         # Attribute distribution
         for attribute_name in self.attributes.keys():
             self.attributes[attribute_name]['distribution'] = {TRAIN:{description:0 for description in self.attributes[attribute_name]['word']},VALID:{description:0 for description in self.attributes[attribute_name]['word']}}
@@ -412,7 +410,7 @@ class ModelDiagnose():
                     if attribute == "hair color" and description in ["white", "yellow", "blonde", "black", "gray", "brown", "red"]:
                         description_valid_idx = [i for i in self.valid_idx if self.attributes[attribute]['data'][i] == description]
                         if self._print:
-                            self.print_output(f"Indices with {attribute}={description} in validation set: {description_valid_idx[20, 30, 40]}...")
+                            self.print_output(f"Indices with {attribute}={description} in validation set: {description_valid_idx[:3]}...")
                         
                         self.print_output(f'The accuracy with "{attribute}" = "{description}" is {sub_acc}')
                         correct_count = sum(1 for idx in description_valid_idx if self.predictions[idx] == self.labels[idx])

@@ -15,7 +15,9 @@ def parse_log(log_path):
     pattern2 = re.compile(
         r'The accuracy with\s+"(?P<attr>[^"]+)"\s*=\s*"(?P<desc>[^"]+)"\s*is\s*(?P<acc>\d+\.\d+)'
     )
-    pattern_overall = re.compile(r'Model Validation ACC:\s*(?P<acc>\d+\.\d+)')
+    pattern_overall = re.compile(
+        r'(?:Model Test ACC|Held-out test accuracy|Model Validation ACC):\s*(?P<acc>\d+\.\d+)'
+    )
     overall_acc = None
 
     results = []

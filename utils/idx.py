@@ -367,8 +367,6 @@ class ModelDiagnose():
             if label != prediction:
                 self.error_binary_list[i] = 1
         
-        self.print_output("Model Validation ACC:",1-np.sum(self.error_binary_list[self.valid_idx])/len(self.valid_idx))
-
         # Attribute distribution
         for attribute_name in self.attributes.keys():
             self.attributes[attribute_name]['distribution'] = {TRAIN:{description:0 for description in self.attributes[attribute_name]['word']},VALID:{description:0 for description in self.attributes[attribute_name]['word']}}
@@ -663,4 +661,3 @@ class ModelDiagnose():
 
 
 # MD = ModelDiagnose(labels, predictions, split, "data/celebA/attribute.json")
-
