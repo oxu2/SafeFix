@@ -39,7 +39,8 @@ logs/
 # IDE & AI Tools
 .vscode
 .claude
-.trellis
+# .trellis
+
 .cursor
 .opencode
 
