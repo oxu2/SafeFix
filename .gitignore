@@ -25,7 +25,9 @@ imagenet*
 
 # Outputs & Results
 outputs/
-log_pose/
+log_pose/*
+log_pose/NA/
+!log_pose/*.log
 !outputs/save/*.json
 !outputs/save/*.npy
 !outputs/save/plot/*.png
@@ -47,3 +49,4 @@ runs/*
 *.npy
 
 TMLR_26_SafeFix
+SLACK_WEBHOOK_HANDOFF.md

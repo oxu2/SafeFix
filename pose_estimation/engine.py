@@ -141,6 +141,85 @@ def save_checkpoint(
     print(f"Saved checkpoint: {checkpoint_path}")
 
 
+def save_model_checkpoint(
+    checkpoint_path: Path,
+    model: torch.nn.Module,
+    epoch: Optional[int] = None,
+    extra: Optional[Dict] = None,
+) -> None:
+    checkpoint_path.parent.mkdir(parents=True, exist_ok=True)
+    payload = {
+        "model_state_dict": model.state_dict(),
+    }
+    if epoch is not None:
+        payload["epoch"] = epoch
+    if extra:
+        payload.update(extra)
+    torch.save(payload, checkpoint_path)
+    print(f"Saved model checkpoint: {checkpoint_path}")
+
+
+def _extract_model_state_dict(payload) -> Dict[str, torch.Tensor]:
+    if not isinstance(payload, dict):
+        raise ValueError("Checkpoint payload must be a dict or state_dict-like mapping.")
+
+    if "model" in payload:
+        state_dict = payload["model"]
+    elif "model_state_dict" in payload:
+        state_dict = payload["model_state_dict"]
+    else:
+        state_dict = payload
+
+    if not isinstance(state_dict, dict):
+        raise ValueError("Checkpoint does not contain a valid model state_dict.")
+    return state_dict
+
+
+def _extract_checkpoint_metadata(payload) -> Dict[str, object]:
+    metadata: Dict[str, object] = {}
+    if isinstance(payload, dict):
+        metadata["has_optimizer"] = payload.get("optimizer") is not None
+        metadata["has_lr_scheduler"] = payload.get("lr_scheduler") is not None
+        if "epoch" in payload:
+            metadata["epoch"] = int(payload["epoch"])
+        if "best_ap" in payload:
+            metadata["best_ap"] = float(payload["best_ap"])
+        if "best_val_acc" in payload:
+            metadata["best_val_acc"] = payload["best_val_acc"]
+    return metadata
+
+
+def read_checkpoint_metadata(
+    checkpoint_path: Path,
+    map_location: str = "cpu",
+) -> Dict[str, object]:
+    payload = torch.load(checkpoint_path, map_location=map_location)
+    return _extract_checkpoint_metadata(payload)
+
+
+def load_model_checkpoint(
+    checkpoint_path: Path,
+    model: torch.nn.Module,
+    map_location: str = "cpu",
+) -> Dict[str, object]:
+    payload = torch.load(checkpoint_path, map_location=map_location)
+    model.load_state_dict(_extract_model_state_dict(payload))
+
+    metadata = _extract_checkpoint_metadata(payload)
+
+    extra_parts = []
+    if "epoch" in metadata:
+        extra_parts.append(f"epoch {int(metadata['epoch'])}")
+    if "best_ap" in metadata:
+        extra_parts.append(f"best AP {float(metadata['best_ap']):.4f}")
+    elif "best_val_acc" in metadata:
+        extra_parts.append(f"best val acc {metadata['best_val_acc']}")
+    extra_text = f" ({', '.join(extra_parts)})" if extra_parts else ""
+
+    print(f"Loaded model weights from {checkpoint_path}{extra_text}")
+    return metadata
+
+
 def load_checkpoint(
     checkpoint_path: Path,
     model: torch.nn.Module,
@@ -149,7 +228,7 @@ def load_checkpoint(
     map_location: str = "cpu",
 ) -> int:
     payload = torch.load(checkpoint_path, map_location=map_location)
-    model.load_state_dict(payload["model"])
+    model.load_state_dict(_extract_model_state_dict(payload))
     if optimizer is not None and payload.get("optimizer") is not None:
         optimizer.load_state_dict(payload["optimizer"])
     if lr_scheduler is not None and payload.get("lr_scheduler") is not None:

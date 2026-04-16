@@ -37,6 +37,14 @@ def _get_model_arg():
             return arg.split('=', 1)[1]
     return 'Qwen/Qwen3-VL-8B-Instruct'  # default
 
+
+def _has_cli_flag(flag_name):
+    prefix = f'--{flag_name}'
+    for arg in sys.argv:
+        if arg == prefix or arg.startswith(prefix + '='):
+            return True
+    return False
+
 _model_arg = _get_model_arg()
 _is_qwen3 = 'Qwen3' in _model_arg
 _is_internvl = 'InternVL' in _model_arg
@@ -95,8 +103,8 @@ parser.add_argument('--coco_root', type=str, default='/data/oxx220000/coco',
                     help='COCO root containing train2017/val2017 and annotations/')
 parser.add_argument('--kitti_root', type=str, default='/data/oxx220000/kitti_yolov8_first5000',
                     help='KITTI YOLO root')
-parser.add_argument('--split', type=str, default='val', choices=['train', 'val', 'all'],
-                    help='COCO split to annotate when --dataset coco_pose')
+parser.add_argument('--split', type=str, default='val', choices=['train', 'val', 'test', 'all'],
+                    help='Split to annotate for datasets that support it (COCO: train/val/all, KITTI: train/val/test/all)')
 parser.add_argument('--annotation_file', type=str, default=None,
                     help='Optional explicit COCO annotation json (overrides --coco_root/--split)')
 parser.add_argument('--image_dir', type=str, default=None,
@@ -111,6 +119,8 @@ parser.add_argument('--partial', type=str, default=None,
                     help='Partial checkpoint path (auto-generated if not specified)')
 parser.add_argument('--resume', action='store_true', default=False,
                     help='Resume from partial checkpoint if it exists')
+parser.add_argument('--start_at', type=int, default=0,
+                    help='Skip the first N images before annotation (default: 0)')
 parser.add_argument('--stop_at', type=int, default=None,
                     help='Stop after processing this many images (for testing)')
 parser.add_argument('--max_memory_per_gpu', type=float, default=23,
@@ -122,6 +132,10 @@ parser.add_argument('--verbose', action='store_true', default=False,
 parser.add_argument('--model', type=str, default='Qwen/Qwen3-VL-8B-Instruct',
                     help='HuggingFace model path. E.g., Qwen/Qwen3-VL-8B-Instruct, Qwen/Qwen2.5-VL-7B-Instruct, or OpenGVLab/InternVL3-8B')
 args = parser.parse_args()
+
+if args.dataset == 'kitti' and not _has_cli_flag('split'):
+    args.split = 'train'
+    print("No --split provided for KITTI; defaulting to split='train' to match the first-5000 training subset.")
 
 # Auto-generate output filename from model version and stop_at
 if args.output is None or args.partial is None:
@@ -136,6 +150,8 @@ if args.output is None or args.partial is None:
         version = parts[0].lower()  # "qwen3"
         size = parts[2] if len(parts) > 2 else ''  # "8B"
     tag = f"{version}_{size}"
+    if args.start_at:
+        tag += f"_start{args.start_at}"
     if args.stop_at is not None:
         tag += f"_{args.stop_at}"                           # "qwen3_8B_20"
     if args.dataset == 'coco_pose':
@@ -402,121 +418,134 @@ ATTRIBUTE_QUESTIONS = {
         "What is the dominant color of the main object in this image? "
         "You MUST choose exactly one from the following list: [{words}]. "
         "Do NOT answer with any word outside this list. "
-        "Reply with ONLY that single word."
+        "Reply with ONLY the chosen option."
     ),
     "background": (
         "What is the background of this image? "
         "You MUST choose exactly one from the following list: [{words}]. "
         "Do NOT answer with any word outside this list. "
-        "Reply with ONLY that single word."
+        "Reply with ONLY the chosen option."
     ),
     "texture": (
         "What material or texture is the main object in this image? "
         "You MUST choose exactly one from the following list: [{words}]. "
         "Do NOT answer with any word outside this list. "
-        "Reply with ONLY that single word."
+        "Reply with ONLY the chosen option."
     ),
     "pose": (
         "Focus on the main person intended for pose estimation. "
         "What is the person's main pose? "
-        "Choose exactly one from [{words}]. Reply with ONLY that single word."
+        "Choose exactly one from [{words}]. Reply with ONLY the chosen option."
     ),
     "pose_complexity": (
         "Focus on the main person intended for pose estimation. "
         "How complex is the person's pose? "
-        "Choose exactly one from [{words}]. Reply with ONLY that single word."
+        "Choose exactly one from [{words}]. Reply with ONLY the chosen option."
     ),
     "head_orientation": (
         "Focus on the main person intended for pose estimation. "
         "What is the orientation of the person's head? "
-        "Choose exactly one from [{words}]. Reply with ONLY that single word."
+        "Choose exactly one from [{words}]. Reply with ONLY the chosen option."
     ),
     "clothes_color": (
         "Focus on the main person intended for pose estimation. "
         "What is the dominant color of the person's clothing? "
-        "Choose exactly one from [{words}]. Reply with ONLY that single word."
+        "Choose exactly one from [{words}]. Reply with ONLY the chosen option."
     ),
     "is_arm_crossing": (
         "Focus on the main person intended for pose estimation. "
         "Are the person's arms crossed? "
-        "Choose exactly one from [{words}]. Reply with ONLY that single word."
+        "Choose exactly one from [{words}]. Reply with ONLY the chosen option."
     ),
     "is_carrying_something": (
         "Focus on the main person intended for pose estimation. "
         "Is the person carrying or holding something? "
-        "Choose exactly one from [{words}]. Reply with ONLY that single word."
+        "Choose exactly one from [{words}]. Reply with ONLY the chosen option."
     ),
     "is_standing_on_one_leg": (
         "Focus on the main person intended for pose estimation. "
         "Is the person standing on one leg? "
-        "Choose exactly one from [{words}]. Reply with ONLY that single word."
+        "Choose exactly one from [{words}]. Reply with ONLY the chosen option."
     ),
     "is_on_all_fours": (
         "Focus on the main person intended for pose estimation. "
         "Is the person on all fours? "
-        "Choose exactly one from [{words}]. Reply with ONLY that single word."
+        "Choose exactly one from [{words}]. Reply with ONLY the chosen option."
     ),
     "is_sitting": (
         "Focus on the main person intended for pose estimation. "
         "Is the person sitting? "
-        "Choose exactly one from [{words}]. Reply with ONLY that single word."
+        "Choose exactly one from [{words}]. Reply with ONLY the chosen option."
     ),
     "is_dynamic": (
         "Focus on the main person intended for pose estimation. "
         "Is the person dynamic or in active motion? "
-        "Choose exactly one from [{words}]. Reply with ONLY that single word."
+        "Choose exactly one from [{words}]. Reply with ONLY the chosen option."
     ),
     "background_style": (
-        "What is the background style around the main person? "
-        "Choose exactly one from [{words}]. Reply with ONLY that single word."
+        "What best describes the overall road or background style of the scene? "
+        "Choose exactly one from [{words}]. Reply with ONLY the chosen option."
     ),
     "background_color": (
         "What is the dominant background color around the main person? "
-        "Choose exactly one from [{words}]. Reply with ONLY that single word."
+        "Choose exactly one from [{words}]. Reply with ONLY the chosen option."
     ),
     "is_containing_other_people": (
         "Does the scene contain other people besides the main person? "
-        "Choose exactly one from [{words}]. Reply with ONLY that single word."
+        "Choose exactly one from [{words}]. Reply with ONLY the chosen option."
     ),
     "indoor_lighting": (
         "What best describes the lighting condition in the scene? "
-        "Choose exactly one from [{words}]. Reply with ONLY that single word."
+        "Choose exactly one from [{words}]. Reply with ONLY the chosen option."
     ),
     "is_indoor": (
         "Is the scene indoors? "
-        "Choose exactly one from [{words}]. Reply with ONLY that single word."
+        "Choose exactly one from [{words}]. Reply with ONLY the chosen option."
     ),
     "weather": (
         "What is the weather or outdoor condition in the scene? "
-        "Choose exactly one from [{words}]. Reply with ONLY that single word."
+        "Choose exactly one from [{words}]. Reply with ONLY the chosen option."
     ),
     "occlusion": (
-        "Is the main person noticeably occluded by objects, other people, or self-occlusion? "
-        "Choose exactly one from [{words}]. Reply with ONLY that single word."
+        "How much is the most prominent target object or person occluded by other objects or image content? "
+        "Choose exactly one from [{words}]. Reply with ONLY the chosen option."
     ),
     "viewpoint": (
-        "What is the viewing angle of the main person? "
-        "Choose exactly one from [{words}]. Reply with ONLY that single word."
+        "What is the viewing angle of the most prominent target object or person? "
+        "Choose exactly one from [{words}]. Reply with ONLY the chosen option."
     ),
     "time_of_day": (
         "What time of day does it appear to be in the driving scene? "
-        "Choose exactly one from [{words}]. Reply with ONLY that single word."
+        "Choose exactly one from [{words}]. Reply with ONLY the chosen option."
     ),
     "scene_location": (
         "What type of location is the ego-vehicle driving in? "
-        "Choose exactly one from [{words}]. Reply with ONLY that single word."
+        "Choose exactly one from [{words}]. Reply with ONLY the chosen option."
     ),
     "traffic_density": (
         "What is the level of traffic density in the scene? "
-        "Choose exactly one from [{words}]. Reply with ONLY that single word."
+        "Choose exactly one from [{words}]. Reply with ONLY the chosen option."
     ),
     "lighting_condition": (
         "What best describes the overall lighting condition in the scene? "
-        "Choose exactly one from [{words}]. Reply with ONLY that single word."
+        "Choose exactly one from [{words}]. Reply with ONLY the chosen option."
     ),
     "road_condition": (
         "What is the surface condition of the road? "
-        "Choose exactly one from [{words}]. Reply with ONLY that single word."
+        "Choose exactly one from [{words}]. Reply with ONLY the chosen option."
+    ),
+    "object_scale": (
+        "Considering the most prominent target object or person in this driving scene, "
+        "what is its apparent size in the image? "
+        "Choose exactly one from [{words}]. Reply with ONLY the chosen option."
+    ),
+    "truncation": (
+        "How much is the most prominent target object or person cut off by the image border? "
+        "Choose exactly one from [{words}]. Reply with ONLY the chosen option."
+    ),
+    "motion_state": (
+        "Is the most prominent target object or person moving or stationary in the scene? "
+        "Choose exactly one from [{words}]. Reply with ONLY the chosen option."
     ),
 }
 
@@ -530,7 +559,7 @@ def build_prompt(attr_name, word_list):
         template = (
             "Describe the {attr} of the main person or subject in this image. "
             "Choose exactly one from: {words}. "
-            "Answer with only the chosen word, nothing else."
+            "Answer with only the chosen option, nothing else."
         )
         return template.format(attr=attr_name, words=words_str)
     return template.format(words=words_str)
@@ -579,7 +608,7 @@ def remap_with_vlm(bad_answer, word_list):
     prompt = (
         f"The word '{bad_answer}' is not in this list: [{words_str}]. "
         f"Which word in the list is closest in meaning to '{bad_answer}'? "
-        f"Reply with ONLY that single word from the list."
+        f"Reply with ONLY the chosen option from the list."
     )
 
     if is_internvl:
@@ -789,13 +818,22 @@ def write_attribute_csv(csv_path, sample_rows, attributes_dict, attr_names, data
             writer.writerow(row)
 
 
-def collect_kitti_dataset(kitti_root, split='val'):
+def collect_kitti_dataset(kitti_root, split='train'):
     import glob
     all_datas = []
     labels = []
     sample_rows = []
-    search_path = os.path.join(kitti_root, 'images', '**', '*.*')
-    image_paths = sorted(glob.glob(search_path, recursive=True))
+
+    if split == 'all':
+        search_path = os.path.join(kitti_root, 'images', '**', '*.*')
+        image_paths = sorted(glob.glob(search_path, recursive=True))
+    else:
+        split_dir = os.path.join(kitti_root, 'images', split)
+        if not os.path.isdir(split_dir):
+            raise FileNotFoundError(f"KITTI split directory not found: {split_dir}")
+        search_path = os.path.join(split_dir, '*.*')
+        image_paths = sorted(glob.glob(search_path))
+
     image_paths = [p for p in image_paths if p.lower().endswith(('.jpg', '.jpeg', '.png'))]
     for i, image_path in enumerate(image_paths):
         fname = os.path.basename(image_path)
@@ -807,7 +845,7 @@ def collect_kitti_dataset(kitti_root, split='val'):
             'file_name': fname,
             'split': split
         })
-    print(f"Found {len(all_datas)} images in KITTI dataset at {kitti_root}")
+    print(f"Found {len(all_datas)} images in KITTI dataset at {kitti_root} (split={split})")
     return all_datas, labels, sample_rows
 
 
@@ -825,6 +863,13 @@ elif args.dataset == 'kitti':
     )
 else:
     all_datas, labels, sample_rows = collect_folder_dataset(args.root_dir)
+
+if args.start_at:
+    requested_start = max(0, args.start_at)
+    all_datas = all_datas[requested_start:]
+    labels = labels[requested_start:]
+    sample_rows = sample_rows[requested_start:]
+    print(f"Skipping the first {requested_start} images (--start_at {args.start_at}); {len(all_datas)} remain")
 
 if args.stop_at is not None:
     requested = max(0, args.stop_at)
