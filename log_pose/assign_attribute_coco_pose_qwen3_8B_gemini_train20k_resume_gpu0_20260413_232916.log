@@ -1,0 +1,22 @@
+Switching to conda environment 'qwen' (current: None)
+`torch_dtype` is deprecated! Use `dtype` instead!
+The following generation flags are not valid and may be ignored: ['top_p', 'top_k']. Set `TRANSFORMERS_VERBOSITY=info` for more details.
+Terminated
+
+ERROR conda.cli.main_run:execute(49): `conda run python -u /people/cs/o/oxx220000/safefix/utils/assign_attribute.py --dataset coco_pose --coco_root /data/oxx220000/coco --split train --stop_at 20000 --corpus save/corpus_coco_pose_gemini.json --output save/attribute_coco_pose_gemini_train20k_qwen3_8B.json --csv-output save/attribute_coco_pose_gemini_train20k_qwen3_8B.csv --partial save/attribute_coco_pose_gemini_train20k_qwen3_8B_partial.json --resume --max_memory_per_gpu 22.5 --model Qwen/Qwen3-VL-8B-Instruct` failed. (See above for error)
+Using 1 GPU(s) with 22.5GiB memory allocation each
+Loading model: Qwen/Qwen3-VL-8B-Instruct (Qwen3 mode)...
+Model loaded.
+Loaded COCO pose split 'train' from /data/oxx220000/coco/annotations/person_keypoints_train2017.json: 56599 valid images
+Will process only the first 20000 images (--stop_at 20000)
+Total images: 20000
+Corpus attributes: ['clothes_color', 'clothes_type', 'background_style', 'time_of_day', 'weather', 'pose']
+Resuming from CSV checkpoint: 4000 images already processed
+Resuming from partial checkpoint: save/attribute_coco_pose_gemini_train20k_qwen3_8B_partial.json
+Remaining images to process: 16000
+
+Processing 16000 images across 6 attributes...
+Attributes: ['clothes_color', 'clothes_type', 'background_style', 'time_of_day', 'weather', 'pose']
+[1/16000] Processed 1 images, 1.92s this image, avg 1.92s/img, ETA 510.7min
+[100/16000] Processed 100 images, 0.93s this image, avg 1.22s/img, ETA 322.5min
+

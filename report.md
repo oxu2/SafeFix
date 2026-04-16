@@ -1,3 +1,108 @@
+# 04/17/2026 Update — GPU 0 and GPU 3 Pose-Training Runs Finished
+
+- Verified that the two bs8 pose-estimation runs launched on April 15, 2026 are complete:
+  - GPU `3` / Qwen3-VL-8B: original PID `1623280`
+  - GPU `0` / InternVL3-8B: original PID `1624937`
+- Both original PIDs are no longer alive, both logs end with `Training complete`, and both artifact roots contain:
+  - `best.pth`
+  - held-out `val` and `test` metrics JSONs
+  - prediction dumps
+  - post-train slice-analysis JSON/CSV outputs
+- These are fresh runs under the current defaults (`batch_size=8`, `analysis_rare_label_threshold=1.1`), so they are **not** strict apples-to-apples reruns of the earlier `4/12` bs4 `rare0p97` probes.
+- In both runs, the best checkpoint came from **epoch 0**; epoch 1 slightly regressed on held-out val AP.
+
+| Run Tag | GPU | Best Epoch | Held-out Val AP | Held-out Test AP | Test AP50 | Test AP75 | Test AR | Train Time | Artifact Root | Log |
+|---------|-----|------------|-----------------|------------------|-----------|-----------|---------|------------|---------------|-----|
+| Qwen3-VL-8B | `3` | `0` | `0.6445` | `0.6352` | `0.8656` | `0.6902` | `0.6993` | `01:29:18` | `log_pose/pose_keypointrcnn_train20k_qwen3_bs8_e2_rare1p1_20260415_144429/` | `log_pose/pose_train20k_qwen3_bs8_e2_rare1p1_20260415_144429.log` |
+| InternVL3-8B | `0` | `0` | `0.6401` | `0.6357` | `0.8618` | `0.6936` | `0.7016` | `01:33:39` | `log_pose/pose_keypointrcnn_train20k_internvl3_bs8_e2_rare1p1_gpu0_20260415_144530/` | `log_pose/pose_train20k_internvl3_bs8_e2_rare1p1_gpu0_20260415_144530.log` |
+
+- Relative to the earlier `4/12` held-out test probes:
+  - Qwen3-VL-8B improved from `0.5968` to `0.6352` (`+0.0384`)
+  - InternVL3-8B moved from `0.6340` to `0.6357` (`+0.0017`)
+- Top-level `log_pose/` logs explicitly record both training-only and end-to-end elapsed time for these runs:
+  - Qwen3-VL-8B: training `01:29:18` (`5358.44 s`), end-to-end `01:29:26` (`5366.02 s`)
+  - InternVL3-8B: training `01:33:39` (`5619.12 s`), end-to-end `01:33:46` (`5625.88 s`)
+- Held-out test slice analysis for both runs used `rare_label_threshold=1.1`.
+- The strongest recurring **rare-case** slice is still `pose=lying` in both runs:
+  - Qwen3-VL-8B: `AP=0.3091`, `ap_delta=-0.3261`, `34` test images
+  - InternVL3-8B: `AP=0.3625`, `ap_delta=-0.2733`, `29` test images
+- Other representative **rare cases** on the held-out test split:
+  - Qwen3-VL-8B: `time_of_day=evening` (`AP=0.5629`, `164` images), `weather=rainy` (`AP=0.5799`, `31` images), `time_of_day=night` (`AP=0.5816`, `74` images)
+  - InternVL3-8B: `time_of_day=night` (`AP=0.5725`, `191` images), `background_style=rural` (`AP=0.5756`, `103` images), `weather=rainy` (`AP=0.5796`, `32` images)
+- `pose=sitting` remains the main high-support hard slice:
+  - Qwen3-VL-8B: `AP=0.5503`, `329` test images
+  - InternVL3-8B: `AP=0.5480`, `288` test images
+- Other notable low-AP slices on the held-out test split:
+  - Qwen3-VL-8B: `background_style=indoors` (`AP=0.5899`, hard_case), `weather=clear` (`AP=0.5899`, hard_case)
+  - InternVL3-8B: `background_style=indoors` (`AP=0.5866`, hard_case), `weather=clear` (`AP=0.6017`, hard_case)
+
+### Follow-Up Addendum (Artifacts dated 2026-04-15; original table above preserved)
+
+- Two later same-day reruns requested after the initial summary are now complete:
+  - Qwen3-VL-8B reproducibility rerun on GPU `0`:
+    - artifact root: `log_pose/pose_keypointrcnn_train20k_qwen3_bs8_e2_rare1p1_gpu0_repro/`
+    - log: `log_pose/pose_train20k_qwen3_bs8_e2_rare1p1_gpu0_repro.log`
+  - InternVL3-8B training-only rerun on GPU `3` followed by post-hoc slice analyses:
+    - artifact root: `log_pose/pose_keypointrcnn_train20k_internvl3_bs8_e2_trainonly_gpu3_20260415_183404/`
+    - training log: `log_pose/pose_train20k_internvl3_bs8_e2_trainonly_gpu3_20260415_183404.log`
+    - post-hoc sweep log: `log_pose/posthoc_slice_analysis_internvl3_trainonly_gpu3_20260415_183404.log`
+- In both later reruns, the best checkpoint again came from **epoch 0**.
+
+| Follow-Up Run | Earlier 4/17 Reference | Held-out Val AP | Held-out Test AP | Test AP50 | Test AP75 | Test AR | Train Time |
+|---------------|------------------------|-----------------|------------------|-----------|-----------|---------|------------|
+| Qwen3-VL-8B GPU `0` repro | Qwen3-VL-8B GPU `3` (`20260415_144429`) | `0.6445 -> 0.6407` (`-0.0038`) | `0.6352 -> 0.6341` (`-0.0011`) | `0.8656 -> 0.8609` (`-0.0047`) | `0.6902 -> 0.6866` (`-0.0036`) | `0.6993 -> 0.6958` (`-0.0035`) | `01:29:18 -> 01:38:50` (`+00:09:32`) |
+| InternVL3-8B GPU `3` train-only rerun | InternVL3-8B GPU `0` (`20260415_144530`) | `0.6401 -> 0.6412` (`+0.0011`) | `0.6357 -> 0.6371` (`+0.0014`) | `0.8618 -> 0.8583` (`-0.0035`) | `0.6936 -> 0.6963` (`+0.0027`) | `0.7016 -> 0.6950` (`-0.0066`) | `01:33:39 -> 01:29:22` (`-00:04:17`) |
+
+- Qwen3-VL-8B repro interpretation:
+  - overall held-out metrics are slightly below the earlier GPU `3` Qwen3 run
+  - the hardest rare slice `pose=lying` improved from `AP=0.3091` to `AP=0.3906` (`+0.0815`)
+  - `pose=sitting` also improved slightly from `AP=0.5503` to `AP=0.5529`
+  - low-light slices remained difficult and close to the earlier run:
+    - `time_of_day=evening`: `0.5629 -> 0.5737`
+    - `time_of_day=night`: `0.5816 -> 0.5802`
+- InternVL3-8B GPU `3` train-only rerun interpretation:
+  - held-out AP is slightly higher than the earlier GPU `0` InternVL3 run on both `val` and `test`
+  - the hardest rare slice `pose=lying` improved from `AP=0.3625` to `AP=0.4021` (`+0.0396`)
+  - `pose=sitting` improved from `AP=0.5480` to `AP=0.5585`
+  - representative rare-case test slices in the rerun are:
+    - `time_of_day=night`: `AP=0.5693`, `191` images
+    - `background_style=rural`: `AP=0.5738`, `103` images
+    - `weather=rainy`: `AP=0.5871`, `32` images
+    - `time_of_day=evening`: `AP=0.6296`, `72` images
+- Important sweep result for the InternVL3 rerun:
+  - the post-hoc `rare_label_threshold` analyses at `0.97`, `0.95`, and `0.93` all completed successfully
+  - the resulting `val` CSVs are byte-identical across thresholds
+  - the resulting `test` CSVs are also byte-identical across thresholds
+  - therefore, for this checkpoint, lowering the post-hoc rare threshold from `0.97` to `0.95` or `0.93` did **not** change the slice rankings or rare/hard-case labels
+  - the three completed slice-analysis roots are:
+    - `log_pose/pose_keypointrcnn_train20k_internvl3_bs8_e2_trainonly_gpu3_20260415_183404/slice_analysis/internvl3_rare0p97/`
+    - `log_pose/pose_keypointrcnn_train20k_internvl3_bs8_e2_trainonly_gpu3_20260415_183404/slice_analysis/internvl3_rare0p95/`
+    - `log_pose/pose_keypointrcnn_train20k_internvl3_bs8_e2_trainonly_gpu3_20260415_183404/slice_analysis/internvl3_rare0p93/`
+- Important sweep result for the Qwen3 repro:
+  - the post-hoc `rare_label_threshold` analyses at `0.97`, `0.95`, and `0.93` all completed successfully under:
+    - `log_pose/pose_keypointrcnn_train20k_qwen3_bs8_e2_rare1p1_gpu0_repro/slice_analysis/qwen3_rare0p97/`
+    - `log_pose/pose_keypointrcnn_train20k_qwen3_bs8_e2_rare1p1_gpu0_repro/slice_analysis/qwen3_rare0p95/`
+    - `log_pose/pose_keypointrcnn_train20k_qwen3_bs8_e2_rare1p1_gpu0_repro/slice_analysis/qwen3_rare0p93/`
+  - the resulting `val` CSVs are byte-identical across thresholds
+  - the resulting `test` CSVs are also byte-identical across thresholds
+  - therefore, for this checkpoint, lowering the post-hoc rare threshold from `0.97` to `0.95` or `0.93` did **not** change the Qwen3 slice rankings or rare/hard-case labels
+  - the stable Qwen3 **val** rare cases across all three thresholds are:
+    - `pose=lying`: `AP=0.3623`, `27` images
+    - `time_of_day=night`: `AP=0.5826`, `61` images
+    - `clothes_color=brown`: `AP=0.5910`, `37` images
+    - `time_of_day=morning`: `AP=0.6135`, `105` images
+    - `time_of_day=evening`: `AP=0.6252`, `161` images
+    - `clothes_color=gray`: `AP=0.6336`, `113` images
+  - the stable Qwen3 **test** rare cases across all three thresholds are:
+    - `pose=lying`: `AP=0.3906`, `34` images
+    - `time_of_day=evening`: `AP=0.5737`, `164` images
+    - `weather=rainy`: `AP=0.5763`, `31` images
+    - `time_of_day=night`: `AP=0.5802`, `74` images
+    - `background_style=rural`: `AP=0.6045`, `86` images
+    - `clothes_color=pink`: `AP=0.6054`, `43` images
+    - `clothes_color=gray`: `AP=0.6147`, `119` images
+    - `clothes_color=brown`: `AP=0.6202`, `38` images
+
 # 4/12/2026 Update — COCO Gemini Attributes and Pose Slice Analysis
 
 ### Summary of Recent Report Updates
@@ -93,30 +198,27 @@ Based on the completed runs and report updates consolidated on 4/12, the main re
   - InternVL3: `Done. Processed 20000 images in 1709.6 minutes` and `Saved attribute annotations to save/attribute_coco_pose_gemini_train20k_internvl3_8B.json`
 - CSV validation passed for both train outputs: each file contains `20,000` data rows plus a header row.
 
-### Canonical Train20k Artifacts To Check Next
+### Canonical Post-Cleanup Completion Update (4/15/2026)
 
-- For the next `report.md` update after the Gemini corpus cleanup (`weather=unknown` removed), use the following three train-only logs and outputs as the primary sources of truth.
-- These runs are the canonical post-cleanup train20k artifacts; do not rely on the older `20260410` train logs if the goal is to summarize the revised corpus outputs.
+- The previously running post-cleanup attribute jobs are now complete.
+- The current stable post-cleanup outputs are:
 
-| Model | Status | Canonical JSON Output | Canonical CSV Output | Primary Log |
-|-------|--------|-----------------------|----------------------|-------------|
-| Qwen3-VL-8B | running on GPU 0 | `save/attribute_coco_pose_gemini_train20k_qwen3_8B.json` | `save/attribute_coco_pose_gemini_train20k_qwen3_8B.csv` | `log_pose/assign_attribute_coco_pose_qwen3_8B_gemini_train20k_only_gpu0_20260412_162135.log` |
-| InternVL3-8B | running on GPU 3 | `save/attribute_coco_pose_gemini_train20k_internvl3_8B.json` | `save/attribute_coco_pose_gemini_train20k_internvl3_8B.csv` | `log_pose/assign_attribute_coco_pose_internvl3_8B_gemini_train20k_only_gpu3_20260412_162238.log` |
-| BLIP | completed on 2026-04-12 16:38 CDT | `save/attribute_coco_pose_gemini_train20k_blip.json` | `save/attribute_coco_pose_gemini_train20k_blip.csv` | `log_pose/blip_coco_pose_gemini_train20k_gpu2_20260412_162538.log` |
+| Model | Split / Shard | Valid Images Written | Runtime | Stable Outputs | Primary Log |
+|-------|---------------|----------------------|---------|----------------|-------------|
+| Qwen3-VL-8B | canonical `val2017` rerun | `2,346` | `46.7` min (`0.78 h`) | `save/attribute_coco_pose_gemini_qwen3_8B.json`, `save/attribute_coco_pose_gemini_qwen3_8B.csv`, plus alias copies `save/attribute_coco_pose_gemini_qwen3_8B_val.json` and `save/attribute_coco_pose_gemini_qwen3_8B_val.csv` | `log_pose/assign_attribute_coco_pose_qwen3_8B_gemini_val_gpu1_20260414_134529.log` |
+| InternVL3-8B | canonical `val2017` rerun | `2,346` | `217.2` min (`3.62 h`) | `save/attribute_coco_pose_gemini_internvl3_8B.json`, `save/attribute_coco_pose_gemini_internvl3_8B.csv` | `log_pose/assign_attribute_coco_pose_internvl3_8B_gemini_val_gpu1_20260414_143656.log` |
+| InternVL3-8B | canonical `train20k` rerun | `20,000` total rows in the canonical artifact; the resume stage processed the remaining `19,500` images after a `500`-row checkpoint | `1876.5` min (`31.28 h`) for the resumed segment | `save/attribute_coco_pose_gemini_train20k_internvl3_8B.json`, `save/attribute_coco_pose_gemini_train20k_internvl3_8B.csv` | `log_pose/assign_attribute_coco_pose_internvl3_8B_gemini_train20k_resume_gpu0_20260413_233306.log` |
+| Qwen3-VL-8B | `train_after20k` continuation shard | `36,599` | `731.4` min (`12.19 h`) | `save/attribute_coco_pose_gemini_train_after20k_qwen3_8B.json`, `save/attribute_coco_pose_gemini_train_after20k_qwen3_8B.csv` | `log_pose/assign_attribute_coco_pose_qwen3_8B_gemini_train_after20k_gpu3_20260414_134834.log` |
 
-- The BLIP train20k run was launched with:
-  - `--dataset coco_pose --split train --stop_at 20000 --with_attribute_selection --corpus save/corpus_coco_pose_gemini.json`
-- BLIP train20k artifact side files are:
-  - `save/labels_coco_pose_gemini_train20k_blip.npy`
-  - `save/label_coco_pose_gemini_train20k_blip.npy`
-  - `save/train_idx_coco_pose_gemini_train20k_blip.npy`
-  - `save/val_idx_coco_pose_gemini_train20k_blip.npy`
-- For quick completion checks later:
-  - Qwen3 / InternVL3 logs should end with `Done. Processed 20000 images ...` plus `Saved attribute annotations to ...`
-  - BLIP log should end with `Saved attributes to save/attribute_coco_pose_gemini_train20k_blip.json` and `Saved attribute CSV to save/attribute_coco_pose_gemini_train20k_blip.csv`
-- BLIP train20k completion is now verified:
-  - `Saved attributes to save/attribute_coco_pose_gemini_train20k_blip.json`
-  - `Saved attribute CSV to save/attribute_coco_pose_gemini_train20k_blip.csv`
+- Current CSV row counts confirm the finished artifact sizes:
+  - `save/attribute_coco_pose_gemini_qwen3_8B_val.csv`: `2,346` data rows
+  - `save/attribute_coco_pose_gemini_internvl3_8B.csv`: `2,346` data rows
+  - `save/attribute_coco_pose_gemini_train20k_internvl3_8B.csv`: `20,000` data rows
+  - `save/attribute_coco_pose_gemini_train_after20k_qwen3_8B.csv`: `36,599` data rows
+- Qwen3 now covers the full valid COCO pose train split through two explicit non-overlapping shards:
+  - the canonical first shard `save/attribute_coco_pose_gemini_train20k_qwen3_8B.{json,csv}` contains the first `20,000` valid train images
+  - the continuation shard `save/attribute_coco_pose_gemini_train_after20k_qwen3_8B.{json,csv}` contains the remaining `36,599` valid train images
+  - together these two shards cover all `56,599` valid `train2017` images
 
 ### Status Note
 

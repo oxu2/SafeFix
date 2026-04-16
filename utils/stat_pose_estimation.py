@@ -226,6 +226,54 @@ def default_output_paths(predictions_json: Path, attribute_file: Path) -> Tuple[
     return base_dir / f"{stem}.json", base_dir / f"{stem}.csv"
 
 
+def split_suffix_token(split: str) -> Optional[str]:
+    if split in {"val", "val_full"}:
+        return "val"
+    if split in {"train", "test", "all"}:
+        return split
+    return None
+
+
+def candidate_attribute_paths(path: Path, split: str) -> List[Path]:
+    candidates = [path]
+    token = split_suffix_token(split)
+    if token is None:
+        return candidates
+
+    stem = path.stem
+    suffix = path.suffix
+    tagged_stem = f"{stem}_{token}"
+    token_suffix = f"_{token}"
+
+    if stem.endswith(token_suffix):
+        candidates.append(path.with_name(f"{stem[:-len(token_suffix)]}{suffix}"))
+    else:
+        candidates.append(path.with_name(f"{tagged_stem}{suffix}"))
+
+    deduped: List[Path] = []
+    seen = set()
+    for candidate in candidates:
+        key = str(candidate)
+        if key in seen:
+            continue
+        seen.add(key)
+        deduped.append(candidate)
+    return deduped
+
+
+def resolve_attribute_path(path: Optional[Path], split: str, label: str) -> Optional[Path]:
+    if path is None:
+        return None
+
+    candidates = candidate_attribute_paths(path, split)
+    for candidate in candidates:
+        if candidate.exists():
+            if candidate != path:
+                print(f"{label}: using {candidate} (fallback for requested path {path})")
+            return candidate
+    return path
+
+
 def resolve_split_paths(
     data_root: str,
     split: str,
@@ -512,6 +560,20 @@ def empty_metrics() -> Dict[str, float]:
     return {name: 0.0 for name in COCO_STAT_NAMES}
 
 
+def blank_metrics() -> Dict[str, Optional[float]]:
+    return {name: None for name in COCO_STAT_NAMES}
+
+
+def blank_overall(eval_image_count: int) -> Dict[str, Optional[float]]:
+    overall = blank_metrics()
+    overall["num_images"] = None
+    overall["num_gt_annotations"] = None
+    overall["num_predictions"] = None
+    overall["coverage_images"] = 0
+    overall["coverage_fraction"] = 0.0 if eval_image_count else None
+    return overall
+
+
 def evaluate_subset(
     coco_gt: COCO,
     predictions: Sequence[Dict],
@@ -551,12 +613,40 @@ def compute_distribution(lookup: Dict[int, str]) -> Tuple[Counter, int]:
     return counter, total
 
 
+def nullable_sort_key(value: Optional[float], *, descending: bool = False) -> Tuple[int, float]:
+    if value is None:
+        return (1, 0.0)
+    return (0, -float(value) if descending else float(value))
+
+
 def sort_rows(rows: List[Dict], sort_by: str) -> List[Dict]:
     if sort_by == "images":
-        return sorted(rows, key=lambda row: (-row["num_images"], row["attribute"], row["value"]))
+        return sorted(
+            rows,
+            key=lambda row: (
+                *nullable_sort_key(row.get("num_images"), descending=True),
+                row["attribute"],
+                row["value"],
+            ),
+        )
     if sort_by == "ap_delta":
-        return sorted(rows, key=lambda row: (row["ap_delta"], row["AP"], row["attribute"], row["value"]))
-    return sorted(rows, key=lambda row: (row["AP"], row["attribute"], row["value"]))
+        return sorted(
+            rows,
+            key=lambda row: (
+                *nullable_sort_key(row.get("ap_delta")),
+                *nullable_sort_key(row.get("AP")),
+                row["attribute"],
+                row["value"],
+            ),
+        )
+    return sorted(
+        rows,
+        key=lambda row: (
+            *nullable_sort_key(row.get("AP")),
+            row["attribute"],
+            row["value"],
+        ),
+    )
 
 
 def classify_failure_case(
@@ -583,16 +673,27 @@ def classify_failure_case(
 
 
 def print_summary(overall: Dict[str, float], rows: Sequence[Dict], top_k: int) -> None:
-    print(
-        "Overall:",
-        f"images={int(overall['num_images'])}",
-        f"gt={int(overall['num_gt_annotations'])}",
-        f"pred={int(overall['num_predictions'])}",
-        f"AP={overall['AP']:.4f}",
-        f"AP50={overall['AP50']:.4f}",
-        f"AR={overall['AR']:.4f}",
-    )
-    print("")
+    if overall.get("AP") is None:
+        coverage_images = overall.get("coverage_images")
+        print(
+            "Overall:",
+            "unavailable",
+            f"coverage_images={int(coverage_images) if coverage_images is not None else 'NA'}",
+            "Eval-side metrics were left blank.",
+        )
+        print("")
+    else:
+        print(
+            "Overall:",
+            f"images={int(overall['num_images'])}",
+            f"gt={int(overall['num_gt_annotations'])}",
+            f"pred={int(overall['num_predictions'])}",
+            f"AP={overall['AP']:.4f}",
+            f"AP50={overall['AP50']:.4f}",
+            f"AR={overall['AR']:.4f}",
+        )
+        print("")
+
     failure_rows = [row for row in rows if row.get("is_failure_case")]
     print(f"Failure cases (top {min(top_k, len(failure_rows))}):")
     for row in failure_rows[:top_k]:
@@ -645,7 +746,7 @@ def write_csv(path: Path, rows: Sequence[Dict]) -> None:
         for row in rows:
             writer.writerow(
                 {
-                    key: ("NA" if value is None else value)
+                    key: ("" if value is None else value)
                     for key, value in row.items()
                 }
             )
@@ -693,6 +794,13 @@ def write_unavailable_summary(
 
 def run_analysis(args: argparse.Namespace) -> Dict[str, object]:
     requested_attributes = parse_attribute_names(args.attributes)
+
+    args.attribute_file = resolve_attribute_path(args.attribute_file, args.attribute_split, "Eval attribute file")
+    args.train_attribute_file = resolve_attribute_path(
+        args.train_attribute_file,
+        args.train_attribute_split,
+        "Train attribute file",
+    )
 
     if args.output_json is None or args.output_csv is None:
         default_json, default_csv = default_output_paths(args.predictions_json, args.attribute_file)
@@ -746,8 +854,6 @@ def run_analysis(args: argparse.Namespace) -> Dict[str, object]:
         for image_id in eval_image_ids
         if all(image_id in primary_eval_lookup[attr_name] for attr_name in attr_names)
     ]
-    if not covered_eval_ids:
-        raise ValueError("No eval images are covered by the requested attribute file.")
 
     train_lookup: Optional[Dict[str, Dict[int, str]]] = None
     train_source: Optional[AttributeSource] = None
@@ -791,13 +897,38 @@ def run_analysis(args: argparse.Namespace) -> Dict[str, object]:
             train_lookup = inferred_train_lookup
             train_source = primary_source
 
-    corpus = load_corpus(args.corpus)
-    predictions = load_predictions(args.predictions_json)
-    coco_gt = COCO(eval_annotation_file)
+    if not covered_eval_ids and train_lookup is None:
+        return write_unavailable_summary(
+            args,
+            eval_annotation_file=eval_annotation_file,
+            reason=(
+                "No eval images are covered by the requested attribute file, and no "
+                "train-side attribute distribution could be recovered."
+            ),
+        )
 
-    overall = evaluate_subset(coco_gt=coco_gt, predictions=predictions, image_ids=covered_eval_ids)
-    overall["coverage_images"] = len(covered_eval_ids)
-    overall["coverage_fraction"] = len(covered_eval_ids) / len(eval_image_ids) if eval_image_ids else 0.0
+    corpus = load_corpus(args.corpus)
+    predictions: Optional[List[Dict]] = None
+    coco_gt: Optional[COCO] = None
+    if covered_eval_ids:
+        predictions = load_predictions(args.predictions_json)
+        coco_gt = COCO(eval_annotation_file)
+        overall: Dict[str, object] = evaluate_subset(
+            coco_gt=coco_gt,
+            predictions=predictions,
+            image_ids=covered_eval_ids,
+        )
+        overall["coverage_images"] = len(covered_eval_ids)
+        overall["coverage_fraction"] = (
+            len(covered_eval_ids) / len(eval_image_ids) if eval_image_ids else 0.0
+        )
+    else:
+        overall = blank_overall(len(eval_image_ids))
+        print(
+            "No eval images are covered by the requested attribute file. "
+            "Eval-side metrics will be left blank, while train-side distributions "
+            "will still be summarized when available."
+        )
 
     slice_rows: List[Dict] = []
     for attr_name in attr_names:
@@ -819,48 +950,75 @@ def run_analysis(args: argparse.Namespace) -> Dict[str, object]:
         train_counter, train_total = compute_distribution(train_attr_lookup or {})
 
         for value in value_order:
-            value_image_ids = [
-                image_id for image_id in covered_eval_ids if primary_eval_lookup[attr_name].get(image_id) == value
-            ]
-            if len(value_image_ids) < args.min_images:
+            eval_count = int(eval_counter.get(value, 0))
+            train_count = int(train_counter.get(value, 0)) if train_lookup is not None else None
+
+            if eval_count == 0:
+                if train_count is None or train_count < args.min_images:
+                    continue
+            elif eval_count < args.min_images:
                 continue
 
-            metrics = evaluate_subset(coco_gt=coco_gt, predictions=predictions, image_ids=value_image_ids)
             row = {
                 "attribute": attr_name,
                 "value": value,
-                "num_images": int(metrics["num_images"]),
-                "num_gt_annotations": int(metrics["num_gt_annotations"]),
-                "num_predictions": int(metrics["num_predictions"]),
+                "num_images": None,
+                "num_gt_annotations": None,
+                "num_predictions": None,
             }
             for metric_name in COCO_STAT_NAMES:
-                row[metric_name] = round(float(metrics[metric_name]), 6)
-            row["ap_delta"] = round(float(metrics["AP"] - overall["AP"]), 6)
+                row[metric_name] = None
+            row["ap_delta"] = None
 
-            row["eval_count"] = int(eval_counter.get(value, 0))
-            row["eval_share"] = round(eval_counter.get(value, 0) / eval_total, 6) if eval_total else None
+            row["eval_count"] = None
+            row["eval_share"] = None
 
             if train_lookup is not None and train_total:
-                row["train_count"] = int(train_counter.get(value, 0))
-                row["train_share"] = round(train_counter.get(value, 0) / train_total, 6)
-                row["share_gap"] = round(row["eval_share"] - row["train_share"], 6)
+                row["train_count"] = train_count
+                row["train_share"] = round(train_count / train_total, 6)
             else:
                 row["train_count"] = None
                 row["train_share"] = None
-                row["share_gap"] = None
+            row["share_gap"] = None
+            row["is_failure_case"] = None
+            row["failure_type"] = None
 
-            is_failure_case, failure_type = classify_failure_case(
-                ap=float(metrics["AP"]),
-                overall_ap=float(overall["AP"]),
-                acc_diff_threshold=args.acc_diff_threshold,
-                train_share=row["train_share"],
-                eval_share=row["eval_share"],
-                distribution_diff_threshold=args.distribution_diff_threshold,
-                rare_label_threshold=args.rare_label_threshold,
-                num_values=max(1, len(value_order)),
-            )
-            row["is_failure_case"] = is_failure_case
-            row["failure_type"] = failure_type
+            if eval_count > 0:
+                value_image_ids = [
+                    image_id
+                    for image_id in covered_eval_ids
+                    if primary_eval_lookup[attr_name].get(image_id) == value
+                ]
+                metrics = evaluate_subset(
+                    coco_gt=coco_gt,
+                    predictions=predictions,
+                    image_ids=value_image_ids,
+                )
+                row["num_images"] = int(metrics["num_images"])
+                row["num_gt_annotations"] = int(metrics["num_gt_annotations"])
+                row["num_predictions"] = int(metrics["num_predictions"])
+                for metric_name in COCO_STAT_NAMES:
+                    row[metric_name] = round(float(metrics[metric_name]), 6)
+                row["eval_count"] = eval_count
+                row["eval_share"] = round(eval_count / eval_total, 6) if eval_total else None
+
+                if row["train_share"] is not None and row["eval_share"] is not None:
+                    row["share_gap"] = round(row["eval_share"] - row["train_share"], 6)
+
+                if overall.get("AP") is not None:
+                    row["ap_delta"] = round(float(metrics["AP"] - overall["AP"]), 6)
+                    is_failure_case, failure_type = classify_failure_case(
+                        ap=float(metrics["AP"]),
+                        overall_ap=float(overall["AP"]),
+                        acc_diff_threshold=args.acc_diff_threshold,
+                        train_share=row["train_share"],
+                        eval_share=row["eval_share"],
+                        distribution_diff_threshold=args.distribution_diff_threshold,
+                        rare_label_threshold=args.rare_label_threshold,
+                        num_values=max(1, len(value_order)),
+                    )
+                    row["is_failure_case"] = is_failure_case
+                    row["failure_type"] = failure_type
 
             slice_rows.append(row)
 
@@ -885,6 +1043,13 @@ def run_analysis(args: argparse.Namespace) -> Dict[str, object]:
         "overall": overall,
         "slices": sorted_rows,
     }
+    if not covered_eval_ids:
+        summary["status"] = "train_only"
+        summary["reason"] = (
+            "No eval images are covered by the requested attribute file. "
+            "Eval-side fields were left blank; train-side distributions were "
+            "still summarized when available."
+        )
 
     ensure_parent(args.output_json)
     ensure_parent(args.output_csv)
