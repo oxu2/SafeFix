@@ -21,6 +21,18 @@ warnings.filterwarnings(
     "`resume_download` is deprecated and will be removed in version 1.0.0",
     FutureWarning
 )
+warnings.filterwarnings(
+    "ignore",
+    message=".*The parameter 'pretrained' is deprecated.*",
+    category=UserWarning,
+    module="torchvision.models._utils",
+)
+warnings.filterwarnings(
+    "ignore",
+    message=".*Arguments other than a weight enum or `None` for 'weights' are deprecated.*",
+    category=UserWarning,
+    module="torchvision.models._utils",
+)
 
 # Core PyTorch imports
 import torch

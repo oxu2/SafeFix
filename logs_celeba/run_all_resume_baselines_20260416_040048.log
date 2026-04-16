@@ -1,0 +1,213 @@
+Launching per-GPU sequential baseline queues.
+[pipeline] gpu=0 ratio=0.1 starting strategy sequence
+Launching CelebA resume sweep
+  strategy:   random
+  base model: weights/model_celeba_resnet_base.pth
+  epochs:     15
+  attrs:      redhair_brownskin_sademotion
+  gpu:        0
+  ratio:      0.1
+[pipeline] gpu=1 ratio=0.3 starting strategy sequence
+Launching CelebA resume sweep
+  strategy:   random
+  base model: weights/model_celeba_resnet_base.pth
+  epochs:     15
+  attrs:      redhair_brownskin_sademotion
+[launch] strategy=random gpu=0 ratio=0.1
+  gpu:        1
+         log=logs_celeba/resume_lr1e-5_epoch15_random_resnet_celeba_1000_ratio0.1.log
+  ratio:      0.3
+[pipeline] gpu=2 ratio=0.5 starting strategy sequence
+[pipeline] gpu=3 ratio=0.7 starting strategy sequence
+[launch] strategy=random gpu=1 ratio=0.3
+         log=logs_celeba/resume_lr1e-5_epoch15_random_resnet_celeba_1000_ratio0.3.log
+Launching CelebA resume sweep
+  strategy:   random
+  base model: weights/model_celeba_resnet_base.pth
+  epochs:     15
+Launching CelebA resume sweep
+  attrs:      redhair_brownskin_sademotion
+  strategy:   random
+  gpu:        3
+  base model: weights/model_celeba_resnet_base.pth
+  ratio:      0.7
+  epochs:     15
+  attrs:      redhair_brownskin_sademotion
+  gpu:        2
+  ratio:      0.5
+         pid=2728067 pidfile=logs_celeba/pids/resume_lr1e-5_epoch15_random_ratio0.1.pid
+[launch] strategy=random gpu=3 ratio=0.7
+         log=logs_celeba/resume_lr1e-5_epoch15_random_resnet_celeba_1000_ratio0.7.log
+[wait] strategy=random waiting for 1 launched jobs
+[launch] strategy=random gpu=2 ratio=0.5
+         log=logs_celeba/resume_lr1e-5_epoch15_random_resnet_celeba_1000_ratio0.5.log
+         pid=2728068 pidfile=logs_celeba/pids/resume_lr1e-5_epoch15_random_ratio0.3.pid
+         pid=2728069 pidfile=logs_celeba/pids/resume_lr1e-5_epoch15_random_ratio0.7.pid
+[wait] strategy=random waiting for 1 launched jobs
+[wait] strategy=random waiting for 1 launched jobs
+         pid=2728070 pidfile=logs_celeba/pids/resume_lr1e-5_epoch15_random_ratio0.5.pid
+[wait] strategy=random waiting for 1 launched jobs
+[wait] strategy=random pid=2728067 completed successfully
+Strategy random completed successfully.
+Launching CelebA resume sweep
+  strategy:   stratified
+  base model: weights/model_celeba_resnet_base.pth
+  epochs:     15
+  attrs:      redhair_brownskin_sademotion
+  gpu:        0
+  ratio:      0.1
+[launch] strategy=stratified gpu=0 ratio=0.1
+         log=logs_celeba/resume_lr1e-5_epoch15_stratified_resnet_celeba_1000_ratio0.1.log
+         pid=2732865 pidfile=logs_celeba/pids/resume_lr1e-5_epoch15_stratified_ratio0.1.pid
+[wait] strategy=stratified waiting for 1 launched jobs
+[wait] strategy=random pid=2728068 completed successfully
+Strategy random completed successfully.
+Launching CelebA resume sweep
+  strategy:   stratified
+  base model: weights/model_celeba_resnet_base.pth
+  epochs:     15
+  attrs:      redhair_brownskin_sademotion
+  gpu:        1
+  ratio:      0.3
+[launch] strategy=stratified gpu=1 ratio=0.3
+         log=logs_celeba/resume_lr1e-5_epoch15_stratified_resnet_celeba_1000_ratio0.3.log
+         pid=2735053 pidfile=logs_celeba/pids/resume_lr1e-5_epoch15_stratified_ratio0.3.pid
+[wait] strategy=stratified waiting for 1 launched jobs
+[wait] strategy=stratified pid=2732865 completed successfully
+Strategy stratified completed successfully.
+Launching CelebA resume sweep
+  strategy:   coreset
+  base model: weights/model_celeba_resnet_base.pth
+  epochs:     15
+  attrs:      redhair_brownskin_sademotion
+  gpu:        0
+  ratio:      0.1
+[launch] strategy=coreset gpu=0 ratio=0.1
+         log=logs_celeba/resume_lr1e-5_epoch15_coreset_resnet_celeba_1000_ratio0.1.log
+         pid=2735963 pidfile=logs_celeba/pids/resume_lr1e-5_epoch15_coreset_ratio0.1.pid
+[wait] strategy=coreset waiting for 1 launched jobs
+[wait] strategy=random pid=2728070 completed successfully
+Strategy random completed successfully.
+Launching CelebA resume sweep
+  strategy:   stratified
+  base model: weights/model_celeba_resnet_base.pth
+  epochs:     15
+  attrs:      redhair_brownskin_sademotion
+  gpu:        2
+  ratio:      0.5
+[launch] strategy=stratified gpu=2 ratio=0.5
+         log=logs_celeba/resume_lr1e-5_epoch15_stratified_resnet_celeba_1000_ratio0.5.log
+         pid=2737735 pidfile=logs_celeba/pids/resume_lr1e-5_epoch15_stratified_ratio0.5.pid
+[wait] strategy=stratified waiting for 1 launched jobs
+[wait] strategy=random pid=2728069 completed successfully
+Strategy random completed successfully.
+Launching CelebA resume sweep
+  strategy:   stratified
+  base model: weights/model_celeba_resnet_base.pth
+  epochs:     15
+  attrs:      redhair_brownskin_sademotion
+  gpu:        3
+  ratio:      0.7
+[launch] strategy=stratified gpu=3 ratio=0.7
+         log=logs_celeba/resume_lr1e-5_epoch15_stratified_resnet_celeba_1000_ratio0.7.log
+         pid=2740331 pidfile=logs_celeba/pids/resume_lr1e-5_epoch15_stratified_ratio0.7.pid
+[wait] strategy=stratified waiting for 1 launched jobs
+[wait] strategy=stratified pid=2735053 completed successfully
+Strategy stratified completed successfully.
+Launching CelebA resume sweep
+  strategy:   coreset
+  base model: weights/model_celeba_resnet_base.pth
+  epochs:     15
+  attrs:      redhair_brownskin_sademotion
+  gpu:        1
+  ratio:      0.3
+[launch] strategy=coreset gpu=1 ratio=0.3
+         log=logs_celeba/resume_lr1e-5_epoch15_coreset_resnet_celeba_1000_ratio0.3.log
+         pid=2741038 pidfile=logs_celeba/pids/resume_lr1e-5_epoch15_coreset_ratio0.3.pid
+[wait] strategy=coreset waiting for 1 launched jobs
+[wait] strategy=stratified pid=2737735 completed successfully
+Strategy stratified completed successfully.
+Launching CelebA resume sweep
+  strategy:   coreset
+  base model: weights/model_celeba_resnet_base.pth
+  epochs:     15
+  attrs:      redhair_brownskin_sademotion
+  gpu:        2
+  ratio:      0.5
+[launch] strategy=coreset gpu=2 ratio=0.5
+         log=logs_celeba/resume_lr1e-5_epoch15_coreset_resnet_celeba_1000_ratio0.5.log
+         pid=2746765 pidfile=logs_celeba/pids/resume_lr1e-5_epoch15_coreset_ratio0.5.pid
+[wait] strategy=coreset waiting for 1 launched jobs
+[wait] strategy=coreset pid=2735963 completed successfully
+Strategy coreset completed successfully.
+Launching CelebA resume sweep
+  strategy:   badge
+  base model: weights/model_celeba_resnet_base.pth
+  epochs:     15
+  attrs:      redhair_brownskin_sademotion
+  gpu:        0
+  ratio:      0.1
+[launch] strategy=badge gpu=0 ratio=0.1
+         log=logs_celeba/resume_lr1e-5_epoch15_badge_resnet_celeba_1000_ratio0.1.log
+         pid=2752460 pidfile=logs_celeba/pids/resume_lr1e-5_epoch15_badge_ratio0.1.pid
+[wait] strategy=badge waiting for 1 launched jobs
+[wait] strategy=stratified pid=2740331 completed successfully
+Strategy stratified completed successfully.
+Launching CelebA resume sweep
+  strategy:   coreset
+  base model: weights/model_celeba_resnet_base.pth
+  epochs:     15
+  attrs:      redhair_brownskin_sademotion
+  gpu:        3
+  ratio:      0.7
+[launch] strategy=coreset gpu=3 ratio=0.7
+         log=logs_celeba/resume_lr1e-5_epoch15_coreset_resnet_celeba_1000_ratio0.7.log
+         pid=2754132 pidfile=logs_celeba/pids/resume_lr1e-5_epoch15_coreset_ratio0.7.pid
+[wait] strategy=coreset waiting for 1 launched jobs
+[wait] strategy=badge pid=2752460 completed successfully
+Strategy badge completed successfully.
+Launching CelebA resume sweep
+  strategy:   hierarchical
+  base model: weights/model_celeba_resnet_base.pth
+  epochs:     15
+  attrs:      redhair_brownskin_sademotion
+  gpu:        0
+  ratio:      0.1
+[launch] strategy=hierarchical gpu=0 ratio=0.1
+         log=logs_celeba/resume_lr1e-5_epoch15_hierarchical_resnet_celeba_1000_ratio0.1.log
+         pid=2776030 pidfile=logs_celeba/pids/resume_lr1e-5_epoch15_hierarchical_ratio0.1.pid
+[wait] strategy=hierarchical waiting for 1 launched jobs
+[wait] strategy=coreset pid=2741038 completed successfully
+Strategy coreset completed successfully.
+Launching CelebA resume sweep
+  strategy:   badge
+  base model: weights/model_celeba_resnet_base.pth
+  epochs:     15
+  attrs:      redhair_brownskin_sademotion
+  gpu:        1
+  ratio:      0.3
+[launch] strategy=badge gpu=1 ratio=0.3
+         log=logs_celeba/resume_lr1e-5_epoch15_badge_resnet_celeba_1000_ratio0.3.log
+         pid=2779384 pidfile=logs_celeba/pids/resume_lr1e-5_epoch15_badge_ratio0.3.pid
+[wait] strategy=badge waiting for 1 launched jobs
+[wait] strategy=coreset pid=2746765 completed successfully
+Strategy coreset completed successfully.
+Launching CelebA resume sweep
+  strategy:   badge
+  base model: weights/model_celeba_resnet_base.pth
+  epochs:     15
+  attrs:      redhair_brownskin_sademotion
+  gpu:        2
+  ratio:      0.5
+[launch] strategy=badge gpu=2 ratio=0.5
+         log=logs_celeba/resume_lr1e-5_epoch15_badge_resnet_celeba_1000_ratio0.5.log
+         pid=2820373 pidfile=logs_celeba/pids/resume_lr1e-5_epoch15_badge_ratio0.5.pid
+[wait] strategy=badge waiting for 1 launched jobs
+[wait] strategy=coreset pid=2754132 exited with status 143
+Strategy coreset completed with failures.
+[wait] strategy=badge pid=2779384 exited with status 143
+Strategy badge completed with failures.
+[wait] strategy=badge pid=2820373 exited with status 143
+Strategy badge completed with failures.
+[wait] strategy=hierarchical pid=2776030 exited with status 143
+Strategy hierarchical completed with failures.

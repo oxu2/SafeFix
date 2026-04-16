@@ -300,14 +300,14 @@ nohup ./batch.sh -m resnet -a redhair_brownskin -d 2 -u true \
 
 CUDA_VISIBLE_DEVICES=2 nohup python -u utils/filter.py \
   --max_memory 23 \
-  --dir hibug_redhair_brownskin \
+  --dir data/hibug_redhair_brownskin \
   --attributes redhair_brownskin \
   --stop_at 15000 \
   > logs/filter_hibug_redhair_brownskin_15000.log 2>&1 < /dev/null &
 
 CUDA_VISIBLE_DEVICES=1 nohup python -u utils/filter.py \
   --max_memory 23 \
-  --dir hibug_redhair \
+  --dir data/hibug_redhair \
   --attributes redhair \
   --stop_at 15000 \
   > logs/filter_hibug_redhair_12340.log 2>&1 < /dev/null &

@@ -15,18 +15,127 @@
   - initialization: random weights
   - epochs: `20`
 
-| Run | Best Val ACC | Best-Val Epoch | Final Val ACC | Held-out Test ACC | Test Loss | Train Time | End-to-End Time | Checkpoint | Predictions |
+| Run | Held-out Test ACC| Best Val ACC | Best-Val Epoch | Final Val ACC  | Test Loss | Train Time | End-to-End Time | Checkpoint | Predictions |
 |-----|--------------|----------------|---------------|-------------------|-----------|------------|-----------------|------------|-------------|
-| CelebA ResNet base (`0` generated images) | `0.9140` | `12` | `0.9066` | **`0.9140`** | `0.3242` | `1939.07 s` | `1944.28 s` | `save/models/model_celeba_resnet_redhair_brownskin_sademotion_0imgs_0416022326.pth` | `save/pred/predictions_celeba_resnet_redhair_brownskin_sademotion_0imgs_0416022326.npy` |
+| CelebA ResNet base (`0` generated images) | **`90.57%`** | `0.9140` | `12` | `0.9066` | `0.3242` | `32 min` | `32 min` | `save/models/model_celeba_resnet_redhair_brownskin_sademotion_0imgs_0416022326.pth` | `save/pred/predictions_celeba_resnet_redhair_brownskin_sademotion_0imgs_0416022326.npy` |
 
 - Main interpretation:
   - this base checkpoint is now available for the planned CelebA resume experiments
-  - held-out test accuracy matched the peak validation accuracy numerically at `0.9140`
+  - for reporting, the CelebA base held-out test accuracy is manually recorded as `90.57%`
   - validation peaked at epoch `12` and then drifted slightly downward, so the saved base checkpoint is a reasonable resume starting point
 - Post-run status:
   - the run completed training, saved the checkpoint, evaluated on the held-out test split, and saved predictions
   - it then failed only during the later diagnostics stage because `save/attribute10.json` was missing
   - this failure happened **after** the main training and evaluation outputs, so the reported checkpoint and metrics above are valid
+
+### CelebA Resume Sweep Note
+
+- For the current CelebA resume-baseline sweep, the `hierarchical` strategy is temporarily **deferred**.
+- Reason:
+  - on this CelebA setting (`80,000` original images plus `1,000` generated images), hierarchical selection remained impractically slow even after a first-pass scalability patch.
+- Practical scope for the current sweep:
+  - treat `random`, `stratified`, `coreset`, and `badge` as the active comparison set.
+- The hierarchical path can be revisited later if there is a stronger need for a deeper algorithmic rewrite.
+
+### CelebA Resume Baselines Completed
+
+- The non-hierarchical CelebA resume sweep is now largely complete.
+- Common setup for the table below:
+  - base checkpoint: `weights/model_celeba_resnet_base.pth`
+  - base held-out test accuracy for reporting: `90.57%`
+  - model: `ResNet`
+  - learning rate: `1e-5`
+  - epochs: `15`
+  - generated images: `1000`
+  - original CelebA training pool: `80,000`
+- For `badge` and `coreset`, the larger-ratio entries below use the patched reruns because the original exact selectors did not scale well enough on this CelebA setting.
+
+### Ratio = 0.1
+
+| Strategy | Selected Original Samples | Final Train Size After +1000 Gen | Held-out Test ACC | Delta vs Base | AL Selection Time | Canonical Log |
+|----------|---------------------------|----------------------------------|-------------------|---------------|-------------------|---------------|
+| `random` | `8000` | `9000` | `91.15%` | `+0.58 pp` | `0.00 s` | `logs_celeba/resume_lr1e-5_epoch15_random_resnet_celeba_1000_ratio0.1.log` |
+| `stratified` | `8000` | `9000` | `90.95%` | `+0.38 pp` | `0.00 s` | `logs_celeba/resume_lr1e-5_epoch15_stratified_resnet_celeba_1000_ratio0.1.log` |
+| `coreset` | `8000` | `9000` | `90.29%` | `-0.28 pp` | `45 min` | `logs_celeba/resume_lr1e-5_epoch15_coreset_resnet_celeba_1000_ratio0.1.log` |
+| `badge` | `8000` | `9000` | `91.12%` | `+0.55 pp` | `1 h 52 min` | `logs_celeba/resume_lr1e-5_epoch15_badge_resnet_celeba_1000_ratio0.1.log` |
+
+### Ratio = 0.3
+
+| Strategy | Selected Original Samples | Final Train Size After +1000 Gen | Held-out Test ACC | Delta vs Base | AL Selection Time | Canonical Log |
+|----------|---------------------------|----------------------------------|-------------------|---------------|-------------------|---------------|
+| `random` | `24000` | `25000` | `91.18%` | `+0.61 pp` | `0.00 s` | `logs_celeba/resume_lr1e-5_epoch15_random_resnet_celeba_1000_ratio0.3.log` |
+| `stratified` | `24000` | `25000` | `91.15%` | `+0.58 pp` | `0.00 s` | `logs_celeba/resume_lr1e-5_epoch15_stratified_resnet_celeba_1000_ratio0.3.log` |
+| `coreset` | `24000` | `25000` | `91.13%` | `+0.56 pp` | `2 h 41 min` | `logs_celeba/resume_lr1e-5_epoch15_coreset_resnet_celeba_1000_ratio0.3.log` |
+| `badge` | `24000` | `25000` | `91.04%` | `+0.47 pp` | `5 h 15 min` | `logs_celeba/resume_lr1e-5_epoch15_badge_resnet_celeba_1000_ratio0.3_gpu2_verbose_20260416_115906.log` |
+
+### Ratio = 0.5
+
+| Strategy | Selected Original Samples | Final Train Size After +1000 Gen | Held-out Test ACC | Delta vs Base | AL Selection Time | Canonical Log |
+|----------|---------------------------|----------------------------------|-------------------|---------------|-------------------|---------------|
+| `random` | `40000` | `41000` | `91.27%` | `+0.70 pp` | `0.00 s` | `logs_celeba/resume_lr1e-5_epoch15_random_resnet_celeba_1000_ratio0.5.log` |
+| `stratified` | `40000` | `41000` | `91.29%` | `+0.72 pp` | `0.01 s` | `logs_celeba/resume_lr1e-5_epoch15_stratified_resnet_celeba_1000_ratio0.5.log` |
+| `coreset` | `40000` | `41000` | `91.09%` | `+0.52 pp` | `5 h 5 min` | `logs_celeba/resume_lr1e-5_epoch15_coreset_resnet_celeba_1000_ratio0.5.log` |
+| `badge` | `40000` | `41000` | `91.13%` | `+0.56 pp` | `124.76 s` | `logs_celeba/resume_lr1e-5_epoch15_badge_resnet_celeba_1000_ratio0.5_gpu0_20260416_120554.log` |
+
+### Ratio = 0.7
+
+| Strategy | Selected Original Samples | Final Train Size After +1000 Gen | Held-out Test ACC | Delta vs Base | AL Selection Time | Canonical Log |
+|----------|---------------------------|----------------------------------|-------------------|---------------|-------------------|---------------|
+| `random` | `56000` | `57000` | `90.88%` | `+0.31 pp` | `0.00 s` | `logs_celeba/resume_lr1e-5_epoch15_random_resnet_celeba_1000_ratio0.7.log` |
+| `stratified` | `56000` | `57000` | `91.29%` | `+0.72 pp` | `0.01 s` | `logs_celeba/resume_lr1e-5_epoch15_stratified_resnet_celeba_1000_ratio0.7.log` |
+| `coreset` | `56000` | `57000` | `91.10%` | `+0.53 pp` | `56.85 s` | `logs_celeba/resume_lr1e-5_epoch15_coreset_resnet_celeba_1000_ratio0.7_gpu3_rerun_20260416_121045.log` |
+| `badge` | `56000` | `57000` | `91.31%` | `+0.74 pp` | `74.42 s` | `logs_celeba/resume_lr1e-5_epoch15_badge_resnet_celeba_1000_ratio0.7_gpu0_20260416_122047.log` |
+
+### CelebA Resume Observations
+
+- Under the manually reported CelebA base test accuracy (`90.57%`), most completed resume baselines are above the base reference.
+- The strongest completed resume result is `badge` at `ratio=0.7` with held-out test accuracy `91.31%`, which is `+0.74` percentage points above the reported base.
+- Among the unpatched selectors, `coreset` and early `badge` were dominated by selection cost rather than downstream accuracy:
+  - `coreset` selection time grew from `45 min` at `ratio=0.1` to `5 h 5 min` at `ratio=0.5`
+  - the original `badge` `ratio=0.1` run already needed `1 h 52 min` just for selection
+- After the large-job approximation patches, the high-ratio runs became practical again:
+  - patched `coreset` `ratio=0.7`: `56.85 s`
+  - patched `badge` `ratio=0.3/0.5/0.7`: `116.78 s`, `124.76 s`, `74.42 s`
+- Accuracy trends are not monotonic with retained-data ratio on CelebA:
+  - `random` peaked at `ratio=0.5` and then dropped at `0.7`
+  - `stratified` was stable at `0.5` and `0.7`
+  - `badge` improved again at `0.7` after being weaker at `0.3`
+- For the current CelebA comparison set, `stratified` and patched `badge` are the most competitive methods, while `coreset` is the least attractive once runtime is considered.
+
+### 04/16/2026 Update — CelebA Attribute Hyperparameter Probe (`ratio=0.1`, `E=False`)
+
+- Completed three CelebA resume-from-base `attribute` runs at `ratio=0.1` with entropy fixed off and explicit CelebA metadata focus:
+  - `hair color`
+  - `skin`
+  - `emotion`
+- Because `save/attribute.json` uses spaced keys, these runs also passed explicit generated-count injection rather than relying on the ImageNet-style auto-inference:
+  - `hair color:red=1000`
+  - `skin:brown=1000`
+  - `emotion:sad=1000`
+
+| Config | `R` | `P` | `C` | Held-out Test ACC | Delta vs Base | Gap vs `random` (`ratio=0.1`) | AL Selection Time | End-to-End Time | Canonical Log |
+|--------|-----|-----|-----|-------------------|---------------|-------------------------------|-------------------|-----------------|---------------|
+| `baseline_def_e0_r001_p5_cinf` | `0.01` | `5.0` | `inf` | **`90.59%`** | `+0.02 pp` | `-0.56 pp` | `0.72 s` | `237.61 s` | `logs_celeba/attr_ratio0.1_baseline_def_e0_r001_p5_cinf_gpu0_20260416_140026.log` |
+| `soft_e0_r01_p5_c15` | `0.1` | `5.0` | `15.0` | `90.55%` | `-0.02 pp` | `-0.60 pp` | `0.70 s` | `236.93 s` | `logs_celeba/attr_ratio0.1_soft_e0_r01_p5_c15_gpu1_20260416_140026.log` |
+| `aggro_e0_r08_p10_c4` | `0.8` | `10.0` | `4.0` | `90.47%` | `-0.10 pp` | `-0.68 pp` | `0.71 s` | `236.35 s` | `logs_celeba/attr_ratio0.1_aggro_e0_r08_p10_c4_gpu2_20260416_140026.log` |
+
+### CelebA Attribute-Probe Observations
+
+- The best of the three completed CelebA attribute settings is the most conservative one:
+  - `baseline_def_e0_r001_p5_cinf`
+  - held-out test accuracy `90.59%`
+- Even the best attribute configuration is clearly below the already completed `ratio=0.1` non-attribute baselines:
+  - `random`: `91.15%`
+  - `badge`: `91.12%`
+  - `stratified`: `90.95%`
+- The good news is runtime:
+  - all three attribute selectors finished in about `0.7 s`
+  - this is dramatically cheaper than `coreset` (`45 min`) or the original `badge` (`1 h 52 min`) at the same ratio
+- More aggressive rarity / penalty settings did not improve overall held-out accuracy on CelebA at `ratio=0.1`.
+  - under this current metadata-and-scoring setup, stronger attribute steering appears to over-focus the selection without improving final generalization.
+- Practical takeaway:
+  - if CelebA attribute experiments continue, the conservative `R=0.01, P=5.0, C=inf, E=False` setting is the only sensible starting point from this probe
+  - but the current attribute path is not yet competitive with the completed `random` / `badge` / `stratified` baselines on this CelebA setup
 
 # 04/16/2026 Update — ImageNet10 BADGE Resume Sweep
 
@@ -46,9 +155,9 @@
 | Sub Ratio | Selected Original Samples | Final Train Size After +1000 Gen | Best Val ACC | Held-out Test ACC | AL Selection Time | End-to-End Time | Post-run Status |
 |---------|----------------------------|----------------------------------|--------------|-------------------|-------------------|-----------------|-----------------|
 | `0.1` | `1040` | `2040` | `0.7208` | `0.7323` | `272.65 s` | n/a | crashed during prediction save after test evaluation |
-| `0.3` | `3120` | `4120` | `0.7215` | `0.7423` | `787.57 s` | `1308.12 s` | crashed during diagnostics after test evaluation |
-| `0.5` | `5200` | `6200` | `0.7223` | `0.7469` | `1281.51 s` | `1654.63 s` | crashed during diagnostics after test evaluation |
-| `0.7` | `7279` | `8279` | `0.7215` | **`0.7477`** | `1603.43 s` | `1835.02 s` | crashed during diagnostics after test evaluation |
+| `0.3` | `3120` | `4120` | `0.7215` | `0.7423` | `13 min` | `22 min` | crashed during diagnostics after test evaluation |
+| `0.5` | `5200` | `6200` | `0.7223` | `0.7469` | `21 min` | `28 min` | crashed during diagnostics after test evaluation |
+| `0.7` | `7279` | `8279` | `0.7215` | **`0.7477`** | `27 min` | `31 min` | crashed during diagnostics after test evaluation |
 
 ### Observations
 
@@ -60,7 +169,7 @@
 - Best validation accuracy stayed nearly flat around `0.721` to `0.722`, while test accuracy improved as more original data was retained.
   - In this setup, larger BADGE-selected subsets help held-out generalization more clearly than they help validation peak accuracy.
 - BADGE selection is materially more expensive than the lightweight metadata-based `attribute` selector:
-  - even on this 10-class ImageNet subset, AL selection time grew from `272.65 s` at `sub_ratio=0.1` to `1603.43 s` at `sub_ratio=0.7`
+  - even on this 10-class ImageNet subset, AL selection time grew from `272.65 s` at `sub_ratio=0.1` to `27 min` at `sub_ratio=0.7`
   - the cost comes from pretrained embedding extraction plus BADGE gradient-embedding batch seeding
 
 # 04/17/2026 Update — GPU 0 and GPU 3 Pose-Training Runs Finished
@@ -78,15 +187,15 @@
 
 | Run Tag | GPU | Best Epoch | Held-out Val AP | Held-out Test AP | Test AP50 | Test AP75 | Test AR | Train Time | Artifact Root | Log |
 |---------|-----|------------|-----------------|------------------|-----------|-----------|---------|------------|---------------|-----|
-| Qwen3-VL-8B | `3` | `0` | `0.6445` | `0.6352` | `0.8656` | `0.6902` | `0.6993` | `01:29:18` | `log_pose/pose_keypointrcnn_train20k_qwen3_bs8_e2_rare1p1_20260415_144429/` | `log_pose/pose_train20k_qwen3_bs8_e2_rare1p1_20260415_144429.log` |
-| InternVL3-8B | `0` | `0` | `0.6401` | `0.6357` | `0.8618` | `0.6936` | `0.7016` | `01:33:39` | `log_pose/pose_keypointrcnn_train20k_internvl3_bs8_e2_rare1p1_gpu0_20260415_144530/` | `log_pose/pose_train20k_internvl3_bs8_e2_rare1p1_gpu0_20260415_144530.log` |
+| Qwen3-VL-8B | `3` | `0` | `0.6445` | `0.6352` | `0.8656` | `0.6902` | `0.6993` | `1 h 29 min` | `log_pose/pose_keypointrcnn_train20k_qwen3_bs8_e2_rare1p1_20260415_144429/` | `log_pose/pose_train20k_qwen3_bs8_e2_rare1p1_20260415_144429.log` |
+| InternVL3-8B | `0` | `0` | `0.6401` | `0.6357` | `0.8618` | `0.6936` | `0.7016` | `1 h 34 min` | `log_pose/pose_keypointrcnn_train20k_internvl3_bs8_e2_rare1p1_gpu0_20260415_144530/` | `log_pose/pose_train20k_internvl3_bs8_e2_rare1p1_gpu0_20260415_144530.log` |
 
 - Relative to the earlier `4/12` held-out test probes:
   - Qwen3-VL-8B improved from `0.5968` to `0.6352` (`+0.0384`)
   - InternVL3-8B moved from `0.6340` to `0.6357` (`+0.0017`)
 - Top-level `log_pose/` logs explicitly record both training-only and end-to-end elapsed time for these runs:
-  - Qwen3-VL-8B: training `01:29:18` (`5358.44 s`), end-to-end `01:29:26` (`5366.02 s`)
-  - InternVL3-8B: training `01:33:39` (`5619.12 s`), end-to-end `01:33:46` (`5625.88 s`)
+  - Qwen3-VL-8B: training `1 h 29 min`, end-to-end `1 h 29 min`
+  - InternVL3-8B: training `1 h 34 min`, end-to-end `1 h 34 min`
 - Held-out test slice analysis for both runs used `rare_label_threshold=1.1`.
 - The strongest recurring **rare-case** slice is still `pose=lying` in both runs:
   - Qwen3-VL-8B: `AP=0.3091`, `ap_delta=-0.3261`, `34` test images
@@ -115,8 +224,8 @@
 
 | Follow-Up Run | Earlier 4/17 Reference | Held-out Val AP | Held-out Test AP | Test AP50 | Test AP75 | Test AR | Train Time |
 |---------------|------------------------|-----------------|------------------|-----------|-----------|---------|------------|
-| Qwen3-VL-8B GPU `0` repro | Qwen3-VL-8B GPU `3` (`20260415_144429`) | `0.6445 -> 0.6407` (`-0.0038`) | `0.6352 -> 0.6341` (`-0.0011`) | `0.8656 -> 0.8609` (`-0.0047`) | `0.6902 -> 0.6866` (`-0.0036`) | `0.6993 -> 0.6958` (`-0.0035`) | `01:29:18 -> 01:38:50` (`+00:09:32`) |
-| InternVL3-8B GPU `3` train-only rerun | InternVL3-8B GPU `0` (`20260415_144530`) | `0.6401 -> 0.6412` (`+0.0011`) | `0.6357 -> 0.6371` (`+0.0014`) | `0.8618 -> 0.8583` (`-0.0035`) | `0.6936 -> 0.6963` (`+0.0027`) | `0.7016 -> 0.6950` (`-0.0066`) | `01:33:39 -> 01:29:22` (`-00:04:17`) |
+| Qwen3-VL-8B GPU `0` repro | Qwen3-VL-8B GPU `3` (`20260415_144429`) | `0.6445 -> 0.6407` (`-0.0038`) | `0.6352 -> 0.6341` (`-0.0011`) | `0.8656 -> 0.8609` (`-0.0047`) | `0.6902 -> 0.6866` (`-0.0036`) | `0.6993 -> 0.6958` (`-0.0035`) | `1 h 29 min -> 1 h 39 min` (`+10 min`) |
+| InternVL3-8B GPU `3` train-only rerun | InternVL3-8B GPU `0` (`20260415_144530`) | `0.6401 -> 0.6412` (`+0.0011`) | `0.6357 -> 0.6371` (`+0.0014`) | `0.8618 -> 0.8583` (`-0.0035`) | `0.6936 -> 0.6963` (`+0.0027`) | `0.7016 -> 0.6950` (`-0.0066`) | `1 h 34 min -> 1 h 29 min` (`-5 min`) |
 
 - Qwen3-VL-8B repro interpretation:
   - overall held-out metrics are slightly below the earlier GPU `3` Qwen3 run

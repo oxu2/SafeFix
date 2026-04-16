@@ -3,6 +3,7 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 PRIMARY_SAVE_ROOT = REPO_ROOT / "save"
+LEGACY_SAVE_ROOT = REPO_ROOT / "outputs" / "save"
 
 
 def _strip_save_prefix(path_like):

@@ -279,10 +279,28 @@ class CoreSetStrategy:
     Selects samples that are most representative of the unlabeled data distribution
     """
     
-    def __init__(self, embedding_dim=512):
+    def __init__(self, embedding_dim=512, exact_kcenter_max_select=4096, exact_kcenter_max_samples=20000):
         self.embedding_dim = embedding_dim
+        self.exact_kcenter_max_select = max(int(exact_kcenter_max_select), 1)
+        self.exact_kcenter_max_samples = max(int(exact_kcenter_max_samples), 1)
+
+    def _weighted_sample_without_replacement(self, weights, n_select, random_seed=42):
+        n_samples = len(weights)
+        if n_select >= n_samples:
+            return list(range(n_samples))
+
+        rng = np.random.default_rng(random_seed)
+        weights = np.asarray(weights, dtype=np.float64)
+        weights = np.maximum(weights, 0.0)
+        total_weight = float(np.sum(weights))
+
+        if not np.isfinite(total_weight) or total_weight <= 0.0:
+            return rng.choice(n_samples, size=n_select, replace=False).tolist()
+
+        probabilities = weights / total_weight
+        return rng.choice(n_samples, size=n_select, replace=False, p=probabilities).tolist()
         
-    def greedy_k_center(self, labeled_embeddings, unlabeled_embeddings, n_select):
+    def greedy_k_center(self, labeled_embeddings, unlabeled_embeddings, n_select, random_seed=42):
         """
         Greedy k-center algorithm for core-set selection with progress tracking
         
@@ -306,15 +324,29 @@ class CoreSetStrategy:
             unlabeled_embeddings = unlabeled_embeddings.cpu().numpy()
         
         print(f"Core-set selection: choosing {n_select} from {n_unlabeled} samples...")
-        print("Progress: ", end="", flush=True)
-        
-        # Initialize with all labeled embeddings
-        selected_embeddings = labeled_embeddings.copy()
-        selected_indices = []
-        
+
         # Pre-compute distances to labeled data (one-time cost)
         distances_to_labeled = euclidean_distances(unlabeled_embeddings, labeled_embeddings)
         min_distances = np.min(distances_to_labeled, axis=1)
+
+        use_exact_kcenter = (
+            n_select <= self.exact_kcenter_max_select
+            and n_unlabeled <= self.exact_kcenter_max_samples
+        )
+
+        if not use_exact_kcenter:
+            print(
+                "Using approximate core-set selection for large job: "
+                f"{n_select} selections from {n_unlabeled} samples."
+            )
+            return self._weighted_sample_without_replacement(
+                min_distances,
+                n_select,
+                random_seed=random_seed,
+            )
+
+        print("Progress: ", end="", flush=True)
+        selected_indices = []
         
         progress_step = max(1, n_select // 20)  # Show progress every 5%
         
@@ -447,8 +479,10 @@ class BadgeStrategy:
     still coupling uncertainty and diversity in the batch selection stage.
     """
 
-    def __init__(self, temperature=1.0):
+    def __init__(self, temperature=1.0, exact_kmeanspp_max_select=4096, exact_kmeanspp_max_samples=20000):
         self.temperature = max(float(temperature), 1e-6)
+        self.exact_kmeanspp_max_select = max(int(exact_kmeanspp_max_select), 1)
+        self.exact_kmeanspp_max_samples = max(int(exact_kmeanspp_max_samples), 1)
         self.last_proxy_stats = {}
 
     def _normalize_rows(self, array):
@@ -554,13 +588,57 @@ class BadgeStrategy:
 
         return selected
 
+    def _weighted_sample_without_replacement(self, weights, n_select, random_seed=42):
+        n_samples = len(weights)
+        if n_select >= n_samples:
+            return list(range(n_samples))
+
+        rng = np.random.default_rng(random_seed)
+        weights = np.asarray(weights, dtype=np.float64)
+        weights = np.maximum(weights, 0.0)
+
+        total_weight = float(np.sum(weights))
+        if not np.isfinite(total_weight) or total_weight <= 0.0:
+            return rng.choice(n_samples, size=n_select, replace=False).tolist()
+
+        probabilities = weights / total_weight
+        return rng.choice(n_samples, size=n_select, replace=False, p=probabilities).tolist()
+
     def select(self, labeled_embeddings, unlabeled_embeddings, labeled_targets, n_select, random_seed=42):
         gradient_embeddings = self._compute_gradient_embeddings(
             labeled_embeddings=labeled_embeddings,
             unlabeled_embeddings=unlabeled_embeddings,
             labeled_targets=labeled_targets,
         )
-        return self._kmeanspp_seeding(gradient_embeddings, n_select, random_seed=random_seed)
+
+        n_samples = gradient_embeddings.shape[0]
+        if n_select >= n_samples:
+            self.last_proxy_stats["selection_mode"] = "all_samples"
+            return list(range(n_samples))
+
+        # Exact BADGE kmeans++ becomes impractical on CelebA-sized runs because it updates
+        # distances against the full candidate set once per selected point. Switch to a
+        # gradient-norm weighted approximation for larger jobs so the selection stage
+        # finishes in a reasonable amount of time.
+        use_exact_kmeanspp = (
+            n_select <= self.exact_kmeanspp_max_select
+            and n_samples <= self.exact_kmeanspp_max_samples
+        )
+
+        if use_exact_kmeanspp:
+            self.last_proxy_stats["selection_mode"] = "exact_badge_kmeanspp"
+            return self._kmeanspp_seeding(gradient_embeddings, n_select, random_seed=random_seed)
+
+        gradient_norms = np.linalg.norm(gradient_embeddings, axis=1)
+        self.last_proxy_stats["selection_mode"] = "approx_badge_weighted_gradient_norm"
+        self.last_proxy_stats["gradient_norm_min"] = float(np.min(gradient_norms))
+        self.last_proxy_stats["gradient_norm_mean"] = float(np.mean(gradient_norms))
+        self.last_proxy_stats["gradient_norm_max"] = float(np.max(gradient_norms))
+        return self._weighted_sample_without_replacement(
+            gradient_norms,
+            n_select,
+            random_seed=random_seed,
+        )
 
 
 class HybridStrategy:
@@ -603,7 +681,7 @@ class HybridStrategy:
         if n_coreset > 0:
             coreset_strategy = CoreSetStrategy()
             coreset_indices = coreset_strategy.greedy_k_center(
-                labeled_embeddings, unlabeled_embeddings, n_coreset
+                labeled_embeddings, unlabeled_embeddings, n_coreset, random_seed=random_seed
             )
             selected_indices.update(coreset_indices)
             print(f"Core-set selected: {len(coreset_indices)} samples")
@@ -1532,10 +1610,17 @@ def active_learning_selection(train_dataset, val_dataset, args, device, verbose=
         log_path = getattr(args, 'al_attribute_log_path', None)
         log_acc_scale = getattr(args, 'al_attribute_log_acc_scale', 1.0)
         extra_counts_raw = getattr(args, 'al_attribute_extra_counts', None)
+        extra_count_scale = getattr(args, 'al_attribute_extra_count_scale', 1.0)
         frequency_penalty = getattr(args, 'al_attribute_frequency_penalty', 0.0)
         class_balance_raw = getattr(args, 'al_attribute_class_balance', 0.0)
         class_balance_weight = parse_float_with_infinity(class_balance_raw)
         use_entropy = getattr(args, 'al_attribute_use_entropy', False)
+
+        try:
+            extra_count_scale = float(extra_count_scale)
+        except (TypeError, ValueError):
+            extra_count_scale = 1.0
+        extra_count_scale = max(extra_count_scale, 0.0)
 
         focus_attributes = None
         if isinstance(focus_raw, str) and focus_raw.strip():
@@ -1571,6 +1656,20 @@ def active_learning_selection(train_dataset, val_dataset, args, device, verbose=
                         "Attribute strategy: auto-injected extra counts for generated attributes "
                         f"{inferred_counts}"
                     )
+
+        if extra_counts and extra_count_scale != 1.0:
+            extra_counts = {
+                attr_name: {
+                    value: float(count) * extra_count_scale
+                    for value, count in value_map.items()
+                }
+                for attr_name, value_map in extra_counts.items()
+            }
+            if verbose:
+                print(
+                    "Attribute strategy: scaled extra counts by "
+                    f"{extra_count_scale:g} -> {extra_counts}"
+                )
 
         if not log_path and getattr(args, 'dataset', None) and getattr(args, 'model', None):
             default_log = Path('logs/compare') / f"stat_{args.dataset}_{args.model}_compare.log"
@@ -1845,7 +1944,8 @@ def active_learning_selection(train_dataset, val_dataset, args, device, verbose=
         selected_indices = strategy.greedy_k_center(
             labeled_embeddings=labeled_embeddings,
             unlabeled_embeddings=train_embeddings,
-            n_select=target_samples
+            n_select=target_samples,
+            random_seed=args.seed
         )
         
     elif al_strategy == 'badge':
@@ -1957,7 +2057,12 @@ def active_learning_selection(train_dataset, val_dataset, args, device, verbose=
             labeled_embeddings = val_embeddings[:initial_size]
             
             strategy = CoreSetStrategy(embedding_dim=args.al_embedding_dim)
-            selected_indices = strategy.greedy_k_center(labeled_embeddings, train_embeddings, target_samples)
+            selected_indices = strategy.greedy_k_center(
+                labeled_embeddings,
+                train_embeddings,
+                target_samples,
+                random_seed=args.seed,
+            )
             
     elif al_strategy == 'hierarchical':
         # Hierarchical two-stage active learning

@@ -52,3 +52,5 @@ logs_imagenet/pids/
 save/
 
 outputs/save/
+logs_celeba/pids/
+

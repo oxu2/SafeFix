@@ -1,0 +1,29 @@
+Current time: 0416141627
+Selected 1000 filenames for sampling
+Added 1000 generated redhair_brownskin_sademotion images, before training set has 80000 images, now 81000
+
+Attribute distribution in selected samples:
+  [hair color] black: 2408 samples (30.1%)
+  [hair color] brown: 1862 samples (23.3%)
+  [hair color] red: 1446 samples (18.1%)
+  [hair color] gray: 782 samples (9.8%)
+  [hair color] blonde: 655 samples (8.2%)
+  [hair color] white: 562 samples (7.0%)
+  [hair color] yellow: 285 samples (3.6%)
+  [skin] black: 3383 samples (42.3%)
+  [skin] brown: 2870 samples (35.9%)
+  [skin] white: 1747 samples (21.8%)
+  [emotion] surprised: 1922 samples (24.0%)
+  [emotion] neutral: 1441 samples (18.0%)
+  [emotion] happy: 1331 samples (16.6%)
+  [emotion] sad: 852 samples (10.7%)
+  [emotion] pensive: 805 samples (10.1%)
+  [emotion] calm: 545 samples (6.8%)
+  [emotion] excited: 499 samples (6.2%)
+  [emotion] angry: 321 samples (4.0%)
+  [emotion] serious: 284 samples (3.5%)
+CelebA: Combined 8000 selected samples with 1000 generated images using Active Learning
+Resumed model from /people/cs/o/oxx220000/safefix/weights/model_celeba_resnet_base.pth (best val acc: 0.914, base test acc: 0.9140)
+Recovered base test acc from log: logs/celeba_resnet_base_redhair_brownskin_sademotion_0imgs_20260416_022317.log
+Epoch [1/15], Train Loss: 0.2892, Train Acc: 0.9532, Val Loss: 0.3661, Val Acc: 0.9110
+Epoch [2/15], Train Loss: 0.2845, Train Acc: 0.9583, Val Loss: 0.3924, Val Acc: 0.9003
