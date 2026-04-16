@@ -32,6 +32,12 @@ import random
 import re  # Added for log parsing
 import copy  # Added for saving best model state
 from utils.stat import ModelDiagnose  # Import ModelDiagnose from local utils/stat.py
+from utils.path_utils import (
+    canonical_save_path,
+    dataset_default_attribute_path,
+    resolve_artifact_path,
+    resolve_existing_artifact,
+)
 from itertools import combinations
 from processData.report import ReportGenerator
 from torchvision.datasets import ImageFolder
@@ -302,8 +308,12 @@ parser.add_argument('--num_added_img', type=int, default=1000,
 parser.add_argument('--augmentation_baseline', type=str2bool, default=False,
                     help='Use strong data augmentation baseline without adding generated images (default: False)')
 # Add argument for attribute file path
-parser.add_argument('--attribute_file', type=str, default="data/celebA/attribute.json",
-                    help='Path to the attribute JSON file (default: data/celebA/attribute.json)')
+parser.add_argument(
+    '--attribute_file',
+    type=str,
+    default=None,
+    help='Path to the attribute JSON file (default: auto; ImageNet -> save/attribute10.json, CelebA -> save/attribute.json)',
+)
 parser.add_argument('--gpu', type=int, default=0,
                     help='Index of the CUDA GPU to use (default: 0)')
 parser.add_argument('--save_report', type=str2bool, default=False,
@@ -398,9 +408,10 @@ _torch.backends.cudnn.benchmark = False
 
 if getattr(args, 'verbose', False):
     print(f"Random seed set to {args.seed}")
-# Override attribute file for ImageNet dataset
-if args.dataset == 'imagenet':
-    args.attribute_file = 'save/attribute10.json'
+if args.attribute_file is None:
+    args.attribute_file = str(dataset_default_attribute_path(args.dataset))
+else:
+    args.attribute_file = str(resolve_artifact_path(args.attribute_file))
 # Automatically enable pretrained weights for CLIP and ViT on ImageNet
 if args.dataset == 'imagenet' and args.model in ('clip', 'vit'):
     args.pretrained = True
@@ -445,9 +456,11 @@ if args.feasible_file is None:
     if args.lvlm == 'llava':
         if args.verbose:
             print(f"Using LLAVA model: setting feasible_file to save/feasible_{attributes}_{args.lvlm}.json")
-        args.feasible_file = f"save/feasible_{attributes}_{args.lvlm}.json"
+        args.feasible_file = str(resolve_artifact_path(f"save/feasible_{attributes}_{args.lvlm}.json"))
     else: #qwen
-        args.feasible_file = f"save/feasible_{attributes}.json"
+        args.feasible_file = str(resolve_artifact_path(f"save/feasible_{attributes}.json"))
+else:
+    args.feasible_file = str(resolve_artifact_path(args.feasible_file))
 # Set default gen_image_dir based on attributes if not provided
 # Ablation: disable ControlNet-based augmentation if no_controlnet is True
 if args.no_controlnet:
@@ -616,10 +629,13 @@ if args.dataset == 'imagenet':
         val_transform = default_img_transform(train=False)
     # Use no transform for index mapping, then create train/val datasets with correct transforms
     full_ds = ImageFolder(data_dir)
-    train_idx = np.load('save/train_idx_imagenet.npy')
-    val_idx = np.load('save/val_idx_imagenet.npy')
-    test_idx_path = Path('save/test_idx_imagenet.npy')
-    if test_idx_path.exists():
+    train_idx = np.load(resolve_existing_artifact('save/train_idx_imagenet.npy'))
+    val_idx = np.load(resolve_existing_artifact('save/val_idx_imagenet.npy'))
+    try:
+        test_idx_path = resolve_existing_artifact('save/test_idx_imagenet.npy')
+    except FileNotFoundError:
+        test_idx_path = None
+    if test_idx_path is not None and test_idx_path.exists():
         test_idx = np.load(test_idx_path)
     else:
         test_idx = np.array([], dtype=int)
@@ -1285,7 +1301,7 @@ if args.dataset == 'imagenet':
     if args.ltl_level == 'attribute':
         # Load attribute json
         import json
-        with open('save/attribute10.json', 'r') as f:
+        with open(resolve_existing_artifact('save/attribute10.json'), 'r') as f:
             attr_data = json.load(f)
         attrs_to_use = args.ltl_attributes.split(',')
         
@@ -1595,10 +1611,11 @@ def save_predictions(model, train_loader, valid_loader, test_loader=None):
 
     # Use simple naming if in simple ablation mode
     pred_key = "simple" if args.no_controlnet and args.simple else attributes
-    np.save(
-        f"save/pred/predictions_{args.dataset}_{args.model}_{pred_key}_{args.num_added_img}imgs{suffix}_{time_now}.npy",
-        combined_preds
+    prediction_path = canonical_save_path(
+        f"pred/predictions_{args.dataset}_{args.model}_{pred_key}_{args.num_added_img}imgs{suffix}_{time_now}.npy",
+        create_parent=True,
     )
+    np.save(prediction_path, combined_preds)
 
 def train_model(model, train_loader, valid_loader, criterion, optimizer, scheduler=None, num_epochs=20):
     # Track best validation performance
@@ -1831,7 +1848,11 @@ if args.dataset == 'imagenet':
     if args.no_controlnet:
         suffix += "_h"
     # Load the predictions we just saved
-    prediction_file = f"save/pred/predictions_{args.dataset}_{args.model}_{attributes}_{args.num_added_img}imgs{suffix}_{time_now}.npy"
+    prediction_file = str(
+        canonical_save_path(
+            f"pred/predictions_{args.dataset}_{args.model}_{attributes}_{args.num_added_img}imgs{suffix}_{time_now}.npy"
+        )
+    )
     predictions = np.load(prediction_file)
 
     # Prepare labels and split for diagnostics
@@ -1843,8 +1864,11 @@ if args.dataset == 'imagenet':
     # Dynamically check whether predictions include the test split
     expected_train = len(train_idx)
     expected_val = len(val_idx)
-    test_idx_path = Path('save/test_idx_imagenet.npy')
-    if test_idx_path.exists():
+    try:
+        test_idx_path = resolve_existing_artifact('save/test_idx_imagenet.npy')
+    except FileNotFoundError:
+        test_idx_path = None
+    if test_idx_path is not None and test_idx_path.exists():
         _test_idx = np.load(test_idx_path)
     else:
         _test_idx = np.array([], dtype=int)
@@ -1900,7 +1924,7 @@ if args.dataset == 'imagenet':
 
     # Optionally save a report
     if args.save_report:
-        report_dir = "save/reports"
+        report_dir = canonical_save_path("reports")
         os.makedirs(report_dir, exist_ok=True)
         MD.generate_report(f"{report_dir}/{args.dataset}_{args.model}_{attributes}_{args.num_added_img}imgs{suffix}_{time_now}")
         print(f"Diagnostic report saved to {report_dir}/{args.dataset}_{args.model}_{attributes}_{args.num_added_img}imgs{suffix}_{time_now}")

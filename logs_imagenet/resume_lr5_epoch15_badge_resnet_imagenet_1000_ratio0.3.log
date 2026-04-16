@@ -1,0 +1,99 @@
+Random seed set to 42
+Using fine-tuning learning rate 1e-05 for resumed model
+Current time: 0416020847
+Feasible file 'save/feasible_pinkcolor_fabrictexture.json' not found; skipping feasible JSON loading for 'pinkcolor_fabrictexture'.
+Using ImageNet split files from outputs/save (train) and outputs/save (val)
+Using generated image directory: data/imagenet_pinkcolor_fabrictexture
+[DEBUG] Normal mode: looking for generated images in directory: data/imagenet_pinkcolor_fabrictexture
+[DEBUG] Starting traversal of class subfolders for generated images...
+[DEBUG] Candidate images before feasible filtering: 2000
+[DEBUG] Total candidate generated images before sampling: 2000
+[DEBUG] Sampled generated images: 1000 items
+Added 1000 generated images.
+Using Active Learning strategy to select 3120 samples from 10400
+Starting Active Learning data selection using 'badge' strategy...
+Dataset: imagenet, Model: resnet
+Train samples: 10400, Val samples: 1300
+Target selection ratio: 0.3
+Embedding dimension: 256
+Initial labeled samples: 400
+/people/cs/o/oxx220000/.conda/envs/ad/lib/python3.9/site-packages/torchvision/models/_utils.py:208: UserWarning: The parameter 'pretrained' is deprecated since 0.13 and may be removed in the future, please use 'weights' instead.
+  warnings.warn(
+/people/cs/o/oxx220000/.conda/envs/ad/lib/python3.9/site-packages/torchvision/models/_utils.py:223: UserWarning: Arguments other than a weight enum or `None` for 'weights' are deprecated since 0.13 and may be removed in the future. The current behavior is equivalent to passing `weights=ResNet18_Weights.IMAGENET1K_V1`. You can also use `weights=ResNet18_Weights.DEFAULT` to get the most up-to-date weights.
+  warnings.warn(msg)
+Using batch size 32 for Active Learning feature extraction
+Extracting embeddings from 10400 training samples...
+Train embeddings shape: torch.Size([10400, 256])
+Extracting embeddings from 1300 validation samples for BADGE...
+BADGE proxy classifier: 10 classes, uncertainty min/mean/max=0.8105/0.8716/0.8958
+BADGE predicted class histogram: {0: 1037, 1: 1120, 2: 1018, 3: 1160, 4: 900, 5: 1082, 6: 914, 7: 1081, 8: 978, 9: 1110}
+
+Class distribution in selected samples:
+  Class backpack: 331 samples (10.6%)
+  Class barber_chair: 290 samples (9.3%)
+  Class coffee_mug: 311 samples (10.0%)
+  Class desk: 271 samples (8.7%)
+  Class electric_guitar: 297 samples (9.5%)
+  Class park_bench: 337 samples (10.8%)
+  Class pitcher: 318 samples (10.2%)
+  Class purse: 359 samples (11.5%)
+  Class rocking_chair: 273 samples (8.8%)
+  Class water_bottle: 333 samples (10.7%)
+
+Class distribution in random baseline:
+  Class backpack: 312 samples (10.0%)
+  Class barber_chair: 304 samples (9.7%)
+  Class coffee_mug: 345 samples (11.1%)
+  Class desk: 292 samples (9.4%)
+  Class electric_guitar: 308 samples (9.9%)
+  Class park_bench: 314 samples (10.1%)
+  Class pitcher: 331 samples (10.6%)
+  Class purse: 320 samples (10.3%)
+  Class rocking_chair: 284 samples (9.1%)
+  Class water_bottle: 310 samples (9.9%)
+Active Learning selection completed. Selected 3120 samples using 'badge' strategy.
+[TIMING] Active Learning selection (ImageNet) took 787.57 seconds
+
+[Active Learning subset (before adding generated images)] class distribution:
+  Class backpack: 331 samples (10.6%)
+  Class barber_chair: 290 samples (9.3%)
+  Class coffee_mug: 311 samples (10.0%)
+  Class desk: 271 samples (8.7%)
+  Class electric_guitar: 297 samples (9.5%)
+  Class park_bench: 337 samples (10.8%)
+  Class pitcher: 318 samples (10.2%)
+  Class purse: 359 samples (11.5%)
+  Class rocking_chair: 273 samples (8.8%)
+  Class water_bottle: 333 samples (10.7%)
+Added 1000 ImageNet pinkcolor_fabrictexture images using Active Learning (badge): 3120 -> 4120
+Resumed model from weights/model_imagenet_resnet_base.pth (best val acc: 0.7223076923076923)
+Epoch [1/15], Train Loss: 0.4457, Train Acc: 0.8617, Val Loss: 0.9292, Val Acc: 0.7146
+Epoch [2/15], Train Loss: 0.4052, Train Acc: 0.8743, Val Loss: 0.9160, Val Acc: 0.7169
+Epoch [3/15], Train Loss: 0.3979, Train Acc: 0.8757, Val Loss: 0.9164, Val Acc: 0.7154
+Epoch [4/15], Train Loss: 0.3756, Train Acc: 0.8801, Val Loss: 0.9129, Val Acc: 0.7177
+Epoch [5/15], Train Loss: 0.3698, Train Acc: 0.8947, Val Loss: 0.8956, Val Acc: 0.7162
+Epoch [6/15], Train Loss: 0.3662, Train Acc: 0.8937, Val Loss: 0.9174, Val Acc: 0.7146
+Epoch [7/15], Train Loss: 0.3522, Train Acc: 0.8939, Val Loss: 0.9072, Val Acc: 0.7169
+Epoch [8/15], Train Loss: 0.3562, Train Acc: 0.8937, Val Loss: 0.9032, Val Acc: 0.7215
+Epoch [9/15], Train Loss: 0.3469, Train Acc: 0.8973, Val Loss: 0.9083, Val Acc: 0.7154
+Epoch [10/15], Train Loss: 0.3394, Train Acc: 0.9036, Val Loss: 0.9105, Val Acc: 0.7177
+Epoch [11/15], Train Loss: 0.3323, Train Acc: 0.8985, Val Loss: 0.9118, Val Acc: 0.7131
+Epoch [12/15], Train Loss: 0.3420, Train Acc: 0.8978, Val Loss: 0.9160, Val Acc: 0.7138
+Epoch [13/15], Train Loss: 0.3386, Train Acc: 0.9010, Val Loss: 0.9046, Val Acc: 0.7146
+Epoch [14/15], Train Loss: 0.3404, Train Acc: 0.9005, Val Loss: 0.9115, Val Acc: 0.7146
+Epoch [15/15], Train Loss: 0.3256, Train Acc: 0.9039, Val Loss: 0.9129, Val Acc: 0.7154
+Held-out test accuracy: 0.7423, test loss: 0.8049
+Generating and saving predictions...
+Prediction segments -> train: 4120, val: 1300, test: 1300
+Combined predictions length: 13000
+Total training time for 15 epochs: 519.76 seconds
+Total Active Learning selection time: 787.57 seconds
+End-to-end wall time (data prep + selection + training + setup): 1308.12 seconds
+
+Running model diagnostics on generated predictions...
+Traceback (most recent call last):
+  File "/people/cs/o/oxx220000/safefix/alpred.py", line 1918, in <module>
+    )
+  File "/people/cs/o/oxx220000/safefix/utils/stat.py", line 259, in __init__
+    self.attributes = json.load(open(attribute_dict_path))
+FileNotFoundError: [Errno 2] No such file or directory: 'save/attribute10.json'

@@ -66,6 +66,7 @@ class HierarchicalActiveStrategy:
         self.max_slice_quota = max_slice_quota
         self.embedding_dim = embedding_dim
         self.dataset = dataset
+        self.preferred_attribute_keys = []
         
         # Define attribute groups based on dataset
         if dataset == 'imagenet':
@@ -77,15 +78,17 @@ class HierarchicalActiveStrategy:
                 'background': ['bridge', 'buildings', 'grass', 'house', 'inside a house', 'rocks', 
                               'sky', 'snow', 'street', 'trees', 'wall', 'water', 'wild']
             }
+            self.preferred_attribute_keys = ['color', 'texture', 'background']
             # Load attribute data from JSON file
             self.attribute_data_path = 'save/attribute10.json'
         else:  # celeba
             self.attribute_groups = {
-                'hair': ['blonde', 'brown', 'black', 'red', 'gray'],
-                'emotion': ['happy', 'sad', 'angry', 'neutral', 'surprised'],
-                'facial': ['beard', 'mustache', 'glasses', 'hat'],
-                'skin': ['pale', 'medium', 'dark']
+                'hair color': ['brown', 'black', 'blonde', 'white', 'yellow', 'red', 'gray'],
+                'emotion': ['excited', 'surprised', 'serious', 'neutral', 'happy', 'calm', 'pensive', 'sad', 'angry'],
+                'skin': ['brown', 'white', 'black'],
+                'beard': ['No', 'Yes']
             }
+            self.preferred_attribute_keys = ['hair color', 'emotion', 'skin', 'beard']
             # Load attribute data from JSON file
             self.attribute_data_path = 'data/celebA/attribute.json'
         
@@ -95,29 +98,45 @@ class HierarchicalActiveStrategy:
             try:
                 with open(self.attribute_data_path, 'r') as f:
                     raw_data = json.load(f)
-                
-                # Transform the data structure from the JSON format
-                # JSON has structure: {'color': {'data': [...]}, 'background': {'data': [...]}, 'texture': {'data': [...]}}
-                # We want: {'0': {'color': 'black', 'background': 'bridge', 'texture': 'ceramic'}, ...}
-                if isinstance(raw_data, dict) and 'color' in raw_data and 'data' in raw_data['color']:
-                    self.attribute_data = {}
-                    color_data = raw_data['color']['data']
-                    background_data = raw_data['background']['data']
-                    texture_data = raw_data['texture']['data']
-                    
-                    # Ensure all arrays have the same length
-                    min_length = min(len(color_data), len(background_data), len(texture_data))
-                    
+
+                # Common JSON layout in this repo is attribute -> {"data": [...], ...}.
+                # Convert that into sample-index -> {attribute: value, ...} so slice
+                # membership works for both ImageNet and CelebA.
+                if (
+                    isinstance(raw_data, dict)
+                    and raw_data
+                    and all(isinstance(v, dict) and isinstance(v.get('data'), list) for v in raw_data.values())
+                ):
+                    lengths = [len(v['data']) for v in raw_data.values() if isinstance(v.get('data'), list)]
+                    min_length = min(lengths) if lengths else 0
+                    samplewise_data = {}
                     for i in range(min_length):
-                        self.attribute_data[str(i)] = {
-                            'color': color_data[i],
-                            'background': background_data[i],
-                            'texture': texture_data[i]
+                        samplewise_data[str(i)] = {
+                            attr_name: attr_info['data'][i]
+                            for attr_name, attr_info in raw_data.items()
+                            if i < len(attr_info['data'])
                         }
+                    self.attribute_data = samplewise_data
+
+                    # Override default value lists with the exact values present in the
+                    # metadata file so CelebA slices match the available annotations.
+                    dynamic_groups = {}
+                    for key in self.preferred_attribute_keys:
+                        attr_info = raw_data.get(key)
+                        if not isinstance(attr_info, dict):
+                            continue
+                        values = attr_info.get('data', [])
+                        if not isinstance(values, list):
+                            continue
+                        unique_values = list(dict.fromkeys(values))
+                        if unique_values:
+                            dynamic_groups[key] = unique_values
+                    if dynamic_groups:
+                        self.attribute_groups = dynamic_groups
                 else:
-                    # Fallback: assume data is already in the expected format
+                    # Fallback: assume data is already in the expected samplewise format.
                     self.attribute_data = raw_data
-                    
+
             except Exception as e:
                 print(f"Warning: Could not load attribute data from {self.attribute_data_path}: {e}")
                 self.attribute_data = None
