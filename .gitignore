@@ -49,8 +49,14 @@ runs/*
 TMLR_26_SafeFix
 SLACK_WEBHOOK_HANDOFF.md
 logs_imagenet/pids/
-save/
+save/*
 
 outputs/save/
 logs_celeba/pids/
 
+
+
+!save/*.csv
+!save/*.json
+
+nips26/

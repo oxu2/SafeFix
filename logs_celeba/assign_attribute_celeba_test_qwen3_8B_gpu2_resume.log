@@ -1,0 +1,38 @@
+Using 1 GPU(s) with 23.9GiB memory allocation each
+Loading model: Qwen/Qwen3-VL-8B-Instruct (Qwen3 mode)...
+`torch_dtype` is deprecated! Use `dtype` instead!
+Model loaded.
+Loaded CelebA split 'test' from /data/oxx220000/img_align_celeba/: 10000 images (train=80000, val=10000, test=10000, unlabeled_available=80000)
+Total images: 10000
+Corpus attributes: ['beard', 'makeup', 'gender', 'hair color', 'skin', 'emotion', 'young']
+Resuming from partial checkpoint: save/attribute_celeba_test_qwen3_8B_partial.json
+Remaining images to process: 1500
+
+Processing 1500 images across 7 attributes...
+Attributes: ['beard', 'makeup', 'gender', 'hair color', 'skin', 'emotion', 'young']
+The following generation flags are not valid and may be ignored: ['top_p', 'top_k']. Set `TRANSFORMERS_VERBOSITY=info` for more details.
+[1/1500] Processed 1 images, 2.36s this image, avg 2.36s/img, ETA 59.0min
+[100/1500] Processed 100 images, 1.37s this image, avg 1.64s/img, ETA 38.2min
+[200/1500] Processed 200 images, 1.63s this image, avg 1.65s/img, ETA 35.8min
+[300/1500] Processed 300 images, 1.74s this image, avg 1.65s/img, ETA 33.0min
+[400/1500] Processed 400 images, 0.75s this image, avg 1.65s/img, ETA 30.2min
+[500/1500] Processed 500 images, 0.71s this image, avg 1.47s/img, ETA 24.5min
+  Checkpoint saved to save/attribute_celeba_test_qwen3_8B_partial.json (500 images done)
+[600/1500] Processed 600 images, 0.77s this image, avg 1.35s/img, ETA 20.2min
+[700/1500] Processed 700 images, 0.70s this image, avg 1.26s/img, ETA 16.8min
+[800/1500] Processed 800 images, 0.76s this image, avg 1.19s/img, ETA 13.9min
+[900/1500] Processed 900 images, 0.74s this image, avg 1.14s/img, ETA 11.4min
+[1000/1500] Processed 1000 images, 0.69s this image, avg 1.10s/img, ETA 9.2min
+  Checkpoint saved to save/attribute_celeba_test_qwen3_8B_partial.json (1000 images done)
+[1100/1500] Processed 1100 images, 0.69s this image, avg 1.06s/img, ETA 7.1min
+[1200/1500] Processed 1200 images, 0.71s this image, avg 1.04s/img, ETA 5.2min
+[1300/1500] Processed 1300 images, 0.76s this image, avg 1.01s/img, ETA 3.4min
+[1400/1500] Processed 1400 images, 0.72s this image, avg 0.99s/img, ETA 1.6min
+[1500/1500] Processed 1500 images, 0.72s this image, avg 0.97s/img, ETA 0.0min
+  Checkpoint saved to save/attribute_celeba_test_qwen3_8B_partial.json (1500 images done)
+
+Done. Processed 1500 images in 24.3 minutes (0.40 hours)
+Average time per image: 0.97s
+Saved attribute annotations to save/attribute_celeba_test_qwen3_8B.json
+Saved attribute CSV to save/attribute_celeba_test_qwen3_8B.csv
+Removed partial checkpoint save/attribute_celeba_test_qwen3_8B_partial.json

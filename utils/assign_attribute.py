@@ -79,6 +79,7 @@ os.environ['HF_HUB_DISABLE_PROGRESS_BARS'] = '1'
 os.environ['PYTORCH_CUDA_ALLOC_CONF'] = 'max_split_size_mb:512'
 
 import math
+import numpy as np
 import torch
 import torchvision.transforms as T
 from PIL import Image
@@ -95,16 +96,18 @@ else:
 # Argument parsing
 # ---------------------------------------------------------------------------
 parser = argparse.ArgumentParser(description="Annotate images with attribute labels using VLMs")
-parser.add_argument('--dataset', type=str, default='folder', choices=['folder', 'coco_pose', 'kitti'],
-                    help='Dataset layout to read: class-folder images, COCO person keypoints or KITTI')
+parser.add_argument('--dataset', type=str, default='folder', choices=['folder', 'coco_pose', 'kitti', 'celeba'],
+                    help='Dataset layout to read: class-folder images, COCO person keypoints, KITTI, or CelebA')
 parser.add_argument('--root_dir', type=str, default='data/imagenet_subset',
                     help='Root directory of a class-folder dataset (used when --dataset folder)')
 parser.add_argument('--coco_root', type=str, default='/data/oxx220000/coco',
                     help='COCO root containing train2017/val2017 and annotations/')
 parser.add_argument('--kitti_root', type=str, default='/data/oxx220000/kitti_yolov8_first5000',
                     help='KITTI YOLO root')
+parser.add_argument('--celeba_root', type=str, default=None,
+                    help='CelebA image root (defaults to /data/oxx220000/img_align_celeba/ when available)')
 parser.add_argument('--split', type=str, default='val', choices=['train', 'val', 'test', 'all'],
-                    help='Split to annotate for datasets that support it (COCO: train/val/all, KITTI: train/val/test/all)')
+                    help='Split to annotate (COCO: train/val/all, KITTI: train/val/test/all, CelebA: train/val/test/all where all=train+val)')
 parser.add_argument('--annotation_file', type=str, default=None,
                     help='Optional explicit COCO annotation json (overrides --coco_root/--split)')
 parser.add_argument('--image_dir', type=str, default=None,
@@ -136,6 +139,9 @@ args = parser.parse_args()
 if args.dataset == 'kitti' and not _has_cli_flag('split'):
     args.split = 'train'
     print("No --split provided for KITTI; defaulting to split='train' to match the first-5000 training subset.")
+elif args.dataset == 'celeba' and not _has_cli_flag('split'):
+    args.split = 'all'
+    print("No --split provided for CelebA; defaulting to split='all' to match the 80k train + 10k val setup.")
 
 # Auto-generate output filename from model version and stop_at
 if args.output is None or args.partial is None:
@@ -158,6 +164,8 @@ if args.output is None or args.partial is None:
         dataset_prefix = 'attribute_coco_pose'
     elif args.dataset == 'kitti':
         dataset_prefix = 'attribute_kitti'
+    elif args.dataset == 'celeba':
+        dataset_prefix = 'attribute_celeba'
     else:
         dataset_prefix = 'attribute10'
     if args.output is None:
@@ -179,6 +187,8 @@ if args.corpus is None:
         args.corpus = 'save/corpus_coco_pose.json'
     elif args.dataset == 'kitti':
         args.corpus = 'save/corpus_kitti_gemini.json'
+    elif args.dataset == 'celeba':
+        args.corpus = 'save/corpus_celeba.json'
     else:
         args.corpus = 'save/corpus10.json'
 
@@ -550,19 +560,28 @@ ATTRIBUTE_QUESTIONS = {
 }
 
 
-def build_prompt(attr_name, word_list):
+def build_prompt(attr_name, attr_info):
     """Build a multiple-choice prompt for the given attribute."""
+    word_list = attr_info.get('word', [])
     words_str = ", ".join(word_list)
     template = ATTRIBUTE_QUESTIONS.get(attr_name)
-    if template is None:
-        # Fallback for unknown attributes
-        template = (
-            "Describe the {attr} of the main person or subject in this image. "
-            "Choose exactly one from: {words}. "
-            "Answer with only the chosen option, nothing else."
+    if template is not None:
+        return template.format(words=words_str)
+
+    question = str(attr_info.get('question', '') or '').strip()
+    if question:
+        return (
+            f"{question} "
+            f"Choose exactly one from [{words_str}]. "
+            "Reply with ONLY the chosen option."
         )
-        return template.format(attr=attr_name, words=words_str)
-    return template.format(words=words_str)
+
+    template = (
+        "Describe the {attr} of the main person or subject in this image. "
+        "Choose exactly one from: {words}. "
+        "Answer with only the chosen option, nothing else."
+    )
+    return template.format(attr=attr_name, words=words_str)
 
 
 def parse_answer(response, word_list):
@@ -793,10 +812,7 @@ def load_processed_coco_csv(csv_path, attr_names):
 
 
 def write_attribute_csv(csv_path, sample_rows, attributes_dict, attr_names, dataset_name, only_completed=False):
-    if dataset_name == 'coco_pose':
-        fieldnames = ['image_id', *attr_names]
-    else:
-        fieldnames = ['index', 'image_path', 'image_id', 'file_name', *attr_names]
+    fieldnames = ['image_id', *attr_names]
 
     with open(csv_path, 'w', newline='', encoding='utf-8') as handle:
         writer = csv.DictWriter(handle, fieldnames=fieldnames)
@@ -804,15 +820,9 @@ def write_attribute_csv(csv_path, sample_rows, attributes_dict, attr_names, data
         for index, sample_row in enumerate(sample_rows):
             if only_completed and not all(attributes_dict[attr_name]['data'][index] for attr_name in attr_names):
                 continue
-            if dataset_name == 'coco_pose':
-                row = {'image_id': sample_row.get('image_id', '')}
-            else:
-                row = {
-                    'index': index,
-                    'image_path': sample_row.get('image_path', ''),
-                    'image_id': sample_row.get('image_id', ''),
-                    'file_name': sample_row.get('file_name', ''),
-                }
+            row = {
+                'image_id': sample_row.get('image_id', '') or sample_row.get('file_name', '') or str(index),
+            }
             for attr_name in attr_names:
                 row[attr_name] = attributes_dict[attr_name]['data'][index]
             writer.writerow(row)
@@ -849,6 +859,110 @@ def collect_kitti_dataset(kitti_root, split='train'):
     return all_datas, labels, sample_rows
 
 
+def _resolve_celeba_root(celeba_root=None):
+    if celeba_root:
+        return celeba_root
+
+    candidates = [
+        '/home/jovyan/ouser/dataset/img_align_celeba/',
+        '/data/oxx220000/img_align_celeba/',
+    ]
+    for candidate in candidates:
+        if os.path.isdir(candidate):
+            return candidate
+
+    raise FileNotFoundError(
+        "Could not locate CelebA image root. Pass --celeba_root explicitly."
+    )
+
+
+def collect_celeba_dataset(celeba_root=None, split='all', seed=42):
+    resolved_root = _resolve_celeba_root(celeba_root)
+
+    with open("data/celebA/list_attr_celeba.txt", 'r', encoding='utf-8') as handle:
+        lines = [line.strip('\n').split(' ')[0] for line in handle.readlines()]
+
+    all_datas = [os.path.join(resolved_root, line) for line in lines][1:]
+
+    train_idx = np.load("data/celebA/train_idx.npy")[:80000]
+    split_cache_dir = "save"
+    val_idx_path = os.path.join(split_cache_dir, "val_idx_celeba.npy")
+    test_idx_path = os.path.join(split_cache_dir, "test_idx_celeba.npy")
+    unlabel_idx_path = os.path.join(split_cache_dir, "unlabel_idx_celeba.npy")
+    meta_path = os.path.join(split_cache_dir, "celeba_split_meta.json")
+
+    cached_seed = None
+    if os.path.exists(meta_path):
+        try:
+            with open(meta_path, "r", encoding="utf-8") as meta_file:
+                cached_seed = json.load(meta_file).get("seed")
+        except Exception:
+            cached_seed = None
+
+    cache_ready = (
+        os.path.exists(val_idx_path)
+        and os.path.exists(test_idx_path)
+        and os.path.exists(unlabel_idx_path)
+        and cached_seed == seed
+    )
+
+    if cache_ready:
+        valid_idx = np.load(val_idx_path)
+        test_idx = np.load(test_idx_path)
+        unlabel_idx = np.load(unlabel_idx_path)
+    else:
+        val_pool = np.arange(len(all_datas))[-100000:]
+        if val_pool.size < 20000:
+            raise ValueError("Expected at least 20000 samples in CelebA validation/test pool.")
+        rng = np.random.default_rng(seed)
+        shuffled_pool = rng.permutation(val_pool)
+        valid_idx = shuffled_pool[:10000]
+        test_idx = shuffled_pool[10000:20000]
+        unlabel_idx = shuffled_pool[20000:]
+        os.makedirs(split_cache_dir, exist_ok=True)
+        np.save(val_idx_path, valid_idx)
+        np.save(test_idx_path, test_idx)
+        np.save(unlabel_idx_path, unlabel_idx)
+        with open(meta_path, "w", encoding="utf-8") as meta_file:
+            json.dump({
+                "seed": int(seed),
+                "timestamp": time.time(),
+            }, meta_file)
+
+    split_to_indices = {
+        'train': np.asarray(train_idx, dtype=int),
+        'val': np.asarray(valid_idx, dtype=int),
+        'test': np.asarray(test_idx, dtype=int),
+        # For CelebA assignment, "all" follows the alpred train+val regime.
+        'all': np.concatenate([train_idx, valid_idx], axis=0),
+    }
+    if split not in split_to_indices:
+        raise ValueError(f"Unsupported CelebA split '{split}'. Use train, val, test, or all.")
+
+    idxs = split_to_indices[split]
+    if split == 'all':
+        split_names = ['train'] * len(train_idx) + ['val'] * len(valid_idx)
+    else:
+        split_names = [split] * len(idxs)
+
+    filtered_datas = [all_datas[int(i)] for i in idxs]
+    labels = [1] * len(filtered_datas)
+    sample_rows = []
+    for original_idx, split_name, image_path in zip(idxs, split_names, filtered_datas):
+        sample_rows.append({
+            'image_path': image_path,
+            'image_id': str(int(original_idx)),
+            'file_name': os.path.basename(image_path),
+            'split': split_name,
+        })
+
+    print(
+        f"Loaded CelebA split '{split}' from {resolved_root}: {len(filtered_datas)} images "
+        f"(train={len(train_idx)}, val={len(valid_idx)}, test={len(test_idx)}, unlabeled_available={len(unlabel_idx)})"
+    )
+    return filtered_datas, labels, sample_rows
+
+
 if args.dataset == 'coco_pose':
     all_datas, labels, sample_rows = collect_coco_pose_dataset(
         coco_root=args.coco_root,
@@ -859,6 +973,11 @@ if args.dataset == 'coco_pose':
 elif args.dataset == 'kitti':
     all_datas, labels, sample_rows = collect_kitti_dataset(
         kitti_root=args.kitti_root,
+        split=args.split,
+    )
+elif args.dataset == 'celeba':
+    all_datas, labels, sample_rows = collect_celeba_dataset(
+        celeba_root=args.celeba_root,
         split=args.split,
     )
 else:
@@ -886,7 +1005,14 @@ effective_count = total_images
 # Load corpus
 # ---------------------------------------------------------------------------
 with open(args.corpus, 'r') as f:
-    corpus = json.load(f)["Corpus"]
+    corpus_payload = json.load(f)
+
+if isinstance(corpus_payload, dict) and "Corpus" in corpus_payload:
+    corpus = corpus_payload["Corpus"]
+elif isinstance(corpus_payload, dict):
+    corpus = corpus_payload
+else:
+    raise ValueError("Corpus JSON must be either {'Corpus': {...}} or a direct attribute dictionary")
 
 print(f"Corpus attributes: {list(corpus.keys())}")
 
@@ -952,7 +1078,7 @@ for loop_index, i in enumerate(pending_indices, start=1):
 
     for attr_name in attr_names:
         word_list = attributes_dict[attr_name]['word']
-        prompt = build_prompt(attr_name, word_list)
+        prompt = build_prompt(attr_name, attributes_dict[attr_name])
 
         try:
             response = inference(img_path, prompt)

@@ -5,6 +5,776 @@
 
 ---
 
+## Session 72: Re-shard CelebA Qwen3 train+val assignment across GPUs 1/2/3
+
+**Date**: 2026-04-16
+**Task**: celeba-qwen3-trainval-reshard-gpu123
+
+### Summary
+
+The user reported that the live CelebA Qwen3 assignment jobs appeared to have stopped after the IDE was closed. Inspection confirmed that the earlier launches had been tied to a terminal session instead of a fully detached `nohup` flow, so closing the IDE likely killed them. The later first resume attempt also briefly mis-launched on all visible GPUs because `CUDA_VISIBLE_DEVICES` was lost during the detached wrapper. After diagnosing the launch pattern, the test split on GPU `2` was resumed to completion, the train+val resume job was stopped at its latest safe checkpoint, and the remaining train+val images were re-sharded evenly across GPUs `1`, `2`, and `3` using explicit `--start_at/--stop_at` ranges and the verified detached `setsid nohup bash -lc '...'` pattern.
+
+### Main Changes
+
+- Updated:
+  - `.trellis/workspace/oxu/journal-1.md`
+  - `.handoff.md`
+
+### Main Findings
+
+- The resumed CelebA `test` split on GPU `2` completed successfully:
+  - output:
+    - `save/attribute_celeba_test_qwen3_8B.json`
+    - `save/attribute_celeba_test_qwen3_8B.csv`
+  - partial removed automatically:
+    - `save/attribute_celeba_test_qwen3_8B_partial.json`
+  - completion log:
+    - `logs_celeba/assign_attribute_celeba_test_qwen3_8B_gpu2_resume.log`
+- The train+val resume checkpoint was preserved at:
+  - completed images:
+    - `16000`
+  - last completed global index:
+    - `15999`
+  - source partial retained:
+    - `save/attribute_celeba_trainval_qwen3_8B_partial.json`
+- Remaining train+val images:
+  - global range:
+    - `16000` to `89999`
+  - count:
+    - `74000`
+- The remainder was split into three contiguous shards:
+  - GPU `1`:
+    - global indices `16000` to `40665`
+    - count `24666`
+    - python PID `3636464`
+    - log `/tmp/celeba_shard1.log`
+    - outputs:
+      - `save/attribute_celeba_trainval_qwen3_8B_gpu1_shard1.json`
+      - `save/attribute_celeba_trainval_qwen3_8B_gpu1_shard1.csv`
+      - `save/attribute_celeba_trainval_qwen3_8B_gpu1_shard1_partial.json`
+  - GPU `2`:
+    - global indices `40666` to `65332`
+    - count `24667`
+    - python PID `3636932`
+    - log:
+      - `logs_celeba/assign_attribute_celeba_trainval_qwen3_8B_gpu2_shard2.log`
+    - outputs:
+      - `save/attribute_celeba_trainval_qwen3_8B_gpu2_shard2.json`
+      - `save/attribute_celeba_trainval_qwen3_8B_gpu2_shard2.csv`
+      - `save/attribute_celeba_trainval_qwen3_8B_gpu2_shard2_partial.json`
+  - GPU `3`:
+    - global indices `65333` to `89999`
+    - count `24667`
+    - python PID `3636943`
+    - log:
+      - `logs_celeba/assign_attribute_celeba_trainval_qwen3_8B_gpu3_shard3.log`
+    - outputs:
+      - `save/attribute_celeba_trainval_qwen3_8B_gpu3_shard3.json`
+      - `save/attribute_celeba_trainval_qwen3_8B_gpu3_shard3.csv`
+      - `save/attribute_celeba_trainval_qwen3_8B_gpu3_shard3_partial.json`
+
+### Validation
+
+- [OK] verified the preserved train+val checkpoint currently has:
+  - `DONE 16000`
+  - `LAST_DONE 15999`
+- [OK] verified each shard launch prints:
+  - `Using 1 GPU(s) with 23.9GiB memory allocation each`
+- [OK] verified shard dataset slicing in logs:
+  - GPU `1`: `--start_at 16000`, `--stop_at 24666`
+  - GPU `2`: `--start_at 40666`, `--stop_at 24667`
+  - GPU `3`: `--start_at 65333`, `--stop_at 24667`
+- [OK] verified live GPU placement by UUID:
+  - GPU `1` UUID `GPU-ab63182a-2a80-f391-2f5c-8acc3cb97f09`
+    - PID `3636464`
+  - GPU `2` UUID `GPU-b2280cd7-6b1e-8014-81de-7ec0b152a4de`
+    - PID `3636932`
+  - GPU `3` UUID `GPU-e3ce52a2-3737-fae7-a3bd-9adfee05cbc5`
+    - PID `3636943`
+
+### Important Notes
+
+- The original issue was not a model crash; it was a launch-lifecycle problem:
+  - the earlier PTY-tied jobs likely died when the IDE terminal closed
+- The first detached relaunch attempt also showed a second failure mode:
+  - `CUDA_VISIBLE_DEVICES` was lost in the wrapper
+  - the job then saw all four GPUs and duplicated model placement across `0/1/2/3`
+- The working detached pattern is:
+  - wrap the full Python launch inside the inner `bash -lc '...'`
+  - then use outer `setsid nohup ... &`
+- `report.md` was not updated because this session changed live execution state and job topology, not stable experiment results.
+
+### Status
+
+[~] **In Progress**
+
+---
+
+## Session 73: Fix save CSV tracking in gitignore
+
+**Date**: 2026-04-16
+**Task**: gitignore-save-csv-visibility
+
+### Summary
+
+The user noticed that the generated CelebA CSV outputs were not visible to Git and asked whether `.gitignore` was the cause. Verified that the CSV files did exist under `save/`, but Git still ignored them because the repository ignored the entire `save/` directory first. Replaced the directory-wide `save/` ignore with `save/*`, which preserves the intended top-level `!save/*.csv` and `!save/*.json` allowlist behavior.
+
+### Main Changes
+
+- Updated:
+  - `.gitignore`
+  - `.trellis/workspace/oxu/journal-1.md`
+
+### Main Findings
+
+- The relevant CSV files already existed:
+  - `save/attribute_celeba_test_qwen3_8B.csv`
+  - `save/attribute_celeba_trainval_qwen3_8B_gpu1_shard1.csv`
+  - `save/attribute_celeba_trainval_qwen3_8B_gpu2_shard2.csv`
+  - `save/attribute_celeba_trainval_qwen3_8B_gpu3_shard3.csv`
+- Before the fix, `git check-ignore -v` reported them as ignored by:
+  - `.gitignore:52: save/`
+- After the fix, the allowlist now works as intended:
+  - `.gitignore:59: !save/*.csv`
+- `git status --short` now shows those CSV files as untracked instead of hidden by ignore rules.
+
+### Validation
+
+- [OK] `git check-ignore -v` now resolves those CelebA CSV files to the unignore rule
+- [OK] `git status --short` shows:
+  - `.gitignore` as modified
+  - the target CSVs as `??`
+
+### Important Notes
+
+- `.handoff.md` was not updated because the active baton remains the live CelebA Qwen3 shard runs on GPUs `1/2/3`; this gitignore fix does not change the continuation target.
+- `report.md` was not updated because this session changed repository tracking behavior only.
+
+### Status
+
+[OK] **Completed**
+
+---
+
+## Session 74: Narrow attribute CSV exports to image_id only
+
+**Date**: 2026-04-16
+**Task**: celeba-csv-image-id-only
+
+### Summary
+
+The user requested that attribute CSV exports stop writing redundant metadata columns and keep only `image_id` plus the attribute columns. Updated `utils/assign_attribute.py` so `write_attribute_csv(...)` now emits a compact schema for every dataset, and rewrote the currently existing CelebA CSV artifacts in `save/` to match that schema immediately.
+
+### Main Changes
+
+- Updated:
+  - `utils/assign_attribute.py`
+  - `.trellis/workspace/oxu/journal-1.md`
+
+### Main Findings
+
+- CSV header format changed from:
+  - `index,image_path,image_id,file_name,...`
+- to:
+  - `image_id,...`
+- Existing rewritten CelebA CSV files:
+  - `save/attribute_celeba_test_qwen3_8B.csv`
+  - `save/attribute_celeba_trainval_qwen3_8B.csv`
+  - `save/attribute_celeba_trainval_qwen3_8B_gpu1_shard1.csv`
+  - `save/attribute_celeba_trainval_qwen3_8B_gpu2_shard2.csv`
+  - `save/attribute_celeba_trainval_qwen3_8B_gpu3_shard3.csv`
+- Fallback behavior for datasets missing a true `image_id` field:
+  - prefer `file_name`
+  - otherwise fall back to the row index string
+
+### Validation
+
+- [OK] `python3 -m py_compile utils/assign_attribute.py`
+- [OK] verified rewritten CSV headers now begin with:
+  - `image_id,beard,makeup,gender,hair color,skin,emotion,young`
+
+### Important Notes
+
+- The three live CelebA train+val shard processes on GPUs `1/2/3` were launched before this code change.
+- Their in-memory code still uses the older CSV writer, so later checkpoint writes may overwrite the shard CSV files back to the old wider schema unless those shard jobs are restarted.
+- The already completed static CSV files keep the new compact schema as rewritten in this session.
+- `.handoff.md` was updated because this schema detail now matters for continuation while the shard jobs are still running.
+- `report.md` was not updated because this session changed export format only.
+
+### Status
+
+[OK] **Completed**
+
+---
+
+## Session 75: Verify CelebA shard completion and merge train+val outputs
+
+**Date**: 2026-04-17
+**Task**: celeba-trainval-shards-merge
+
+### Summary
+
+The user asked whether the three CelebA Qwen3 train+val shards had fully finished and requested that they be merged into one file. Verified from all three shard logs that they reached `Done.`, wrote their final JSON and CSV outputs, and removed their shard partial checkpoints. Then merged the preserved first `16000` examples from `save/attribute_celeba_trainval_qwen3_8B_partial.json` with the three completed shard JSONs to produce a full `90000`-example train+val JSON and CSV.
+
+### Main Changes
+
+- Updated:
+  - `save/attribute_celeba_trainval_qwen3_8B.json`
+  - `save/attribute_celeba_trainval_qwen3_8B.csv`
+  - `.trellis/workspace/oxu/journal-1.md`
+  - `.handoff.md`
+
+### Main Findings
+
+- All three shards completed successfully:
+  - GPU `1` shard log:
+    - `/tmp/celeba_shard1.log`
+    - final line group includes:
+      - `Done. Processed 24666 images`
+      - final JSON and CSV saved
+      - partial removed
+  - GPU `2` shard log:
+    - `logs_celeba/assign_attribute_celeba_trainval_qwen3_8B_gpu2_shard2.log`
+    - final line group includes:
+      - `Done. Processed 24667 images`
+      - final JSON and CSV saved
+      - partial removed
+  - GPU `3` shard log:
+    - `logs_celeba/assign_attribute_celeba_trainval_qwen3_8B_gpu3_shard3.log`
+    - final line group includes:
+      - `Done. Processed 24667 images`
+      - final JSON and CSV saved
+      - partial removed
+- The merged train+val outputs are now:
+  - `save/attribute_celeba_trainval_qwen3_8B.json`
+  - `save/attribute_celeba_trainval_qwen3_8B.csv`
+- Merged coverage:
+  - base preserved prefix:
+    - global indices `0` to `15999`
+  - shard 1:
+    - `16000` to `40665`
+  - shard 2:
+    - `40666` to `65332`
+  - shard 3:
+    - `65333` to `89999`
+
+### Validation
+
+- [OK] merged JSON length:
+  - `90000`
+- [OK] merged CSV data rows:
+  - `90000`
+- [OK] no missing merged values remain:
+  - `beard: 0`
+  - `makeup: 0`
+  - `gender: 0`
+  - `hair color: 0`
+  - `skin: 0`
+  - `emotion: 0`
+  - `young: 0`
+- [OK] merged CSV header remains the compact schema:
+  - `image_id,beard,makeup,gender,hair color,skin,emotion,young`
+
+### Important Notes
+
+- The shard outputs remain available separately if later debugging or re-merging is needed:
+  - `save/attribute_celeba_trainval_qwen3_8B_gpu1_shard1.json`
+  - `save/attribute_celeba_trainval_qwen3_8B_gpu2_shard2.json`
+  - `save/attribute_celeba_trainval_qwen3_8B_gpu3_shard3.json`
+- `report.md` was not updated because this session consolidated artifacts only; it did not add a new experiment result.
+
+### Status
+
+[OK] **Completed**
+
+---
+
+## Session 70: Launch Qwen3 CelebA test assignment
+
+**Date**: 2026-04-16
+**Task**: celeba-qwen3-test-assignment-launch
+
+### Summary
+
+After the train+val Qwen3 CelebA assignment was already running on GPU `1`, the user asked to also run the CelebA `test` split on GPU `2`. Reused the new CelebA-capable `utils/assign_attribute.py` path and the new `save/corpus_celeba.json`, launched a second persistent PTY session on GPU `2`, and verified that it loaded the correct `10,000`-image test subset and entered the main processing loop.
+
+### Main Changes
+
+- Updated:
+  - `.handoff.md`
+
+### Main Findings
+
+- The new test-set run is live on GPU `2`:
+  - PTY session:
+    - `89441`
+  - log:
+    - `logs_celeba/assign_attribute_celeba_test_qwen3_8B_gpu2_20260416_150347.log`
+  - outputs:
+    - `save/attribute_celeba_test_qwen3_8B.json`
+    - `save/attribute_celeba_test_qwen3_8B.csv`
+    - `save/attribute_celeba_test_qwen3_8B_partial.json`
+- Verified startup lines:
+  - `Loaded CelebA split 'test' ... 10000 images`
+  - `Corpus attributes: ['beard', 'makeup', 'gender', 'hair color', 'skin', 'emotion', 'young']`
+  - `[1/10000] Processed 1 images ... ETA 208.0min`
+- The earlier train+val run on GPU `1` remains live in parallel:
+  - PTY session:
+    - `77557`
+  - log:
+    - `logs_celeba/assign_attribute_celeba_trainval_qwen3_8B_gpu1_20260416_150226.log`
+
+### Validation
+
+- [OK] GPU `2` session reached:
+  - model load
+  - CelebA test split load
+  - first-image progress log
+
+### Important Notes
+
+- Both live CelebA assignment jobs use the same Qwen3 environment setup:
+  - `CUDA_VISIBLE_DEVICES=<gpu>`
+  - `CONDA_DEFAULT_ENV=qwen`
+  - manual `LD_LIBRARY_PATH` prepend for the `nvjitlink` library
+- `report.md` was not updated because both runs are still in progress.
+
+### Status
+
+[~] **In Progress**
+
+---
+
+## Session 71: Rewrite paper introduction around attribute-aware repair
+
+**Date**: 2026-04-16
+**Task**: nips26-introduction-rewrite-pass1
+
+### Summary
+
+The user started drafting the NeurIPS paper in `nips26/` and asked to remove the earlier long-tail framing, then rewrite the introduction around the flaw in current state-of-the-art active learning. Read the paper-writing guidance PDF in `nips26/`, the current LaTeX draft, and the relevant code paths (`alpred.py`, `utils/active_learning.py`, `utils/assign_attribute.py`) to align the narrative with the actual attribute-selection pipeline. Rewrote the abstract, introduction, and part of related work so the story is now: generic AL methods such as CoreSet and BADGE operate on image-level geometry / uncertainty, lack explicit attribute semantics, and do not model the synthetic-data flooding created by targeted repair; modern LVLMs make structured attribute extraction practical; \model uses those attributes for localized bug discovery and compact repair-set curation.
+
+### Main Changes
+
+- Updated:
+  - `nips26/main.tex`
+  - `nips26/ref.bib`
+
+### Main Findings
+
+- Removed the long-tail-learning framing from the current draft introduction and related-work setup.
+- Added a new introduction arc that explicitly covers:
+  - why generic AL is misaligned with attribute-level repair
+  - why class labels and image-level embeddings are insufficient
+  - why synthetic repair data creates a new distribution-selection problem
+  - why LVLM-based attribute extraction now makes attribute-aware selection feasible
+- Reframed contributions to avoid claims that are stronger than the currently documented experimental evidence in `report.md`.
+- Added a new BibTeX entry for:
+  - `bai2025qwen3vl`
+- Kept the paper claims conservative:
+  - the new draft argues for controllability, locality, and efficiency of attribute-aware repair
+  - it does not claim that the attribute selector uniformly beats all generic AL baselines on overall accuracy
+
+### Validation
+
+- [OK] `latexmk -pdf -interaction=nonstopmode main.tex` in `nips26/`
+- [OK] the rebuilt `nips26/main.pdf` resolves the new citations and includes the rewritten abstract / introduction / related-work text
+- [OK] inspected the rendered text with `pdftotext` to verify that the new narrative reads coherently in the compiled PDF
+
+### Important Notes
+
+- `.handoff.md` was not updated in this session because the active cross-session baton there is still the live CelebA Qwen3 assignment jobs on GPUs `1` and `2`; this paper-writing change does not replace that monitoring state.
+- `report.md` was not updated because this session changed draft writing only, not stable experiment results.
+- The next writing pass should continue with:
+  - tightening the methodology section so its notation matches `utils/active_learning.py`
+  - rewriting experiments to distinguish overall-accuracy baselines from attribute-targeted repair behavior
+  - deciding whether the paper title should stay generic as `MODEL` or switch back to `SafeFix`
+
+### Status
+
+[OK] **Completed**
+
+---
+
+## Session 69: Launch Qwen3 CelebA train+val assignment
+
+**Date**: 2026-04-16
+**Task**: celeba-qwen3-trainval-assignment-launch
+
+### Summary
+
+The user asked to run Qwen3-based CelebA attribute assignment on GPU `1` with a GPU memory cap of `23.9 GiB`, then clarified two scope details: the candidate options should be extracted from `data/celebA/attribute.json` into a real CelebA corpus file, and the assignment should cover only the `80,000` training images plus the `10,000` validation images used by `alpred.py`. Audited `utils/assign_attribute.py`, added a CelebA data path and question-aware prompt handling, rebuilt the CelebA corpus with explicit word lists, validated the new path with a `stop_at=1` probe, and started the full live Qwen3 run in a persistent PTY session.
+
+### Main Changes
+
+- Updated:
+  - `utils/assign_attribute.py`
+  - `data/celebA/corpus.json`
+  - `.handoff.md`
+- Added:
+  - `save/corpus_celeba.json`
+
+### Main Findings
+
+- `utils/assign_attribute.py` originally only supported:
+  - `folder`
+  - `coco_pose`
+  - `kitti`
+- The CelebA assignment path now supports:
+  - `--dataset celeba`
+  - default corpus:
+    - `save/corpus_celeba.json`
+  - default split when `--split` is omitted:
+    - `all`
+    - interpreted for CelebA as:
+      - `80,000` train
+      - `10,000` val
+- The new CelebA corpus keys now match the real attribute metadata and include explicit candidate lists:
+  - `beard`
+  - `makeup`
+  - `gender`
+  - `hair color`
+  - `skin`
+  - `emotion`
+  - `young`
+- Prompt construction now prefers the corpus `question` field for non-specialized attributes, which avoids low-quality fallback phrasing for cases such as:
+  - `beard`
+  - `makeup`
+  - `gender`
+- The full run is live on GPU `1`:
+  - PTY session:
+    - `77557`
+  - log:
+    - `logs_celeba/assign_attribute_celeba_trainval_qwen3_8B_gpu1_20260416_150226.log`
+  - outputs:
+    - `save/attribute_celeba_trainval_qwen3_8B.json`
+    - `save/attribute_celeba_trainval_qwen3_8B.csv`
+    - `save/attribute_celeba_trainval_qwen3_8B_partial.json`
+  - verified startup lines:
+    - `Loaded CelebA split 'all' ... 90000 images`
+    - `Corpus attributes: ['beard', 'makeup', 'gender', 'hair color', 'skin', 'emotion', 'young']`
+    - `[1/90000] Processed 1 images ... ETA 1884.1min`
+
+### Validation
+
+- [OK] `python3 -m py_compile utils/assign_attribute.py`
+- [OK] `git diff --check`
+- [OK] corpus validation:
+  - both `data/celebA/corpus.json` and `save/corpus_celeba.json` contain all 7 attributes with non-empty `word` lists
+- [OK] one-image live probe using the Qwen3 runtime:
+  - loaded model successfully
+  - loaded the CelebA `train+val` subset successfully
+  - processed `1` image end-to-end and wrote probe JSON/CSV under `/tmp`
+- [OK] persistent live run session:
+  - `77557`
+  - reached model load, dataset load, and first-image progress logging
+
+### Important Notes
+
+- A direct detached `nohup` launch was not reliable in the current sandboxed shell setup; the working launch mechanism is the persistent PTY session above.
+- For CelebA only, `--split all` is intentionally redefined to mean the `alpred.py` assignment subset:
+  - train `80k`
+  - val `10k`
+- `report.md` was not updated in this session because there is no stable completed assignment result yet.
+
+### Status
+
+[~] **In Progress**
+
+---
+
+## Session 68: Summarize completed CelebA ratio-0.3 top-3 mix-scaled runs
+
+**Date**: 2026-04-16
+**Task**: celeba-attribute-ratio0p3-top3-results-summary
+
+### Summary
+
+The user asked whether the `ratio=0.3` CelebA top-3 mix-scaled attribute runs had finished and requested that the results be added to `report.md`. Verified that all three transferred follow-up runs completed, extracted their held-out test accuracies and runtimes from the logs, compared them with the completed CelebA `ratio=0.3` baselines, and updated `report.md` plus the handoff state.
+
+### Main Changes
+
+- Updated:
+  - `report.md`
+  - `.handoff.md`
+
+### Main Findings
+
+- Completed `ratio=0.3` follow-up runs:
+  - `mixselx333_e0_r000_p0_cinf`
+    - `R=0.0`, `P=0.0`, `C=inf`
+    - held-out test accuracy `0.9089`
+    - selection time `0.71 s`
+    - wall time `492.89 s`
+    - log:
+      - `logs_celeba/attr_ratio0.3_mixselx333_e0_r000_p0_cinf_gpu2_20260416_143519.log`
+  - `mixselx333_e0_r003_p05_cinf`
+    - `R=0.03`, `P=0.5`, `C=inf`
+    - held-out test accuracy `0.9087`
+    - selection time `0.76 s`
+    - wall time `470.50 s`
+    - log:
+      - `logs_celeba/attr_ratio0.3_mixselx333_e0_r003_p05_cinf_gpu1_20260416_143519.log`
+  - `mixselx333_e0_r01_p05_cinf`
+    - `R=0.1`, `P=0.5`, `C=inf`
+    - held-out test accuracy `0.9074`
+    - selection time `0.76 s`
+    - wall time `637.82 s`
+    - log:
+      - `logs_celeba/attr_ratio0.3_mixselx333_e0_r01_p05_cinf_gpu3_20260416_143519.log`
+- Ranking and takeaway:
+  - best within the transferred top-3 set:
+    - `mixselx333_e0_r000_p0_cinf`
+    - `R=0.0`, `P=0.0`, `C=inf`, `E=False`, `extra_count_scale=3.33333`
+  - this is a shift from `ratio=0.1`, where the corrected best was:
+    - `R=0.03`, `P=0.5`, `C=inf`
+  - comparison against completed CelebA `ratio=0.3` baselines already in the report:
+    - `random`: `0.9118`
+    - `stratified`: `0.9115`
+    - `coreset`: `0.9113`
+    - `badge`: `0.9104`
+    - best transferred mix-scaled attribute:
+      - `0.9089`
+  - gap to `random`:
+    - `-0.0029`
+    - `-0.29 pp`
+- Interpretation:
+  - the corrected attribute path remains fast and competitive, but the transferred `ratio=0.3` top-3 still does not beat the completed standard baselines
+  - if a broader `ratio=0.3` attribute sweep is worth doing later, it should focus on the milder corner around:
+    - `R in {0.0, 0.03}`
+    - `P in {0.0, 0.5}`
+    - `C=inf`
+
+### Validation
+
+- [OK] all three `ratio=0.3` logs printed:
+  - `Model Test ACC`
+  - `Total Active Learning selection time`
+  - `End-to-end wall time`
+- [OK] `report.md` now contains the stable `ratio=0.3` follow-up table and observations
+
+### Important Notes
+
+- This `ratio=0.3` follow-up only tested the top 3 corrected `ratio=0.1` settings; it is not a full `ratio=0.3` grid.
+- The best `ratio=0.3` transferred config dropped all rarity and penalty terms (`R=0.0`, `P=0.0`), which is a useful hint that the optimal CelebA attribute regime may continue to shift with ratio.
+
+### Status
+
+[OK] **Completed**
+
+---
+
+## Session 67: Launch CelebA ratio-0.3 top-3 mix-scaled attribute runs
+
+**Date**: 2026-04-16
+**Task**: celeba-attribute-ratio0p3-top3-launch
+
+### Summary
+
+After the corrected `ratio=0.1` mix-scaled sweep finished, the user asked to summarize those results into `report.md` and then launch the best `ratio=0.1` parameter settings at `ratio=0.3` on GPUs `1/2/3`. Reused the newly added generated-count scaling knob, created a dedicated `ratio=0.3` launcher for the top 3 `ratio=0.1` configs, started all three runs, and verified from their logs that selection completed and resumed training had begun.
+
+### Main Changes
+
+- Added:
+  - `scripts/run_celeba_attribute_ratio0.3_mixscaled_top3.sh`
+- Updated:
+  - `.handoff.md`
+
+### Main Findings
+
+- `report.md` now contains the stable `ratio=0.1` mix-scaled sweep summary and identifies the current best CelebA attribute setting as:
+  - `R=0.03`, `P=0.5`, `C=inf`, `E=False`
+  - with generated-count scaling by `1 / sub_ratio`
+- Launched `ratio=0.3` follow-up runs using the top 3 corrected `ratio=0.1` configs:
+  - GPU `1`
+    - config `mixselx333_e0_r003_p05_cinf`
+    - `R=0.03`, `P=0.5`, `C=inf`
+    - log:
+      - `logs_celeba/attr_ratio0.3_mixselx333_e0_r003_p05_cinf_gpu1_20260416_143519.log`
+  - GPU `2`
+    - config `mixselx333_e0_r000_p0_cinf`
+    - `R=0.0`, `P=0.0`, `C=inf`
+    - log:
+      - `logs_celeba/attr_ratio0.3_mixselx333_e0_r000_p0_cinf_gpu2_20260416_143519.log`
+  - GPU `3`
+    - config `mixselx333_e0_r01_p05_cinf`
+    - `R=0.1`, `P=0.5`, `C=inf`
+    - log:
+      - `logs_celeba/attr_ratio0.3_mixselx333_e0_r01_p05_cinf_gpu3_20260416_143519.log`
+- Common `ratio=0.3` setup:
+  - `extra_count_scale = 1 / 0.3 = 3.33333`
+  - effective scoring counts:
+    - `hair color:red=3333.33`
+    - `skin:brown=3333.33`
+    - `emotion:sad=3333.33`
+- Verified early post-selection distributions already differ substantially across the three configs:
+  - `mixselx333_e0_r003_p05_cinf`
+    - red `2335 / 24000`
+    - brown skin `6472 / 24000`
+    - sad `3059 / 24000`
+  - `mixselx333_e0_r000_p0_cinf`
+    - red `703 / 24000`
+    - brown skin `7183 / 24000`
+    - sad `1165 / 24000`
+  - `mixselx333_e0_r01_p05_cinf`
+    - red `2335 / 24000`
+    - brown skin `7037 / 24000`
+    - sad `3437 / 24000`
+
+### Validation
+
+- [OK] `bash -n scripts/run_celeba_attribute_ratio0.3_mixscaled_top3.sh`
+- [OK] `scripts/run_celeba_attribute_ratio0.3_mixscaled_top3.sh --dry-run`
+- [OK] inspected the start of all three live logs and confirmed each contains:
+  - `Selected 1000 filenames for sampling`
+  - `CelebA: Combined 24000 selected samples with 1000 generated images using Active Learning`
+  - `Resumed model from /people/cs/o/oxx220000/safefix/weights/model_celeba_resnet_base.pth ...`
+
+### Important Notes
+
+- `report.md` was not updated for the `ratio=0.3` launch because these runs are still in progress and do not yet have stable held-out test accuracies.
+- The exact next follow-up is to monitor the three `ratio=0.3` logs for `Model Test ACC` and then compare them against the completed CelebA `ratio=0.3` baselines already summarized in the report.
+
+### Status
+
+[OK] **Completed**
+
+---
+
+## Session 66: CelebA attribute mix-scaled ratio-0.1 sweep
+
+**Date**: 2026-04-16
+**Task**: celeba-attribute-ratio0p1-mixscaled-sweep
+
+### Summary
+
+The user pointed out that CelebA uses `80,000 * ratio` original images plus `1000` generated images, while the earlier ImageNet setting used a much smaller original pool, so the attribute-selection hyperparameters should not be copied directly. Audited the attribute selector and found that explicit generated counts were being injected into the full original candidate pool, which underweighted the generated-image share on CelebA at `ratio=0.1`. Added an `al_attribute_extra_count_scale` knob, created a new 8-scenario CelebA launcher that scales generated counts by `1 / sub_ratio = 10`, ran the full `E=False` sweep on GPUs `0/1/2/3`, and recorded the stable results in `report.md`.
+
+### Main Changes
+
+- Updated:
+  - `alpred.py`
+  - `utils/active_learning.py`
+  - `report.md`
+  - `.handoff.md`
+- Added:
+  - `scripts/run_celeba_attribute_ratio0.1_mixscaled_rpc_grid.sh`
+
+### Main Findings
+
+- Root-cause adjustment:
+  - old raw-count probe injected:
+    - `hair color:red=1000`
+    - `skin:brown=1000`
+    - `emotion:sad=1000`
+  - on CelebA `ratio=0.1`, the final training mix is `8000 original + 1000 generated`, but the selector previously compared those `1000` generated counts against the full `80,000`-image original pool
+  - new sweep therefore used:
+    - `al_attribute_extra_count_scale = 10`
+    - effective injected counts during scoring:
+      - `hair color:red=10000`
+      - `skin:brown=10000`
+      - `emotion:sad=10000`
+- Completed 8-scenario mix-scaled sweep (`E=False` for all):
+  - `mixselx10_e0_r003_p05_cinf`
+    - `R=0.03`, `P=0.5`, `C=inf`
+    - held-out test accuracy `0.9099`
+    - selection time `0.74 s`
+    - wall time `349.37 s`
+    - log:
+      - `logs_celeba/attr_ratio0.1_mixselx10_e0_r003_p05_cinf_gpu2_20260416_141739.log`
+  - `mixselx10_e0_r000_p0_cinf`
+    - `R=0.0`, `P=0.0`, `C=inf`
+    - held-out test accuracy `0.9086`
+    - selection time `0.70 s`
+    - wall time `347.44 s`
+    - log:
+      - `logs_celeba/attr_ratio0.1_mixselx10_e0_r000_p0_cinf_gpu1_20260416_141739.log`
+  - `mixselx10_e0_r01_p05_cinf`
+    - `R=0.1`, `P=0.5`, `C=inf`
+    - held-out test accuracy `0.9081`
+    - selection time `0.74 s`
+    - wall time `372.83 s`
+    - log:
+      - `logs_celeba/attr_ratio0.1_mixselx10_e0_r01_p05_cinf_gpu3_20260416_141739.log`
+  - `mixselx10_e0_r000_p05_cinf`
+    - `R=0.0`, `P=0.5`, `C=inf`
+    - held-out test accuracy `0.9071`
+    - selection time `0.94 s`
+    - wall time `348.21 s`
+    - log:
+      - `logs_celeba/attr_ratio0.1_mixselx10_e0_r000_p05_cinf_gpu1_20260416_141739.log`
+  - `mixselx10_e0_r001_p0_cinf`
+    - `R=0.01`, `P=0.0`, `C=inf`
+    - held-out test accuracy `0.9070`
+    - selection time `0.72 s`
+    - wall time `344.59 s`
+    - log:
+      - `logs_celeba/attr_ratio0.1_mixselx10_e0_r001_p0_cinf_gpu0_20260416_141739.log`
+  - `mixselx10_e0_r001_p05_cinf`
+    - `R=0.01`, `P=0.5`, `C=inf`
+    - held-out test accuracy `0.9067`
+    - selection time `1.05 s`
+    - wall time `343.75 s`
+    - log:
+      - `logs_celeba/attr_ratio0.1_mixselx10_e0_r001_p05_cinf_gpu0_20260416_141739.log`
+  - `mixselx10_e0_r001_p1_cinf`
+    - `R=0.01`, `P=1.0`, `C=inf`
+    - held-out test accuracy `0.9061`
+    - selection time `1.01 s`
+    - wall time `350.25 s`
+    - log:
+      - `logs_celeba/attr_ratio0.1_mixselx10_e0_r001_p1_cinf_gpu2_20260416_141739.log`
+  - `mixselx10_e0_r01_p05_c15`
+    - `R=0.1`, `P=0.5`, `C=15.0`
+    - held-out test accuracy `0.9061`
+    - selection time `0.98 s`
+    - wall time `412.87 s`
+    - log:
+      - `logs_celeba/attr_ratio0.1_mixselx10_e0_r01_p05_c15_gpu3_20260416_141739.log`
+- Ranking and takeaway:
+  - best config:
+    - `mixselx10_e0_r003_p05_cinf`
+    - `R=0.03`, `P=0.5`, `C=inf`, `E=False`, `extra_count_scale=10`
+  - improvement over the earlier raw-count best:
+    - `0.9099 - 0.9059 = +0.0040`
+    - `+0.40 pp`
+  - remaining gap to completed CelebA `ratio=0.1` baselines:
+    - `random`: `0.9115`
+    - `badge`: `0.9112`
+    - `best mix-scaled attribute`: `0.9099`
+    - gap to `random`:
+      - `-0.0016`
+      - `-0.16 pp`
+- Parameter trend:
+  - once generated counts are scaled to the selected-data regime, CelebA prefers much milder penalties than the earlier ImageNet-style settings
+  - `P=0.0` to `0.5` beats `P=1.0`
+  - strict class balance (`C=inf`) beats the softer `C=15`
+
+### Validation
+
+- [OK] `bash -n scripts/run_celeba_attribute_ratio0.1_mixscaled_rpc_grid.sh`
+- [OK] `scripts/run_celeba_attribute_ratio0.1_mixscaled_rpc_grid.sh --dry-run`
+- [OK] `/people/cs/o/oxx220000/.conda/envs/ad/bin/python -u alpred.py --help | rg "al_attribute_extra_count_scale"`
+- [OK] all 8 mix-scaled logs printed:
+  - `Model Test ACC`
+  - `Total Active Learning selection time`
+  - `End-to-end wall time`
+- [OK] updated `report.md` with the stable sweep summary
+
+### Important Notes
+
+- The earlier 3-run raw-count probe is still useful as a reference, but it is now superseded as the main CelebA `ratio=0.1` attribute tuning result because its generated-count weighting was mismatched to the selected-data regime.
+- Even after the mix-scaled correction, the attribute selector still trails the completed `random` baseline at `ratio=0.1`; the result is much closer now, but not yet the best overall method.
+- If the user wants to extend CelebA attribute runs to larger ratios, the correct starting point is no longer the old `R=0.01, P=5.0, C=inf` raw-count config. Use:
+  - `R=0.03`, `P=0.5`, `C=inf`, `E=False`
+  - plus generated-count scaling by `1 / sub_ratio`
+
+### Status
+
+[OK] **Completed**
+
+---
+
 ## Session 65: Summarize completed CelebA attribute ratio-0.1 probe
 
 **Date**: 2026-04-16
