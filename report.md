@@ -137,6 +137,100 @@
   - if CelebA attribute experiments continue, the conservative `R=0.01, P=5.0, C=inf, E=False` setting is the only sensible starting point from this probe
   - but the current attribute path is not yet competitive with the completed `random` / `badge` / `stratified` baselines on this CelebA setup
 
+### 04/16/2026 Update — CelebA Attribute Mix-Scaled Probe (`ratio=0.1`, `E=False`, `extra_count_scale=10`)
+
+- The earlier three-run probe injected raw generated counts (`1000`) directly into the full `80,000`-image original candidate pool.
+- For `ratio=0.1`, the final training mix is really `8000 original + 1000 generated`, so the selector was underestimating the generated-image share during scoring.
+- This follow-up probe therefore scales the explicit generated counts by `1 / sub_ratio = 10` before scoring:
+  - effective injected counts during selection:
+    - `hair color:red=10000`
+    - `skin:brown=10000`
+    - `emotion:sad=10000`
+- With that correction in place, the CelebA sweep moved to much milder `R/P/C` settings instead of reusing the stronger ImageNet-style penalties.
+
+| Config | `R` | `P` | `C` | Held-out Test ACC | Delta vs Base | Gap vs `random` (`ratio=0.1`) | AL Selection Time | End-to-End Time | Canonical Log |
+|--------|-----|-----|-----|-------------------|---------------|-------------------------------|-------------------|-----------------|---------------|
+| `mixselx10_e0_r003_p05_cinf` | `0.03` | `0.5` | `inf` | **`90.99%`** | `+0.42 pp` | `-0.16 pp` | `0.74 s` | `349.37 s` | `logs_celeba/attr_ratio0.1_mixselx10_e0_r003_p05_cinf_gpu2_20260416_141739.log` |
+| `mixselx10_e0_r000_p0_cinf` | `0.0` | `0.0` | `inf` | `90.86%` | `+0.29 pp` | `-0.29 pp` | `0.70 s` | `347.44 s` | `logs_celeba/attr_ratio0.1_mixselx10_e0_r000_p0_cinf_gpu1_20260416_141739.log` |
+| `mixselx10_e0_r01_p05_cinf` | `0.1` | `0.5` | `inf` | `90.81%` | `+0.24 pp` | `-0.34 pp` | `0.74 s` | `372.83 s` | `logs_celeba/attr_ratio0.1_mixselx10_e0_r01_p05_cinf_gpu3_20260416_141739.log` |
+| `mixselx10_e0_r000_p05_cinf` | `0.0` | `0.5` | `inf` | `90.71%` | `+0.14 pp` | `-0.44 pp` | `0.94 s` | `348.21 s` | `logs_celeba/attr_ratio0.1_mixselx10_e0_r000_p05_cinf_gpu1_20260416_141739.log` |
+| `mixselx10_e0_r001_p0_cinf` | `0.01` | `0.0` | `inf` | `90.70%` | `+0.13 pp` | `-0.45 pp` | `0.72 s` | `344.59 s` | `logs_celeba/attr_ratio0.1_mixselx10_e0_r001_p0_cinf_gpu0_20260416_141739.log` |
+| `mixselx10_e0_r001_p05_cinf` | `0.01` | `0.5` | `inf` | `90.67%` | `+0.10 pp` | `-0.48 pp` | `1.05 s` | `343.75 s` | `logs_celeba/attr_ratio0.1_mixselx10_e0_r001_p05_cinf_gpu0_20260416_141739.log` |
+| `mixselx10_e0_r001_p1_cinf` | `0.01` | `1.0` | `inf` | `90.61%` | `+0.04 pp` | `-0.54 pp` | `1.01 s` | `350.25 s` | `logs_celeba/attr_ratio0.1_mixselx10_e0_r001_p1_cinf_gpu2_20260416_141739.log` |
+| `mixselx10_e0_r01_p05_c15` | `0.1` | `0.5` | `15.0` | `90.61%` | `+0.04 pp` | `-0.54 pp` | `0.98 s` | `412.87 s` | `logs_celeba/attr_ratio0.1_mixselx10_e0_r01_p05_c15_gpu3_20260416_141739.log` |
+
+### CelebA Attribute Mix-Scaled Observations
+
+- Correcting the generated-count scale materially helped:
+  - old raw-count best:
+    - `90.59%`
+  - new mix-scaled best:
+    - `90.99%`
+  - improvement:
+    - `+0.40 pp`
+- The best CelebA configuration after this correction is:
+  - `R=0.03`
+  - `P=0.5`
+  - `C=inf`
+  - `E=False`
+  - `extra_count_scale=10`
+- After the scale correction, CelebA prefers much milder penalties than the earlier ImageNet-style probe:
+  - `P=0.0` to `0.5` is consistently better than `P=1.0`
+  - strict class balance (`C=inf`) is better than the softer `C=15`
+- Runtime remains excellent:
+  - all eight mix-scaled selectors still finish in about `0.7` to `1.1 s`
+- The attribute method is now much closer to the best completed CelebA baselines, but it still does not win at `ratio=0.1`:
+  - `random`: `91.15%`
+  - `badge`: `91.12%`
+  - `best mix-scaled attribute`: `90.99%`
+- Practical takeaway:
+  - if the CelebA attribute sweep continues to larger ratios, start from:
+    - `R=0.03, P=0.5, C=inf, E=False`
+    - with generated extra counts scaled by `1 / sub_ratio`
+
+### 04/16/2026 Update — CelebA Attribute Mix-Scaled Follow-Up (`ratio=0.3`, top 3 from `ratio=0.1`)
+
+- After the corrected `ratio=0.1` sweep, we transferred its top 3 settings to `ratio=0.3` instead of rerunning the full 8-scenario grid immediately.
+- These runs also used generated-count scaling matched to the selected-data regime:
+  - `extra_count_scale = 1 / 0.3 = 3.33333`
+  - effective injected counts during scoring:
+    - `hair color:red=3333.33`
+    - `skin:brown=3333.33`
+    - `emotion:sad=3333.33`
+
+| Config | `R` | `P` | `C` | Held-out Test ACC | Delta vs Base | Gap vs `random` (`ratio=0.3`) | AL Selection Time | End-to-End Time | Canonical Log |
+|--------|-----|-----|-----|-------------------|---------------|-------------------------------|-------------------|-----------------|---------------|
+| `mixselx333_e0_r000_p0_cinf` | `0.0` | `0.0` | `inf` | **`90.89%`** | `+0.32 pp` | `-0.29 pp` | `0.71 s` | `492.89 s` | `logs_celeba/attr_ratio0.3_mixselx333_e0_r000_p0_cinf_gpu2_20260416_143519.log` |
+| `mixselx333_e0_r003_p05_cinf` | `0.03` | `0.5` | `inf` | `90.87%` | `+0.30 pp` | `-0.31 pp` | `0.76 s` | `470.50 s` | `logs_celeba/attr_ratio0.3_mixselx333_e0_r003_p05_cinf_gpu1_20260416_143519.log` |
+| `mixselx333_e0_r01_p05_cinf` | `0.1` | `0.5` | `inf` | `90.74%` | `+0.17 pp` | `-0.44 pp` | `0.76 s` | `637.82 s` | `logs_celeba/attr_ratio0.3_mixselx333_e0_r01_p05_cinf_gpu3_20260416_143519.log` |
+
+### CelebA Attribute Mix-Scaled Ratio-0.3 Observations
+
+- All three transferred `ratio=0.1` winners completed cleanly at `ratio=0.3`.
+- Within this transferred top-3 set, the best `ratio=0.3` configuration is:
+  - `R=0.0`
+  - `P=0.0`
+  - `C=inf`
+  - `E=False`
+  - `extra_count_scale=3.33333`
+- This is a notable shift from `ratio=0.1`, where the best corrected setting was:
+  - `R=0.03`
+  - `P=0.5`
+  - `C=inf`
+- Even so, the attribute method still trails the completed CelebA `ratio=0.3` baselines:
+  - `random`: `91.18%`
+  - `stratified`: `91.15%`
+  - `coreset`: `91.13%`
+  - `badge`: `91.04%`
+  - `best transferred mix-scaled attribute`: `90.89%`
+- Compared with the corrected `ratio=0.1` best (`90.99%`), the transferred `ratio=0.3` best did not improve.
+- Practical takeaway:
+  - if a larger `ratio=0.3` attribute sweep is worth doing, search around the milder corner first:
+    - `R in {0.0, 0.03}`
+    - `P in {0.0, 0.5}`
+    - `C = inf`
+    - still using generated-count scaling by `1 / sub_ratio`
+
 # 04/16/2026 Update — ImageNet10 BADGE Resume Sweep
 
 - Completed four ImageNet10 BADGE follow-up runs using the same resume-from-base setting as the earlier AL comparison:

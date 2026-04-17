@@ -1,0 +1,53 @@
+{
+    "Corpus": {
+        "beard": {
+            "data": [],
+            "word": ["Yes", "No"],
+            "prompt": ["a photo of a people with beard", "a photo of a people without beard"],
+            "type": "binary",
+            "question": "Does this person have a beard?"
+        },
+        "makeup": {
+            "data": [],
+            "word": ["Yes", "No"],
+            "prompt": ["a photo of a people wearing makeup", "a photo of a people without makeup"],
+            "type": "binary",
+            "question": "Is this person wearing makeup?"
+        },
+        "gender": {
+            "data": [],
+            "word": ["female", "male"],
+            "prompt": ["a photo of a #1"],
+            "type": "description",
+            "question": "What is the gender of the person in the photo?"
+        },
+        "hair color": {
+            "data": [],
+            "word": ["white", "yellow", "blonde", "black", "gray", "brown", "red"],
+            "prompt": ["a photo of a people with #1 hair"],
+            "type": "description",
+            "question": "What color is the person's hair?"
+        },
+        "skin": {
+            "data": [],
+            "word": ["white", "black", "brown"],
+            "prompt": ["a photo of a people with #1 skin"],
+            "type": "description",
+            "question": "What skin tone best matches the person?"
+        },
+        "emotion": {
+            "data": [],
+            "word": ["sad", "serious", "calm", "happy", "surprised", "neutral", "angry", "excited", "pensive"],
+            "prompt": ["a photo of a #1 people"],
+            "type": "description",
+            "question": "What is the person's emotion?"
+        },
+        "young": {
+            "data": [],
+            "word": ["young", "middle-aged", "old"],
+            "prompt": ["a photo of a #1 people"],
+            "type": "description",
+            "question": "What is the person's age group?"
+        }
+    }
+}
