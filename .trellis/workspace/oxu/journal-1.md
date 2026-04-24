@@ -5,6 +5,1480 @@
 
 ---
 
+## Session 107: Resume unfinished ratio-0.05 attribute refinements on GPU0
+
+**Date**: 2026-04-24
+**Task**: resume-ratio005-attribute-refinements-gpu0
+
+### Summary
+
+The user asked to run the unfinished / not-good `ratio=0.05` results on GPU `0`. I identified the pending refinement queue as the class-balance-only attribute sweep where `attrx20_r000_p0_c8` had stopped before metrics, with `attrx20_r000_p0_c30` and `attrx20_r000_p0_cinf` still pending. I added resume support to the refinement launcher and started the queue from `attrx20_r000_p0_c8` on GPU `0`.
+
+### Code Change
+
+- Updated:
+  - `scripts/run_pose_ratio0.05_gpu0_badge_then_attr_refine.sh`
+- Added `--start-at NAME` support matching the existing main `ratio=0.05` queue launcher:
+  - detached controller preserves `--start-at`
+  - skipped entries are logged as `[skip] ... before start-at=...`
+  - the script exits with an error if no queue entry matches
+
+### Validation
+
+- `bash -n scripts/run_pose_ratio0.05_gpu0_badge_then_attr_refine.sh`
+- `bash scripts/run_pose_ratio0.05_gpu0_badge_then_attr_refine.sh --start-at attrx20_r000_p0_c8 --dry-run`
+  - confirmed it skips `badge` and `attrx20_r000_p0_c0`
+  - confirmed it launches `attrx20_r000_p0_c8`, then `attrx20_r000_p0_c30`, then `attrx20_r000_p0_cinf`
+
+### Relaunch
+
+- Command:
+  - `bash scripts/run_pose_ratio0.05_gpu0_badge_then_attr_refine.sh --start-at attrx20_r000_p0_c8 --detach-controller`
+- Controller:
+  - pid `30271`
+  - log `log_pose/run_pose_ratio0.05_gpu0_badge_then_attr_refine_20260424_153745.log`
+  - pidfile `log_pose/pids/run_pose_ratio0.05_gpu0_badge_then_attr_refine_20260424_153745.pid`
+- First worker:
+  - `attribute` `attrx20_r000_p0_c8`
+  - pid `30279`
+  - log `log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.05_attrx20_r000_p0_c8_gpu0_20260424_153745.log`
+  - output dir `log_pose/pose_keypointrcnn_resume_internvl3_attribute_ratio0.05_attrx20_r000_p0_c8_gpu0_20260424_153745`
+
+### Next Step
+
+- Monitor:
+  - `log_pose/run_pose_ratio0.05_gpu0_badge_then_attr_refine_20260424_153745.log`
+  - `log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.05_attrx20_r000_p0_c8_gpu0_20260424_153745.log`
+- After `c8` completes, the same controller should continue to:
+  - `attrx20_r000_p0_c30`
+  - `attrx20_r000_p0_cinf`
+- When all three finish, update `report.md` with stable metrics.
+
+### Status
+
+[~] **In Progress**
+
+## Session 103: Check stopped ratio-0.9 queue, restart unfinished work, and report ratio-0.05 results
+
+**Date**: 2026-04-24
+**Task**: diagnose-ratio09-stopped-restart-and-update-ratio005-report
+
+### Summary
+
+The user reported the `ratio=0.9` queue had stopped again, asked why, and requested a restart. They also asked whether the `ratio=0.05` results were ready and to organize them into `report.md`. I confirmed both recent controllers were gone, preserved completed rows, restarted the `ratio=0.9` queue from the first unfinished entry on GPU `1`, and updated the report with only stable completed `ratio=0.05` metrics.
+
+### Ratio 0.9 Stopped State
+
+- Previous controller:
+  - pid `22242`
+  - log `log_pose/run_pose_ratio0.9_gpu1_internvl3_queue_20260424_133746.log`
+- Previous second worker:
+  - pid `49267`
+  - log `log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.9_attrx111_r0001_p01_c15_gpu1_20260424_133746.log`
+- Observed:
+  - `ps -fp 22242 49267` showed no live process
+  - controller log stopped immediately after launching `attrx111_r0001_p01_c15`
+  - worker log stopped at `[Epoch 1] step 650/2375`
+  - no traceback, no `[fail]`, no held-out metrics, and no `Training complete. Artifacts:` line were present
+- Interpretation:
+  - the log does not show a model-side Python error; this looks like the controller/worker was killed externally or lost with the host/session.
+
+### Completed Ratio 0.9 Row Preserved
+
+- Completed row:
+  - `attribute` `attrx111_r000_p0_c15`
+  - log `log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.9_attrx111_r000_p0_c15_gpu1_20260424_133746.log`
+  - held-out test AP `0.6278736945323198`
+  - AP50 `0.8579706794816282`
+  - AP75 `0.6850822909931451`
+  - AR `0.6884920634920635`
+  - end-to-end elapsed `00:43:56`
+- This row was not rerun.
+
+### Relaunched Ratio 0.9 On GPU1
+
+- Command:
+  - `bash scripts/run_pose_ratio0.9_gpu1_internvl3_queue.sh --start-at attrx111_r0001_p01_c15 --detach-controller`
+- New controller:
+  - pid `15310`
+  - log `log_pose/run_pose_ratio0.9_gpu1_internvl3_queue_20260424_150718.log`
+  - pidfile `log_pose/pids/run_pose_ratio0.9_gpu1_internvl3_queue_20260424_150718.pid`
+- New first worker:
+  - pid `15317`
+  - log `log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.9_attrx111_r0001_p01_c15_gpu1_20260424_150718.log`
+- Validation:
+  - `ps -fp 15310` showed the controller alive
+  - `ps -fp 15317` showed the worker alive
+  - controller log shows `[skip] attrx111_r000_p0_c15 before start-at=attrx111_r0001_p01_c15`
+  - worker log started at `2026-04-24 15:07:24`
+
+### Ratio 0.05 Report Update
+
+- Updated:
+  - `report.md`
+- Added stable completed rows:
+  - fast approximate `badge`: AP `0.5754187474288335`, AP50 `0.8303671995363598`, AP75 `0.6262434620421699`, AR `0.6612026862026863`, selection time `64.34s`, end-to-end `00:08:53`, log `log_pose/pose_resume_internvl3_epoch2_badge_ratio0.05_gpu0_20260424_121700.log`
+  - `attribute` `attrx20_r000_p0_c0`: AP `0.5745230762964305`, AP50 `0.8149232912790892`, AP75 `0.6301653412934867`, AR `0.6528998778998779`, selection time `0.25s`, end-to-end `00:07:52`, log `log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.05_attrx20_r000_p0_c0_gpu0_20260424_121700.log`
+- Excluded incomplete row:
+  - `attribute` `attrx20_r000_p0_c8`
+  - log `log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.05_attrx20_r000_p0_c8_gpu0_20260424_121700.log`
+  - stopped after `[Epoch 1] step 100/250`
+  - no held-out metrics and no `Training complete. Artifacts:`
+- Interpretation preserved in `report.md`:
+  - all completed `ratio=0.05` rows remain below corrected base AP `0.5902`
+  - best completed `ratio=0.05` row remains `attribute` `attrx20_r000_p0_c15`, AP `0.5846`
+  - fast approximate `badge` did not beat `attribute`, `stratified`, or `random`
+  - class-balance-only `C=0` did not improve over `C=15`
+
+### Next Step
+
+- Monitor:
+  - `log_pose/run_pose_ratio0.9_gpu1_internvl3_queue_20260424_150718.log`
+  - `log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.9_attrx111_r0001_p01_c15_gpu1_20260424_150718.log`
+- If a complete `ratio=0.05` refinement sweep is still needed, relaunch from `attrx20_r000_p0_c8`; otherwise, the current stable report is sufficient for completed rows.
+
+### Status
+
+[~] **In Progress**
+
+## Session 104: Create compact pose bug-compare CSV grouped by ratio
+
+**Date**: 2026-04-24
+**Task**: create-compact-pose-bug-compare-csv
+
+### Summary
+
+The user asked for a new root-level CSV derived from `log_pose/base_reference_old015544_top14/test_base_failure_set_compare_summary.csv`, with runs grouped by ratio, the `run` field renamed/normalized to `method`, unnecessary path/parameter text removed, and only the best `attribute` row retained for each ratio.
+
+### Output
+
+- Created:
+  - `bugs compare pose.csv`
+- Source:
+  - `log_pose/base_reference_old015544_top14/test_base_failure_set_compare_summary.csv`
+- Output shape:
+  - `21` lines total
+  - `20` data rows
+  - five methods per ratio for ratios `0.1`, `0.3`, `0.5`, `0.7`
+
+### Transformation
+
+- Added `ratio` from the run path.
+- Replaced full `run` paths with compact `method` values:
+  - `attribute`
+  - `random`
+  - `stratified`
+  - `coreset`
+  - `badge`
+- Preserved the winning attribute setting in `attribute_setting`.
+- Selected the best `attribute` row per ratio by highest `overall_ap_run`:
+  - `0.1`: `attrx10_r000_p0_c15`, AP `0.607076`
+  - `0.3`: `attrx333_r000_p0_c15`, AP `0.617445`
+  - `0.5`: `attrx2_r000_p0_c0`, AP `0.61271`
+  - `0.7`: `attrx143_r000_p0_c15`, AP `0.626274`
+
+### Status
+
+[x] **Completed**
+
+## Session 105: Compare pose bug counts under different AP-drop thresholds
+
+**Date**: 2026-04-24
+**Task**: threshold-sensitivity-for-pose-bug-failure-counts
+
+### Summary
+
+The user asked whether high `still_failure_count` could be caused by the metric threshold and requested comparing several adjusted thresholds for the 20 compact pose rows. I generated a new threshold-sensitivity folder using existing `manual` slice stats, without rerunning model inference or COCO evaluation.
+
+### Outputs
+
+- Created folder:
+  - `pose_bug_threshold_compare/`
+- Main files:
+  - `pose_bug_threshold_compare/bugs_compare_pose_threshold_sensitivity.csv`
+  - `pose_bug_threshold_compare/still_resolved_pivot.csv`
+  - `pose_bug_threshold_compare/README.md`
+- Per-threshold folders:
+  - `pose_bug_threshold_compare/acc_diff_0p0/`
+  - `pose_bug_threshold_compare/acc_diff_0p001/`
+  - `pose_bug_threshold_compare/acc_diff_0p0025/`
+  - `pose_bug_threshold_compare/acc_diff_0p005/`
+  - `pose_bug_threshold_compare/acc_diff_0p01/`
+  - `pose_bug_threshold_compare/acc_diff_0p02/`
+
+### Thresholds Compared
+
+- `acc_diff_threshold` values:
+  - `0.0`
+  - `0.001`
+  - `0.0025`
+  - `0.005`
+  - `0.01`
+  - `0.02`
+- Fixed:
+  - `distribution_diff_threshold=0.15`
+  - `rare_label_threshold=1.1`
+  - `top_k=14`
+- Important semantics:
+  - failure rule is `slice_AP < overall_AP - acc_diff_threshold`
+  - lowering `acc_diff_threshold` makes the rule stricter around overall AP and can mark more near-average slices as failures
+  - raising it marks fewer slices as failures
+
+### Key Results
+
+| acc_diff_threshold | Base Failure Total | Mean Still Failures | Mean Resolved Failures |
+|--------------------|--------------------|---------------------|------------------------|
+| `0.0` | `16` | `10.10` | `3.90` |
+| `0.001` | `15` | `10.10` | `3.90` |
+| `0.0025` | `15` | `10.10` | `3.90` |
+| `0.005` | `14` | `9.95` | `4.05` |
+| `0.01` | `13` | `9.65` | `3.35` |
+| `0.02` | `12` | `7.05` | `4.95` |
+
+### Interpretation
+
+- Around the default `0.005`, lowering the threshold to `0.0025`, `0.001`, or `0.0` does not reduce still-failure counts; it slightly increases or preserves them.
+- Raising the threshold to `0.02` reduces mean still failures, but changes the base failure set by making fewer slices count as failures in the first place.
+- Therefore, the high `still_failure_count` at `0.005` is not mainly because the threshold is too high; it reflects that many of the top base failure slices remain below each run's own failure cutoff.
+
+### Cleanup
+
+- Removed `attribute_setting` and `split` columns from:
+  - `bugs compare pose.csv`
+  - `pose_bug_threshold_compare/bugs_compare_pose_threshold_sensitivity.csv`
+  - `pose_bug_threshold_compare/still_resolved_pivot.csv`
+  - all `pose_bug_threshold_compare/acc_diff_*/bugs_compare_pose_summary.csv`
+- Future compact result tables should omit those columns unless explicitly requested.
+
+### Status
+
+[x] **Completed**
+
+## Session 106: Promote acc-diff 0.02 as pose bug standard and archive other thresholds
+
+**Date**: 2026-04-24
+**Task**: promote-pose-bug-threshold-0p02
+
+### Summary
+
+The user chose `acc_diff_threshold=0.02` as the standard for future pose bug/failure-set comparison and asked to write the 0.02 result into `report.md`, with other threshold files moved into a subfolder. I promoted the 0.02 summary as the main artifact, archived the non-standard sweep files, and synchronized the root compact CSV to the 0.02 standard.
+
+### File Organization
+
+- Standard folder:
+  - `pose_bug_threshold_compare/`
+- Main standard files:
+  - `pose_bug_threshold_compare/README.md`
+  - `pose_bug_threshold_compare/bugs_compare_pose_acc_diff_0p02.csv`
+  - `pose_bug_threshold_compare/acc_diff_0p02/`
+- Archived non-standard files:
+  - `pose_bug_threshold_compare/archived_threshold_sweep/`
+  - contains prior `acc_diff_0p0`, `acc_diff_0p001`, `acc_diff_0p0025`, `acc_diff_0p005`, `acc_diff_0p01`, plus the long-form sensitivity and pivot files.
+- Root convenience CSV updated to 0.02 standard:
+  - `bugs compare pose.csv`
+
+### Report Update
+
+- Updated:
+  - `report.md`
+- Added top section:
+  - `04/24/2026 Update — Pose Bug Compare Threshold Standard`
+- Recorded:
+  - future standard `acc_diff_threshold=0.02`
+  - failure rule `slice_AP < overall_AP - acc_diff_threshold`
+  - base failure total before top-k `12`
+  - compared base failure cases per method `12`
+  - mean still failures over 20 compact method rows `7.05`
+  - mean resolved failures over 20 compact method rows `4.95`
+  - full 20-row method table under the 0.02 standard.
+
+### Status
+
+[x] **Completed**
+
+## Session 107: Align pose bug overall AP columns with report and expand report table
+
+**Date**: 2026-04-24
+**Task**: align-pose-bug-overall-ap-with-report-values
+
+### Summary
+
+The user clarified that the `overall_ap_*` columns in the pose bug compare should reference the main `report.md` COCO pose resume table below, and that every column from `pose_bug_threshold_compare/bugs_compare_pose_acc_diff_0p02.csv` should also appear in `report.md`. I updated the 0.02 standard CSVs and the report table accordingly.
+
+### Updated Files
+
+- `pose_bug_threshold_compare/bugs_compare_pose_acc_diff_0p02.csv`
+- `pose_bug_threshold_compare/acc_diff_0p02/bugs_compare_pose_summary.csv`
+- `bugs compare pose.csv`
+- `pose_bug_threshold_compare/README.md`
+- `report.md`
+
+### Changes
+
+- Replaced posthoc slice-summary precision values in:
+  - `overall_ap_base`
+  - `overall_ap_run`
+  - `overall_ap_delta`
+- New values use the held-out test AP values already reported in the main COCO pose resume tables in `report.md`.
+- Expanded the top-level `report.md` pose bug standard table to include all CSV columns:
+  - `acc_diff_threshold`
+  - `ratio`
+  - `method`
+  - `overall_ap_base`
+  - `overall_ap_run`
+  - `overall_ap_delta`
+  - `base_failure_total`
+  - `compared_count`
+  - `improved_count`
+  - `declined_count`
+  - `same_count`
+  - `resolved_failure_count`
+  - `still_failure_count`
+  - `rare_to_not_rare_count`
+
+### Status
+
+[x] **Completed**
+
+## Session 108: Preserve all pose bug threshold results in one CSV
+
+**Date**: 2026-04-24
+**Task**: preserve-all-pose-bug-threshold-results-one-csv
+
+### Summary
+
+The user clarified that the non-0.02 threshold results should not be deleted and should be kept in a single CSV. I restored a main-folder consolidated sensitivity CSV while keeping the archived detailed folders.
+
+### Updated Files
+
+- Created/restored:
+  - `pose_bug_threshold_compare/bugs_compare_pose_threshold_sensitivity.csv`
+- Updated:
+  - `pose_bug_threshold_compare/archived_threshold_sweep/bugs_compare_pose_threshold_sensitivity.csv`
+  - `pose_bug_threshold_compare/README.md`
+
+### Details
+
+- The consolidated CSV has `120` rows:
+  - `20` compact method rows for each threshold:
+    - `0.0`
+    - `0.001`
+    - `0.0025`
+    - `0.005`
+    - `0.01`
+    - `0.02`
+- Overall AP columns are aligned to the held-out test AP values in `report.md`, consistent with the current 0.02 standard CSV.
+- Detailed non-standard per-threshold folders remain under:
+  - `pose_bug_threshold_compare/archived_threshold_sweep/`
+
+### Status
+
+[x] **Completed**
+
+## Session 109: Remove standard threshold column and bold best report values
+
+**Date**: 2026-04-24
+**Task**: clean-standard-pose-bug-table-formatting
+
+### Summary
+
+The user asked to remove the `acc_diff_threshold` column and bold the best `overall_ap_run` and best `improved_count`. I removed the threshold column from the standard 0.02 files and updated the report table formatting.
+
+### Updated Files
+
+- Removed `acc_diff_threshold` from standard 0.02 CSVs:
+  - `pose_bug_threshold_compare/bugs_compare_pose_acc_diff_0p02.csv`
+  - `pose_bug_threshold_compare/acc_diff_0p02/bugs_compare_pose_summary.csv`
+  - `bugs compare pose.csv`
+- Kept `acc_diff_threshold` in:
+  - `pose_bug_threshold_compare/bugs_compare_pose_threshold_sensitivity.csv`
+  - rationale: this table contains six thresholds, so the column is required to identify rows.
+- Updated:
+  - `report.md`
+  - `pose_bug_threshold_compare/README.md`
+
+### Report Formatting
+
+- `report.md` top-level 0.02 table no longer has `acc_diff_threshold`.
+- Bolded highest `overall_ap_run`:
+  - `ratio=0.7`, `method=attribute`, `overall_ap_run=0.6263`
+- Bolded all tied best `improved_count` values:
+  - maximum `improved_count=10`
+
+### Status
+
+[x] **Completed**
+
+## Session 102: Relaunch interrupted ratio-0.9 queue on GPU1
+
+**Date**: 2026-04-24
+**Task**: check-ratio09-gpu2-and-relaunch-unfinished-on-gpu1
+
+### Summary
+
+The user asked whether the `ratio=0.9` queue on GPU `2` had stopped, and requested moving unfinished work to GPU `1`. I confirmed the GPU `2` controller and worker were gone, found that the first `attribute` job had not completed, and relaunched the unfinished `ratio=0.9` queue from the first entry on GPU `1`.
+
+### GPU2 Interrupted State
+
+- Checked old GPU `2` launch:
+  - controller pid `26038`
+  - first worker pid `26047`
+  - controller log `log_pose/run_pose_ratio0.9_gpu2_internvl3_queue_20260424_115402.log`
+  - first worker log `log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.9_attrx111_r000_p0_c15_gpu2_20260424_115402.log`
+- Observed:
+  - neither pid was present in `ps`
+  - no `ratio=0.9` process was found by `pgrep`
+  - controller log stopped immediately after launching the first worker
+  - worker log reached `[Epoch 1] step 2350/2375` but had no `Training complete. Artifacts:` and no held-out metrics
+  - no later queue entries had logs for the `20260424_115402` GPU `2` timestamp
+
+### Relaunched On GPU1
+
+- Command:
+  - `bash scripts/run_pose_ratio0.9_gpu1_internvl3_queue.sh --start-at attrx111_r000_p0_c15 --detach-controller`
+- New controller:
+  - pid `22242`
+  - log `log_pose/run_pose_ratio0.9_gpu1_internvl3_queue_20260424_133746.log`
+  - pidfile `log_pose/pids/run_pose_ratio0.9_gpu1_internvl3_queue_20260424_133746.pid`
+- First new worker:
+  - pid `22249`
+  - log `log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.9_attrx111_r000_p0_c15_gpu1_20260424_133746.log`
+  - output dir `log_pose/pose_keypointrcnn_resume_internvl3_attribute_ratio0.9_attrx111_r000_p0_c15_gpu1_20260424_133746`
+
+### Queue Order
+
+1. `attribute` `attrx111_r000_p0_c15` (`R=0.0`, `P=0.0`, `C=15.0`)
+2. `attribute` `attrx111_r0001_p01_c15` (`R=0.001`, `P=0.1`, `C=15.0`)
+3. `attribute` `attrx111_r0005_p005_c15` (`R=0.005`, `P=0.05`, `C=15.0`)
+4. `random`
+5. `stratified`
+6. `coreset`
+7. `badge`
+
+### Validation
+
+- [OK] `ps -fp 22242 22249` showed both controller and first worker alive.
+- [OK] Controller log shows `start at: attrx111_r000_p0_c15` and worker pid `22249`.
+- [OK] Worker log started at `2026-04-24 13:37:51` and loaded COCO annotations.
+- Note:
+  - per repo instruction, GPU `1` availability was not pre-checked because the user explicitly assigned GPU `1`.
+  - `report.md` was not updated because no new stable metrics are available yet.
+
+### Next Step
+
+- Monitor:
+  - `log_pose/run_pose_ratio0.9_gpu1_internvl3_queue_20260424_133746.log`
+  - `log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.9_attrx111_r000_p0_c15_gpu1_20260424_133746.log`
+- Look for `Training complete. Artifacts:` and held-out metrics before adding stable results to `report.md`.
+
+### Status
+
+[~] **In Progress**
+
+## Session 101: Switch ratio-0.05 BADGE to fast approximate selection and relaunch
+
+**Date**: 2026-04-24
+**Task**: diagnose-badge-exact-selection-stall-and-use-fast-path
+
+### Summary
+
+The user asked why the relaunched `ratio=0.05` `badge` run still appeared stuck, and whether it was using the long or short BADGE path. I confirmed it was using the long exact BADGE kmeans++ branch because `n_select=1000` and `n_samples=20000` satisfied the previous exact thresholds (`exact_kmeanspp_max_select=4096`, `exact_kmeanspp_max_samples=20000`). I lowered the default exact threshold so this run uses the fast weighted-gradient-norm approximation, killed the long-path worker, and relaunched the GPU `0` queue.
+
+### Code Change
+
+- Updated:
+  - `utils/active_learning.py`
+- Change:
+  - `BadgeStrategy(... exact_kmeanspp_max_select=4096 ...)`
+  - to `BadgeStrategy(... exact_kmeanspp_max_select=512 ...)`
+- Effect:
+  - selections of `1000+` samples from the `20000` COCO pose candidate pool now use `approx_badge_weighted_gradient_norm` instead of exact BADGE kmeans++.
+
+### Killed Long-Path Launch
+
+- Old controller:
+  - pid `35598`
+  - log `log_pose/run_pose_ratio0.05_gpu0_badge_then_attr_refine_20260424_121046.log`
+- Old badge worker:
+  - pid `35605`
+  - log `log_pose/pose_resume_internvl3_epoch2_badge_ratio0.05_gpu0_20260424_121046.log`
+- Observed state:
+  - worker CPU time exceeded `270` minutes
+  - GPU `0` utilization was `0%`
+  - log still stopped immediately after COCO annotation indexing
+
+### Relaunched Fast-Path Queue
+
+- Controller command:
+  - `bash scripts/run_pose_ratio0.05_gpu0_badge_then_attr_refine.sh --detach-controller`
+- New controller pid:
+  - `38044`
+- New controller log:
+  - `log_pose/run_pose_ratio0.05_gpu0_badge_then_attr_refine_20260424_121700.log`
+- New controller pidfile:
+  - `log_pose/pids/run_pose_ratio0.05_gpu0_badge_then_attr_refine_20260424_121700.pid`
+- New badge worker:
+  - pid `38052`
+  - log `log_pose/pose_resume_internvl3_epoch2_badge_ratio0.05_gpu0_20260424_121700.log`
+
+### Validation
+
+- [OK] Syntax validation:
+  - `/people/cs/o/oxx220000/.conda/envs/ad/bin/python -m py_compile utils/active_learning.py train_pose_estimation.py`
+- [OK] New badge run passed AL selection and entered training.
+- [OK] New log contains:
+  - `Train sampling summary: original_candidates=20000, selected_original=1000 (sub_ratio=0.05), selection_strategy=badge, selection_time=64.34s, generated_available=1271, generated_selected=1000, final_train=2000`
+- [OK] GPU `0` moved from idle during selection to active training after selection:
+  - `nvidia-smi` showed GPU `0` utilization `100%` after the training phase started.
+
+### Important Notes
+
+- The prior behavior was not a CUDA training stall; it was exact BADGE kmeans++ running before the first training progress line.
+- `report.md` was not updated because no new stable AP metric is available yet.
+- Next step:
+  - monitor `log_pose/pose_resume_internvl3_epoch2_badge_ratio0.05_gpu0_20260424_121700.log` for epoch progress and held-out test metrics.
+  - after badge completes, the same controller will continue with the four attribute refinements.
+
+### Status
+
+[~] **In Progress**
+
+## Session 100: Kill stuck ratio-0.05 GPU0 badge worker and relaunch queue
+
+**Date**: 2026-04-24
+**Task**: kill-and-relaunch-pose-ratio005-gpu0-queue
+
+### Summary
+
+The user reported the `ratio=0.05` run appeared stuck and asked to kill it and restart under `nohup` on GPU `0`. I inspected the active controller and worker from Session 99, confirmed the badge worker log had not advanced beyond COCO annotation indexing, killed both processes, and relaunched the same GPU `0` queue outside the sandbox.
+
+### Killed Stuck Launch
+
+- Old controller:
+  - pid `31600`
+  - log `log_pose/run_pose_ratio0.05_gpu0_badge_then_attr_refine_20260424_120331.log`
+- Old badge worker:
+  - pid `31610`
+  - log `log_pose/pose_resume_internvl3_epoch2_badge_ratio0.05_gpu0_20260424_120331.log`
+- Observed state before kill:
+  - worker had accumulated CPU time but the log stopped after COCO annotation indexing
+  - no held-out metrics and no `Training complete. Artifacts:`
+- Kill command:
+  - `kill 31610 31600`
+- Validation:
+  - `ps -fp 31600 31610` showed neither process after kill
+
+### Relaunched Queue
+
+- Controller command:
+  - `bash scripts/run_pose_ratio0.05_gpu0_badge_then_attr_refine.sh --detach-controller`
+- New controller pid:
+  - `35598`
+- New controller log:
+  - `log_pose/run_pose_ratio0.05_gpu0_badge_then_attr_refine_20260424_121046.log`
+- New controller pidfile:
+  - `log_pose/pids/run_pose_ratio0.05_gpu0_badge_then_attr_refine_20260424_121046.pid`
+- First worker:
+  - `badge`
+  - pid `35605`
+  - log `log_pose/pose_resume_internvl3_epoch2_badge_ratio0.05_gpu0_20260424_121046.log`
+
+### Queue Order
+
+1. `badge`
+2. `attribute` `attrx20_r000_p0_c0` (`R=0.0`, `P=0.0`, `C=0`)
+3. `attribute` `attrx20_r000_p0_c8` (`R=0.0`, `P=0.0`, `C=8.0`)
+4. `attribute` `attrx20_r000_p0_c30` (`R=0.0`, `P=0.0`, `C=30.0`)
+5. `attribute` `attrx20_r000_p0_cinf` (`R=0.0`, `P=0.0`, `C=inf`)
+
+### Validation
+
+- [OK] New controller is alive:
+  - `ps -fp 35598`
+- [OK] New badge worker is alive:
+  - `ps -fp 35605`
+- [OK] Controller log shows new `badge` worker pid `35605`.
+- [OK] Worker log started at `2026-04-24 12:10:51`.
+
+### Important Notes
+
+- Per repo instruction, GPU `0` availability was not checked because the user explicitly assigned GPU `0`.
+- `report.md` was not updated because no new stable metrics were produced.
+- Next step:
+  - monitor `log_pose/run_pose_ratio0.05_gpu0_badge_then_attr_refine_20260424_121046.log`
+  - inspect `log_pose/pose_resume_internvl3_epoch2_badge_ratio0.05_gpu0_20260424_121046.log` for progress beyond annotation indexing, `Held-out test metrics`, and `Training complete. Artifacts:`
+
+### Status
+
+[~] **In Progress**
+
+## Session 99: Launch COCO pose InternVL3 ratio-0.05 badge plus four attribute refinements
+
+**Date**: 2026-04-24
+**Task**: launch-pose-ratio005-badge-and-attribute-refine-gpu0
+
+### Summary
+
+The user requested running the remaining `ratio=0.05` `badge` baseline on GPU `0`, and asked for four additional parameter choices to try to improve over the current best completed `ratio=0.05` row: `attribute` `attrx20_r000_p0_c15`, AP `0.5846`.
+
+### Rationale
+
+- Existing `ratio=0.05` results show the conservative branch is best:
+  - `attrx20_r000_p0_c15`: AP `0.5846`
+  - `attrx20_r0001_p01_c15`: AP `0.5185`
+  - `attrx20_r0005_p005_c15`: AP `0.5273`
+- Therefore the four new attribute runs keep `R=0.0` and `P=0.0`, and only sweep class-balance weight around the winning `C=15`:
+  - `C=0`
+  - `C=8`
+  - `C=30`
+  - `C=inf`
+
+### Main Changes
+
+- Added:
+  - `scripts/run_pose_ratio0.05_gpu0_badge_then_attr_refine.sh`
+- Updated:
+  - `.handoff.md`
+  - `.trellis/workspace/oxu/journal-1.md`
+
+### Launched Queue
+
+- Controller command:
+  - `bash scripts/run_pose_ratio0.05_gpu0_badge_then_attr_refine.sh --detach-controller`
+- Controller pid:
+  - `31600`
+- Controller log:
+  - `log_pose/run_pose_ratio0.05_gpu0_badge_then_attr_refine_20260424_120331.log`
+- Controller pidfile:
+  - `log_pose/pids/run_pose_ratio0.05_gpu0_badge_then_attr_refine_20260424_120331.pid`
+- First worker:
+  - `badge`
+  - pid `31610`
+  - log `log_pose/pose_resume_internvl3_epoch2_badge_ratio0.05_gpu0_20260424_120331.log`
+
+### Queue Order
+
+1. `badge`
+2. `attribute` `attrx20_r000_p0_c0` (`R=0.0`, `P=0.0`, `C=0`)
+3. `attribute` `attrx20_r000_p0_c8` (`R=0.0`, `P=0.0`, `C=8.0`)
+4. `attribute` `attrx20_r000_p0_c30` (`R=0.0`, `P=0.0`, `C=30.0`)
+5. `attribute` `attrx20_r000_p0_cinf` (`R=0.0`, `P=0.0`, `C=inf`)
+
+### Common Setup
+
+- GPU `0`
+- ratio `0.05`
+- `extra_count_scale=20`
+- generated attribute `rainy`
+- generated images selected `1000`
+- original candidate pool `20000`
+- selected original count `1000`
+- base checkpoint:
+  - `log_pose/pose_keypointrcnn_train20k_internvl3_bs8_e2_rare1p1_gpu0_20260415_144530/best.pth`
+- attribute file:
+  - `save/attribute_coco_pose_gemini_train20k_internvl3_8B.json`
+
+### Validation
+
+- [OK] `bash -n scripts/run_pose_ratio0.05_gpu0_badge_then_attr_refine.sh`
+- [OK] `bash scripts/run_pose_ratio0.05_gpu0_badge_then_attr_refine.sh --dry-run`
+- [OK] Detached controller started:
+  - `ps -fp 31600`
+- [OK] Controller log confirms `badge` worker pid `31610`.
+- [OK] `ps -fp 31600 31610` showed the controller and GPU worker alive after outside-sandbox launch.
+
+### Important Notes
+
+- Per repo instruction, GPU `0` availability was not checked because the user explicitly assigned GPU `0`.
+- The first sandboxed detached attempt (`20260424_120208`, controller pid `30445`, worker pid `30453`) stopped after startup because the sandbox wrapper ended; the live launch is the outside-sandbox `20260424_120331` controller above.
+- `report.md` was not updated yet because these jobs have only been launched; no new stable metrics exist.
+- Next step:
+  - monitor `log_pose/run_pose_ratio0.05_gpu0_badge_then_attr_refine_20260424_120331.log`
+  - inspect per-run logs for `Held-out test metrics` and `Training complete. Artifacts:`
+
+### Status
+
+[~] **In Progress**
+
+## Session 98: Reorganize NeurIPS slice-enrichment theory
+
+**Date**: 2026-04-24
+**Task**: nips26-slice-enrichment-proof-restructure
+
+### Summary
+
+The user proposed a clearer proof structure for `nips26/main.tex`: first state why representation-based coverage can suppress rare slices, then derive the rarity/penalty score margin, then prove deterministic target-slice enrichment. I rewrote the theory subsection to follow that order while keeping the stronger covering-number argument instead of a fragile volume-only CoreSet bound.
+
+### Main Changes
+
+- Updated:
+  - `nips26/main.tex`
+- Renamed/restructured subsection:
+  - `Theoretical Analysis of Slice Enrichment`
+- New main-theory order:
+  - `Feature-space coverage suppresses compact rare slices`
+  - `Uncertainty requires target alignment`
+  - `Sufficient conditions for positive score margin`
+  - `Deterministic rare-slice enrichment`
+- Key proof choices:
+  - coverage/Diversity/CoreSet/BADGE limitation uses epsilon covering number `N_epsilon` and explains the volume-ratio intuition only as a stronger idealized interpretation
+  - score-margin proof uses the readable one-attribute condition:
+    - `lambda (hat p_T - hat p_B) < (n_T + eps)^(-alpha) - (n_B + eps)^(-alpha)`
+  - deterministic enrichment now states that class-aware re-ranking preserves within-class base-score order and selects `min(B_c, |T_c|)` target examples
+  - appendix no-generation proof now refers to the positive-margin condition
+
+### Validation
+
+- [OK] Forced rebuild:
+  - `cd nips26 && latexmk -g -pdf -interaction=nonstopmode -halt-on-error main.tex`
+- Output:
+  - `nips26/main.pdf`
+  - 9 pages
+- Note:
+  - BibTeX still reports the pre-existing warning `empty journal in settles2009active`.
+  - Shell startup still prints the unrelated read-only `.tailscale` log warning from `.bash_profile`.
+
+### Important Notes
+
+- This is a paper-theory text edit only.
+- `.handoff.md` was not updated because the active experiment baton did not change.
+- `report.md` was not updated because no stable metrics changed.
+- `nips26/` is ignored by `.gitignore`, so `nips26/main.tex` edits do not appear in normal `git status`.
+
+### Status
+
+[OK] **Completed**
+
+## Session 97: Record COCO pose InternVL3 ratio-0.05 partial results
+
+**Date**: 2026-04-24
+**Task**: check-and-report-pose-ratio005-results
+
+### Summary
+
+The user asked whether the earlier `ratio=0.05` results were all available and whether they could be written into `report.md`. I checked the resumed GPU `0` queue and per-run logs. Six runs have stable held-out test metrics; `badge` did not finish and has no metric.
+
+### Main Changes
+
+- Updated:
+  - `report.md`
+  - `.handoff.md`
+  - `.trellis/workspace/oxu/journal-1.md`
+
+### Findings
+
+- Completed with `Training complete. Artifacts:`:
+  - `attribute` `attrx20_r000_p0_c15`
+    - test AP `0.5846`
+    - log `log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.05_attrx20_r000_p0_c15_gpu0_20260423_232656.log`
+  - `attribute` `attrx20_r0001_p01_c15`
+    - test AP `0.5185`
+    - log `log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.05_attrx20_r0001_p01_c15_gpu0_20260424_000907.log`
+  - `attribute` `attrx20_r0005_p005_c15`
+    - test AP `0.5273`
+    - log `log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.05_attrx20_r0005_p005_c15_gpu0_20260424_000907.log`
+  - `random`
+    - test AP `0.5792`
+    - log `log_pose/pose_resume_internvl3_epoch2_random_ratio0.05_gpu0_20260424_000907.log`
+  - `stratified`
+    - test AP `0.5815`
+    - log `log_pose/pose_resume_internvl3_epoch2_stratified_ratio0.05_gpu0_20260424_000907.log`
+  - `coreset`
+    - test AP `0.5619`
+    - log `log_pose/pose_resume_internvl3_epoch2_coreset_ratio0.05_gpu0_20260424_000907.log`
+- Not completed:
+  - `badge`
+    - controller pid `9377` and worker pid `30599` are absent from `ps`
+    - log `log_pose/pose_resume_internvl3_epoch2_badge_ratio0.05_gpu0_20260424_000907.log` contains only startup/data-loading lines
+    - no held-out metrics and no `Training complete. Artifacts:`
+
+### Report Update
+
+- Added a top-level `04/24/2026` section to `report.md` titled:
+  - `COCO Pose InternVL3 Ratio 0.05 Partial Results`
+- The section records the six completed rows and includes a `badge` pending/failed row instead of fabricating a metric.
+- Best completed `ratio=0.05` result:
+  - `attribute` `attrx20_r000_p0_c15`
+  - test AP `0.5846`
+  - delta vs corrected base `0.5902`: `-0.0056`
+
+### Validation
+
+- [OK] Checked queue controller tail:
+  - `log_pose/run_pose_ratio0.05_gpu0_internvl3_queue_20260424_000907.log`
+- [OK] Verified six completed per-run logs contain held-out test metrics and completion markers.
+- [OK] Verified `badge` has no metric and no live process via:
+  - `ps -fp 30599 9377`
+
+### Important Notes
+
+- The answer to "都出来了吗" is no: `badge` is missing.
+- The completed six results are stable enough for `report.md`, with an explicit caveat that the seven-strategy table is incomplete until `badge` is relaunched or otherwise completed.
+
+### Status
+
+[OK] **Completed**
+
+## Session 96: Relaunch COCO pose InternVL3 ratio-0.9 queue on GPU2
+
+**Date**: 2026-04-24
+**Task**: relaunch-pose-ratio09-gpu2-queue
+
+### Summary
+
+The user reported that the `ratio=0.9` GPU `1` run appeared to have disconnected and asked to start it on GPU `2`. I confirmed the previous GPU `1` controller and first worker were no longer present in `ps`; the first worker log stopped mid-epoch without `Training complete. Artifacts:`. I then added a GPU `2` variant of the ratio-0.9 queue script and launched the same seven-job queue detached.
+
+### Main Changes
+
+- Added:
+  - `scripts/run_pose_ratio0.9_gpu2_internvl3_queue.sh`
+- Updated:
+  - `.handoff.md`
+  - `.trellis/workspace/oxu/journal-1.md`
+
+### Interrupted GPU1 State
+
+- Previous controller:
+  - pid `21658`
+  - log `log_pose/run_pose_ratio0.9_gpu1_internvl3_queue_20260424_003350.log`
+- Previous first worker:
+  - pid `21666`
+  - log `log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.9_attrx111_r000_p0_c15_gpu1_20260424_003350.log`
+- Status:
+  - `ps -fp 21658 21666` no longer listed either process
+  - controller log reached only the first worker launch
+  - worker log reached epoch `1` training steps and did not contain completion output
+
+### New GPU2 Queue
+
+- Controller command:
+  - `bash scripts/run_pose_ratio0.9_gpu2_internvl3_queue.sh --detach-controller`
+- Controller pid:
+  - `26038`
+- Controller log:
+  - `log_pose/run_pose_ratio0.9_gpu2_internvl3_queue_20260424_115402.log`
+- Controller pidfile:
+  - `log_pose/pids/run_pose_ratio0.9_gpu2_internvl3_queue_20260424_115402.pid`
+- First worker at launch:
+  - pid `26047`
+  - log `log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.9_attrx111_r000_p0_c15_gpu2_20260424_115402.log`
+- Sequential GPU `2` queue:
+  - `attribute` `attrx111_r000_p0_c15` (`R=0.0`, `P=0.0`, `C=15.0`)
+  - `attribute` `attrx111_r0001_p01_c15` (`R=0.001`, `P=0.1`, `C=15.0`)
+  - `attribute` `attrx111_r0005_p005_c15` (`R=0.005`, `P=0.05`, `C=15.0`)
+  - `random`
+  - `stratified`
+  - `coreset`
+  - `badge`
+
+### Validation
+
+- [OK] `bash -n scripts/run_pose_ratio0.9_gpu2_internvl3_queue.sh`
+- [OK] `bash scripts/run_pose_ratio0.9_gpu2_internvl3_queue.sh --dry-run`
+- [OK] dry-run showed `CUDA_VISIBLE_DEVICES=2`, `ratio=0.9`, `extra scale=1.11111`, and the intended queue order.
+- [OK] detached controller started:
+  - `ps -fp 26038`
+- [OK] controller log confirms first worker pid `26047`.
+
+### Important Notes
+
+- Per repo instruction, GPU `2` availability was not checked before launch because the user explicitly assigned GPU `2`.
+- `report.md` was not updated because the GPU `2` queue is only launched; no stable metrics exist yet.
+
+### Status
+
+[~] **In Progress**
+
+## Session 95: Strengthen NeurIPS attribute-selection proof
+
+**Date**: 2026-04-24
+**Task**: nips26-count-derived-margin-and-baseline-limits
+
+### Summary
+
+The user pointed out that the existing semantic score-margin assumption in `nips26/main.tex` was tautological: it assumed target-slice samples already had higher score, then proved they would be selected first. I rewrote the theory subsection so the margin is derived from source and generated attribute-count conditions.
+
+### Main Changes
+
+- Updated:
+  - `nips26/main.tex`
+- Replaced:
+  - `Assumption [Semantic score margin]`
+  - adversarial-tie-style no-representation-alignment proposition
+- Added/changed proof content:
+  - `Assumption [Count-separated repair slice]` based on conditional source-count rarity and a balanced frequency penalty
+  - `Proposition [Score margin from count separation]`, deriving a positive score gap from:
+    - rarity advantage `G_ij`
+    - penalty disadvantage bound `H_ij`
+    - balanced condition `lambda H_ij < G_ij`
+  - explicit one-attribute lambda condition showing that low `n_a(v_T | c)` produces a margin unless the effective-count penalty is too large
+  - `Proposition [Uncertainty requires target alignment]`, showing uncertainty selection reduces to random expected target-slice coverage under conditional independence, and can select zero target examples when uncertainty concentrates on non-target cases
+  - `Proposition [Volumetric limitation of diversity and coverage]`, using epsilon-covering number to explain why Diversity/CoreSet/BADGE-style geometry objectives can allocate only a few representatives to a compact target slice
+  - no-generation appendix wording now refers to the count-separation and balanced-penalty condition instead of the removed score-margin assumption
+
+### Validation
+
+- [OK] Forced rebuild:
+  - `cd nips26 && latexmk -g -pdf -interaction=nonstopmode -halt-on-error main.tex`
+- Output:
+  - `nips26/main.pdf`
+  - 10 pages
+- Note:
+  - BibTeX still reports the pre-existing warning `empty journal in settles2009active`.
+  - Shell startup still prints a read-only `.tailscale` log warning from `.bash_profile`; it did not affect the build.
+
+### Important Notes
+
+- This edit is a paper-theory revision only and does not change code or experiment results.
+- `.handoff.md` was not updated because the active experiment baton did not change.
+- `report.md` was not updated because no stable human-facing metric changed.
+
+### Status
+
+[OK] **Completed**
+
+## Session 94: Launch COCO pose InternVL3 ratio-0.9 GPU1 queue
+
+**Date**: 2026-04-24
+**Task**: launch-pose-ratio09-gpu1-queue
+
+### Summary
+
+The user requested a `ratio=0.9` COCO pose InternVL3 sweep on GPU `1`, with three attribute configurations followed by `random`, `stratified`, `coreset`, and `badge`. I added a dedicated sequential controller script and launched it detached with `nohup`/`setsid`.
+
+### Main Changes
+
+- Added:
+  - `scripts/run_pose_ratio0.9_gpu1_internvl3_queue.sh`
+- Updated:
+  - `.handoff.md`
+  - `.trellis/workspace/oxu/journal-1.md`
+
+### Queue
+
+- Controller command:
+  - `bash scripts/run_pose_ratio0.9_gpu1_internvl3_queue.sh --detach-controller`
+- Controller pid:
+  - `21658`
+- Controller log:
+  - `log_pose/run_pose_ratio0.9_gpu1_internvl3_queue_20260424_003350.log`
+- Controller pidfile:
+  - `log_pose/pids/run_pose_ratio0.9_gpu1_internvl3_queue_20260424_003350.pid`
+- First worker at launch:
+  - pid `21666`
+  - log `log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.9_attrx111_r000_p0_c15_gpu1_20260424_003350.log`
+- Sequential GPU `1` queue:
+  - `attribute` `attrx111_r000_p0_c15` (`R=0.0`, `P=0.0`, `C=15.0`)
+  - `attribute` `attrx111_r0001_p01_c15` (`R=0.001`, `P=0.1`, `C=15.0`)
+  - `attribute` `attrx111_r0005_p005_c15` (`R=0.005`, `P=0.05`, `C=15.0`)
+  - `random`
+  - `stratified`
+  - `coreset`
+  - `badge`
+
+### Validation
+
+- [OK] `bash -n scripts/run_pose_ratio0.9_gpu1_internvl3_queue.sh`
+- [OK] `bash scripts/run_pose_ratio0.9_gpu1_internvl3_queue.sh --dry-run`
+- [OK] detached controller started and stayed alive:
+  - `ps -fp 21658`
+- [OK] controller log confirms `ratio=0.9`, `GPU 1`, `extra scale=1.11111`, and first worker pid `21666`.
+
+### Important Notes
+
+- Per repo instruction, GPU `1` availability was not checked before launch because the user explicitly assigned GPU `1`.
+- `report.md` was not updated because the ratio-0.9 queue is only launched; no stable metrics exist yet.
+
+### Status
+
+[~] **In Progress**
+
+## Session 93: Add no-generation corner-case appendix proof
+
+**Date**: 2026-04-24
+**Task**: nips26-no-generated-images-appendix-proof
+
+### Summary
+
+The user asked to write the generated-images-equals-zero corner-case proof into the appendix. `nips26/main.tex` now includes an appendix section explaining what remains provable when `D_gen` is empty.
+
+### Main Changes
+
+- Updated:
+  - `nips26/main.tex`
+- Added appendix section:
+  - `No-Generation Corner Case`
+- Added proof content:
+  - with `D_gen = empty`, the effective count reduces to source counts only:
+    - `hat n_a(v) = n_a^src(v)`
+  - the score becomes source-only semantic subset selection
+  - proposition: if the target slice exists in the source pool and the source-only score has a semantic margin, rare-slice enrichment still holds
+  - proposition: if the target slice has zero source support, every source-only selector has zero target coverage
+  - interpretation: generation is not required to enrich existing rare failure cases, but is required to add missing semantic support
+  - warning: when generated images are absent, `lambda` acts as source head-value suppression and may need to be smaller than in heavy generated-data injection settings
+
+### Validation
+
+- [OK] Forced rebuild:
+  - `cd nips26 && latexmk -g -pdf -interaction=nonstopmode -halt-on-error main.tex`
+- Output:
+  - `nips26/main.pdf`
+  - 9 pages
+- Note:
+  - BibTeX still reports the pre-existing warning `empty journal in settles2009active`.
+
+### Important Notes
+
+- This edit does not change experiment results.
+- `report.md` was not updated because no stable metrics changed.
+- `.handoff.md` was not updated because the active experiment baton did not change.
+
+### Status
+
+[OK] **Completed**
+
+## Session 92: Add finite-weight soft-balance proposition to NeurIPS method theory
+
+**Date**: 2026-04-24
+**Task**: nips26-finite-w-soft-balance-proof
+
+### Summary
+
+The user asked what can be proved for the attribute selector when the class-balance weight is finite (`w != inf`). The NeurIPS draft now includes a finite-weight balance-pressure proposition in `nips26/main.tex`.
+
+### Main Changes
+
+- Updated:
+  - `nips26/main.tex`
+- Added:
+  - `Proposition [Finite-weight balance pressure]`
+  - proof that if class `d` is selected while class `c` is active, then the current count gap is bounded by:
+    - `n_d^{(k)} - n_c^{(k)} <= t Delta / w`
+  - explanatory paragraph:
+    - `w=0` recovers pure attribute ranking
+    - finite `w` bounds how far an over-selected active class can stay ahead unless its attribute score advantage is large enough
+    - increasing `w` tightens the admissible count gap
+    - `w -> inf` recovers the earlier hard round-robin behavior
+
+### Validation
+
+- [OK] Forced rebuild:
+  - `cd nips26 && latexmk -g -pdf -interaction=nonstopmode -halt-on-error main.tex`
+- Output:
+  - `nips26/main.pdf`
+  - 8 pages
+- Note:
+  - BibTeX still reports the pre-existing warning `empty journal in settles2009active`.
+
+### Important Notes
+
+- The finite-`w` result is a soft-balance bound, not an exact quota guarantee.
+- The theorem says class imbalance can persist only when the over-selected class has enough attribute-score advantage to overcome the deficit bonus.
+- `report.md` was not updated because this was a method-theory draft edit, not a new experiment result.
+- `.handoff.md` was not updated because the active experiment baton did not change.
+
+### Status
+
+[OK] **Completed**
+
+## Session 91: Add method-theory text for attribute selector repair coverage
+
+**Date**: 2026-04-24
+**Task**: nips26-method-theory-attribute-selector
+
+### Summary
+
+The user asked how to justify the nonzero R/P/C attribute selector in the NeurIPS draft and whether the method should prove representativeness or another property. The method section in `nips26/main.tex` was expanded to frame the selector as a repair-surrogate method, not a universal downstream-accuracy guarantee.
+
+### Main Changes
+
+- Updated:
+  - `nips26/main.tex`
+- Added method text explaining why the score is defined:
+  - rarity term enriches rare semantic configurations within class
+  - frequency penalty discounts attribute values already over-supplied by generated data
+  - class-aware re-ranking prevents collapse onto a small number of classes or pose-complexity bins
+- Added/strengthened theoretical statements:
+  - hard-balance limit for `w=inf` round-robin class selection
+  - rare-slice enrichment under a semantic score-margin assumption
+  - expected target-slice count for random/stratified selection under the same class allocation
+  - no semantic coverage guarantee for CoreSet/BADGE without representation alignment
+  - repair utility interpretation showing why target-slice enrichment is the right proof target
+
+### Validation
+
+- [OK] Built the NeurIPS draft:
+  - `cd nips26 && latexmk -pdf -interaction=nonstopmode -halt-on-error main.tex`
+- Output:
+  - `nips26/main.pdf`
+  - 7 pages
+- Note:
+  - BibTeX still reports the pre-existing warning `empty journal in settles2009active`.
+
+### Important Notes
+
+- The draft now explicitly avoids claiming that nonzero R/P/C always beats random, stratified, CoreSet, and BADGE in final AP/ACC for every `ratio < 1`.
+- The defensible claim is conditional: if LVLM metadata and score terms produce a positive margin for the diagnosed rare failure slice, the selector spends a limited source budget on more repair-relevant examples than random/stratified and has a semantic coverage guarantee that generic feature/gradient AL methods lack without alignment assumptions.
+- `report.md` was not updated because this was a paper-method edit, not a new stable experiment result.
+- `.handoff.md` was not updated because the active experiment baton did not change.
+
+### Status
+
+[OK] **Completed**
+
+## Session 90: Resume missing runs from interrupted InternVL3 RPC12 queue
+
+**Date**: 2026-04-24
+**Task**: resume-missing-pose-rpc12-runs
+
+### Summary
+
+The user reported that some runs from `scripts/run_pose_attribute_rpc12_internvl3.sh` had already finished, but the server shutdown interrupted the queue before all `12` requested runs completed. I inspected the original controller log and per-run logs from timestamp `20260423_224514`, confirmed exactly which runs had completed cleanly, corrected stale `0.6145` base-AP references in `report.md`, added a minimal missing-run controller, and relaunched only the unfinished jobs under a new detached nohup controller.
+
+### Main Changes
+
+- Added:
+  - `scripts/run_pose_attribute_rpc12_resume_missing.sh`
+- Updated:
+  - `report.md`
+  - `.handoff.md`
+  - `.trellis/workspace/oxu/journal-1.md`
+
+### Main Findings
+
+- Completed successfully from the original interrupted queue `20260423_224514`:
+  - ratio `0.1` / GPU `0`:
+    - `attrx10_r001_p05_c8`
+    - `attrx10_r003_p05_c15`
+    - `attrx10_r003_p05_c8`
+  - ratio `0.3` / GPU `1`:
+    - `attrx333_r001_p05_c15`
+    - `attrx333_r003_p05_c8`
+  - ratio `0.5` / GPU `2`:
+    - `attrx2_r001_p05_c8`
+  - ratio `0.7` / GPU `3`:
+    - `attrx143_r001_p05_c8`
+- Incomplete or not yet launched in the interrupted queue:
+  - ratio `0.3` / GPU `1`:
+    - `attrx333_r003_p05_c15`
+  - ratio `0.5` / GPU `2`:
+    - `attrx2_r003_p05_c15`
+    - `attrx2_r003_p05_c8`
+  - ratio `0.7` / GPU `3`:
+    - `attrx143_r003_p05_c15`
+    - `attrx143_r003_p05_c8`
+- The interrupted per-run logs for the first missing jobs ended mid-epoch with NUL-padded tails, which is consistent with abrupt shutdown rather than trainer-level completion.
+- `report.md` already used `0.5902` as the canonical comparison baseline at the top, but a later historical section still contained stale `0.6145` values, which were updated.
+
+### Validation
+
+- [OK] confirmed completed runs from the old queue by scanning per-run logs for:
+  - `Training complete. Artifacts:`
+- [OK] confirmed the missing-run candidates by reading the truncated old logs:
+  - `log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.3_attrx333_r003_p05_c15_gpu1_20260423_224514.log`
+  - `log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.5_attrx2_r003_p05_c15_gpu2_20260423_224514.log`
+  - `log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.7_attrx143_r003_p05_c15_gpu3_20260423_224514.log`
+- [OK] shell validation passed for the new resume controller:
+  - `bash -n scripts/run_pose_attribute_rpc12_resume_missing.sh`
+  - `bash scripts/run_pose_attribute_rpc12_resume_missing.sh --dry-run`
+- [OK] detached missing-run controller launched successfully:
+  - command:
+    - `bash scripts/run_pose_attribute_rpc12_resume_missing.sh --detach-controller`
+  - controller pid:
+    - `10848`
+  - controller pidfile:
+    - `log_pose/pids/run_pose_attribute_rpc12_resume_missing_20260424_001044.pid`
+  - controller log:
+    - `log_pose/run_pose_attribute_rpc12_resume_missing_20260424_001044.log`
+- [OK] immediate post-launch inspection confirmed the first three missing workers are live:
+  - GPU `1`: pid `10860`
+  - GPU `2`: pid `10862`
+  - GPU `3`: pid `10861`
+
+### Important Notes
+
+- The resume controller only launches the `5` missing runs; it does not rerun the `7` already-completed jobs.
+- The canonical COCO pose InternVL3 comparison baseline remains `0.5902` going forward.
+- The original interrupted controller pid `44719` is no longer active.
+
+### Status
+
+[~] **In Progress**
+
+## Session 89: Launch COCO pose InternVL3 ratio-0.05 GPU0 queue
+
+**Date**: 2026-04-23
+**Task**: launch-pose-ratio005-gpu0-queue
+
+### Summary
+
+The user requested a new `ratio=0.05` COCO pose InternVL3 sweep on GPU `0`, including three attribute configurations and four non-attribute baselines. A dedicated sequential controller script was added and launched with `nohup` so the seven jobs run one at a time on GPU `0`.
+
+### Main Changes
+
+- Added:
+  - `scripts/run_pose_ratio0.05_gpu0_internvl3_queue.sh`
+- Updated:
+  - `.handoff.md`
+  - `.trellis/workspace/oxu/journal-1.md`
+
+### Queue
+
+- Controller command:
+  - `bash scripts/run_pose_ratio0.05_gpu0_internvl3_queue.sh --detach-controller`
+- Controller pid:
+  - `76507`
+- Controller log:
+  - `log_pose/run_pose_ratio0.05_gpu0_internvl3_queue_20260423_232656.log`
+- Controller pidfile:
+  - `log_pose/pids/run_pose_ratio0.05_gpu0_internvl3_queue_20260423_232656.pid`
+- Sequential GPU `0` queue:
+  - `attribute` `attrx20_r000_p0_c15` (`R=0.0`, `P=0.0`, `C=15.0`)
+  - `attribute` `attrx20_r0001_p01_c15` (`R=0.001`, `P=0.1`, `C=15.0`)
+  - `attribute` `attrx20_r0005_p005_c15` (`R=0.005`, `P=0.05`, `C=15.0`)
+  - `random`
+  - `stratified`
+  - `coreset`
+  - `badge`
+
+### Validation
+
+- [OK] `bash -n scripts/run_pose_ratio0.05_gpu0_internvl3_queue.sh`
+- [OK] `bash scripts/run_pose_ratio0.05_gpu0_internvl3_queue.sh --dry-run`
+- [OK] nohup controller started and stayed alive:
+  - controller pid `76507`
+  - first worker pid `76515`
+- [OK] first worker log reached attribute selection output:
+  - `log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.05_attrx20_r000_p0_c15_gpu0_20260423_232656.log`
+
+### Important Notes
+
+- The run uses `extra_count_scale=20`, matching `1 / ratio`.
+- The base checkpoint for resume is still:
+  - `log_pose/pose_keypointrcnn_train20k_internvl3_bs8_e2_rare1p1_gpu0_20260415_144530/best.pth`
+- The comparison AP baseline for reporting remains the corrected `0.5902`.
+- The user explicitly requested GPU `0`; no GPU availability check was performed.
+
+### Status
+
+[IN PROGRESS] **ratio=0.05 GPU0 queue running under nohup**
+
+### 2026-04-24 Resume After Server Shutdown
+
+The user reported that some `ratio=0.05` jobs had finished before a server shutdown stopped the queue, and asked to continue only the missing jobs. Inspection showed:
+
+- Original controller:
+  - pid `76507`
+  - log `log_pose/run_pose_ratio0.05_gpu0_internvl3_queue_20260423_232656.log`
+  - no longer alive
+- Completed before interruption:
+  - `attribute` `attrx20_r000_p0_c15`
+  - log `log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.05_attrx20_r000_p0_c15_gpu0_20260423_232656.log`
+  - artifact root `log_pose/pose_keypointrcnn_resume_internvl3_attribute_ratio0.05_attrx20_r000_p0_c15_gpu0_20260423_232656/`
+  - held-out test AP `0.5846`
+- Interrupted / incomplete:
+  - `attribute` `attrx20_r0001_p01_c15` from timestamp `20260423_232656`
+  - log stopped around epoch step `100/250`
+- Not started before interruption:
+  - `attrx20_r0005_p005_c15`
+  - `random`
+  - `stratified`
+  - `coreset`
+  - `badge`
+
+Updated `scripts/run_pose_ratio0.05_gpu0_internvl3_queue.sh` to support `--start-at NAME`, validated it with:
+
+- [OK] `bash -n scripts/run_pose_ratio0.05_gpu0_internvl3_queue.sh`
+- [OK] `bash scripts/run_pose_ratio0.05_gpu0_internvl3_queue.sh --start-at attrx20_r0001_p01_c15 --dry-run`
+
+Relaunched the remaining queue under nohup:
+
+- command:
+  - `bash scripts/run_pose_ratio0.05_gpu0_internvl3_queue.sh --start-at attrx20_r0001_p01_c15 --detach-controller`
+- controller pid:
+  - `9377`
+- controller log:
+  - `log_pose/run_pose_ratio0.05_gpu0_internvl3_queue_20260424_000907.log`
+- pidfile:
+  - `log_pose/pids/run_pose_ratio0.05_gpu0_internvl3_queue_20260424_000907.pid`
+- first resumed worker:
+  - pid `9385`
+  - log `log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.05_attrx20_r0001_p01_c15_gpu0_20260424_000907.log`
+
+Status remains in progress, with the resumed queue running from `attrx20_r0001_p01_c15` onward.
+
+## Session 88: Correct canonical COCO pose InternVL3 base AP to 0.5902
+
+**Date**: 2026-04-23
+**Task**: correct-pose-base-ap-and-old-failure-compare
+
+### Summary
+
+The user clarified that future InternVL3 COCO pose resume comparisons should use the older bs4 `015544` run as the canonical AP baseline. The previously recorded comparison value `0.6145` is wrong for the comparison tables. The canonical comparison base is now the old `015544` held-out test AP `0.5902`, and the old base's `Failure cases (top 14)` set is the requested focused failure-set reference.
+
+### Main Changes
+
+- Updated:
+  - `report.md`
+  - `.handoff.md`
+  - `scripts/posthoc_pose_base_compare.py`
+  - `.trellis/workspace/oxu/journal-1.md`
+- Added:
+  - `scripts/run_posthoc_pose_old015544_top14_compare_nohup.sh`
+- Canonical comparison base for future pose resume deltas:
+  - artifact root: `log_pose/pose_keypointrcnn_train20k_internvl3_bs4_e2_rare0p97_gpuX_20260412_015544/`
+  - log: `log_pose/pose_train20k_internvl3_bs4_e2_rare0p97_gpuX_20260412_015544.log`
+  - held-out test AP: `0.5902`
+- `scripts/posthoc_pose_base_compare.py` now defaults to:
+  - the `015544` base run
+  - the `015544` base log
+  - `top_k=14`
+
+### Validation
+
+- Added a dedicated launcher for the old-base top-14 failure-set comparison:
+  - `bash scripts/run_posthoc_pose_old015544_top14_compare_nohup.sh`
+- The focused comparison output directory is:
+  - `log_pose/base_reference_old015544_top14/`
+- A foreground unbuffered validation run completed all `32` canonical run directories and wrote:
+  - `log_pose/base_reference_old015544_top14/test_base_failure_set_compare_summary.md`
+  - `log_pose/base_reference_old015544_top14/test_base_failure_set_compare_summary.csv`
+- Aggregate result over the old base `14` test failure cases per run:
+  - `31/32` runs have positive overall AP delta vs the `0.5902` base
+  - total focused-case counts: `329` improved, `55` declined, `0` same
+  - total resolved failures: `131`
+  - total still failures: `317`
+  - total rare-to-not-rare transitions: `67`
+
+### Important Notes
+
+- Do not use `0.6145` as the canonical COCO pose InternVL3 resume comparison baseline.
+- Historical report sections may still mention later bs8 run metrics, but the forward-looking comparison baseline is `0.5902`.
+- The old `015544` base failure block contains `14` test failure cases, not `16`.
+
+### Status
+
+[OK] **Completed**
+
+## Session 87: Launch requested InternVL3 pose RPC12 queue across GPUs 0/1/2/3
+
+**Date**: 2026-04-23
+**Task**: pose-internvl3-rpc12-gpu01357-queue
+
+### Summary
+
+The user asked to run a new set of `12` InternVL3 COCO pose resume attribute experiments, grouped as `3` requested RPC settings for each fixed ratio `0.1`, `0.3`, `0.5`, and `0.7`, with those four ratios pinned to GPUs `0`, `1`, `2`, and `3` respectively. Instead of copying the earlier `rpc4` launchers, a new per-GPU sequential controller script was added so each GPU keeps its assigned ratio and runs the requested three settings in order. After catching and fixing an initial parameter-mapping bug in dry-run validation, the detached controller was launched successfully.
+
+### Main Changes
+
+- Added:
+  - `scripts/run_pose_attribute_rpc12_internvl3.sh`
+- Updated:
+  - `.trellis/workspace/oxu/journal-1.md`
+  - `.handoff.md`
+
+### Main Findings
+
+- The new launcher keeps the canonical ratio placement:
+  - GPU `0` -> ratio `0.1`
+  - GPU `1` -> ratio `0.3`
+  - GPU `2` -> ratio `0.5`
+  - GPU `3` -> ratio `0.7`
+- Each GPU now runs this requested queue sequentially:
+  - ratio `0.1` on GPU `0`:
+    - `attrx10_r001_p05_c8`
+    - `attrx10_r003_p05_c15`
+    - `attrx10_r003_p05_c8`
+  - ratio `0.3` on GPU `1`:
+    - `attrx333_r001_p05_c15`
+    - `attrx333_r003_p05_c8`
+    - `attrx333_r003_p05_c15`
+  - ratio `0.5` on GPU `2`:
+    - `attrx2_r001_p05_c8`
+    - `attrx2_r003_p05_c15`
+    - `attrx2_r003_p05_c8`
+  - ratio `0.7` on GPU `3`:
+    - `attrx143_r001_p05_c8`
+    - `attrx143_r003_p05_c15`
+    - `attrx143_r003_p05_c8`
+- The controller computes `extra_count_scale` as `1 / ratio` per queue item to stay aligned with the earlier InternVL3 attribute launchers.
+- The first draft incorrectly reused position-based `C` values across all queues; dry-run output exposed that mismatch on the `ratio=0.3` queue, so the script was corrected to store each queue entry as an explicit `name|R|P|C` record.
+
+### Validation
+
+- [OK] shell syntax check passed:
+  - `bash -n scripts/run_pose_attribute_rpc12_internvl3.sh`
+- [OK] dry-run verified the full `12`-run mapping and command lines:
+  - `bash scripts/run_pose_attribute_rpc12_internvl3.sh --dry-run`
+- [OK] detached controller launched successfully:
+  - command:
+    - `bash scripts/run_pose_attribute_rpc12_internvl3.sh --detach-controller`
+  - controller pid:
+    - `44719`
+  - controller pidfile:
+    - `log_pose/pids/run_pose_attribute_rpc12_internvl3_20260423_224514.pid`
+  - controller log:
+    - `log_pose/run_pose_attribute_rpc12_internvl3_20260423_224514.log`
+- [OK] immediate post-launch inspection confirmed the controller is alive and has already launched the first run on each GPU:
+  - GPU `0` first run pid `44736`
+  - GPU `1` first run pid `44735`
+  - GPU `2` first run pid `44734`
+  - GPU `3` first run pid `44737`
+
+### Important Notes
+
+- This session changed launch orchestration only; no stable experiment metrics exist yet, so `report.md` was not updated.
+- The new script follows the pose baseline controller pattern instead of the older `rpc4` pattern because the user requested `3` sequential jobs per fixed-ratio GPU, not `1` job per GPU for a single ratio.
+- If the detached controller stops unexpectedly, inspect:
+  - `log_pose/run_pose_attribute_rpc12_internvl3_20260423_224514.log`
+  - and the per-run logs under `log_pose/pose_resume_internvl3_epoch2_attribute_ratio*_*.log`
+
+### Status
+
+[~] **In Progress**
+
+## Session 86: Canonicalize InternVL3 base pose training log path
+
+**Date**: 2026-04-23
+**Task**: canonicalize-internvl3-base-pose-log
+
+### Summary
+
+The user asked to make the canonical InternVL3 base pose training log easier to find later by first copying it into a reference location and then simplifying the final canonical name even further. The final canonical path is now the short top-level log filename `log_pose/base_pose_train20k_compare.log`, and the Python workflow that consumes the base log was updated to use that path directly.
+
+### Main Changes
+
+- Updated:
+  - `scripts/posthoc_pose_base_compare.py`
+  - `.trellis/workspace/oxu/journal-1.md`
+- Canonical base log location confirmed at:
+  - `log_pose/base_pose_train20k_compare.log`
+
+### Main Findings
+
+- The original timestamped top-level filename was renamed from:
+  - `log_pose/pose_train20k_internvl3_bs8_e2_rare1p1_gpu0_20260415_144530.log`
+  - to `log_pose/base_pose_train20k_compare.log`
+- The older reference copy under `log_pose/base_reference/` is no longer the canonical lookup path.
+- The Python workflow that uses the base log now defaults to the canonical reference copy instead of the original top-level log path:
+  - `scripts/posthoc_pose_base_compare.py`
+  - `DEFAULT_BASE_LOG`
+
+### Validation
+
+- [OK] renamed the canonical base log with:
+  - `mv log_pose/pose_train20k_internvl3_bs8_e2_rare1p1_gpu0_20260415_144530.log log_pose/base_pose_train20k_compare.log`
+- [OK] verified the new canonical file path is:
+  - `log_pose/base_pose_train20k_compare.log`
+
+### Important Notes
+
+- `.handoff.md` and `report.md` were updated only to keep log references searchable after the rename.
+
+### Status
+
+[OK] **Completed**
+
 ## Session 84: Insert two ControlNet slides into 15-minute SafeFix talk
 
 **Date**: 2026-04-21
@@ -71,6 +1545,84 @@ The user asked to insert two slides between the current page 3 and page 4 of `TM
 ### Status
 
 [OK] **Completed**
+
+## Session 85: Add detached posthoc pose base-vs-ratio compare workflow
+
+**Date**: 2026-04-23
+**Task**: posthoc-pose-base-failure-set-compare
+
+### Summary
+
+The user asked for a posthoc comparison between the canonical InternVL3 COCO pose base run and the finished ratio-based resume runs. The initial interpretation was too broad because it generated new top-k failure sets for each ratio run. After the user clarified the requirement, the workflow was narrowed to compare each ratio run only against the `16` base-selected failure cases from the base test log, while also counting how many of those `16` improved, declined, or changed from `rare_case` to not-`rare_case`. A new reusable script and a detached nohup launcher were added, and the long-running batch compare job was relaunched in the background so it will survive IDE / GPT disconnects.
+
+### Main Changes
+
+- Added:
+  - `scripts/posthoc_pose_base_compare.py`
+  - `scripts/run_posthoc_pose_base_compare_nohup.sh`
+- Updated:
+  - `.gitignore`
+  - `.handoff.md`
+  - `.trellis/workspace/oxu/journal-1.md`
+
+### Main Findings
+
+- The new compare script now does the following:
+  - copies the base training log into:
+    - `log_pose/base_reference/base_pose_train20k_internvl3_bs8_e2_rare1p1_gpu0_20260415_144530.log`
+  - reuses the existing base test slice-analysis failure set
+  - generates posthoc test slice-analysis for each canonical resume run if missing
+  - writes per-run compare files against only the base-selected failure set:
+    - `test_compare_vs_base_failure_set.md`
+    - `test_compare_vs_base_failure_set.csv`
+  - writes a global summary under:
+    - `log_pose/base_reference/test_base_failure_set_compare_summary.md`
+    - `log_pose/base_reference/test_base_failure_set_compare_summary.csv`
+- The per-run compare markdown now explicitly reports:
+  - improved count
+  - declined count
+  - same count
+  - resolved failure count
+  - still-failure count
+  - `rare_case -> not-rare_case` count
+- Smoke-test validation on:
+  - `log_pose/pose_keypointrcnn_resume_internvl3_attribute_ratio0.7_attrx143_r000_p0_c15_gpu1_20260417_170346`
+  produced:
+  - improved: `2`
+  - declined: `14`
+  - same: `0`
+  - resolved failures: `1`
+  - still failures: `15`
+  - `rare_case -> not-rare_case`: `1`
+
+### Validation
+
+- [OK] `python3 -m py_compile scripts/posthoc_pose_base_compare.py`
+- [OK] smoke test completed successfully for one ratio run using:
+  - `/people/cs/o/oxx220000/.conda/envs/ad/bin/python scripts/posthoc_pose_base_compare.py --run-log log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.7_attrx143_r000_p0_c15_gpu1_20260417_170346.log`
+- [OK] detached launcher successfully started:
+  - pid `30198`
+  - log `log_pose/base_reference/posthoc_pose_base_compare_20260423_223130.log`
+  - pidfile `log_pose/base_reference/posthoc_pose_base_compare_20260423_223130.pid`
+
+### Important Notes
+
+- The clarified requirement is:
+  - do **not** choose a new top-k per ratio run
+  - compare only against the `16` failure cases selected by the base test log
+- The current batch job processes:
+  - canonical pose resume runs from the top pose section of `report.md`
+  - test split only
+- Because the job is relaunched under detached `setsid nohup`, it should survive closing the current GPT / IDE session.
+- Follow-up `.gitignore` adjustment:
+  - allow tracking only:
+    - `log_pose/base_reference/test_base_failure_set_compare_summary.md`
+    - `log_pose/base_reference/test_base_failure_set_compare_summary.csv`
+  - keep other `log_pose/base_reference/*` artifacts ignored, including copied base logs and nohup logs.
+
+### Status
+
+[~] **In Progress**
 
 ## Session 72: Re-shard CelebA Qwen3 train+val assignment across GPUs 1/2/3
 

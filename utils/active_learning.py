@@ -484,7 +484,7 @@ class BadgeStrategy:
     still coupling uncertainty and diversity in the batch selection stage.
     """
 
-    def __init__(self, temperature=1.0, exact_kmeanspp_max_select=4096, exact_kmeanspp_max_samples=20000):
+    def __init__(self, temperature=1.0, exact_kmeanspp_max_select=512, exact_kmeanspp_max_samples=20000):
         self.temperature = max(float(temperature), 1e-6)
         self.exact_kmeanspp_max_select = max(int(exact_kmeanspp_max_select), 1)
         self.exact_kmeanspp_max_samples = max(int(exact_kmeanspp_max_samples), 1)
