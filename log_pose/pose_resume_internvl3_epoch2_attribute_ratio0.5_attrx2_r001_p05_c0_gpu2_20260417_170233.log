@@ -1,0 +1,30 @@
+Current time: 0417170238
+Training start timestamp: 2026-04-17 17:02:38
+Deterministic settings: seed=42, cudnn.deterministic=True, cudnn.benchmark=False, CUBLAS_WORKSPACE_CONFIG=:4096:8
+loading annotations into memory...
+Done (t=5.78s)
+creating index...
+index created!
+loading annotations into memory...
+Done (t=0.13s)
+creating index...
+index created!
+
+Attribute distribution in selected samples:
+  [weather] clear: 5506 samples (55.1%)
+  [weather] cloudy: 2509 samples (25.1%)
+  [weather] snowy: 1429 samples (14.3%)
+  [weather] rainy: 556 samples (5.6%)
+Debug attribute breakdown for 'weather':
+  value=snowy, freq=1429, indices=[22,60,71,79,91,124,125,136,142,145,...], R=0.9299, U=0.0000, L=0.0000, B=0.0000
+  value=cloudy, freq=2509, indices=[1,3,15,36,37,39,44,57,66,73,...], R=0.9247, U=0.0000, L=0.0000, B=0.0000
+  value=rainy, freq=2556.0, indices=[58,103,159,247,284,304,314,376,385,392,...], R=0.9245, U=0.0000, L=0.0000, B=0.0000
+  value=clear, freq=6394, indices=[4,5,6,8,10,12,13,16,17,23,...], R=0.9161, U=0.0000, L=0.0000, B=0.0000
+  value=sunny, freq=9112, indices=[0,2,7,9,11,14,18,19,20,21,...], R=0.9129, U=0.0000, L=0.0000, B=0.0000
+Warning: filtered out 8 unreadable generated images before training. Examples: 444199 (000000444199.png: UnidentifiedImageError), 448974 (000000448974.png: SyntaxError), 449412 (000000449412.png: SyntaxError), 464274 (000000464274.png: OSError), 464462 (000000464462.png: OSError)
+Warning: filtered out 7 generated images whose reused COCO boxes collapse under the generated image size. Examples: 41020 (512x512), 133619 (512x512), 151877 (512x512), 199927 (512x512), 229383 (512x512)
+Generated augmentation source: attribute=rainy, dir=/data/oxx220000/coco-pose-weather-edits/generated_coco_train1500_rain/outputs
+Train sampling summary: original_candidates=20000, selected_original=10000 (sub_ratio=0.5), selection_strategy=attribute, selection_time=0.25s, generated_available=1271, generated_selected=1000, final_train=11000
+Dataset sizes after split: train=11000, val=1173, test=1173
+Loaded model weights from log_pose/pose_keypointrcnn_train20k_internvl3_bs8_e2_rare1p1_gpu0_20260415_144530/best.pth (epoch 0, best AP 0.6401)
+Using fresh optimizer / scheduler state after --resume-model. Training will start from epoch index 1 with the current optimizer hyperparameters (lr=0.005, momentum=0.9, weight_decay=0.0005, step_size=8, gamma=0.1).

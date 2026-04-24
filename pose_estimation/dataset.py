@@ -38,12 +38,17 @@ class CocoPersonKeypointsDataset(Dataset):
         train: bool = False,
         hflip_prob: float = 0.5,
         filter_empty: bool = True,
+        image_path_overrides: Optional[Dict[int, str]] = None,
     ) -> None:
         self.image_dir = image_dir
         self.train = train
         self.hflip_prob = hflip_prob
         self.coco = COCO(annotation_file)
         self.image_ids = sorted(self.coco.getImgIds())
+        self.image_path_overrides = {
+            int(image_id): str(path)
+            for image_id, path in (image_path_overrides or {}).items()
+        }
 
         if filter_empty:
             valid_ids: List[int] = []
@@ -60,8 +65,16 @@ class CocoPersonKeypointsDataset(Dataset):
     def __getitem__(self, idx: int) -> Tuple[torch.Tensor, Dict[str, torch.Tensor]]:
         image_id = self.image_ids[idx]
         image_info = self.coco.loadImgs(image_id)[0]
-        image_path = f"{self.image_dir}/{image_info['file_name']}"
-        image = Image.open(image_path).convert("RGB")
+        image_path = self.image_path_overrides.get(
+            image_id,
+            f"{self.image_dir}/{image_info['file_name']}",
+        )
+        try:
+            with Image.open(image_path) as image_file:
+                image = image_file.convert("RGB")
+                image.load()
+        except Exception as exc:
+            raise OSError(f"Failed to read image_id={image_id} from {image_path}: {exc}") from exc
 
         ann_ids = self.coco.getAnnIds(imgIds=image_id, catIds=[1], iscrowd=None)
         anns = self.coco.loadAnns(ann_ids)
@@ -125,6 +138,7 @@ def clone_dataset_with_image_ids(
     *,
     train: Optional[bool] = None,
     hflip_prob: Optional[float] = None,
+    image_path_overrides: Optional[Dict[int, str]] = None,
 ) -> CocoPersonKeypointsDataset:
     subset = CocoPersonKeypointsDataset.__new__(CocoPersonKeypointsDataset)
     subset.image_dir = dataset.image_dir
@@ -132,6 +146,12 @@ def clone_dataset_with_image_ids(
     subset.hflip_prob = dataset.hflip_prob if hflip_prob is None else hflip_prob
     subset.coco = dataset.coco
     subset.image_ids = list(image_ids)
+    source_overrides = dataset.image_path_overrides if image_path_overrides is None else image_path_overrides
+    subset.image_path_overrides = {
+        int(image_id): str(source_overrides[image_id])
+        for image_id in subset.image_ids
+        if image_id in source_overrides
+    }
     return subset
 
 

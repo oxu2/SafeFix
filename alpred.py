@@ -246,8 +246,8 @@ parser.add_argument('--gpu', type=int, default=0,
                     help='Index of the CUDA GPU to use (default: 0)')
 parser.add_argument('--save_report', type=str2bool, default=False,
                     help='Generate and save diagnostic report (default: False)')
-parser.add_argument('--save_preds', type=str2bool, default=True,
-                    help='Save model predictions after training (default: True)')
+parser.add_argument('--save_preds', type=str2bool, default=False,
+                    help='Save model predictions after training (default: False)')
 parser.add_argument('--save_model', type=str2bool, default=False,
                     help='Save model checkpoint (.pth) to save/models/ after training (default: False)')
 parser.add_argument('--resume_model', type=str, default=None,

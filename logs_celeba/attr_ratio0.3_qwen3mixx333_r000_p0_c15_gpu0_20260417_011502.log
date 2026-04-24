@@ -1,0 +1,128 @@
+Current time: 0417011504
+Selected 1000 filenames for sampling
+Added 1000 generated redhair_brownskin_sademotion images, before training set has 80000 images, now 81000
+
+Attribute distribution in selected samples:
+  [hair color] brown: 10103 samples (42.1%)
+  [hair color] black: 6359 samples (26.5%)
+  [hair color] blonde: 5241 samples (21.8%)
+  [hair color] gray: 922 samples (3.8%)
+  [hair color] white: 865 samples (3.6%)
+  [hair color] red: 509 samples (2.1%)
+  [hair color] yellow: 1 samples (0.0%)
+  [skin] white: 16630 samples (69.3%)
+  [skin] brown: 6427 samples (26.8%)
+  [skin] black: 943 samples (3.9%)
+  [emotion] happy: 10631 samples (44.3%)
+  [emotion] serious: 6106 samples (25.4%)
+  [emotion] pensive: 3770 samples (15.7%)
+  [emotion] calm: 2790 samples (11.6%)
+  [emotion] excited: 298 samples (1.2%)
+  [emotion] neutral: 193 samples (0.8%)
+  [emotion] surprised: 121 samples (0.5%)
+  [emotion] angry: 81 samples (0.3%)
+  [emotion] sad: 10 samples (0.0%)
+CelebA: Combined 24000 selected samples with 1000 generated images using Active Learning
+Resumed model from /people/cs/o/oxx220000/safefix/weights/model_celeba_resnet_base.pth (best val acc: 0.914, base test acc: 0.9140)
+Recovered base test acc from log: logs/celeba_resnet_base_redhair_brownskin_sademotion_0imgs_20260416_022317.log
+Epoch [1/15], Train Loss: 0.2538, Train Acc: 0.9768, Val Loss: 0.4084, Val Acc: 0.8978
+Epoch [2/15], Train Loss: 0.2503, Train Acc: 0.9796, Val Loss: 0.3694, Val Acc: 0.9076
+Epoch [3/15], Train Loss: 0.2500, Train Acc: 0.9792, Val Loss: 0.3955, Val Acc: 0.9019
+Epoch [4/15], Train Loss: 0.2501, Train Acc: 0.9799, Val Loss: 0.4074, Val Acc: 0.8998
+Epoch [5/15], Train Loss: 0.2493, Train Acc: 0.9800, Val Loss: 0.3568, Val Acc: 0.9092
+Epoch [6/15], Train Loss: 0.2476, Train Acc: 0.9812, Val Loss: 0.3705, Val Acc: 0.9088
+Epoch [7/15], Train Loss: 0.2479, Train Acc: 0.9814, Val Loss: 0.3630, Val Acc: 0.9077
+Epoch [8/15], Train Loss: 0.2464, Train Acc: 0.9824, Val Loss: 0.3871, Val Acc: 0.9032
+Epoch [9/15], Train Loss: 0.2468, Train Acc: 0.9817, Val Loss: 0.3713, Val Acc: 0.9067
+Epoch [10/15], Train Loss: 0.2472, Train Acc: 0.9817, Val Loss: 0.3714, Val Acc: 0.9055
+Epoch [11/15], Train Loss: 0.2460, Train Acc: 0.9815, Val Loss: 0.3788, Val Acc: 0.9039
+Epoch [12/15], Train Loss: 0.2465, Train Acc: 0.9821, Val Loss: 0.3888, Val Acc: 0.9016
+Epoch [13/15], Train Loss: 0.2462, Train Acc: 0.9826, Val Loss: 0.3833, Val Acc: 0.9032
+Epoch [14/15], Train Loss: 0.2453, Train Acc: 0.9826, Val Loss: 0.3702, Val Acc: 0.9059
+Epoch [15/15], Train Loss: 0.2461, Train Acc: 0.9821, Val Loss: 0.3880, Val Acc: 0.9027
+Model Test ACC: 0.9088, test loss: 0.3613
+Generating and saving predictions...
+/people/cs/o/oxx220000/safefix/alpred.py:1707: DeprecationWarning: Conversion of an array with ndim > 0 to a scalar is deprecated, and will error in future. Ensure you extract a single element from your array before performing this operation. (Deprecated NumPy 1.25.)
+  full_orig_preds[idx] = pred
+Combined predictions length: 181000 (should match combined_labels length: 125000)
+Total training time for 15 epochs: 420.89 seconds
+Total Active Learning selection time: 0.53 seconds
+End-to-end wall time (data prep + selection + training + setup): 423.41 seconds
+
+Running model diagnostics on generated predictions...
+Start detect_failure_by_label
+
+Start detect_prediction_correlation
+
+ACC: 0.897650 	Hard case: attribute "beard", description "No"
+ACC: 0.867033 	Hard case: attribute "makeup", description "Yes"
+ACC: 0.853115 	Hard case: attribute "gender", description "female"
+The accuracy with "hair color" = "white" is 0.9641791044776119
+Correct predictions: 323/335
+The accuracy with "hair color" = "yellow" is 1.0
+Correct predictions: 1/1
+The accuracy with "hair color" = "blonde" is 0.880201765447667
+Correct predictions: 2094/2379
+ACC: 0.880202 	Hard case: attribute "hair color", description "blonde"
+The accuracy with "hair color" = "black" is 0.9263199369582348
+Correct predictions: 2351/2538
+The accuracy with "hair color" = "gray" is 0.9761194029850746
+Correct predictions: 327/335
+The accuracy with "hair color" = "brown" is 0.9072657743785851
+Correct predictions: 3796/4184
+The accuracy with "hair color" = "red" is 0.8771929824561403
+Correct predictions: 200/228
+ACC: 0.877193 	Rare Case: attribute "hair color", description "red"
+The accuracy with "skin" = "white" is 0.9077972992594744
+Correct predictions: 6252/6887
+The accuracy with "skin" = "black" is 0.958904109589041
+Correct predictions: 350/365
+The accuracy with "skin" = "brown" is 0.9061135371179039
+Correct predictions: 2490/2748
+ACC: 0.666667 	Rare Case: attribute "emotion", description "sad"
+ACC: 0.883333 	Rare Case: attribute "emotion", description "surprised"
+ACC: 0.875000 	Rare Case: attribute "emotion", description "neutral"
+ACC: 0.843478 	Rare Case: attribute "emotion", description "excited"
+ACC: 0.855646 	Hard case: attribute "emotion", description "pensive"
+ACC: 0.877172 	Hard case: attribute "young", description "young"
+Start detect_failure_prediction_correlation
+
+Model diagnostics complete.
+
+Comparing accuracy with log file: logs/compare/stat_origin_resnet_compare.log
+Overall accuracy: 0.906750 -> 0.909200: improved
+
+Attribute-specific accuracy comparison:
+beard, No, 0.893557 -> 0.897650: improved
+gender, female, 0.849626 -> 0.853115: improved
+hair color, white, 0.930328 -> 0.964179: improved
+hair color, yellow, 0.918919 -> 1.000000: improved
+hair color, blonde, 0.880229 -> 0.880202: declined
+hair color, black, 0.921358 -> 0.926320: improved
+hair color, gray, 0.977444 -> 0.976119: declined
+hair color, brown, 0.899712 -> 0.907266: improved
+hair color, red, 0.900161 -> 0.877193: declined
+skin, brown, 0.889450 -> 0.906114: improved
+emotion, sad, 0.851711 -> 0.666667: declined
+emotion, surprised, 0.882006 -> 0.883333: improved
+emotion, pensive, 0.859833 -> 0.855646: declined
+
+Compared 13 attribute-specific accuracies.
+Using log file: logs/AL_resnet_celeba_random_1000.log
+
+================================================================================
+ACTIVE LEARNING vs RANDOM SELECTION COMPARISON
+================================================================================
+Comparing current Active Learning results with random selection: logs/AL_resnet_celeba_random_1000.log
+Overall accuracy: Random 0.914000 -> Active Learning 0.909200 (Δ=-0.004800): RANDOM SELECTION WINS
+
+Attribute-specific Active Learning vs Random Selection comparison:
+
+------------------------------------------------------------
+ACTIVE LEARNING vs RANDOM SELECTION SUMMARY:
+Total compared attributes: 0
+Active Learning wins: 0
+Random Selection wins: 0
+Ties: 0
+------------------------------------------------------------
+Current time: 0417011504
