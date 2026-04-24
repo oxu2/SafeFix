@@ -28,6 +28,10 @@ outputs/
 log_pose/*
 log_pose/NA/
 !log_pose/*.log
+!log_pose/base_reference/
+log_pose/base_reference/*
+!log_pose/base_reference/test_base_failure_set_compare_summary.md
+!log_pose/base_reference/test_base_failure_set_compare_summary.csv
 /safefix_*
 
 # Logs

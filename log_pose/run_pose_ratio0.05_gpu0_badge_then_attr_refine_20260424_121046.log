@@ -1,0 +1,15 @@
+Launching ratio=0.05 badge + attribute refinement queue on GPU 0.
+  timestamp:         20260424_121046
+  base model:        log_pose/pose_keypointrcnn_train20k_internvl3_bs8_e2_rare1p1_gpu0_20260415_144530/best.pth
+  attribute file:    save/attribute_coco_pose_gemini_train20k_internvl3_8B.json
+  generated attr:    rainy
+  num added img:     1000
+  max train samples: 20000
+  focus:             weather
+  extra scale:       20
+  rationale:         refine around best attrx20_r000_p0_c15 by sweeping class balance only
+         out=log_pose/pose_keypointrcnn_resume_internvl3_badge_ratio0.05_gpu0_20260424_121046
+[launch] badge
+         log=log_pose/pose_resume_internvl3_epoch2_badge_ratio0.05_gpu0_20260424_121046.log
+         pidfile=log_pose/pids/pose_resume_internvl3_epoch2_badge_ratio0.05_gpu0_20260424_121046.pid
+         pid=35605

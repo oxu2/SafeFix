@@ -1,0 +1,13 @@
+attribute,value,base_AP,run_AP,AP_delta_vs_base,status_vs_base,base_is_failure_case,run_is_failure_case,failure_transition,base_failure_type,run_failure_type
+pose,lying,0.265332,0.289842,0.02451,improved,True,True,still_failure,rare_case,rare_case
+background_style,rural,0.50505,0.563913,0.058863,improved,True,True,still_failure,rare_case,rare_case
+pose,sitting,0.522271,0.522462,0.000191,improved,True,True,still_failure,hard_case,hard_case
+time_of_day,night,0.543585,0.535772,-0.007813,declined,True,True,still_failure,rare_case,rare_case
+background_style,indoors,0.546004,0.550146,0.004142,improved,True,True,still_failure,hard_case,hard_case
+weather,unknown,0.549791,,,missing,True,False,resolved_failure,hard_case,
+clothes_type,swimwear,0.552448,0.559986,0.007538,improved,True,True,still_failure,rare_case,rare_case
+time_of_day,unknown,0.55324,,,missing,True,False,resolved_failure,hard_case,
+pose,jumping,0.557601,0.634298,0.076697,improved,True,False,resolved_failure,rare_case,
+time_of_day,evening,0.561629,0.58836,0.026731,improved,True,False,resolved_failure,rare_case,
+clothes_type,casual,0.564228,0.584929,0.020701,improved,True,True,still_failure,hard_case,hard_case
+clothes_color,white,0.567893,0.586775,0.018882,improved,True,True,still_failure,hard_case,hard_case

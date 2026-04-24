@@ -1,3 +1,76 @@
+# 04/24/2026 Update — Pose Bug Compare Threshold Standard
+
+- Future pose bug/failure-set comparisons should use `acc_diff_threshold=0.02`.
+- Failure rule: `slice_AP < overall_AP - acc_diff_threshold`.
+- Standard output folder:
+  - `pose_bug_threshold_compare/`
+- Main standard CSV:
+  - `pose_bug_threshold_compare/bugs_compare_pose_acc_diff_0p02.csv`
+- Detailed focused rows:
+  - `pose_bug_threshold_compare/acc_diff_0p02/`
+- Non-standard threshold sweep files are archived under:
+  - `pose_bug_threshold_compare/archived_threshold_sweep/`
+- With `acc_diff_threshold=0.02`:
+  - base failure total before top-k: `12`
+  - compared base failure cases per method: `12`
+  - mean still failures over the 20 compact method rows: `7.05`
+  - mean resolved failures over the 20 compact method rows: `4.95`
+
+| ratio | method | overall_ap_base | overall_ap_run | overall_ap_delta | base_failure_total | compared_count | improved_count | declined_count | same_count | resolved_failure_count | still_failure_count | rare_to_not_rare_count |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| `0.1` | `attribute` | `0.5902` | `0.6071` | `0.0169` | `12` | `12` | `9` | `1` | `0` | `4` | `8` | `2` |
+| `0.1` | `random` | `0.5902` | `0.6029` | `0.0127` | `12` | `12` | `8` | `2` | `0` | `5` | `7` | `2` |
+| `0.1` | `stratified` | `0.5902` | `0.6031` | `0.0129` | `12` | `12` | `8` | `2` | `0` | `5` | `7` | `2` |
+| `0.1` | `coreset` | `0.5902` | `0.5579` | `-0.0323` | `12` | `12` | `1` | `9` | `0` | `5` | `7` | `2` |
+| `0.1` | `badge` | `0.5902` | `0.5919` | `0.0017` | `12` | `12` | `6` | `4` | `0` | `4` | `8` | `2` |
+| `0.3` | `attribute` | `0.5902` | `0.6174` | `0.0272` | `12` | `12` | **`10`** | `0` | `0` | `6` | `6` | `2` |
+| `0.3` | `random` | `0.5902` | `0.6061` | `0.0159` | `12` | `12` | `8` | `2` | `0` | `5` | `7` | `2` |
+| `0.3` | `stratified` | `0.5902` | `0.6041` | `0.0139` | `12` | `12` | `8` | `2` | `0` | `5` | `7` | `2` |
+| `0.3` | `coreset` | `0.5902` | `0.6031` | `0.0129` | `12` | `12` | **`10`** | `0` | `0` | `5` | `7` | `2` |
+| `0.3` | `badge` | `0.5902` | `0.6083` | `0.0181` | `12` | `12` | **`10`** | `0` | `0` | `5` | `7` | `2` |
+| `0.5` | `attribute` | `0.5902` | `0.6127` | `0.0225` | `12` | `12` | **`10`** | `0` | `0` | `4` | `8` | `1` |
+| `0.5` | `random` | `0.5902` | `0.5972` | `0.0070` | `12` | `12` | `6` | `4` | `0` | `5` | `7` | `2` |
+| `0.5` | `stratified` | `0.5902` | `0.6166` | `0.0264` | `12` | `12` | **`10`** | `0` | `0` | `5` | `7` | `1` |
+| `0.5` | `coreset` | `0.5902` | `0.6073` | `0.0171` | `12` | `12` | `8` | `2` | `0` | `5` | `7` | `2` |
+| `0.5` | `badge` | `0.5902` | `0.6111` | `0.0209` | `12` | `12` | `9` | `1` | `0` | `5` | `7` | `2` |
+| `0.7` | `attribute` | `0.5902` | **`0.6263`** | `0.0361` | `12` | `12` | **`10`** | `0` | `0` | `5` | `7` | `2` |
+| `0.7` | `random` | `0.5902` | `0.6244` | `0.0342` | `12` | `12` | **`10`** | `0` | `0` | `5` | `7` | `2` |
+| `0.7` | `stratified` | `0.5902` | `0.6244` | `0.0342` | `12` | `12` | **`10`** | `0` | `0` | `5` | `7` | `2` |
+| `0.7` | `coreset` | `0.5902` | `0.6176` | `0.0274` | `12` | `12` | **`10`** | `0` | `0` | `5` | `7` | `2` |
+| `0.7` | `badge` | `0.5902` | `0.6191` | `0.0289` | `12` | `12` | **`10`** | `0` | `0` | `6` | `6` | `2` |
+
+# 04/24/2026 Update — COCO Pose InternVL3 Ratio 0.05 Results
+
+- The `ratio=0.05` COCO pose InternVL3 queue now has eight stable completed runs: four `attribute` settings plus `random`, `stratified`, `coreset`, and fast-path `badge`.
+- The original exact-BADGE row from `20260424_000907` failed before metrics. The completed `badge` row below is the fast approximate BADGE rerun after lowering `BadgeStrategy(exact_kmeanspp_max_select)` to `512`.
+- The additional `attribute` refinement `attrx20_r000_p0_c8` started in `log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.05_attrx20_r000_p0_c8_gpu0_20260424_121700.log` but stopped after `[Epoch 1] step 100/250`; it has no held-out metrics and is not included as a completed result.
+- Common setup:
+  - base AP for comparison: `0.5902`
+  - selected original samples: `1000`
+  - generated rainy images added: `1000`
+  - final train size: `2000`
+  - original candidate pool: `20000`
+  - `extra_count_scale`: `20`
+
+| Strategy | Selected Original | Final Train Size | Held-out Test AP | Delta vs Base | AL Selection Time | End-to-End Time | Canonical Log |
+|----------|-------------------|------------------|------------------|---------------|-------------------|-----------------|---------------|
+| `attribute` (`attrx20_r000_p0_c15`) | `1000` | `2000` | **`0.5846`** | `-0.0056` | `0.26 s` | `00:07:46` | `log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.05_attrx20_r000_p0_c15_gpu0_20260423_232656.log` |
+| `stratified` | `1000` | `2000` | `0.5815` | `-0.0087` | `0.22 s` | `00:07:46` | `log_pose/pose_resume_internvl3_epoch2_stratified_ratio0.05_gpu0_20260424_000907.log` |
+| `random` | `1000` | `2000` | `0.5792` | `-0.0110` | `0.00 s` | `00:07:39` | `log_pose/pose_resume_internvl3_epoch2_random_ratio0.05_gpu0_20260424_000907.log` |
+| `badge` fast approximate | `1000` | `2000` | `0.5754` | `-0.0148` | `64.34 s` | `00:08:53` | `log_pose/pose_resume_internvl3_epoch2_badge_ratio0.05_gpu0_20260424_121700.log` |
+| `attribute` (`attrx20_r000_p0_c0`) | `1000` | `2000` | `0.5745` | `-0.0157` | `0.25 s` | `00:07:52` | `log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.05_attrx20_r000_p0_c0_gpu0_20260424_121700.log` |
+| `coreset` | `1000` | `2000` | `0.5619` | `-0.0283` | `202.56 s` | `00:11:11` | `log_pose/pose_resume_internvl3_epoch2_coreset_ratio0.05_gpu0_20260424_000907.log` |
+| `attribute` (`attrx20_r0005_p005_c15`) | `1000` | `2000` | `0.5273` | `-0.0629` | `0.26 s` | `00:08:14` | `log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.05_attrx20_r0005_p005_c15_gpu0_20260424_000907.log` |
+| `attribute` (`attrx20_r0001_p01_c15`) | `1000` | `2000` | `0.5185` | `-0.0717` | `0.28 s` | `00:09:11` | `log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.05_attrx20_r0001_p01_c15_gpu0_20260424_000907.log` |
+
+- Main observations:
+  - this very small retained-original setting is below the corrected base AP for all completed rows
+  - the best completed `ratio=0.05` row is the conservative attribute setting `attrx20_r000_p0_c15` with AP `0.5846`
+  - the fast approximate `badge` rerun completed, but it did not beat `attribute`, `stratified`, or `random`
+  - the `C=0` class-balance-only refinement also did not improve over `C=15`, so the earlier conservative `C=15` setting remains the best completed `ratio=0.05` attribute point
+  - the weather-steered attribute settings are much weaker at this ratio, especially `attrx20_r0001_p01_c15`
+  - `stratified` and `random` are close behind the best completed attribute row, while `coreset` is slower and worse
+
 # 04/17/2026 Update — COCO Pose InternVL3 Resume Baselines And Attribute Sweeps Completed
 
 - The controller-backed InternVL3 COCO pose resume sweep launched from the canonical base checkpoint has fully completed, and the finished `attribute` comparison runs are now merged directly into the same top-level ratio tables for like-for-like comparison.
@@ -6,10 +79,13 @@
   - ends with:
     - `All strategies completed.`
 - Common setup for the tables below:
-  - base checkpoint:
-    - `log_pose/pose_keypointrcnn_train20k_internvl3_bs8_e2_rare1p1_gpu0_20260415_144530/best.pth`
+  - base reference for AP comparison:
+    - `log_pose/pose_keypointrcnn_train20k_internvl3_bs4_e2_rare0p97_gpuX_20260412_015544/`
+    - log: `log_pose/pose_train20k_internvl3_bs4_e2_rare0p97_gpuX_20260412_015544.log`
   - base held-out test AP for comparison:
-    - `0.6145`
+    - `0.5902`
+  - note:
+    - use `0.5902` as the canonical base AP for future COCO pose InternVL3 resume comparisons; the previously listed `0.6145` comparison value was wrong
   - resume schedule:
     - one additional epoch from the saved epoch-0 checkpoint
   - original candidate pool:
@@ -26,66 +102,66 @@
 
 | Strategy | Selected Original | Final Train Size | Held-out Test AP | Delta vs Base | AL Selection Time | End-to-End Time | Canonical Log |
 |----------|-------------------|------------------|------------------|---------------|-------------------|-----------------|---------------|
-| `random` | `2000` | `3000` | `0.6029` | `-0.0116` | `0.00 s` | `00:09:44` | `log_pose/pose_resume_internvl3_epoch2_random_ratio0.1_gpu0_20260417_022717.log` |
-| `stratified` | `2000` | `3000` | `0.6031` | `-0.0114` | `0.23 s` | `00:09:44` | `log_pose/pose_resume_internvl3_epoch2_stratified_ratio0.1_gpu0_20260417_023705.log` |
-| `coreset` | `2000` | `3000` | `0.5579` | `-0.0566` | `4.96 min` | `00:14:48` | `log_pose/pose_resume_internvl3_epoch2_coreset_ratio0.1_gpu0_20260417_024654.log` |
-| `badge` | `2000` | `3000` | `0.5919` | `-0.0226` | `21.43 min` | `00:31:20` | `log_pose/pose_resume_internvl3_epoch2_badge_ratio0.1_gpu0_20260417_030147.log` |
-| `attribute` (`attrx10_r000_p0_c15`) | `2000` | `3000` | **`0.6071`** | `-0.0074` | `0.26 s` | `00:09:48` | `log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.1_attrx10_r000_p0_c15_gpu0_20260417_114049.log` |
-| `attribute` (`attrx10_r003_p05_c15`) | `2000` | `3000` | `0.6012` | `-0.0133` | `0.27 s` | `00:10:04` | `log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.1_attrx10_r003_p05_c15_gpu2_20260417_114049.log` |
-| `attribute` (`attrx10_r001_p05_c15`) | `2000` | `3000` | `0.6003` | `-0.0142` | `0.26 s` | `00:09:50` | `log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.1_attrx10_r001_p05_c15_gpu1_20260417_114049.log` |
-| `attribute` (`attrx10_r003_p05_c8`) | `2000` | `3000` | `0.5963` | `-0.0182` | `0.26 s` | `00:09:47` | `log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.1_attrx10_r003_p05_c8_gpu3_20260417_114049.log` |
+| `random` | `2000` | `3000` | `0.6029` | `+0.0127` | `0.00 s` | `00:09:44` | `log_pose/pose_resume_internvl3_epoch2_random_ratio0.1_gpu0_20260417_022717.log` |
+| `stratified` | `2000` | `3000` | `0.6031` | `+0.0129` | `0.23 s` | `00:09:44` | `log_pose/pose_resume_internvl3_epoch2_stratified_ratio0.1_gpu0_20260417_023705.log` |
+| `coreset` | `2000` | `3000` | `0.5579` | `-0.0323` | `4.96 min` | `00:14:48` | `log_pose/pose_resume_internvl3_epoch2_coreset_ratio0.1_gpu0_20260417_024654.log` |
+| `badge` | `2000` | `3000` | `0.5919` | `+0.0017` | `21.43 min` | `00:31:20` | `log_pose/pose_resume_internvl3_epoch2_badge_ratio0.1_gpu0_20260417_030147.log` |
+| `attribute` (`attrx10_r000_p0_c15`) | `2000` | `3000` | **`0.6071`** | `+0.0169` | `0.26 s` | `00:09:48` | `log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.1_attrx10_r000_p0_c15_gpu0_20260417_114049.log` |
+| `attribute` (`attrx10_r003_p05_c15`) | `2000` | `3000` | `0.6012` | `+0.0110` | `0.27 s` | `00:10:04` | `log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.1_attrx10_r003_p05_c15_gpu2_20260417_114049.log` |
+| `attribute` (`attrx10_r001_p05_c15`) | `2000` | `3000` | `0.6003` | `+0.0101` | `0.26 s` | `00:09:50` | `log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.1_attrx10_r001_p05_c15_gpu1_20260417_114049.log` |
+| `attribute` (`attrx10_r003_p05_c8`) | `2000` | `3000` | `0.5963` | `+0.0061` | `0.26 s` | `00:09:47` | `log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.1_attrx10_r003_p05_c8_gpu3_20260417_114049.log` |
 
 ### Ratio = 0.3
 
 | Strategy | Selected Original | Final Train Size | Held-out Test AP | Delta vs Base | AL Selection Time | End-to-End Time | Canonical Log |
 |----------|-------------------|------------------|------------------|---------------|-------------------|-----------------|---------------|
-| `random` | `6000` | `7000` | `0.6061` | `-0.0084` | `0.00 s` | `00:17:55` | `log_pose/pose_resume_internvl3_epoch2_random_ratio0.3_gpu1_20260417_022717.log` |
-| `stratified` | `6000` | `7000` | `0.6041` | `-0.0104` | `0.21 s` | `00:18:37` | `log_pose/pose_resume_internvl3_epoch2_stratified_ratio0.3_gpu1_20260417_024517.log` |
-| `coreset` | `6000` | `7000` | `0.6031` | `-0.0114` | `19.29 min` | `00:37:10` | `log_pose/pose_resume_internvl3_epoch2_coreset_ratio0.3_gpu1_20260417_030359.log` |
-| `badge` | `6000` | `7000` | `0.6083` | `-0.0062` | `59.96 s` | `00:18:51` | `log_pose/pose_resume_internvl3_epoch2_badge_ratio0.3_gpu1_20260417_034116.log` |
-| `attribute` (`attrx333_r000_p0_c15`) | `6000` | `7000` | **`0.6174`** | `+0.0029` | `0.28 s` | `00:18:23` | `log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.3_attrx333_r000_p0_c15_gpu1_20260417_122328.log` |
-| `attribute` (`attrx333_r000_p0_c0`) | `6000` | `7000` | `0.6091` | `-0.0054` | `0.25 s` | `00:17:56` | `log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.3_attrx333_r000_p0_c0_gpu0_20260417_122328.log` |
-| `attribute` (`attrx333_r001_p05_c15`) | `6000` | `7000` | `0.6079` | `-0.0066` | `0.27 s` | `00:18:24` | `log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.3_attrx333_r001_p05_c15_gpu3_20260417_122328.log` |
-| `attribute` (`attrx333_r001_p05_c0`) | `6000` | `7000` | `0.6067` | `-0.0078` | `0.25 s` | `00:18:08` | `log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.3_attrx333_r001_p05_c0_gpu2_20260417_122328.log` |
+| `random` | `6000` | `7000` | `0.6061` | `+0.0159` | `0.00 s` | `00:17:55` | `log_pose/pose_resume_internvl3_epoch2_random_ratio0.3_gpu1_20260417_022717.log` |
+| `stratified` | `6000` | `7000` | `0.6041` | `+0.0139` | `0.21 s` | `00:18:37` | `log_pose/pose_resume_internvl3_epoch2_stratified_ratio0.3_gpu1_20260417_024517.log` |
+| `coreset` | `6000` | `7000` | `0.6031` | `+0.0129` | `19.29 min` | `00:37:10` | `log_pose/pose_resume_internvl3_epoch2_coreset_ratio0.3_gpu1_20260417_030359.log` |
+| `badge` | `6000` | `7000` | `0.6083` | `+0.0181` | `59.96 s` | `00:18:51` | `log_pose/pose_resume_internvl3_epoch2_badge_ratio0.3_gpu1_20260417_034116.log` |
+| `attribute` (`attrx333_r000_p0_c15`) | `6000` | `7000` | **`0.6174`** | `+0.0272` | `0.28 s` | `00:18:23` | `log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.3_attrx333_r000_p0_c15_gpu1_20260417_122328.log` |
+| `attribute` (`attrx333_r000_p0_c0`) | `6000` | `7000` | `0.6091` | `+0.0189` | `0.25 s` | `00:17:56` | `log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.3_attrx333_r000_p0_c0_gpu0_20260417_122328.log` |
+| `attribute` (`attrx333_r001_p05_c15`) | `6000` | `7000` | `0.6079` | `+0.0177` | `0.27 s` | `00:18:24` | `log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.3_attrx333_r001_p05_c15_gpu3_20260417_122328.log` |
+| `attribute` (`attrx333_r001_p05_c0`) | `6000` | `7000` | `0.6067` | `+0.0165` | `0.25 s` | `00:18:08` | `log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.3_attrx333_r001_p05_c0_gpu2_20260417_122328.log` |
 
 ### Ratio = 0.5
 
 | Strategy | Selected Original | Final Train Size | Held-out Test AP | Delta vs Base | AL Selection Time | End-to-End Time | Canonical Log |
 |----------|-------------------|------------------|------------------|---------------|-------------------|-----------------|---------------|
-| `random` | `10000` | `11000` | `0.5972` | `-0.0173` | `0.00 s` | `00:27:11` | `log_pose/pose_resume_internvl3_epoch2_random_ratio0.5_gpu2_20260417_022717.log` |
-| `stratified` | `10000` | `11000` | `0.6166` | `+0.0021` | `0.22 s` | `00:28:59` | `log_pose/pose_resume_internvl3_epoch2_stratified_ratio0.5_gpu2_20260417_025433.log` |
-| `coreset` | `10000` | `11000` | `0.6073` | `-0.0072` | `1.15 min` | `00:28:22` | `log_pose/pose_resume_internvl3_epoch2_coreset_ratio0.5_gpu2_20260417_032336.log` |
-| `badge` | `10000` | `11000` | `0.6111` | `-0.0034` | `59.68 s` | `00:27:22` | `log_pose/pose_resume_internvl3_epoch2_badge_ratio0.5_gpu2_20260417_035203.log` |
-| `attribute` (`attrx2_r000_p0_c0`) | `10000` | `11000` | **`0.6127`** | `-0.0018` | `0.25 s` | `00:26:42` | `log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.5_attrx2_r000_p0_c0_gpu0_20260417_125113.log` |
-| `attribute` (`attrx2_r000_p0_c15`) | `10000` | `11000` | `0.6097` | `-0.0048` | `0.28 s` | `00:27:23` | `log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.5_attrx2_r000_p0_c15_gpu1_20260417_125113.log` |
-| `attribute` (`attrx2_r001_p05_c15`) | `10000` | `11000` | `0.6084` | `-0.0061` | `0.28 s` | `00:27:14` | `log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.5_attrx2_r001_p05_c15_gpu3_20260417_125113.log` |
-| `attribute` (`attrx2_r001_p05_c0`) | `10000` | `11000` | `0.6047` | `-0.0098` | `0.25 s` | `00:26:34` | `log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.5_attrx2_r001_p05_c0_gpu2_20260417_125113.log` |
+| `random` | `10000` | `11000` | `0.5972` | `+0.0070` | `0.00 s` | `00:27:11` | `log_pose/pose_resume_internvl3_epoch2_random_ratio0.5_gpu2_20260417_022717.log` |
+| `stratified` | `10000` | `11000` | `0.6166` | `+0.0264` | `0.22 s` | `00:28:59` | `log_pose/pose_resume_internvl3_epoch2_stratified_ratio0.5_gpu2_20260417_025433.log` |
+| `coreset` | `10000` | `11000` | `0.6073` | `+0.0171` | `1.15 min` | `00:28:22` | `log_pose/pose_resume_internvl3_epoch2_coreset_ratio0.5_gpu2_20260417_032336.log` |
+| `badge` | `10000` | `11000` | `0.6111` | `+0.0209` | `59.68 s` | `00:27:22` | `log_pose/pose_resume_internvl3_epoch2_badge_ratio0.5_gpu2_20260417_035203.log` |
+| `attribute` (`attrx2_r000_p0_c0`) | `10000` | `11000` | **`0.6127`** | `+0.0225` | `0.25 s` | `00:26:42` | `log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.5_attrx2_r000_p0_c0_gpu0_20260417_125113.log` |
+| `attribute` (`attrx2_r000_p0_c15`) | `10000` | `11000` | `0.6097` | `+0.0195` | `0.28 s` | `00:27:23` | `log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.5_attrx2_r000_p0_c15_gpu1_20260417_125113.log` |
+| `attribute` (`attrx2_r001_p05_c15`) | `10000` | `11000` | `0.6084` | `+0.0182` | `0.28 s` | `00:27:14` | `log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.5_attrx2_r001_p05_c15_gpu3_20260417_125113.log` |
+| `attribute` (`attrx2_r001_p05_c0`) | `10000` | `11000` | `0.6047` | `+0.0145` | `0.25 s` | `00:26:34` | `log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.5_attrx2_r001_p05_c0_gpu2_20260417_125113.log` |
 
 ### Ratio = 0.7
 
 | Strategy | Selected Original | Final Train Size | Held-out Test AP | Delta vs Base | AL Selection Time | End-to-End Time | Canonical Log |
 |----------|-------------------|------------------|------------------|---------------|-------------------|-----------------|---------------|
-| `random` | `14000` | `15000` | `0.6244` | `+0.0099` | `0.01 s` | `00:34:27` | `log_pose/pose_resume_internvl3_epoch2_random_ratio0.7_gpu3_20260417_022717.log` |
-| `stratified` | `14000` | `15000` | `0.6244` | `+0.0099` | `0.23 s` | `00:35:26` | `log_pose/pose_resume_internvl3_epoch2_stratified_ratio0.7_gpu3_20260417_041149.log` |
-| `coreset` | `14000` | `15000` | `0.6176` | `+0.0031` | `59.12 s` | `00:35:25` | `log_pose/pose_resume_internvl3_epoch2_coreset_ratio0.7_gpu3_20260417_055719.log` |
-| `badge` | `14000` | `15000` | `0.6191` | `+0.0046` | `59.19 s` | `00:35:24` | `log_pose/pose_resume_internvl3_epoch2_badge_ratio0.7_gpu3_20260417_074249.log` |
-| `attribute` (`attrx143_r000_p0_c15`) | `14000` | `15000` | **`0.6263`** | `+0.0118` | `0.28 s` | `00:36:03` | `log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.7_attrx143_r000_p0_c15_gpu1_20260417_170346.log` |
-| `attribute` (`attrx143_r001_p05_c0`) | `14000` | `15000` | `0.6262` | `+0.0117` | `0.26 s` | `00:34:53` | `log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.7_attrx143_r001_p05_c0_gpu2_20260417_170346.log` |
-| `attribute` (`attrx143_r001_p05_c15`) | `14000` | `15000` | `0.6203` | `+0.0058` | `0.29 s` | `00:35:51` | `log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.7_attrx143_r001_p05_c15_gpu3_20260417_170346.log` |
-| `attribute` (`attrx143_r000_p0_c0`) | `14000` | `15000` | `0.6166` | `+0.0021` | `0.25 s` | `00:35:02` | `log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.7_attrx143_r000_p0_c0_gpu0_20260417_170346.log` |
+| `random` | `14000` | `15000` | `0.6244` | `+0.0342` | `0.01 s` | `00:34:27` | `log_pose/pose_resume_internvl3_epoch2_random_ratio0.7_gpu3_20260417_022717.log` |
+| `stratified` | `14000` | `15000` | `0.6244` | `+0.0342` | `0.23 s` | `00:35:26` | `log_pose/pose_resume_internvl3_epoch2_stratified_ratio0.7_gpu3_20260417_041149.log` |
+| `coreset` | `14000` | `15000` | `0.6176` | `+0.0274` | `59.12 s` | `00:35:25` | `log_pose/pose_resume_internvl3_epoch2_coreset_ratio0.7_gpu3_20260417_055719.log` |
+| `badge` | `14000` | `15000` | `0.6191` | `+0.0289` | `59.19 s` | `00:35:24` | `log_pose/pose_resume_internvl3_epoch2_badge_ratio0.7_gpu3_20260417_074249.log` |
+| `attribute` (`attrx143_r000_p0_c15`) | `14000` | `15000` | **`0.6263`** | `+0.0361` | `0.28 s` | `00:36:03` | `log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.7_attrx143_r000_p0_c15_gpu1_20260417_170346.log` |
+| `attribute` (`attrx143_r001_p05_c0`) | `14000` | `15000` | `0.6262` | `+0.0360` | `0.26 s` | `00:34:53` | `log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.7_attrx143_r001_p05_c0_gpu2_20260417_170346.log` |
+| `attribute` (`attrx143_r001_p05_c15`) | `14000` | `15000` | `0.6203` | `+0.0301` | `0.29 s` | `00:35:51` | `log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.7_attrx143_r001_p05_c15_gpu3_20260417_170346.log` |
+| `attribute` (`attrx143_r000_p0_c0`) | `14000` | `15000` | `0.6166` | `+0.0264` | `0.25 s` | `00:35:02` | `log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.7_attrx143_r000_p0_c0_gpu0_20260417_170346.log` |
 
 - Main observations:
   - all non-attribute and attribute resume runs now have stable finished outputs for the four comparison ratios `0.1`, `0.3`, `0.5`, and `0.7`
   - the finished attribute runs are now grouped directly under the same top-level ratio tables as the baselines for like-for-like comparison
-  - under the corrected comparison baseline (`0.6145` test AP), the subset runs no longer uniformly trail the base
+  - under the corrected comparison baseline (`0.5902` test AP), nearly all finished resume runs are above base; the clear exception in this table is `coreset` at `ratio=0.1`
   - the strongest finished resumed result in the full table is now:
     - `attribute` (`attrx143_r000_p0_c15`) at `ratio=0.7`
     - held-out test AP `0.6263`
-    - delta vs corrected base `+0.0118`
+    - delta vs corrected base `+0.0361`
   - the second-best finished resumed result is also an attribute point at `ratio=0.7`:
     - `attribute` (`attrx143_r001_p05_c0`)
     - held-out test AP `0.6262`
-    - delta vs corrected base `+0.0117`
+    - delta vs corrected base `+0.0360`
   - retained-data ratio matters more than selector sophistication in this sweep:
     - every strategy is substantially stronger at `0.7` than at `0.1`
   - the corrected base is matched or exceeded by:
@@ -96,19 +172,19 @@
   - at `ratio=0.1`, the best finished attribute point is:
     - `attrx10_r000_p0_c15`
     - held-out test AP `0.6071`
-    - this is above the corrected `random` `ratio=0.1` row (`0.6029`) but still below the corrected base
+    - this is above the corrected base (`0.5902`) and above the corrected `random` `ratio=0.1` row (`0.6029`)
   - at `ratio=0.3`, the best finished attribute point is:
     - `attrx333_r000_p0_c15`
     - held-out test AP `0.6174`
-    - this is above the corrected base (`0.6145`) and above every finished non-attribute `ratio=0.3` baseline
+    - this is above the corrected base (`0.5902`) and above every finished non-attribute `ratio=0.3` baseline
   - at `ratio=0.5`, the best finished attribute point is:
     - `attrx2_r000_p0_c0`
     - held-out test AP `0.6127`
-    - this is below the corrected base (`0.6145`) and below the finished `stratified` `ratio=0.5` baseline (`0.6166`), but above `badge`, `coreset`, and `random` at the same ratio
+    - this is above the corrected base (`0.5902`) and below the finished `stratified` `ratio=0.5` baseline (`0.6166`), but above `badge`, `coreset`, and `random` at the same ratio
   - at `ratio=0.7`, the best finished attribute point is:
     - `attrx143_r000_p0_c15`
     - held-out test AP `0.6263`
-    - this is above the corrected base (`0.6145`) and above every finished non-attribute `ratio=0.7` baseline
+    - this is above the corrected base (`0.5902`) and above every finished non-attribute `ratio=0.7` baseline
   - for the `ratio=0.3` attribute RPC4 sweep, the conservative control family still wins:
     - `r000_p0_c15`: `0.6174`
     - `r000_p0_c0`: `0.6091`
@@ -160,7 +236,7 @@
     - `21000`
   - slice-analysis source:
     - `internvl3`
-- Compared with the earlier InternVL3 `20k` base run already recorded in this report (`held-out test AP = 0.6145`), this rain-augmented full-data run is higher by `+0.0075` AP.
+- Compared with the corrected InternVL3 `20k` base reference now used in this report (`held-out test AP = 0.5902`), this rain-augmented full-data run is higher by `+0.0318` AP.
 
 | Run | Selected Original | Final Train Size | Best Val AP | Held-out Test AP | Test AP50 | Test AP75 | Test AR | Train Time | End-to-End Time | Canonical Log |
 |-----|-------------------|------------------|-------------|------------------|-----------|-----------|---------|------------|-----------------|---------------|
@@ -168,7 +244,7 @@
 
 - Main observations:
   - the best checkpoint still came from epoch `0`, with best val AP `0.6333`
-  - held-out test AP `0.6220` is slightly above the corrected earlier InternVL3 base
+  - held-out test AP `0.6220` is above the corrected earlier InternVL3 base
   - the hardest held-out test slice remained:
     - `pose=lying` with `AP=0.3268`
   - the weather-target slice also remained difficult:
@@ -811,11 +887,11 @@
 | Run Tag | GPU | Best Epoch | Held-out Val AP | Held-out Test AP | Test AP50 | Test AP75 | Test AR | Train Time | Artifact Root | Log |
 |---------|-----|------------|-----------------|------------------|-----------|-----------|---------|------------|---------------|-----|
 | Qwen3-VL-8B | `3` | `0` | `0.6445` | `0.6352` | `0.8656` | `0.6902` | `0.6993` | `1 h 29 min` | `log_pose/pose_keypointrcnn_train20k_qwen3_bs8_e2_rare1p1_20260415_144429/` | `log_pose/pose_train20k_qwen3_bs8_e2_rare1p1_20260415_144429.log` |
-| InternVL3-8B | `0` | `0` | `0.6401` | `0.6145` | `0.8618` | `0.6936` | `0.7016` | `1 h 34 min` | `log_pose/pose_keypointrcnn_train20k_internvl3_bs8_e2_rare1p1_gpu0_20260415_144530/` | `log_pose/pose_train20k_internvl3_bs8_e2_rare1p1_gpu0_20260415_144530.log` |
+| InternVL3-8B | `0` | `0` | `0.6401` | `0.5902` | `0.8618` | `0.6936` | `0.7016` | `1 h 34 min` | `log_pose/pose_keypointrcnn_train20k_internvl3_bs8_e2_rare1p1_gpu0_20260415_144530/` | `log_pose/base_pose_train20k_compare.log` |
 
 - Relative to the earlier `4/12` held-out test probes:
   - Qwen3-VL-8B improved from `0.5968` to `0.6352` (`+0.0384`)
-  - InternVL3-8B moved from `0.6340` to `0.6145` (`-0.0195`)
+  - InternVL3-8B moved from `0.6340` to `0.5902` (`-0.0438`)
 - Top-level `log_pose/` logs explicitly record both training-only and end-to-end elapsed time for these runs:
   - Qwen3-VL-8B: training `1 h 29 min`, end-to-end `1 h 29 min`
   - InternVL3-8B: training `1 h 34 min`, end-to-end `1 h 34 min`
@@ -848,7 +924,7 @@
 | Follow-Up Run | Earlier 4/17 Reference | Held-out Val AP | Held-out Test AP | Test AP50 | Test AP75 | Test AR | Train Time |
 |---------------|------------------------|-----------------|------------------|-----------|-----------|---------|------------|
 | Qwen3-VL-8B GPU `0` repro | Qwen3-VL-8B GPU `3` (`20260415_144429`) | `0.6445 -> 0.6407` (`-0.0038`) | `0.6352 -> 0.6341` (`-0.0011`) | `0.8656 -> 0.8609` (`-0.0047`) | `0.6902 -> 0.6866` (`-0.0036`) | `0.6993 -> 0.6958` (`-0.0035`) | `1 h 29 min -> 1 h 39 min` (`+10 min`) |
-| InternVL3-8B GPU `3` train-only rerun | InternVL3-8B GPU `0` (`20260415_144530`) | `0.6401 -> 0.6412` (`+0.0011`) | `0.6145 -> 0.6371` (`+0.0226`) | `0.8618 -> 0.8583` (`-0.0035`) | `0.6936 -> 0.6963` (`+0.0027`) | `0.7016 -> 0.6950` (`-0.0066`) | `1 h 34 min -> 1 h 29 min` (`-5 min`) |
+| InternVL3-8B GPU `3` train-only rerun | InternVL3-8B GPU `0` (`20260415_144530`) | `0.6401 -> 0.6412` (`+0.0011`) | `0.5902 -> 0.6371` (`+0.0469`) | `0.8618 -> 0.8583` (`-0.0035`) | `0.6936 -> 0.6963` (`+0.0027`) | `0.7016 -> 0.6950` (`-0.0066`) | `1 h 34 min -> 1 h 29 min` (`-5 min`) |
 
 - Qwen3-VL-8B repro interpretation:
   - overall held-out metrics are slightly below the earlier GPU `3` Qwen3 run

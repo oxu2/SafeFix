@@ -1,0 +1,110 @@
+Launching requested pose attribute RPC12 queue.
+  timestamp:         20260423_224514
+  base model:        log_pose/pose_keypointrcnn_train20k_internvl3_bs8_e2_rare1p1_gpu0_20260415_144530/best.pth
+  attribute file:    save/attribute_coco_pose_gemini_train20k_internvl3_8B.json
+  generated attr:    rainy
+  num added img:     1000
+  max train samples: 20000
+  focus:             weather
+[pipeline] gpu=0 ratio=0.1 starting requested RPC queue
+[pipeline] gpu=1 ratio=0.3 starting requested RPC queue
+[pipeline] gpu=2 ratio=0.5 starting requested RPC queue
+[pipeline] gpu=3 ratio=0.7 starting requested RPC queue
+[launch] gpu=2 ratio=0.5 name=attrx2_r001_p05_c8 R=0.01 P=0.5 C=8.0
+         base=log_pose/pose_keypointrcnn_train20k_internvl3_bs8_e2_rare1p1_gpu0_20260415_144530/best.pth
+         attribute_file=save/attribute_coco_pose_gemini_train20k_internvl3_8B.json
+         focus=weather
+         extra_scale=2
+         log=log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.5_attrx2_r001_p05_c8_gpu2_20260423_224514.log
+[launch] gpu=1 ratio=0.3 name=attrx333_r001_p05_c15 R=0.01 P=0.5 C=15.0
+         out=log_pose/pose_keypointrcnn_resume_internvl3_attribute_ratio0.5_attrx2_r001_p05_c8_gpu2_20260423_224514
+         base=log_pose/pose_keypointrcnn_train20k_internvl3_bs8_e2_rare1p1_gpu0_20260415_144530/best.pth
+         attribute_file=save/attribute_coco_pose_gemini_train20k_internvl3_8B.json
+         focus=weather
+[launch] gpu=0 ratio=0.1 name=attrx10_r001_p05_c8 R=0.01 P=0.5 C=8.0
+         extra_scale=3.33333
+         base=log_pose/pose_keypointrcnn_train20k_internvl3_bs8_e2_rare1p1_gpu0_20260415_144530/best.pth
+         log=log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.3_attrx333_r001_p05_c15_gpu1_20260423_224514.log
+         attribute_file=save/attribute_coco_pose_gemini_train20k_internvl3_8B.json
+[launch] gpu=3 ratio=0.7 name=attrx143_r001_p05_c8 R=0.01 P=0.5 C=8.0
+         out=log_pose/pose_keypointrcnn_resume_internvl3_attribute_ratio0.3_attrx333_r001_p05_c15_gpu1_20260423_224514
+         base=log_pose/pose_keypointrcnn_train20k_internvl3_bs8_e2_rare1p1_gpu0_20260415_144530/best.pth
+         focus=weather
+         attribute_file=save/attribute_coco_pose_gemini_train20k_internvl3_8B.json
+         extra_scale=10
+         focus=weather
+         log=log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.1_attrx10_r001_p05_c8_gpu0_20260423_224514.log
+         extra_scale=1.42857
+         out=log_pose/pose_keypointrcnn_resume_internvl3_attribute_ratio0.1_attrx10_r001_p05_c8_gpu0_20260423_224514
+         log=log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.7_attrx143_r001_p05_c8_gpu3_20260423_224514.log
+         out=log_pose/pose_keypointrcnn_resume_internvl3_attribute_ratio0.7_attrx143_r001_p05_c8_gpu3_20260423_224514
+         pid=44734 pidfile=log_pose/pids/pose_resume_internvl3_epoch2_attribute_ratio0.5_attrx2_r001_p05_c8_gpu2_20260423_224514.pid
+         pid=44735 pidfile=log_pose/pids/pose_resume_internvl3_epoch2_attribute_ratio0.3_attrx333_r001_p05_c15_gpu1_20260423_224514.pid
+[wait] gpu=2 ratio=0.5 name=attrx2_r001_p05_c8 pid=44734
+[wait] gpu=1 ratio=0.3 name=attrx333_r001_p05_c15 pid=44735
+         pid=44736 pidfile=log_pose/pids/pose_resume_internvl3_epoch2_attribute_ratio0.1_attrx10_r001_p05_c8_gpu0_20260423_224514.pid
+         pid=44737 pidfile=log_pose/pids/pose_resume_internvl3_epoch2_attribute_ratio0.7_attrx143_r001_p05_c8_gpu3_20260423_224514.pid
+[wait] gpu=0 ratio=0.1 name=attrx10_r001_p05_c8 pid=44736
+[wait] gpu=3 ratio=0.7 name=attrx143_r001_p05_c8 pid=44737
+[done] gpu=0 ratio=0.1 name=attrx10_r001_p05_c8 pid=44736
+[launch] gpu=0 ratio=0.1 name=attrx10_r003_p05_c15 R=0.03 P=0.5 C=15.0
+         base=log_pose/pose_keypointrcnn_train20k_internvl3_bs8_e2_rare1p1_gpu0_20260415_144530/best.pth
+         attribute_file=save/attribute_coco_pose_gemini_train20k_internvl3_8B.json
+         focus=weather
+         extra_scale=10
+         log=log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.1_attrx10_r003_p05_c15_gpu0_20260423_224514.log
+         out=log_pose/pose_keypointrcnn_resume_internvl3_attribute_ratio0.1_attrx10_r003_p05_c15_gpu0_20260423_224514
+         pid=54148 pidfile=log_pose/pids/pose_resume_internvl3_epoch2_attribute_ratio0.1_attrx10_r003_p05_c15_gpu0_20260423_224514.pid
+[wait] gpu=0 ratio=0.1 name=attrx10_r003_p05_c15 pid=54148
+[done] gpu=1 ratio=0.3 name=attrx333_r001_p05_c15 pid=44735
+[launch] gpu=1 ratio=0.3 name=attrx333_r003_p05_c8 R=0.03 P=0.5 C=8.0
+         base=log_pose/pose_keypointrcnn_train20k_internvl3_bs8_e2_rare1p1_gpu0_20260415_144530/best.pth
+         attribute_file=save/attribute_coco_pose_gemini_train20k_internvl3_8B.json
+         focus=weather
+         extra_scale=3.33333
+         log=log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.3_attrx333_r003_p05_c8_gpu1_20260423_224514.log
+         out=log_pose/pose_keypointrcnn_resume_internvl3_attribute_ratio0.3_attrx333_r003_p05_c8_gpu1_20260423_224514
+         pid=64810 pidfile=log_pose/pids/pose_resume_internvl3_epoch2_attribute_ratio0.3_attrx333_r003_p05_c8_gpu1_20260423_224514.pid
+[wait] gpu=1 ratio=0.3 name=attrx333_r003_p05_c8 pid=64810
+[done] gpu=0 ratio=0.1 name=attrx10_r003_p05_c15 pid=54148
+[launch] gpu=0 ratio=0.1 name=attrx10_r003_p05_c8 R=0.03 P=0.5 C=8.0
+         base=log_pose/pose_keypointrcnn_train20k_internvl3_bs8_e2_rare1p1_gpu0_20260415_144530/best.pth
+         attribute_file=save/attribute_coco_pose_gemini_train20k_internvl3_8B.json
+         focus=weather
+         extra_scale=10
+         log=log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.1_attrx10_r003_p05_c8_gpu0_20260423_224514.log
+         out=log_pose/pose_keypointrcnn_resume_internvl3_attribute_ratio0.1_attrx10_r003_p05_c8_gpu0_20260423_224514
+         pid=66628 pidfile=log_pose/pids/pose_resume_internvl3_epoch2_attribute_ratio0.1_attrx10_r003_p05_c8_gpu0_20260423_224514.pid
+[wait] gpu=0 ratio=0.1 name=attrx10_r003_p05_c8 pid=66628
+[done] gpu=2 ratio=0.5 name=attrx2_r001_p05_c8 pid=44734
+[launch] gpu=2 ratio=0.5 name=attrx2_r003_p05_c15 R=0.03 P=0.5 C=15.0
+         base=log_pose/pose_keypointrcnn_train20k_internvl3_bs8_e2_rare1p1_gpu0_20260415_144530/best.pth
+         attribute_file=save/attribute_coco_pose_gemini_train20k_internvl3_8B.json
+         focus=weather
+         extra_scale=2
+         log=log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.5_attrx2_r003_p05_c15_gpu2_20260423_224514.log
+         out=log_pose/pose_keypointrcnn_resume_internvl3_attribute_ratio0.5_attrx2_r003_p05_c15_gpu2_20260423_224514
+         pid=70972 pidfile=log_pose/pids/pose_resume_internvl3_epoch2_attribute_ratio0.5_attrx2_r003_p05_c15_gpu2_20260423_224514.pid
+[wait] gpu=2 ratio=0.5 name=attrx2_r003_p05_c15 pid=70972
+[done] gpu=0 ratio=0.1 name=attrx10_r003_p05_c8 pid=66628
+[pipeline] gpu=0 ratio=0.1 finished requested RPC queue
+[done] gpu=3 ratio=0.7 name=attrx143_r001_p05_c8 pid=44737
+[launch] gpu=3 ratio=0.7 name=attrx143_r003_p05_c15 R=0.03 P=0.5 C=15.0
+         base=log_pose/pose_keypointrcnn_train20k_internvl3_bs8_e2_rare1p1_gpu0_20260415_144530/best.pth
+         attribute_file=save/attribute_coco_pose_gemini_train20k_internvl3_8B.json
+         focus=weather
+         extra_scale=1.42857
+         log=log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.7_attrx143_r003_p05_c15_gpu3_20260423_224514.log
+         out=log_pose/pose_keypointrcnn_resume_internvl3_attribute_ratio0.7_attrx143_r003_p05_c15_gpu3_20260423_224514
+         pid=73812 pidfile=log_pose/pids/pose_resume_internvl3_epoch2_attribute_ratio0.7_attrx143_r003_p05_c15_gpu3_20260423_224514.pid
+[wait] gpu=3 ratio=0.7 name=attrx143_r003_p05_c15 pid=73812
+[done] gpu=1 ratio=0.3 name=attrx333_r003_p05_c8 pid=64810
+[launch] gpu=1 ratio=0.3 name=attrx333_r003_p05_c15 R=0.03 P=0.5 C=15.0
+         base=log_pose/pose_keypointrcnn_train20k_internvl3_bs8_e2_rare1p1_gpu0_20260415_144530/best.pth
+         attribute_file=save/attribute_coco_pose_gemini_train20k_internvl3_8B.json
+         focus=weather
+         extra_scale=3.33333
+         log=log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.3_attrx333_r003_p05_c15_gpu1_20260423_224514.log
+         out=log_pose/pose_keypointrcnn_resume_internvl3_attribute_ratio0.3_attrx333_r003_p05_c15_gpu1_20260423_224514
+         pid=74609 pidfile=log_pose/pids/pose_resume_internvl3_epoch2_attribute_ratio0.3_attrx333_r003_p05_c15_gpu1_20260423_224514.pid
+[wait] gpu=1 ratio=0.3 name=attrx333_r003_p05_c15 pid=74609
