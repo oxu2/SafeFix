@@ -1,0 +1,111 @@
+Current time: 0417024656
+Training start timestamp: 2026-04-17 02:46:56
+Deterministic settings: seed=42, cudnn.deterministic=True, cudnn.benchmark=False, CUBLAS_WORKSPACE_CONFIG=:4096:8
+loading annotations into memory...
+Done (t=5.03s)
+creating index...
+index created!
+loading annotations into memory...
+Done (t=0.15s)
+creating index...
+index created!
+Core-set selection: choosing 2000 from 20000 samples...
+Progress: ░░░░░░░░░░░░░░░░░░░░ 0/2000█░░░░░░░░░░░░░░░░░░░ 100/2000██░░░░░░░░░░░░░░░░░░ 200/2000███░░░░░░░░░░░░░░░░░ 300/2000████░░░░░░░░░░░░░░░░ 400/2000█████░░░░░░░░░░░░░░░ 500/2000██████░░░░░░░░░░░░░░ 600/2000███████░░░░░░░░░░░░░ 700/2000████████░░░░░░░░░░░░ 800/2000█████████░░░░░░░░░░░ 900/2000██████████░░░░░░░░░░ 1000/2000███████████░░░░░░░░░ 1100/2000████████████░░░░░░░░ 1200/2000█████████████░░░░░░░ 1300/2000██████████████░░░░░░ 1400/2000███████████████░░░░░ 1500/2000████████████████░░░░ 1600/2000█████████████████░░░ 1700/2000██████████████████░░ 1800/2000███████████████████░ 1900/2000████████████████████ 2000/2000 - Complete!
+Warning: filtered out 8 unreadable generated images before training. Examples: 444199 (000000444199.png: UnidentifiedImageError), 448974 (000000448974.png: SyntaxError), 449412 (000000449412.png: SyntaxError), 464274 (000000464274.png: OSError), 464462 (000000464462.png: OSError)
+Warning: filtered out 7 generated images whose reused COCO boxes collapse under the generated image size. Examples: 41020 (512x512), 133619 (512x512), 151877 (512x512), 199927 (512x512), 229383 (512x512)
+Generated augmentation source: attribute=rainy, dir=/data/oxx220000/coco-pose-weather-edits/generated_coco_train1500_rain/outputs
+Train sampling summary: original_candidates=20000, selected_original=2000 (sub_ratio=0.1), selection_strategy=coreset, selection_time=297.68s, generated_available=1271, generated_selected=1000, final_train=3000
+Dataset sizes after split: train=3000, val=1173, test=1173
+Loaded model weights from log_pose/pose_keypointrcnn_train20k_internvl3_bs8_e2_rare1p1_gpu0_20260415_144530/best.pth (epoch 0, best AP 0.6401)
+Using fresh optimizer / scheduler state after --resume-model. Training will start from epoch index 1 with the current optimizer hyperparameters (lr=0.005, momentum=0.9, weight_decay=0.0005, step_size=8, gamma=0.1).
+/people/cs/o/oxx220000/.conda/envs/ad/lib/python3.9/site-packages/torch/autograd/__init__.py:197: UserWarning: upsample_bilinear2d_backward_out_cuda does not have a deterministic implementation, but you set 'torch.use_deterministic_algorithms(True, warn_only=True)'. You can file an issue at https://github.com/pytorch/pytorch/issues to help us prioritize adding deterministic support for this operation. (Triggered internally at ../aten/src/ATen/Context.cpp:82.)
+  Variable._execution_engine.run_backward(  # Calls into the C++ engine to run the backward pass
+[Epoch 1] step 50/375: total=5.4454 (loss_classifier=0.0826, loss_box_reg=0.0957, loss_keypoint=5.2379, loss_objectness=0.0165, loss_rpn_box_reg=0.0126)
+[Epoch 1] step 100/375: total=5.8752 (loss_classifier=0.1277, loss_box_reg=0.1665, loss_keypoint=5.5601, loss_objectness=0.0134, loss_rpn_box_reg=0.0074)
+[Epoch 1] step 150/375: total=5.2919 (loss_classifier=0.0921, loss_box_reg=0.1156, loss_keypoint=5.0569, loss_objectness=0.0186, loss_rpn_box_reg=0.0087)
+[Epoch 1] step 200/375: total=4.6386 (loss_classifier=0.1188, loss_box_reg=0.1734, loss_keypoint=4.3181, loss_objectness=0.0165, loss_rpn_box_reg=0.0118)
+[Epoch 1] step 250/375: total=5.1308 (loss_classifier=0.1123, loss_box_reg=0.1430, loss_keypoint=4.8498, loss_objectness=0.0167, loss_rpn_box_reg=0.0090)
+[Epoch 1] step 300/375: total=4.1636 (loss_classifier=0.0725, loss_box_reg=0.1321, loss_keypoint=3.9348, loss_objectness=0.0182, loss_rpn_box_reg=0.0060)
+[Epoch 1] step 350/375: total=5.1624 (loss_classifier=0.0779, loss_box_reg=0.0853, loss_keypoint=4.9874, loss_objectness=0.0081, loss_rpn_box_reg=0.0037)
+[Epoch 1] done in 361.8s, avg_train_loss=5.1529
+Loading and preparing results...
+DONE (t=0.38s)
+creating index...
+index created!
+Running per image evaluation...
+Evaluate annotation type *keypoints*
+DONE (t=2.38s).
+Accumulating evaluation results...
+DONE (t=0.06s).
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=   all | maxDets= 20 ] = 0.566
+ Average Precision  (AP) @[ IoU=0.50      | area=   all | maxDets= 20 ] = 0.820
+ Average Precision  (AP) @[ IoU=0.75      | area=   all | maxDets= 20 ] = 0.615
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=medium | maxDets= 20 ] = 0.524
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= large | maxDets= 20 ] = 0.632
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets= 20 ] = 0.673
+ Average Recall     (AR) @[ IoU=0.50      | area=   all | maxDets= 20 ] = 0.892
+ Average Recall     (AR) @[ IoU=0.75      | area=   all | maxDets= 20 ] = 0.727
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=medium | maxDets= 20 ] = 0.631
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= large | maxDets= 20 ] = 0.730
+{"epoch": 1, "train_loss": 5.152880818684896, "epoch_time_sec": 361.8236575126648, "AP": 0.5664373653075486, "AP50": 0.8199598936986224, "AP75": 0.6150092845788976, "AR": 0.6730819245773731, "eval_time_sec": 71.28158473968506}
+No saved best/last model checkpoint was found after training. Skipping the post-train reload step and using the in-memory final model for evaluation.
+Loading and preparing results...
+DONE (t=0.38s)
+creating index...
+index created!
+Running per image evaluation...
+Evaluate annotation type *keypoints*
+DONE (t=2.34s).
+Accumulating evaluation results...
+DONE (t=0.06s).
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=   all | maxDets= 20 ] = 0.566
+ Average Precision  (AP) @[ IoU=0.50      | area=   all | maxDets= 20 ] = 0.820
+ Average Precision  (AP) @[ IoU=0.75      | area=   all | maxDets= 20 ] = 0.615
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=medium | maxDets= 20 ] = 0.524
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= large | maxDets= 20 ] = 0.632
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets= 20 ] = 0.673
+ Average Recall     (AR) @[ IoU=0.50      | area=   all | maxDets= 20 ] = 0.892
+ Average Recall     (AR) @[ IoU=0.75      | area=   all | maxDets= 20 ] = 0.727
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=medium | maxDets= 20 ] = 0.631
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= large | maxDets= 20 ] = 0.730
+Held-out val metrics (final in-memory model):
+{
+  "AP": 0.5664373653075486,
+  "AP50": 0.8199598936986224,
+  "AP75": 0.6150092845788976,
+  "AR": 0.6730819245773731
+}
+Loading and preparing results...
+DONE (t=0.39s)
+creating index...
+index created!
+Running per image evaluation...
+Evaluate annotation type *keypoints*
+DONE (t=2.39s).
+Accumulating evaluation results...
+DONE (t=0.05s).
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=   all | maxDets= 20 ] = 0.558
+ Average Precision  (AP) @[ IoU=0.50      | area=   all | maxDets= 20 ] = 0.816
+ Average Precision  (AP) @[ IoU=0.75      | area=   all | maxDets= 20 ] = 0.607
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=medium | maxDets= 20 ] = 0.507
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= large | maxDets= 20 ] = 0.641
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets= 20 ] = 0.661
+ Average Recall     (AR) @[ IoU=0.50      | area=   all | maxDets= 20 ] = 0.882
+ Average Recall     (AR) @[ IoU=0.75      | area=   all | maxDets= 20 ] = 0.707
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=medium | maxDets= 20 ] = 0.610
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= large | maxDets= 20 ] = 0.737
+Held-out test metrics:
+{
+  "AP": 0.5579301790952955,
+  "AP50": 0.8164864684143844,
+  "AP75": 0.606626449477188,
+  "AR": 0.6613247863247864
+}
+Total training time for 2 epochs: 576.20 seconds
+Total training-only epoch time: 361.82 seconds
+Total evaluation time: 71.28 seconds
+End-to-end wall time (data prep + training + evaluation + setup): 888.35 seconds
+Training end timestamp: 2026-04-17 03:01:45
+Training elapsed (HH:MM:SS): 00:09:36
+End-to-end elapsed (HH:MM:SS): 00:14:48
+Training complete. Artifacts: log_pose/pose_keypointrcnn_resume_internvl3_coreset_ratio0.1_gpu0_20260417_024654

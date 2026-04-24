@@ -237,6 +237,11 @@ def extract_targets_from_dataset(dataset):
     """Extract per-sample class labels from common dataset wrappers."""
     from torch.utils.data import ConcatDataset, Subset
 
+    if hasattr(dataset, "al_targets"):
+        targets = _coerce_targets_array(getattr(dataset, "al_targets"))
+        if targets is not None:
+            return targets
+
     if isinstance(dataset, Subset):
         parent_targets = extract_targets_from_dataset(dataset.dataset)
         if parent_targets is None:
@@ -990,6 +995,8 @@ class AttributeFocusedStrategy:
         """Map dataset-local indices to attribute metadata indices."""
         from torch.utils.data import Subset, ConcatDataset
 
+        dataset_len = len(dataset) if hasattr(dataset, "__len__") else 0
+
         if isinstance(dataset, Subset):
             parent_mapping = self._resolve_metadata_indices(dataset.dataset)
             if parent_mapping is None:
@@ -1006,9 +1013,15 @@ class AttributeFocusedStrategy:
                     indices.extend(sub_map)
             return indices
 
-        # Base dataset: assume attribute metadata aligns with dataset order
-        dataset_len = len(dataset) if hasattr(dataset, "__len__") else 0
+        if hasattr(dataset, "attribute_metadata_indices"):
+            custom_indices = list(getattr(dataset, "attribute_metadata_indices"))
+            if len(custom_indices) != dataset_len:
+                raise ValueError(
+                    "attribute_metadata_indices length must match dataset length"
+                )
+            return custom_indices
 
+        # Base dataset: assume attribute metadata aligns with dataset order
         # Heuristic: generated datasets typically do not have attribute metadata
         class_name = dataset.__class__.__name__.lower()
         if "generated" in class_name or dataset_len == 0:
@@ -1043,11 +1056,16 @@ class AttributeFocusedStrategy:
                     labels.extend(sub_labels)
             return labels
 
-        candidates = None
-        for attr_name in ("targets", "labels"):
-            if hasattr(dataset, attr_name):
-                candidates = getattr(dataset, attr_name)
-                break
+        if hasattr(dataset, "al_targets"):
+            candidates = list(getattr(dataset, "al_targets"))
+        else:
+            candidates = None
+
+        if candidates is None:
+            for attr_name in ("targets", "labels"):
+                if hasattr(dataset, attr_name):
+                    candidates = getattr(dataset, attr_name)
+                    break
 
         if candidates is None and hasattr(dataset, "samples"):
             candidates = [sample[1] for sample in dataset.samples]

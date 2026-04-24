@@ -1,0 +1,113 @@
+Current time: 0417020156
+Training start timestamp: 2026-04-17 02:01:56
+Deterministic settings: seed=42, cudnn.deterministic=True, cudnn.benchmark=False, CUBLAS_WORKSPACE_CONFIG=:4096:8
+loading annotations into memory...
+Done (t=5.08s)
+creating index...
+index created!
+loading annotations into memory...
+Done (t=0.15s)
+creating index...
+index created!
+
+Attribute distribution in selected samples:
+  [weather] cloudy: 33 samples (51.6%)
+  [weather] clear: 18 samples (28.1%)
+  [weather] snowy: 13 samples (20.3%)
+Debug attribute breakdown for 'weather':
+  value=snowy, freq=13, indices=[71,79,91,124,125,136,145,156,176,208,...], R=0.9259, U=0.0000, L=0.0000, B=0.0000
+  value=cloudy, freq=33, indices=[1,37,39,44,57,65,83,86,88,104,...], R=0.9004, U=0.0000, L=0.0000, B=0.0000
+  value=clear, freq=96, indices=[4,5,6,8,9,10,12,13,16,17,...], R=0.8720, U=0.0000, L=0.0000, B=0.0000
+  value=sunny, freq=106, indices=[0,2,3,11,14,15,18,19,20,21,...], R=0.8694, U=0.0000, L=0.0000, B=0.0000
+  value=rainy, freq=136.0, indices=[7,58,103,159,166,235,247,253], R=0.8630, U=0.0000, L=0.0000, B=0.0000
+Warning: filtered out 8 unreadable generated images before training. Examples: 444199 (000000444199.png: UnidentifiedImageError), 448974 (000000448974.png: SyntaxError), 449412 (000000449412.png: SyntaxError), 464274 (000000464274.png: OSError), 464462 (000000464462.png: OSError)
+Warning: filtered out 7 generated images whose reused COCO boxes collapse under the generated image size. Examples: 41020 (512x512), 133619 (512x512), 151877 (512x512), 199927 (512x512), 229383 (512x512)
+Generated augmentation source: attribute=rainy, dir=/data/oxx220000/coco-pose-weather-edits/generated_coco_train1500_rain/outputs
+Train sampling summary: original_candidates=256, selected_original=64 (sub_ratio=0.25), selection_strategy=attribute, selection_time=0.01s, generated_available=1271, generated_selected=32, final_train=96
+Dataset sizes after split: train=96, val=1173, test=1173
+/people/cs/o/oxx220000/.conda/envs/ad/lib/python3.9/site-packages/torch/autograd/__init__.py:197: UserWarning: upsample_bilinear2d_backward_out_cuda does not have a deterministic implementation, but you set 'torch.use_deterministic_algorithms(True, warn_only=True)'. You can file an issue at https://github.com/pytorch/pytorch/issues to help us prioritize adding deterministic support for this operation. (Triggered internally at ../aten/src/ATen/Context.cpp:82.)
+  Variable._execution_engine.run_backward(  # Calls into the C++ engine to run the backward pass
+[Epoch 0] step 50/96: total=8.2604 (loss_classifier=0.4351, loss_box_reg=0.4411, loss_keypoint=7.2144, loss_objectness=0.1410, loss_rpn_box_reg=0.0289)
+[Epoch 0] done in 11.6s, avg_train_loss=6.7866
+Loading and preparing results...
+DONE (t=0.40s)
+creating index...
+index created!
+Running per image evaluation...
+Evaluate annotation type *keypoints*
+DONE (t=2.56s).
+Accumulating evaluation results...
+DONE (t=0.06s).
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=   all | maxDets= 20 ] = 0.238
+ Average Precision  (AP) @[ IoU=0.50      | area=   all | maxDets= 20 ] = 0.515
+ Average Precision  (AP) @[ IoU=0.75      | area=   all | maxDets= 20 ] = 0.189
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=medium | maxDets= 20 ] = 0.278
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= large | maxDets= 20 ] = 0.215
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets= 20 ] = 0.361
+ Average Recall     (AR) @[ IoU=0.50      | area=   all | maxDets= 20 ] = 0.664
+ Average Recall     (AR) @[ IoU=0.75      | area=   all | maxDets= 20 ] = 0.335
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=medium | maxDets= 20 ] = 0.370
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= large | maxDets= 20 ] = 0.351
+Saved model checkpoint: log_pose/pose_keypointrcnn_al_smoke_attribute_gpu2_20260417_020154/best.pth
+{"epoch": 0, "train_loss": 6.7866246576110525, "epoch_time_sec": 11.619735717773438, "AP": 0.2378615277685578, "AP50": 0.5148076978457121, "AP75": 0.18882664539088542, "AR": 0.36118335500650195, "eval_time_sec": 60.219746112823486}
+Loaded model weights from log_pose/pose_keypointrcnn_al_smoke_attribute_gpu2_20260417_020154/best.pth (epoch 0, best AP 0.2379)
+Loading and preparing results...
+DONE (t=0.41s)
+creating index...
+index created!
+Running per image evaluation...
+Evaluate annotation type *keypoints*
+DONE (t=2.52s).
+Accumulating evaluation results...
+DONE (t=0.06s).
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=   all | maxDets= 20 ] = 0.238
+ Average Precision  (AP) @[ IoU=0.50      | area=   all | maxDets= 20 ] = 0.515
+ Average Precision  (AP) @[ IoU=0.75      | area=   all | maxDets= 20 ] = 0.189
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=medium | maxDets= 20 ] = 0.278
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= large | maxDets= 20 ] = 0.215
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets= 20 ] = 0.361
+ Average Recall     (AR) @[ IoU=0.50      | area=   all | maxDets= 20 ] = 0.664
+ Average Recall     (AR) @[ IoU=0.75      | area=   all | maxDets= 20 ] = 0.335
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=medium | maxDets= 20 ] = 0.370
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= large | maxDets= 20 ] = 0.351
+Held-out val metrics (best checkpoint):
+{
+  "AP": 0.2378615277685578,
+  "AP50": 0.5148076978457121,
+  "AP75": 0.18882664539088542,
+  "AR": 0.36118335500650195
+}
+Loading and preparing results...
+DONE (t=0.41s)
+creating index...
+index created!
+Running per image evaluation...
+Evaluate annotation type *keypoints*
+DONE (t=2.58s).
+Accumulating evaluation results...
+DONE (t=0.06s).
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=   all | maxDets= 20 ] = 0.242
+ Average Precision  (AP) @[ IoU=0.50      | area=   all | maxDets= 20 ] = 0.518
+ Average Precision  (AP) @[ IoU=0.75      | area=   all | maxDets= 20 ] = 0.193
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=medium | maxDets= 20 ] = 0.277
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= large | maxDets= 20 ] = 0.217
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets= 20 ] = 0.352
+ Average Recall     (AR) @[ IoU=0.50      | area=   all | maxDets= 20 ] = 0.656
+ Average Recall     (AR) @[ IoU=0.75      | area=   all | maxDets= 20 ] = 0.322
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=medium | maxDets= 20 ] = 0.355
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= large | maxDets= 20 ] = 0.349
+Held-out test metrics:
+{
+  "AP": 0.2416149312731647,
+  "AP50": 0.5178512345161234,
+  "AP75": 0.1929786421825931,
+  "AR": 0.3521367521367521
+}
+Total training time for 1 epochs: 199.10 seconds
+Total training-only epoch time: 11.62 seconds
+Total evaluation time: 60.22 seconds
+End-to-end wall time (data prep + training + evaluation + setup): 213.94 seconds
+Training end timestamp: 2026-04-17 02:05:30
+Training elapsed (HH:MM:SS): 00:03:19
+End-to-end elapsed (HH:MM:SS): 00:03:34
+Training complete. Artifacts: log_pose/pose_keypointrcnn_al_smoke_attribute_gpu2_20260417_020154

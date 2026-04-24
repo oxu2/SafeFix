@@ -1,0 +1,270 @@
+Launching per-GPU sequential pose baseline queues.
+[pipeline] gpu=0 ratio=0.1 starting strategy sequence
+Launching pose resume sweep
+  strategy:     random
+  base source:  internvl3
+  base model:   log_pose/pose_keypointrcnn_train20k_internvl3_bs8_e2_rare1p1_gpu0_20260415_144530/best.pth
+  epochs total: 2
+  analysis src: internvl3
+  gpu:          0
+[pipeline] gpu=1 ratio=0.3 starting strategy sequence
+  ratio:        0.1
+Launching pose resume sweep
+  strategy:     random
+  base source:  internvl3
+  base model:   log_pose/pose_keypointrcnn_train20k_internvl3_bs8_e2_rare1p1_gpu0_20260415_144530/best.pth
+  epochs total: 2
+[pipeline] gpu=2 ratio=0.5 starting strategy sequence
+  analysis src: internvl3
+  gpu:          1
+  ratio:        0.3
+Launching pose resume sweep
+  strategy:     random
+  base source:  internvl3
+[pipeline] gpu=3 ratio=0.7 starting strategy sequence
+  base model:   log_pose/pose_keypointrcnn_train20k_internvl3_bs8_e2_rare1p1_gpu0_20260415_144530/best.pth
+  epochs total: 2
+  analysis src: internvl3
+  gpu:          2
+  ratio:        0.5
+Launching pose resume sweep
+  strategy:     random
+  base source:  internvl3
+  base model:   log_pose/pose_keypointrcnn_train20k_internvl3_bs8_e2_rare1p1_gpu0_20260415_144530/best.pth
+  epochs total: 2
+  analysis src: internvl3
+  gpu:          3
+  ratio:        0.7
+[launch] strategy=random gpu=0 ratio=0.1
+         base=log_pose/pose_keypointrcnn_train20k_internvl3_bs8_e2_rare1p1_gpu0_20260415_144530/best.pth
+         log=log_pose/pose_resume_internvl3_epoch2_random_ratio0.1_gpu0_20260417_022717.log
+         out=log_pose/pose_keypointrcnn_resume_internvl3_random_ratio0.1_gpu0_20260417_022717
+[launch] strategy=random gpu=1 ratio=0.3
+         base=log_pose/pose_keypointrcnn_train20k_internvl3_bs8_e2_rare1p1_gpu0_20260415_144530/best.pth
+         log=log_pose/pose_resume_internvl3_epoch2_random_ratio0.3_gpu1_20260417_022717.log
+         out=log_pose/pose_keypointrcnn_resume_internvl3_random_ratio0.3_gpu1_20260417_022717
+         pid=4156901 pidfile=log_pose/pids/pose_resume_internvl3_epoch2_random_ratio0.1_gpu0_20260417_022717.pid
+[wait] strategy=random waiting for 1 launched jobs
+         pid=4156902 pidfile=log_pose/pids/pose_resume_internvl3_epoch2_random_ratio0.3_gpu1_20260417_022717.pid
+[wait] strategy=random waiting for 1 launched jobs
+[launch] strategy=random gpu=2 ratio=0.5
+         base=log_pose/pose_keypointrcnn_train20k_internvl3_bs8_e2_rare1p1_gpu0_20260415_144530/best.pth
+         log=log_pose/pose_resume_internvl3_epoch2_random_ratio0.5_gpu2_20260417_022717.log
+         out=log_pose/pose_keypointrcnn_resume_internvl3_random_ratio0.5_gpu2_20260417_022717
+[launch] strategy=random gpu=3 ratio=0.7
+         base=log_pose/pose_keypointrcnn_train20k_internvl3_bs8_e2_rare1p1_gpu0_20260415_144530/best.pth
+         log=log_pose/pose_resume_internvl3_epoch2_random_ratio0.7_gpu3_20260417_022717.log
+         out=log_pose/pose_keypointrcnn_resume_internvl3_random_ratio0.7_gpu3_20260417_022717
+         delayed_start_sec=4200
+         pid=4156903 pidfile=log_pose/pids/pose_resume_internvl3_epoch2_random_ratio0.5_gpu2_20260417_022717.pid
+         pid=4156904 pidfile=log_pose/pids/pose_resume_internvl3_epoch2_random_ratio0.7_gpu3_20260417_022717.pid
+[wait] strategy=random waiting for 1 launched jobs
+[wait] strategy=random waiting for 1 launched jobs
+[wait] strategy=random pid=4156901 completed successfully
+Strategy random completed successfully.
+Launching pose resume sweep
+  strategy:     stratified
+  base source:  internvl3
+  base model:   log_pose/pose_keypointrcnn_train20k_internvl3_bs8_e2_rare1p1_gpu0_20260415_144530/best.pth
+  epochs total: 2
+  analysis src: internvl3
+  gpu:          0
+  ratio:        0.1
+[launch] strategy=stratified gpu=0 ratio=0.1
+         base=log_pose/pose_keypointrcnn_train20k_internvl3_bs8_e2_rare1p1_gpu0_20260415_144530/best.pth
+         log=log_pose/pose_resume_internvl3_epoch2_stratified_ratio0.1_gpu0_20260417_023705.log
+         out=log_pose/pose_keypointrcnn_resume_internvl3_stratified_ratio0.1_gpu0_20260417_023705
+         pid=4169390 pidfile=log_pose/pids/pose_resume_internvl3_epoch2_stratified_ratio0.1_gpu0_20260417_023705.pid
+[wait] strategy=stratified waiting for 1 launched jobs
+[wait] strategy=random pid=4156902 completed successfully
+Strategy random completed successfully.
+Launching pose resume sweep
+  strategy:     stratified
+  base source:  internvl3
+  base model:   log_pose/pose_keypointrcnn_train20k_internvl3_bs8_e2_rare1p1_gpu0_20260415_144530/best.pth
+  epochs total: 2
+  analysis src: internvl3
+  gpu:          1
+  ratio:        0.3
+[launch] strategy=stratified gpu=1 ratio=0.3
+         base=log_pose/pose_keypointrcnn_train20k_internvl3_bs8_e2_rare1p1_gpu0_20260415_144530/best.pth
+         log=log_pose/pose_resume_internvl3_epoch2_stratified_ratio0.3_gpu1_20260417_024517.log
+         out=log_pose/pose_keypointrcnn_resume_internvl3_stratified_ratio0.3_gpu1_20260417_024517
+         pid=4178303 pidfile=log_pose/pids/pose_resume_internvl3_epoch2_stratified_ratio0.3_gpu1_20260417_024517.pid
+[wait] strategy=stratified waiting for 1 launched jobs
+[wait] strategy=stratified pid=4169390 completed successfully
+Strategy stratified completed successfully.
+Launching pose resume sweep
+  strategy:     coreset
+  base source:  internvl3
+  base model:   log_pose/pose_keypointrcnn_train20k_internvl3_bs8_e2_rare1p1_gpu0_20260415_144530/best.pth
+  epochs total: 2
+  analysis src: internvl3
+  gpu:          0
+  ratio:        0.1
+[launch] strategy=coreset gpu=0 ratio=0.1
+         base=log_pose/pose_keypointrcnn_train20k_internvl3_bs8_e2_rare1p1_gpu0_20260415_144530/best.pth
+         log=log_pose/pose_resume_internvl3_epoch2_coreset_ratio0.1_gpu0_20260417_024654.log
+         out=log_pose/pose_keypointrcnn_resume_internvl3_coreset_ratio0.1_gpu0_20260417_024654
+         pid=4180367 pidfile=log_pose/pids/pose_resume_internvl3_epoch2_coreset_ratio0.1_gpu0_20260417_024654.pid
+[wait] strategy=coreset waiting for 1 launched jobs
+[wait] strategy=random pid=4156903 completed successfully
+Strategy random completed successfully.
+Launching pose resume sweep
+  strategy:     stratified
+  base source:  internvl3
+  base model:   log_pose/pose_keypointrcnn_train20k_internvl3_bs8_e2_rare1p1_gpu0_20260415_144530/best.pth
+  epochs total: 2
+  analysis src: internvl3
+  gpu:          2
+  ratio:        0.5
+[launch] strategy=stratified gpu=2 ratio=0.5
+         base=log_pose/pose_keypointrcnn_train20k_internvl3_bs8_e2_rare1p1_gpu0_20260415_144530/best.pth
+         log=log_pose/pose_resume_internvl3_epoch2_stratified_ratio0.5_gpu2_20260417_025433.log
+         out=log_pose/pose_keypointrcnn_resume_internvl3_stratified_ratio0.5_gpu2_20260417_025433
+         pid=4188698 pidfile=log_pose/pids/pose_resume_internvl3_epoch2_stratified_ratio0.5_gpu2_20260417_025433.pid
+[wait] strategy=stratified waiting for 1 launched jobs
+[wait] strategy=coreset pid=4180367 completed successfully
+Strategy coreset completed successfully.
+Launching pose resume sweep
+  strategy:     badge
+  base source:  internvl3
+  base model:   log_pose/pose_keypointrcnn_train20k_internvl3_bs8_e2_rare1p1_gpu0_20260415_144530/best.pth
+  epochs total: 2
+  analysis src: internvl3
+  gpu:          0
+  ratio:        0.1
+[launch] strategy=badge gpu=0 ratio=0.1
+         base=log_pose/pose_keypointrcnn_train20k_internvl3_bs8_e2_rare1p1_gpu0_20260415_144530/best.pth
+         log=log_pose/pose_resume_internvl3_epoch2_badge_ratio0.1_gpu0_20260417_030147.log
+         out=log_pose/pose_keypointrcnn_resume_internvl3_badge_ratio0.1_gpu0_20260417_030147
+         pid=2501 pidfile=log_pose/pids/pose_resume_internvl3_epoch2_badge_ratio0.1_gpu0_20260417_030147.pid
+[wait] strategy=badge waiting for 1 launched jobs
+[wait] strategy=stratified pid=4178303 completed successfully
+Strategy stratified completed successfully.
+Launching pose resume sweep
+  strategy:     coreset
+  base source:  internvl3
+  base model:   log_pose/pose_keypointrcnn_train20k_internvl3_bs8_e2_rare1p1_gpu0_20260415_144530/best.pth
+  epochs total: 2
+  analysis src: internvl3
+  gpu:          1
+  ratio:        0.3
+[launch] strategy=coreset gpu=1 ratio=0.3
+         base=log_pose/pose_keypointrcnn_train20k_internvl3_bs8_e2_rare1p1_gpu0_20260415_144530/best.pth
+         log=log_pose/pose_resume_internvl3_epoch2_coreset_ratio0.3_gpu1_20260417_030359.log
+         out=log_pose/pose_keypointrcnn_resume_internvl3_coreset_ratio0.3_gpu1_20260417_030359
+         pid=5867 pidfile=log_pose/pids/pose_resume_internvl3_epoch2_coreset_ratio0.3_gpu1_20260417_030359.pid
+[wait] strategy=coreset waiting for 1 launched jobs
+[wait] strategy=stratified pid=4188698 completed successfully
+Strategy stratified completed successfully.
+Launching pose resume sweep
+  strategy:     coreset
+  base source:  internvl3
+  base model:   log_pose/pose_keypointrcnn_train20k_internvl3_bs8_e2_rare1p1_gpu0_20260415_144530/best.pth
+  epochs total: 2
+  analysis src: internvl3
+  gpu:          2
+  ratio:        0.5
+[launch] strategy=coreset gpu=2 ratio=0.5
+         base=log_pose/pose_keypointrcnn_train20k_internvl3_bs8_e2_rare1p1_gpu0_20260415_144530/best.pth
+         log=log_pose/pose_resume_internvl3_epoch2_coreset_ratio0.5_gpu2_20260417_032336.log
+         out=log_pose/pose_keypointrcnn_resume_internvl3_coreset_ratio0.5_gpu2_20260417_032336
+         pid=25359 pidfile=log_pose/pids/pose_resume_internvl3_epoch2_coreset_ratio0.5_gpu2_20260417_032336.pid
+[wait] strategy=coreset waiting for 1 launched jobs
+[wait] strategy=badge pid=2501 completed successfully
+Strategy badge completed successfully.
+[pipeline] gpu=0 ratio=0.1 finished strategy sequence
+[wait] strategy=coreset pid=5867 completed successfully
+Strategy coreset completed successfully.
+Launching pose resume sweep
+  strategy:     badge
+  base source:  internvl3
+  base model:   log_pose/pose_keypointrcnn_train20k_internvl3_bs8_e2_rare1p1_gpu0_20260415_144530/best.pth
+  epochs total: 2
+  analysis src: internvl3
+  gpu:          1
+  ratio:        0.3
+[launch] strategy=badge gpu=1 ratio=0.3
+         base=log_pose/pose_keypointrcnn_train20k_internvl3_bs8_e2_rare1p1_gpu0_20260415_144530/best.pth
+         log=log_pose/pose_resume_internvl3_epoch2_badge_ratio0.3_gpu1_20260417_034116.log
+         out=log_pose/pose_keypointrcnn_resume_internvl3_badge_ratio0.3_gpu1_20260417_034116
+         pid=43528 pidfile=log_pose/pids/pose_resume_internvl3_epoch2_badge_ratio0.3_gpu1_20260417_034116.pid
+[wait] strategy=badge waiting for 1 launched jobs
+[wait] strategy=coreset pid=25359 completed successfully
+Strategy coreset completed successfully.
+Launching pose resume sweep
+  strategy:     badge
+  base source:  internvl3
+  base model:   log_pose/pose_keypointrcnn_train20k_internvl3_bs8_e2_rare1p1_gpu0_20260415_144530/best.pth
+  epochs total: 2
+  analysis src: internvl3
+  gpu:          2
+  ratio:        0.5
+[launch] strategy=badge gpu=2 ratio=0.5
+         base=log_pose/pose_keypointrcnn_train20k_internvl3_bs8_e2_rare1p1_gpu0_20260415_144530/best.pth
+         log=log_pose/pose_resume_internvl3_epoch2_badge_ratio0.5_gpu2_20260417_035203.log
+         out=log_pose/pose_keypointrcnn_resume_internvl3_badge_ratio0.5_gpu2_20260417_035203
+         pid=54624 pidfile=log_pose/pids/pose_resume_internvl3_epoch2_badge_ratio0.5_gpu2_20260417_035203.pid
+[wait] strategy=badge waiting for 1 launched jobs
+[wait] strategy=badge pid=43528 completed successfully
+Strategy badge completed successfully.
+[pipeline] gpu=1 ratio=0.3 finished strategy sequence
+[wait] strategy=random pid=4156904 completed successfully
+Strategy random completed successfully.
+Launching pose resume sweep
+  strategy:     stratified
+  base source:  internvl3
+  base model:   log_pose/pose_keypointrcnn_train20k_internvl3_bs8_e2_rare1p1_gpu0_20260415_144530/best.pth
+  epochs total: 2
+  analysis src: internvl3
+  gpu:          3
+  ratio:        0.7
+[launch] strategy=stratified gpu=3 ratio=0.7
+         base=log_pose/pose_keypointrcnn_train20k_internvl3_bs8_e2_rare1p1_gpu0_20260415_144530/best.pth
+         log=log_pose/pose_resume_internvl3_epoch2_stratified_ratio0.7_gpu3_20260417_041149.log
+         out=log_pose/pose_keypointrcnn_resume_internvl3_stratified_ratio0.7_gpu3_20260417_041149
+         delayed_start_sec=4200
+         pid=74480 pidfile=log_pose/pids/pose_resume_internvl3_epoch2_stratified_ratio0.7_gpu3_20260417_041149.pid
+[wait] strategy=stratified waiting for 1 launched jobs
+[wait] strategy=badge pid=54624 completed successfully
+Strategy badge completed successfully.
+[pipeline] gpu=2 ratio=0.5 finished strategy sequence
+[wait] strategy=stratified pid=74480 completed successfully
+Strategy stratified completed successfully.
+Launching pose resume sweep
+  strategy:     coreset
+  base source:  internvl3
+  base model:   log_pose/pose_keypointrcnn_train20k_internvl3_bs8_e2_rare1p1_gpu0_20260415_144530/best.pth
+  epochs total: 2
+  analysis src: internvl3
+  gpu:          3
+  ratio:        0.7
+[launch] strategy=coreset gpu=3 ratio=0.7
+         base=log_pose/pose_keypointrcnn_train20k_internvl3_bs8_e2_rare1p1_gpu0_20260415_144530/best.pth
+         log=log_pose/pose_resume_internvl3_epoch2_coreset_ratio0.7_gpu3_20260417_055719.log
+         out=log_pose/pose_keypointrcnn_resume_internvl3_coreset_ratio0.7_gpu3_20260417_055719
+         delayed_start_sec=4200
+         pid=177266 pidfile=log_pose/pids/pose_resume_internvl3_epoch2_coreset_ratio0.7_gpu3_20260417_055719.pid
+[wait] strategy=coreset waiting for 1 launched jobs
+[wait] strategy=coreset pid=177266 completed successfully
+Strategy coreset completed successfully.
+Launching pose resume sweep
+  strategy:     badge
+  base source:  internvl3
+  base model:   log_pose/pose_keypointrcnn_train20k_internvl3_bs8_e2_rare1p1_gpu0_20260415_144530/best.pth
+  epochs total: 2
+  analysis src: internvl3
+  gpu:          3
+  ratio:        0.7
+[launch] strategy=badge gpu=3 ratio=0.7
+         base=log_pose/pose_keypointrcnn_train20k_internvl3_bs8_e2_rare1p1_gpu0_20260415_144530/best.pth
+         log=log_pose/pose_resume_internvl3_epoch2_badge_ratio0.7_gpu3_20260417_074249.log
+         out=log_pose/pose_keypointrcnn_resume_internvl3_badge_ratio0.7_gpu3_20260417_074249
+         delayed_start_sec=4200
+         pid=281463 pidfile=log_pose/pids/pose_resume_internvl3_epoch2_badge_ratio0.7_gpu3_20260417_074249.pid
+[wait] strategy=badge waiting for 1 launched jobs
+[wait] strategy=badge pid=281463 completed successfully
+Strategy badge completed successfully.
+[pipeline] gpu=3 ratio=0.7 finished strategy sequence
+All strategies completed.

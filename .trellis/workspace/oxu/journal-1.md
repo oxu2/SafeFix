@@ -5,6 +5,73 @@
 
 ---
 
+## Session 84: Insert two ControlNet slides into 15-minute SafeFix talk
+
+**Date**: 2026-04-21
+**Task**: safefix-talk-controlnet-insert
+
+### Summary
+
+The user asked to insert two slides between the current page 3 and page 4 of `TMLR_26_SafeFix/safefix_talk_beamer_15min.tex`. After locating the frame boundary, two new ControlNet-focused slides were added between `Why Rare-Slice Repair Is Hard` and `SafeFix at a Glance`: one slide for the ControlNet editing pipeline and one slide for how ControlNet works. Because no matching local figure assets were present under `TMLR_26_SafeFix/Figure/`, both slides were implemented directly in LaTeX with `tikz` so the deck remains self-contained and compilable.
+
+### Main Changes
+
+- Updated:
+  - `TMLR_26_SafeFix/safefix_talk_beamer_15min.tex`
+  - `.trellis/workspace/oxu/journal-1.md`
+
+### Main Findings
+
+- Inserted two new frames immediately after:
+  - `Why Rare-Slice Repair Is Hard`
+- The new frames are:
+  - `ControlNet Editing Pipeline`
+  - `How ControlNet Works`
+- Added two supporting colors for the new diagrams:
+  - `controlnetorange`
+  - `controlnetteal`
+- The deck now compiles to:
+  - `TMLR_26_SafeFix/safefix_talk_beamer_15min.pdf`
+  - total pages: `22`
+
+### Validation
+
+- [OK] `pdflatex -interaction=nonstopmode -halt-on-error safefix_talk_beamer_15min.tex`
+- [OK] output written to:
+  - `TMLR_26_SafeFix/safefix_talk_beamer_15min.pdf`
+
+### Important Notes
+
+- The first inserted ControlNet frame still produces a small LaTeX warning:
+  - `Overfull \vbox (3.44702pt too high) detected at line 153`
+- Existing overfull warnings later in the deck were already present and were not part of this task.
+- `.handoff.md` was not updated because the active experiment baton did not change.
+- `report.md` was not updated because this session changed presentation slides only, not stable experiment results.
+- Follow-up update on the same day:
+  - the two inserted ControlNet slides were rebuilt again after real assets became available
+  - `ControlNet Editing Pipeline` now directly includes:
+    - `TMLR_26_SafeFix/Figure/canny.png`
+  - `How ControlNet Works` now uses:
+    - `TMLR_26_SafeFix/Figure/controlnet.png`
+    - a right-side explanatory bullet list and bottom citation line
+  - revalidated with:
+    - `pdflatex -interaction=nonstopmode -halt-on-error safefix_talk_beamer_15min.tex`
+  - after the rebuild, the large overflow from the earlier text-heavy ControlNet slide was reduced to a small warning:
+    - `Overfull \vbox (13.47205pt too high) detected at line 138`
+  - later slide polish:
+    - added the source line under `canny.png`:
+      - `https://stable-diffusion-art.com/controlnet/`
+    - changed the `controlnet.png` citation text to:
+      - `L. Zhang and M. Agrawala. Adding Conditional Control to Text-to-Image Diffusion Models. ICCV 2023`
+    - reduced the right-side annotation font to about `95%` of the previous size
+    - moved the two newly added ControlNet slides earlier in the deck:
+      - now placed between `Motivation` and `Why Rare-Slice Repair Is Hard`
+    - revalidated with the same `pdflatex` command
+
+### Status
+
+[OK] **Completed**
+
 ## Session 72: Re-shard CelebA Qwen3 train+val assignment across GPUs 1/2/3
 
 **Date**: 2026-04-16
@@ -108,6 +175,140 @@ The user reported that the live CelebA Qwen3 assignment jobs appeared to have st
 
 [~] **In Progress**
 
+## Session 83: Write ratio-0.5 report rows and switch to direct ratio-0.7 launch
+
+**Date**: 2026-04-17
+**Task**: pose-attribute-ratio0.5-report-and-direct-ratio0.7
+
+### Summary
+
+After the user reviewed the `0.5 -> 0.7` cascade state, they asked to stop waiting on the restarted `ratio=0.5` rerun, write the already finished `ratio=0.5` results into `report.md`, and launch `ratio=0.7` directly. Verified that the earlier `125113` cascade had already completed all four `ratio=0.5` jobs successfully, stopped the later `170233` restart attempt, wrote the stable `ratio=0.5` rows into `report.md`, and launched a fresh direct `ratio=0.7` RPC4 sweep at timestamp `170346`.
+
+### Main Changes
+
+- Updated:
+  - `report.md`
+  - `.handoff.md`
+  - `.trellis/workspace/oxu/journal-1.md`
+
+### Main Findings
+
+- Stable finished `ratio=0.5` results from the earlier `125113` run:
+  - `attrx2_r000_p0_c0`
+    - held-out test AP `0.6127`
+    - delta vs corrected base `-0.0018`
+    - log:
+      - `log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.5_attrx2_r000_p0_c0_gpu0_20260417_125113.log`
+  - `attrx2_r000_p0_c15`
+    - held-out test AP `0.6097`
+    - delta vs corrected base `-0.0048`
+    - log:
+      - `log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.5_attrx2_r000_p0_c15_gpu1_20260417_125113.log`
+  - `attrx2_r001_p05_c15`
+    - held-out test AP `0.6084`
+    - delta vs corrected base `-0.0061`
+    - log:
+      - `log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.5_attrx2_r001_p05_c15_gpu3_20260417_125113.log`
+  - `attrx2_r001_p05_c0`
+    - held-out test AP `0.6047`
+    - delta vs corrected base `-0.0098`
+    - log:
+      - `log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.5_attrx2_r001_p05_c0_gpu2_20260417_125113.log`
+- The later restart attempt was intentionally stopped:
+  - controller pid `9072`
+  - worker pids `9088 9089 9090 9091`
+- New direct `ratio=0.7` runs launched at `20260417_170346`:
+  - GPU `0`:
+    - `attrx143_r000_p0_c0`
+    - pid `13760`
+  - GPU `1`:
+    - `attrx143_r000_p0_c15`
+    - pid `13763`
+  - GPU `2`:
+    - `attrx143_r001_p05_c0`
+    - pid `13766`
+  - GPU `3`:
+    - `attrx143_r001_p05_c15`
+    - pid `13769`
+- Early startup check for the new direct `ratio=0.7` sweep:
+  - all four logs reached deterministic setup and dataset loading
+  - `ps -fp` confirmed all four python workers are live
+
+### Validation
+
+- [OK] verified stopped restart attempt:
+  - `ps -fp 9072 9088 9089 9090 9091`
+- [OK] extracted stable `ratio=0.5` metrics from finished `125113` logs
+- [OK] `bash scripts/run_pose_attribute_ratio0.7_internvl3_rpc4.sh`
+- [OK] verified live direct `ratio=0.7` workers:
+  - `ps -fp 13760 13763 13766 13769`
+
+### Important Notes
+
+- `report.md` now contains finished `ratio=0.5` rows, but `ratio=0.7` is still live and not yet reported.
+- The naming shorthand used in these runs is:
+  - `r001` -> rarity power `0.01`
+  - `p05` -> frequency penalty `0.5`
+  - `c15` -> class-balance weight `15.0`
+
+### Status
+
+[~] **In Progress**
+
+### Follow-up Update
+
+- Verified the later direct `ratio=0.7` RPC4 sweep launched at `20260417_170346` has also finished cleanly for all four GPUs.
+- Extracted stable `ratio=0.7` test AP values from:
+  - `log_pose/pose_keypointrcnn_resume_internvl3_attribute_ratio0.7_attrx143_r000_p0_c0_gpu0_20260417_170346/test_metrics.json`
+  - `log_pose/pose_keypointrcnn_resume_internvl3_attribute_ratio0.7_attrx143_r000_p0_c15_gpu1_20260417_170346/test_metrics.json`
+  - `log_pose/pose_keypointrcnn_resume_internvl3_attribute_ratio0.7_attrx143_r001_p05_c0_gpu2_20260417_170346/test_metrics.json`
+  - `log_pose/pose_keypointrcnn_resume_internvl3_attribute_ratio0.7_attrx143_r001_p05_c15_gpu3_20260417_170346/test_metrics.json`
+- Finished `ratio=0.7` results:
+  - `attrx143_r000_p0_c15`
+    - held-out test AP `0.6263`
+    - delta vs corrected base `+0.0118`
+    - selection time `0.28 s`
+    - end-to-end time `00:36:03`
+  - `attrx143_r001_p05_c0`
+    - held-out test AP `0.6262`
+    - delta vs corrected base `+0.0117`
+    - selection time `0.26 s`
+    - end-to-end time `00:34:53`
+  - `attrx143_r001_p05_c15`
+    - held-out test AP `0.6203`
+    - delta vs corrected base `+0.0058`
+    - selection time `0.29 s`
+    - end-to-end time `00:35:51`
+  - `attrx143_r000_p0_c0`
+    - held-out test AP `0.6166`
+    - delta vs corrected base `+0.0021`
+    - selection time `0.25 s`
+    - end-to-end time `00:35:02`
+- Updated `report.md` top section so the pose comparison block now:
+  - stays at the top of the report
+  - contains exactly four ratio tables:
+    - `0.1`
+    - `0.3`
+    - `0.5`
+    - `0.7`
+  - includes the finished attribute rows inline with the baseline rows for each ratio
+- Corrected stale shorthand label typos in the existing tables:
+  - `attrx10_r000_p0_c15`
+  - `attrx333_r000_p0_c15`
+  - `attrx2_r000_p0_c0`
+- Updated `.handoff.md` so it no longer describes `ratio=0.7` as live.
+
+### Validation
+
+- [OK] verified all four `ratio=0.7` logs end with:
+  - `Training complete. Artifacts: ...`
+- [OK] verified all four `ratio=0.7` artifact directories contain stable `test_metrics.json`
+- [OK] verified the top of `report.md` now contains the merged four-table pose block
+
+### Updated Status
+
+[OK] **Completed**
+
 ---
 
 ## Session 73: Fix save CSV tracking in gitignore
@@ -155,6 +356,113 @@ The user noticed that the generated CelebA CSV outputs were not visible to Git a
 [OK] **Completed**
 
 ---
+
+## Session 77: Launch COCO pose attribute ratio-0.3 InternVL3 RPC4 sweep
+
+**Date**: 2026-04-17
+**Task**: pose-attribute-ratio0.3-launch
+
+### Summary
+
+The user asked to launch the prepared InternVL3 COCO pose `attribute` `ratio=0.3` RPC4 sweep. Started all four detached resume-from-base runs on GPUs `0/1/2/3`, verified the new logs and PIDs, and confirmed from the early log content that the conservative and weather-steered settings are already producing distinct `weather` selection distributions.
+
+### Main Changes
+
+- Updated:
+  - `.handoff.md`
+  - `.trellis/workspace/oxu/journal-1.md`
+
+### Main Findings
+
+- Launched four detached runs with timestamp `20260417_122328`:
+  - GPU `0`:
+    - `attrx333_r000_p0_c0`
+    - PID `494206`
+    - log:
+      - `log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.3_attrx333_r000_p0_c0_gpu0_20260417_122328.log`
+  - GPU `1`:
+    - `attrx333_r000_p0_c15`
+    - PID `494209`
+    - log:
+      - `log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.3_attrx333_r000_p0_c15_gpu1_20260417_122328.log`
+  - GPU `2`:
+    - `attrx333_r001_p05_c0`
+    - PID `494212`
+    - log:
+      - `log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.3_attrx333_r001_p05_c0_gpu2_20260417_122328.log`
+  - GPU `3`:
+    - `attrx333_r001_p05_c15`
+    - PID `494215`
+    - log:
+      - `log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.3_attrx333_r001_p05_c15_gpu3_20260417_122328.log`
+- Early selection behavior from the logs matches the intended sweep design:
+  - conservative `r000_p0_*` runs keep `sunny` and `clear` dominant
+  - weather-steered `r001_p05_*` runs shift strongly toward `cloudy`, `snowy`, and `rainy`
+- `report.md` was not updated in this session because the runs are live and do not yet have stable held-out test AP results.
+
+### Validation
+
+- [OK] `bash scripts/run_pose_attribute_ratio0.3_internvl3_rpc4.sh`
+- [OK] verified each new log reached:
+  - `Attribute distribution in selected samples`
+- [OK] verified launch bookkeeping from stdout:
+  - PID
+  - log path
+  - output directory
+
+### Important Notes
+
+- The immediate continuation target is now to wait for the four `20260417_122328` runs to finish and then extract held-out test AP for insertion into `report.md`.
+- This session supersedes the earlier status-only note that the `ratio=0.3` sweep had not been launched yet.
+
+### Status
+
+[~] **In Progress**
+
+---
+
+## Session 76: Verify COCO pose attribute ratio-0.3 launch status
+
+**Date**: 2026-04-17
+**Task**: pose-attribute-ratio0.3-status-check
+
+### Summary
+
+The user asked whether the InternVL3 COCO pose `attribute` `ratio=0.3` sweep had finished and requested that it be written into `report.md`. Verified that the planned RPC4 sweep has still not been launched: there are no matching ratio-`0.3` attribute logs, no output directories, and no live training process for that configuration. Added a short status note to `report.md` so the current absence of a stable `ratio=0.3` attribute result is explicit.
+
+### Main Changes
+
+- Updated:
+  - `report.md`
+  - `.trellis/workspace/oxu/journal-1.md`
+
+### Main Findings
+
+- Verified missing launch artifacts for the planned sweep:
+  - no matching logs:
+    - `log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.3_*`
+  - no matching output directories:
+    - `log_pose/pose_keypointrcnn_resume_internvl3_attribute_ratio0.3_*`
+  - no live process matching:
+    - `train_pose_estimation.py train ... --sub-ratio 0.3 ... --al-strategy attribute`
+- The existing baton in `.handoff.md` remains accurate:
+  - the `ratio=0.3` InternVL3 COCO pose attribute RPC4 sweep is prepared but not launched yet
+- `report.md` now explicitly states that there is no stable `ratio=0.3` attribute row to report yet.
+
+### Validation
+
+- [OK] `find log_pose -maxdepth 1 \( -name 'pose_resume_internvl3_epoch2_attribute_ratio0.3_*' -o -name 'pose_keypointrcnn_resume_internvl3_attribute_ratio0.3_*' \) | sort`
+- [OK] `rg -n "attribute_ratio0\\.3|attrx333" log_pose -g '*.log'`
+
+### Important Notes
+
+- `.handoff.md` was not updated because its current baton already states the correct status and next step.
+- No result row was added to the `ratio=0.3` COCO pose table because that would not be supported by any finished run artifact.
+
+### Status
+
+[OK] **Completed**
+
 
 ## Session 74: Narrow attribute CSV exports to image_id only
 
@@ -5643,3 +5951,176 @@ Updated `utils/stat_pose_estimation.py` so it tolerates explicit split suffixes 
 ### Status
 
 [OK] **Completed**
+
+## Session 79 - Refine mismatch wording and active learning citations
+
+- Replaced `This mismatch is not rare` with `Such mismatches arise frequently in practice` in the introduction.
+- Rewrote the active-learning overview in the introduction and related work to describe uncertainty-based AL as a classical family, rather than citing Shannon 1948 as if it were an AL method paper.
+- Switched those sentences to cite `settles2009active` for the AL framing, while retaining CoreSet and BADGE as concrete modern baselines.
+
+---
+
+## Session 80: Clarify repo-specific BADGE implementation in report
+
+**Date**: 2026-04-17
+**Task**: report-badge-implementation-clarification
+
+### Summary
+
+The user asked for a concrete explanation of how the current repository implements `badge` and requested that it be written into `report.md`. After comparing the local `BadgeStrategy` against the public `JordanAsh/badge` implementation, updated the report to describe the actual four-stage local pipeline and to state explicitly that this repository uses a BADGE-style proxy variant rather than the original algorithm verbatim.
+
+### Main Changes
+
+- Updated:
+  - `report.md`
+  - `.trellis/workspace/oxu/journal-1.md`
+
+### Main Findings
+
+- The local BADGE path uses validation embeddings plus validation labels as a proxy labeled set.
+- Class probabilities for unlabeled samples are not produced by the model's own classifier head:
+  - they are produced by a centroid proxy classifier in normalized embedding space
+- The local gradient embedding keeps the standard BADGE block structure:
+  - one embedding block per class scaled by `p_c - 1[c = argmax p]`
+- Batch selection is split into two code paths:
+  - exact BADGE-style k-means++ seeding for smaller jobs
+  - weighted gradient-norm sampling without replacement for larger jobs
+- Therefore the current implementation is a BADGE-style approximation, not a line-by-line match to `JordanAsh/badge`.
+
+### Validation
+
+- [OK] Verified local implementation in:
+  - `utils/active_learning.py`
+- [OK] Verified the updated human-facing description in:
+  - `report.md`
+- [OK] Cross-checked against the public reference repository:
+  - `https://github.com/JordanAsh/badge`
+
+### Important Notes
+
+- `.handoff.md` was not updated because the active baton remains the pending InternVL3 COCO pose attribute `ratio=0.3` launch; this clarification only improves documentation accuracy.
+- No experiment tables changed in this session; only the implementation description was corrected.
+
+### Status
+
+[OK] **Completed**
+
+## Session 80 - Clarify selector notation for lambda and eta
+
+- Updated the methodology notation in `main.tex` so `\lambda` is explained alongside `\alpha` in the same sentence.
+- Corrected the effective-count definition to `\hat n_a(v) = \eta n_a^{\mathrm{src}}(v) + n_a^{\mathrm{gen}}(v)`, matching the intended meaning that `\eta` controls the relative contribution of the source pool rather than the generated pool.
+- Recompiled `main.tex`; `main.pdf` remains up to date.
+
+## Session 81 - Align effective-count notation with active_learning.py
+
+- Checked `/people/cs/o/oxx220000/safefix/utils/active_learning.py` and confirmed there is no explicit `eta` parameter controlling the source-pool contribution in the attribute selector.
+- The implementation adds generated-side counts through `extra_counts` in `_compute_attribute_counts`, and those counts may be rescaled beforehand via `extra_count_scale`.
+- Updated `main.tex` to remove the incorrect `eta * n_src + n_gen` statement and replace it with wording that matches the code path: source counts plus optionally scaled generated counts.
+- Fixed the LaTeX wording to use `\texttt{extra\_counts}` and recompiled with `latexmk -g -pdf -interaction=nonstopmode main.tex` successfully.
+
+## Session 82: Record COCO pose attribute ratio-0.3 results and launch ratio-0.5 -> 0.7 cascade
+
+**Date**: 2026-04-17
+**Task**: pose-attribute-ratio0.3-report-and-ratio0.5-0.7-cascade
+
+### Summary
+
+The user asked to write the finished InternVL3 COCO pose `attribute` `ratio=0.3` results into `report.md`, then begin the `ratio=0.5` runs and launch the `ratio=0.7` follow-up on each GPU as soon as that GPU's `ratio=0.5` run finishes. Extracted the stable `ratio=0.3` metrics from the four finished logs, updated the `ratio=0.3` table in `report.md`, added dedicated `ratio=0.5`, `ratio=0.7`, and per-GPU cascade launch scripts, then started a detached controller that is now running the `0.5 -> 0.7` pipeline independently on GPUs `0/1/2/3`.
+
+### Main Changes
+
+- Updated:
+  - `report.md`
+  - `.handoff.md`
+  - `.trellis/workspace/oxu/journal-1.md`
+- Added:
+  - `scripts/run_pose_attribute_ratio0.5_internvl3_rpc4.sh`
+  - `scripts/run_pose_attribute_ratio0.7_internvl3_rpc4.sh`
+  - `scripts/run_pose_attribute_ratio0.5_then_0.7_internvl3_rpc4.sh`
+
+### Main Findings
+
+- Finished `ratio=0.3` attribute RPC4 results:
+  - `attrx333_r000_p0_c15`
+    - held-out test AP `0.6174`
+    - delta vs corrected base `+0.0029`
+    - end-to-end time `00:18:23`
+    - log:
+      - `log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.3_attrx333_r000_p0_c15_gpu1_20260417_122328.log`
+  - `attrx333_r000_p0_c0`
+    - held-out test AP `0.6091`
+    - delta vs corrected base `-0.0054`
+    - end-to-end time `00:17:56`
+    - log:
+      - `log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.3_attrx333_r000_p0_c0_gpu0_20260417_122328.log`
+  - `attrx333_r001_p05_c15`
+    - held-out test AP `0.6079`
+    - delta vs corrected base `-0.0066`
+    - end-to-end time `00:18:24`
+    - log:
+      - `log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.3_attrx333_r001_p05_c15_gpu3_20260417_122328.log`
+  - `attrx333_r001_p05_c0`
+    - held-out test AP `0.6067`
+    - delta vs corrected base `-0.0078`
+    - end-to-end time `00:18:08`
+    - log:
+      - `log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.3_attrx333_r001_p05_c0_gpu2_20260417_122328.log`
+- `ratio=0.3` interpretation:
+  - the best attribute point is `attrx333_r000_p0_c15`
+  - it beats every finished non-attribute `ratio=0.3` baseline already recorded in `report.md`
+  - the weather-steered `r001_p05_*` branch still trails the conservative control
+- Live detached cascade controller:
+  - script:
+    - `scripts/run_pose_attribute_ratio0.5_then_0.7_internvl3_rpc4.sh`
+  - controller log:
+    - `log_pose/run_pose_attribute_internvl3_ratio0.5_then_0.7_20260417_125113.log`
+  - controller pid:
+    - `523582`
+- Live `ratio=0.5` launches under the controller:
+  - GPU `0`:
+    - `attrx2_r000_p0_c0`
+    - pid `523599`
+    - log:
+      - `log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.5_attrx2_r000_p0_c0_gpu0_20260417_125113.log`
+  - GPU `1`:
+    - `attrx2_r000_p0_c15`
+    - pid `523598`
+    - log:
+      - `log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.5_attrx2_r000_p0_c15_gpu1_20260417_125113.log`
+  - GPU `2`:
+    - `attrx2_r001_p05_c0`
+    - pid `523600`
+    - log:
+      - `log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.5_attrx2_r001_p05_c0_gpu2_20260417_125113.log`
+  - GPU `3`:
+    - `attrx2_r001_p05_c15`
+    - pid `523601`
+    - log:
+      - `log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.5_attrx2_r001_p05_c15_gpu3_20260417_125113.log`
+- Early `ratio=0.5` startup check:
+  - all four logs reached `Attribute distribution in selected samples`
+  - conservative runs remain sunny/clear-heavy
+  - weather-steered runs remain shifted toward cloudy/snowy/rainy
+
+### Validation
+
+- [OK] `bash -n scripts/run_pose_attribute_ratio0.5_internvl3_rpc4.sh`
+- [OK] `bash -n scripts/run_pose_attribute_ratio0.7_internvl3_rpc4.sh`
+- [OK] `bash -n scripts/run_pose_attribute_ratio0.5_then_0.7_internvl3_rpc4.sh`
+- [OK] `bash scripts/run_pose_attribute_ratio0.5_internvl3_rpc4.sh --dry-run`
+- [OK] `bash scripts/run_pose_attribute_ratio0.7_internvl3_rpc4.sh --dry-run`
+- [OK] `bash scripts/run_pose_attribute_ratio0.5_then_0.7_internvl3_rpc4.sh --dry-run`
+- [OK] launched detached controller:
+  - `log_pose/run_pose_attribute_internvl3_ratio0.5_then_0.7_20260417_125113.log`
+- [OK] verified all four `ratio=0.5` logs reached:
+  - `Attribute distribution in selected samples`
+
+### Important Notes
+
+- `report.md` was updated only for the finished `ratio=0.3` results. The `ratio=0.5` and `ratio=0.7` rows are intentionally deferred until those runs finish.
+- The per-GPU controller is designed so a failed `ratio=0.5` run on one GPU does not block the other GPUs from advancing.
+- The active continuation target is now the controller log, not the old `ratio=0.3` launch log.
+
+### Status
+
+[~] **In Progress**

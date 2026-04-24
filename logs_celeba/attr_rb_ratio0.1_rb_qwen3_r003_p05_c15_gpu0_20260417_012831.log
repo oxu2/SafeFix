@@ -1,0 +1,53 @@
+Current time: 0417012833
+Selected 1000 filenames for sampling
+Added 1000 generated redhair_brownskin images, before training set has 80000 images, now 81000
+
+Attribute distribution in selected samples:
+  [hair color] black: 6731 samples (84.1%)
+  [hair color] white: 442 samples (5.5%)
+  [hair color] gray: 362 samples (4.5%)
+  [hair color] red: 345 samples (4.3%)
+  [hair color] brown: 84 samples (1.1%)
+  [hair color] blonde: 31 samples (0.4%)
+  [hair color] yellow: 5 samples (0.1%)
+  [skin] brown: 4222 samples (52.8%)
+  [skin] black: 3060 samples (38.2%)
+  [skin] white: 718 samples (9.0%)
+CelebA: Combined 8000 selected samples with 1000 generated images using Active Learning
+Resumed model from /people/cs/o/oxx220000/safefix/weights/model_celeba_resnet_base.pth (best val acc: 0.914, base test acc: 0.9140)
+Recovered base test acc from log: logs/celeba_resnet_base_redhair_brownskin_sademotion_0imgs_20260416_022317.log
+Epoch [1/15], Train Loss: 0.2773, Train Acc: 0.9638, Val Loss: 0.4746, Val Acc: 0.8740
+Epoch [2/15], Train Loss: 0.2707, Train Acc: 0.9663, Val Loss: 0.4061, Val Acc: 0.9021
+Epoch [3/15], Train Loss: 0.2654, Train Acc: 0.9709, Val Loss: 0.4232, Val Acc: 0.8948
+Epoch [4/15], Train Loss: 0.2654, Train Acc: 0.9718, Val Loss: 0.4018, Val Acc: 0.8962
+Epoch [5/15], Train Loss: 0.2640, Train Acc: 0.9732, Val Loss: 0.4017, Val Acc: 0.9017
+Epoch [6/15], Train Loss: 0.2613, Train Acc: 0.9734, Val Loss: 0.4029, Val Acc: 0.8973
+Epoch [7/15], Train Loss: 0.2607, Train Acc: 0.9751, Val Loss: 0.3965, Val Acc: 0.8975
+Epoch [8/15], Train Loss: 0.2627, Train Acc: 0.9729, Val Loss: 0.4118, Val Acc: 0.8936
+Traceback (most recent call last):
+  File "/people/cs/o/oxx220000/safefix/alpred.py", line 1965, in <module>
+    train_loss_history, train_acc_history, val_loss_history, val_acc_history = train_model(
+  File "/people/cs/o/oxx220000/safefix/alpred.py", line 1798, in train_model
+    for images, labels in train_loader:
+  File "/people/cs/o/oxx220000/.conda/envs/ad/lib/python3.9/site-packages/torch/utils/data/dataloader.py", line 628, in __next__
+    data = self._next_data()
+  File "/people/cs/o/oxx220000/.conda/envs/ad/lib/python3.9/site-packages/torch/utils/data/dataloader.py", line 1313, in _next_data
+    return self._process_data(data)
+  File "/people/cs/o/oxx220000/.conda/envs/ad/lib/python3.9/site-packages/torch/utils/data/dataloader.py", line 1359, in _process_data
+    data.reraise()
+  File "/people/cs/o/oxx220000/.conda/envs/ad/lib/python3.9/site-packages/torch/_utils.py", line 543, in reraise
+    raise exception
+FileNotFoundError: Caught FileNotFoundError in DataLoader worker process 1.
+Original Traceback (most recent call last):
+  File "/people/cs/o/oxx220000/.conda/envs/ad/lib/python3.9/site-packages/torch/utils/data/_utils/worker.py", line 302, in _worker_loop
+    data = fetcher.fetch(index)
+  File "/people/cs/o/oxx220000/.conda/envs/ad/lib/python3.9/site-packages/torch/utils/data/_utils/fetch.py", line 58, in fetch
+    data = [self.dataset[idx] for idx in possibly_batched_index]
+  File "/people/cs/o/oxx220000/.conda/envs/ad/lib/python3.9/site-packages/torch/utils/data/_utils/fetch.py", line 58, in <listcomp>
+    data = [self.dataset[idx] for idx in possibly_batched_index]
+  File "/people/cs/o/oxx220000/safefix/alpred.py", line 1097, in __getitem__
+    img = Image.open(self.img_paths[idx]).convert("RGB")
+  File "/people/cs/o/oxx220000/.conda/envs/ad/lib/python3.9/site-packages/PIL/Image.py", line 3469, in open
+    fp = builtins.open(filename, "rb")
+FileNotFoundError: [Errno 2] No such file or directory: '/people/cs/o/oxx220000/safefix/data/redhair_brownskin/074646_redhair_brownskin.jpg'
+

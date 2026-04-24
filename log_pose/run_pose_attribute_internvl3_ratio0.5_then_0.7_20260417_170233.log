@@ -1,0 +1,36 @@
+[launch] ratio=0.5 gpu=0 name=attrx2_r000_p0_c0 R=0.0 P=0.0 C=0
+         extra_scale=2
+         log=log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.5_attrx2_r000_p0_c0_gpu0_20260417_170233.log
+         out=log_pose/pose_keypointrcnn_resume_internvl3_attribute_ratio0.5_attrx2_r000_p0_c0_gpu0_20260417_170233
+[launch] ratio=0.5 gpu=1 name=attrx2_r000_p0_c15 R=0.0 P=0.0 C=15.0
+         extra_scale=2
+         log=log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.5_attrx2_r000_p0_c15_gpu1_20260417_170233.log
+         out=log_pose/pose_keypointrcnn_resume_internvl3_attribute_ratio0.5_attrx2_r000_p0_c15_gpu1_20260417_170233
+[launch] ratio=0.5 gpu=3 name=attrx2_r001_p05_c15 R=0.01 P=0.5 C=15.0
+         extra_scale=2
+         log=log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.5_attrx2_r001_p05_c15_gpu3_20260417_170233.log
+         out=log_pose/pose_keypointrcnn_resume_internvl3_attribute_ratio0.5_attrx2_r001_p05_c15_gpu3_20260417_170233
+PID=9088
+PIDFILE=log_pose/pids/pose_resume_internvl3_epoch2_attribute_ratio0.5_attrx2_r000_p0_c0_gpu0_20260417_170233.pid
+PID=9089
+LOG=log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.5_attrx2_r000_p0_c0_gpu0_20260417_170233.log
+PIDFILE=log_pose/pids/pose_resume_internvl3_epoch2_attribute_ratio0.5_attrx2_r000_p0_c15_gpu1_20260417_170233.pid
+[launch] ratio=0.5 gpu=2 name=attrx2_r001_p05_c0 R=0.01 P=0.5 C=0
+LOG=log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.5_attrx2_r000_p0_c15_gpu1_20260417_170233.log
+OUTDIR=log_pose/pose_keypointrcnn_resume_internvl3_attribute_ratio0.5_attrx2_r000_p0_c0_gpu0_20260417_170233
+         extra_scale=2
+OUTDIR=log_pose/pose_keypointrcnn_resume_internvl3_attribute_ratio0.5_attrx2_r000_p0_c15_gpu1_20260417_170233
+         log=log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.5_attrx2_r001_p05_c0_gpu2_20260417_170233.log
+         out=log_pose/pose_keypointrcnn_resume_internvl3_attribute_ratio0.5_attrx2_r001_p05_c0_gpu2_20260417_170233
+[monitor] gpu=0 waiting for ratio=0.5 pid=9088
+[monitor] gpu=1 waiting for ratio=0.5 pid=9089
+PID=9090
+PIDFILE=log_pose/pids/pose_resume_internvl3_epoch2_attribute_ratio0.5_attrx2_r001_p05_c15_gpu3_20260417_170233.pid
+LOG=log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.5_attrx2_r001_p05_c15_gpu3_20260417_170233.log
+OUTDIR=log_pose/pose_keypointrcnn_resume_internvl3_attribute_ratio0.5_attrx2_r001_p05_c15_gpu3_20260417_170233
+[monitor] gpu=3 waiting for ratio=0.5 pid=9090
+PID=9091
+PIDFILE=log_pose/pids/pose_resume_internvl3_epoch2_attribute_ratio0.5_attrx2_r001_p05_c0_gpu2_20260417_170233.pid
+LOG=log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.5_attrx2_r001_p05_c0_gpu2_20260417_170233.log
+OUTDIR=log_pose/pose_keypointrcnn_resume_internvl3_attribute_ratio0.5_attrx2_r001_p05_c0_gpu2_20260417_170233
+[monitor] gpu=2 waiting for ratio=0.5 pid=9091

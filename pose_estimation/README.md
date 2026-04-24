@@ -45,7 +45,27 @@ python train_pose_estimation.py train \
   --data-root /data/oxx220000/coco \
   --pretrained false \
   --output-dir log_pose/pose_keypointrcnn_scratch
+
+# Add 1000 randomly sampled generated rainy images while keeping all capped originals:
+python train_pose_estimation.py train \
+  --data-root /data/oxx220000/coco \
+  --attribute rainy \
+  --num-added-img 1000 \
+  --sub-ratio 1.0 \
+  --output-dir log_pose/pose_keypointrcnn_rain
 ```
+
+When `--attribute rainy` is enabled, the script loads generated images from:
+
+```text
+/data/oxx220000/coco-pose-weather-edits/generated_coco_train1500_rain/outputs
+```
+
+Legacy `--attribute rain` is still accepted as an alias and is normalized to the
+canonical COCO weather value `weather=rainy`.
+
+The generated PNG stems are matched against COCO `image_id`s and reuse the original
+`person_keypoints_train2017.json` annotations during training.
 
 ## 3) Evaluate
 

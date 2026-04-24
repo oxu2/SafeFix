@@ -1,0 +1,31 @@
+Current time: 0417010942
+Training start timestamp: 2026-04-17 01:09:42
+Deterministic settings: seed=42, cudnn.deterministic=True, cudnn.benchmark=False, CUBLAS_WORKSPACE_CONFIG=:4096:8
+loading annotations into memory...
+Done (t=5.75s)
+creating index...
+index created!
+loading annotations into memory...
+Done (t=0.18s)
+creating index...
+index created!
+Warning: filtered out 8 unreadable generated images before training. Examples: 444199 (000000444199.png: UnidentifiedImageError), 448974 (000000448974.png: SyntaxError), 449412 (000000449412.png: SyntaxError), 464274 (000000464274.png: OSError), 464462 (000000464462.png: OSError)
+Generated augmentation source: attribute=rain, dir=/data/oxx220000/coco-pose-weather-edits/generated_coco_train1500_rain/outputs
+Train sampling summary: original_candidates=20000, selected_original=20000 (sub_ratio=1.0), generated_available=1278, generated_selected=1000, final_train=21000
+Dataset sizes after split: train=21000, val=1173, test=1173
+Traceback (most recent call last):
+  File "/people/cs/o/oxx220000/safefix/train_pose_estimation.py", line 1315, in <module>
+    main()
+  File "/people/cs/o/oxx220000/safefix/train_pose_estimation.py", line 1303, in main
+    run_train(args)
+  File "/people/cs/o/oxx220000/safefix/train_pose_estimation.py", line 960, in run_train
+    metrics = train_one_epoch(
+  File "/people/cs/o/oxx220000/safefix/pose_estimation/engine.py", line 27, in train_one_epoch
+    loss_dict = model(images, targets)
+  File "/people/cs/o/oxx220000/.conda/envs/ad/lib/python3.9/site-packages/torch/nn/modules/module.py", line 1194, in _call_impl
+    return forward_call(*input, **kwargs)
+  File "/people/cs/o/oxx220000/.conda/envs/ad/lib/python3.9/site-packages/torchvision/models/detection/generalized_rcnn.py", line 95, in forward
+    torch._assert(
+  File "/people/cs/o/oxx220000/.conda/envs/ad/lib/python3.9/site-packages/torch/__init__.py", line 853, in _assert
+    assert condition, message
+AssertionError: All bounding boxes should have positive height and width. Found invalid box [0.0, 0.0, 0.0, 0.0] for target at index 0.

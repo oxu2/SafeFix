@@ -1,3 +1,179 @@
+# 04/17/2026 Update — COCO Pose InternVL3 Resume Baselines And Attribute Sweeps Completed
+
+- The controller-backed InternVL3 COCO pose resume sweep launched from the canonical base checkpoint has fully completed, and the finished `attribute` comparison runs are now merged directly into the same top-level ratio tables for like-for-like comparison.
+- Controller log:
+  - `log_pose/run_pose_resume_internvl3_all_20260417_022717.log`
+  - ends with:
+    - `All strategies completed.`
+- Common setup for the tables below:
+  - base checkpoint:
+    - `log_pose/pose_keypointrcnn_train20k_internvl3_bs8_e2_rare1p1_gpu0_20260415_144530/best.pth`
+  - base held-out test AP for comparison:
+    - `0.6145`
+  - resume schedule:
+    - one additional epoch from the saved epoch-0 checkpoint
+  - original candidate pool:
+    - `20000`
+  - generated augmentation:
+    - canonical rainy-image mix, `1000` images added after original-image selection
+  - fixed ratio placement:
+    - GPU `0` -> `0.1`
+    - GPU `1` -> `0.3`
+    - GPU `2` -> `0.5`
+    - GPU `3` -> `0.7`
+
+### Ratio = 0.1
+
+| Strategy | Selected Original | Final Train Size | Held-out Test AP | Delta vs Base | AL Selection Time | End-to-End Time | Canonical Log |
+|----------|-------------------|------------------|------------------|---------------|-------------------|-----------------|---------------|
+| `random` | `2000` | `3000` | `0.6029` | `-0.0116` | `0.00 s` | `00:09:44` | `log_pose/pose_resume_internvl3_epoch2_random_ratio0.1_gpu0_20260417_022717.log` |
+| `stratified` | `2000` | `3000` | `0.6031` | `-0.0114` | `0.23 s` | `00:09:44` | `log_pose/pose_resume_internvl3_epoch2_stratified_ratio0.1_gpu0_20260417_023705.log` |
+| `coreset` | `2000` | `3000` | `0.5579` | `-0.0566` | `4.96 min` | `00:14:48` | `log_pose/pose_resume_internvl3_epoch2_coreset_ratio0.1_gpu0_20260417_024654.log` |
+| `badge` | `2000` | `3000` | `0.5919` | `-0.0226` | `21.43 min` | `00:31:20` | `log_pose/pose_resume_internvl3_epoch2_badge_ratio0.1_gpu0_20260417_030147.log` |
+| `attribute` (`attrx10_r000_p0_c15`) | `2000` | `3000` | **`0.6071`** | `-0.0074` | `0.26 s` | `00:09:48` | `log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.1_attrx10_r000_p0_c15_gpu0_20260417_114049.log` |
+| `attribute` (`attrx10_r003_p05_c15`) | `2000` | `3000` | `0.6012` | `-0.0133` | `0.27 s` | `00:10:04` | `log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.1_attrx10_r003_p05_c15_gpu2_20260417_114049.log` |
+| `attribute` (`attrx10_r001_p05_c15`) | `2000` | `3000` | `0.6003` | `-0.0142` | `0.26 s` | `00:09:50` | `log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.1_attrx10_r001_p05_c15_gpu1_20260417_114049.log` |
+| `attribute` (`attrx10_r003_p05_c8`) | `2000` | `3000` | `0.5963` | `-0.0182` | `0.26 s` | `00:09:47` | `log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.1_attrx10_r003_p05_c8_gpu3_20260417_114049.log` |
+
+### Ratio = 0.3
+
+| Strategy | Selected Original | Final Train Size | Held-out Test AP | Delta vs Base | AL Selection Time | End-to-End Time | Canonical Log |
+|----------|-------------------|------------------|------------------|---------------|-------------------|-----------------|---------------|
+| `random` | `6000` | `7000` | `0.6061` | `-0.0084` | `0.00 s` | `00:17:55` | `log_pose/pose_resume_internvl3_epoch2_random_ratio0.3_gpu1_20260417_022717.log` |
+| `stratified` | `6000` | `7000` | `0.6041` | `-0.0104` | `0.21 s` | `00:18:37` | `log_pose/pose_resume_internvl3_epoch2_stratified_ratio0.3_gpu1_20260417_024517.log` |
+| `coreset` | `6000` | `7000` | `0.6031` | `-0.0114` | `19.29 min` | `00:37:10` | `log_pose/pose_resume_internvl3_epoch2_coreset_ratio0.3_gpu1_20260417_030359.log` |
+| `badge` | `6000` | `7000` | `0.6083` | `-0.0062` | `59.96 s` | `00:18:51` | `log_pose/pose_resume_internvl3_epoch2_badge_ratio0.3_gpu1_20260417_034116.log` |
+| `attribute` (`attrx333_r000_p0_c15`) | `6000` | `7000` | **`0.6174`** | `+0.0029` | `0.28 s` | `00:18:23` | `log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.3_attrx333_r000_p0_c15_gpu1_20260417_122328.log` |
+| `attribute` (`attrx333_r000_p0_c0`) | `6000` | `7000` | `0.6091` | `-0.0054` | `0.25 s` | `00:17:56` | `log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.3_attrx333_r000_p0_c0_gpu0_20260417_122328.log` |
+| `attribute` (`attrx333_r001_p05_c15`) | `6000` | `7000` | `0.6079` | `-0.0066` | `0.27 s` | `00:18:24` | `log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.3_attrx333_r001_p05_c15_gpu3_20260417_122328.log` |
+| `attribute` (`attrx333_r001_p05_c0`) | `6000` | `7000` | `0.6067` | `-0.0078` | `0.25 s` | `00:18:08` | `log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.3_attrx333_r001_p05_c0_gpu2_20260417_122328.log` |
+
+### Ratio = 0.5
+
+| Strategy | Selected Original | Final Train Size | Held-out Test AP | Delta vs Base | AL Selection Time | End-to-End Time | Canonical Log |
+|----------|-------------------|------------------|------------------|---------------|-------------------|-----------------|---------------|
+| `random` | `10000` | `11000` | `0.5972` | `-0.0173` | `0.00 s` | `00:27:11` | `log_pose/pose_resume_internvl3_epoch2_random_ratio0.5_gpu2_20260417_022717.log` |
+| `stratified` | `10000` | `11000` | `0.6166` | `+0.0021` | `0.22 s` | `00:28:59` | `log_pose/pose_resume_internvl3_epoch2_stratified_ratio0.5_gpu2_20260417_025433.log` |
+| `coreset` | `10000` | `11000` | `0.6073` | `-0.0072` | `1.15 min` | `00:28:22` | `log_pose/pose_resume_internvl3_epoch2_coreset_ratio0.5_gpu2_20260417_032336.log` |
+| `badge` | `10000` | `11000` | `0.6111` | `-0.0034` | `59.68 s` | `00:27:22` | `log_pose/pose_resume_internvl3_epoch2_badge_ratio0.5_gpu2_20260417_035203.log` |
+| `attribute` (`attrx2_r000_p0_c0`) | `10000` | `11000` | **`0.6127`** | `-0.0018` | `0.25 s` | `00:26:42` | `log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.5_attrx2_r000_p0_c0_gpu0_20260417_125113.log` |
+| `attribute` (`attrx2_r000_p0_c15`) | `10000` | `11000` | `0.6097` | `-0.0048` | `0.28 s` | `00:27:23` | `log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.5_attrx2_r000_p0_c15_gpu1_20260417_125113.log` |
+| `attribute` (`attrx2_r001_p05_c15`) | `10000` | `11000` | `0.6084` | `-0.0061` | `0.28 s` | `00:27:14` | `log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.5_attrx2_r001_p05_c15_gpu3_20260417_125113.log` |
+| `attribute` (`attrx2_r001_p05_c0`) | `10000` | `11000` | `0.6047` | `-0.0098` | `0.25 s` | `00:26:34` | `log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.5_attrx2_r001_p05_c0_gpu2_20260417_125113.log` |
+
+### Ratio = 0.7
+
+| Strategy | Selected Original | Final Train Size | Held-out Test AP | Delta vs Base | AL Selection Time | End-to-End Time | Canonical Log |
+|----------|-------------------|------------------|------------------|---------------|-------------------|-----------------|---------------|
+| `random` | `14000` | `15000` | `0.6244` | `+0.0099` | `0.01 s` | `00:34:27` | `log_pose/pose_resume_internvl3_epoch2_random_ratio0.7_gpu3_20260417_022717.log` |
+| `stratified` | `14000` | `15000` | `0.6244` | `+0.0099` | `0.23 s` | `00:35:26` | `log_pose/pose_resume_internvl3_epoch2_stratified_ratio0.7_gpu3_20260417_041149.log` |
+| `coreset` | `14000` | `15000` | `0.6176` | `+0.0031` | `59.12 s` | `00:35:25` | `log_pose/pose_resume_internvl3_epoch2_coreset_ratio0.7_gpu3_20260417_055719.log` |
+| `badge` | `14000` | `15000` | `0.6191` | `+0.0046` | `59.19 s` | `00:35:24` | `log_pose/pose_resume_internvl3_epoch2_badge_ratio0.7_gpu3_20260417_074249.log` |
+| `attribute` (`attrx143_r000_p0_c15`) | `14000` | `15000` | **`0.6263`** | `+0.0118` | `0.28 s` | `00:36:03` | `log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.7_attrx143_r000_p0_c15_gpu1_20260417_170346.log` |
+| `attribute` (`attrx143_r001_p05_c0`) | `14000` | `15000` | `0.6262` | `+0.0117` | `0.26 s` | `00:34:53` | `log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.7_attrx143_r001_p05_c0_gpu2_20260417_170346.log` |
+| `attribute` (`attrx143_r001_p05_c15`) | `14000` | `15000` | `0.6203` | `+0.0058` | `0.29 s` | `00:35:51` | `log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.7_attrx143_r001_p05_c15_gpu3_20260417_170346.log` |
+| `attribute` (`attrx143_r000_p0_c0`) | `14000` | `15000` | `0.6166` | `+0.0021` | `0.25 s` | `00:35:02` | `log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.7_attrx143_r000_p0_c0_gpu0_20260417_170346.log` |
+
+- Main observations:
+  - all non-attribute and attribute resume runs now have stable finished outputs for the four comparison ratios `0.1`, `0.3`, `0.5`, and `0.7`
+  - the finished attribute runs are now grouped directly under the same top-level ratio tables as the baselines for like-for-like comparison
+  - under the corrected comparison baseline (`0.6145` test AP), the subset runs no longer uniformly trail the base
+  - the strongest finished resumed result in the full table is now:
+    - `attribute` (`attrx143_r000_p0_c15`) at `ratio=0.7`
+    - held-out test AP `0.6263`
+    - delta vs corrected base `+0.0118`
+  - the second-best finished resumed result is also an attribute point at `ratio=0.7`:
+    - `attribute` (`attrx143_r001_p05_c0`)
+    - held-out test AP `0.6262`
+    - delta vs corrected base `+0.0117`
+  - retained-data ratio matters more than selector sophistication in this sweep:
+    - every strategy is substantially stronger at `0.7` than at `0.1`
+  - the corrected base is matched or exceeded by:
+    - `stratified`, `ratio=0.5`
+    - all four finished `attribute` runs at `ratio=0.7`
+    - `attribute` (`attrx333_r000_p0_c15`), `ratio=0.3`
+    - all four non-attribute strategies at `ratio=0.7`
+  - at `ratio=0.1`, the best finished attribute point is:
+    - `attrx10_r000_p0_c15`
+    - held-out test AP `0.6071`
+    - this is above the corrected `random` `ratio=0.1` row (`0.6029`) but still below the corrected base
+  - at `ratio=0.3`, the best finished attribute point is:
+    - `attrx333_r000_p0_c15`
+    - held-out test AP `0.6174`
+    - this is above the corrected base (`0.6145`) and above every finished non-attribute `ratio=0.3` baseline
+  - at `ratio=0.5`, the best finished attribute point is:
+    - `attrx2_r000_p0_c0`
+    - held-out test AP `0.6127`
+    - this is below the corrected base (`0.6145`) and below the finished `stratified` `ratio=0.5` baseline (`0.6166`), but above `badge`, `coreset`, and `random` at the same ratio
+  - at `ratio=0.7`, the best finished attribute point is:
+    - `attrx143_r000_p0_c15`
+    - held-out test AP `0.6263`
+    - this is above the corrected base (`0.6145`) and above every finished non-attribute `ratio=0.7` baseline
+  - for the `ratio=0.3` attribute RPC4 sweep, the conservative control family still wins:
+    - `r000_p0_c15`: `0.6174`
+    - `r000_p0_c0`: `0.6091`
+    - `r001_p05_c15`: `0.6079`
+    - `r001_p05_c0`: `0.6067`
+  - the same pattern continues at `ratio=0.5`:
+    - `r000_p0_c0`: `0.6127`
+    - `r000_p0_c15`: `0.6097`
+    - `r001_p05_c15`: `0.6084`
+    - `r001_p05_c0`: `0.6047`
+  - at `ratio=0.7`, the strongest two points are split between the conservative and mild weather-steered branches:
+    - `r000_p0_c15`: `0.6263`
+    - `r001_p05_c0`: `0.6262`
+    - `r001_p05_c15`: `0.6203`
+    - `r000_p0_c0`: `0.6166`
+  - `coreset` is still the weakest cost/benefit point:
+    - `ratio=0.1`: `0.5579` AP after `4.96 min` of selection
+    - `ratio=0.3`: `0.6031` AP after `19.29 min`
+    - `ratio=0.5`: `0.6073` AP after `1.15 min`
+    - `ratio=0.7`: `0.6176` AP after `59.12 s`
+  - `badge` no longer leads at `ratio=0.3` once the finished attribute sweep is included:
+    - `badge`: `0.6083`
+    - best attribute: `0.6174`
+  - at `ratio=0.5`, `attribute` also improves on `badge`, but does not reach `stratified`:
+    - `attribute` best: `0.6127`
+    - `badge`: `0.6111`
+    - `stratified`: `0.6166`
+  - at `ratio=0.7`, `attribute` now leads the full baseline set:
+    - best attribute: `0.6263`
+    - `random`: `0.6244`
+    - `stratified`: `0.6244`
+    - `badge`: `0.6191`
+    - `coreset`: `0.6176`
+- practical reference point for future pose-resume comparisons:
+  - keep `ratio=0.3` `attribute` (`attrx333_r000_p0_c15`), `ratio=0.5` `attribute` (`attrx2_r000_p0_c0`), and `ratio=0.7` `attribute` (`attrx143_r000_p0_c15`)
+
+# 04/17/2026 Update — COCO Pose Rain-Augmented Full-Data Run Finished
+
+- The full-data InternVL3 COCO pose run with `1000` generated rain edits on GPU `3` finished at `2026-04-17 02:48:19`.
+- Common setup:
+  - original selected images:
+    - `20000`
+  - generated source:
+    - legacy `attribute=rain`
+  - generated images after filtering:
+    - `1271` available
+    - `1000` selected
+  - final train size:
+    - `21000`
+  - slice-analysis source:
+    - `internvl3`
+- Compared with the earlier InternVL3 `20k` base run already recorded in this report (`held-out test AP = 0.6145`), this rain-augmented full-data run is higher by `+0.0075` AP.
+
+| Run | Selected Original | Final Train Size | Best Val AP | Held-out Test AP | Test AP50 | Test AP75 | Test AR | Train Time | End-to-End Time | Canonical Log |
+|-----|-------------------|------------------|-------------|------------------|-----------|-----------|---------|------------|-----------------|---------------|
+| InternVL3 + `1000` rain edits | `20000` | `21000` | `0.6333` | `0.6220` | `0.8528` | `0.6766` | `0.6893` | `01:33:45` | `01:33:59` | `log_pose/pose_train20k_rain1k_gpu3_20260417_011411.log` |
+
+- Main observations:
+  - the best checkpoint still came from epoch `0`, with best val AP `0.6333`
+  - held-out test AP `0.6220` is slightly above the corrected earlier InternVL3 base
+  - the hardest held-out test slice remained:
+    - `pose=lying` with `AP=0.3268`
+  - the weather-target slice also remained difficult:
+    - `weather=rainy` with `AP=0.5692`
+
 # 04/16/2026 Update — CelebA ResNet Base Run Finished
 
 - The fresh CelebA ResNet base run launched on GPU `0` has finished.
@@ -54,53 +230,59 @@
 
 | Strategy | Selected Original Samples | Final Train Size After +1000 Gen | Held-out Test ACC | Delta vs Base | AL Selection Time | Canonical Log |
 |----------|---------------------------|----------------------------------|-------------------|---------------|-------------------|---------------|
-| `random` | `8000` | `9000` | `91.15%` | `+0.58 pp` | `0.00 s` | `logs_celeba/resume_lr1e-5_epoch15_random_resnet_celeba_1000_ratio0.1.log` |
+| `random` | `8000` | `9000` | `90.15%` | `-0.42 pp` | `0.00 s` | `logs_celeba/resume_lr1e-5_epoch15_random_resnet_celeba_1000_ratio0.1.log` |
 | `stratified` | `8000` | `9000` | `90.95%` | `+0.38 pp` | `0.00 s` | `logs_celeba/resume_lr1e-5_epoch15_stratified_resnet_celeba_1000_ratio0.1.log` |
 | `coreset` | `8000` | `9000` | `90.29%` | `-0.28 pp` | `45 min` | `logs_celeba/resume_lr1e-5_epoch15_coreset_resnet_celeba_1000_ratio0.1.log` |
 | `badge` | `8000` | `9000` | `91.12%` | `+0.55 pp` | `1 h 52 min` | `logs_celeba/resume_lr1e-5_epoch15_badge_resnet_celeba_1000_ratio0.1.log` |
+| `attribute` | `8000` | `9000` | `91.07%` | `+0.50 pp` | `0.42 s` | `logs_celeba/attr_ratio0.1_qwen3mix_r003_p05_c15_gpu2_20260417_010718.log` |
 
 ### Ratio = 0.3
 
 | Strategy | Selected Original Samples | Final Train Size After +1000 Gen | Held-out Test ACC | Delta vs Base | AL Selection Time | Canonical Log |
 |----------|---------------------------|----------------------------------|-------------------|---------------|-------------------|---------------|
-| `random` | `24000` | `25000` | `91.18%` | `+0.61 pp` | `0.00 s` | `logs_celeba/resume_lr1e-5_epoch15_random_resnet_celeba_1000_ratio0.3.log` |
-| `stratified` | `24000` | `25000` | `91.15%` | `+0.58 pp` | `0.00 s` | `logs_celeba/resume_lr1e-5_epoch15_stratified_resnet_celeba_1000_ratio0.3.log` |
-| `coreset` | `24000` | `25000` | `91.13%` | `+0.56 pp` | `2 h 41 min` | `logs_celeba/resume_lr1e-5_epoch15_coreset_resnet_celeba_1000_ratio0.3.log` |
-| `badge` | `24000` | `25000` | `91.04%` | `+0.47 pp` | `5 h 15 min` | `logs_celeba/resume_lr1e-5_epoch15_badge_resnet_celeba_1000_ratio0.3_gpu2_verbose_20260416_115906.log` |
+| `random` | `24000` | `25000` | `90.68%` | `+0.11 pp` | `0.00 s` | `logs_celeba/resume_lr1e-5_epoch15_random_resnet_celeba_1000_ratio0.3.log` |
+| `stratified` | `24000` | `25000` | `90.65%` | `+0.08 pp` | `0.00 s` | `logs_celeba/resume_lr1e-5_epoch15_stratified_resnet_celeba_1000_ratio0.3.log` |
+| `coreset` | `24000` | `25000` | `90.63%` | `+0.06 pp` | `2 h 41 min` | `logs_celeba/resume_lr1e-5_epoch15_coreset_resnet_celeba_1000_ratio0.3.log` |
+| `badge` | `24000` | `25000` | `90.54%` | `-0.03 pp` | `116.78 s` | `logs_celeba/resume_lr1e-5_epoch15_badge_resnet_celeba_1000_ratio0.3_gpu2_verbose_20260416_115906.log` |
+| `attribute` | `24000` | `25000` | `90.91%` | `+0.34 pp` | `0.43 s` | `logs_celeba/attr_rb_ratio0.3_rb_qwen3x333_r000_p0_cinf_gpu0_20260417_014040.log` |
 
 ### Ratio = 0.5
 
 | Strategy | Selected Original Samples | Final Train Size After +1000 Gen | Held-out Test ACC | Delta vs Base | AL Selection Time | Canonical Log |
 |----------|---------------------------|----------------------------------|-------------------|---------------|-------------------|---------------|
-| `random` | `40000` | `41000` | `91.27%` | `+0.70 pp` | `0.00 s` | `logs_celeba/resume_lr1e-5_epoch15_random_resnet_celeba_1000_ratio0.5.log` |
-| `stratified` | `40000` | `41000` | `91.29%` | `+0.72 pp` | `0.01 s` | `logs_celeba/resume_lr1e-5_epoch15_stratified_resnet_celeba_1000_ratio0.5.log` |
-| `coreset` | `40000` | `41000` | `91.09%` | `+0.52 pp` | `5 h 5 min` | `logs_celeba/resume_lr1e-5_epoch15_coreset_resnet_celeba_1000_ratio0.5.log` |
-| `badge` | `40000` | `41000` | `91.13%` | `+0.56 pp` | `124.76 s` | `logs_celeba/resume_lr1e-5_epoch15_badge_resnet_celeba_1000_ratio0.5_gpu0_20260416_120554.log` |
+| `random` | `40000` | `41000` | `90.77%` | `+0.20 pp` | `0.00 s` | `logs_celeba/resume_lr1e-5_epoch15_random_resnet_celeba_1000_ratio0.5.log` |
+| `stratified` | `40000` | `41000` | `90.79%` | `+0.22 pp` | `0.01 s` | `logs_celeba/resume_lr1e-5_epoch15_stratified_resnet_celeba_1000_ratio0.5.log` |
+| `coreset` | `40000` | `41000` | `90.59%` | `+0.02 pp` | `5 h 5 min` | `logs_celeba/resume_lr1e-5_epoch15_coreset_resnet_celeba_1000_ratio0.5.log` |
+| `badge` | `40000` | `41000` | `90.63%` | `+0.06 pp` | `124.76 s` | `logs_celeba/resume_lr1e-5_epoch15_badge_resnet_celeba_1000_ratio0.5_gpu0_20260416_120554.log` |
 
 ### Ratio = 0.7
 
 | Strategy | Selected Original Samples | Final Train Size After +1000 Gen | Held-out Test ACC | Delta vs Base | AL Selection Time | Canonical Log |
 |----------|---------------------------|----------------------------------|-------------------|---------------|-------------------|---------------|
-| `random` | `56000` | `57000` | `90.88%` | `+0.31 pp` | `0.00 s` | `logs_celeba/resume_lr1e-5_epoch15_random_resnet_celeba_1000_ratio0.7.log` |
-| `stratified` | `56000` | `57000` | `91.29%` | `+0.72 pp` | `0.01 s` | `logs_celeba/resume_lr1e-5_epoch15_stratified_resnet_celeba_1000_ratio0.7.log` |
-| `coreset` | `56000` | `57000` | `91.10%` | `+0.53 pp` | `56.85 s` | `logs_celeba/resume_lr1e-5_epoch15_coreset_resnet_celeba_1000_ratio0.7_gpu3_rerun_20260416_121045.log` |
-| `badge` | `56000` | `57000` | `91.31%` | `+0.74 pp` | `74.42 s` | `logs_celeba/resume_lr1e-5_epoch15_badge_resnet_celeba_1000_ratio0.7_gpu0_20260416_122047.log` |
+| `random` | `56000` | `57000` | `90.38%` | `-0.19 pp` | `0.00 s` | `logs_celeba/resume_lr1e-5_epoch15_random_resnet_celeba_1000_ratio0.7.log` |
+| `stratified` | `56000` | `57000` | `90.79%` | `+0.22 pp` | `0.01 s` | `logs_celeba/resume_lr1e-5_epoch15_stratified_resnet_celeba_1000_ratio0.7.log` |
+| `coreset` | `56000` | `57000` | `90.60%` | `+0.03 pp` | `56.85 s` | `logs_celeba/resume_lr1e-5_epoch15_coreset_resnet_celeba_1000_ratio0.7_gpu3_rerun_20260416_121045.log` |
+| `badge` | `56000` | `57000` | `90.81%` | `+0.24 pp` | `74.42 s` | `logs_celeba/resume_lr1e-5_epoch15_badge_resnet_celeba_1000_ratio0.7_gpu0_20260416_122047.log` |
 
 ### CelebA Resume Observations
 
-- Under the manually reported CelebA base test accuracy (`90.57%`), most completed resume baselines are above the base reference.
-- The strongest completed resume result is `badge` at `ratio=0.7` with held-out test accuracy `91.31%`, which is `+0.74` percentage points above the reported base.
+- Under the manually reported CelebA base test accuracy (`90.57%`), the corrected higher-ratio non-attribute resume baselines are weaker than previously recorded, while the `ratio=0.1` entries remain as originally reported.
+- The strongest completed resume result in the current table is `badge` at `ratio=0.1` with held-out test accuracy `91.12%`, which is `+0.55` percentage points above the reported base.
 - Among the unpatched selectors, `coreset` and early `badge` were dominated by selection cost rather than downstream accuracy:
   - `coreset` selection time grew from `45 min` at `ratio=0.1` to `5 h 5 min` at `ratio=0.5`
   - the original `badge` `ratio=0.1` run already needed `1 h 52 min` just for selection
 - After the large-job approximation patches, the high-ratio runs became practical again:
   - patched `coreset` `ratio=0.7`: `56.85 s`
   - patched `badge` `ratio=0.3/0.5/0.7`: `116.78 s`, `124.76 s`, `74.42 s`
+- The apparent BADGE runtime reversal across ratios is a code-path change, not a true scaling win:
+  - `ratio=0.1` used the older exact BADGE path and took `1 h 52 min`
+  - `ratio=0.3/0.5/0.7` are patched large-job reruns that use the approximation path
+  - so `0.1` versus `0.3/0.5/0.7` runtime is not a like-for-like selector comparison
 - Accuracy trends are not monotonic with retained-data ratio on CelebA:
-  - `random` peaked at `ratio=0.5` and then dropped at `0.7`
-  - `stratified` was stable at `0.5` and `0.7`
-  - `badge` improved again at `0.7` after being weaker at `0.3`
-- For the current CelebA comparison set, `stratified` and patched `badge` are the most competitive methods, while `coreset` is the least attractive once runtime is considered.
+  - corrected `random` peaked at `ratio=0.5` and then dropped at `0.7`
+  - corrected `stratified` was stable at `0.5` and `0.7`
+  - corrected `badge` improved again at `0.7` after being weaker at `0.3`
+- For the current CelebA comparison set, `badge` remains the strongest reported method at `ratio=0.1`, while `attribute` is competitive at both `ratio=0.1` and `ratio=0.3`; `coreset` is still the least attractive once runtime is considered.
 
 ### 04/16/2026 Update — CelebA Attribute Hyperparameter Probe (`ratio=0.1`, `E=False`)
 
@@ -115,19 +297,19 @@
 
 | Config | `R` | `P` | `C` | Held-out Test ACC | Delta vs Base | Gap vs `random` (`ratio=0.1`) | AL Selection Time | End-to-End Time | Canonical Log |
 |--------|-----|-----|-----|-------------------|---------------|-------------------------------|-------------------|-----------------|---------------|
-| `baseline_def_e0_r001_p5_cinf` | `0.01` | `5.0` | `inf` | **`90.59%`** | `+0.02 pp` | `-0.56 pp` | `0.72 s` | `237.61 s` | `logs_celeba/attr_ratio0.1_baseline_def_e0_r001_p5_cinf_gpu0_20260416_140026.log` |
-| `soft_e0_r01_p5_c15` | `0.1` | `5.0` | `15.0` | `90.55%` | `-0.02 pp` | `-0.60 pp` | `0.70 s` | `236.93 s` | `logs_celeba/attr_ratio0.1_soft_e0_r01_p5_c15_gpu1_20260416_140026.log` |
-| `aggro_e0_r08_p10_c4` | `0.8` | `10.0` | `4.0` | `90.47%` | `-0.10 pp` | `-0.68 pp` | `0.71 s` | `236.35 s` | `logs_celeba/attr_ratio0.1_aggro_e0_r08_p10_c4_gpu2_20260416_140026.log` |
+| `baseline_def_e0_r001_p5_cinf` | `0.01` | `5.0` | `inf` | **`90.59%`** | `+0.02 pp` | `+0.44 pp` | `0.72 s` | `237.61 s` | `logs_celeba/attr_ratio0.1_baseline_def_e0_r001_p5_cinf_gpu0_20260416_140026.log` |
+| `soft_e0_r01_p5_c15` | `0.1` | `5.0` | `15.0` | `90.55%` | `-0.02 pp` | `+0.40 pp` | `0.70 s` | `236.93 s` | `logs_celeba/attr_ratio0.1_soft_e0_r01_p5_c15_gpu1_20260416_140026.log` |
+| `aggro_e0_r08_p10_c4` | `0.8` | `10.0` | `4.0` | `90.47%` | `-0.10 pp` | `+0.32 pp` | `0.71 s` | `236.35 s` | `logs_celeba/attr_ratio0.1_aggro_e0_r08_p10_c4_gpu2_20260416_140026.log` |
 
 ### CelebA Attribute-Probe Observations
 
 - The best of the three completed CelebA attribute settings is the most conservative one:
   - `baseline_def_e0_r001_p5_cinf`
   - held-out test accuracy `90.59%`
-- Even the best attribute configuration is clearly below the already completed `ratio=0.1` non-attribute baselines:
-  - `random`: `91.15%`
-  - `badge`: `91.12%`
+- Even this early attribute configuration already clears the corrected `random` baseline, but it remains below the stronger completed `ratio=0.1` non-attribute baselines:
+  - `random`: `90.15%`
   - `stratified`: `90.95%`
+  - `badge`: `91.12%`
 - The good news is runtime:
   - all three attribute selectors finished in about `0.7 s`
   - this is dramatically cheaper than `coreset` (`45 min`) or the original `badge` (`1 h 52 min`) at the same ratio
@@ -150,14 +332,14 @@
 
 | Config | `R` | `P` | `C` | Held-out Test ACC | Delta vs Base | Gap vs `random` (`ratio=0.1`) | AL Selection Time | End-to-End Time | Canonical Log |
 |--------|-----|-----|-----|-------------------|---------------|-------------------------------|-------------------|-----------------|---------------|
-| `mixselx10_e0_r003_p05_cinf` | `0.03` | `0.5` | `inf` | **`90.99%`** | `+0.42 pp` | `-0.16 pp` | `0.74 s` | `349.37 s` | `logs_celeba/attr_ratio0.1_mixselx10_e0_r003_p05_cinf_gpu2_20260416_141739.log` |
-| `mixselx10_e0_r000_p0_cinf` | `0.0` | `0.0` | `inf` | `90.86%` | `+0.29 pp` | `-0.29 pp` | `0.70 s` | `347.44 s` | `logs_celeba/attr_ratio0.1_mixselx10_e0_r000_p0_cinf_gpu1_20260416_141739.log` |
-| `mixselx10_e0_r01_p05_cinf` | `0.1` | `0.5` | `inf` | `90.81%` | `+0.24 pp` | `-0.34 pp` | `0.74 s` | `372.83 s` | `logs_celeba/attr_ratio0.1_mixselx10_e0_r01_p05_cinf_gpu3_20260416_141739.log` |
-| `mixselx10_e0_r000_p05_cinf` | `0.0` | `0.5` | `inf` | `90.71%` | `+0.14 pp` | `-0.44 pp` | `0.94 s` | `348.21 s` | `logs_celeba/attr_ratio0.1_mixselx10_e0_r000_p05_cinf_gpu1_20260416_141739.log` |
-| `mixselx10_e0_r001_p0_cinf` | `0.01` | `0.0` | `inf` | `90.70%` | `+0.13 pp` | `-0.45 pp` | `0.72 s` | `344.59 s` | `logs_celeba/attr_ratio0.1_mixselx10_e0_r001_p0_cinf_gpu0_20260416_141739.log` |
-| `mixselx10_e0_r001_p05_cinf` | `0.01` | `0.5` | `inf` | `90.67%` | `+0.10 pp` | `-0.48 pp` | `1.05 s` | `343.75 s` | `logs_celeba/attr_ratio0.1_mixselx10_e0_r001_p05_cinf_gpu0_20260416_141739.log` |
-| `mixselx10_e0_r001_p1_cinf` | `0.01` | `1.0` | `inf` | `90.61%` | `+0.04 pp` | `-0.54 pp` | `1.01 s` | `350.25 s` | `logs_celeba/attr_ratio0.1_mixselx10_e0_r001_p1_cinf_gpu2_20260416_141739.log` |
-| `mixselx10_e0_r01_p05_c15` | `0.1` | `0.5` | `15.0` | `90.61%` | `+0.04 pp` | `-0.54 pp` | `0.98 s` | `412.87 s` | `logs_celeba/attr_ratio0.1_mixselx10_e0_r01_p05_c15_gpu3_20260416_141739.log` |
+| `mixselx10_e0_r003_p05_cinf` | `0.03` | `0.5` | `inf` | **`90.99%`** | `+0.42 pp` | `+0.84 pp` | `0.74 s` | `349.37 s` | `logs_celeba/attr_ratio0.1_mixselx10_e0_r003_p05_cinf_gpu2_20260416_141739.log` |
+| `mixselx10_e0_r000_p0_cinf` | `0.0` | `0.0` | `inf` | `90.86%` | `+0.29 pp` | `+0.71 pp` | `0.70 s` | `347.44 s` | `logs_celeba/attr_ratio0.1_mixselx10_e0_r000_p0_cinf_gpu1_20260416_141739.log` |
+| `mixselx10_e0_r01_p05_cinf` | `0.1` | `0.5` | `inf` | `90.81%` | `+0.24 pp` | `+0.66 pp` | `0.74 s` | `372.83 s` | `logs_celeba/attr_ratio0.1_mixselx10_e0_r01_p05_cinf_gpu3_20260416_141739.log` |
+| `mixselx10_e0_r000_p05_cinf` | `0.0` | `0.5` | `inf` | `90.71%` | `+0.14 pp` | `+0.56 pp` | `0.94 s` | `348.21 s` | `logs_celeba/attr_ratio0.1_mixselx10_e0_r000_p05_cinf_gpu1_20260416_141739.log` |
+| `mixselx10_e0_r001_p0_cinf` | `0.01` | `0.0` | `inf` | `90.70%` | `+0.13 pp` | `+0.55 pp` | `0.72 s` | `344.59 s` | `logs_celeba/attr_ratio0.1_mixselx10_e0_r001_p0_cinf_gpu0_20260416_141739.log` |
+| `mixselx10_e0_r001_p05_cinf` | `0.01` | `0.5` | `inf` | `90.67%` | `+0.10 pp` | `+0.52 pp` | `1.05 s` | `343.75 s` | `logs_celeba/attr_ratio0.1_mixselx10_e0_r001_p05_cinf_gpu0_20260416_141739.log` |
+| `mixselx10_e0_r001_p1_cinf` | `0.01` | `1.0` | `inf` | `90.61%` | `+0.04 pp` | `+0.46 pp` | `1.01 s` | `350.25 s` | `logs_celeba/attr_ratio0.1_mixselx10_e0_r001_p1_cinf_gpu2_20260416_141739.log` |
+| `mixselx10_e0_r01_p05_c15` | `0.1` | `0.5` | `15.0` | `90.61%` | `+0.04 pp` | `+0.46 pp` | `0.98 s` | `412.87 s` | `logs_celeba/attr_ratio0.1_mixselx10_e0_r01_p05_c15_gpu3_20260416_141739.log` |
 
 ### CelebA Attribute Mix-Scaled Observations
 
@@ -179,8 +361,9 @@
   - strict class balance (`C=inf`) is better than the softer `C=15`
 - Runtime remains excellent:
   - all eight mix-scaled selectors still finish in about `0.7` to `1.1 s`
-- The attribute method is now much closer to the best completed CelebA baselines, but it still does not win at `ratio=0.1`:
-  - `random`: `91.15%`
+- The attribute method is now competitive with the corrected `ratio=0.1` baselines:
+  - `random`: `90.15%`
+  - `stratified`: `90.95%`
   - `badge`: `91.12%`
   - `best mix-scaled attribute`: `90.99%`
 - Practical takeaway:
@@ -230,6 +413,352 @@
     - `P in {0.0, 0.5}`
     - `C = inf`
     - still using generated-count scaling by `1 / sub_ratio`
+
+### 04/17/2026 Update — CelebA Qwen3 Attribute Follow-Up (`ratio=0.3`, finite `C=15`)
+
+- The earlier Qwen3 `ratio=0.3` reference runs only covered `C=inf`, but that was not the intended final selector regime.
+- This follow-up kept the same mild `R/P` neighborhood and changed only the class-balance term to finite `C=15.0` using:
+  - `save/attribute_celeba_trainval_qwen3_8B.json`
+  - `extra_count_scale=3.33333`
+
+| Config | `R` | `P` | `C` | Held-out Test ACC | Delta vs Base | Gap vs `random` (`ratio=0.3`) | Best Val ACC | AL Selection Time | End-to-End Time | Canonical Log |
+|--------|-----|-----|-----|-------------------|---------------|-------------------------------|--------------|-------------------|-----------------|---------------|
+| `qwen3mixx333_r000_p0_c15` | `0.0` | `0.0` | `15.0` | **`90.88%`** | `+0.31 pp` | `-0.30 pp` | `90.92%` | `0.53 s` | `423.41 s` | `logs_celeba/attr_ratio0.3_qwen3mixx333_r000_p0_c15_gpu0_20260417_011502.log` |
+| `qwen3mixx333_r001_p05_c15` | `0.01` | `0.5` | `15.0` | `90.61%` | `+0.04 pp` | `-0.57 pp` | `90.55%` | `0.55 s` | `416.34 s` | `logs_celeba/attr_ratio0.3_qwen3mixx333_r001_p05_c15_gpu1_20260417_011502.log` |
+| `qwen3mixx333_r003_p05_c15` | `0.03` | `0.5` | `15.0` | `90.28%` | `-0.29 pp` | `-0.90 pp` | `90.38%` | `0.54 s` | `420.36 s` | `logs_celeba/attr_ratio0.3_qwen3mixx333_r003_p05_c15_gpu2_20260417_011502.log` |
+
+### CelebA Qwen3 Ratio-0.3 Finite-`C` Observations
+
+- Switching from `C=inf` to `C=15.0` did not improve the best `ratio=0.3` Qwen3 result.
+- The best finite-`C` configuration is still the most conservative one:
+  - `R=0.0`
+  - `P=0.0`
+  - `C=15.0`
+  - held-out test accuracy `90.88%`
+- Compared with the earlier Qwen3 `C=inf` reference at the same mild corner:
+  - `R=0.0, P=0.0` changed from `90.89%` to `90.88%`
+  - effectively no gain
+- The more attribute-steered finite-`C` settings were clearly worse at `ratio=0.3`:
+  - `R=0.01, P=0.5, C=15.0`: `90.61%`
+  - `R=0.03, P=0.5, C=15.0`: `90.28%`
+- Relative to the completed non-attribute CelebA baselines at `ratio=0.3`, the attribute path still trails:
+  - `random`: `91.18%`
+  - `stratified`: `91.15%`
+  - `coreset`: `91.13%`
+  - `badge`: `91.04%`
+  - best Qwen3 finite-`C` attribute result: `90.88%`
+- Practical takeaway:
+  - for CelebA `ratio=0.3`, there is currently no evidence that finite class balance helps the Qwen3 attribute selector
+  - if this line continues, the only defensible region is still the conservative near-random corner
+
+### 04/17/2026 Update — CelebA Qwen3 Attribute Re-Run (`ratio=0.1`, 4 selected RPCs)
+
+- The earlier CelebA attribute experiments above used the older BLIP-style metadata file:
+  - `save/attribute.json`
+- A follow-up re-run was completed against the newer Qwen3-assigned merged train+val metadata:
+  - `save/attribute_celeba_trainval_qwen3_8B.json`
+- To keep the source explicit and avoid silently changing defaults, these runs used:
+  - `scripts/run_celeba_attribute_ratio0.1_qwen3_rpc4.sh`
+- The four selected settings were chosen from the previously strongest `ratio=0.1` mix-scaled BLIP region instead of rerunning the full grid.
+
+| Config | `R` | `P` | `C` | Qwen3 Held-out Test ACC | BLIP Held-out Test ACC | Delta vs BLIP | Best Val ACC | AL Selection Time | End-to-End Time | Qwen3 Log |
+|--------|-----|-----|-----|--------------------------|------------------------|---------------|--------------|-------------------|-----------------|-----------|
+| `qwen3mix_r000_p0_cinf` | `0.0` | `0.0` | `inf` | **`90.86%`** | `90.86%` | `+0.00 pp` | `91.03%` | `0.38 s` | `217.35 s` | `logs_celeba/attr_ratio0.1_qwen3mix_r000_p0_cinf_gpu0_20260417_004805.log` |
+| `qwen3mix_r001_p05_cinf` | `0.01` | `0.5` | `inf` | `90.30%` | `90.67%` | `-0.37 pp` | `90.29%` | `0.42 s` | `217.03 s` | `logs_celeba/attr_ratio0.1_qwen3mix_r001_p05_cinf_gpu1_20260417_004805.log` |
+| `qwen3mix_r003_p05_cinf` | `0.03` | `0.5` | `inf` | `90.12%` | **`90.99%`** | `-0.87 pp` | `90.33%` | `0.45 s` | `216.75 s` | `logs_celeba/attr_ratio0.1_qwen3mix_r003_p05_cinf_gpu2_20260417_004805.log` |
+| `qwen3mix_r01_p05_cinf` | `0.1` | `0.5` | `inf` | `90.03%` | `90.81%` | `-0.78 pp` | `90.16%` | `0.41 s` | `216.72 s` | `logs_celeba/attr_ratio0.1_qwen3mix_r01_p05_cinf_gpu3_20260417_004805.log` |
+
+### CelebA Qwen3 Re-Run Observations
+
+- This Qwen3 metadata re-run did **not** improve over the earlier BLIP-based `ratio=0.1` attribute results.
+- The best Qwen3 result is:
+  - `R=0.0`
+  - `P=0.0`
+  - `C=inf`
+  - held-out test accuracy `90.86%`
+- Compared with the best BLIP-based `ratio=0.1` attribute result:
+  - BLIP best:
+    - `R=0.03`
+    - `P=0.5`
+    - `C=inf`
+    - held-out test accuracy `90.99%`
+  - Qwen3 best:
+    - `90.86%`
+  - gap:
+    - `-0.13 pp`
+- On a same-config comparison, Qwen3 matched only the conservative control:
+  - `R=0.0`, `P=0.0`, `C=inf`:
+    - `90.86%` vs `90.86%`
+- The three stronger rarity-steering settings all degraded under Qwen3 metadata:
+  - `R=0.01`, `P=0.5`, `C=inf`:
+    - `-0.37 pp`
+  - `R=0.03`, `P=0.5`, `C=inf`:
+    - `-0.87 pp`
+  - `R=0.1`, `P=0.5`, `C=inf`:
+    - `-0.78 pp`
+- Practical takeaway:
+  - for CelebA `ratio=0.1` attribute AL, the Qwen3 metadata source did not improve overall held-out accuracy over the earlier BLIP-based metadata
+  - if this line continues, the immediate options are:
+    - keep the BLIP-based `R=0.03, P=0.5, C=inf` result as the stronger `ratio=0.1` attribute reference
+    - or inspect why Qwen3 labels appear to make the selector over-steer once `P>0` and `R>0`
+
+### 04/17/2026 Update — CelebA Qwen3 Attribute Follow-Up (`ratio=0.1`, finite `C=15`)
+
+- Because `C=inf` is not admissible for the next selector choice, a second `ratio=0.1` Qwen3 follow-up re-tested the mild top-3 Qwen3 `R/P` settings with finite class balance:
+  - `C=15.0`
+- These runs again used:
+  - `save/attribute_celeba_trainval_qwen3_8B.json`
+  - `extra_count_scale = 10`
+
+| Config | `R` | `P` | `C` | Qwen3 Held-out Test ACC | Delta vs Base | Gap vs `random` (`ratio=0.1`) | Best Val ACC | AL Selection Time | End-to-End Time | Qwen3 Log |
+|--------|-----|-----|-----|--------------------------|---------------|-------------------------------|--------------|-------------------|-----------------|-----------|
+| `qwen3mix_r003_p05_c15` | `0.03` | `0.5` | `15.0` | **`91.07%`** | `+0.50 pp` | `+0.92 pp` | `90.91%` | `0.42 s` | `216.89 s` | `logs_celeba/attr_ratio0.1_qwen3mix_r003_p05_c15_gpu2_20260417_010718.log` |
+| `qwen3mix_r000_p0_c15` | `0.0` | `0.0` | `15.0` | `90.84%` | `+0.27 pp` | `+0.69 pp` | `90.97%` | `0.40 s` | `217.38 s` | `logs_celeba/attr_ratio0.1_qwen3mix_r000_p0_c15_gpu0_20260417_010718.log` |
+| `qwen3mix_r001_p05_c15` | `0.01` | `0.5` | `15.0` | `90.09%` | `-0.48 pp` | `-0.06 pp` | `90.24%` | `0.43 s` | `217.79 s` | `logs_celeba/attr_ratio0.1_qwen3mix_r001_p05_c15_gpu1_20260417_010718.log` |
+
+### CelebA Qwen3 Ratio-0.1 Finite-C Observations
+
+- The finite-`C` rerun changes the ranking within the Qwen3 `ratio=0.1` family:
+  - best finite-`C` setting:
+    - `R=0.03`
+    - `P=0.5`
+    - `C=15.0`
+    - held-out test accuracy `91.07%`
+- Compared with the earlier Qwen3 `C=inf` runs at the same `ratio=0.1`:
+  - `R=0.0`, `P=0.0`:
+    - `C=15.0` Qwen3 `90.84%`
+    - `C=inf` Qwen3 `90.86%`
+    - delta `-0.02 pp`
+  - `R=0.01`, `P=0.5`:
+    - `C=15.0` Qwen3 `90.09%`
+    - `C=inf` Qwen3 `90.30%`
+    - delta `-0.21 pp`
+  - `R=0.03`, `P=0.5`:
+    - `C=15.0` Qwen3 `91.07%`
+    - `C=inf` Qwen3 `90.12%`
+    - delta `+0.95 pp`
+- This finite-`C` result substantially closes the gap to the earlier BLIP-based best `ratio=0.1` attribute run:
+  - BLIP best:
+    - `R=0.03`, `P=0.5`, `C=inf`
+    - `90.99%`
+  - Qwen3 best finite-`C`:
+    - `R=0.03`, `P=0.5`, `C=15.0`
+    - `91.07%`
+  - delta:
+    - `+0.08 pp`
+- It now beats the corrected `random` and `stratified` `ratio=0.1` baselines, but it still does not beat the strongest completed non-attribute method:
+  - `random`: `90.15%`
+  - `stratified`: `90.95%`
+  - `badge`: `91.12%`
+  - Qwen3 best finite-`C`: `91.07%`
+- Practical takeaway:
+  - once `C=inf` is excluded, the best current Qwen3 `ratio=0.1` setting is:
+    - `R=0.03, P=0.5, C=15.0`
+  - this is the first Qwen3 CelebA attribute setting that slightly beats the earlier BLIP-based best attribute result, while remaining just below the finished `random` and `badge` baselines
+
+### 04/17/2026 Update — CelebA Qwen3 Attribute Local Refinement (`ratio=0.1`, around `R=0.03, P=0.5, C=15`)
+
+- After the first finite-`C` Qwen3 `ratio=0.1` sweep, a small local refinement tested whether the current best point could be improved by:
+  - lowering rarity from `R=0.03` to `R=0.02`
+  - raising rarity from `R=0.03` to `R=0.05`
+  - softening class balance from `C=15.0` to `C=8.0`
+- These runs again used:
+  - `save/attribute_celeba_trainval_qwen3_8B.json`
+  - `extra_count_scale = 10`
+
+| Config | `R` | `P` | `C` | Qwen3 Held-out Test ACC | Delta vs Base | Gap vs `random` (`ratio=0.1`) | Best Val ACC | AL Selection Time | End-to-End Time | Qwen3 Log |
+|--------|-----|-----|-----|--------------------------|---------------|-------------------------------|--------------|-------------------|-----------------|-----------|
+| `qwen3mix_r003_p05_c8` | `0.03` | `0.5` | `8.0` | **`90.66%`** | `+0.09 pp` | `+0.51 pp` | `90.63%` | `0.53 s` | `235.02 s` | `logs_celeba/attr_ratio0.1_qwen3mix_r003_p05_c8_gpu2_20260417_012110.log` |
+| `qwen3mix_r002_p05_c15` | `0.02` | `0.5` | `15.0` | `90.41%` | `-0.16 pp` | `+0.26 pp` | `90.46%` | `0.52 s` | `230.14 s` | `logs_celeba/attr_ratio0.1_qwen3mix_r002_p05_c15_gpu0_20260417_012110.log` |
+| `qwen3mix_r005_p05_c15` | `0.05` | `0.5` | `15.0` | `90.15%` | `-0.42 pp` | `+0.00 pp` | `90.27%` | `0.52 s` | `235.35 s` | `logs_celeba/attr_ratio0.1_qwen3mix_r005_p05_c15_gpu1_20260417_012110.log` |
+
+### CelebA Qwen3 Ratio-0.1 Local-Refinement Observations
+
+- None of the three local-refinement runs beat the incumbent best finite-`C` setting:
+  - incumbent:
+    - `R=0.03, P=0.5, C=15.0`
+    - held-out test accuracy `91.07%`
+- Lowering rarity slightly hurts:
+  - `R=0.02, P=0.5, C=15.0`
+  - `90.41%`
+  - delta vs incumbent `-0.66 pp`
+- Increasing rarity also hurts:
+  - `R=0.05, P=0.5, C=15.0`
+  - `90.15%`
+  - delta vs incumbent `-0.92 pp`
+- Softening class balance from `C=15.0` to `C=8.0` is better than moving `R`, but it still loses to the incumbent:
+  - `R=0.03, P=0.5, C=8.0`
+  - `90.66%`
+  - delta vs incumbent `-0.41 pp`
+- Practical takeaway:
+  - the local neighborhood evidence supports keeping:
+    - `R=0.03, P=0.5, C=15.0`
+  - as the current best Qwen3 CelebA attribute setting for `ratio=0.1`
+
+### 04/17/2026 Update — CelebA Qwen3 `redhair_brownskin` Attribute Pre-Rerun Snapshot (`ratio=0.1`, interrupted old directory semantics)
+
+- Before the generated-image directories were renamed to distinguish filtered vs unfiltered content, six `redhair_brownskin` attribute runs were launched with the old path meaning.
+- Those runs started normally, completed active-learning selection, and entered resumed training, but all six crashed mid-training after the directory rename because the training dataloader could no longer open some generated images under the old path.
+- These logs are still useful as a pre-rerun comparison snapshot for selection behavior and early validation trajectory, but they are **not** valid final accuracy results.
+
+| Config | `R` | `P` | `C` | Best Observed Val ACC Before Crash | Last Completed Epoch | Failure Type | Canonical Log |
+|--------|-----|-----|-----|------------------------------------|----------------------|--------------|---------------|
+| `rb_qwen3_r003_p05_c15` | `0.03` | `0.5` | `15.0` | `90.21%` | `8` | `FileNotFoundError` after directory rename | `logs_celeba/attr_rb_ratio0.1_rb_qwen3_r003_p05_c15_gpu0_20260417_012831.log` |
+| `rb_qwen3_r000_p0_cinf` | `0.0` | `0.0` | `inf` | `90.79%` | `8` | `FileNotFoundError` after directory rename | `logs_celeba/attr_rb_ratio0.1_rb_qwen3_r000_p0_cinf_gpu0_20260417_012831.log` |
+| `rb_qwen3_r000_p0_c15` | `0.0` | `0.0` | `15.0` | `90.79%` | `7` | `FileNotFoundError` after directory rename | `logs_celeba/attr_rb_ratio0.1_rb_qwen3_r000_p0_c15_gpu1_20260417_012831.log` |
+| `rb_qwen3_r003_p05_cinf` | `0.03` | `0.5` | `inf` | `89.82%` | `7` | `FileNotFoundError` after directory rename | `logs_celeba/attr_rb_ratio0.1_rb_qwen3_r003_p05_cinf_gpu1_20260417_012831.log` |
+| `rb_qwen3_r003_p05_c8` | `0.03` | `0.5` | `8.0` | `90.87%` | `7` | `FileNotFoundError` after directory rename | `logs_celeba/attr_rb_ratio0.1_rb_qwen3_r003_p05_c8_gpu2_20260417_012831.log` |
+| `rb_qwen3_r002_p05_c15` | `0.02` | `0.5` | `15.0` | `90.33%` | `7` | `FileNotFoundError` after directory rename | `logs_celeba/attr_rb_ratio0.1_rb_qwen3_r002_p05_c15_gpu2_20260417_012831.log` |
+
+### CelebA `redhair_brownskin` Pre-Rerun Snapshot Notes
+
+- All six interrupted runs successfully reached:
+  - `Selected 1000 filenames for sampling`
+  - `CelebA: Combined 8000 selected samples with 1000 generated images using Active Learning`
+  - resumed fine-tuning from `weights/model_celeba_resnet_base.pth`
+- The crash mechanism was consistent across runs:
+  - `FileNotFoundError`
+  - missing generated image under `data/redhair_brownskin/...`
+  - caused by the directory rename that changed filtered vs unfiltered path semantics during training
+- These rows should only be used as an early-trajectory comparison against the rerun that uses the corrected filtered directory layout.
+
+### 04/17/2026 Update — CelebA Qwen3 `redhair_brownskin` Attribute Rerun (`ratio=0.1`, filtered directory)
+
+- After the generated-image directory semantics were corrected, the same six `redhair_brownskin` Qwen3 `ratio=0.1` configurations were rerun against the filtered subset now mounted at:
+  - `data/redhair_brownskin`
+- These runs used:
+  - `save/attribute_celeba_trainval_qwen3_8B.json`
+  - focus:
+    - `hair color,skin`
+  - explicit generated counts:
+    - `hair color:red=1000`
+    - `skin:brown=1000`
+  - `extra_count_scale = 10`
+
+| Config | `R` | `P` | `C` | Held-out Test ACC | Delta vs Base | Best Val ACC | AL Selection Time | End-to-End Time | Canonical Log |
+|--------|-----|-----|-----|-------------------|---------------|--------------|-------------------|-----------------|---------------|
+| `rb_qwen3_r000_p0_c15` | `0.0` | `0.0` | `15.0` | **`90.75%`** | `+0.18 pp` | `90.82%` | `0.34 s` | `323.19 s` | `logs_celeba/attr_rb_ratio0.1_rb_qwen3_r000_p0_c15_gpu1_20260417_013234.log` |
+| `rb_qwen3_r000_p0_cinf` | `0.0` | `0.0` | `inf` | `90.74%` | `+0.17 pp` | `90.82%` | `0.32 s` | `315.65 s` | `logs_celeba/attr_rb_ratio0.1_rb_qwen3_r000_p0_cinf_gpu0_20260417_013234.log` |
+| `rb_qwen3_r002_p05_c15` | `0.02` | `0.5` | `15.0` | `90.63%` | `+0.06 pp` | `90.63%` | `0.42 s` | `323.69 s` | `logs_celeba/attr_rb_ratio0.1_rb_qwen3_r002_p05_c15_gpu2_20260417_013234.log` |
+| `rb_qwen3_r003_p05_c15` | `0.03` | `0.5` | `15.0` | `90.33%` | `-0.24 pp` | `90.53%` | `0.37 s` | `316.43 s` | `logs_celeba/attr_rb_ratio0.1_rb_qwen3_r003_p05_c15_gpu0_20260417_013234.log` |
+| `rb_qwen3_r003_p05_c8` | `0.03` | `0.5` | `8.0` | `90.16%` | `-0.41 pp` | `90.30%` | `0.36 s` | `323.48 s` | `logs_celeba/attr_rb_ratio0.1_rb_qwen3_r003_p05_c8_gpu2_20260417_013234.log` |
+| `rb_qwen3_r003_p05_cinf` | `0.03` | `0.5` | `inf` | `89.65%` | `-0.92 pp` | `89.92%` | `0.36 s` | `322.76 s` | `logs_celeba/attr_rb_ratio0.1_rb_qwen3_r003_p05_cinf_gpu1_20260417_013234.log` |
+
+### CelebA `redhair_brownskin` Ratio-0.1 Observations
+
+- On the filtered `redhair_brownskin` subset, the best Qwen3 attribute setting is the conservative control:
+  - `R=0.0`
+  - `P=0.0`
+  - `C=15.0`
+  - held-out test accuracy `90.75%`
+- The corresponding `C=inf` control is effectively tied:
+  - `R=0.0, P=0.0, C=inf`
+  - `90.74%`
+- Unlike the earlier `redhair_brownskin_sademotion` experiments, steering toward the `R=0.03, P=0.5` region hurts on this filtered two-attribute setup:
+  - `C=15.0`: `90.33%`
+  - `C=8.0`: `90.16%`
+  - `C=inf`: `89.65%`
+- The filtered `redhair_brownskin` subset therefore appears to prefer minimal attribute steering, with finite `C=15.0` only slightly ahead of the pure `C=inf` control.
+- Practical takeaway:
+  - for the current filtered `redhair_brownskin` `ratio=0.1` setting, carry forward:
+    - `R=0.0, P=0.0, C=15.0`
+  - and treat the earlier interrupted pre-rerun table only as a directory-mismatch comparison snapshot, not as a competing result set
+
+### 04/17/2026 Update — CelebA Qwen3 `redhair_brownskin` Attribute Follow-Up (`ratio=0.3`, filtered directory)
+
+- The six filtered `redhair_brownskin` Qwen3 `ratio=0.3` runs launched earlier on GPUs `0/1/2` have now finished.
+- These runs used:
+  - `data/redhair_brownskin`
+  - `save/attribute_celeba_trainval_qwen3_8B.json`
+  - `extra_count_scale = 3.33333`
+- This was the direct larger-ratio follow-up to the filtered `ratio=0.1` rerun, keeping both conservative controls and the previously informative mild steering region.
+
+| Config | `R` | `P` | `C` | Held-out Test ACC | Delta vs Base | Best Val ACC | AL Selection Time | End-to-End Time | Canonical Log |
+|--------|-----|-----|-----|-------------------|---------------|--------------|-------------------|-----------------|---------------|
+| `rb_qwen3x333_r000_p0_c15` | `0.0` | `0.0` | `15.0` | **`90.91%`** | `+0.34 pp` | `91.02%` | `0.44 s` | `655.45 s` | `logs_celeba/attr_rb_ratio0.3_rb_qwen3x333_r000_p0_c15_gpu0_20260417_014040.log` |
+| `rb_qwen3x333_r000_p0_cinf` | `0.0` | `0.0` | `inf` | **`90.91%`** | `+0.34 pp` | `91.03%` | `0.43 s` | `656.18 s` | `logs_celeba/attr_rb_ratio0.3_rb_qwen3x333_r000_p0_cinf_gpu0_20260417_014040.log` |
+| `rb_qwen3x333_r003_p05_cinf` | `0.03` | `0.5` | `inf` | `90.63%` | `+0.06 pp` | `90.72%` | `0.44 s` | `676.91 s` | `logs_celeba/attr_rb_ratio0.3_rb_qwen3x333_r003_p05_cinf_gpu2_20260417_014040.log` |
+| `rb_qwen3x333_r003_p05_c15` | `0.03` | `0.5` | `15.0` | `90.53%` | `-0.04 pp` | `90.61%` | `0.47 s` | `661.52 s` | `logs_celeba/attr_rb_ratio0.3_rb_qwen3x333_r003_p05_c15_gpu1_20260417_014040.log` |
+| `rb_qwen3x333_r002_p05_c15` | `0.02` | `0.5` | `15.0` | `90.47%` | `-0.10 pp` | `90.63%` | `0.47 s` | `664.06 s` | `logs_celeba/attr_rb_ratio0.3_rb_qwen3x333_r002_p05_c15_gpu1_20260417_014040.log` |
+| `rb_qwen3x333_r003_p05_c8` | `0.03` | `0.5` | `8.0` | `90.37%` | `-0.20 pp` | `90.49%` | `0.46 s` | `678.05 s` | `logs_celeba/attr_rb_ratio0.3_rb_qwen3x333_r003_p05_c8_gpu2_20260417_014040.log` |
+
+### CelebA `redhair_brownskin` Ratio-0.3 Observations
+
+- On the filtered `redhair_brownskin` subset at `ratio=0.3`, the best result is again the conservative control family:
+  - `R=0.0`
+  - `P=0.0`
+  - both `C=15.0` and `C=inf` reached the same held-out test accuracy:
+    - `90.91%`
+- Relative to the filtered `ratio=0.1` rerun, increasing the retained original-data ratio helped the control point:
+  - `ratio=0.1` best:
+    - `90.75%`
+  - `ratio=0.3` best:
+    - `90.91%`
+  - improvement:
+    - `+0.16 pp`
+- The mild attribute-steered region still does not beat the control on this filtered two-attribute setup:
+  - `R=0.02, P=0.5, C=15.0`:
+    - `90.47%`
+  - `R=0.03, P=0.5, C=15.0`:
+    - `90.53%`
+  - `R=0.03, P=0.5, C=8.0`:
+    - `90.37%`
+  - `R=0.03, P=0.5, C=inf`:
+    - `90.63%`
+- Runtime remains negligible compared with embedding-based AL baselines:
+  - all six selections still finished in about `0.43` to `0.47 s`
+- Practical takeaway:
+  - for the current filtered `redhair_brownskin` line, both completed ratios (`0.1` and `0.3`) prefer near-random Qwen3 selection over explicit rarity steering
+  - if this branch continues, carry forward:
+    - `R=0.0`
+    - `P=0.0`
+    - `C=15.0` or `C=inf`
+
+### 04/17/2026 Update — CelebA Qwen3 Attribute Follow-Up (`ratio=0.3`, transferred top 3)
+
+- A second Qwen3-based follow-up transferred the top 3 mild `ratio=0.1` Qwen3 settings to `ratio=0.3`:
+  - `R=0.0, P=0.0, C=inf`
+  - `R=0.01, P=0.5, C=inf`
+  - `R=0.03, P=0.5, C=inf`
+- These runs used the same Qwen3 metadata source:
+  - `save/attribute_celeba_trainval_qwen3_8B.json`
+- The generated-count scaling again matched the selected-data regime:
+  - `extra_count_scale = 1 / 0.3 = 3.33333`
+
+| Config | `R` | `P` | `C` | Qwen3 Held-out Test ACC | Delta vs Base | Gap vs `random` (`ratio=0.3`) | Best Val ACC | AL Selection Time | End-to-End Time | Qwen3 Log |
+|--------|-----|-----|-----|--------------------------|---------------|-------------------------------|--------------|-------------------|-----------------|-----------|
+| `qwen3mixx333_r000_p0_cinf` | `0.0` | `0.0` | `inf` | **`90.89%`** | `+0.32 pp` | `-0.29 pp` | `90.90%` | `0.51 s` | `399.41 s` | `logs_celeba/attr_ratio0.3_qwen3mixx333_r000_p0_cinf_gpu0_20260417_005520.log` |
+| `qwen3mixx333_r001_p05_cinf` | `0.01` | `0.5` | `inf` | `90.49%` | `-0.08 pp` | `-0.69 pp` | `90.50%` | `0.50 s` | `401.53 s` | `logs_celeba/attr_ratio0.3_qwen3mixx333_r001_p05_cinf_gpu1_20260417_005520.log` |
+| `qwen3mixx333_r003_p05_cinf` | `0.03` | `0.5` | `inf` | `90.63%` | `+0.06 pp` | `-0.55 pp` | `90.71%` | `0.51 s` | `399.91 s` | `logs_celeba/attr_ratio0.3_qwen3mixx333_r003_p05_cinf_gpu2_20260417_005520.log` |
+
+### CelebA Qwen3 Ratio-0.3 Observations
+
+- The best completed Qwen3 `ratio=0.3` result is still the conservative control:
+  - `R=0.0`
+  - `P=0.0`
+  - `C=inf`
+  - held-out test accuracy `90.89%`
+- On the overlapping transferred settings, Qwen3 does not beat the earlier BLIP-based ratio-0.3 results:
+  - `R=0.0`, `P=0.0`, `C=inf`:
+    - Qwen3 `90.89%`
+    - BLIP `90.89%`
+    - delta `+0.00 pp`
+  - `R=0.03`, `P=0.5`, `C=inf`:
+    - Qwen3 `90.63%`
+    - BLIP `90.87%`
+    - delta `-0.24 pp`
+- There is no direct BLIP `ratio=0.3` comparison point for:
+  - `R=0.01`, `P=0.5`, `C=inf`
+  - because the earlier BLIP top-3 transfer at `ratio=0.3` used `R=0.1`, `P=0.5`, `C=inf` instead
+- All three completed Qwen3 `ratio=0.3` runs still trail the finished non-attribute CelebA baselines at the same ratio:
+  - `random`: `91.18%`
+  - `stratified`: `91.15%`
+  - `coreset`: `91.13%`
+  - `badge`: `91.04%`
+- These completed Qwen3 `ratio=0.3` runs are still useful as reference points, but they are **not** the right settings to carry forward if `C=inf` is no longer admissible.
+- Practical takeaway:
+  - preserve the `ratio=0.3` Qwen3 results for reference
+  - but move the next search back to `ratio=0.1` with finite `C` values rather than selecting from the `C=inf` runs above
 
 # 04/16/2026 Update — ImageNet10 BADGE Resume Sweep
 
@@ -282,11 +811,11 @@
 | Run Tag | GPU | Best Epoch | Held-out Val AP | Held-out Test AP | Test AP50 | Test AP75 | Test AR | Train Time | Artifact Root | Log |
 |---------|-----|------------|-----------------|------------------|-----------|-----------|---------|------------|---------------|-----|
 | Qwen3-VL-8B | `3` | `0` | `0.6445` | `0.6352` | `0.8656` | `0.6902` | `0.6993` | `1 h 29 min` | `log_pose/pose_keypointrcnn_train20k_qwen3_bs8_e2_rare1p1_20260415_144429/` | `log_pose/pose_train20k_qwen3_bs8_e2_rare1p1_20260415_144429.log` |
-| InternVL3-8B | `0` | `0` | `0.6401` | `0.6357` | `0.8618` | `0.6936` | `0.7016` | `1 h 34 min` | `log_pose/pose_keypointrcnn_train20k_internvl3_bs8_e2_rare1p1_gpu0_20260415_144530/` | `log_pose/pose_train20k_internvl3_bs8_e2_rare1p1_gpu0_20260415_144530.log` |
+| InternVL3-8B | `0` | `0` | `0.6401` | `0.6145` | `0.8618` | `0.6936` | `0.7016` | `1 h 34 min` | `log_pose/pose_keypointrcnn_train20k_internvl3_bs8_e2_rare1p1_gpu0_20260415_144530/` | `log_pose/pose_train20k_internvl3_bs8_e2_rare1p1_gpu0_20260415_144530.log` |
 
 - Relative to the earlier `4/12` held-out test probes:
   - Qwen3-VL-8B improved from `0.5968` to `0.6352` (`+0.0384`)
-  - InternVL3-8B moved from `0.6340` to `0.6357` (`+0.0017`)
+  - InternVL3-8B moved from `0.6340` to `0.6145` (`-0.0195`)
 - Top-level `log_pose/` logs explicitly record both training-only and end-to-end elapsed time for these runs:
   - Qwen3-VL-8B: training `1 h 29 min`, end-to-end `1 h 29 min`
   - InternVL3-8B: training `1 h 34 min`, end-to-end `1 h 34 min`
@@ -319,7 +848,7 @@
 | Follow-Up Run | Earlier 4/17 Reference | Held-out Val AP | Held-out Test AP | Test AP50 | Test AP75 | Test AR | Train Time |
 |---------------|------------------------|-----------------|------------------|-----------|-----------|---------|------------|
 | Qwen3-VL-8B GPU `0` repro | Qwen3-VL-8B GPU `3` (`20260415_144429`) | `0.6445 -> 0.6407` (`-0.0038`) | `0.6352 -> 0.6341` (`-0.0011`) | `0.8656 -> 0.8609` (`-0.0047`) | `0.6902 -> 0.6866` (`-0.0036`) | `0.6993 -> 0.6958` (`-0.0035`) | `1 h 29 min -> 1 h 39 min` (`+10 min`) |
-| InternVL3-8B GPU `3` train-only rerun | InternVL3-8B GPU `0` (`20260415_144530`) | `0.6401 -> 0.6412` (`+0.0011`) | `0.6357 -> 0.6371` (`+0.0014`) | `0.8618 -> 0.8583` (`-0.0035`) | `0.6936 -> 0.6963` (`+0.0027`) | `0.7016 -> 0.6950` (`-0.0066`) | `1 h 34 min -> 1 h 29 min` (`-5 min`) |
+| InternVL3-8B GPU `3` train-only rerun | InternVL3-8B GPU `0` (`20260415_144530`) | `0.6401 -> 0.6412` (`+0.0011`) | `0.6145 -> 0.6371` (`+0.0226`) | `0.8618 -> 0.8583` (`-0.0035`) | `0.6936 -> 0.6963` (`+0.0027`) | `0.7016 -> 0.6950` (`-0.0066`) | `1 h 34 min -> 1 h 29 min` (`-5 min`) |
 
 - Qwen3-VL-8B repro interpretation:
   - overall held-out metrics are slightly below the earlier GPU `3` Qwen3 run
@@ -329,7 +858,7 @@
     - `time_of_day=evening`: `0.5629 -> 0.5737`
     - `time_of_day=night`: `0.5816 -> 0.5802`
 - InternVL3-8B GPU `3` train-only rerun interpretation:
-  - held-out AP is slightly higher than the earlier GPU `0` InternVL3 run on both `val` and `test`
+  - held-out AP is higher than the earlier GPU `0` InternVL3 run on both `val` and `test`
   - the hardest rare slice `pose=lying` improved from `AP=0.3625` to `AP=0.4021` (`+0.0396`)
   - `pose=sitting` improved from `AP=0.5480` to `AP=0.5585`
   - representative rare-case test slices in the rerun are:
@@ -1192,7 +1721,12 @@ python alpred.py --al_strategy coreset --al_initial_labeled 400 --al_embedding_d
 python alpred.py --al_strategy badge --al_embedding_dim 256
 ```
 - **Principle**: Builds BADGE-style gradient embeddings and uses k-means++ seeding to choose a batch that is both uncertain and diverse.
-- **Current Implementation Detail**: `alpred.py` estimates the class probabilities from validation-set class centroids in the pretrained embedding space, so BADGE can run before task-specific fine-tuning.
+- **Current Implementation Detail**: this repo implements a BADGE-style proxy variant rather than the original `JordanAsh/badge` pipeline.
+- **Step 1 - Proxy labeled set**: `alpred.py` extracts embeddings from the validation split and uses the validation targets as a lightweight labeled proxy set.
+- **Step 2 - Proxy class probabilities**: for each class, it computes a centroid in the normalized embedding space; each unlabeled training image gets class probabilities from a softmax over negative squared distances to those centroids.
+- **Step 3 - Gradient embeddings**: it builds the usual BADGE-shaped gradient embedding by concatenating one block per class, where each block is the sample embedding scaled by the class coefficient `p_c - 1[c = argmax p]`.
+- **Step 4 - Batch selection**: for smaller jobs, it runs exact BADGE-style k-means++ seeding on those gradient embeddings; for larger jobs, it switches to a cheaper approximation that samples without replacement with probabilities proportional to the gradient-embedding norm.
+- **Difference from original BADGE**: the original `JordanAsh/badge` code uses the model's own predictive probabilities for the unlabeled pool and keeps the sequential BADGE seeding logic, while this repo replaces the classifier with a validation-centroid proxy and may replace exact seeding with weighted gradient-norm sampling on large pools.
 - **Use Cases**: Strong baseline when a batch selector should mix uncertainty with diversity rather than optimizing either one alone.
 - **Advantages**: Closer to a standard batch-AL baseline than pure coreset or pure clustering.
 
