@@ -1,0 +1,31 @@
+Loading YOLOv8 model from runs/kitti_yolov8/first5000_1240val_1241test_gpu3_e30_20260428_231728/weights/best.pt...
+Eval split 'train': 5000 images
+Train image IDs for attribute alignment: 5000
+Running inference on 5000 images...
+  [1/5000] images processed
+  [200/5000] images processed
+  [400/5000] images processed
+  [600/5000] images processed
+  [800/5000] images processed
+  [1000/5000] images processed
+  [1200/5000] images processed
+  [1400/5000] images processed
+  [1600/5000] images processed
+  [1800/5000] images processed
+  [2000/5000] images processed
+  [2200/5000] images processed
+  [2400/5000] images processed
+  [2600/5000] images processed
+  [2800/5000] images processed
+  [3000/5000] images processed
+  [3200/5000] images processed
+  [3400/5000] images processed
+  [3600/5000] images processed
+  [3800/5000] images processed
+  [4000/5000] images processed
+  [4200/5000] images processed
+  [4400/5000] images processed
+  [4600/5000] images processed
+  [4800/5000] images processed
+  [5000/5000] images processed
+Inference complete. 5000 images processed.

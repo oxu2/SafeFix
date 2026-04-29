@@ -1,4 +1,4 @@
-# 04/29/2026 Update — KITTI Attribute Assignment (BLIP Completed, Qwen3 In-Progress)
+# 04/29/2026 Update — KITTI Attribute Assignment and Slice Analysis
 
 - Completed an additional local KITTI object-detection run using YOLOv8n
   pretrained weights with batch size `16` on physical GPU `0`.
@@ -47,6 +47,78 @@
   run is effectively tied on held-out test mAP50-95 (`0.5797` vs `0.5801`) and
   slightly higher on held-out test mAP50 (`0.8454` vs `0.8422`).
 
+- Completed standalone KITTI train-split slice analysis using
+  `utils/stat_kitti_detection.py`.
+- Current KITTI BLIP/Qwen3 assignment files cover the 5000 train images, so the
+  completed slice-analysis runs use `--split train`. Val/test slice analysis
+  will need separate val/test assignment JSONs.
+- Batch-size-64 GPU3 checkpoint analysis:
+  - checkpoint:
+    `runs/kitti_yolov8/first5000_1240val_1241test_gpu3_e30_20260428_231728/weights/best.pt`
+  - log:
+    `logs/kitti_slice_analysis_train_bs64best_gpu3_20260429_021509.log`
+  - output root: `log_kitti/kitti_slice_stats`
+  - overall train metrics: mAP50 `0.8744`, mAP50-95 `0.6051`
+  - Qwen3: `25` slices, `12` failure slices
+  - BLIP: `26` slices, `13` failure slices
+
+### KITTI Batch-Size-64 Failure Train Slices
+
+These are all slices whose train-split mAP50-95 is more than `0.02` below the
+batch-size-64 overall train mAP50-95 (`0.6051`).
+
+| Assigner | Attribute value | Images | mAP50 | mAP50-95 | Delta mAP50-95 |
+| --- | --- | ---: | ---: | ---: | ---: |
+| Qwen3 | `traffic_density=heavy` | `71` | `0.4695` | `0.3769` | `-0.2282` |
+| Qwen3 | `weather=clear` | `139` | `0.6530` | `0.4200` | `-0.1851` |
+| Qwen3 | `color=green` | `77` | `0.6930` | `0.4463` | `-0.1588` |
+| Qwen3 | `background_style=highway` | `142` | `0.9764` | `0.4523` | `-0.1528` |
+| Qwen3 | `weather=cloudy` | `110` | `0.7371` | `0.4559` | `-0.1492` |
+| Qwen3 | `road_condition=wet` | `206` | `0.7944` | `0.4746` | `-0.1305` |
+| Qwen3 | `color=red` | `394` | `0.7467` | `0.5154` | `-0.0897` |
+| Qwen3 | `lighting_condition=overcast` | `176` | `0.8637` | `0.5478` | `-0.0573` |
+| Qwen3 | `background_style=residential` | `2492` | `0.7996` | `0.5539` | `-0.0512` |
+| Qwen3 | `color=black` | `1268` | `0.8316` | `0.5653` | `-0.0398` |
+| Qwen3 | `color=silver` | `650` | `0.8565` | `0.5653` | `-0.0398` |
+| Qwen3 | `color=white` | `789` | `0.8677` | `0.5766` | `-0.0285` |
+| BLIP | `lighting_condition=dim` | `45` | `0.4715` | `0.3802` | `-0.2249` |
+| BLIP | `background_style=rural` | `23` | `0.7284` | `0.4883` | `-0.1168` |
+| BLIP | `road_condition=snowy` | `585` | `0.7763` | `0.5316` | `-0.0735` |
+| BLIP | `background_style=highway` | `1621` | `0.7779` | `0.5330` | `-0.0721` |
+| BLIP | `road_condition=wet` | `1272` | `0.8129` | `0.5364` | `-0.0687` |
+| BLIP | `lighting_condition=overcast` | `351` | `0.8398` | `0.5373` | `-0.0678` |
+| BLIP | `color=green` | `34` | `0.8312` | `0.5408` | `-0.0643` |
+| BLIP | `color=red` | `141` | `0.8775` | `0.5434` | `-0.0617` |
+| BLIP | `traffic_density=empty` | `963` | `0.8396` | `0.5551` | `-0.0500` |
+| BLIP | `color=white` | `1248` | `0.8446` | `0.5674` | `-0.0377` |
+| BLIP | `background_style=residential` | `1917` | `0.8233` | `0.5683` | `-0.0367` |
+| BLIP | `color=gray` | `2320` | `0.8496` | `0.5721` | `-0.0330` |
+| BLIP | `lighting_condition=glare` | `145` | `0.8813` | `0.5786` | `-0.0265` |
+
+- Batch-size-16 GPU0 checkpoint analysis:
+  - checkpoint:
+    `runs/kitti_yolov8/first5000_1240val_1241test_gpu0_bs16_e30_20260429_012232/weights/best.pt`
+  - log:
+    `logs/kitti_slice_analysis_train_bs16_gpu0_20260429_012232.log`
+  - output root:
+    `log_kitti/kitti_slice_stats_bs16_gpu0_20260429_012232`
+  - overall train metrics: mAP50 `0.8719`, mAP50-95 `0.6010`
+  - Qwen3: `25` slices, `12` failure slices
+  - BLIP: `26` slices, `14` failure slices
+
+### KITTI Batch-Size-16 Worst Train Slices
+
+| Assigner | Attribute value | Images | mAP50 | mAP50-95 | Delta mAP50-95 |
+| --- | --- | ---: | ---: | ---: | ---: |
+| Qwen3 | `traffic_density=heavy` | `71` | `0.4723` | `0.3711` | `-0.2299` |
+| Qwen3 | `weather=cloudy` | `110` | `0.5317` | `0.3794` | `-0.2216` |
+| Qwen3 | `weather=clear` | `139` | `0.5678` | `0.4074` | `-0.1936` |
+| Qwen3 | `background_style=highway` | `142` | `0.6403` | `0.4074` | `-0.1936` |
+| BLIP | `lighting_condition=dim` | `45` | `0.4722` | `0.3722` | `-0.2288` |
+| BLIP | `background_style=rural` | `23` | `0.7622` | `0.4775` | `-0.1235` |
+| BLIP | `road_condition=snowy` | `585` | `0.7645` | `0.5260` | `-0.0750` |
+| BLIP | `background_style=highway` | `1621` | `0.7703` | `0.5274` | `-0.0736` |
+
 - Completed BLIP attribute assignment on 5000 KITTI train images.
 - Corpus: `save/corpus_kitti_gemini_clean.json` (6 attributes, no "unknown"/"NA")
   - Removed `time_of_day` (redundant with `lighting_condition`, KITTI is nearly
@@ -66,13 +138,14 @@
 | `lighting_condition` | strong shadows 89.2%, overcast 7.0%, glare 2.9%, dim 0.9% |
 | `road_condition` | dry 62.7%, wet 25.4%, snowy 11.7%, muddy 0.2% |
 
-- Qwen3-VL-8B attribute assignment in-progress on GPU 3 (~2200/5000 at time
-  of BLIP completion).
-  - Output: `save/attribute_kitti_qwen3_8B.json`
+- Qwen3-VL-8B attribute assignment completed for the same 5000 KITTI train
+  images.
+  - Output: `save/attribute_kitti_qwen3_8B.json`,
+    `save/attribute_kitti_qwen3_8B.csv`
   - Log: `logs/assign_attr_kitti_train_qwen3_gemini6c_gpu3_*.log`
-  - ETA: ~44 min remaining
-- InternVL3-8B attribute assignment launched on GPU 2 after BLIP completed.
-  - Output: `save/attribute_kitti_internvl3_8B.json`
+- InternVL3-8B attribute assignment has partial artifacts in the current repo.
+  - Partial output: `save/attribute_kitti_internvl3_8B_partial.json`,
+    `save/attribute_kitti_internvl3_8B.csv`
   - Log: `logs/assign_attr_kitti_train_internvl3_gpu2_*.log`
 - Available KITTI corpus files:
   - `save/corpus_kitti_gemini_clean.json` — 6 attrs (color, weather, background_style, traffic_density, lighting_condition, road_condition); used for all three assigners

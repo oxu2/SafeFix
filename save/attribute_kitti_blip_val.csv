@@ -1,0 +1,1241 @@
+index,image_path,image_id,file_name,color,weather,background_style,traffic_density,lighting_condition,road_condition
+0,/data/oxx220000/kitti_yolov8_first5000/images/val/005000.png,005000,005000.png,black,clear,natural,moderate,strong shadows,dry
+1,/data/oxx220000/kitti_yolov8_first5000/images/val/005001.png,005001,005001.png,black,clear,residential,moderate,strong shadows,snowy
+2,/data/oxx220000/kitti_yolov8_first5000/images/val/005002.png,005002,005002.png,white,clear,highway,empty,strong shadows,dry
+3,/data/oxx220000/kitti_yolov8_first5000/images/val/005003.png,005003,005003.png,silver,sunny,urban city,moderate,strong shadows,dry
+4,/data/oxx220000/kitti_yolov8_first5000/images/val/005004.png,005004,005004.png,white,clear,residential,moderate,strong shadows,dry
+5,/data/oxx220000/kitti_yolov8_first5000/images/val/005005.png,005005,005005.png,blue,clear,urban city,moderate,strong shadows,dry
+6,/data/oxx220000/kitti_yolov8_first5000/images/val/005006.png,005006,005006.png,white,clear,residential,moderate,strong shadows,dry
+7,/data/oxx220000/kitti_yolov8_first5000/images/val/005007.png,005007,005007.png,blue,clear,urban city,moderate,strong shadows,dry
+8,/data/oxx220000/kitti_yolov8_first5000/images/val/005008.png,005008,005008.png,white,clear,highway,moderate,strong shadows,wet
+9,/data/oxx220000/kitti_yolov8_first5000/images/val/005009.png,005009,005009.png,gray,clear,highway,empty,strong shadows,dry
+10,/data/oxx220000/kitti_yolov8_first5000/images/val/005010.png,005010,005010.png,gray,clear,residential,moderate,strong shadows,dry
+11,/data/oxx220000/kitti_yolov8_first5000/images/val/005011.png,005011,005011.png,gray,sunny,residential,moderate,strong shadows,dry
+12,/data/oxx220000/kitti_yolov8_first5000/images/val/005012.png,005012,005012.png,gray,clear,residential,moderate,strong shadows,snowy
+13,/data/oxx220000/kitti_yolov8_first5000/images/val/005013.png,005013,005013.png,gray,clear,residential,moderate,strong shadows,snowy
+14,/data/oxx220000/kitti_yolov8_first5000/images/val/005014.png,005014,005014.png,silver,sunny,urban city,moderate,strong shadows,wet
+15,/data/oxx220000/kitti_yolov8_first5000/images/val/005015.png,005015,005015.png,black,clear,highway,moderate,strong shadows,dry
+16,/data/oxx220000/kitti_yolov8_first5000/images/val/005016.png,005016,005016.png,gray,clear,urban city,moderate,strong shadows,dry
+17,/data/oxx220000/kitti_yolov8_first5000/images/val/005017.png,005017,005017.png,blue,clear,urban city,moderate,strong shadows,dry
+18,/data/oxx220000/kitti_yolov8_first5000/images/val/005018.png,005018,005018.png,red,clear,highway,light,strong shadows,dry
+19,/data/oxx220000/kitti_yolov8_first5000/images/val/005019.png,005019,005019.png,gray,clear,highway,moderate,strong shadows,wet
+20,/data/oxx220000/kitti_yolov8_first5000/images/val/005020.png,005020,005020.png,brown,sunny,residential,moderate,strong shadows,dry
+21,/data/oxx220000/kitti_yolov8_first5000/images/val/005021.png,005021,005021.png,gray,sunny,residential,moderate,strong shadows,wet
+22,/data/oxx220000/kitti_yolov8_first5000/images/val/005022.png,005022,005022.png,gray,sunny,residential,moderate,strong shadows,dry
+23,/data/oxx220000/kitti_yolov8_first5000/images/val/005023.png,005023,005023.png,white,clear,urban city,moderate,strong shadows,wet
+24,/data/oxx220000/kitti_yolov8_first5000/images/val/005024.png,005024,005024.png,gray,sunny,residential,moderate,strong shadows,dry
+25,/data/oxx220000/kitti_yolov8_first5000/images/val/005025.png,005025,005025.png,gray,clear,highway,moderate,strong shadows,wet
+26,/data/oxx220000/kitti_yolov8_first5000/images/val/005026.png,005026,005026.png,black,sunny,urban city,moderate,strong shadows,wet
+27,/data/oxx220000/kitti_yolov8_first5000/images/val/005027.png,005027,005027.png,gray,sunny,urban city,moderate,strong shadows,dry
+28,/data/oxx220000/kitti_yolov8_first5000/images/val/005028.png,005028,005028.png,gray,clear,highway,empty,overcast,dry
+29,/data/oxx220000/kitti_yolov8_first5000/images/val/005029.png,005029,005029.png,red,sunny,residential,moderate,strong shadows,snowy
+30,/data/oxx220000/kitti_yolov8_first5000/images/val/005030.png,005030,005030.png,blue,clear,urban city,moderate,strong shadows,dry
+31,/data/oxx220000/kitti_yolov8_first5000/images/val/005031.png,005031,005031.png,silver,clear,urban city,empty,strong shadows,dry
+32,/data/oxx220000/kitti_yolov8_first5000/images/val/005032.png,005032,005032.png,white,clear,residential,moderate,strong shadows,dry
+33,/data/oxx220000/kitti_yolov8_first5000/images/val/005033.png,005033,005033.png,black,clear,residential,moderate,strong shadows,snowy
+34,/data/oxx220000/kitti_yolov8_first5000/images/val/005034.png,005034,005034.png,gray,sunny,residential,moderate,strong shadows,dry
+35,/data/oxx220000/kitti_yolov8_first5000/images/val/005035.png,005035,005035.png,gray,sunny,residential,moderate,strong shadows,dry
+36,/data/oxx220000/kitti_yolov8_first5000/images/val/005036.png,005036,005036.png,white,clear,residential,moderate,strong shadows,dry
+37,/data/oxx220000/kitti_yolov8_first5000/images/val/005037.png,005037,005037.png,red,sunny,urban city,moderate,strong shadows,dry
+38,/data/oxx220000/kitti_yolov8_first5000/images/val/005038.png,005038,005038.png,white,sunny,residential,moderate,strong shadows,dry
+39,/data/oxx220000/kitti_yolov8_first5000/images/val/005039.png,005039,005039.png,gray,clear,highway,moderate,strong shadows,dry
+40,/data/oxx220000/kitti_yolov8_first5000/images/val/005040.png,005040,005040.png,green,clear,residential,moderate,strong shadows,dry
+41,/data/oxx220000/kitti_yolov8_first5000/images/val/005041.png,005041,005041.png,gray,clear,highway,moderate,strong shadows,dry
+42,/data/oxx220000/kitti_yolov8_first5000/images/val/005042.png,005042,005042.png,gray,sunny,residential,empty,strong shadows,dry
+43,/data/oxx220000/kitti_yolov8_first5000/images/val/005043.png,005043,005043.png,white,clear,urban city,light,strong shadows,snowy
+44,/data/oxx220000/kitti_yolov8_first5000/images/val/005044.png,005044,005044.png,black,clear,residential,moderate,strong shadows,dry
+45,/data/oxx220000/kitti_yolov8_first5000/images/val/005045.png,005045,005045.png,gray,sunny,residential,moderate,strong shadows,dry
+46,/data/oxx220000/kitti_yolov8_first5000/images/val/005046.png,005046,005046.png,gray,sunny,urban city,moderate,strong shadows,dry
+47,/data/oxx220000/kitti_yolov8_first5000/images/val/005047.png,005047,005047.png,gray,clear,natural,empty,strong shadows,dry
+48,/data/oxx220000/kitti_yolov8_first5000/images/val/005048.png,005048,005048.png,white,clear,residential,moderate,strong shadows,snowy
+49,/data/oxx220000/kitti_yolov8_first5000/images/val/005049.png,005049,005049.png,gray,sunny,residential,moderate,strong shadows,dry
+50,/data/oxx220000/kitti_yolov8_first5000/images/val/005050.png,005050,005050.png,blue,clear,urban city,moderate,strong shadows,dry
+51,/data/oxx220000/kitti_yolov8_first5000/images/val/005051.png,005051,005051.png,black,clear,urban city,moderate,strong shadows,dry
+52,/data/oxx220000/kitti_yolov8_first5000/images/val/005052.png,005052,005052.png,white,sunny,residential,moderate,strong shadows,snowy
+53,/data/oxx220000/kitti_yolov8_first5000/images/val/005053.png,005053,005053.png,gray,clear,highway,moderate,strong shadows,wet
+54,/data/oxx220000/kitti_yolov8_first5000/images/val/005054.png,005054,005054.png,black,clear,residential,moderate,strong shadows,snowy
+55,/data/oxx220000/kitti_yolov8_first5000/images/val/005055.png,005055,005055.png,gray,clear,highway,empty,overcast,dry
+56,/data/oxx220000/kitti_yolov8_first5000/images/val/005056.png,005056,005056.png,black,clear,urban city,moderate,strong shadows,snowy
+57,/data/oxx220000/kitti_yolov8_first5000/images/val/005057.png,005057,005057.png,gray,sunny,residential,moderate,strong shadows,dry
+58,/data/oxx220000/kitti_yolov8_first5000/images/val/005058.png,005058,005058.png,white,clear,highway,moderate,strong shadows,dry
+59,/data/oxx220000/kitti_yolov8_first5000/images/val/005059.png,005059,005059.png,silver,sunny,urban city,moderate,strong shadows,dry
+60,/data/oxx220000/kitti_yolov8_first5000/images/val/005060.png,005060,005060.png,gray,sunny,residential,moderate,strong shadows,dry
+61,/data/oxx220000/kitti_yolov8_first5000/images/val/005061.png,005061,005061.png,white,sunny,urban city,moderate,strong shadows,snowy
+62,/data/oxx220000/kitti_yolov8_first5000/images/val/005062.png,005062,005062.png,white,clear,highway,moderate,strong shadows,dry
+63,/data/oxx220000/kitti_yolov8_first5000/images/val/005063.png,005063,005063.png,gray,clear,highway,moderate,overcast,wet
+64,/data/oxx220000/kitti_yolov8_first5000/images/val/005064.png,005064,005064.png,gray,clear,highway,empty,overcast,wet
+65,/data/oxx220000/kitti_yolov8_first5000/images/val/005065.png,005065,005065.png,white,sunny,urban city,moderate,strong shadows,dry
+66,/data/oxx220000/kitti_yolov8_first5000/images/val/005066.png,005066,005066.png,red,clear,highway,moderate,strong shadows,dry
+67,/data/oxx220000/kitti_yolov8_first5000/images/val/005067.png,005067,005067.png,black,clear,highway,moderate,overcast,wet
+68,/data/oxx220000/kitti_yolov8_first5000/images/val/005068.png,005068,005068.png,gray,clear,highway,empty,overcast,dry
+69,/data/oxx220000/kitti_yolov8_first5000/images/val/005069.png,005069,005069.png,gray,clear,highway,moderate,strong shadows,wet
+70,/data/oxx220000/kitti_yolov8_first5000/images/val/005070.png,005070,005070.png,gray,clear,highway,empty,strong shadows,dry
+71,/data/oxx220000/kitti_yolov8_first5000/images/val/005071.png,005071,005071.png,gray,clear,urban city,moderate,strong shadows,dry
+72,/data/oxx220000/kitti_yolov8_first5000/images/val/005072.png,005072,005072.png,green,sunny,residential,moderate,strong shadows,wet
+73,/data/oxx220000/kitti_yolov8_first5000/images/val/005073.png,005073,005073.png,white,clear,highway,moderate,dim,wet
+74,/data/oxx220000/kitti_yolov8_first5000/images/val/005074.png,005074,005074.png,gray,clear,residential,moderate,strong shadows,dry
+75,/data/oxx220000/kitti_yolov8_first5000/images/val/005075.png,005075,005075.png,gray,clear,urban city,empty,glare,wet
+76,/data/oxx220000/kitti_yolov8_first5000/images/val/005076.png,005076,005076.png,white,sunny,urban city,moderate,strong shadows,dry
+77,/data/oxx220000/kitti_yolov8_first5000/images/val/005077.png,005077,005077.png,gray,clear,highway,empty,strong shadows,dry
+78,/data/oxx220000/kitti_yolov8_first5000/images/val/005078.png,005078,005078.png,black,sunny,urban city,moderate,strong shadows,dry
+79,/data/oxx220000/kitti_yolov8_first5000/images/val/005079.png,005079,005079.png,gray,clear,residential,moderate,strong shadows,dry
+80,/data/oxx220000/kitti_yolov8_first5000/images/val/005080.png,005080,005080.png,gray,clear,highway,empty,strong shadows,dry
+81,/data/oxx220000/kitti_yolov8_first5000/images/val/005081.png,005081,005081.png,blue,sunny,highway,moderate,strong shadows,wet
+82,/data/oxx220000/kitti_yolov8_first5000/images/val/005082.png,005082,005082.png,gray,sunny,urban city,empty,strong shadows,dry
+83,/data/oxx220000/kitti_yolov8_first5000/images/val/005083.png,005083,005083.png,gray,sunny,urban city,moderate,strong shadows,wet
+84,/data/oxx220000/kitti_yolov8_first5000/images/val/005084.png,005084,005084.png,gray,clear,residential,moderate,strong shadows,dry
+85,/data/oxx220000/kitti_yolov8_first5000/images/val/005085.png,005085,005085.png,white,sunny,residential,moderate,strong shadows,dry
+86,/data/oxx220000/kitti_yolov8_first5000/images/val/005086.png,005086,005086.png,white,sunny,urban city,empty,strong shadows,dry
+87,/data/oxx220000/kitti_yolov8_first5000/images/val/005087.png,005087,005087.png,gray,clear,residential,moderate,strong shadows,dry
+88,/data/oxx220000/kitti_yolov8_first5000/images/val/005088.png,005088,005088.png,gray,clear,residential,moderate,strong shadows,snowy
+89,/data/oxx220000/kitti_yolov8_first5000/images/val/005089.png,005089,005089.png,white,clear,highway,moderate,strong shadows,wet
+90,/data/oxx220000/kitti_yolov8_first5000/images/val/005090.png,005090,005090.png,gray,sunny,urban city,moderate,strong shadows,dry
+91,/data/oxx220000/kitti_yolov8_first5000/images/val/005091.png,005091,005091.png,blue,clear,residential,moderate,strong shadows,wet
+92,/data/oxx220000/kitti_yolov8_first5000/images/val/005092.png,005092,005092.png,black,clear,highway,moderate,strong shadows,snowy
+93,/data/oxx220000/kitti_yolov8_first5000/images/val/005093.png,005093,005093.png,gray,clear,highway,empty,strong shadows,dry
+94,/data/oxx220000/kitti_yolov8_first5000/images/val/005094.png,005094,005094.png,white,clear,highway,moderate,strong shadows,dry
+95,/data/oxx220000/kitti_yolov8_first5000/images/val/005095.png,005095,005095.png,yellow,sunny,residential,moderate,strong shadows,dry
+96,/data/oxx220000/kitti_yolov8_first5000/images/val/005096.png,005096,005096.png,gray,clear,residential,moderate,strong shadows,wet
+97,/data/oxx220000/kitti_yolov8_first5000/images/val/005097.png,005097,005097.png,white,clear,urban city,empty,strong shadows,dry
+98,/data/oxx220000/kitti_yolov8_first5000/images/val/005098.png,005098,005098.png,red,sunny,urban city,moderate,strong shadows,wet
+99,/data/oxx220000/kitti_yolov8_first5000/images/val/005099.png,005099,005099.png,gray,clear,residential,moderate,strong shadows,dry
+100,/data/oxx220000/kitti_yolov8_first5000/images/val/005100.png,005100,005100.png,gray,sunny,residential,empty,strong shadows,dry
+101,/data/oxx220000/kitti_yolov8_first5000/images/val/005101.png,005101,005101.png,black,clear,highway,empty,strong shadows,dry
+102,/data/oxx220000/kitti_yolov8_first5000/images/val/005102.png,005102,005102.png,white,clear,highway,moderate,strong shadows,wet
+103,/data/oxx220000/kitti_yolov8_first5000/images/val/005103.png,005103,005103.png,white,sunny,natural,moderate,strong shadows,dry
+104,/data/oxx220000/kitti_yolov8_first5000/images/val/005104.png,005104,005104.png,black,clear,highway,moderate,strong shadows,wet
+105,/data/oxx220000/kitti_yolov8_first5000/images/val/005105.png,005105,005105.png,gray,clear,residential,moderate,strong shadows,dry
+106,/data/oxx220000/kitti_yolov8_first5000/images/val/005106.png,005106,005106.png,gray,clear,urban city,moderate,strong shadows,dry
+107,/data/oxx220000/kitti_yolov8_first5000/images/val/005107.png,005107,005107.png,blue,clear,urban city,moderate,strong shadows,dry
+108,/data/oxx220000/kitti_yolov8_first5000/images/val/005108.png,005108,005108.png,white,clear,highway,moderate,strong shadows,wet
+109,/data/oxx220000/kitti_yolov8_first5000/images/val/005109.png,005109,005109.png,black,sunny,residential,moderate,strong shadows,dry
+110,/data/oxx220000/kitti_yolov8_first5000/images/val/005110.png,005110,005110.png,gray,clear,highway,moderate,strong shadows,wet
+111,/data/oxx220000/kitti_yolov8_first5000/images/val/005111.png,005111,005111.png,gray,clear,urban city,moderate,strong shadows,dry
+112,/data/oxx220000/kitti_yolov8_first5000/images/val/005112.png,005112,005112.png,gray,clear,highway,light,overcast,wet
+113,/data/oxx220000/kitti_yolov8_first5000/images/val/005113.png,005113,005113.png,black,clear,highway,moderate,overcast,dry
+114,/data/oxx220000/kitti_yolov8_first5000/images/val/005114.png,005114,005114.png,brown,sunny,urban city,moderate,strong shadows,dry
+115,/data/oxx220000/kitti_yolov8_first5000/images/val/005115.png,005115,005115.png,gray,sunny,residential,empty,strong shadows,dry
+116,/data/oxx220000/kitti_yolov8_first5000/images/val/005116.png,005116,005116.png,white,sunny,urban city,light,strong shadows,dry
+117,/data/oxx220000/kitti_yolov8_first5000/images/val/005117.png,005117,005117.png,gray,clear,highway,empty,strong shadows,dry
+118,/data/oxx220000/kitti_yolov8_first5000/images/val/005118.png,005118,005118.png,yellow,clear,highway,moderate,strong shadows,snowy
+119,/data/oxx220000/kitti_yolov8_first5000/images/val/005119.png,005119,005119.png,gray,clear,urban city,moderate,strong shadows,snowy
+120,/data/oxx220000/kitti_yolov8_first5000/images/val/005120.png,005120,005120.png,black,sunny,urban city,moderate,strong shadows,dry
+121,/data/oxx220000/kitti_yolov8_first5000/images/val/005121.png,005121,005121.png,white,clear,highway,empty,strong shadows,dry
+122,/data/oxx220000/kitti_yolov8_first5000/images/val/005122.png,005122,005122.png,white,clear,residential,moderate,strong shadows,dry
+123,/data/oxx220000/kitti_yolov8_first5000/images/val/005123.png,005123,005123.png,black,clear,highway,moderate,strong shadows,dry
+124,/data/oxx220000/kitti_yolov8_first5000/images/val/005124.png,005124,005124.png,blue,clear,urban city,moderate,strong shadows,dry
+125,/data/oxx220000/kitti_yolov8_first5000/images/val/005125.png,005125,005125.png,gray,clear,residential,moderate,strong shadows,dry
+126,/data/oxx220000/kitti_yolov8_first5000/images/val/005126.png,005126,005126.png,gray,sunny,residential,moderate,strong shadows,dry
+127,/data/oxx220000/kitti_yolov8_first5000/images/val/005127.png,005127,005127.png,gray,sunny,urban city,moderate,strong shadows,wet
+128,/data/oxx220000/kitti_yolov8_first5000/images/val/005128.png,005128,005128.png,gray,sunny,residential,moderate,strong shadows,wet
+129,/data/oxx220000/kitti_yolov8_first5000/images/val/005129.png,005129,005129.png,gray,clear,urban city,moderate,strong shadows,wet
+130,/data/oxx220000/kitti_yolov8_first5000/images/val/005130.png,005130,005130.png,white,sunny,natural,moderate,strong shadows,dry
+131,/data/oxx220000/kitti_yolov8_first5000/images/val/005131.png,005131,005131.png,silver,clear,urban city,moderate,strong shadows,dry
+132,/data/oxx220000/kitti_yolov8_first5000/images/val/005132.png,005132,005132.png,gray,clear,urban city,moderate,strong shadows,snowy
+133,/data/oxx220000/kitti_yolov8_first5000/images/val/005133.png,005133,005133.png,black,clear,residential,moderate,strong shadows,dry
+134,/data/oxx220000/kitti_yolov8_first5000/images/val/005134.png,005134,005134.png,white,sunny,urban city,moderate,strong shadows,dry
+135,/data/oxx220000/kitti_yolov8_first5000/images/val/005135.png,005135,005135.png,black,clear,residential,moderate,strong shadows,dry
+136,/data/oxx220000/kitti_yolov8_first5000/images/val/005136.png,005136,005136.png,black,clear,residential,moderate,strong shadows,snowy
+137,/data/oxx220000/kitti_yolov8_first5000/images/val/005137.png,005137,005137.png,gray,sunny,urban city,moderate,strong shadows,dry
+138,/data/oxx220000/kitti_yolov8_first5000/images/val/005138.png,005138,005138.png,gray,clear,highway,moderate,strong shadows,wet
+139,/data/oxx220000/kitti_yolov8_first5000/images/val/005139.png,005139,005139.png,gray,clear,residential,moderate,strong shadows,dry
+140,/data/oxx220000/kitti_yolov8_first5000/images/val/005140.png,005140,005140.png,black,clear,residential,moderate,strong shadows,snowy
+141,/data/oxx220000/kitti_yolov8_first5000/images/val/005141.png,005141,005141.png,gray,clear,highway,empty,overcast,dry
+142,/data/oxx220000/kitti_yolov8_first5000/images/val/005142.png,005142,005142.png,blue,clear,urban city,moderate,strong shadows,dry
+143,/data/oxx220000/kitti_yolov8_first5000/images/val/005143.png,005143,005143.png,gray,clear,highway,moderate,overcast,wet
+144,/data/oxx220000/kitti_yolov8_first5000/images/val/005144.png,005144,005144.png,white,clear,residential,moderate,strong shadows,dry
+145,/data/oxx220000/kitti_yolov8_first5000/images/val/005145.png,005145,005145.png,gray,sunny,residential,moderate,strong shadows,dry
+146,/data/oxx220000/kitti_yolov8_first5000/images/val/005146.png,005146,005146.png,white,clear,urban city,empty,strong shadows,dry
+147,/data/oxx220000/kitti_yolov8_first5000/images/val/005147.png,005147,005147.png,gray,clear,highway,empty,strong shadows,dry
+148,/data/oxx220000/kitti_yolov8_first5000/images/val/005148.png,005148,005148.png,gray,clear,highway,moderate,overcast,wet
+149,/data/oxx220000/kitti_yolov8_first5000/images/val/005149.png,005149,005149.png,gray,clear,residential,moderate,strong shadows,dry
+150,/data/oxx220000/kitti_yolov8_first5000/images/val/005150.png,005150,005150.png,gray,clear,highway,moderate,overcast,wet
+151,/data/oxx220000/kitti_yolov8_first5000/images/val/005151.png,005151,005151.png,gray,clear,highway,empty,strong shadows,wet
+152,/data/oxx220000/kitti_yolov8_first5000/images/val/005152.png,005152,005152.png,white,clear,residential,moderate,strong shadows,wet
+153,/data/oxx220000/kitti_yolov8_first5000/images/val/005153.png,005153,005153.png,gray,clear,highway,moderate,strong shadows,dry
+154,/data/oxx220000/kitti_yolov8_first5000/images/val/005154.png,005154,005154.png,white,sunny,residential,moderate,strong shadows,dry
+155,/data/oxx220000/kitti_yolov8_first5000/images/val/005155.png,005155,005155.png,black,clear,highway,moderate,strong shadows,dry
+156,/data/oxx220000/kitti_yolov8_first5000/images/val/005156.png,005156,005156.png,gray,sunny,urban city,moderate,strong shadows,dry
+157,/data/oxx220000/kitti_yolov8_first5000/images/val/005157.png,005157,005157.png,black,sunny,urban city,moderate,strong shadows,dry
+158,/data/oxx220000/kitti_yolov8_first5000/images/val/005158.png,005158,005158.png,white,clear,highway,empty,overcast,dry
+159,/data/oxx220000/kitti_yolov8_first5000/images/val/005159.png,005159,005159.png,gray,clear,highway,moderate,strong shadows,dry
+160,/data/oxx220000/kitti_yolov8_first5000/images/val/005160.png,005160,005160.png,gray,clear,residential,moderate,strong shadows,dry
+161,/data/oxx220000/kitti_yolov8_first5000/images/val/005161.png,005161,005161.png,green,clear,residential,moderate,strong shadows,dry
+162,/data/oxx220000/kitti_yolov8_first5000/images/val/005162.png,005162,005162.png,gray,clear,residential,moderate,strong shadows,dry
+163,/data/oxx220000/kitti_yolov8_first5000/images/val/005163.png,005163,005163.png,black,clear,residential,moderate,strong shadows,snowy
+164,/data/oxx220000/kitti_yolov8_first5000/images/val/005164.png,005164,005164.png,green,clear,highway,moderate,strong shadows,wet
+165,/data/oxx220000/kitti_yolov8_first5000/images/val/005165.png,005165,005165.png,black,sunny,urban city,moderate,strong shadows,dry
+166,/data/oxx220000/kitti_yolov8_first5000/images/val/005166.png,005166,005166.png,black,clear,urban city,moderate,strong shadows,dry
+167,/data/oxx220000/kitti_yolov8_first5000/images/val/005167.png,005167,005167.png,black,clear,highway,moderate,strong shadows,dry
+168,/data/oxx220000/kitti_yolov8_first5000/images/val/005168.png,005168,005168.png,white,clear,urban city,empty,overcast,wet
+169,/data/oxx220000/kitti_yolov8_first5000/images/val/005169.png,005169,005169.png,gray,clear,highway,empty,strong shadows,dry
+170,/data/oxx220000/kitti_yolov8_first5000/images/val/005170.png,005170,005170.png,black,sunny,urban city,moderate,strong shadows,dry
+171,/data/oxx220000/kitti_yolov8_first5000/images/val/005171.png,005171,005171.png,gray,sunny,urban city,moderate,strong shadows,wet
+172,/data/oxx220000/kitti_yolov8_first5000/images/val/005172.png,005172,005172.png,black,sunny,residential,moderate,strong shadows,wet
+173,/data/oxx220000/kitti_yolov8_first5000/images/val/005173.png,005173,005173.png,gray,clear,highway,moderate,strong shadows,dry
+174,/data/oxx220000/kitti_yolov8_first5000/images/val/005174.png,005174,005174.png,gray,clear,residential,moderate,strong shadows,dry
+175,/data/oxx220000/kitti_yolov8_first5000/images/val/005175.png,005175,005175.png,black,clear,urban city,moderate,glare,wet
+176,/data/oxx220000/kitti_yolov8_first5000/images/val/005176.png,005176,005176.png,black,clear,urban city,moderate,strong shadows,dry
+177,/data/oxx220000/kitti_yolov8_first5000/images/val/005177.png,005177,005177.png,blue,clear,residential,moderate,strong shadows,wet
+178,/data/oxx220000/kitti_yolov8_first5000/images/val/005178.png,005178,005178.png,white,clear,residential,moderate,strong shadows,dry
+179,/data/oxx220000/kitti_yolov8_first5000/images/val/005179.png,005179,005179.png,gray,clear,residential,moderate,strong shadows,snowy
+180,/data/oxx220000/kitti_yolov8_first5000/images/val/005180.png,005180,005180.png,yellow,sunny,residential,moderate,strong shadows,dry
+181,/data/oxx220000/kitti_yolov8_first5000/images/val/005181.png,005181,005181.png,gray,clear,highway,empty,strong shadows,snowy
+182,/data/oxx220000/kitti_yolov8_first5000/images/val/005182.png,005182,005182.png,gray,clear,residential,moderate,strong shadows,dry
+183,/data/oxx220000/kitti_yolov8_first5000/images/val/005183.png,005183,005183.png,gray,clear,rural,moderate,strong shadows,dry
+184,/data/oxx220000/kitti_yolov8_first5000/images/val/005184.png,005184,005184.png,gray,sunny,residential,moderate,strong shadows,snowy
+185,/data/oxx220000/kitti_yolov8_first5000/images/val/005185.png,005185,005185.png,black,clear,residential,moderate,strong shadows,dry
+186,/data/oxx220000/kitti_yolov8_first5000/images/val/005186.png,005186,005186.png,gray,clear,residential,moderate,strong shadows,snowy
+187,/data/oxx220000/kitti_yolov8_first5000/images/val/005187.png,005187,005187.png,white,sunny,natural,moderate,strong shadows,dry
+188,/data/oxx220000/kitti_yolov8_first5000/images/val/005188.png,005188,005188.png,black,sunny,residential,moderate,strong shadows,dry
+189,/data/oxx220000/kitti_yolov8_first5000/images/val/005189.png,005189,005189.png,white,sunny,residential,moderate,strong shadows,dry
+190,/data/oxx220000/kitti_yolov8_first5000/images/val/005190.png,005190,005190.png,gray,sunny,residential,moderate,strong shadows,dry
+191,/data/oxx220000/kitti_yolov8_first5000/images/val/005191.png,005191,005191.png,white,clear,highway,moderate,strong shadows,dry
+192,/data/oxx220000/kitti_yolov8_first5000/images/val/005192.png,005192,005192.png,white,sunny,residential,moderate,strong shadows,dry
+193,/data/oxx220000/kitti_yolov8_first5000/images/val/005193.png,005193,005193.png,gray,clear,residential,moderate,strong shadows,wet
+194,/data/oxx220000/kitti_yolov8_first5000/images/val/005194.png,005194,005194.png,gray,clear,highway,empty,overcast,dry
+195,/data/oxx220000/kitti_yolov8_first5000/images/val/005195.png,005195,005195.png,gray,clear,highway,empty,strong shadows,wet
+196,/data/oxx220000/kitti_yolov8_first5000/images/val/005196.png,005196,005196.png,black,sunny,residential,moderate,strong shadows,snowy
+197,/data/oxx220000/kitti_yolov8_first5000/images/val/005197.png,005197,005197.png,gray,clear,highway,empty,strong shadows,dry
+198,/data/oxx220000/kitti_yolov8_first5000/images/val/005198.png,005198,005198.png,gray,clear,residential,moderate,strong shadows,dry
+199,/data/oxx220000/kitti_yolov8_first5000/images/val/005199.png,005199,005199.png,black,clear,residential,moderate,strong shadows,dry
+200,/data/oxx220000/kitti_yolov8_first5000/images/val/005200.png,005200,005200.png,gray,clear,highway,moderate,glare,wet
+201,/data/oxx220000/kitti_yolov8_first5000/images/val/005201.png,005201,005201.png,gray,clear,residential,moderate,strong shadows,dry
+202,/data/oxx220000/kitti_yolov8_first5000/images/val/005202.png,005202,005202.png,gray,clear,rural,moderate,strong shadows,dry
+203,/data/oxx220000/kitti_yolov8_first5000/images/val/005203.png,005203,005203.png,gray,clear,urban city,moderate,strong shadows,snowy
+204,/data/oxx220000/kitti_yolov8_first5000/images/val/005204.png,005204,005204.png,white,clear,highway,empty,strong shadows,dry
+205,/data/oxx220000/kitti_yolov8_first5000/images/val/005205.png,005205,005205.png,gray,sunny,natural,moderate,strong shadows,dry
+206,/data/oxx220000/kitti_yolov8_first5000/images/val/005206.png,005206,005206.png,gray,clear,residential,moderate,strong shadows,dry
+207,/data/oxx220000/kitti_yolov8_first5000/images/val/005207.png,005207,005207.png,white,clear,residential,empty,strong shadows,snowy
+208,/data/oxx220000/kitti_yolov8_first5000/images/val/005208.png,005208,005208.png,white,clear,residential,empty,strong shadows,snowy
+209,/data/oxx220000/kitti_yolov8_first5000/images/val/005209.png,005209,005209.png,gray,clear,residential,moderate,strong shadows,dry
+210,/data/oxx220000/kitti_yolov8_first5000/images/val/005210.png,005210,005210.png,black,clear,highway,moderate,strong shadows,dry
+211,/data/oxx220000/kitti_yolov8_first5000/images/val/005211.png,005211,005211.png,white,clear,residential,moderate,strong shadows,snowy
+212,/data/oxx220000/kitti_yolov8_first5000/images/val/005212.png,005212,005212.png,white,clear,residential,moderate,strong shadows,dry
+213,/data/oxx220000/kitti_yolov8_first5000/images/val/005213.png,005213,005213.png,gray,clear,residential,moderate,strong shadows,wet
+214,/data/oxx220000/kitti_yolov8_first5000/images/val/005214.png,005214,005214.png,blue,clear,highway,moderate,glare,wet
+215,/data/oxx220000/kitti_yolov8_first5000/images/val/005215.png,005215,005215.png,gray,clear,highway,empty,strong shadows,wet
+216,/data/oxx220000/kitti_yolov8_first5000/images/val/005216.png,005216,005216.png,black,clear,residential,moderate,strong shadows,dry
+217,/data/oxx220000/kitti_yolov8_first5000/images/val/005217.png,005217,005217.png,white,clear,residential,moderate,strong shadows,dry
+218,/data/oxx220000/kitti_yolov8_first5000/images/val/005218.png,005218,005218.png,blue,clear,urban city,moderate,strong shadows,dry
+219,/data/oxx220000/kitti_yolov8_first5000/images/val/005219.png,005219,005219.png,white,clear,highway,moderate,strong shadows,dry
+220,/data/oxx220000/kitti_yolov8_first5000/images/val/005220.png,005220,005220.png,gray,clear,residential,moderate,strong shadows,snowy
+221,/data/oxx220000/kitti_yolov8_first5000/images/val/005221.png,005221,005221.png,gray,clear,residential,moderate,strong shadows,dry
+222,/data/oxx220000/kitti_yolov8_first5000/images/val/005222.png,005222,005222.png,white,clear,residential,moderate,strong shadows,dry
+223,/data/oxx220000/kitti_yolov8_first5000/images/val/005223.png,005223,005223.png,red,sunny,residential,moderate,strong shadows,wet
+224,/data/oxx220000/kitti_yolov8_first5000/images/val/005224.png,005224,005224.png,white,sunny,residential,moderate,strong shadows,dry
+225,/data/oxx220000/kitti_yolov8_first5000/images/val/005225.png,005225,005225.png,white,sunny,natural,moderate,strong shadows,wet
+226,/data/oxx220000/kitti_yolov8_first5000/images/val/005226.png,005226,005226.png,black,sunny,urban city,moderate,strong shadows,dry
+227,/data/oxx220000/kitti_yolov8_first5000/images/val/005227.png,005227,005227.png,white,clear,residential,moderate,strong shadows,dry
+228,/data/oxx220000/kitti_yolov8_first5000/images/val/005228.png,005228,005228.png,gray,clear,highway,empty,strong shadows,dry
+229,/data/oxx220000/kitti_yolov8_first5000/images/val/005229.png,005229,005229.png,white,clear,highway,moderate,strong shadows,dry
+230,/data/oxx220000/kitti_yolov8_first5000/images/val/005230.png,005230,005230.png,black,sunny,residential,moderate,strong shadows,wet
+231,/data/oxx220000/kitti_yolov8_first5000/images/val/005231.png,005231,005231.png,blue,clear,urban city,moderate,strong shadows,dry
+232,/data/oxx220000/kitti_yolov8_first5000/images/val/005232.png,005232,005232.png,gray,clear,residential,empty,strong shadows,wet
+233,/data/oxx220000/kitti_yolov8_first5000/images/val/005233.png,005233,005233.png,white,clear,residential,moderate,strong shadows,dry
+234,/data/oxx220000/kitti_yolov8_first5000/images/val/005234.png,005234,005234.png,white,clear,highway,moderate,strong shadows,dry
+235,/data/oxx220000/kitti_yolov8_first5000/images/val/005235.png,005235,005235.png,gray,clear,highway,empty,strong shadows,wet
+236,/data/oxx220000/kitti_yolov8_first5000/images/val/005236.png,005236,005236.png,red,clear,highway,empty,strong shadows,wet
+237,/data/oxx220000/kitti_yolov8_first5000/images/val/005237.png,005237,005237.png,white,clear,highway,empty,strong shadows,dry
+238,/data/oxx220000/kitti_yolov8_first5000/images/val/005238.png,005238,005238.png,gray,clear,highway,moderate,strong shadows,dry
+239,/data/oxx220000/kitti_yolov8_first5000/images/val/005239.png,005239,005239.png,yellow,sunny,urban city,moderate,strong shadows,dry
+240,/data/oxx220000/kitti_yolov8_first5000/images/val/005240.png,005240,005240.png,gray,clear,highway,light,overcast,wet
+241,/data/oxx220000/kitti_yolov8_first5000/images/val/005241.png,005241,005241.png,yellow,sunny,residential,moderate,strong shadows,dry
+242,/data/oxx220000/kitti_yolov8_first5000/images/val/005242.png,005242,005242.png,gray,sunny,urban city,moderate,strong shadows,dry
+243,/data/oxx220000/kitti_yolov8_first5000/images/val/005243.png,005243,005243.png,white,clear,residential,empty,strong shadows,dry
+244,/data/oxx220000/kitti_yolov8_first5000/images/val/005244.png,005244,005244.png,gray,clear,highway,moderate,overcast,dry
+245,/data/oxx220000/kitti_yolov8_first5000/images/val/005245.png,005245,005245.png,black,sunny,urban city,moderate,strong shadows,wet
+246,/data/oxx220000/kitti_yolov8_first5000/images/val/005246.png,005246,005246.png,gray,clear,highway,moderate,strong shadows,wet
+247,/data/oxx220000/kitti_yolov8_first5000/images/val/005247.png,005247,005247.png,black,sunny,residential,moderate,strong shadows,wet
+248,/data/oxx220000/kitti_yolov8_first5000/images/val/005248.png,005248,005248.png,black,sunny,urban city,moderate,strong shadows,snowy
+249,/data/oxx220000/kitti_yolov8_first5000/images/val/005249.png,005249,005249.png,white,clear,highway,moderate,overcast,wet
+250,/data/oxx220000/kitti_yolov8_first5000/images/val/005250.png,005250,005250.png,white,clear,urban city,moderate,strong shadows,snowy
+251,/data/oxx220000/kitti_yolov8_first5000/images/val/005251.png,005251,005251.png,gray,sunny,residential,moderate,strong shadows,dry
+252,/data/oxx220000/kitti_yolov8_first5000/images/val/005252.png,005252,005252.png,gray,clear,natural,empty,strong shadows,dry
+253,/data/oxx220000/kitti_yolov8_first5000/images/val/005253.png,005253,005253.png,gray,sunny,urban city,moderate,strong shadows,dry
+254,/data/oxx220000/kitti_yolov8_first5000/images/val/005254.png,005254,005254.png,white,clear,highway,empty,strong shadows,dry
+255,/data/oxx220000/kitti_yolov8_first5000/images/val/005255.png,005255,005255.png,gray,sunny,residential,moderate,strong shadows,snowy
+256,/data/oxx220000/kitti_yolov8_first5000/images/val/005256.png,005256,005256.png,gray,clear,highway,moderate,overcast,wet
+257,/data/oxx220000/kitti_yolov8_first5000/images/val/005257.png,005257,005257.png,gray,sunny,residential,moderate,strong shadows,dry
+258,/data/oxx220000/kitti_yolov8_first5000/images/val/005258.png,005258,005258.png,gray,sunny,urban city,empty,strong shadows,dry
+259,/data/oxx220000/kitti_yolov8_first5000/images/val/005259.png,005259,005259.png,gray,clear,urban city,moderate,strong shadows,dry
+260,/data/oxx220000/kitti_yolov8_first5000/images/val/005260.png,005260,005260.png,gray,clear,highway,moderate,glare,wet
+261,/data/oxx220000/kitti_yolov8_first5000/images/val/005261.png,005261,005261.png,gray,clear,highway,moderate,glare,wet
+262,/data/oxx220000/kitti_yolov8_first5000/images/val/005262.png,005262,005262.png,gray,clear,highway,empty,strong shadows,dry
+263,/data/oxx220000/kitti_yolov8_first5000/images/val/005263.png,005263,005263.png,gray,sunny,residential,moderate,strong shadows,snowy
+264,/data/oxx220000/kitti_yolov8_first5000/images/val/005264.png,005264,005264.png,blue,sunny,residential,moderate,strong shadows,snowy
+265,/data/oxx220000/kitti_yolov8_first5000/images/val/005265.png,005265,005265.png,black,sunny,residential,moderate,strong shadows,dry
+266,/data/oxx220000/kitti_yolov8_first5000/images/val/005266.png,005266,005266.png,white,sunny,residential,moderate,strong shadows,snowy
+267,/data/oxx220000/kitti_yolov8_first5000/images/val/005267.png,005267,005267.png,gray,sunny,residential,moderate,strong shadows,wet
+268,/data/oxx220000/kitti_yolov8_first5000/images/val/005268.png,005268,005268.png,gray,clear,highway,empty,strong shadows,dry
+269,/data/oxx220000/kitti_yolov8_first5000/images/val/005269.png,005269,005269.png,yellow,sunny,urban city,empty,strong shadows,dry
+270,/data/oxx220000/kitti_yolov8_first5000/images/val/005270.png,005270,005270.png,white,clear,urban city,moderate,strong shadows,dry
+271,/data/oxx220000/kitti_yolov8_first5000/images/val/005271.png,005271,005271.png,gray,clear,highway,moderate,strong shadows,dry
+272,/data/oxx220000/kitti_yolov8_first5000/images/val/005272.png,005272,005272.png,gray,clear,highway,moderate,glare,dry
+273,/data/oxx220000/kitti_yolov8_first5000/images/val/005273.png,005273,005273.png,gray,clear,urban city,light,overcast,wet
+274,/data/oxx220000/kitti_yolov8_first5000/images/val/005274.png,005274,005274.png,gray,sunny,residential,moderate,strong shadows,dry
+275,/data/oxx220000/kitti_yolov8_first5000/images/val/005275.png,005275,005275.png,gray,clear,highway,moderate,overcast,wet
+276,/data/oxx220000/kitti_yolov8_first5000/images/val/005276.png,005276,005276.png,gray,clear,residential,moderate,strong shadows,wet
+277,/data/oxx220000/kitti_yolov8_first5000/images/val/005277.png,005277,005277.png,gray,clear,urban city,moderate,strong shadows,snowy
+278,/data/oxx220000/kitti_yolov8_first5000/images/val/005278.png,005278,005278.png,silver,sunny,urban city,light,strong shadows,dry
+279,/data/oxx220000/kitti_yolov8_first5000/images/val/005279.png,005279,005279.png,gray,clear,residential,empty,strong shadows,dry
+280,/data/oxx220000/kitti_yolov8_first5000/images/val/005280.png,005280,005280.png,black,sunny,residential,moderate,strong shadows,wet
+281,/data/oxx220000/kitti_yolov8_first5000/images/val/005281.png,005281,005281.png,gray,clear,urban city,empty,strong shadows,wet
+282,/data/oxx220000/kitti_yolov8_first5000/images/val/005282.png,005282,005282.png,gray,clear,highway,empty,overcast,dry
+283,/data/oxx220000/kitti_yolov8_first5000/images/val/005283.png,005283,005283.png,red,sunny,residential,moderate,strong shadows,dry
+284,/data/oxx220000/kitti_yolov8_first5000/images/val/005284.png,005284,005284.png,black,clear,highway,moderate,overcast,dry
+285,/data/oxx220000/kitti_yolov8_first5000/images/val/005285.png,005285,005285.png,brown,sunny,residential,moderate,strong shadows,dry
+286,/data/oxx220000/kitti_yolov8_first5000/images/val/005286.png,005286,005286.png,white,clear,residential,moderate,strong shadows,wet
+287,/data/oxx220000/kitti_yolov8_first5000/images/val/005287.png,005287,005287.png,gray,clear,residential,moderate,strong shadows,dry
+288,/data/oxx220000/kitti_yolov8_first5000/images/val/005288.png,005288,005288.png,white,clear,highway,moderate,strong shadows,wet
+289,/data/oxx220000/kitti_yolov8_first5000/images/val/005289.png,005289,005289.png,gray,sunny,residential,moderate,strong shadows,dry
+290,/data/oxx220000/kitti_yolov8_first5000/images/val/005290.png,005290,005290.png,gray,clear,highway,empty,strong shadows,dry
+291,/data/oxx220000/kitti_yolov8_first5000/images/val/005291.png,005291,005291.png,black,sunny,natural,moderate,strong shadows,wet
+292,/data/oxx220000/kitti_yolov8_first5000/images/val/005292.png,005292,005292.png,white,clear,highway,empty,strong shadows,dry
+293,/data/oxx220000/kitti_yolov8_first5000/images/val/005293.png,005293,005293.png,gray,clear,residential,moderate,strong shadows,wet
+294,/data/oxx220000/kitti_yolov8_first5000/images/val/005294.png,005294,005294.png,white,sunny,urban city,empty,strong shadows,dry
+295,/data/oxx220000/kitti_yolov8_first5000/images/val/005295.png,005295,005295.png,white,sunny,residential,moderate,strong shadows,dry
+296,/data/oxx220000/kitti_yolov8_first5000/images/val/005296.png,005296,005296.png,white,clear,highway,moderate,strong shadows,dry
+297,/data/oxx220000/kitti_yolov8_first5000/images/val/005297.png,005297,005297.png,gray,clear,highway,empty,strong shadows,dry
+298,/data/oxx220000/kitti_yolov8_first5000/images/val/005298.png,005298,005298.png,gray,clear,highway,moderate,overcast,wet
+299,/data/oxx220000/kitti_yolov8_first5000/images/val/005299.png,005299,005299.png,black,clear,highway,empty,glare,wet
+300,/data/oxx220000/kitti_yolov8_first5000/images/val/005300.png,005300,005300.png,gray,clear,residential,moderate,strong shadows,dry
+301,/data/oxx220000/kitti_yolov8_first5000/images/val/005301.png,005301,005301.png,blue,clear,urban city,moderate,strong shadows,dry
+302,/data/oxx220000/kitti_yolov8_first5000/images/val/005302.png,005302,005302.png,white,clear,natural,empty,strong shadows,dry
+303,/data/oxx220000/kitti_yolov8_first5000/images/val/005303.png,005303,005303.png,white,clear,highway,empty,strong shadows,dry
+304,/data/oxx220000/kitti_yolov8_first5000/images/val/005304.png,005304,005304.png,white,clear,highway,empty,strong shadows,dry
+305,/data/oxx220000/kitti_yolov8_first5000/images/val/005305.png,005305,005305.png,gray,sunny,highway,empty,strong shadows,dry
+306,/data/oxx220000/kitti_yolov8_first5000/images/val/005306.png,005306,005306.png,white,sunny,residential,moderate,strong shadows,dry
+307,/data/oxx220000/kitti_yolov8_first5000/images/val/005307.png,005307,005307.png,gray,clear,residential,moderate,strong shadows,dry
+308,/data/oxx220000/kitti_yolov8_first5000/images/val/005308.png,005308,005308.png,gray,clear,highway,empty,strong shadows,snowy
+309,/data/oxx220000/kitti_yolov8_first5000/images/val/005309.png,005309,005309.png,white,clear,highway,empty,strong shadows,dry
+310,/data/oxx220000/kitti_yolov8_first5000/images/val/005310.png,005310,005310.png,white,sunny,residential,moderate,strong shadows,wet
+311,/data/oxx220000/kitti_yolov8_first5000/images/val/005311.png,005311,005311.png,gray,clear,highway,light,strong shadows,dry
+312,/data/oxx220000/kitti_yolov8_first5000/images/val/005312.png,005312,005312.png,gray,clear,residential,moderate,strong shadows,dry
+313,/data/oxx220000/kitti_yolov8_first5000/images/val/005313.png,005313,005313.png,white,clear,highway,empty,overcast,dry
+314,/data/oxx220000/kitti_yolov8_first5000/images/val/005314.png,005314,005314.png,white,sunny,urban city,moderate,strong shadows,wet
+315,/data/oxx220000/kitti_yolov8_first5000/images/val/005315.png,005315,005315.png,gray,clear,residential,moderate,strong shadows,snowy
+316,/data/oxx220000/kitti_yolov8_first5000/images/val/005316.png,005316,005316.png,gray,clear,highway,empty,strong shadows,snowy
+317,/data/oxx220000/kitti_yolov8_first5000/images/val/005317.png,005317,005317.png,blue,clear,urban city,moderate,strong shadows,dry
+318,/data/oxx220000/kitti_yolov8_first5000/images/val/005318.png,005318,005318.png,gray,clear,highway,moderate,glare,wet
+319,/data/oxx220000/kitti_yolov8_first5000/images/val/005319.png,005319,005319.png,white,clear,residential,moderate,strong shadows,snowy
+320,/data/oxx220000/kitti_yolov8_first5000/images/val/005320.png,005320,005320.png,gray,clear,residential,moderate,strong shadows,dry
+321,/data/oxx220000/kitti_yolov8_first5000/images/val/005321.png,005321,005321.png,gray,clear,highway,moderate,dim,wet
+322,/data/oxx220000/kitti_yolov8_first5000/images/val/005322.png,005322,005322.png,gray,clear,highway,moderate,strong shadows,dry
+323,/data/oxx220000/kitti_yolov8_first5000/images/val/005323.png,005323,005323.png,gray,clear,highway,moderate,strong shadows,dry
+324,/data/oxx220000/kitti_yolov8_first5000/images/val/005324.png,005324,005324.png,blue,clear,urban city,moderate,strong shadows,dry
+325,/data/oxx220000/kitti_yolov8_first5000/images/val/005325.png,005325,005325.png,gray,clear,highway,empty,strong shadows,dry
+326,/data/oxx220000/kitti_yolov8_first5000/images/val/005326.png,005326,005326.png,white,clear,highway,moderate,overcast,wet
+327,/data/oxx220000/kitti_yolov8_first5000/images/val/005327.png,005327,005327.png,gray,sunny,residential,moderate,strong shadows,dry
+328,/data/oxx220000/kitti_yolov8_first5000/images/val/005328.png,005328,005328.png,gray,clear,highway,empty,overcast,wet
+329,/data/oxx220000/kitti_yolov8_first5000/images/val/005329.png,005329,005329.png,blue,clear,urban city,moderate,strong shadows,dry
+330,/data/oxx220000/kitti_yolov8_first5000/images/val/005330.png,005330,005330.png,gray,sunny,residential,moderate,strong shadows,dry
+331,/data/oxx220000/kitti_yolov8_first5000/images/val/005331.png,005331,005331.png,gray,clear,natural,moderate,strong shadows,dry
+332,/data/oxx220000/kitti_yolov8_first5000/images/val/005332.png,005332,005332.png,gray,clear,residential,moderate,strong shadows,wet
+333,/data/oxx220000/kitti_yolov8_first5000/images/val/005333.png,005333,005333.png,gray,sunny,residential,moderate,strong shadows,dry
+334,/data/oxx220000/kitti_yolov8_first5000/images/val/005334.png,005334,005334.png,gray,sunny,highway,moderate,strong shadows,dry
+335,/data/oxx220000/kitti_yolov8_first5000/images/val/005335.png,005335,005335.png,gray,clear,residential,moderate,strong shadows,dry
+336,/data/oxx220000/kitti_yolov8_first5000/images/val/005336.png,005336,005336.png,white,sunny,urban city,moderate,strong shadows,dry
+337,/data/oxx220000/kitti_yolov8_first5000/images/val/005337.png,005337,005337.png,gray,clear,urban city,moderate,strong shadows,dry
+338,/data/oxx220000/kitti_yolov8_first5000/images/val/005338.png,005338,005338.png,gray,clear,highway,empty,strong shadows,dry
+339,/data/oxx220000/kitti_yolov8_first5000/images/val/005339.png,005339,005339.png,black,clear,highway,empty,strong shadows,snowy
+340,/data/oxx220000/kitti_yolov8_first5000/images/val/005340.png,005340,005340.png,white,sunny,residential,moderate,strong shadows,dry
+341,/data/oxx220000/kitti_yolov8_first5000/images/val/005341.png,005341,005341.png,white,sunny,residential,empty,strong shadows,wet
+342,/data/oxx220000/kitti_yolov8_first5000/images/val/005342.png,005342,005342.png,white,clear,highway,empty,strong shadows,dry
+343,/data/oxx220000/kitti_yolov8_first5000/images/val/005343.png,005343,005343.png,gray,clear,highway,empty,strong shadows,snowy
+344,/data/oxx220000/kitti_yolov8_first5000/images/val/005344.png,005344,005344.png,gray,clear,highway,empty,strong shadows,dry
+345,/data/oxx220000/kitti_yolov8_first5000/images/val/005345.png,005345,005345.png,red,sunny,natural,moderate,strong shadows,dry
+346,/data/oxx220000/kitti_yolov8_first5000/images/val/005346.png,005346,005346.png,white,sunny,residential,moderate,strong shadows,wet
+347,/data/oxx220000/kitti_yolov8_first5000/images/val/005347.png,005347,005347.png,gray,clear,residential,moderate,strong shadows,dry
+348,/data/oxx220000/kitti_yolov8_first5000/images/val/005348.png,005348,005348.png,black,clear,residential,moderate,strong shadows,wet
+349,/data/oxx220000/kitti_yolov8_first5000/images/val/005349.png,005349,005349.png,white,clear,residential,moderate,strong shadows,dry
+350,/data/oxx220000/kitti_yolov8_first5000/images/val/005350.png,005350,005350.png,black,sunny,residential,moderate,strong shadows,wet
+351,/data/oxx220000/kitti_yolov8_first5000/images/val/005351.png,005351,005351.png,gray,clear,residential,moderate,strong shadows,dry
+352,/data/oxx220000/kitti_yolov8_first5000/images/val/005352.png,005352,005352.png,gray,clear,residential,moderate,strong shadows,dry
+353,/data/oxx220000/kitti_yolov8_first5000/images/val/005353.png,005353,005353.png,black,clear,highway,empty,glare,dry
+354,/data/oxx220000/kitti_yolov8_first5000/images/val/005354.png,005354,005354.png,gray,sunny,urban city,moderate,strong shadows,wet
+355,/data/oxx220000/kitti_yolov8_first5000/images/val/005355.png,005355,005355.png,yellow,clear,highway,moderate,strong shadows,snowy
+356,/data/oxx220000/kitti_yolov8_first5000/images/val/005356.png,005356,005356.png,black,sunny,urban city,moderate,strong shadows,wet
+357,/data/oxx220000/kitti_yolov8_first5000/images/val/005357.png,005357,005357.png,gray,sunny,urban city,moderate,strong shadows,dry
+358,/data/oxx220000/kitti_yolov8_first5000/images/val/005358.png,005358,005358.png,blue,clear,residential,moderate,strong shadows,dry
+359,/data/oxx220000/kitti_yolov8_first5000/images/val/005359.png,005359,005359.png,white,clear,residential,moderate,strong shadows,dry
+360,/data/oxx220000/kitti_yolov8_first5000/images/val/005360.png,005360,005360.png,blue,clear,residential,moderate,strong shadows,snowy
+361,/data/oxx220000/kitti_yolov8_first5000/images/val/005361.png,005361,005361.png,black,clear,highway,moderate,strong shadows,wet
+362,/data/oxx220000/kitti_yolov8_first5000/images/val/005362.png,005362,005362.png,gray,sunny,urban city,moderate,strong shadows,dry
+363,/data/oxx220000/kitti_yolov8_first5000/images/val/005363.png,005363,005363.png,white,clear,highway,empty,overcast,dry
+364,/data/oxx220000/kitti_yolov8_first5000/images/val/005364.png,005364,005364.png,black,clear,highway,empty,strong shadows,snowy
+365,/data/oxx220000/kitti_yolov8_first5000/images/val/005365.png,005365,005365.png,white,clear,residential,moderate,strong shadows,dry
+366,/data/oxx220000/kitti_yolov8_first5000/images/val/005366.png,005366,005366.png,white,clear,highway,moderate,strong shadows,dry
+367,/data/oxx220000/kitti_yolov8_first5000/images/val/005367.png,005367,005367.png,gray,clear,residential,moderate,strong shadows,wet
+368,/data/oxx220000/kitti_yolov8_first5000/images/val/005368.png,005368,005368.png,black,clear,residential,moderate,strong shadows,dry
+369,/data/oxx220000/kitti_yolov8_first5000/images/val/005369.png,005369,005369.png,gray,clear,urban city,moderate,strong shadows,dry
+370,/data/oxx220000/kitti_yolov8_first5000/images/val/005370.png,005370,005370.png,black,clear,highway,empty,strong shadows,dry
+371,/data/oxx220000/kitti_yolov8_first5000/images/val/005371.png,005371,005371.png,gray,sunny,urban city,moderate,strong shadows,dry
+372,/data/oxx220000/kitti_yolov8_first5000/images/val/005372.png,005372,005372.png,gray,sunny,residential,moderate,strong shadows,dry
+373,/data/oxx220000/kitti_yolov8_first5000/images/val/005373.png,005373,005373.png,white,clear,urban city,empty,strong shadows,wet
+374,/data/oxx220000/kitti_yolov8_first5000/images/val/005374.png,005374,005374.png,white,clear,highway,moderate,strong shadows,wet
+375,/data/oxx220000/kitti_yolov8_first5000/images/val/005375.png,005375,005375.png,gray,clear,highway,empty,strong shadows,wet
+376,/data/oxx220000/kitti_yolov8_first5000/images/val/005376.png,005376,005376.png,gray,clear,urban city,moderate,strong shadows,dry
+377,/data/oxx220000/kitti_yolov8_first5000/images/val/005377.png,005377,005377.png,white,clear,highway,empty,strong shadows,dry
+378,/data/oxx220000/kitti_yolov8_first5000/images/val/005378.png,005378,005378.png,gray,sunny,highway,moderate,strong shadows,snowy
+379,/data/oxx220000/kitti_yolov8_first5000/images/val/005379.png,005379,005379.png,gray,sunny,residential,moderate,strong shadows,wet
+380,/data/oxx220000/kitti_yolov8_first5000/images/val/005380.png,005380,005380.png,gray,sunny,urban city,empty,strong shadows,wet
+381,/data/oxx220000/kitti_yolov8_first5000/images/val/005381.png,005381,005381.png,gray,sunny,residential,moderate,strong shadows,dry
+382,/data/oxx220000/kitti_yolov8_first5000/images/val/005382.png,005382,005382.png,black,sunny,urban city,moderate,strong shadows,wet
+383,/data/oxx220000/kitti_yolov8_first5000/images/val/005383.png,005383,005383.png,black,sunny,urban city,moderate,strong shadows,wet
+384,/data/oxx220000/kitti_yolov8_first5000/images/val/005384.png,005384,005384.png,gray,clear,highway,moderate,strong shadows,dry
+385,/data/oxx220000/kitti_yolov8_first5000/images/val/005385.png,005385,005385.png,gray,clear,residential,moderate,strong shadows,snowy
+386,/data/oxx220000/kitti_yolov8_first5000/images/val/005386.png,005386,005386.png,gray,clear,residential,moderate,strong shadows,dry
+387,/data/oxx220000/kitti_yolov8_first5000/images/val/005387.png,005387,005387.png,gray,clear,urban city,moderate,strong shadows,dry
+388,/data/oxx220000/kitti_yolov8_first5000/images/val/005388.png,005388,005388.png,white,clear,urban city,moderate,strong shadows,dry
+389,/data/oxx220000/kitti_yolov8_first5000/images/val/005389.png,005389,005389.png,gray,clear,residential,moderate,strong shadows,dry
+390,/data/oxx220000/kitti_yolov8_first5000/images/val/005390.png,005390,005390.png,gray,clear,highway,empty,strong shadows,dry
+391,/data/oxx220000/kitti_yolov8_first5000/images/val/005391.png,005391,005391.png,gray,clear,residential,light,strong shadows,wet
+392,/data/oxx220000/kitti_yolov8_first5000/images/val/005392.png,005392,005392.png,gray,clear,highway,moderate,strong shadows,wet
+393,/data/oxx220000/kitti_yolov8_first5000/images/val/005393.png,005393,005393.png,white,clear,highway,empty,strong shadows,wet
+394,/data/oxx220000/kitti_yolov8_first5000/images/val/005394.png,005394,005394.png,black,sunny,residential,moderate,strong shadows,wet
+395,/data/oxx220000/kitti_yolov8_first5000/images/val/005395.png,005395,005395.png,white,sunny,residential,moderate,strong shadows,snowy
+396,/data/oxx220000/kitti_yolov8_first5000/images/val/005396.png,005396,005396.png,black,clear,highway,empty,strong shadows,dry
+397,/data/oxx220000/kitti_yolov8_first5000/images/val/005397.png,005397,005397.png,white,sunny,residential,moderate,strong shadows,dry
+398,/data/oxx220000/kitti_yolov8_first5000/images/val/005398.png,005398,005398.png,white,sunny,residential,moderate,strong shadows,wet
+399,/data/oxx220000/kitti_yolov8_first5000/images/val/005399.png,005399,005399.png,gray,clear,highway,empty,strong shadows,snowy
+400,/data/oxx220000/kitti_yolov8_first5000/images/val/005400.png,005400,005400.png,gray,clear,highway,moderate,strong shadows,wet
+401,/data/oxx220000/kitti_yolov8_first5000/images/val/005401.png,005401,005401.png,white,clear,highway,moderate,strong shadows,wet
+402,/data/oxx220000/kitti_yolov8_first5000/images/val/005402.png,005402,005402.png,red,clear,natural,moderate,strong shadows,dry
+403,/data/oxx220000/kitti_yolov8_first5000/images/val/005403.png,005403,005403.png,red,sunny,urban city,moderate,strong shadows,wet
+404,/data/oxx220000/kitti_yolov8_first5000/images/val/005404.png,005404,005404.png,black,clear,residential,moderate,strong shadows,dry
+405,/data/oxx220000/kitti_yolov8_first5000/images/val/005405.png,005405,005405.png,gray,clear,highway,empty,strong shadows,dry
+406,/data/oxx220000/kitti_yolov8_first5000/images/val/005406.png,005406,005406.png,gray,clear,residential,moderate,strong shadows,snowy
+407,/data/oxx220000/kitti_yolov8_first5000/images/val/005407.png,005407,005407.png,gray,sunny,residential,moderate,strong shadows,dry
+408,/data/oxx220000/kitti_yolov8_first5000/images/val/005408.png,005408,005408.png,gray,clear,urban city,moderate,strong shadows,dry
+409,/data/oxx220000/kitti_yolov8_first5000/images/val/005409.png,005409,005409.png,gray,clear,residential,moderate,strong shadows,dry
+410,/data/oxx220000/kitti_yolov8_first5000/images/val/005410.png,005410,005410.png,gray,clear,residential,moderate,strong shadows,dry
+411,/data/oxx220000/kitti_yolov8_first5000/images/val/005411.png,005411,005411.png,gray,clear,residential,moderate,overcast,wet
+412,/data/oxx220000/kitti_yolov8_first5000/images/val/005412.png,005412,005412.png,gray,clear,highway,moderate,strong shadows,wet
+413,/data/oxx220000/kitti_yolov8_first5000/images/val/005413.png,005413,005413.png,gray,clear,highway,empty,strong shadows,dry
+414,/data/oxx220000/kitti_yolov8_first5000/images/val/005414.png,005414,005414.png,white,clear,highway,moderate,strong shadows,wet
+415,/data/oxx220000/kitti_yolov8_first5000/images/val/005415.png,005415,005415.png,gray,clear,residential,moderate,strong shadows,dry
+416,/data/oxx220000/kitti_yolov8_first5000/images/val/005416.png,005416,005416.png,red,sunny,residential,moderate,strong shadows,dry
+417,/data/oxx220000/kitti_yolov8_first5000/images/val/005417.png,005417,005417.png,gray,clear,highway,moderate,strong shadows,dry
+418,/data/oxx220000/kitti_yolov8_first5000/images/val/005418.png,005418,005418.png,silver,sunny,urban city,moderate,strong shadows,dry
+419,/data/oxx220000/kitti_yolov8_first5000/images/val/005419.png,005419,005419.png,white,sunny,urban city,moderate,strong shadows,wet
+420,/data/oxx220000/kitti_yolov8_first5000/images/val/005420.png,005420,005420.png,white,sunny,highway,moderate,strong shadows,wet
+421,/data/oxx220000/kitti_yolov8_first5000/images/val/005421.png,005421,005421.png,gray,clear,residential,moderate,strong shadows,dry
+422,/data/oxx220000/kitti_yolov8_first5000/images/val/005422.png,005422,005422.png,blue,clear,urban city,moderate,strong shadows,dry
+423,/data/oxx220000/kitti_yolov8_first5000/images/val/005423.png,005423,005423.png,gray,clear,residential,moderate,strong shadows,dry
+424,/data/oxx220000/kitti_yolov8_first5000/images/val/005424.png,005424,005424.png,gray,clear,rural,moderate,strong shadows,dry
+425,/data/oxx220000/kitti_yolov8_first5000/images/val/005425.png,005425,005425.png,white,sunny,residential,moderate,strong shadows,dry
+426,/data/oxx220000/kitti_yolov8_first5000/images/val/005426.png,005426,005426.png,yellow,sunny,residential,moderate,strong shadows,dry
+427,/data/oxx220000/kitti_yolov8_first5000/images/val/005427.png,005427,005427.png,yellow,sunny,residential,moderate,strong shadows,dry
+428,/data/oxx220000/kitti_yolov8_first5000/images/val/005428.png,005428,005428.png,gray,clear,highway,moderate,strong shadows,snowy
+429,/data/oxx220000/kitti_yolov8_first5000/images/val/005429.png,005429,005429.png,blue,clear,urban city,moderate,strong shadows,dry
+430,/data/oxx220000/kitti_yolov8_first5000/images/val/005430.png,005430,005430.png,gray,clear,residential,moderate,strong shadows,dry
+431,/data/oxx220000/kitti_yolov8_first5000/images/val/005431.png,005431,005431.png,white,clear,highway,moderate,strong shadows,wet
+432,/data/oxx220000/kitti_yolov8_first5000/images/val/005432.png,005432,005432.png,gray,sunny,residential,moderate,strong shadows,wet
+433,/data/oxx220000/kitti_yolov8_first5000/images/val/005433.png,005433,005433.png,gray,clear,urban city,moderate,strong shadows,dry
+434,/data/oxx220000/kitti_yolov8_first5000/images/val/005434.png,005434,005434.png,yellow,sunny,urban city,moderate,strong shadows,dry
+435,/data/oxx220000/kitti_yolov8_first5000/images/val/005435.png,005435,005435.png,gray,sunny,residential,moderate,strong shadows,dry
+436,/data/oxx220000/kitti_yolov8_first5000/images/val/005436.png,005436,005436.png,gray,sunny,urban city,moderate,strong shadows,dry
+437,/data/oxx220000/kitti_yolov8_first5000/images/val/005437.png,005437,005437.png,gray,clear,highway,empty,overcast,dry
+438,/data/oxx220000/kitti_yolov8_first5000/images/val/005438.png,005438,005438.png,brown,sunny,residential,moderate,strong shadows,dry
+439,/data/oxx220000/kitti_yolov8_first5000/images/val/005439.png,005439,005439.png,blue,clear,urban city,moderate,strong shadows,dry
+440,/data/oxx220000/kitti_yolov8_first5000/images/val/005440.png,005440,005440.png,red,clear,highway,moderate,strong shadows,dry
+441,/data/oxx220000/kitti_yolov8_first5000/images/val/005441.png,005441,005441.png,gray,sunny,residential,moderate,strong shadows,dry
+442,/data/oxx220000/kitti_yolov8_first5000/images/val/005442.png,005442,005442.png,red,clear,highway,moderate,strong shadows,dry
+443,/data/oxx220000/kitti_yolov8_first5000/images/val/005443.png,005443,005443.png,white,sunny,residential,moderate,strong shadows,dry
+444,/data/oxx220000/kitti_yolov8_first5000/images/val/005444.png,005444,005444.png,gray,clear,natural,moderate,strong shadows,dry
+445,/data/oxx220000/kitti_yolov8_first5000/images/val/005445.png,005445,005445.png,white,clear,highway,empty,strong shadows,dry
+446,/data/oxx220000/kitti_yolov8_first5000/images/val/005446.png,005446,005446.png,white,sunny,natural,moderate,strong shadows,wet
+447,/data/oxx220000/kitti_yolov8_first5000/images/val/005447.png,005447,005447.png,gray,clear,highway,moderate,overcast,wet
+448,/data/oxx220000/kitti_yolov8_first5000/images/val/005448.png,005448,005448.png,black,clear,residential,moderate,strong shadows,wet
+449,/data/oxx220000/kitti_yolov8_first5000/images/val/005449.png,005449,005449.png,gray,sunny,residential,moderate,strong shadows,dry
+450,/data/oxx220000/kitti_yolov8_first5000/images/val/005450.png,005450,005450.png,gray,sunny,residential,moderate,strong shadows,dry
+451,/data/oxx220000/kitti_yolov8_first5000/images/val/005451.png,005451,005451.png,silver,clear,highway,empty,strong shadows,dry
+452,/data/oxx220000/kitti_yolov8_first5000/images/val/005452.png,005452,005452.png,gray,clear,highway,moderate,overcast,wet
+453,/data/oxx220000/kitti_yolov8_first5000/images/val/005453.png,005453,005453.png,gray,clear,residential,moderate,strong shadows,snowy
+454,/data/oxx220000/kitti_yolov8_first5000/images/val/005454.png,005454,005454.png,white,clear,highway,empty,strong shadows,dry
+455,/data/oxx220000/kitti_yolov8_first5000/images/val/005455.png,005455,005455.png,gray,clear,urban city,moderate,strong shadows,dry
+456,/data/oxx220000/kitti_yolov8_first5000/images/val/005456.png,005456,005456.png,white,sunny,natural,moderate,strong shadows,wet
+457,/data/oxx220000/kitti_yolov8_first5000/images/val/005457.png,005457,005457.png,white,clear,highway,moderate,strong shadows,dry
+458,/data/oxx220000/kitti_yolov8_first5000/images/val/005458.png,005458,005458.png,white,clear,residential,moderate,strong shadows,dry
+459,/data/oxx220000/kitti_yolov8_first5000/images/val/005459.png,005459,005459.png,gray,clear,urban city,moderate,strong shadows,wet
+460,/data/oxx220000/kitti_yolov8_first5000/images/val/005460.png,005460,005460.png,gray,clear,highway,empty,overcast,wet
+461,/data/oxx220000/kitti_yolov8_first5000/images/val/005461.png,005461,005461.png,gray,sunny,residential,moderate,strong shadows,dry
+462,/data/oxx220000/kitti_yolov8_first5000/images/val/005462.png,005462,005462.png,black,clear,highway,empty,strong shadows,dry
+463,/data/oxx220000/kitti_yolov8_first5000/images/val/005463.png,005463,005463.png,silver,sunny,residential,moderate,strong shadows,dry
+464,/data/oxx220000/kitti_yolov8_first5000/images/val/005464.png,005464,005464.png,red,clear,highway,moderate,strong shadows,dry
+465,/data/oxx220000/kitti_yolov8_first5000/images/val/005465.png,005465,005465.png,white,sunny,residential,moderate,strong shadows,dry
+466,/data/oxx220000/kitti_yolov8_first5000/images/val/005466.png,005466,005466.png,white,sunny,residential,moderate,strong shadows,dry
+467,/data/oxx220000/kitti_yolov8_first5000/images/val/005467.png,005467,005467.png,gray,sunny,urban city,empty,strong shadows,dry
+468,/data/oxx220000/kitti_yolov8_first5000/images/val/005468.png,005468,005468.png,black,clear,highway,empty,strong shadows,dry
+469,/data/oxx220000/kitti_yolov8_first5000/images/val/005469.png,005469,005469.png,white,clear,residential,moderate,strong shadows,snowy
+470,/data/oxx220000/kitti_yolov8_first5000/images/val/005470.png,005470,005470.png,gray,clear,highway,moderate,strong shadows,wet
+471,/data/oxx220000/kitti_yolov8_first5000/images/val/005471.png,005471,005471.png,gray,clear,highway,empty,glare,dry
+472,/data/oxx220000/kitti_yolov8_first5000/images/val/005472.png,005472,005472.png,gray,sunny,urban city,moderate,strong shadows,dry
+473,/data/oxx220000/kitti_yolov8_first5000/images/val/005473.png,005473,005473.png,gray,clear,highway,empty,strong shadows,wet
+474,/data/oxx220000/kitti_yolov8_first5000/images/val/005474.png,005474,005474.png,gray,clear,highway,moderate,overcast,wet
+475,/data/oxx220000/kitti_yolov8_first5000/images/val/005475.png,005475,005475.png,gray,clear,highway,empty,strong shadows,dry
+476,/data/oxx220000/kitti_yolov8_first5000/images/val/005476.png,005476,005476.png,gray,clear,highway,empty,strong shadows,snowy
+477,/data/oxx220000/kitti_yolov8_first5000/images/val/005477.png,005477,005477.png,gray,clear,highway,moderate,strong shadows,dry
+478,/data/oxx220000/kitti_yolov8_first5000/images/val/005478.png,005478,005478.png,gray,clear,residential,moderate,strong shadows,dry
+479,/data/oxx220000/kitti_yolov8_first5000/images/val/005479.png,005479,005479.png,gray,sunny,residential,moderate,strong shadows,dry
+480,/data/oxx220000/kitti_yolov8_first5000/images/val/005480.png,005480,005480.png,black,clear,highway,moderate,strong shadows,wet
+481,/data/oxx220000/kitti_yolov8_first5000/images/val/005481.png,005481,005481.png,gray,clear,residential,moderate,strong shadows,dry
+482,/data/oxx220000/kitti_yolov8_first5000/images/val/005482.png,005482,005482.png,gray,clear,urban city,light,overcast,wet
+483,/data/oxx220000/kitti_yolov8_first5000/images/val/005483.png,005483,005483.png,white,clear,highway,empty,strong shadows,dry
+484,/data/oxx220000/kitti_yolov8_first5000/images/val/005484.png,005484,005484.png,white,clear,highway,empty,strong shadows,dry
+485,/data/oxx220000/kitti_yolov8_first5000/images/val/005485.png,005485,005485.png,gray,clear,rural,moderate,strong shadows,wet
+486,/data/oxx220000/kitti_yolov8_first5000/images/val/005486.png,005486,005486.png,white,sunny,residential,moderate,strong shadows,snowy
+487,/data/oxx220000/kitti_yolov8_first5000/images/val/005487.png,005487,005487.png,white,clear,residential,moderate,strong shadows,dry
+488,/data/oxx220000/kitti_yolov8_first5000/images/val/005488.png,005488,005488.png,gray,sunny,residential,moderate,strong shadows,wet
+489,/data/oxx220000/kitti_yolov8_first5000/images/val/005489.png,005489,005489.png,gray,clear,residential,moderate,strong shadows,dry
+490,/data/oxx220000/kitti_yolov8_first5000/images/val/005490.png,005490,005490.png,gray,clear,urban city,moderate,strong shadows,dry
+491,/data/oxx220000/kitti_yolov8_first5000/images/val/005491.png,005491,005491.png,white,clear,residential,empty,strong shadows,snowy
+492,/data/oxx220000/kitti_yolov8_first5000/images/val/005492.png,005492,005492.png,black,clear,residential,moderate,strong shadows,wet
+493,/data/oxx220000/kitti_yolov8_first5000/images/val/005493.png,005493,005493.png,gray,sunny,residential,moderate,strong shadows,dry
+494,/data/oxx220000/kitti_yolov8_first5000/images/val/005494.png,005494,005494.png,gray,clear,residential,moderate,strong shadows,dry
+495,/data/oxx220000/kitti_yolov8_first5000/images/val/005495.png,005495,005495.png,gray,clear,urban city,light,overcast,wet
+496,/data/oxx220000/kitti_yolov8_first5000/images/val/005496.png,005496,005496.png,gray,clear,residential,moderate,strong shadows,snowy
+497,/data/oxx220000/kitti_yolov8_first5000/images/val/005497.png,005497,005497.png,black,clear,highway,empty,strong shadows,dry
+498,/data/oxx220000/kitti_yolov8_first5000/images/val/005498.png,005498,005498.png,white,clear,highway,moderate,strong shadows,wet
+499,/data/oxx220000/kitti_yolov8_first5000/images/val/005499.png,005499,005499.png,red,clear,highway,moderate,strong shadows,dry
+500,/data/oxx220000/kitti_yolov8_first5000/images/val/005500.png,005500,005500.png,gray,sunny,residential,moderate,strong shadows,dry
+501,/data/oxx220000/kitti_yolov8_first5000/images/val/005501.png,005501,005501.png,gray,clear,urban city,moderate,strong shadows,dry
+502,/data/oxx220000/kitti_yolov8_first5000/images/val/005502.png,005502,005502.png,gray,sunny,natural,empty,strong shadows,dry
+503,/data/oxx220000/kitti_yolov8_first5000/images/val/005503.png,005503,005503.png,gray,clear,highway,empty,strong shadows,dry
+504,/data/oxx220000/kitti_yolov8_first5000/images/val/005504.png,005504,005504.png,black,sunny,rural,moderate,strong shadows,dry
+505,/data/oxx220000/kitti_yolov8_first5000/images/val/005505.png,005505,005505.png,gray,sunny,residential,moderate,strong shadows,dry
+506,/data/oxx220000/kitti_yolov8_first5000/images/val/005506.png,005506,005506.png,white,clear,highway,empty,strong shadows,wet
+507,/data/oxx220000/kitti_yolov8_first5000/images/val/005507.png,005507,005507.png,gray,clear,highway,moderate,strong shadows,wet
+508,/data/oxx220000/kitti_yolov8_first5000/images/val/005508.png,005508,005508.png,blue,clear,highway,moderate,glare,dry
+509,/data/oxx220000/kitti_yolov8_first5000/images/val/005509.png,005509,005509.png,white,clear,highway,moderate,strong shadows,snowy
+510,/data/oxx220000/kitti_yolov8_first5000/images/val/005510.png,005510,005510.png,gray,sunny,urban city,moderate,strong shadows,wet
+511,/data/oxx220000/kitti_yolov8_first5000/images/val/005511.png,005511,005511.png,white,clear,urban city,empty,overcast,wet
+512,/data/oxx220000/kitti_yolov8_first5000/images/val/005512.png,005512,005512.png,gray,sunny,urban city,moderate,strong shadows,dry
+513,/data/oxx220000/kitti_yolov8_first5000/images/val/005513.png,005513,005513.png,red,clear,highway,moderate,strong shadows,dry
+514,/data/oxx220000/kitti_yolov8_first5000/images/val/005514.png,005514,005514.png,white,clear,residential,moderate,strong shadows,snowy
+515,/data/oxx220000/kitti_yolov8_first5000/images/val/005515.png,005515,005515.png,gray,clear,residential,moderate,strong shadows,dry
+516,/data/oxx220000/kitti_yolov8_first5000/images/val/005516.png,005516,005516.png,gray,clear,residential,moderate,strong shadows,dry
+517,/data/oxx220000/kitti_yolov8_first5000/images/val/005517.png,005517,005517.png,gray,clear,highway,empty,strong shadows,wet
+518,/data/oxx220000/kitti_yolov8_first5000/images/val/005518.png,005518,005518.png,black,clear,highway,empty,glare,wet
+519,/data/oxx220000/kitti_yolov8_first5000/images/val/005519.png,005519,005519.png,white,sunny,residential,moderate,strong shadows,dry
+520,/data/oxx220000/kitti_yolov8_first5000/images/val/005520.png,005520,005520.png,gray,clear,residential,empty,strong shadows,wet
+521,/data/oxx220000/kitti_yolov8_first5000/images/val/005521.png,005521,005521.png,yellow,clear,highway,moderate,strong shadows,snowy
+522,/data/oxx220000/kitti_yolov8_first5000/images/val/005522.png,005522,005522.png,red,clear,natural,empty,dim,dry
+523,/data/oxx220000/kitti_yolov8_first5000/images/val/005523.png,005523,005523.png,yellow,sunny,residential,moderate,strong shadows,dry
+524,/data/oxx220000/kitti_yolov8_first5000/images/val/005524.png,005524,005524.png,white,sunny,urban city,moderate,strong shadows,dry
+525,/data/oxx220000/kitti_yolov8_first5000/images/val/005525.png,005525,005525.png,yellow,clear,highway,empty,overcast,wet
+526,/data/oxx220000/kitti_yolov8_first5000/images/val/005526.png,005526,005526.png,blue,clear,urban city,moderate,strong shadows,dry
+527,/data/oxx220000/kitti_yolov8_first5000/images/val/005527.png,005527,005527.png,gray,sunny,residential,moderate,strong shadows,dry
+528,/data/oxx220000/kitti_yolov8_first5000/images/val/005528.png,005528,005528.png,gray,clear,residential,moderate,strong shadows,dry
+529,/data/oxx220000/kitti_yolov8_first5000/images/val/005529.png,005529,005529.png,red,clear,highway,empty,strong shadows,dry
+530,/data/oxx220000/kitti_yolov8_first5000/images/val/005530.png,005530,005530.png,gray,sunny,residential,moderate,strong shadows,dry
+531,/data/oxx220000/kitti_yolov8_first5000/images/val/005531.png,005531,005531.png,white,clear,residential,moderate,strong shadows,dry
+532,/data/oxx220000/kitti_yolov8_first5000/images/val/005532.png,005532,005532.png,black,clear,urban city,moderate,strong shadows,dry
+533,/data/oxx220000/kitti_yolov8_first5000/images/val/005533.png,005533,005533.png,gray,sunny,residential,moderate,strong shadows,dry
+534,/data/oxx220000/kitti_yolov8_first5000/images/val/005534.png,005534,005534.png,red,clear,residential,moderate,strong shadows,wet
+535,/data/oxx220000/kitti_yolov8_first5000/images/val/005535.png,005535,005535.png,white,clear,residential,moderate,strong shadows,dry
+536,/data/oxx220000/kitti_yolov8_first5000/images/val/005536.png,005536,005536.png,white,clear,highway,moderate,strong shadows,dry
+537,/data/oxx220000/kitti_yolov8_first5000/images/val/005537.png,005537,005537.png,white,clear,residential,moderate,strong shadows,dry
+538,/data/oxx220000/kitti_yolov8_first5000/images/val/005538.png,005538,005538.png,gray,clear,highway,moderate,strong shadows,dry
+539,/data/oxx220000/kitti_yolov8_first5000/images/val/005539.png,005539,005539.png,white,sunny,residential,moderate,strong shadows,wet
+540,/data/oxx220000/kitti_yolov8_first5000/images/val/005540.png,005540,005540.png,white,clear,urban city,moderate,strong shadows,dry
+541,/data/oxx220000/kitti_yolov8_first5000/images/val/005541.png,005541,005541.png,gray,sunny,residential,moderate,strong shadows,wet
+542,/data/oxx220000/kitti_yolov8_first5000/images/val/005542.png,005542,005542.png,black,clear,highway,moderate,glare,wet
+543,/data/oxx220000/kitti_yolov8_first5000/images/val/005543.png,005543,005543.png,black,clear,highway,empty,strong shadows,dry
+544,/data/oxx220000/kitti_yolov8_first5000/images/val/005544.png,005544,005544.png,white,clear,urban city,light,strong shadows,snowy
+545,/data/oxx220000/kitti_yolov8_first5000/images/val/005545.png,005545,005545.png,gray,sunny,urban city,moderate,strong shadows,dry
+546,/data/oxx220000/kitti_yolov8_first5000/images/val/005546.png,005546,005546.png,gray,clear,residential,moderate,strong shadows,dry
+547,/data/oxx220000/kitti_yolov8_first5000/images/val/005547.png,005547,005547.png,black,sunny,residential,moderate,strong shadows,wet
+548,/data/oxx220000/kitti_yolov8_first5000/images/val/005548.png,005548,005548.png,white,clear,highway,moderate,glare,snowy
+549,/data/oxx220000/kitti_yolov8_first5000/images/val/005549.png,005549,005549.png,black,sunny,natural,moderate,strong shadows,dry
+550,/data/oxx220000/kitti_yolov8_first5000/images/val/005550.png,005550,005550.png,gray,clear,natural,empty,strong shadows,dry
+551,/data/oxx220000/kitti_yolov8_first5000/images/val/005551.png,005551,005551.png,gray,sunny,residential,moderate,strong shadows,wet
+552,/data/oxx220000/kitti_yolov8_first5000/images/val/005552.png,005552,005552.png,gray,clear,residential,moderate,strong shadows,dry
+553,/data/oxx220000/kitti_yolov8_first5000/images/val/005553.png,005553,005553.png,gray,sunny,residential,moderate,strong shadows,dry
+554,/data/oxx220000/kitti_yolov8_first5000/images/val/005554.png,005554,005554.png,gray,clear,residential,moderate,strong shadows,dry
+555,/data/oxx220000/kitti_yolov8_first5000/images/val/005555.png,005555,005555.png,white,clear,highway,moderate,strong shadows,dry
+556,/data/oxx220000/kitti_yolov8_first5000/images/val/005556.png,005556,005556.png,gray,sunny,residential,moderate,strong shadows,dry
+557,/data/oxx220000/kitti_yolov8_first5000/images/val/005557.png,005557,005557.png,green,clear,highway,moderate,dim,wet
+558,/data/oxx220000/kitti_yolov8_first5000/images/val/005558.png,005558,005558.png,gray,clear,highway,moderate,strong shadows,dry
+559,/data/oxx220000/kitti_yolov8_first5000/images/val/005559.png,005559,005559.png,blue,clear,urban city,moderate,strong shadows,dry
+560,/data/oxx220000/kitti_yolov8_first5000/images/val/005560.png,005560,005560.png,gray,sunny,urban city,moderate,strong shadows,dry
+561,/data/oxx220000/kitti_yolov8_first5000/images/val/005561.png,005561,005561.png,gray,clear,highway,moderate,strong shadows,snowy
+562,/data/oxx220000/kitti_yolov8_first5000/images/val/005562.png,005562,005562.png,black,clear,highway,empty,strong shadows,snowy
+563,/data/oxx220000/kitti_yolov8_first5000/images/val/005563.png,005563,005563.png,gray,clear,residential,moderate,strong shadows,dry
+564,/data/oxx220000/kitti_yolov8_first5000/images/val/005564.png,005564,005564.png,black,sunny,natural,moderate,strong shadows,snowy
+565,/data/oxx220000/kitti_yolov8_first5000/images/val/005565.png,005565,005565.png,gray,clear,highway,moderate,strong shadows,snowy
+566,/data/oxx220000/kitti_yolov8_first5000/images/val/005566.png,005566,005566.png,gray,clear,highway,moderate,overcast,wet
+567,/data/oxx220000/kitti_yolov8_first5000/images/val/005567.png,005567,005567.png,blue,clear,urban city,moderate,strong shadows,dry
+568,/data/oxx220000/kitti_yolov8_first5000/images/val/005568.png,005568,005568.png,gray,sunny,urban city,moderate,strong shadows,dry
+569,/data/oxx220000/kitti_yolov8_first5000/images/val/005569.png,005569,005569.png,white,clear,highway,moderate,strong shadows,wet
+570,/data/oxx220000/kitti_yolov8_first5000/images/val/005570.png,005570,005570.png,gray,clear,residential,moderate,strong shadows,snowy
+571,/data/oxx220000/kitti_yolov8_first5000/images/val/005571.png,005571,005571.png,black,clear,residential,moderate,strong shadows,wet
+572,/data/oxx220000/kitti_yolov8_first5000/images/val/005572.png,005572,005572.png,gray,clear,residential,moderate,strong shadows,dry
+573,/data/oxx220000/kitti_yolov8_first5000/images/val/005573.png,005573,005573.png,white,clear,highway,moderate,dim,wet
+574,/data/oxx220000/kitti_yolov8_first5000/images/val/005574.png,005574,005574.png,black,sunny,highway,moderate,strong shadows,wet
+575,/data/oxx220000/kitti_yolov8_first5000/images/val/005575.png,005575,005575.png,gray,clear,highway,moderate,glare,wet
+576,/data/oxx220000/kitti_yolov8_first5000/images/val/005576.png,005576,005576.png,gray,clear,residential,moderate,strong shadows,dry
+577,/data/oxx220000/kitti_yolov8_first5000/images/val/005577.png,005577,005577.png,white,sunny,residential,moderate,strong shadows,dry
+578,/data/oxx220000/kitti_yolov8_first5000/images/val/005578.png,005578,005578.png,white,sunny,residential,moderate,strong shadows,snowy
+579,/data/oxx220000/kitti_yolov8_first5000/images/val/005579.png,005579,005579.png,white,clear,highway,moderate,strong shadows,wet
+580,/data/oxx220000/kitti_yolov8_first5000/images/val/005580.png,005580,005580.png,white,sunny,residential,moderate,strong shadows,dry
+581,/data/oxx220000/kitti_yolov8_first5000/images/val/005581.png,005581,005581.png,white,clear,highway,empty,strong shadows,dry
+582,/data/oxx220000/kitti_yolov8_first5000/images/val/005582.png,005582,005582.png,gray,clear,highway,empty,overcast,dry
+583,/data/oxx220000/kitti_yolov8_first5000/images/val/005583.png,005583,005583.png,gray,sunny,residential,moderate,strong shadows,dry
+584,/data/oxx220000/kitti_yolov8_first5000/images/val/005584.png,005584,005584.png,white,clear,highway,empty,strong shadows,dry
+585,/data/oxx220000/kitti_yolov8_first5000/images/val/005585.png,005585,005585.png,blue,sunny,residential,moderate,strong shadows,dry
+586,/data/oxx220000/kitti_yolov8_first5000/images/val/005586.png,005586,005586.png,gray,clear,residential,moderate,strong shadows,dry
+587,/data/oxx220000/kitti_yolov8_first5000/images/val/005587.png,005587,005587.png,gray,clear,highway,empty,strong shadows,dry
+588,/data/oxx220000/kitti_yolov8_first5000/images/val/005588.png,005588,005588.png,gray,sunny,residential,moderate,strong shadows,dry
+589,/data/oxx220000/kitti_yolov8_first5000/images/val/005589.png,005589,005589.png,gray,sunny,residential,moderate,strong shadows,dry
+590,/data/oxx220000/kitti_yolov8_first5000/images/val/005590.png,005590,005590.png,blue,sunny,natural,moderate,strong shadows,dry
+591,/data/oxx220000/kitti_yolov8_first5000/images/val/005591.png,005591,005591.png,gray,sunny,residential,moderate,strong shadows,wet
+592,/data/oxx220000/kitti_yolov8_first5000/images/val/005592.png,005592,005592.png,white,clear,highway,empty,strong shadows,dry
+593,/data/oxx220000/kitti_yolov8_first5000/images/val/005593.png,005593,005593.png,gray,clear,highway,empty,strong shadows,dry
+594,/data/oxx220000/kitti_yolov8_first5000/images/val/005594.png,005594,005594.png,white,clear,residential,moderate,strong shadows,dry
+595,/data/oxx220000/kitti_yolov8_first5000/images/val/005595.png,005595,005595.png,gray,sunny,residential,moderate,strong shadows,dry
+596,/data/oxx220000/kitti_yolov8_first5000/images/val/005596.png,005596,005596.png,gray,clear,urban city,moderate,strong shadows,wet
+597,/data/oxx220000/kitti_yolov8_first5000/images/val/005597.png,005597,005597.png,gray,sunny,natural,empty,strong shadows,dry
+598,/data/oxx220000/kitti_yolov8_first5000/images/val/005598.png,005598,005598.png,white,sunny,urban city,moderate,strong shadows,wet
+599,/data/oxx220000/kitti_yolov8_first5000/images/val/005599.png,005599,005599.png,black,sunny,highway,moderate,strong shadows,wet
+600,/data/oxx220000/kitti_yolov8_first5000/images/val/005600.png,005600,005600.png,white,clear,residential,moderate,strong shadows,snowy
+601,/data/oxx220000/kitti_yolov8_first5000/images/val/005601.png,005601,005601.png,white,clear,highway,empty,strong shadows,dry
+602,/data/oxx220000/kitti_yolov8_first5000/images/val/005602.png,005602,005602.png,gray,sunny,urban city,moderate,overcast,wet
+603,/data/oxx220000/kitti_yolov8_first5000/images/val/005603.png,005603,005603.png,white,cloudy,highway,moderate,overcast,wet
+604,/data/oxx220000/kitti_yolov8_first5000/images/val/005604.png,005604,005604.png,silver,sunny,urban city,light,strong shadows,snowy
+605,/data/oxx220000/kitti_yolov8_first5000/images/val/005605.png,005605,005605.png,white,sunny,residential,moderate,strong shadows,dry
+606,/data/oxx220000/kitti_yolov8_first5000/images/val/005606.png,005606,005606.png,black,sunny,residential,moderate,strong shadows,dry
+607,/data/oxx220000/kitti_yolov8_first5000/images/val/005607.png,005607,005607.png,red,clear,highway,moderate,strong shadows,dry
+608,/data/oxx220000/kitti_yolov8_first5000/images/val/005608.png,005608,005608.png,gray,sunny,urban city,moderate,strong shadows,dry
+609,/data/oxx220000/kitti_yolov8_first5000/images/val/005609.png,005609,005609.png,white,sunny,urban city,moderate,strong shadows,wet
+610,/data/oxx220000/kitti_yolov8_first5000/images/val/005610.png,005610,005610.png,red,clear,residential,moderate,strong shadows,dry
+611,/data/oxx220000/kitti_yolov8_first5000/images/val/005611.png,005611,005611.png,gray,sunny,residential,empty,strong shadows,dry
+612,/data/oxx220000/kitti_yolov8_first5000/images/val/005612.png,005612,005612.png,gray,clear,highway,moderate,strong shadows,dry
+613,/data/oxx220000/kitti_yolov8_first5000/images/val/005613.png,005613,005613.png,gray,sunny,residential,moderate,strong shadows,dry
+614,/data/oxx220000/kitti_yolov8_first5000/images/val/005614.png,005614,005614.png,black,sunny,residential,moderate,strong shadows,dry
+615,/data/oxx220000/kitti_yolov8_first5000/images/val/005615.png,005615,005615.png,gray,clear,highway,empty,strong shadows,dry
+616,/data/oxx220000/kitti_yolov8_first5000/images/val/005616.png,005616,005616.png,gray,clear,residential,moderate,strong shadows,dry
+617,/data/oxx220000/kitti_yolov8_first5000/images/val/005617.png,005617,005617.png,gray,sunny,urban city,moderate,strong shadows,wet
+618,/data/oxx220000/kitti_yolov8_first5000/images/val/005618.png,005618,005618.png,green,sunny,residential,moderate,strong shadows,dry
+619,/data/oxx220000/kitti_yolov8_first5000/images/val/005619.png,005619,005619.png,white,clear,highway,moderate,strong shadows,dry
+620,/data/oxx220000/kitti_yolov8_first5000/images/val/005620.png,005620,005620.png,white,clear,highway,moderate,strong shadows,dry
+621,/data/oxx220000/kitti_yolov8_first5000/images/val/005621.png,005621,005621.png,white,clear,residential,moderate,strong shadows,snowy
+622,/data/oxx220000/kitti_yolov8_first5000/images/val/005622.png,005622,005622.png,white,sunny,residential,moderate,strong shadows,snowy
+623,/data/oxx220000/kitti_yolov8_first5000/images/val/005623.png,005623,005623.png,gray,clear,residential,moderate,strong shadows,dry
+624,/data/oxx220000/kitti_yolov8_first5000/images/val/005624.png,005624,005624.png,white,clear,highway,moderate,strong shadows,wet
+625,/data/oxx220000/kitti_yolov8_first5000/images/val/005625.png,005625,005625.png,gray,clear,residential,moderate,strong shadows,dry
+626,/data/oxx220000/kitti_yolov8_first5000/images/val/005626.png,005626,005626.png,white,clear,highway,empty,strong shadows,dry
+627,/data/oxx220000/kitti_yolov8_first5000/images/val/005627.png,005627,005627.png,gray,clear,residential,moderate,strong shadows,wet
+628,/data/oxx220000/kitti_yolov8_first5000/images/val/005628.png,005628,005628.png,gray,clear,residential,moderate,strong shadows,snowy
+629,/data/oxx220000/kitti_yolov8_first5000/images/val/005629.png,005629,005629.png,gray,clear,residential,moderate,strong shadows,wet
+630,/data/oxx220000/kitti_yolov8_first5000/images/val/005630.png,005630,005630.png,white,sunny,residential,moderate,strong shadows,dry
+631,/data/oxx220000/kitti_yolov8_first5000/images/val/005631.png,005631,005631.png,gray,clear,residential,moderate,strong shadows,wet
+632,/data/oxx220000/kitti_yolov8_first5000/images/val/005632.png,005632,005632.png,white,sunny,residential,moderate,strong shadows,dry
+633,/data/oxx220000/kitti_yolov8_first5000/images/val/005633.png,005633,005633.png,gray,clear,urban city,light,overcast,wet
+634,/data/oxx220000/kitti_yolov8_first5000/images/val/005634.png,005634,005634.png,gray,sunny,residential,moderate,strong shadows,dry
+635,/data/oxx220000/kitti_yolov8_first5000/images/val/005635.png,005635,005635.png,white,clear,highway,moderate,strong shadows,dry
+636,/data/oxx220000/kitti_yolov8_first5000/images/val/005636.png,005636,005636.png,gray,sunny,residential,moderate,strong shadows,dry
+637,/data/oxx220000/kitti_yolov8_first5000/images/val/005637.png,005637,005637.png,blue,clear,urban city,moderate,strong shadows,dry
+638,/data/oxx220000/kitti_yolov8_first5000/images/val/005638.png,005638,005638.png,gray,clear,highway,empty,overcast,wet
+639,/data/oxx220000/kitti_yolov8_first5000/images/val/005639.png,005639,005639.png,black,clear,residential,moderate,strong shadows,dry
+640,/data/oxx220000/kitti_yolov8_first5000/images/val/005640.png,005640,005640.png,gray,clear,highway,moderate,overcast,wet
+641,/data/oxx220000/kitti_yolov8_first5000/images/val/005641.png,005641,005641.png,gray,clear,rural,moderate,strong shadows,dry
+642,/data/oxx220000/kitti_yolov8_first5000/images/val/005642.png,005642,005642.png,gray,clear,residential,moderate,strong shadows,wet
+643,/data/oxx220000/kitti_yolov8_first5000/images/val/005643.png,005643,005643.png,gray,clear,residential,moderate,strong shadows,dry
+644,/data/oxx220000/kitti_yolov8_first5000/images/val/005644.png,005644,005644.png,white,clear,urban city,empty,strong shadows,dry
+645,/data/oxx220000/kitti_yolov8_first5000/images/val/005645.png,005645,005645.png,gray,clear,residential,moderate,strong shadows,dry
+646,/data/oxx220000/kitti_yolov8_first5000/images/val/005646.png,005646,005646.png,white,clear,highway,moderate,strong shadows,dry
+647,/data/oxx220000/kitti_yolov8_first5000/images/val/005647.png,005647,005647.png,blue,clear,urban city,moderate,strong shadows,dry
+648,/data/oxx220000/kitti_yolov8_first5000/images/val/005648.png,005648,005648.png,gray,sunny,residential,moderate,strong shadows,wet
+649,/data/oxx220000/kitti_yolov8_first5000/images/val/005649.png,005649,005649.png,blue,clear,highway,moderate,strong shadows,dry
+650,/data/oxx220000/kitti_yolov8_first5000/images/val/005650.png,005650,005650.png,black,clear,highway,empty,strong shadows,dry
+651,/data/oxx220000/kitti_yolov8_first5000/images/val/005651.png,005651,005651.png,black,clear,highway,empty,strong shadows,wet
+652,/data/oxx220000/kitti_yolov8_first5000/images/val/005652.png,005652,005652.png,white,clear,highway,moderate,strong shadows,wet
+653,/data/oxx220000/kitti_yolov8_first5000/images/val/005653.png,005653,005653.png,white,clear,highway,empty,strong shadows,dry
+654,/data/oxx220000/kitti_yolov8_first5000/images/val/005654.png,005654,005654.png,gray,sunny,urban city,moderate,strong shadows,snowy
+655,/data/oxx220000/kitti_yolov8_first5000/images/val/005655.png,005655,005655.png,white,clear,natural,empty,strong shadows,dry
+656,/data/oxx220000/kitti_yolov8_first5000/images/val/005656.png,005656,005656.png,gray,clear,highway,moderate,strong shadows,dry
+657,/data/oxx220000/kitti_yolov8_first5000/images/val/005657.png,005657,005657.png,gray,sunny,residential,moderate,strong shadows,dry
+658,/data/oxx220000/kitti_yolov8_first5000/images/val/005658.png,005658,005658.png,gray,clear,highway,empty,overcast,wet
+659,/data/oxx220000/kitti_yolov8_first5000/images/val/005659.png,005659,005659.png,white,clear,residential,moderate,strong shadows,dry
+660,/data/oxx220000/kitti_yolov8_first5000/images/val/005660.png,005660,005660.png,gray,clear,residential,moderate,strong shadows,dry
+661,/data/oxx220000/kitti_yolov8_first5000/images/val/005661.png,005661,005661.png,black,sunny,urban city,moderate,strong shadows,wet
+662,/data/oxx220000/kitti_yolov8_first5000/images/val/005662.png,005662,005662.png,white,clear,highway,empty,strong shadows,dry
+663,/data/oxx220000/kitti_yolov8_first5000/images/val/005663.png,005663,005663.png,black,sunny,urban city,moderate,strong shadows,dry
+664,/data/oxx220000/kitti_yolov8_first5000/images/val/005664.png,005664,005664.png,white,sunny,residential,moderate,strong shadows,snowy
+665,/data/oxx220000/kitti_yolov8_first5000/images/val/005665.png,005665,005665.png,black,sunny,urban city,moderate,strong shadows,dry
+666,/data/oxx220000/kitti_yolov8_first5000/images/val/005666.png,005666,005666.png,gray,sunny,urban city,moderate,strong shadows,dry
+667,/data/oxx220000/kitti_yolov8_first5000/images/val/005667.png,005667,005667.png,white,clear,highway,empty,strong shadows,snowy
+668,/data/oxx220000/kitti_yolov8_first5000/images/val/005668.png,005668,005668.png,gray,clear,residential,moderate,strong shadows,snowy
+669,/data/oxx220000/kitti_yolov8_first5000/images/val/005669.png,005669,005669.png,black,sunny,urban city,moderate,strong shadows,dry
+670,/data/oxx220000/kitti_yolov8_first5000/images/val/005670.png,005670,005670.png,gray,clear,urban city,moderate,strong shadows,dry
+671,/data/oxx220000/kitti_yolov8_first5000/images/val/005671.png,005671,005671.png,silver,sunny,urban city,empty,strong shadows,dry
+672,/data/oxx220000/kitti_yolov8_first5000/images/val/005672.png,005672,005672.png,gray,clear,residential,moderate,strong shadows,snowy
+673,/data/oxx220000/kitti_yolov8_first5000/images/val/005673.png,005673,005673.png,gray,sunny,residential,moderate,strong shadows,wet
+674,/data/oxx220000/kitti_yolov8_first5000/images/val/005674.png,005674,005674.png,white,clear,urban city,moderate,strong shadows,dry
+675,/data/oxx220000/kitti_yolov8_first5000/images/val/005675.png,005675,005675.png,gray,sunny,highway,moderate,glare,wet
+676,/data/oxx220000/kitti_yolov8_first5000/images/val/005676.png,005676,005676.png,gray,clear,highway,empty,strong shadows,dry
+677,/data/oxx220000/kitti_yolov8_first5000/images/val/005677.png,005677,005677.png,gray,clear,residential,moderate,strong shadows,snowy
+678,/data/oxx220000/kitti_yolov8_first5000/images/val/005678.png,005678,005678.png,black,sunny,natural,moderate,strong shadows,wet
+679,/data/oxx220000/kitti_yolov8_first5000/images/val/005679.png,005679,005679.png,gray,clear,residential,moderate,strong shadows,wet
+680,/data/oxx220000/kitti_yolov8_first5000/images/val/005680.png,005680,005680.png,white,clear,highway,moderate,strong shadows,wet
+681,/data/oxx220000/kitti_yolov8_first5000/images/val/005681.png,005681,005681.png,gray,clear,natural,empty,strong shadows,dry
+682,/data/oxx220000/kitti_yolov8_first5000/images/val/005682.png,005682,005682.png,gray,sunny,urban city,moderate,strong shadows,wet
+683,/data/oxx220000/kitti_yolov8_first5000/images/val/005683.png,005683,005683.png,blue,clear,urban city,moderate,strong shadows,dry
+684,/data/oxx220000/kitti_yolov8_first5000/images/val/005684.png,005684,005684.png,gray,sunny,residential,moderate,strong shadows,wet
+685,/data/oxx220000/kitti_yolov8_first5000/images/val/005685.png,005685,005685.png,white,clear,highway,moderate,dim,wet
+686,/data/oxx220000/kitti_yolov8_first5000/images/val/005686.png,005686,005686.png,blue,clear,urban city,moderate,strong shadows,dry
+687,/data/oxx220000/kitti_yolov8_first5000/images/val/005687.png,005687,005687.png,gray,clear,residential,moderate,strong shadows,dry
+688,/data/oxx220000/kitti_yolov8_first5000/images/val/005688.png,005688,005688.png,brown,sunny,urban city,empty,strong shadows,dry
+689,/data/oxx220000/kitti_yolov8_first5000/images/val/005689.png,005689,005689.png,white,clear,residential,moderate,strong shadows,dry
+690,/data/oxx220000/kitti_yolov8_first5000/images/val/005690.png,005690,005690.png,green,sunny,residential,moderate,strong shadows,dry
+691,/data/oxx220000/kitti_yolov8_first5000/images/val/005691.png,005691,005691.png,gray,clear,residential,moderate,strong shadows,snowy
+692,/data/oxx220000/kitti_yolov8_first5000/images/val/005692.png,005692,005692.png,silver,sunny,urban city,light,strong shadows,dry
+693,/data/oxx220000/kitti_yolov8_first5000/images/val/005693.png,005693,005693.png,black,sunny,residential,moderate,strong shadows,snowy
+694,/data/oxx220000/kitti_yolov8_first5000/images/val/005694.png,005694,005694.png,white,clear,residential,moderate,strong shadows,dry
+695,/data/oxx220000/kitti_yolov8_first5000/images/val/005695.png,005695,005695.png,gray,sunny,residential,moderate,strong shadows,snowy
+696,/data/oxx220000/kitti_yolov8_first5000/images/val/005696.png,005696,005696.png,black,clear,urban city,moderate,strong shadows,dry
+697,/data/oxx220000/kitti_yolov8_first5000/images/val/005697.png,005697,005697.png,white,clear,highway,empty,strong shadows,snowy
+698,/data/oxx220000/kitti_yolov8_first5000/images/val/005698.png,005698,005698.png,gray,sunny,residential,moderate,strong shadows,dry
+699,/data/oxx220000/kitti_yolov8_first5000/images/val/005699.png,005699,005699.png,white,clear,highway,empty,strong shadows,dry
+700,/data/oxx220000/kitti_yolov8_first5000/images/val/005700.png,005700,005700.png,white,clear,highway,moderate,strong shadows,wet
+701,/data/oxx220000/kitti_yolov8_first5000/images/val/005701.png,005701,005701.png,gray,clear,natural,moderate,strong shadows,dry
+702,/data/oxx220000/kitti_yolov8_first5000/images/val/005702.png,005702,005702.png,gray,clear,natural,empty,strong shadows,dry
+703,/data/oxx220000/kitti_yolov8_first5000/images/val/005703.png,005703,005703.png,gray,clear,urban city,moderate,strong shadows,dry
+704,/data/oxx220000/kitti_yolov8_first5000/images/val/005704.png,005704,005704.png,gray,clear,highway,empty,overcast,wet
+705,/data/oxx220000/kitti_yolov8_first5000/images/val/005705.png,005705,005705.png,white,clear,highway,moderate,overcast,wet
+706,/data/oxx220000/kitti_yolov8_first5000/images/val/005706.png,005706,005706.png,white,clear,highway,moderate,strong shadows,dry
+707,/data/oxx220000/kitti_yolov8_first5000/images/val/005707.png,005707,005707.png,black,clear,residential,moderate,strong shadows,dry
+708,/data/oxx220000/kitti_yolov8_first5000/images/val/005708.png,005708,005708.png,gray,sunny,residential,moderate,strong shadows,dry
+709,/data/oxx220000/kitti_yolov8_first5000/images/val/005709.png,005709,005709.png,gray,clear,highway,moderate,overcast,wet
+710,/data/oxx220000/kitti_yolov8_first5000/images/val/005710.png,005710,005710.png,gray,sunny,residential,moderate,strong shadows,dry
+711,/data/oxx220000/kitti_yolov8_first5000/images/val/005711.png,005711,005711.png,blue,clear,urban city,moderate,strong shadows,dry
+712,/data/oxx220000/kitti_yolov8_first5000/images/val/005712.png,005712,005712.png,gray,clear,highway,moderate,strong shadows,wet
+713,/data/oxx220000/kitti_yolov8_first5000/images/val/005713.png,005713,005713.png,black,clear,highway,empty,strong shadows,dry
+714,/data/oxx220000/kitti_yolov8_first5000/images/val/005714.png,005714,005714.png,gray,sunny,urban city,moderate,strong shadows,dry
+715,/data/oxx220000/kitti_yolov8_first5000/images/val/005715.png,005715,005715.png,gray,clear,highway,empty,strong shadows,wet
+716,/data/oxx220000/kitti_yolov8_first5000/images/val/005716.png,005716,005716.png,black,sunny,residential,moderate,strong shadows,dry
+717,/data/oxx220000/kitti_yolov8_first5000/images/val/005717.png,005717,005717.png,gray,clear,residential,moderate,strong shadows,dry
+718,/data/oxx220000/kitti_yolov8_first5000/images/val/005718.png,005718,005718.png,white,clear,urban city,moderate,strong shadows,dry
+719,/data/oxx220000/kitti_yolov8_first5000/images/val/005719.png,005719,005719.png,white,clear,highway,moderate,strong shadows,snowy
+720,/data/oxx220000/kitti_yolov8_first5000/images/val/005720.png,005720,005720.png,gray,clear,urban city,moderate,strong shadows,dry
+721,/data/oxx220000/kitti_yolov8_first5000/images/val/005721.png,005721,005721.png,black,clear,highway,moderate,strong shadows,wet
+722,/data/oxx220000/kitti_yolov8_first5000/images/val/005722.png,005722,005722.png,black,sunny,highway,moderate,strong shadows,wet
+723,/data/oxx220000/kitti_yolov8_first5000/images/val/005723.png,005723,005723.png,white,sunny,residential,moderate,strong shadows,wet
+724,/data/oxx220000/kitti_yolov8_first5000/images/val/005724.png,005724,005724.png,blue,clear,urban city,moderate,strong shadows,dry
+725,/data/oxx220000/kitti_yolov8_first5000/images/val/005725.png,005725,005725.png,gray,rainy,highway,moderate,overcast,wet
+726,/data/oxx220000/kitti_yolov8_first5000/images/val/005726.png,005726,005726.png,gray,sunny,natural,empty,strong shadows,dry
+727,/data/oxx220000/kitti_yolov8_first5000/images/val/005727.png,005727,005727.png,gray,clear,highway,empty,strong shadows,dry
+728,/data/oxx220000/kitti_yolov8_first5000/images/val/005728.png,005728,005728.png,gray,clear,highway,moderate,glare,wet
+729,/data/oxx220000/kitti_yolov8_first5000/images/val/005729.png,005729,005729.png,black,sunny,residential,moderate,strong shadows,wet
+730,/data/oxx220000/kitti_yolov8_first5000/images/val/005730.png,005730,005730.png,red,clear,highway,moderate,strong shadows,dry
+731,/data/oxx220000/kitti_yolov8_first5000/images/val/005731.png,005731,005731.png,white,clear,highway,empty,strong shadows,dry
+732,/data/oxx220000/kitti_yolov8_first5000/images/val/005732.png,005732,005732.png,black,clear,residential,moderate,strong shadows,dry
+733,/data/oxx220000/kitti_yolov8_first5000/images/val/005733.png,005733,005733.png,gray,sunny,residential,moderate,strong shadows,wet
+734,/data/oxx220000/kitti_yolov8_first5000/images/val/005734.png,005734,005734.png,black,clear,highway,moderate,strong shadows,dry
+735,/data/oxx220000/kitti_yolov8_first5000/images/val/005735.png,005735,005735.png,blue,clear,urban city,moderate,strong shadows,dry
+736,/data/oxx220000/kitti_yolov8_first5000/images/val/005736.png,005736,005736.png,blue,clear,residential,moderate,strong shadows,dry
+737,/data/oxx220000/kitti_yolov8_first5000/images/val/005737.png,005737,005737.png,gray,clear,highway,moderate,overcast,dry
+738,/data/oxx220000/kitti_yolov8_first5000/images/val/005738.png,005738,005738.png,white,clear,highway,empty,strong shadows,dry
+739,/data/oxx220000/kitti_yolov8_first5000/images/val/005739.png,005739,005739.png,gray,clear,highway,moderate,overcast,wet
+740,/data/oxx220000/kitti_yolov8_first5000/images/val/005740.png,005740,005740.png,white,clear,residential,moderate,strong shadows,dry
+741,/data/oxx220000/kitti_yolov8_first5000/images/val/005741.png,005741,005741.png,black,clear,residential,moderate,strong shadows,dry
+742,/data/oxx220000/kitti_yolov8_first5000/images/val/005742.png,005742,005742.png,white,clear,urban city,moderate,strong shadows,wet
+743,/data/oxx220000/kitti_yolov8_first5000/images/val/005743.png,005743,005743.png,gray,sunny,urban city,empty,strong shadows,dry
+744,/data/oxx220000/kitti_yolov8_first5000/images/val/005744.png,005744,005744.png,blue,clear,urban city,moderate,strong shadows,dry
+745,/data/oxx220000/kitti_yolov8_first5000/images/val/005745.png,005745,005745.png,white,sunny,residential,moderate,strong shadows,dry
+746,/data/oxx220000/kitti_yolov8_first5000/images/val/005746.png,005746,005746.png,blue,clear,urban city,moderate,strong shadows,dry
+747,/data/oxx220000/kitti_yolov8_first5000/images/val/005747.png,005747,005747.png,gray,sunny,natural,moderate,strong shadows,dry
+748,/data/oxx220000/kitti_yolov8_first5000/images/val/005748.png,005748,005748.png,white,clear,residential,moderate,strong shadows,snowy
+749,/data/oxx220000/kitti_yolov8_first5000/images/val/005749.png,005749,005749.png,black,sunny,natural,moderate,strong shadows,dry
+750,/data/oxx220000/kitti_yolov8_first5000/images/val/005750.png,005750,005750.png,gray,clear,highway,moderate,strong shadows,dry
+751,/data/oxx220000/kitti_yolov8_first5000/images/val/005751.png,005751,005751.png,gray,sunny,residential,moderate,strong shadows,dry
+752,/data/oxx220000/kitti_yolov8_first5000/images/val/005752.png,005752,005752.png,white,clear,highway,moderate,strong shadows,dry
+753,/data/oxx220000/kitti_yolov8_first5000/images/val/005753.png,005753,005753.png,gray,clear,natural,empty,strong shadows,dry
+754,/data/oxx220000/kitti_yolov8_first5000/images/val/005754.png,005754,005754.png,gray,clear,highway,moderate,overcast,wet
+755,/data/oxx220000/kitti_yolov8_first5000/images/val/005755.png,005755,005755.png,gray,sunny,highway,moderate,strong shadows,wet
+756,/data/oxx220000/kitti_yolov8_first5000/images/val/005756.png,005756,005756.png,gray,clear,natural,moderate,strong shadows,dry
+757,/data/oxx220000/kitti_yolov8_first5000/images/val/005757.png,005757,005757.png,red,sunny,residential,moderate,strong shadows,dry
+758,/data/oxx220000/kitti_yolov8_first5000/images/val/005758.png,005758,005758.png,white,clear,highway,moderate,strong shadows,dry
+759,/data/oxx220000/kitti_yolov8_first5000/images/val/005759.png,005759,005759.png,black,sunny,residential,moderate,strong shadows,dry
+760,/data/oxx220000/kitti_yolov8_first5000/images/val/005760.png,005760,005760.png,blue,clear,urban city,moderate,strong shadows,dry
+761,/data/oxx220000/kitti_yolov8_first5000/images/val/005761.png,005761,005761.png,white,clear,residential,moderate,strong shadows,snowy
+762,/data/oxx220000/kitti_yolov8_first5000/images/val/005762.png,005762,005762.png,red,sunny,residential,moderate,strong shadows,dry
+763,/data/oxx220000/kitti_yolov8_first5000/images/val/005763.png,005763,005763.png,gray,clear,highway,light,overcast,wet
+764,/data/oxx220000/kitti_yolov8_first5000/images/val/005764.png,005764,005764.png,gray,clear,residential,moderate,strong shadows,dry
+765,/data/oxx220000/kitti_yolov8_first5000/images/val/005765.png,005765,005765.png,gray,clear,urban city,moderate,glare,wet
+766,/data/oxx220000/kitti_yolov8_first5000/images/val/005766.png,005766,005766.png,gray,sunny,residential,moderate,strong shadows,dry
+767,/data/oxx220000/kitti_yolov8_first5000/images/val/005767.png,005767,005767.png,gray,sunny,natural,moderate,strong shadows,dry
+768,/data/oxx220000/kitti_yolov8_first5000/images/val/005768.png,005768,005768.png,gray,clear,residential,moderate,strong shadows,snowy
+769,/data/oxx220000/kitti_yolov8_first5000/images/val/005769.png,005769,005769.png,gray,sunny,residential,moderate,strong shadows,dry
+770,/data/oxx220000/kitti_yolov8_first5000/images/val/005770.png,005770,005770.png,gray,clear,highway,empty,strong shadows,dry
+771,/data/oxx220000/kitti_yolov8_first5000/images/val/005771.png,005771,005771.png,white,sunny,residential,moderate,strong shadows,wet
+772,/data/oxx220000/kitti_yolov8_first5000/images/val/005772.png,005772,005772.png,red,clear,highway,moderate,strong shadows,dry
+773,/data/oxx220000/kitti_yolov8_first5000/images/val/005773.png,005773,005773.png,black,clear,highway,moderate,strong shadows,wet
+774,/data/oxx220000/kitti_yolov8_first5000/images/val/005774.png,005774,005774.png,blue,clear,highway,moderate,strong shadows,dry
+775,/data/oxx220000/kitti_yolov8_first5000/images/val/005775.png,005775,005775.png,gray,clear,urban city,moderate,strong shadows,dry
+776,/data/oxx220000/kitti_yolov8_first5000/images/val/005776.png,005776,005776.png,yellow,clear,highway,moderate,strong shadows,dry
+777,/data/oxx220000/kitti_yolov8_first5000/images/val/005777.png,005777,005777.png,gray,clear,residential,moderate,strong shadows,dry
+778,/data/oxx220000/kitti_yolov8_first5000/images/val/005778.png,005778,005778.png,gray,clear,residential,moderate,strong shadows,dry
+779,/data/oxx220000/kitti_yolov8_first5000/images/val/005779.png,005779,005779.png,blue,clear,urban city,moderate,strong shadows,dry
+780,/data/oxx220000/kitti_yolov8_first5000/images/val/005780.png,005780,005780.png,white,clear,highway,moderate,overcast,wet
+781,/data/oxx220000/kitti_yolov8_first5000/images/val/005781.png,005781,005781.png,gray,sunny,residential,moderate,strong shadows,dry
+782,/data/oxx220000/kitti_yolov8_first5000/images/val/005782.png,005782,005782.png,gray,clear,highway,moderate,overcast,wet
+783,/data/oxx220000/kitti_yolov8_first5000/images/val/005783.png,005783,005783.png,red,sunny,residential,moderate,strong shadows,wet
+784,/data/oxx220000/kitti_yolov8_first5000/images/val/005784.png,005784,005784.png,black,sunny,urban city,moderate,strong shadows,dry
+785,/data/oxx220000/kitti_yolov8_first5000/images/val/005785.png,005785,005785.png,gray,clear,highway,empty,overcast,dry
+786,/data/oxx220000/kitti_yolov8_first5000/images/val/005786.png,005786,005786.png,gray,clear,residential,moderate,strong shadows,wet
+787,/data/oxx220000/kitti_yolov8_first5000/images/val/005787.png,005787,005787.png,gray,clear,highway,moderate,overcast,dry
+788,/data/oxx220000/kitti_yolov8_first5000/images/val/005788.png,005788,005788.png,gray,sunny,urban city,moderate,strong shadows,snowy
+789,/data/oxx220000/kitti_yolov8_first5000/images/val/005789.png,005789,005789.png,white,clear,residential,moderate,strong shadows,dry
+790,/data/oxx220000/kitti_yolov8_first5000/images/val/005790.png,005790,005790.png,gray,clear,highway,light,overcast,wet
+791,/data/oxx220000/kitti_yolov8_first5000/images/val/005791.png,005791,005791.png,gray,sunny,urban city,moderate,strong shadows,snowy
+792,/data/oxx220000/kitti_yolov8_first5000/images/val/005792.png,005792,005792.png,gray,clear,residential,empty,strong shadows,wet
+793,/data/oxx220000/kitti_yolov8_first5000/images/val/005793.png,005793,005793.png,black,sunny,residential,moderate,strong shadows,snowy
+794,/data/oxx220000/kitti_yolov8_first5000/images/val/005794.png,005794,005794.png,gray,sunny,urban city,moderate,strong shadows,wet
+795,/data/oxx220000/kitti_yolov8_first5000/images/val/005795.png,005795,005795.png,blue,clear,highway,moderate,glare,wet
+796,/data/oxx220000/kitti_yolov8_first5000/images/val/005796.png,005796,005796.png,gray,clear,highway,light,overcast,wet
+797,/data/oxx220000/kitti_yolov8_first5000/images/val/005797.png,005797,005797.png,white,clear,residential,moderate,strong shadows,snowy
+798,/data/oxx220000/kitti_yolov8_first5000/images/val/005798.png,005798,005798.png,gray,clear,urban city,empty,strong shadows,dry
+799,/data/oxx220000/kitti_yolov8_first5000/images/val/005799.png,005799,005799.png,gray,clear,highway,moderate,strong shadows,dry
+800,/data/oxx220000/kitti_yolov8_first5000/images/val/005800.png,005800,005800.png,black,clear,residential,moderate,strong shadows,snowy
+801,/data/oxx220000/kitti_yolov8_first5000/images/val/005801.png,005801,005801.png,blue,clear,urban city,moderate,strong shadows,dry
+802,/data/oxx220000/kitti_yolov8_first5000/images/val/005802.png,005802,005802.png,white,sunny,residential,moderate,strong shadows,wet
+803,/data/oxx220000/kitti_yolov8_first5000/images/val/005803.png,005803,005803.png,gray,sunny,residential,moderate,strong shadows,dry
+804,/data/oxx220000/kitti_yolov8_first5000/images/val/005804.png,005804,005804.png,blue,clear,urban city,moderate,strong shadows,dry
+805,/data/oxx220000/kitti_yolov8_first5000/images/val/005805.png,005805,005805.png,black,clear,residential,moderate,strong shadows,dry
+806,/data/oxx220000/kitti_yolov8_first5000/images/val/005806.png,005806,005806.png,blue,clear,urban city,moderate,strong shadows,dry
+807,/data/oxx220000/kitti_yolov8_first5000/images/val/005807.png,005807,005807.png,gray,sunny,highway,moderate,strong shadows,wet
+808,/data/oxx220000/kitti_yolov8_first5000/images/val/005808.png,005808,005808.png,blue,clear,urban city,moderate,strong shadows,dry
+809,/data/oxx220000/kitti_yolov8_first5000/images/val/005809.png,005809,005809.png,white,clear,natural,moderate,strong shadows,wet
+810,/data/oxx220000/kitti_yolov8_first5000/images/val/005810.png,005810,005810.png,white,clear,residential,moderate,strong shadows,wet
+811,/data/oxx220000/kitti_yolov8_first5000/images/val/005811.png,005811,005811.png,white,clear,highway,moderate,strong shadows,dry
+812,/data/oxx220000/kitti_yolov8_first5000/images/val/005812.png,005812,005812.png,gray,sunny,urban city,moderate,strong shadows,dry
+813,/data/oxx220000/kitti_yolov8_first5000/images/val/005813.png,005813,005813.png,silver,sunny,urban city,empty,strong shadows,dry
+814,/data/oxx220000/kitti_yolov8_first5000/images/val/005814.png,005814,005814.png,gray,sunny,highway,moderate,strong shadows,wet
+815,/data/oxx220000/kitti_yolov8_first5000/images/val/005815.png,005815,005815.png,black,clear,highway,empty,strong shadows,dry
+816,/data/oxx220000/kitti_yolov8_first5000/images/val/005816.png,005816,005816.png,white,clear,highway,empty,strong shadows,dry
+817,/data/oxx220000/kitti_yolov8_first5000/images/val/005817.png,005817,005817.png,black,clear,urban city,moderate,strong shadows,dry
+818,/data/oxx220000/kitti_yolov8_first5000/images/val/005818.png,005818,005818.png,white,clear,highway,empty,strong shadows,dry
+819,/data/oxx220000/kitti_yolov8_first5000/images/val/005819.png,005819,005819.png,blue,clear,residential,moderate,strong shadows,dry
+820,/data/oxx220000/kitti_yolov8_first5000/images/val/005820.png,005820,005820.png,gray,clear,residential,moderate,strong shadows,snowy
+821,/data/oxx220000/kitti_yolov8_first5000/images/val/005821.png,005821,005821.png,black,sunny,residential,moderate,strong shadows,dry
+822,/data/oxx220000/kitti_yolov8_first5000/images/val/005822.png,005822,005822.png,yellow,clear,residential,moderate,strong shadows,snowy
+823,/data/oxx220000/kitti_yolov8_first5000/images/val/005823.png,005823,005823.png,gray,clear,natural,moderate,strong shadows,dry
+824,/data/oxx220000/kitti_yolov8_first5000/images/val/005824.png,005824,005824.png,silver,clear,urban city,moderate,glare,wet
+825,/data/oxx220000/kitti_yolov8_first5000/images/val/005825.png,005825,005825.png,silver,clear,urban city,moderate,strong shadows,dry
+826,/data/oxx220000/kitti_yolov8_first5000/images/val/005826.png,005826,005826.png,white,clear,residential,empty,strong shadows,dry
+827,/data/oxx220000/kitti_yolov8_first5000/images/val/005827.png,005827,005827.png,gray,clear,highway,moderate,strong shadows,wet
+828,/data/oxx220000/kitti_yolov8_first5000/images/val/005828.png,005828,005828.png,white,sunny,residential,moderate,strong shadows,dry
+829,/data/oxx220000/kitti_yolov8_first5000/images/val/005829.png,005829,005829.png,gray,sunny,residential,moderate,strong shadows,dry
+830,/data/oxx220000/kitti_yolov8_first5000/images/val/005830.png,005830,005830.png,red,clear,highway,moderate,strong shadows,dry
+831,/data/oxx220000/kitti_yolov8_first5000/images/val/005831.png,005831,005831.png,gray,sunny,urban city,moderate,strong shadows,muddy
+832,/data/oxx220000/kitti_yolov8_first5000/images/val/005832.png,005832,005832.png,red,clear,highway,empty,strong shadows,dry
+833,/data/oxx220000/kitti_yolov8_first5000/images/val/005833.png,005833,005833.png,white,clear,highway,moderate,glare,dry
+834,/data/oxx220000/kitti_yolov8_first5000/images/val/005834.png,005834,005834.png,white,clear,highway,moderate,glare,wet
+835,/data/oxx220000/kitti_yolov8_first5000/images/val/005835.png,005835,005835.png,blue,clear,urban city,moderate,strong shadows,dry
+836,/data/oxx220000/kitti_yolov8_first5000/images/val/005836.png,005836,005836.png,gray,clear,rural,empty,strong shadows,dry
+837,/data/oxx220000/kitti_yolov8_first5000/images/val/005837.png,005837,005837.png,silver,sunny,urban city,light,strong shadows,dry
+838,/data/oxx220000/kitti_yolov8_first5000/images/val/005838.png,005838,005838.png,gray,sunny,urban city,moderate,strong shadows,dry
+839,/data/oxx220000/kitti_yolov8_first5000/images/val/005839.png,005839,005839.png,white,clear,highway,moderate,strong shadows,dry
+840,/data/oxx220000/kitti_yolov8_first5000/images/val/005840.png,005840,005840.png,gray,clear,highway,moderate,strong shadows,wet
+841,/data/oxx220000/kitti_yolov8_first5000/images/val/005841.png,005841,005841.png,gray,clear,highway,empty,overcast,dry
+842,/data/oxx220000/kitti_yolov8_first5000/images/val/005842.png,005842,005842.png,white,clear,residential,moderate,strong shadows,snowy
+843,/data/oxx220000/kitti_yolov8_first5000/images/val/005843.png,005843,005843.png,white,clear,urban city,moderate,strong shadows,dry
+844,/data/oxx220000/kitti_yolov8_first5000/images/val/005844.png,005844,005844.png,gray,clear,residential,moderate,strong shadows,dry
+845,/data/oxx220000/kitti_yolov8_first5000/images/val/005845.png,005845,005845.png,gray,clear,rural,moderate,strong shadows,dry
+846,/data/oxx220000/kitti_yolov8_first5000/images/val/005846.png,005846,005846.png,silver,sunny,urban city,light,strong shadows,dry
+847,/data/oxx220000/kitti_yolov8_first5000/images/val/005847.png,005847,005847.png,green,clear,residential,moderate,strong shadows,snowy
+848,/data/oxx220000/kitti_yolov8_first5000/images/val/005848.png,005848,005848.png,white,clear,highway,moderate,overcast,wet
+849,/data/oxx220000/kitti_yolov8_first5000/images/val/005849.png,005849,005849.png,white,clear,residential,moderate,strong shadows,snowy
+850,/data/oxx220000/kitti_yolov8_first5000/images/val/005850.png,005850,005850.png,white,sunny,residential,moderate,strong shadows,snowy
+851,/data/oxx220000/kitti_yolov8_first5000/images/val/005851.png,005851,005851.png,black,sunny,residential,moderate,strong shadows,snowy
+852,/data/oxx220000/kitti_yolov8_first5000/images/val/005852.png,005852,005852.png,gray,clear,highway,empty,overcast,dry
+853,/data/oxx220000/kitti_yolov8_first5000/images/val/005853.png,005853,005853.png,black,sunny,urban city,moderate,strong shadows,wet
+854,/data/oxx220000/kitti_yolov8_first5000/images/val/005854.png,005854,005854.png,gray,clear,residential,moderate,strong shadows,dry
+855,/data/oxx220000/kitti_yolov8_first5000/images/val/005855.png,005855,005855.png,white,clear,highway,moderate,overcast,wet
+856,/data/oxx220000/kitti_yolov8_first5000/images/val/005856.png,005856,005856.png,gray,clear,highway,empty,strong shadows,dry
+857,/data/oxx220000/kitti_yolov8_first5000/images/val/005857.png,005857,005857.png,white,clear,highway,empty,strong shadows,dry
+858,/data/oxx220000/kitti_yolov8_first5000/images/val/005858.png,005858,005858.png,gray,clear,residential,moderate,strong shadows,snowy
+859,/data/oxx220000/kitti_yolov8_first5000/images/val/005859.png,005859,005859.png,white,clear,highway,empty,glare,dry
+860,/data/oxx220000/kitti_yolov8_first5000/images/val/005860.png,005860,005860.png,gray,clear,urban city,moderate,strong shadows,dry
+861,/data/oxx220000/kitti_yolov8_first5000/images/val/005861.png,005861,005861.png,gray,clear,highway,moderate,strong shadows,snowy
+862,/data/oxx220000/kitti_yolov8_first5000/images/val/005862.png,005862,005862.png,gray,clear,residential,empty,strong shadows,wet
+863,/data/oxx220000/kitti_yolov8_first5000/images/val/005863.png,005863,005863.png,gray,sunny,urban city,moderate,strong shadows,dry
+864,/data/oxx220000/kitti_yolov8_first5000/images/val/005864.png,005864,005864.png,gray,clear,residential,moderate,strong shadows,dry
+865,/data/oxx220000/kitti_yolov8_first5000/images/val/005865.png,005865,005865.png,black,clear,residential,moderate,strong shadows,wet
+866,/data/oxx220000/kitti_yolov8_first5000/images/val/005866.png,005866,005866.png,white,clear,urban city,moderate,strong shadows,wet
+867,/data/oxx220000/kitti_yolov8_first5000/images/val/005867.png,005867,005867.png,gray,sunny,residential,empty,strong shadows,wet
+868,/data/oxx220000/kitti_yolov8_first5000/images/val/005868.png,005868,005868.png,gray,clear,highway,moderate,overcast,wet
+869,/data/oxx220000/kitti_yolov8_first5000/images/val/005869.png,005869,005869.png,gray,clear,residential,empty,strong shadows,dry
+870,/data/oxx220000/kitti_yolov8_first5000/images/val/005870.png,005870,005870.png,white,sunny,residential,moderate,strong shadows,dry
+871,/data/oxx220000/kitti_yolov8_first5000/images/val/005871.png,005871,005871.png,gray,sunny,urban city,moderate,strong shadows,snowy
+872,/data/oxx220000/kitti_yolov8_first5000/images/val/005872.png,005872,005872.png,gray,clear,highway,light,strong shadows,wet
+873,/data/oxx220000/kitti_yolov8_first5000/images/val/005873.png,005873,005873.png,silver,clear,highway,moderate,strong shadows,dry
+874,/data/oxx220000/kitti_yolov8_first5000/images/val/005874.png,005874,005874.png,white,clear,highway,moderate,strong shadows,dry
+875,/data/oxx220000/kitti_yolov8_first5000/images/val/005875.png,005875,005875.png,gray,sunny,highway,moderate,strong shadows,dry
+876,/data/oxx220000/kitti_yolov8_first5000/images/val/005876.png,005876,005876.png,black,sunny,residential,moderate,strong shadows,dry
+877,/data/oxx220000/kitti_yolov8_first5000/images/val/005877.png,005877,005877.png,gray,clear,highway,moderate,strong shadows,wet
+878,/data/oxx220000/kitti_yolov8_first5000/images/val/005878.png,005878,005878.png,gray,clear,highway,empty,strong shadows,wet
+879,/data/oxx220000/kitti_yolov8_first5000/images/val/005879.png,005879,005879.png,white,clear,residential,empty,strong shadows,dry
+880,/data/oxx220000/kitti_yolov8_first5000/images/val/005880.png,005880,005880.png,white,sunny,residential,moderate,strong shadows,wet
+881,/data/oxx220000/kitti_yolov8_first5000/images/val/005881.png,005881,005881.png,white,sunny,residential,moderate,strong shadows,dry
+882,/data/oxx220000/kitti_yolov8_first5000/images/val/005882.png,005882,005882.png,gray,clear,highway,moderate,overcast,dry
+883,/data/oxx220000/kitti_yolov8_first5000/images/val/005883.png,005883,005883.png,white,clear,highway,moderate,strong shadows,dry
+884,/data/oxx220000/kitti_yolov8_first5000/images/val/005884.png,005884,005884.png,gray,clear,residential,moderate,strong shadows,dry
+885,/data/oxx220000/kitti_yolov8_first5000/images/val/005885.png,005885,005885.png,gray,sunny,residential,moderate,strong shadows,dry
+886,/data/oxx220000/kitti_yolov8_first5000/images/val/005886.png,005886,005886.png,white,sunny,urban city,moderate,strong shadows,dry
+887,/data/oxx220000/kitti_yolov8_first5000/images/val/005887.png,005887,005887.png,gray,sunny,residential,moderate,strong shadows,dry
+888,/data/oxx220000/kitti_yolov8_first5000/images/val/005888.png,005888,005888.png,blue,clear,urban city,moderate,strong shadows,dry
+889,/data/oxx220000/kitti_yolov8_first5000/images/val/005889.png,005889,005889.png,gray,clear,residential,moderate,strong shadows,dry
+890,/data/oxx220000/kitti_yolov8_first5000/images/val/005890.png,005890,005890.png,black,sunny,residential,moderate,strong shadows,dry
+891,/data/oxx220000/kitti_yolov8_first5000/images/val/005891.png,005891,005891.png,black,sunny,urban city,moderate,strong shadows,snowy
+892,/data/oxx220000/kitti_yolov8_first5000/images/val/005892.png,005892,005892.png,gray,sunny,residential,moderate,strong shadows,dry
+893,/data/oxx220000/kitti_yolov8_first5000/images/val/005893.png,005893,005893.png,white,clear,highway,moderate,strong shadows,wet
+894,/data/oxx220000/kitti_yolov8_first5000/images/val/005894.png,005894,005894.png,white,clear,highway,moderate,strong shadows,dry
+895,/data/oxx220000/kitti_yolov8_first5000/images/val/005895.png,005895,005895.png,white,clear,natural,moderate,strong shadows,wet
+896,/data/oxx220000/kitti_yolov8_first5000/images/val/005896.png,005896,005896.png,white,sunny,residential,moderate,strong shadows,wet
+897,/data/oxx220000/kitti_yolov8_first5000/images/val/005897.png,005897,005897.png,white,sunny,urban city,moderate,strong shadows,dry
+898,/data/oxx220000/kitti_yolov8_first5000/images/val/005898.png,005898,005898.png,white,clear,residential,empty,strong shadows,snowy
+899,/data/oxx220000/kitti_yolov8_first5000/images/val/005899.png,005899,005899.png,blue,clear,urban city,moderate,strong shadows,dry
+900,/data/oxx220000/kitti_yolov8_first5000/images/val/005900.png,005900,005900.png,black,clear,urban city,moderate,strong shadows,dry
+901,/data/oxx220000/kitti_yolov8_first5000/images/val/005901.png,005901,005901.png,gray,sunny,residential,moderate,strong shadows,dry
+902,/data/oxx220000/kitti_yolov8_first5000/images/val/005902.png,005902,005902.png,gray,sunny,natural,moderate,strong shadows,dry
+903,/data/oxx220000/kitti_yolov8_first5000/images/val/005903.png,005903,005903.png,gray,sunny,residential,moderate,strong shadows,dry
+904,/data/oxx220000/kitti_yolov8_first5000/images/val/005904.png,005904,005904.png,gray,sunny,residential,moderate,strong shadows,wet
+905,/data/oxx220000/kitti_yolov8_first5000/images/val/005905.png,005905,005905.png,gray,clear,urban city,empty,strong shadows,dry
+906,/data/oxx220000/kitti_yolov8_first5000/images/val/005906.png,005906,005906.png,blue,sunny,natural,moderate,strong shadows,dry
+907,/data/oxx220000/kitti_yolov8_first5000/images/val/005907.png,005907,005907.png,blue,sunny,residential,moderate,strong shadows,wet
+908,/data/oxx220000/kitti_yolov8_first5000/images/val/005908.png,005908,005908.png,black,sunny,residential,moderate,strong shadows,snowy
+909,/data/oxx220000/kitti_yolov8_first5000/images/val/005909.png,005909,005909.png,gray,sunny,residential,moderate,strong shadows,dry
+910,/data/oxx220000/kitti_yolov8_first5000/images/val/005910.png,005910,005910.png,gray,sunny,urban city,moderate,strong shadows,dry
+911,/data/oxx220000/kitti_yolov8_first5000/images/val/005911.png,005911,005911.png,gray,clear,residential,moderate,strong shadows,dry
+912,/data/oxx220000/kitti_yolov8_first5000/images/val/005912.png,005912,005912.png,yellow,clear,highway,moderate,strong shadows,dry
+913,/data/oxx220000/kitti_yolov8_first5000/images/val/005913.png,005913,005913.png,gray,clear,highway,moderate,strong shadows,dry
+914,/data/oxx220000/kitti_yolov8_first5000/images/val/005914.png,005914,005914.png,gray,clear,highway,empty,overcast,dry
+915,/data/oxx220000/kitti_yolov8_first5000/images/val/005915.png,005915,005915.png,white,sunny,urban city,light,strong shadows,dry
+916,/data/oxx220000/kitti_yolov8_first5000/images/val/005916.png,005916,005916.png,gray,clear,highway,moderate,strong shadows,dry
+917,/data/oxx220000/kitti_yolov8_first5000/images/val/005917.png,005917,005917.png,gray,sunny,residential,moderate,strong shadows,dry
+918,/data/oxx220000/kitti_yolov8_first5000/images/val/005918.png,005918,005918.png,gray,sunny,residential,moderate,strong shadows,dry
+919,/data/oxx220000/kitti_yolov8_first5000/images/val/005919.png,005919,005919.png,white,sunny,residential,moderate,strong shadows,dry
+920,/data/oxx220000/kitti_yolov8_first5000/images/val/005920.png,005920,005920.png,gray,sunny,urban city,light,strong shadows,dry
+921,/data/oxx220000/kitti_yolov8_first5000/images/val/005921.png,005921,005921.png,white,clear,highway,moderate,strong shadows,wet
+922,/data/oxx220000/kitti_yolov8_first5000/images/val/005922.png,005922,005922.png,white,clear,highway,empty,overcast,snowy
+923,/data/oxx220000/kitti_yolov8_first5000/images/val/005923.png,005923,005923.png,gray,clear,highway,moderate,strong shadows,wet
+924,/data/oxx220000/kitti_yolov8_first5000/images/val/005924.png,005924,005924.png,blue,clear,urban city,moderate,strong shadows,dry
+925,/data/oxx220000/kitti_yolov8_first5000/images/val/005925.png,005925,005925.png,gray,clear,highway,moderate,overcast,wet
+926,/data/oxx220000/kitti_yolov8_first5000/images/val/005926.png,005926,005926.png,white,clear,highway,moderate,strong shadows,wet
+927,/data/oxx220000/kitti_yolov8_first5000/images/val/005927.png,005927,005927.png,gray,clear,residential,moderate,strong shadows,dry
+928,/data/oxx220000/kitti_yolov8_first5000/images/val/005928.png,005928,005928.png,gray,clear,residential,moderate,strong shadows,dry
+929,/data/oxx220000/kitti_yolov8_first5000/images/val/005929.png,005929,005929.png,gray,clear,residential,moderate,strong shadows,snowy
+930,/data/oxx220000/kitti_yolov8_first5000/images/val/005930.png,005930,005930.png,black,clear,natural,moderate,strong shadows,dry
+931,/data/oxx220000/kitti_yolov8_first5000/images/val/005931.png,005931,005931.png,blue,clear,urban city,moderate,strong shadows,dry
+932,/data/oxx220000/kitti_yolov8_first5000/images/val/005932.png,005932,005932.png,white,clear,highway,moderate,overcast,wet
+933,/data/oxx220000/kitti_yolov8_first5000/images/val/005933.png,005933,005933.png,gray,sunny,residential,moderate,strong shadows,wet
+934,/data/oxx220000/kitti_yolov8_first5000/images/val/005934.png,005934,005934.png,white,sunny,natural,moderate,strong shadows,dry
+935,/data/oxx220000/kitti_yolov8_first5000/images/val/005935.png,005935,005935.png,gray,clear,highway,moderate,dim,wet
+936,/data/oxx220000/kitti_yolov8_first5000/images/val/005936.png,005936,005936.png,gray,clear,urban city,empty,strong shadows,dry
+937,/data/oxx220000/kitti_yolov8_first5000/images/val/005937.png,005937,005937.png,blue,clear,urban city,moderate,strong shadows,dry
+938,/data/oxx220000/kitti_yolov8_first5000/images/val/005938.png,005938,005938.png,white,clear,highway,empty,strong shadows,snowy
+939,/data/oxx220000/kitti_yolov8_first5000/images/val/005939.png,005939,005939.png,gray,clear,highway,empty,overcast,dry
+940,/data/oxx220000/kitti_yolov8_first5000/images/val/005940.png,005940,005940.png,gray,clear,residential,moderate,strong shadows,wet
+941,/data/oxx220000/kitti_yolov8_first5000/images/val/005941.png,005941,005941.png,white,sunny,highway,moderate,strong shadows,wet
+942,/data/oxx220000/kitti_yolov8_first5000/images/val/005942.png,005942,005942.png,black,sunny,highway,moderate,strong shadows,wet
+943,/data/oxx220000/kitti_yolov8_first5000/images/val/005943.png,005943,005943.png,gray,clear,urban city,moderate,strong shadows,dry
+944,/data/oxx220000/kitti_yolov8_first5000/images/val/005944.png,005944,005944.png,gray,clear,highway,empty,strong shadows,dry
+945,/data/oxx220000/kitti_yolov8_first5000/images/val/005945.png,005945,005945.png,gray,sunny,urban city,light,strong shadows,dry
+946,/data/oxx220000/kitti_yolov8_first5000/images/val/005946.png,005946,005946.png,black,clear,residential,moderate,strong shadows,snowy
+947,/data/oxx220000/kitti_yolov8_first5000/images/val/005947.png,005947,005947.png,white,sunny,residential,moderate,strong shadows,dry
+948,/data/oxx220000/kitti_yolov8_first5000/images/val/005948.png,005948,005948.png,gray,clear,residential,moderate,strong shadows,dry
+949,/data/oxx220000/kitti_yolov8_first5000/images/val/005949.png,005949,005949.png,white,clear,highway,light,glare,wet
+950,/data/oxx220000/kitti_yolov8_first5000/images/val/005950.png,005950,005950.png,gray,clear,residential,moderate,strong shadows,snowy
+951,/data/oxx220000/kitti_yolov8_first5000/images/val/005951.png,005951,005951.png,gray,clear,residential,moderate,strong shadows,dry
+952,/data/oxx220000/kitti_yolov8_first5000/images/val/005952.png,005952,005952.png,gray,clear,highway,moderate,strong shadows,wet
+953,/data/oxx220000/kitti_yolov8_first5000/images/val/005953.png,005953,005953.png,gray,sunny,urban city,moderate,strong shadows,dry
+954,/data/oxx220000/kitti_yolov8_first5000/images/val/005954.png,005954,005954.png,blue,clear,urban city,moderate,strong shadows,dry
+955,/data/oxx220000/kitti_yolov8_first5000/images/val/005955.png,005955,005955.png,gray,clear,residential,moderate,strong shadows,snowy
+956,/data/oxx220000/kitti_yolov8_first5000/images/val/005956.png,005956,005956.png,gray,sunny,residential,moderate,strong shadows,wet
+957,/data/oxx220000/kitti_yolov8_first5000/images/val/005957.png,005957,005957.png,gray,sunny,residential,moderate,strong shadows,snowy
+958,/data/oxx220000/kitti_yolov8_first5000/images/val/005958.png,005958,005958.png,blue,clear,urban city,moderate,strong shadows,dry
+959,/data/oxx220000/kitti_yolov8_first5000/images/val/005959.png,005959,005959.png,gray,clear,residential,moderate,strong shadows,snowy
+960,/data/oxx220000/kitti_yolov8_first5000/images/val/005960.png,005960,005960.png,gray,sunny,residential,moderate,strong shadows,dry
+961,/data/oxx220000/kitti_yolov8_first5000/images/val/005961.png,005961,005961.png,white,clear,highway,empty,strong shadows,dry
+962,/data/oxx220000/kitti_yolov8_first5000/images/val/005962.png,005962,005962.png,black,clear,residential,moderate,strong shadows,dry
+963,/data/oxx220000/kitti_yolov8_first5000/images/val/005963.png,005963,005963.png,gray,clear,highway,moderate,strong shadows,dry
+964,/data/oxx220000/kitti_yolov8_first5000/images/val/005964.png,005964,005964.png,gray,sunny,residential,moderate,strong shadows,dry
+965,/data/oxx220000/kitti_yolov8_first5000/images/val/005965.png,005965,005965.png,gray,clear,urban city,empty,overcast,wet
+966,/data/oxx220000/kitti_yolov8_first5000/images/val/005966.png,005966,005966.png,white,clear,residential,moderate,strong shadows,snowy
+967,/data/oxx220000/kitti_yolov8_first5000/images/val/005967.png,005967,005967.png,gray,sunny,residential,moderate,strong shadows,dry
+968,/data/oxx220000/kitti_yolov8_first5000/images/val/005968.png,005968,005968.png,white,clear,highway,empty,strong shadows,dry
+969,/data/oxx220000/kitti_yolov8_first5000/images/val/005969.png,005969,005969.png,gray,clear,residential,moderate,strong shadows,dry
+970,/data/oxx220000/kitti_yolov8_first5000/images/val/005970.png,005970,005970.png,black,sunny,urban city,moderate,strong shadows,dry
+971,/data/oxx220000/kitti_yolov8_first5000/images/val/005971.png,005971,005971.png,white,clear,highway,moderate,strong shadows,wet
+972,/data/oxx220000/kitti_yolov8_first5000/images/val/005972.png,005972,005972.png,black,clear,urban city,moderate,strong shadows,wet
+973,/data/oxx220000/kitti_yolov8_first5000/images/val/005973.png,005973,005973.png,gray,sunny,residential,moderate,strong shadows,snowy
+974,/data/oxx220000/kitti_yolov8_first5000/images/val/005974.png,005974,005974.png,red,clear,highway,empty,strong shadows,dry
+975,/data/oxx220000/kitti_yolov8_first5000/images/val/005975.png,005975,005975.png,black,clear,residential,moderate,strong shadows,snowy
+976,/data/oxx220000/kitti_yolov8_first5000/images/val/005976.png,005976,005976.png,gray,sunny,residential,empty,strong shadows,dry
+977,/data/oxx220000/kitti_yolov8_first5000/images/val/005977.png,005977,005977.png,white,sunny,residential,moderate,strong shadows,dry
+978,/data/oxx220000/kitti_yolov8_first5000/images/val/005978.png,005978,005978.png,white,sunny,residential,moderate,strong shadows,dry
+979,/data/oxx220000/kitti_yolov8_first5000/images/val/005979.png,005979,005979.png,gray,sunny,urban city,moderate,strong shadows,dry
+980,/data/oxx220000/kitti_yolov8_first5000/images/val/005980.png,005980,005980.png,white,sunny,residential,moderate,strong shadows,dry
+981,/data/oxx220000/kitti_yolov8_first5000/images/val/005981.png,005981,005981.png,white,clear,highway,moderate,overcast,wet
+982,/data/oxx220000/kitti_yolov8_first5000/images/val/005982.png,005982,005982.png,gray,sunny,urban city,moderate,strong shadows,dry
+983,/data/oxx220000/kitti_yolov8_first5000/images/val/005983.png,005983,005983.png,white,clear,urban city,moderate,strong shadows,wet
+984,/data/oxx220000/kitti_yolov8_first5000/images/val/005984.png,005984,005984.png,white,clear,highway,light,strong shadows,dry
+985,/data/oxx220000/kitti_yolov8_first5000/images/val/005985.png,005985,005985.png,white,clear,highway,moderate,strong shadows,dry
+986,/data/oxx220000/kitti_yolov8_first5000/images/val/005986.png,005986,005986.png,white,clear,highway,moderate,dim,wet
+987,/data/oxx220000/kitti_yolov8_first5000/images/val/005987.png,005987,005987.png,white,clear,highway,moderate,glare,wet
+988,/data/oxx220000/kitti_yolov8_first5000/images/val/005988.png,005988,005988.png,gray,sunny,urban city,moderate,strong shadows,dry
+989,/data/oxx220000/kitti_yolov8_first5000/images/val/005989.png,005989,005989.png,gray,sunny,residential,empty,strong shadows,dry
+990,/data/oxx220000/kitti_yolov8_first5000/images/val/005990.png,005990,005990.png,black,sunny,residential,moderate,strong shadows,dry
+991,/data/oxx220000/kitti_yolov8_first5000/images/val/005991.png,005991,005991.png,gray,clear,highway,empty,strong shadows,wet
+992,/data/oxx220000/kitti_yolov8_first5000/images/val/005992.png,005992,005992.png,gray,sunny,residential,moderate,strong shadows,dry
+993,/data/oxx220000/kitti_yolov8_first5000/images/val/005993.png,005993,005993.png,gray,clear,residential,moderate,strong shadows,dry
+994,/data/oxx220000/kitti_yolov8_first5000/images/val/005994.png,005994,005994.png,gray,sunny,urban city,moderate,strong shadows,dry
+995,/data/oxx220000/kitti_yolov8_first5000/images/val/005995.png,005995,005995.png,black,clear,highway,empty,strong shadows,wet
+996,/data/oxx220000/kitti_yolov8_first5000/images/val/005996.png,005996,005996.png,gray,sunny,residential,moderate,strong shadows,dry
+997,/data/oxx220000/kitti_yolov8_first5000/images/val/005997.png,005997,005997.png,gray,clear,highway,empty,overcast,dry
+998,/data/oxx220000/kitti_yolov8_first5000/images/val/005998.png,005998,005998.png,gray,clear,highway,moderate,strong shadows,dry
+999,/data/oxx220000/kitti_yolov8_first5000/images/val/005999.png,005999,005999.png,green,sunny,residential,moderate,strong shadows,dry
+1000,/data/oxx220000/kitti_yolov8_first5000/images/val/006000.png,006000,006000.png,gray,sunny,urban city,moderate,strong shadows,dry
+1001,/data/oxx220000/kitti_yolov8_first5000/images/val/006001.png,006001,006001.png,gray,clear,highway,moderate,overcast,wet
+1002,/data/oxx220000/kitti_yolov8_first5000/images/val/006002.png,006002,006002.png,white,clear,residential,moderate,strong shadows,snowy
+1003,/data/oxx220000/kitti_yolov8_first5000/images/val/006003.png,006003,006003.png,red,clear,residential,moderate,strong shadows,dry
+1004,/data/oxx220000/kitti_yolov8_first5000/images/val/006004.png,006004,006004.png,white,sunny,residential,moderate,strong shadows,wet
+1005,/data/oxx220000/kitti_yolov8_first5000/images/val/006005.png,006005,006005.png,white,sunny,residential,moderate,strong shadows,dry
+1006,/data/oxx220000/kitti_yolov8_first5000/images/val/006006.png,006006,006006.png,gray,clear,rural,moderate,strong shadows,dry
+1007,/data/oxx220000/kitti_yolov8_first5000/images/val/006007.png,006007,006007.png,gray,clear,residential,moderate,strong shadows,dry
+1008,/data/oxx220000/kitti_yolov8_first5000/images/val/006008.png,006008,006008.png,gray,clear,highway,moderate,glare,wet
+1009,/data/oxx220000/kitti_yolov8_first5000/images/val/006009.png,006009,006009.png,gray,clear,residential,moderate,strong shadows,dry
+1010,/data/oxx220000/kitti_yolov8_first5000/images/val/006010.png,006010,006010.png,white,clear,highway,empty,strong shadows,wet
+1011,/data/oxx220000/kitti_yolov8_first5000/images/val/006011.png,006011,006011.png,gray,sunny,urban city,moderate,strong shadows,wet
+1012,/data/oxx220000/kitti_yolov8_first5000/images/val/006012.png,006012,006012.png,gray,clear,highway,empty,strong shadows,dry
+1013,/data/oxx220000/kitti_yolov8_first5000/images/val/006013.png,006013,006013.png,black,sunny,residential,moderate,strong shadows,dry
+1014,/data/oxx220000/kitti_yolov8_first5000/images/val/006014.png,006014,006014.png,gray,clear,residential,moderate,strong shadows,dry
+1015,/data/oxx220000/kitti_yolov8_first5000/images/val/006015.png,006015,006015.png,gray,clear,highway,moderate,strong shadows,wet
+1016,/data/oxx220000/kitti_yolov8_first5000/images/val/006016.png,006016,006016.png,gray,sunny,residential,moderate,strong shadows,dry
+1017,/data/oxx220000/kitti_yolov8_first5000/images/val/006017.png,006017,006017.png,white,clear,highway,empty,strong shadows,wet
+1018,/data/oxx220000/kitti_yolov8_first5000/images/val/006018.png,006018,006018.png,gray,clear,residential,moderate,strong shadows,dry
+1019,/data/oxx220000/kitti_yolov8_first5000/images/val/006019.png,006019,006019.png,white,clear,natural,moderate,strong shadows,dry
+1020,/data/oxx220000/kitti_yolov8_first5000/images/val/006020.png,006020,006020.png,white,clear,residential,moderate,strong shadows,dry
+1021,/data/oxx220000/kitti_yolov8_first5000/images/val/006021.png,006021,006021.png,gray,sunny,residential,moderate,strong shadows,dry
+1022,/data/oxx220000/kitti_yolov8_first5000/images/val/006022.png,006022,006022.png,gray,sunny,residential,moderate,strong shadows,dry
+1023,/data/oxx220000/kitti_yolov8_first5000/images/val/006023.png,006023,006023.png,gray,clear,highway,empty,strong shadows,dry
+1024,/data/oxx220000/kitti_yolov8_first5000/images/val/006024.png,006024,006024.png,gray,clear,highway,light,overcast,wet
+1025,/data/oxx220000/kitti_yolov8_first5000/images/val/006025.png,006025,006025.png,white,sunny,urban city,moderate,strong shadows,dry
+1026,/data/oxx220000/kitti_yolov8_first5000/images/val/006026.png,006026,006026.png,black,sunny,urban city,moderate,strong shadows,dry
+1027,/data/oxx220000/kitti_yolov8_first5000/images/val/006027.png,006027,006027.png,brown,sunny,urban city,moderate,strong shadows,dry
+1028,/data/oxx220000/kitti_yolov8_first5000/images/val/006028.png,006028,006028.png,white,clear,highway,moderate,strong shadows,dry
+1029,/data/oxx220000/kitti_yolov8_first5000/images/val/006029.png,006029,006029.png,blue,clear,urban city,moderate,strong shadows,dry
+1030,/data/oxx220000/kitti_yolov8_first5000/images/val/006030.png,006030,006030.png,white,clear,residential,empty,strong shadows,dry
+1031,/data/oxx220000/kitti_yolov8_first5000/images/val/006031.png,006031,006031.png,gray,sunny,residential,moderate,strong shadows,dry
+1032,/data/oxx220000/kitti_yolov8_first5000/images/val/006032.png,006032,006032.png,white,clear,highway,empty,strong shadows,dry
+1033,/data/oxx220000/kitti_yolov8_first5000/images/val/006033.png,006033,006033.png,gray,clear,residential,moderate,strong shadows,dry
+1034,/data/oxx220000/kitti_yolov8_first5000/images/val/006034.png,006034,006034.png,yellow,clear,residential,moderate,strong shadows,dry
+1035,/data/oxx220000/kitti_yolov8_first5000/images/val/006035.png,006035,006035.png,blue,clear,urban city,moderate,strong shadows,dry
+1036,/data/oxx220000/kitti_yolov8_first5000/images/val/006036.png,006036,006036.png,gray,clear,highway,moderate,glare,snowy
+1037,/data/oxx220000/kitti_yolov8_first5000/images/val/006037.png,006037,006037.png,gray,clear,residential,moderate,strong shadows,dry
+1038,/data/oxx220000/kitti_yolov8_first5000/images/val/006038.png,006038,006038.png,white,clear,highway,empty,strong shadows,wet
+1039,/data/oxx220000/kitti_yolov8_first5000/images/val/006039.png,006039,006039.png,gray,clear,residential,moderate,strong shadows,dry
+1040,/data/oxx220000/kitti_yolov8_first5000/images/val/006040.png,006040,006040.png,gray,clear,residential,moderate,strong shadows,dry
+1041,/data/oxx220000/kitti_yolov8_first5000/images/val/006041.png,006041,006041.png,gray,clear,highway,moderate,glare,wet
+1042,/data/oxx220000/kitti_yolov8_first5000/images/val/006042.png,006042,006042.png,white,clear,highway,moderate,overcast,wet
+1043,/data/oxx220000/kitti_yolov8_first5000/images/val/006043.png,006043,006043.png,white,clear,residential,moderate,strong shadows,snowy
+1044,/data/oxx220000/kitti_yolov8_first5000/images/val/006044.png,006044,006044.png,gray,sunny,residential,moderate,strong shadows,dry
+1045,/data/oxx220000/kitti_yolov8_first5000/images/val/006045.png,006045,006045.png,gray,clear,highway,moderate,strong shadows,wet
+1046,/data/oxx220000/kitti_yolov8_first5000/images/val/006046.png,006046,006046.png,gray,clear,highway,empty,overcast,dry
+1047,/data/oxx220000/kitti_yolov8_first5000/images/val/006047.png,006047,006047.png,gray,clear,residential,moderate,strong shadows,dry
+1048,/data/oxx220000/kitti_yolov8_first5000/images/val/006048.png,006048,006048.png,gray,sunny,highway,moderate,strong shadows,wet
+1049,/data/oxx220000/kitti_yolov8_first5000/images/val/006049.png,006049,006049.png,white,clear,highway,empty,strong shadows,dry
+1050,/data/oxx220000/kitti_yolov8_first5000/images/val/006050.png,006050,006050.png,gray,sunny,residential,moderate,strong shadows,wet
+1051,/data/oxx220000/kitti_yolov8_first5000/images/val/006051.png,006051,006051.png,gray,clear,residential,moderate,strong shadows,dry
+1052,/data/oxx220000/kitti_yolov8_first5000/images/val/006052.png,006052,006052.png,gray,sunny,residential,moderate,strong shadows,wet
+1053,/data/oxx220000/kitti_yolov8_first5000/images/val/006053.png,006053,006053.png,blue,clear,urban city,moderate,strong shadows,dry
+1054,/data/oxx220000/kitti_yolov8_first5000/images/val/006054.png,006054,006054.png,gray,clear,residential,moderate,strong shadows,snowy
+1055,/data/oxx220000/kitti_yolov8_first5000/images/val/006055.png,006055,006055.png,black,sunny,residential,moderate,strong shadows,wet
+1056,/data/oxx220000/kitti_yolov8_first5000/images/val/006056.png,006056,006056.png,gray,sunny,residential,moderate,strong shadows,wet
+1057,/data/oxx220000/kitti_yolov8_first5000/images/val/006057.png,006057,006057.png,gray,clear,residential,moderate,strong shadows,dry
+1058,/data/oxx220000/kitti_yolov8_first5000/images/val/006058.png,006058,006058.png,gray,clear,residential,moderate,strong shadows,snowy
+1059,/data/oxx220000/kitti_yolov8_first5000/images/val/006059.png,006059,006059.png,blue,clear,highway,moderate,glare,dry
+1060,/data/oxx220000/kitti_yolov8_first5000/images/val/006060.png,006060,006060.png,gray,clear,residential,moderate,strong shadows,dry
+1061,/data/oxx220000/kitti_yolov8_first5000/images/val/006061.png,006061,006061.png,gray,clear,highway,empty,strong shadows,dry
+1062,/data/oxx220000/kitti_yolov8_first5000/images/val/006062.png,006062,006062.png,gray,clear,residential,moderate,strong shadows,snowy
+1063,/data/oxx220000/kitti_yolov8_first5000/images/val/006063.png,006063,006063.png,white,clear,highway,moderate,strong shadows,dry
+1064,/data/oxx220000/kitti_yolov8_first5000/images/val/006064.png,006064,006064.png,white,clear,residential,moderate,strong shadows,snowy
+1065,/data/oxx220000/kitti_yolov8_first5000/images/val/006065.png,006065,006065.png,gray,sunny,residential,empty,strong shadows,dry
+1066,/data/oxx220000/kitti_yolov8_first5000/images/val/006066.png,006066,006066.png,gray,sunny,residential,moderate,strong shadows,dry
+1067,/data/oxx220000/kitti_yolov8_first5000/images/val/006067.png,006067,006067.png,gray,clear,residential,empty,strong shadows,dry
+1068,/data/oxx220000/kitti_yolov8_first5000/images/val/006068.png,006068,006068.png,gray,clear,residential,moderate,strong shadows,dry
+1069,/data/oxx220000/kitti_yolov8_first5000/images/val/006069.png,006069,006069.png,gray,sunny,urban city,empty,strong shadows,dry
+1070,/data/oxx220000/kitti_yolov8_first5000/images/val/006070.png,006070,006070.png,black,sunny,urban city,moderate,strong shadows,dry
+1071,/data/oxx220000/kitti_yolov8_first5000/images/val/006071.png,006071,006071.png,black,sunny,urban city,empty,strong shadows,dry
+1072,/data/oxx220000/kitti_yolov8_first5000/images/val/006072.png,006072,006072.png,gray,sunny,residential,empty,strong shadows,wet
+1073,/data/oxx220000/kitti_yolov8_first5000/images/val/006073.png,006073,006073.png,black,clear,highway,moderate,strong shadows,wet
+1074,/data/oxx220000/kitti_yolov8_first5000/images/val/006074.png,006074,006074.png,white,clear,residential,moderate,strong shadows,snowy
+1075,/data/oxx220000/kitti_yolov8_first5000/images/val/006075.png,006075,006075.png,black,sunny,urban city,moderate,strong shadows,dry
+1076,/data/oxx220000/kitti_yolov8_first5000/images/val/006076.png,006076,006076.png,blue,clear,urban city,moderate,strong shadows,dry
+1077,/data/oxx220000/kitti_yolov8_first5000/images/val/006077.png,006077,006077.png,gray,sunny,residential,moderate,strong shadows,dry
+1078,/data/oxx220000/kitti_yolov8_first5000/images/val/006078.png,006078,006078.png,gray,clear,residential,moderate,strong shadows,dry
+1079,/data/oxx220000/kitti_yolov8_first5000/images/val/006079.png,006079,006079.png,gray,clear,highway,moderate,strong shadows,dry
+1080,/data/oxx220000/kitti_yolov8_first5000/images/val/006080.png,006080,006080.png,black,clear,highway,moderate,strong shadows,dry
+1081,/data/oxx220000/kitti_yolov8_first5000/images/val/006081.png,006081,006081.png,white,clear,highway,moderate,strong shadows,dry
+1082,/data/oxx220000/kitti_yolov8_first5000/images/val/006082.png,006082,006082.png,black,sunny,urban city,moderate,strong shadows,snowy
+1083,/data/oxx220000/kitti_yolov8_first5000/images/val/006083.png,006083,006083.png,black,clear,urban city,empty,strong shadows,dry
+1084,/data/oxx220000/kitti_yolov8_first5000/images/val/006084.png,006084,006084.png,gray,clear,residential,moderate,strong shadows,snowy
+1085,/data/oxx220000/kitti_yolov8_first5000/images/val/006085.png,006085,006085.png,gray,sunny,natural,moderate,strong shadows,wet
+1086,/data/oxx220000/kitti_yolov8_first5000/images/val/006086.png,006086,006086.png,white,clear,highway,empty,strong shadows,dry
+1087,/data/oxx220000/kitti_yolov8_first5000/images/val/006087.png,006087,006087.png,gray,sunny,urban city,moderate,strong shadows,dry
+1088,/data/oxx220000/kitti_yolov8_first5000/images/val/006088.png,006088,006088.png,white,sunny,urban city,moderate,strong shadows,dry
+1089,/data/oxx220000/kitti_yolov8_first5000/images/val/006089.png,006089,006089.png,blue,clear,urban city,moderate,strong shadows,dry
+1090,/data/oxx220000/kitti_yolov8_first5000/images/val/006090.png,006090,006090.png,white,clear,residential,moderate,strong shadows,dry
+1091,/data/oxx220000/kitti_yolov8_first5000/images/val/006091.png,006091,006091.png,gray,clear,residential,moderate,strong shadows,dry
+1092,/data/oxx220000/kitti_yolov8_first5000/images/val/006092.png,006092,006092.png,black,clear,highway,empty,strong shadows,dry
+1093,/data/oxx220000/kitti_yolov8_first5000/images/val/006093.png,006093,006093.png,black,sunny,urban city,moderate,strong shadows,dry
+1094,/data/oxx220000/kitti_yolov8_first5000/images/val/006094.png,006094,006094.png,white,clear,residential,moderate,strong shadows,dry
+1095,/data/oxx220000/kitti_yolov8_first5000/images/val/006095.png,006095,006095.png,white,clear,residential,empty,strong shadows,dry
+1096,/data/oxx220000/kitti_yolov8_first5000/images/val/006096.png,006096,006096.png,white,clear,residential,moderate,strong shadows,dry
+1097,/data/oxx220000/kitti_yolov8_first5000/images/val/006097.png,006097,006097.png,white,sunny,residential,moderate,strong shadows,dry
+1098,/data/oxx220000/kitti_yolov8_first5000/images/val/006098.png,006098,006098.png,white,clear,residential,moderate,strong shadows,dry
+1099,/data/oxx220000/kitti_yolov8_first5000/images/val/006099.png,006099,006099.png,gray,clear,highway,moderate,strong shadows,dry
+1100,/data/oxx220000/kitti_yolov8_first5000/images/val/006100.png,006100,006100.png,white,clear,highway,empty,strong shadows,wet
+1101,/data/oxx220000/kitti_yolov8_first5000/images/val/006101.png,006101,006101.png,gray,sunny,residential,moderate,strong shadows,dry
+1102,/data/oxx220000/kitti_yolov8_first5000/images/val/006102.png,006102,006102.png,black,clear,residential,moderate,strong shadows,dry
+1103,/data/oxx220000/kitti_yolov8_first5000/images/val/006103.png,006103,006103.png,gray,clear,residential,moderate,strong shadows,snowy
+1104,/data/oxx220000/kitti_yolov8_first5000/images/val/006104.png,006104,006104.png,gray,clear,natural,empty,strong shadows,dry
+1105,/data/oxx220000/kitti_yolov8_first5000/images/val/006105.png,006105,006105.png,gray,sunny,residential,moderate,strong shadows,wet
+1106,/data/oxx220000/kitti_yolov8_first5000/images/val/006106.png,006106,006106.png,gray,clear,residential,moderate,strong shadows,snowy
+1107,/data/oxx220000/kitti_yolov8_first5000/images/val/006107.png,006107,006107.png,gray,clear,residential,empty,strong shadows,dry
+1108,/data/oxx220000/kitti_yolov8_first5000/images/val/006108.png,006108,006108.png,white,clear,highway,empty,strong shadows,dry
+1109,/data/oxx220000/kitti_yolov8_first5000/images/val/006109.png,006109,006109.png,gray,clear,highway,empty,strong shadows,wet
+1110,/data/oxx220000/kitti_yolov8_first5000/images/val/006110.png,006110,006110.png,green,sunny,residential,moderate,strong shadows,snowy
+1111,/data/oxx220000/kitti_yolov8_first5000/images/val/006111.png,006111,006111.png,gray,sunny,urban city,empty,strong shadows,dry
+1112,/data/oxx220000/kitti_yolov8_first5000/images/val/006112.png,006112,006112.png,gray,clear,highway,empty,strong shadows,wet
+1113,/data/oxx220000/kitti_yolov8_first5000/images/val/006113.png,006113,006113.png,gray,sunny,residential,moderate,strong shadows,dry
+1114,/data/oxx220000/kitti_yolov8_first5000/images/val/006114.png,006114,006114.png,white,clear,residential,moderate,strong shadows,dry
+1115,/data/oxx220000/kitti_yolov8_first5000/images/val/006115.png,006115,006115.png,white,clear,residential,moderate,strong shadows,dry
+1116,/data/oxx220000/kitti_yolov8_first5000/images/val/006116.png,006116,006116.png,black,clear,highway,moderate,strong shadows,dry
+1117,/data/oxx220000/kitti_yolov8_first5000/images/val/006117.png,006117,006117.png,gray,sunny,residential,moderate,strong shadows,wet
+1118,/data/oxx220000/kitti_yolov8_first5000/images/val/006118.png,006118,006118.png,gray,clear,urban city,empty,overcast,wet
+1119,/data/oxx220000/kitti_yolov8_first5000/images/val/006119.png,006119,006119.png,yellow,clear,highway,moderate,strong shadows,snowy
+1120,/data/oxx220000/kitti_yolov8_first5000/images/val/006120.png,006120,006120.png,black,clear,natural,moderate,strong shadows,dry
+1121,/data/oxx220000/kitti_yolov8_first5000/images/val/006121.png,006121,006121.png,black,clear,urban city,moderate,strong shadows,dry
+1122,/data/oxx220000/kitti_yolov8_first5000/images/val/006122.png,006122,006122.png,white,sunny,urban city,moderate,strong shadows,dry
+1123,/data/oxx220000/kitti_yolov8_first5000/images/val/006123.png,006123,006123.png,gray,clear,residential,moderate,strong shadows,dry
+1124,/data/oxx220000/kitti_yolov8_first5000/images/val/006124.png,006124,006124.png,white,clear,highway,empty,strong shadows,wet
+1125,/data/oxx220000/kitti_yolov8_first5000/images/val/006125.png,006125,006125.png,white,clear,residential,moderate,strong shadows,dry
+1126,/data/oxx220000/kitti_yolov8_first5000/images/val/006126.png,006126,006126.png,gray,clear,residential,moderate,strong shadows,snowy
+1127,/data/oxx220000/kitti_yolov8_first5000/images/val/006127.png,006127,006127.png,white,clear,highway,moderate,strong shadows,wet
+1128,/data/oxx220000/kitti_yolov8_first5000/images/val/006128.png,006128,006128.png,gray,sunny,residential,moderate,strong shadows,dry
+1129,/data/oxx220000/kitti_yolov8_first5000/images/val/006129.png,006129,006129.png,gray,clear,natural,moderate,strong shadows,dry
+1130,/data/oxx220000/kitti_yolov8_first5000/images/val/006130.png,006130,006130.png,gray,clear,urban city,moderate,glare,dry
+1131,/data/oxx220000/kitti_yolov8_first5000/images/val/006131.png,006131,006131.png,white,clear,residential,empty,strong shadows,wet
+1132,/data/oxx220000/kitti_yolov8_first5000/images/val/006132.png,006132,006132.png,gray,clear,residential,moderate,strong shadows,dry
+1133,/data/oxx220000/kitti_yolov8_first5000/images/val/006133.png,006133,006133.png,gray,clear,highway,moderate,overcast,wet
+1134,/data/oxx220000/kitti_yolov8_first5000/images/val/006134.png,006134,006134.png,black,clear,highway,moderate,strong shadows,dry
+1135,/data/oxx220000/kitti_yolov8_first5000/images/val/006135.png,006135,006135.png,gray,sunny,natural,moderate,strong shadows,dry
+1136,/data/oxx220000/kitti_yolov8_first5000/images/val/006136.png,006136,006136.png,gray,clear,highway,moderate,overcast,wet
+1137,/data/oxx220000/kitti_yolov8_first5000/images/val/006137.png,006137,006137.png,gray,sunny,urban city,moderate,strong shadows,snowy
+1138,/data/oxx220000/kitti_yolov8_first5000/images/val/006138.png,006138,006138.png,gray,sunny,residential,moderate,strong shadows,snowy
+1139,/data/oxx220000/kitti_yolov8_first5000/images/val/006139.png,006139,006139.png,gray,sunny,urban city,moderate,strong shadows,dry
+1140,/data/oxx220000/kitti_yolov8_first5000/images/val/006140.png,006140,006140.png,gray,sunny,residential,moderate,strong shadows,dry
+1141,/data/oxx220000/kitti_yolov8_first5000/images/val/006141.png,006141,006141.png,gray,sunny,residential,moderate,strong shadows,snowy
+1142,/data/oxx220000/kitti_yolov8_first5000/images/val/006142.png,006142,006142.png,white,sunny,residential,empty,strong shadows,dry
+1143,/data/oxx220000/kitti_yolov8_first5000/images/val/006143.png,006143,006143.png,black,sunny,residential,moderate,strong shadows,wet
+1144,/data/oxx220000/kitti_yolov8_first5000/images/val/006144.png,006144,006144.png,white,clear,highway,moderate,overcast,wet
+1145,/data/oxx220000/kitti_yolov8_first5000/images/val/006145.png,006145,006145.png,white,clear,residential,moderate,strong shadows,snowy
+1146,/data/oxx220000/kitti_yolov8_first5000/images/val/006146.png,006146,006146.png,gray,clear,residential,moderate,strong shadows,dry
+1147,/data/oxx220000/kitti_yolov8_first5000/images/val/006147.png,006147,006147.png,white,sunny,urban city,moderate,strong shadows,dry
+1148,/data/oxx220000/kitti_yolov8_first5000/images/val/006148.png,006148,006148.png,white,clear,highway,empty,overcast,wet
+1149,/data/oxx220000/kitti_yolov8_first5000/images/val/006149.png,006149,006149.png,white,clear,residential,moderate,strong shadows,wet
+1150,/data/oxx220000/kitti_yolov8_first5000/images/val/006150.png,006150,006150.png,gray,clear,residential,moderate,strong shadows,dry
+1151,/data/oxx220000/kitti_yolov8_first5000/images/val/006151.png,006151,006151.png,blue,clear,urban city,moderate,strong shadows,dry
+1152,/data/oxx220000/kitti_yolov8_first5000/images/val/006152.png,006152,006152.png,blue,clear,urban city,moderate,strong shadows,dry
+1153,/data/oxx220000/kitti_yolov8_first5000/images/val/006153.png,006153,006153.png,black,clear,highway,moderate,strong shadows,dry
+1154,/data/oxx220000/kitti_yolov8_first5000/images/val/006154.png,006154,006154.png,gray,clear,highway,moderate,strong shadows,wet
+1155,/data/oxx220000/kitti_yolov8_first5000/images/val/006155.png,006155,006155.png,white,sunny,urban city,moderate,strong shadows,dry
+1156,/data/oxx220000/kitti_yolov8_first5000/images/val/006156.png,006156,006156.png,white,sunny,residential,moderate,strong shadows,dry
+1157,/data/oxx220000/kitti_yolov8_first5000/images/val/006157.png,006157,006157.png,white,clear,residential,moderate,strong shadows,dry
+1158,/data/oxx220000/kitti_yolov8_first5000/images/val/006158.png,006158,006158.png,blue,clear,urban city,moderate,strong shadows,dry
+1159,/data/oxx220000/kitti_yolov8_first5000/images/val/006159.png,006159,006159.png,gray,sunny,residential,moderate,strong shadows,dry
+1160,/data/oxx220000/kitti_yolov8_first5000/images/val/006160.png,006160,006160.png,white,clear,residential,moderate,strong shadows,snowy
+1161,/data/oxx220000/kitti_yolov8_first5000/images/val/006161.png,006161,006161.png,black,sunny,residential,moderate,strong shadows,snowy
+1162,/data/oxx220000/kitti_yolov8_first5000/images/val/006162.png,006162,006162.png,gray,clear,highway,empty,strong shadows,wet
+1163,/data/oxx220000/kitti_yolov8_first5000/images/val/006163.png,006163,006163.png,red,sunny,residential,moderate,strong shadows,snowy
+1164,/data/oxx220000/kitti_yolov8_first5000/images/val/006164.png,006164,006164.png,blue,clear,urban city,moderate,strong shadows,dry
+1165,/data/oxx220000/kitti_yolov8_first5000/images/val/006165.png,006165,006165.png,gray,clear,highway,empty,overcast,wet
+1166,/data/oxx220000/kitti_yolov8_first5000/images/val/006166.png,006166,006166.png,white,sunny,residential,moderate,strong shadows,dry
+1167,/data/oxx220000/kitti_yolov8_first5000/images/val/006167.png,006167,006167.png,white,clear,residential,moderate,strong shadows,dry
+1168,/data/oxx220000/kitti_yolov8_first5000/images/val/006168.png,006168,006168.png,gray,clear,highway,empty,strong shadows,dry
+1169,/data/oxx220000/kitti_yolov8_first5000/images/val/006169.png,006169,006169.png,gray,clear,urban city,moderate,strong shadows,wet
+1170,/data/oxx220000/kitti_yolov8_first5000/images/val/006170.png,006170,006170.png,red,clear,highway,moderate,strong shadows,dry
+1171,/data/oxx220000/kitti_yolov8_first5000/images/val/006171.png,006171,006171.png,white,clear,residential,moderate,strong shadows,dry
+1172,/data/oxx220000/kitti_yolov8_first5000/images/val/006172.png,006172,006172.png,blue,sunny,urban city,moderate,strong shadows,snowy
+1173,/data/oxx220000/kitti_yolov8_first5000/images/val/006173.png,006173,006173.png,gray,clear,highway,empty,overcast,wet
+1174,/data/oxx220000/kitti_yolov8_first5000/images/val/006174.png,006174,006174.png,gray,sunny,urban city,empty,strong shadows,dry
+1175,/data/oxx220000/kitti_yolov8_first5000/images/val/006175.png,006175,006175.png,gray,clear,residential,moderate,strong shadows,wet
+1176,/data/oxx220000/kitti_yolov8_first5000/images/val/006176.png,006176,006176.png,black,sunny,urban city,empty,strong shadows,dry
+1177,/data/oxx220000/kitti_yolov8_first5000/images/val/006177.png,006177,006177.png,gray,clear,highway,empty,overcast,dry
+1178,/data/oxx220000/kitti_yolov8_first5000/images/val/006178.png,006178,006178.png,red,clear,highway,empty,strong shadows,dry
+1179,/data/oxx220000/kitti_yolov8_first5000/images/val/006179.png,006179,006179.png,black,sunny,urban city,moderate,strong shadows,dry
+1180,/data/oxx220000/kitti_yolov8_first5000/images/val/006180.png,006180,006180.png,black,clear,residential,moderate,strong shadows,wet
+1181,/data/oxx220000/kitti_yolov8_first5000/images/val/006181.png,006181,006181.png,white,clear,residential,moderate,strong shadows,snowy
+1182,/data/oxx220000/kitti_yolov8_first5000/images/val/006182.png,006182,006182.png,black,clear,urban city,moderate,strong shadows,wet
+1183,/data/oxx220000/kitti_yolov8_first5000/images/val/006183.png,006183,006183.png,white,sunny,residential,moderate,strong shadows,wet
+1184,/data/oxx220000/kitti_yolov8_first5000/images/val/006184.png,006184,006184.png,blue,clear,residential,moderate,strong shadows,dry
+1185,/data/oxx220000/kitti_yolov8_first5000/images/val/006185.png,006185,006185.png,white,sunny,residential,moderate,strong shadows,wet
+1186,/data/oxx220000/kitti_yolov8_first5000/images/val/006186.png,006186,006186.png,white,sunny,residential,moderate,strong shadows,dry
+1187,/data/oxx220000/kitti_yolov8_first5000/images/val/006187.png,006187,006187.png,gray,clear,residential,moderate,strong shadows,dry
+1188,/data/oxx220000/kitti_yolov8_first5000/images/val/006188.png,006188,006188.png,gray,clear,residential,empty,strong shadows,dry
+1189,/data/oxx220000/kitti_yolov8_first5000/images/val/006189.png,006189,006189.png,gray,sunny,urban city,moderate,strong shadows,wet
+1190,/data/oxx220000/kitti_yolov8_first5000/images/val/006190.png,006190,006190.png,white,clear,highway,moderate,strong shadows,dry
+1191,/data/oxx220000/kitti_yolov8_first5000/images/val/006191.png,006191,006191.png,gray,clear,urban city,moderate,strong shadows,dry
+1192,/data/oxx220000/kitti_yolov8_first5000/images/val/006192.png,006192,006192.png,gray,sunny,residential,moderate,strong shadows,dry
+1193,/data/oxx220000/kitti_yolov8_first5000/images/val/006193.png,006193,006193.png,gray,clear,highway,moderate,strong shadows,dry
+1194,/data/oxx220000/kitti_yolov8_first5000/images/val/006194.png,006194,006194.png,blue,clear,urban city,moderate,strong shadows,dry
+1195,/data/oxx220000/kitti_yolov8_first5000/images/val/006195.png,006195,006195.png,black,clear,residential,moderate,strong shadows,snowy
+1196,/data/oxx220000/kitti_yolov8_first5000/images/val/006196.png,006196,006196.png,gray,clear,highway,light,overcast,wet
+1197,/data/oxx220000/kitti_yolov8_first5000/images/val/006197.png,006197,006197.png,gray,sunny,residential,moderate,strong shadows,dry
+1198,/data/oxx220000/kitti_yolov8_first5000/images/val/006198.png,006198,006198.png,black,sunny,urban city,moderate,strong shadows,dry
+1199,/data/oxx220000/kitti_yolov8_first5000/images/val/006199.png,006199,006199.png,gray,sunny,residential,moderate,strong shadows,dry
+1200,/data/oxx220000/kitti_yolov8_first5000/images/val/006200.png,006200,006200.png,white,sunny,residential,moderate,strong shadows,dry
+1201,/data/oxx220000/kitti_yolov8_first5000/images/val/006201.png,006201,006201.png,blue,clear,urban city,moderate,strong shadows,dry
+1202,/data/oxx220000/kitti_yolov8_first5000/images/val/006202.png,006202,006202.png,white,clear,highway,moderate,strong shadows,wet
+1203,/data/oxx220000/kitti_yolov8_first5000/images/val/006203.png,006203,006203.png,gray,clear,highway,empty,strong shadows,wet
+1204,/data/oxx220000/kitti_yolov8_first5000/images/val/006204.png,006204,006204.png,white,clear,residential,empty,strong shadows,dry
+1205,/data/oxx220000/kitti_yolov8_first5000/images/val/006205.png,006205,006205.png,white,clear,highway,moderate,strong shadows,snowy
+1206,/data/oxx220000/kitti_yolov8_first5000/images/val/006206.png,006206,006206.png,gray,clear,natural,empty,strong shadows,dry
+1207,/data/oxx220000/kitti_yolov8_first5000/images/val/006207.png,006207,006207.png,gray,clear,natural,moderate,strong shadows,dry
+1208,/data/oxx220000/kitti_yolov8_first5000/images/val/006208.png,006208,006208.png,white,clear,urban city,moderate,strong shadows,dry
+1209,/data/oxx220000/kitti_yolov8_first5000/images/val/006209.png,006209,006209.png,white,sunny,natural,moderate,strong shadows,wet
+1210,/data/oxx220000/kitti_yolov8_first5000/images/val/006210.png,006210,006210.png,black,clear,urban city,moderate,strong shadows,dry
+1211,/data/oxx220000/kitti_yolov8_first5000/images/val/006211.png,006211,006211.png,red,sunny,urban city,moderate,strong shadows,wet
+1212,/data/oxx220000/kitti_yolov8_first5000/images/val/006212.png,006212,006212.png,white,sunny,natural,empty,strong shadows,dry
+1213,/data/oxx220000/kitti_yolov8_first5000/images/val/006213.png,006213,006213.png,gray,clear,urban city,empty,strong shadows,dry
+1214,/data/oxx220000/kitti_yolov8_first5000/images/val/006214.png,006214,006214.png,gray,clear,rural,moderate,strong shadows,wet
+1215,/data/oxx220000/kitti_yolov8_first5000/images/val/006215.png,006215,006215.png,blue,clear,urban city,moderate,strong shadows,dry
+1216,/data/oxx220000/kitti_yolov8_first5000/images/val/006216.png,006216,006216.png,gray,sunny,residential,moderate,strong shadows,dry
+1217,/data/oxx220000/kitti_yolov8_first5000/images/val/006217.png,006217,006217.png,white,clear,natural,empty,strong shadows,dry
+1218,/data/oxx220000/kitti_yolov8_first5000/images/val/006218.png,006218,006218.png,gray,clear,highway,moderate,strong shadows,wet
+1219,/data/oxx220000/kitti_yolov8_first5000/images/val/006219.png,006219,006219.png,gray,clear,highway,moderate,strong shadows,dry
+1220,/data/oxx220000/kitti_yolov8_first5000/images/val/006220.png,006220,006220.png,white,sunny,highway,empty,strong shadows,wet
+1221,/data/oxx220000/kitti_yolov8_first5000/images/val/006221.png,006221,006221.png,white,sunny,residential,moderate,strong shadows,dry
+1222,/data/oxx220000/kitti_yolov8_first5000/images/val/006222.png,006222,006222.png,blue,clear,urban city,moderate,strong shadows,dry
+1223,/data/oxx220000/kitti_yolov8_first5000/images/val/006223.png,006223,006223.png,white,sunny,natural,moderate,strong shadows,dry
+1224,/data/oxx220000/kitti_yolov8_first5000/images/val/006224.png,006224,006224.png,gray,sunny,urban city,moderate,strong shadows,wet
+1225,/data/oxx220000/kitti_yolov8_first5000/images/val/006225.png,006225,006225.png,gray,clear,urban city,moderate,strong shadows,dry
+1226,/data/oxx220000/kitti_yolov8_first5000/images/val/006226.png,006226,006226.png,white,clear,residential,empty,strong shadows,snowy
+1227,/data/oxx220000/kitti_yolov8_first5000/images/val/006227.png,006227,006227.png,gray,clear,highway,empty,strong shadows,dry
+1228,/data/oxx220000/kitti_yolov8_first5000/images/val/006228.png,006228,006228.png,blue,clear,urban city,moderate,strong shadows,dry
+1229,/data/oxx220000/kitti_yolov8_first5000/images/val/006229.png,006229,006229.png,gray,clear,highway,moderate,strong shadows,dry
+1230,/data/oxx220000/kitti_yolov8_first5000/images/val/006230.png,006230,006230.png,white,clear,residential,moderate,strong shadows,dry
+1231,/data/oxx220000/kitti_yolov8_first5000/images/val/006231.png,006231,006231.png,gray,clear,residential,moderate,strong shadows,snowy
+1232,/data/oxx220000/kitti_yolov8_first5000/images/val/006232.png,006232,006232.png,gray,clear,residential,moderate,strong shadows,snowy
+1233,/data/oxx220000/kitti_yolov8_first5000/images/val/006233.png,006233,006233.png,white,clear,residential,moderate,strong shadows,dry
+1234,/data/oxx220000/kitti_yolov8_first5000/images/val/006234.png,006234,006234.png,white,clear,natural,moderate,strong shadows,dry
+1235,/data/oxx220000/kitti_yolov8_first5000/images/val/006235.png,006235,006235.png,white,clear,highway,empty,strong shadows,wet
+1236,/data/oxx220000/kitti_yolov8_first5000/images/val/006236.png,006236,006236.png,white,sunny,urban city,moderate,strong shadows,snowy
+1237,/data/oxx220000/kitti_yolov8_first5000/images/val/006237.png,006237,006237.png,gray,clear,residential,moderate,strong shadows,dry
+1238,/data/oxx220000/kitti_yolov8_first5000/images/val/006238.png,006238,006238.png,white,clear,highway,moderate,dim,wet
+1239,/data/oxx220000/kitti_yolov8_first5000/images/val/006239.png,006239,006239.png,white,sunny,natural,moderate,strong shadows,dry
