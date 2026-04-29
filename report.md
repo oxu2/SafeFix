@@ -1,3 +1,86 @@
+# 04/29/2026 Update — Brown-Rainy Completed Result Snapshot
+
+- This section records all stable brown-rainy COCO pose results currently
+  completed on Juno and complements the local completed experiment sections
+  already preserved below.
+- Juno job `185516` (`br-base-1gpu`) is still active for the one-GPU H100
+  paired baseline sweep.
+- The sweep runs ratios sequentially (`0.05`, `0.1`, `0.3`, `0.5`, `0.7`,
+  `0.9`) and runs two methods at a time per ratio:
+  `random + stratified`, then `coreset + badge`.
+- Stable completed baseline results are currently available for ratios `0.05`,
+  `0.1`, `0.3`, and `0.5`; `0.7` and `0.9` were still running at the latest
+  check.
+- Juno job `185548` (`br-attr-miss`) is also active for missing Qwen3
+  brown-rainy attribute RPC rows. It runs at most two training processes at
+  once and starts the next queued task as soon as one active task finishes.
+- Training resumes from the same base checkpoint used by the recent
+  brown-rainy experiments:
+  `/home/oxx220000/scratch/safefix_cache/log_pose/pose_keypointrcnn_train20k_internvl3_bs8_e2_rare1p1_gpu0_20260415_144530/best.pth`
+  with logged base best AP `0.6401`.
+- Common generated augmentation source:
+  `/home/oxx220000/scratch/safefix_cache/data/coco-pose-weather-edits/generated_coco_qwen3_1500_brown_rain_icedit`.
+- Each run uses 2 total epochs with batch size `8`, seed `42`, and evaluates
+  COCO keypoints on the generated train/val/test split produced by the runner.
+
+## Completed Brown-Rainy Baseline Results
+
+| Ratio | Method | Val AP | Val AP50 | Val AP75 | Test AP | Test AP50 | Test AP75 |
+| ---: | --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| `0.05` | `random` | `0.5890` | `0.8375` | `0.6406` | `0.5797` | `0.8208` | `0.6263` |
+| `0.05` | `stratified` | `0.6022` | `0.8454` | `0.6604` | `0.5976` | `0.8331` | `0.6492` |
+| `0.05` | `coreset` | `0.5639` | `0.8072` | `0.6129` | `0.5527` | `0.7997` | `0.5914` |
+| `0.05` | `badge` | `0.5936` | `0.8361` | `0.6445` | `0.5782` | `0.8217` | `0.6284` |
+| `0.10` | `random` | `0.6170` | `0.8562` | `0.6767` | `0.6048` | `0.8421` | `0.6521` |
+| `0.10` | `stratified` | `0.6189` | `0.8533` | `0.6776` | `0.6110` | `0.8440` | `0.6646` |
+| `0.10` | `coreset` | `0.5950` | `0.8423` | `0.6441` | `0.5877` | `0.8333` | `0.6371` |
+| `0.10` | `badge` | `0.6121` | `0.8539` | `0.6679` | `0.5985` | `0.8370` | `0.6467` |
+| `0.30` | `random` | `0.6192` | `0.8580` | `0.6652` | `0.6127` | `0.8441` | `0.6626` |
+| `0.30` | `stratified` | `0.6324` | `0.8635` | `0.6837` | `0.6243` | `0.8533` | `0.6816` |
+| `0.30` | `coreset` | `0.6306` | `0.8628` | `0.6910` | `0.6256` | `0.8511` | `0.6778` |
+| `0.30` | `badge` | `0.6212` | `0.8605` | `0.6776` | `0.6153` | `0.8523` | `0.6628` |
+| `0.50` | `random` | `0.6251` | `0.8641` | `0.6849` | `0.6219` | `0.8521` | `0.6770` |
+| `0.50` | `stratified` | `0.6343` | `0.8650` | `0.6914` | `0.6230` | `0.8553` | `0.6786` |
+| `0.50` | `coreset` | `0.6248` | `0.8584` | `0.6823` | `0.6167` | `0.8546` | `0.6733` |
+| `0.50` | `badge` | `0.6300` | `0.8679` | `0.6907` | `0.6206` | `0.8591` | `0.6696` |
+
+- Best completed baseline test AP so far: `ratio=0.30`, `coreset`, test AP
+  `0.6256`.
+- Best completed baseline validation AP so far: `ratio=0.50`, `stratified`,
+  val AP `0.6343`.
+
+## Completed Juno Qwen3 Brown-Rainy Attribute Results
+
+These runs use Qwen3 train20k metadata, generated target
+`clothes_color=brown, weather=rainy`, explicit generated extra counts
+`clothes_color:brown=1000,weather:rainy=1000`, and `extra_count_scale=1/ratio`.
+
+| Ratio | R | P | C | Val AP | Val AP50 | Val AP75 | Test AP | Test AP50 | Test AP75 |
+| ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| `0.05` | `0.00` | `0.0` | `15.0` | `0.6011` | `0.8492` | `0.6560` | `0.5871` | `0.8308` | `0.6384` |
+| `0.10` | `0.00` | `0.0` | `15.0` | `0.6159` | `0.8568` | `0.6623` | `0.6042` | `0.8390` | `0.6546` |
+| `0.10` | `0.01` | `0.5` | `15.0` | `0.6235` | `0.8485` | `0.6833` | `0.6152` | `0.8403` | `0.6717` |
+| `0.10` | `0.03` | `0.5` | `8.0` | `0.6285` | `0.8629` | `0.6882` | `0.6165` | `0.8489` | `0.6690` |
+| `0.10` | `0.03` | `0.5` | `15.0` | `0.6288` | `0.8604` | `0.6925` | `0.6183` | `0.8466` | `0.6782` |
+| `0.30` | `0.00` | `0.0` | `15.0` | `0.6309` | `0.8621` | `0.6899` | `0.6288` | `0.8572` | `0.6926` |
+| `0.30` | `0.01` | `0.5` | `15.0` | `0.6266` | `0.8620` | `0.6892` | **`0.6306`** | `0.8567` | `0.6849` |
+| `0.30` | `0.03` | `0.5` | `8.0` | `0.6254` | `0.8578` | `0.6847` | `0.6110` | `0.8445` | `0.6640` |
+| `0.30` | `0.03` | `0.5` | `15.0` | `0.6266` | `0.8591` | `0.6860` | `0.6176` | `0.8516` | `0.6663` |
+| `0.50` | `0.00` | `0.0` | `15.0` | `0.6272` | `0.8562` | `0.6897` | `0.6203` | `0.8544` | `0.6753` |
+| `0.50` | `0.01` | `0.5` | `15.0` | `0.6290` | `0.8672` | `0.6870` | `0.6208` | `0.8547` | `0.6774` |
+| `0.50` | `0.03` | `0.5` | `8.0` | `0.6257` | `0.8602` | `0.6874` | `0.6162` | `0.8525` | `0.6667` |
+| `0.50` | `0.03` | `0.5` | `15.0` | `0.5916` | `0.8412` | `0.6453` | `0.5866` | `0.8338` | `0.6357` |
+| `0.70` | `0.00` | `0.0` | `15.0` | **`0.6364`** | `0.8650` | `0.6953` | **`0.6313`** | `0.8583` | `0.6932` |
+| `0.90` | `0.00` | `0.0` | `15.0` | `0.6339` | `0.8706` | `0.6908` | `0.6268` | `0.8579` | `0.6836` |
+
+- Best completed Qwen3 brown-rainy attribute test AP so far:
+  `ratio=0.70`, `R=0.00`, `P=0.0`, `C=15.0`, test AP `0.6313`.
+- The strongest completed Juno brown-rainy result overall is currently this
+  `ratio=0.70` attribute row, above the best completed baseline row
+  (`ratio=0.30`, `coreset`, test AP `0.6256`).
+- The remaining `0.70` and `0.90` attribute RPC rows are still running under
+  job `185548`, so they are intentionally not included yet.
+
 # 04/29/2026 Update — KITTI Attribute Assignment and Slice Analysis
 
 - Completed an additional local KITTI object-detection run using YOLOv8n
