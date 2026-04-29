@@ -1,5 +1,52 @@
 # 04/29/2026 Update — KITTI Attribute Assignment (BLIP Completed, Qwen3 In-Progress)
 
+- Completed an additional local KITTI object-detection run using YOLOv8n
+  pretrained weights with batch size `16` on physical GPU `0`.
+- This is a batch-size sensitivity rerun of the same 5000/1240/1241 KITTI
+  split used by the previous batch-size-64 result.
+- Training setup:
+  - script: `object_detection/train_yolov8_kitti.py`
+  - launch helper: `scripts/launch_kitti_yolov8_gpu0_bs16_e30.sh`
+  - environment: local `fp` conda
+  - pretrained weights: `weights/yolov8n.pt`
+  - epochs: `30`
+  - batch size: `16`
+  - image size: `640`
+  - GPU: physical GPU `0`
+  - Ultralytics: `8.4.33`
+  - Python: `3.10.18`
+  - PyTorch: `2.9.1+cu128`
+- Canonical artifacts:
+  - log:
+    `logs/kitti_yolov8_first5000_1240val_1241test_gpu0_bs16_e30_20260429_012232.log`
+  - run directory:
+    `runs/kitti_yolov8/first5000_1240val_1241test_gpu0_bs16_e30_20260429_012232`
+  - final test evaluation directory:
+    `runs/kitti_yolov8/first5000_1240val_1241test_gpu0_bs16_e30_20260429_012232_test`
+  - best checkpoint:
+    `runs/kitti_yolov8/first5000_1240val_1241test_gpu0_bs16_e30_20260429_012232/weights/best.pt`
+  - last checkpoint:
+    `runs/kitti_yolov8/first5000_1240val_1241test_gpu0_bs16_e30_20260429_012232/weights/last.pt`
+- Runtime:
+  - training: `714.95 s` (`00:11:55`)
+  - final test evaluation: `5.96 s` (`00:00:06`)
+- Final validation metrics after epoch 30:
+  - precision: `0.889`
+  - recall: `0.709`
+  - mAP50: `0.819`
+  - mAP50-95: `0.561`
+- Final held-out test metrics:
+
+| Class | Images | Instances | Precision | Recall | mAP50 | mAP50-95 |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| all | `1241` | `5369` | `0.8677` | `0.7530` | `0.8454` | `0.5797` |
+| Car | `1107` | `4666` | `0.900` | `0.893` | `0.945` | `0.747` |
+| Pedestrian | `283` | `703` | `0.836` | `0.613` | `0.746` | `0.413` |
+
+- Compared with the previous batch-size-64 run on GPU `3`, the batch-size-16
+  run is effectively tied on held-out test mAP50-95 (`0.5797` vs `0.5801`) and
+  slightly higher on held-out test mAP50 (`0.8454` vs `0.8422`).
+
 - Completed BLIP attribute assignment on 5000 KITTI train images.
 - Corpus: `save/corpus_kitti_gemini_clean.json` (6 attributes, no "unknown"/"NA")
   - Removed `time_of_day` (redundant with `lighting_condition`, KITTI is nearly
