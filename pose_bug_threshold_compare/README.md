@@ -5,7 +5,7 @@
 - Fixed distribution threshold: `0.15`.
 - Fixed rare-label threshold: `1.1`.
 - Analysis tag: `manual`.
-- Compared methods: `20` compact rows from `bugs compare pose.csv`; only the best `attribute` method per ratio is retained.
+- Compared methods: `20` compact rows from `bugs_compare_pose.csv`; only the best `attribute` method per ratio is retained.
 
 ## Standard Result
 

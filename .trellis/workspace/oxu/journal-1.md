@@ -5,6 +5,1242 @@
 
 ---
 
+## Session 116: Upgrade Juno ad PyTorch for H100 and relaunch ratio 0.05
+
+**Date**: 2026-04-28
+**Task**: juno-ad-h100-pytorch-upgrade
+
+### Summary
+
+The running `ratio=0.05` job was stuck after checkpoint load with a PyTorch
+warning that `torch==1.13.1+cu117` did not support H100 `sm_90`. Per user
+request, cancelled that job, upgraded the Juno `ad` environment to an H100-ready
+PyTorch CUDA 12.1 stack, ran an H100 smoke test, and relaunched only
+`ratio=0.05`.
+
+### Cancelled Stuck Job
+
+- Cancelled job:
+  - `185323`
+  - final state: `CANCELLED by 777123`
+  - elapsed: `00:13:11`
+  - node: `g-04-02`
+- This job had already passed data loading / selection but had not printed any
+  `[Epoch 1] step ...` progress after the H100 compatibility warning.
+
+### PyTorch Upgrade
+
+- Rationale:
+  - official PyTorch previous-version install table lists CUDA 12.1 wheels for
+    `torch==2.4.1`, `torchvision==0.19.1`, and `torchaudio==2.4.1`
+  - PyTorch 1.13.x only supports CUDA up to 11.7 and does not support Hopper
+    H100 `sm_90`
+- Upgraded Juno env:
+  - env: `/groups/yguo/oxx220000/conda/envs/ad`
+  - installed:
+    - `torch==2.4.1+cu121`
+    - `torchvision==0.19.1+cu121`
+    - `torchaudio==2.4.1+cu121`
+  - install command family:
+    - `python -m pip install --upgrade --no-cache-dir torch==2.4.1 torchvision==0.19.1 --index-url https://download.pytorch.org/whl/cu121`
+    - `python -m pip install --upgrade --no-cache-dir torchaudio==2.4.1 --index-url https://download.pytorch.org/whl/cu121`
+
+### Validation
+
+- Login-node package check:
+  - `torch 2.4.1+cu121 cuda 12.1`
+  - `torchvision 0.19.1+cu121`
+  - `torchaudio 2.4.1+cu121`
+  - `transformers 4.26.1`
+  - `timm 0.4.12`
+- Repo checks:
+  - `python -m py_compile train_pose_estimation.py utils/imports.py utils/active_learning.py pose_estimation/modeling.py pose_estimation/engine.py`
+  - `cd ~/work/safefix && /groups/yguo/oxx220000/conda/envs/ad/bin/python -c 'from utils.imports import *; from pose_estimation.modeling import create_keypointrcnn_model; print("imports ok")'`
+- H100 smoke job:
+  - job id: `185346`
+  - state: `COMPLETED`, exit code `0:0`
+  - node: `g-04-02`
+  - output:
+    - `torch 2.4.1+cu121 cuda 12.1`
+    - `available True`
+    - `device NVIDIA H100 80GB HBM3`
+    - `capability (9, 0)`
+    - CUDA matmul sum: `1073741824.0`
+
+### Relaunch
+
+- Relaunched only brown-rainy `ratio=0.05`; did not relaunch `ratio=0.1`.
+- New job:
+  - `185348`
+  - initially `PENDING` with reason `Priority`
+  - then `RUNNING` on `g-04-02`
+  - stdout:
+    `/work/oxx220000/safefix/slurm-safefix-br-rain-185348.out`
+  - Python log:
+    `/work/oxx220000/safefix/log_pose/pose_resume_qwen3_brown_rainy_r0p05_r0p0_p0p0_c15p0_gpu0_20260428_185219.log`
+  - output dir:
+    `/work/oxx220000/safefix/log_pose/pose_keypointrcnn_resume_qwen3_brown_rainy_r0p05_r0p0_p0p0_c15p0_gpu0_20260428_185219`
+- Command used scratch cache and no recopy:
+  - `sbatch --partition=h100 scripts/juno_pose_brown_rainy_attribute.sbatch --ratio 0.05 --data-root ~/scratch/safefix_cache/data/coco --generated-dir ~/scratch/safefix_cache/data/coco-pose-weather-edits/generated_coco_qwen3_1500_brown_rain_icedit --base-model ~/scratch/safefix_cache/log_pose/pose_keypointrcnn_train20k_internvl3_bs8_e2_rare1p1_gpu0_20260415_144530/best.pth --no-scratch-copy`
+- Confirmed it can run on H100 after the PyTorch upgrade:
+  - no old H100 `sm_90` incompatibility warning in the new Python log
+  - data selection completed:
+    `selected_original=1000`, `generated_selected=1000`, `final_train=2000`
+  - checkpoint loaded successfully
+  - reached training progress:
+    `[Epoch 1] step 50/250`
+
+### Next Step
+
+- Monitor:
+  - `ssh juno 'squeue -j 185348 -o "%i %j %t %M %D %R"'`
+  - `ssh juno 'cd ~/work/safefix && tail -f slurm-safefix-br-rain-185348.out'`
+- Continue monitoring the Python log for:
+  - epoch completion
+  - `Held-out test metrics`
+  - `Training complete. Artifacts:`
+
+### Status
+
+[~] **Juno H100 PyTorch Ready; ratio 0.05 Running**
+
+## Session 115: Confirm Juno cache and relaunch brown-rainy ratio 0.05
+
+**Date**: 2026-04-28
+**Task**: relaunch-juno-brown-rainy-ratio005-only
+
+### Summary
+
+Confirmed the Juno scratch-cache staging job completed successfully, then
+relaunched only the brown-rainy `ratio=0.05` job as requested. Did not relaunch
+`ratio=0.1`.
+
+### Scratch Cache Status
+
+- `185308` (`safefix-stage-cache`) completed:
+  - `sacct` state: `COMPLETED`
+  - exit code: `0:0`
+  - elapsed: `00:49:21`
+  - node: `c-03-05`
+- Cache root:
+  - `/home/oxx220000/scratch/safefix_cache`
+  - total size at check time: `80G`
+- Cached data:
+  - COCO: `52G`
+    - `/home/oxx220000/scratch/safefix_cache/data/coco`
+  - COCO pose weather edits: `3.9G`
+    - `/home/oxx220000/scratch/safefix_cache/data/coco-pose-weather-edits`
+  - KITTI object: `24G`
+    - `/home/oxx220000/scratch/safefix_cache/data/kitti_object`
+  - KITTI YOLO first5000: `59M`
+    - `/home/oxx220000/scratch/safefix_cache/data/kitti_yolov8_first5000`
+  - base checkpoint cache: `451M`
+    - `/home/oxx220000/scratch/safefix_cache/log_pose/pose_keypointrcnn_train20k_internvl3_bs8_e2_rare1p1_gpu0_20260415_144530`
+- Verified required relaunch inputs exist:
+  - COCO cache directory exists
+  - brown-rainy generated directory exists
+  - base checkpoint exists
+  - brown-rainy generated directory has `1500` files
+
+### Relaunch
+
+- Submitted only `ratio=0.05`:
+  - job id: `185323`
+  - command:
+    `ssh juno 'cd ~/work/safefix && sbatch --partition=h100 scripts/juno_pose_brown_rainy_attribute.sbatch --ratio 0.05 --data-root ~/scratch/safefix_cache/data/coco --generated-dir ~/scratch/safefix_cache/data/coco-pose-weather-edits/generated_coco_qwen3_1500_brown_rain_icedit --base-model ~/scratch/safefix_cache/log_pose/pose_keypointrcnn_train20k_internvl3_bs8_e2_rare1p1_gpu0_20260415_144530/best.pth --no-scratch-copy'`
+- Immediate status:
+  - initially `PENDING` with reason `Priority`
+  - later `RUNNING` on `g-04-02`
+- SLURM stdout confirms it is using scratch-cache inputs:
+  - data root:
+    `/home/oxx220000/scratch/safefix_cache/data/coco`
+  - generated dir:
+    `/home/oxx220000/scratch/safefix_cache/data/coco-pose-weather-edits/generated_coco_qwen3_1500_brown_rain_icedit`
+  - base checkpoint:
+    `/home/oxx220000/scratch/safefix_cache/log_pose/pose_keypointrcnn_train20k_internvl3_bs8_e2_rare1p1_gpu0_20260415_144530/best.pth`
+  - primary Python log:
+    `/work/oxx220000/safefix/log_pose/pose_resume_qwen3_brown_rainy_r0p05_r0p0_p0p0_c15p0_gpu0_20260428_183019.log`
+  - output dir:
+    `/work/oxx220000/safefix/log_pose/pose_keypointrcnn_resume_qwen3_brown_rainy_r0p05_r0p0_p0p0_c15p0_gpu0_20260428_183019`
+- Early Python log no longer shows the old `transformers` import error; it
+  currently only has a `wandb` / `pkg_resources` warning.
+- The job was launched after the Juno `ad` environment fix, so it should not hit
+  the previous `ModuleNotFoundError: No module named 'transformers'`.
+- Because the current Juno launcher default is already updated, this relaunch
+  will use `1000` generated images, not the previous failed jobs' `1500`.
+
+### Next Step
+
+- Monitor:
+  - `ssh juno 'squeue --me -o "%i %j %t %M %D %R"'`
+  - `ssh juno 'cd ~/work/safefix && tail -f slurm-safefix-br-rain-185323.out'`
+- Once stdout prints the Python log path, monitor that log for:
+  - absence of the old `transformers` import error
+  - `Train sampling summary`
+  - `Held-out test metrics`
+  - `Training complete. Artifacts:`
+
+### Status
+
+[~] **Juno ratio 0.05 Relaunched**
+
+## Session 114: Bring Juno ad environment closer to local ad
+
+**Date**: 2026-04-28
+**Task**: sync-juno-ad-env
+
+### Summary
+
+Synced the Juno `ad` conda environment toward the current UTD `ad` environment
+for reproducible safefix pose runs, while preserving the working
+`torch==1.13.1+cu117` / `torchvision==0.14.1+cu117` GPU stack.
+
+### Baseline Comparison
+
+- Local UTD `ad`:
+  - Python `3.9.20`
+  - executable: `/people/cs/o/oxx220000/.conda/envs/ad/bin/python`
+  - torch `1.13.1+cu117`
+  - torchvision `0.14.1+cu117`
+  - transformers `4.26.1`
+  - timm `0.4.12`
+  - cv2 `4.7.0` import result from the current local env
+- Juno `ad` before sync:
+  - Python `3.9.25`
+  - executable: `/groups/yguo/oxx220000/conda/envs/ad/bin/python`
+  - torch `1.13.1+cu117`
+  - torchvision `0.14.1+cu117`
+  - missing `transformers`
+  - had `huggingface-hub==1.8.0`
+
+### Installation
+
+- Initial broad install attempt failed because local `ad` itself has an
+  inconsistent pairing:
+  - `sentence-transformers==2.7.0` declares `transformers>=4.34.0`
+  - local `ad` actually uses `transformers==4.26.1`
+- Preserved the local active-training choice by installing
+  `transformers==4.26.1` and skipping `sentence-transformers` for now.
+- Installed / aligned key Juno packages with:
+  - `transformers==4.26.1`
+  - `tokenizers==0.13.3`
+  - `huggingface-hub==0.26.2`
+  - `safetensors==0.4.5`
+  - `accelerate==1.1.1`
+  - `timm==0.4.12`
+  - `pandas==1.5.3`
+  - `opencv-python-headless==4.7.0.72`
+  - `opencv-python==4.10.0.84`
+  - `openai==1.55.0`
+  - `diffusers==0.31.0`
+  - `qwen-vl-utils==0.0.10`
+  - `sentencepiece==0.2.1`
+  - `ftfy==6.3.1`
+  - `regex==2024.11.6`
+  - `open-clip-torch==1.3.0`
+  - `lpips==0.1.4`
+  - `pytorch-fid==0.3.0`
+  - `GPUtil==1.4.0`
+  - `wandb==0.12.21`
+  - `tensorboard==2.18.0`
+  - `scikit-image==0.24.0`
+  - `albumentations==1.4.0`
+  - `pycocoevalcap==1.2`
+  - `xtcocotools==1.14.3`
+  - `json-tricks==3.17.3`
+  - `mmengine==0.10.7`
+
+### Validation
+
+- Juno direct Python import check succeeded:
+  - command used `/groups/yguo/oxx220000/conda/envs/ad/bin/python`
+  - output included:
+    `ok 1.13.1+cu117 0.14.1+cu117 4.26.1 0.4.12 4.10.0`
+  - meaning imports for `torch`, `torchvision`, `transformers`, `timm`, and
+    `cv2` are now available
+- Juno repo import check succeeded:
+  - `cd ~/work/safefix && /groups/yguo/oxx220000/conda/envs/ad/bin/python -c 'from utils.imports import *; print("utils.imports ok")'`
+- Juno compile / entry checks succeeded:
+  - `python -m py_compile train_pose_estimation.py utils/imports.py utils/active_learning.py`
+  - `python train_pose_estimation.py train --help`
+  - `bash scripts/juno_pose_brown_rainy_attribute.sbatch --ratio 0.05 --dry-run --no-scratch-copy`
+- Dry-run confirms future brown-rainy submissions now use the post-policy
+  `1000` generated images:
+  - `--num-added-img 1000`
+  - `--al-attribute-extra-counts clothes_color:brown=1000,weather:rainy=1000`
+
+### Juno Job State After Sync
+
+- Both already-submitted brown-rainy jobs failed before the environment fix:
+  - `185306` ratio `0.05`: `FAILED`, exit code `1:0`
+  - `185307` ratio `0.1`: `FAILED`, exit code `1:0`
+- `185307` failed for the same pre-sync reason as `185306`:
+  - `ModuleNotFoundError: No module named 'transformers'`
+  - log:
+    `/work/oxx220000/safefix/log_pose/pose_resume_qwen3_brown_rainy_r0p1_r0p0_p0p0_c15p0_gpu0_20260428_174946.log`
+- Scratch staging job `185308` is still running:
+  - cache size at latest check: `67G`
+
+### Caveats
+
+- Juno `ad` is now close enough for current safefix pose training, but not a
+  byte-for-byte clone of the local environment.
+- Skipped known problematic / nonportable local entries:
+  - local editable install under `/people/cs/o/oxx220000/CLiMB/...`
+  - local `apex @ file:///people/...`
+  - git-installed packages such as local CLIP / fvcore references
+  - `sentence-transformers==2.7.0`, due its conflict with the local active
+    `transformers==4.26.1`
+- If exact reproduction becomes necessary, use `conda-pack` from local `ad`
+  rather than rebuilding package-by-package.
+
+### Next Step
+
+- Relaunch the failed brown-rainy Juno jobs after user confirmation:
+  - `ssh juno 'cd ~/work/safefix && sbatch --partition=h100 scripts/juno_pose_brown_rainy_attribute.sbatch --ratio 0.05'`
+  - `ssh juno 'cd ~/work/safefix && sbatch --partition=h100 scripts/juno_pose_brown_rainy_attribute.sbatch --ratio 0.1'`
+- These future relaunches will use `1000` generated images, not the failed
+  jobs' original `1500`.
+
+### Status
+
+[x] **Juno ad Core Environment Synced**
+
+## Session 113: Check Juno submitted task status
+
+**Date**: 2026-04-28
+**Task**: check-juno-prior-tasks
+
+### Summary
+
+Checked the previously submitted Juno jobs from Session 112.
+
+### Current Juno Status
+
+- `squeue --me` showed:
+  - `185307` (`safefix-br-rain`) running on `g-04-02`
+  - `185308` (`safefix-stage-cache`) running on `c-03-05`
+- `sacct -j 185306,185307,185308` showed:
+  - `185306` (`safefix-br-rain`, ratio `0.05`) `FAILED`, exit code `1:0`, elapsed `00:15:04`
+  - `185307` (`safefix-br-rain`, ratio `0.1`) `RUNNING`
+  - `185308` (`safefix-stage-cache`) `RUNNING`
+- `185306` SLURM stdout reached the Python command and wrote:
+  - log:
+    `/work/oxx220000/safefix/log_pose/pose_resume_qwen3_brown_rainy_r0p05_r0p0_p0p0_c15p0_gpu0_20260428_173450.log`
+  - output dir:
+    `/work/oxx220000/safefix/log_pose/pose_keypointrcnn_resume_qwen3_brown_rainy_r0p05_r0p0_p0p0_c15p0_gpu0_20260428_173450`
+- The `185306` Python log failed immediately with:
+  - `ModuleNotFoundError: No module named 'transformers'`
+- `185307` stdout currently only shows scratch-copy startup:
+  - `/home/oxx220000/scratch/safefix_185307_brown_rainy_ratio0.1`
+- `185308` scratch cache size at check time:
+  - `44G` under `/home/oxx220000/scratch/safefix_cache`
+
+### Next Step
+
+- Fix or install the missing `transformers` dependency in the Juno `ad` conda
+  environment before relaunching `185306` or expecting `185307` to train.
+- Continue monitoring:
+  - `ssh juno 'squeue --me'`
+  - `ssh juno 'tail -f ~/work/safefix/slurm-safefix-br-rain-185307.out'`
+  - `ssh juno 'du -sh ~/scratch/safefix_cache'`
+
+### Status
+
+[~] **Juno Tasks Not Complete**
+
+## Session 112: Submit Juno brown-rainy ratio 0.05 and 0.1 jobs
+
+**Date**: 2026-04-28
+**Task**: run-juno-brown-rainy-ratio005-01
+
+### Summary
+
+Answered the logging-layout question and submitted two Juno SLURM jobs for COCO
+pose attribute selection with generated attribute `brown_rainy` at ratios `0.05`
+and `0.1`.
+
+### Logging Decision
+
+- Keep primary training logs on Juno under `~/work/safefix/log_pose/`.
+- Keep SLURM stdout/stderr in the Juno submit directory:
+  - `/work/oxx220000/safefix/slurm-safefix-br-rain-<jobid>.out`
+  - `/work/oxx220000/safefix/slurm-safefix-br-rain-<jobid>.err`
+- Do not write primary job output directly to `/people/cs/o/oxx220000`; that is
+  the UTD filesystem, not Juno-local job storage. For local viewing, use
+  `ssh juno tail -f ...` or periodically pull logs with `rsync`.
+
+### Juno Submission
+
+- Initial direct submission failed because the wrapper used stale partition
+  `h100-2.47gb`, which is not present in current `sinfo`.
+- Actual GPU partitions observed with `sinfo` include `h100`, `a30`,
+  `a30-2.12gb`, and `a30-4.6gb`.
+- Submitted successfully with command-line partition override:
+  - `sbatch --partition=h100 scripts/juno_pose_brown_rainy_attribute.sbatch --ratio 0.05`
+    - job id `185306`
+    - status after submission: running on `g-04-02`
+    - stdout: `/work/oxx220000/safefix/slurm-safefix-br-rain-185306.out`
+    - stderr: `/work/oxx220000/safefix/slurm-safefix-br-rain-185306.err`
+    - stdout showed scratch copy started:
+      `/home/oxx220000/scratch/safefix_185306_brown_rainy_ratio0.05`
+  - `sbatch --partition=h100 scripts/juno_pose_brown_rainy_attribute.sbatch --ratio 0.1`
+    - job id `185307`
+    - status after submission: pending with reason `Priority`
+
+### Code / Docs Follow-up
+
+- Updated `scripts/juno_pose_brown_rainy_attribute.sbatch` default partition to
+  `h100`.
+- Updated `docs/juno_migration.md` to record the current `sinfo` partition names
+  and remove the stale `h100-2.47gb` recommendation.
+- Synced those two updated files to Juno under the correct paths:
+  - `~/work/safefix/scripts/juno_pose_brown_rainy_attribute.sbatch`
+  - `~/work/safefix/docs/juno_migration.md`
+- Verified hashes match between `/people/cs/o/oxx220000/safefix` and Juno for:
+  - `train_pose_estimation.py`
+  - `utils/attribute_aliases.py`
+  - `scripts/juno_pose_brown_rainy_attribute.sbatch`
+  - `docs/juno_migration.md`
+
+### Next Step
+
+- Monitor Juno queue:
+  - `ssh juno 'squeue --me'`
+- Monitor the running job startup:
+  - `ssh juno 'cd ~/work/safefix && tail -f slurm-safefix-br-rain-185306.out'`
+- Once scratch copy completes, monitor the Python training log printed as
+  `log=...` in the SLURM stdout.
+
+### Status
+
+[~] **Juno Jobs Submitted**
+
+### Follow-up: Future Brown-Rainy Runs Use 1000 Generated Images
+
+- User clarified not to kill the already submitted Juno jobs, but future
+  brown-rainy runs should always append `1000` generated images, not `1500`.
+- Existing jobs `185306` and `185307` were left untouched.
+- Updated `train_pose_estimation.py`:
+  - generated-image subsampling now uses `random.Random(seed)` directly instead
+    of `random.Random(seed + 17)`
+  - with default `--seed 42`, the generated-image subset is a deterministic
+    random sample of `1000` image ids from the available generated directory
+- Updated `scripts/juno_pose_brown_rainy_attribute.sbatch`:
+  - default `NUM_ADDED_IMG=1000`
+  - help text now says default `1000`
+  - existing extra-count argument remains tied to `${NUM_ADDED_IMG}`, so future
+    runs use `clothes_color:brown=1000,weather:rainy=1000`
+- Updated `docs/juno_migration.md`:
+  - recorded the policy that the 1500-file directory is kept intact, but runs
+    append only 1000 generated images sampled deterministically with `--seed 42`
+- Synced the updated files to Juno:
+  - `~/work/safefix/train_pose_estimation.py`
+  - `~/work/safefix/scripts/juno_pose_brown_rainy_attribute.sbatch`
+  - `~/work/safefix/docs/juno_migration.md`
+- Validation:
+  - local: `python3 -m py_compile train_pose_estimation.py`
+  - local: `bash -n scripts/juno_pose_brown_rainy_attribute.sbatch`
+  - Juno:
+    `/groups/yguo/oxx220000/conda/envs/ad/bin/python -m py_compile train_pose_estimation.py`
+  - Juno: `bash -n scripts/juno_pose_brown_rainy_attribute.sbatch`
+  - verified matching SHA256 hashes between local and Juno for all three files
+
+### Follow-up: Stage Juno Work Data To Scratch Cache
+
+- User wanted most datasets already present under Juno `~/work` copied to
+  scratch for faster future batch I/O, including checkpoints.
+- Did not kill or modify the active training jobs.
+- Observed Juno `~/work` data sizes:
+  - `~/work/data/coco`: `51G`
+  - `~/work/data/coco-pose-weather-edits`: `3.9G`
+  - `~/work/data/kitti_object`: `24G`
+  - `~/work/data/kitti_yolov8_first5000`: `19M`
+  - base checkpoint:
+    `~/work/safefix/log_pose/pose_keypointrcnn_train20k_internvl3_bs8_e2_rare1p1_gpu0_20260415_144530/best.pth`
+    (`451M`)
+- Submitted a non-GPU SLURM staging job:
+  - job id `185308`
+  - partition `normal`
+  - job name `safefix-stage-cache`
+  - status after launch: running on `c-03-05`
+  - stdout:
+    `/work/oxx220000/safefix/logs/stage_scratch_cache_185308.out`
+  - stderr:
+    `/work/oxx220000/safefix/logs/stage_scratch_cache_185308.err`
+- Destination cache:
+  - `~/scratch/safefix_cache/data/coco`
+  - `~/scratch/safefix_cache/data/coco-pose-weather-edits`
+  - `~/scratch/safefix_cache/data/kitti_object`
+  - `~/scratch/safefix_cache/data/kitti_yolov8_first5000`
+  - `~/scratch/safefix_cache/log_pose/pose_keypointrcnn_train20k_internvl3_bs8_e2_rare1p1_gpu0_20260415_144530/best.pth`
+- Monitor:
+  - `ssh juno 'squeue --me'`
+  - `ssh juno 'tail -f ~/work/safefix/logs/stage_scratch_cache_185308.out'`
+  - `ssh juno 'du -sh ~/scratch/safefix_cache'`
+
+## Session 111: Add Juno brown-rainy pose attribute selection launcher
+
+**Date**: 2026-04-28
+**Task**: juno-brown-rainy-attribute-selection-code
+
+### Summary
+
+Added code and a Juno SLURM wrapper for running COCO pose attribute selection
+focused on the exact attribute metadata values `clothes_color=brown` and
+`weather=rainy`.
+
+### Changes
+
+- Updated `utils/attribute_aliases.py`:
+  - added `brown_rainy` as a canonical COCO pose generated attribute
+  - added aliases `brown_rain`, `brown-rain`, and `brown-rainy`
+- Updated `train_pose_estimation.py`:
+  - added default local root for `brown_rainy` generated images:
+    `/data/oxx220000/coco-pose-weather-edits/generated_coco_qwen3_1500_brown_rain_icedit`
+  - added generated extra-count template:
+    - `clothes_color:brown`
+    - `weather:rainy`
+- Added `scripts/juno_pose_brown_rainy_attribute.sbatch`:
+  - default Juno data root: `~/work/data/coco`
+  - default generated-image dir:
+    `~/work/data/coco-pose-weather-edits/generated_coco_qwen3_1500_brown_rain_icedit`
+  - default attribute file:
+    `~/work/safefix/save/attribute_coco_pose_gemini_train20k_qwen3_8B.json`
+  - default focus: `clothes_color,weather`
+  - default extra counts:
+    `clothes_color:brown=1500,weather:rainy=1500`
+  - default generated attribute: `brown_rainy`
+  - default ratio: `0.9`
+  - default generated images added: `1500`
+  - copies COCO and the generated-image directory to scratch unless
+    `--no-scratch-copy` is passed
+- Updated `docs/juno_migration.md` with brown-rainy data paths and submit command.
+- Synced the runtime files to Juno `~/work/safefix`:
+  - `train_pose_estimation.py`
+  - `utils/attribute_aliases.py`
+  - `scripts/juno_pose_brown_rainy_attribute.sbatch`
+  - `docs/juno_migration.md`
+
+### Validation
+
+- `bash -n scripts/juno_pose_brown_rainy_attribute.sbatch`
+- `python3 -m py_compile train_pose_estimation.py utils/attribute_aliases.py`
+- Local dry-run of the new sbatch wrapper succeeded with local substitute paths
+  and showed the expected command arguments:
+  - `--attribute brown_rainy`
+  - `--assigner qwen3`
+  - `--al-attribute-focus clothes_color,weather`
+  - `--al-attribute-extra-counts clothes_color:brown=1500,weather:rainy=1500`
+  - `--al-attribute-extra-count-scale 1.11111` for ratio `0.9`
+- Juno validation after syncing:
+  - `bash -n scripts/juno_pose_brown_rainy_attribute.sbatch`
+  - `/groups/yguo/oxx220000/conda/envs/ad/bin/python -m py_compile train_pose_estimation.py utils/attribute_aliases.py`
+  - dry-run with a dummy existing `--base-model` path printed the expected
+    Juno command and paths without copying scratch data
+
+### Juno State Checked
+
+- Juno generated-image directory exists:
+  - `~/work/data/coco-pose-weather-edits/generated_coco_qwen3_1500_brown_rain_icedit`
+  - `1500` files, about `58M`
+- Juno Qwen3 train20k attribute JSON exists:
+  - `~/work/safefix/save/attribute_coco_pose_gemini_train20k_qwen3_8B.json`
+- Copied base checkpoint to Juno:
+  - local:
+    `log_pose/pose_keypointrcnn_train20k_internvl3_bs8_e2_rare1p1_gpu0_20260415_144530/best.pth`
+  - Juno:
+    `~/work/safefix/log_pose/pose_keypointrcnn_train20k_internvl3_bs8_e2_rare1p1_gpu0_20260415_144530/best.pth`
+  - size: `451M`
+  - sha256:
+    `d321348d42070516b2aa6edb9031e181922ff043e1f4b59689adb9e3cc5e114a`
+- Juno dry-run now works with the launcher default `--base-model` path and
+  prints the expected command.
+
+### Next Step
+
+- Submit from Juno:
+  - `cd ~/work/safefix`
+  - `sbatch scripts/juno_pose_brown_rainy_attribute.sbatch`
+
+### Status
+
+[x] **Ready To Submit On Juno**
+
+## Session 110: Check ratio-0.9 GPU0 status and relaunch
+
+**Date**: 2026-04-28
+**Task**: check-ratio09-gpu0-and-relaunch
+
+### Summary
+
+The user asked whether the `ratio=0.9` GPU0 queue had finished. It had not: the controller and worker from the `20260428_034157` launch were gone, and the worker log stopped during training without completion or an error traceback. I relaunched the queue again on GPU `0` from the same first unfinished entry.
+
+### Stopped State
+
+- Stopped controller:
+  - pid `204931`
+  - log `log_pose/run_pose_ratio0.9_gpu0_internvl3_queue_20260428_034157.log`
+- Stopped worker:
+  - pid `204939`
+  - log `log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.9_attrx111_r0001_p01_c15_gpu0_20260428_034157.log`
+- Observed:
+  - `ps -fp 204931 204939` showed no live process
+  - worker log stopped at `[Epoch 1] step 950/2375`
+  - no `Held-out test metrics`
+  - no `Training complete. Artifacts:`
+  - no traceback or explicit `[fail]` line
+
+### Relaunch
+
+- Command:
+  - `bash scripts/run_pose_ratio0.9_gpu1_internvl3_queue.sh --start-at attrx111_r0001_p01_c15 --gpu 0 --detach-controller`
+- Controller:
+  - pid `33609`
+  - log `log_pose/run_pose_ratio0.9_gpu0_internvl3_queue_20260428_163413.log`
+  - pidfile `log_pose/pids/run_pose_ratio0.9_gpu0_internvl3_queue_20260428_163413.pid`
+- First worker:
+  - `attribute` `attrx111_r0001_p01_c15`
+  - pid `33616`
+  - log `log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.9_attrx111_r0001_p01_c15_gpu0_20260428_163413.log`
+  - output dir `log_pose/pose_keypointrcnn_resume_internvl3_attribute_ratio0.9_attrx111_r0001_p01_c15_gpu0_20260428_163413`
+
+### Validation
+
+- `ps -fp 33609 33616` showed the controller alive with PPID `1` and the worker alive under the controller.
+- Controller log showed the expected skip of completed `attrx111_r000_p0_c15` and launch of `attrx111_r0001_p01_c15`.
+- Worker log started at `2026-04-28 16:34:19`.
+
+### Next Step
+
+- Monitor:
+  - `log_pose/run_pose_ratio0.9_gpu0_internvl3_queue_20260428_163413.log`
+  - `log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.9_attrx111_r0001_p01_c15_gpu0_20260428_163413.log`
+- If this attempt stops again without traceback, investigate host/job lifetime or external process termination rather than model-side Python errors.
+
+### Status
+
+[~] **In Progress**
+
+## Session 89 - Record completed Juno brown-rainy ratio-0.1 run 185427
+
+**Date**: 2026-04-28
+**Task**: report-juno-brown-rainy-ratio0.1-185427
+
+### Summary
+
+Juno job `185427`, the first Qwen3 brown-rainy `ratio=0.1` RPC run, completed
+successfully. Added a new top-level `ratio=0.1` brown-rainy RPC section to
+`report.md` and updated `.handoff.md`.
+
+### Result
+
+- Job: `185427`
+- RPC: `R=0.0`, `P=0.0`, `C=15.0`
+- Selection:
+  - original candidates: `20000`
+  - selected original: `2000`
+  - generated available: `1314`
+  - generated selected: `1000`
+  - final train size: `3000`
+  - selection time: `0.37 s`
+- Held-out val:
+  - AP `0.6159066583180007`
+  - AP50 `0.8567885211238286`
+  - AP75 `0.6622645669798422`
+  - AR `0.6908322496749024`
+- Held-out test:
+  - AP `0.604214737755279`
+  - AP50 `0.8390170185379144`
+  - AP75 `0.654581408240925`
+  - AR `0.6766483516483517`
+- Runtime:
+  - total training time for 2 epochs: `454.11 s`
+  - end-to-end elapsed: `00:08:00`
+- Log:
+  - `/work/oxx220000/safefix/log_pose/pose_resume_qwen3_brown_rainy_r0p1_r0p0_p0p0_c15p0_gpu0_20260428_205920.log`
+- Artifacts:
+  - `/work/oxx220000/safefix/log_pose/pose_keypointrcnn_resume_qwen3_brown_rainy_r0p1_r0p0_p0p0_c15p0_gpu0_20260428_205920`
+
+### Current Juno Status
+
+- `185428`: running on `g-04-02` at last check
+- `185429`: pending at last check
+- `185430`: pending at last check
+- A30 probe `185433`: still `PENDING`, reason `Resources` at last check
+
+### Status
+
+[OK] **Completed**
+
+## Session 88 - Submit A30 brown-rainy ratio-0.05 all-zero RPC probe
+
+**Date**: 2026-04-28
+**Task**: juno-a30-brown-rainy-ratio0.05-probe
+
+### Summary
+
+Submitted an A30 partition probe to test whether the brown-rainy COCO pose
+training job can run on a non-H100 GPU while keeping `batch-size=8` for a fairer
+comparison. The probe uses `ratio=0.05` and the all-zero RPC setting
+`R=0.0, P=0.0, C=0.0`.
+
+### Job
+
+- Job id: `185433`
+- Partition: `a30`
+- Job name: `br-r005-r000-p0-c0-a30`
+- State at last check: `PENDING`, reason `Resources`
+- Key settings:
+  - `ratio=0.05`
+  - `R=0.0`
+  - `P=0.0`
+  - `C=0.0`
+  - `batch-size=8`
+  - `num-added-img=1000`
+  - `extra_count_scale=20`
+- Inputs use scratch cache with `--no-scratch-copy`:
+  - `/home/oxx220000/scratch/safefix_cache/data/coco`
+  - `/home/oxx220000/scratch/safefix_cache/data/coco-pose-weather-edits/generated_coco_qwen3_1500_brown_rain_icedit`
+  - `/home/oxx220000/scratch/safefix_cache/log_pose/pose_keypointrcnn_train20k_internvl3_bs8_e2_rare1p1_gpu0_20260415_144530/best.pth`
+
+### Notes
+
+- Keeping `batch-size=8` is the right first probe because it preserves
+  comparability with the H100 runs. If the A30 job starts and fails with CUDA
+  OOM, relaunch with a smaller batch size and mark it as a throughput/feasibility
+  probe rather than a strict same-batch comparison.
+
+### Status
+
+[~] **In Progress**
+
+## Session 87 - Clean root-level miscellaneous files
+
+**Date**: 2026-04-28
+**Task**: root-file-organization
+
+### Summary
+
+Moved obvious non-code root-level miscellaneous files into typed subfolders so
+the repository root contains only core entry points and project metadata.
+
+### File Moves
+
+- `3_Juno_Orientation_v12_Thien-2025-11-26.pdf`
+  -> `docs/juno/3_Juno_Orientation_v12_Thien-2025-11-26.pdf`
+- `bugs compare pose.csv`
+  -> `pose_bug_threshold_compare/bugs_compare_pose.csv`
+- `codex_chat_export_2026-04-12.md`
+  -> `analysis_and_history/codex_exports/codex_chat_export_2026-04-12.md`
+- `draft.sh`
+  -> `scripts/archive/draft_pose_commands.sh`
+- `"$logfile"`
+  -> `log_pose/pose_train20k_rain1k_partial_20260417_010928.log`
+
+### Follow-Up Edits
+
+- Updated `pose_bug_threshold_compare/README.md` to reference the renamed
+  `bugs_compare_pose.csv`.
+
+### Status
+
+[OK] **Completed**
+
+## Session 83 - Juno `sf` environment and brown-rainy ratio-0.05 completion
+
+**Date**: 2026-04-28
+**Task**: juno-sf-environment-and-brown-rainy-ratio0.05
+
+### Summary
+
+Created a clean Juno SafeFix environment named `sf` under the PI group conda
+path, recorded the upgraded `ad` and new `sf` package snapshots, validated the
+new environment on H100, and recorded the completed Qwen3 brown-rainy
+`ratio=0.05` result. The main recommendation is to keep shared Juno training
+environments under `/groups/yguo/oxx220000/conda/envs/`, not `~/`.
+
+### Main Changes
+
+- Added:
+  - `docs/sf_environment.md`
+  - `docs/sf_pip_freeze.txt`
+  - `docs/sf_conda_export.txt`
+  - `docs/juno_ad_current_pip_freeze.txt`
+  - `docs/juno_ad_current_conda_export.txt`
+- Updated:
+  - `docs/juno_migration.md`
+  - `.handoff.md`
+  - `report.md`
+  - `.trellis/workspace/oxu/journal-1.md`
+
+### Environment Details
+
+- New clean environment:
+  - path: `/groups/yguo/oxx220000/conda/envs/sf`
+  - Python `3.10`
+  - `torch==2.4.1+cu121`
+  - `torchvision==0.19.1+cu121`
+  - `torchaudio==2.4.1+cu121`
+- Main train-pose packages installed:
+  - `numpy==1.26.4`
+  - `pillow==11.0.0`
+  - `pycocotools==2.0.11`
+  - `scipy==1.13.1`
+  - `scikit-learn==1.5.2`
+  - `matplotlib==3.9.4`
+  - `tqdm==4.66.6`
+  - `transformers==4.46.3`
+  - `safetensors==0.4.5`
+  - `accelerate==1.1.1`
+  - `timm==1.0.12`
+  - `pandas==2.2.3`
+  - `opencv-python-headless==4.10.0.84`
+  - `tensorboard==2.18.0`
+  - `wandb==0.18.7`
+  - `json-tricks==3.17.3`
+
+### Validation
+
+- [OK] `sf` package imports:
+  - `torch`
+  - `torchvision`
+  - `torchaudio`
+  - `transformers`
+  - `timm`
+  - `numpy`
+  - `cv2`
+- [OK] repo import and compile checks:
+  - `train_pose_estimation.py`
+  - `utils/imports.py`
+  - `utils/active_learning.py`
+  - `utils/hierarchical_al.py`
+  - `utils/stat_pose_estimation.py`
+  - `pose_estimation/dataset.py`
+  - `pose_estimation/engine.py`
+  - `pose_estimation/modeling.py`
+  - `pose_estimation/visualize.py`
+- [OK] Juno command:
+  - `/groups/yguo/oxx220000/conda/envs/sf/bin/python train_pose_estimation.py train --help`
+- [OK] H100 smoke job `185362`:
+  - `torch 2.4.1+cu121 cuda 12.1`
+  - CUDA available: `True`
+  - device: `NVIDIA H100 80GB HBM3`
+  - capability: `(9, 0)`
+  - CUDA tensor matmul succeeded
+
+### Brown-Rainy Result
+
+- Completed Juno job:
+  - `185348`
+- Log:
+  - `/work/oxx220000/safefix/log_pose/pose_resume_qwen3_brown_rainy_r0p05_r0p0_p0p0_c15p0_gpu0_20260428_185219.log`
+- Artifacts:
+  - `/work/oxx220000/safefix/log_pose/pose_keypointrcnn_resume_qwen3_brown_rainy_r0p05_r0p0_p0p0_c15p0_gpu0_20260428_185219`
+- Held-out val:
+  - AP `0.6010691066213775`
+  - AP50 `0.849160591430811`
+  - AP75 `0.6559574681994292`
+  - AR `0.6834200260078023`
+- Held-out test:
+  - AP `0.5871352330207191`
+  - AP50 `0.8308032906068219`
+  - AP75 `0.6383749235102931`
+  - AR `0.6712148962148963`
+- Runtime:
+  - training time for 2 epochs: `351.07 s`
+  - end-to-end elapsed: `00:06:11`
+- `ratio=0.1` was intentionally not relaunched.
+
+### Important Notes
+
+- Use `/groups/yguo/oxx220000/conda/envs/sf` as the clean reproducible Juno
+  environment for future SafeFix work.
+- Keep `/groups/yguo/oxx220000/conda/envs/ad` as the historical working
+  environment. It has been upgraded for H100, but it is less clean for GitHub
+  reproduction because it includes older and broader research packages.
+
+### Status
+
+[OK] **Completed**
+
+## Session 86 - Launch Juno brown-rainy ratio-0.1 RPC4 from scratch cache
+
+**Date**: 2026-04-28
+**Task**: juno-brown-rainy-ratio0.1-rpc4
+
+### Summary
+
+After the merged `ratio=0.05` table showed a small positive signal for Qwen3
+brown-rainy (`0.5871`) over the earlier InternVL3 rainy best (`0.5846`), the
+user asked to launch brown-rainy `ratio=0.1` RPC combinations on Juno. Submitted
+four H100 single-GPU SLURM jobs. The first submission accidentally used `/work`
+data paths; because the scratch cache already exists and should be reused, those
+jobs were cancelled and relaunched with `~/scratch/safefix_cache/...` plus
+`--no-scratch-copy`.
+
+### Scratch Cache
+
+- Confirmed cache root:
+  - `/home/oxx220000/scratch/safefix_cache`
+- Confirmed cached inputs:
+  - COCO: `/home/oxx220000/scratch/safefix_cache/data/coco` (`52G`)
+  - brown-rainy generated images:
+    `/home/oxx220000/scratch/safefix_cache/data/coco-pose-weather-edits/generated_coco_qwen3_1500_brown_rain_icedit`
+    (`58M`)
+  - base checkpoint:
+    `/home/oxx220000/scratch/safefix_cache/log_pose/pose_keypointrcnn_train20k_internvl3_bs8_e2_rare1p1_gpu0_20260415_144530/best.pth`
+    (`451M`)
+- Future Juno brown-rainy jobs should pass these scratch-cache paths and
+  `--no-scratch-copy`; do not recopy the datasets while this cache is valid.
+
+### Cancelled Mistaken Submissions
+
+- Cancelled jobs that used `/work/oxx220000/data/...` directly:
+  - `185423`
+  - `185424`
+  - `185425`
+  - `185426`
+
+### Active Replacement Jobs
+
+- `185427`: `R=0.0`, `P=0.0`, `C=15.0`
+  - state at last check: `RUNNING` on `g-04-02`
+  - SLURM stdout:
+    `~/work/safefix/slurm-br-r01-r000-p0-c15-185427.out`
+  - Python log:
+    `/work/oxx220000/safefix/log_pose/pose_resume_qwen3_brown_rainy_r0p1_r0p0_p0p0_c15p0_gpu0_20260428_205920.log`
+- `185428`: `R=0.01`, `P=0.5`, `C=15.0`
+  - state at last check: `PENDING`, reason `Priority`
+- `185429`: `R=0.03`, `P=0.5`, `C=15.0`
+  - state at last check: `PENDING`, reason `Priority`
+- `185430`: `R=0.03`, `P=0.5`, `C=8.0`
+  - state at last check: `PENDING`, reason `Priority`
+
+### Commands
+
+Monitor jobs:
+
+```bash
+ssh juno 'squeue -j 185427,185428,185429,185430 -o "%i %j %T %M %D %R"'
+```
+
+Tail the first running job:
+
+```bash
+ssh juno 'cd ~/work/safefix && tail -f slurm-br-r01-r000-p0-c15-185427.out'
+```
+
+### Status
+
+[~] **In Progress**
+
+## Session 85 - Merge ratio-0.05 rainy and brown-rainy report table
+
+**Date**: 2026-04-28
+**Task**: report-ratio0.05-rpc-merged-table
+
+### Summary
+
+Updated the top of `report.md` so the Juno Qwen3 brown-rainy `ratio=0.05` run
+and the earlier local InternVL3 rainy `ratio=0.05` runs are reported in one
+shared table. The table now explicitly defines RPC as the attribute selector's
+`R/P/C` configuration instead of relying on compact run-name codes.
+
+### Main Changes
+
+- Replaced the separate Juno brown-rainy summary and older local rainy
+  `ratio=0.05` section with one top-level table:
+  - `04/28/2026 Update - COCO Pose Ratio 0.05 Rainy / Brown-Rainy Results`
+- Added explicit RPC definitions:
+  - `R`: `--al-attribute-rarity-power`
+  - `P`: `--al-attribute-frequency-penalty`
+  - `C`: `--al-attribute-class-balance`
+- Added the Juno Qwen3 brown-rainy row:
+  - AP `0.5871`
+  - delta vs base `-0.0031`
+  - selection time `0.41 s`
+  - end-to-end time `00:06:11`
+  - log:
+    `/work/oxx220000/safefix/log_pose/pose_resume_qwen3_brown_rainy_r0p05_r0p0_p0p0_c15p0_gpu0_20260428_185219.log`
+- Preserved the earlier local rainy rows in the same table.
+
+### Validation
+
+- [OK] Checked Juno log for exact brown-rainy selection time:
+  - `selection_time=0.41s`
+- [OK] Ran `git diff --check -- report.md`.
+
+### Status
+
+[OK] **Completed**
+
+## Session 84 - Compare Juno and local ratio-0.05 runtime
+
+**Date**: 2026-04-28
+**Task**: juno-vs-local-ratio0.05-runtime
+
+### Summary
+
+Checked SLURM accounting for Juno job `185348` and compared it with the closest
+local completed `ratio=0.05` COCO pose resume runs. Juno was somewhat faster in
+script runtime and training time, but not by a large margin once SLURM wrapper
+and scheduling time are included.
+
+### Timing
+
+- Juno job `185348`:
+  - submitted: `2026-04-28T18:51:58`
+  - started: `2026-04-28T18:52:19`
+  - ended: `2026-04-28T18:59:33`
+  - pending time: `21 s`
+  - allocated runtime: `00:07:14`
+  - Python training script end-to-end elapsed: `00:06:11`
+  - Python total training time for 2 epochs: `351.07 s`
+- Closest local `ratio=0.05` completed runs:
+  - `attribute attrx20_r000_p0_c15`: end-to-end `00:07:46`,
+    training `451.63 s`
+  - `random`: end-to-end `00:07:39`, training `444.25 s`
+  - `stratified`: end-to-end `00:07:46`, training `451.17 s`
+  - `coreset`: end-to-end `00:11:11`, training `454.86 s`,
+    selection `202.56 s`
+  - `badge` fast approximate: end-to-end `00:08:53`, training `453.86 s`,
+    selection `64.34 s`
+
+### Interpretation
+
+- Comparing Python script end-to-end time, Juno `185348` was about `1.25x`
+  faster than the closest local attribute run (`466 s / 371 s`).
+- Comparing total training time only, Juno was about `1.29x` faster
+  (`451.63 s / 351.07 s`).
+- Comparing full SLURM allocated runtime to local Python end-to-end time, the
+  gap is small: Juno `00:07:14` versus local attribute `00:07:46`.
+- This is not a perfect apples-to-apples comparison because Juno `185348` used
+  Qwen3 brown-rainy generated images, while the closest local `ratio=0.05`
+  entries used InternVL3/rainy settings.
+
+### Status
+
+[OK] **Completed**
+
+## Session 109: Resume unfinished ratio-0.9 queue on GPU0
+
+**Date**: 2026-04-28
+**Task**: resume-ratio09-gpu0
+
+### Summary
+
+The user said the previous `ratio=0.9` run did not finish and asked to continue it with `nohup` on GPU `0`. Per the repo GPU assignment rule, I did not check GPU availability. I inspected the latest ratio-0.9 logs, confirmed the last GPU1 retry was incomplete, fixed the detached launcher so `--gpu` is preserved, and relaunched the queue from the first unfinished entry on GPU `0`.
+
+### Existing State
+
+- Completed and preserved:
+  - `attribute` `attrx111_r000_p0_c15`
+  - log `log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.9_attrx111_r000_p0_c15_gpu1_20260424_133746.log`
+  - this log has held-out metrics and `Training complete. Artifacts:`
+- Still unfinished before relaunch:
+  - `attribute` `attrx111_r0001_p01_c15`
+  - latest interrupted log `log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.9_attrx111_r0001_p01_c15_gpu1_20260424_192254.log`
+  - stopped at `[Epoch 1] step 150/2375`
+  - no held-out metrics and no `Training complete. Artifacts:`
+
+### Code Change
+
+- Updated `scripts/run_pose_ratio0.9_gpu1_internvl3_queue.sh`:
+  - detached controller now forwards `--gpu "$GPU"`
+  - detached controller log and pidfile names now use `gpu${GPU}` instead of hard-coded `gpu1`
+
+### Validation
+
+- `bash -n scripts/run_pose_ratio0.9_gpu1_internvl3_queue.sh`
+- `bash scripts/run_pose_ratio0.9_gpu1_internvl3_queue.sh --start-at attrx111_r0001_p01_c15 --gpu 0 --dry-run`
+  - confirmed earlier `attrx111_r000_p0_c15` is skipped
+  - confirmed worker commands use `CUDA_VISIBLE_DEVICES=0`
+
+### Relaunch
+
+- Command:
+  - `bash scripts/run_pose_ratio0.9_gpu1_internvl3_queue.sh --start-at attrx111_r0001_p01_c15 --gpu 0 --detach-controller`
+- Controller:
+  - pid `204931`
+  - log `log_pose/run_pose_ratio0.9_gpu0_internvl3_queue_20260428_034157.log`
+  - pidfile `log_pose/pids/run_pose_ratio0.9_gpu0_internvl3_queue_20260428_034157.pid`
+- First worker:
+  - `attribute` `attrx111_r0001_p01_c15`
+  - pid `204939`
+  - log `log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.9_attrx111_r0001_p01_c15_gpu0_20260428_034157.log`
+  - output dir `log_pose/pose_keypointrcnn_resume_internvl3_attribute_ratio0.9_attrx111_r0001_p01_c15_gpu0_20260428_034157`
+
+### Live Check At Launch
+
+- `ps -fp 204931` showed the controller alive with PPID `1`.
+- `ps -fp 204939` showed the worker alive under the controller.
+- Controller log showed:
+  - `[skip] attrx111_r000_p0_c15 before start-at=attrx111_r0001_p01_c15`
+  - launch of `attrx111_r0001_p01_c15`
+- Worker log started at `2026-04-28 03:42:03` and began loading/selection.
+
+### Next Step
+
+- Monitor:
+  - `log_pose/run_pose_ratio0.9_gpu0_internvl3_queue_20260428_034157.log`
+  - `log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.9_attrx111_r0001_p01_c15_gpu0_20260428_034157.log`
+- If the worker completes, the same controller should continue to:
+  - `attribute` `attrx111_r0005_p005_c15`
+  - `random`
+  - `stratified`
+  - `coreset`
+  - `badge`
+
+### Status
+
+[~] **In Progress**
+
+## Session 108: Resume unfinished ratio-0.9 queue on GPU1
+
+**Date**: 2026-04-24
+**Task**: resume-ratio09-gpu1
+
+### Summary
+
+The user asked to continue the unfinished `ratio=0.9` run on GPU `1`. Per the repo GPU assignment rule, I did not check GPU availability. I checked the existing ratio-0.9 queue state, confirmed the last GPU1 controller and worker were gone, and relaunched the queue from the first unfinished entry.
+
+### Existing State
+
+- Completed and preserved:
+  - `attribute` `attrx111_r000_p0_c15`
+  - log `log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.9_attrx111_r000_p0_c15_gpu1_20260424_133746.log`
+  - this log has `Held-out test metrics` and `Training complete. Artifacts:`
+- Still unfinished before relaunch:
+  - `attribute` `attrx111_r0001_p01_c15`
+  - latest interrupted log `log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.9_attrx111_r0001_p01_c15_gpu1_20260424_150718.log`
+  - stopped at `[Epoch 1] step 2100/2375`
+  - no held-out metrics and no `Training complete. Artifacts:`
+- No later GPU1 ratio-0.9 logs existed before relaunch.
+
+### Relaunch
+
+- Command:
+  - `bash scripts/run_pose_ratio0.9_gpu1_internvl3_queue.sh --start-at attrx111_r0001_p01_c15 --detach-controller`
+- Controller:
+  - pid `25087`
+  - log `log_pose/run_pose_ratio0.9_gpu1_internvl3_queue_20260424_192254.log`
+  - pidfile `log_pose/pids/run_pose_ratio0.9_gpu1_internvl3_queue_20260424_192254.pid`
+- First worker:
+  - `attribute` `attrx111_r0001_p01_c15`
+  - pid `25094`
+  - log `log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.9_attrx111_r0001_p01_c15_gpu1_20260424_192254.log`
+  - output dir `log_pose/pose_keypointrcnn_resume_internvl3_attribute_ratio0.9_attrx111_r0001_p01_c15_gpu1_20260424_192254`
+
+### Validation
+
+- `ps -fp 25087` showed the controller alive with PPID `1`.
+- `ps -fp 25094` showed the worker alive under the controller.
+- Controller log showed:
+  - `[skip] attrx111_r000_p0_c15 before start-at=attrx111_r0001_p01_c15`
+  - launch of `attrx111_r0001_p01_c15`
+- Worker log started at `2026-04-24 19:23:00` and began loading annotations.
+
+### Next Step
+
+- Monitor:
+  - `log_pose/run_pose_ratio0.9_gpu1_internvl3_queue_20260424_192254.log`
+  - `log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.9_attrx111_r0001_p01_c15_gpu1_20260424_192254.log`
+- If the worker completes, the same controller should continue to:
+  - `attribute` `attrx111_r0005_p005_c15`
+  - `random`
+  - `stratified`
+  - `coreset`
+  - `badge`
+
+### Status
+
+[~] **In Progress**
+
+## 2026-04-27 Juno Migration Setup
+
+### Changes
+
+- Added Juno migration docs and task tracking:
+  - `docs/juno_migration.md`
+  - `tasks/juno_migration_task.md`
+  - `docs/juno_pose_minimal_requirements.txt`
+  - `docs/ad_conda_explicit_linux64.txt`
+  - `docs/ad_pip_freeze.txt`
+- Added Juno SLURM launcher:
+  - `scripts/juno_pose_resume.sbatch`
+- Updated pose queue scripts to support Juno paths:
+  - `scripts/run_pose_ratio0.9_gpu1_internvl3_queue.sh`
+  - `scripts/run_pose_ratio0.05_gpu0_badge_then_attr_refine.sh`
+  - both now accept `--generated-image-dir`
+  - both now accept `--gpu`
+  - Juno wrapper passes `--gpu 0` for single-GPU SLURM allocations
+
+### Juno State
+
+- PI group path confirmed: `/groups/yguo`.
+- Juno conda env created at:
+  - `/groups/yguo/oxx220000/conda/envs/ad`
+- Installed in that env:
+  - Python `3.9.25`
+  - PyTorch `1.13.1+cu117`
+  - torchvision `0.14.1+cu117`
+  - `numpy==1.26.4`, `pillow==11.0.0`, `pycocotools==2.0.11`,
+    `scipy==1.13.1`, `scikit-learn==1.5.2`, `matplotlib==3.9.4`,
+    `tqdm==4.65.2`
+  - Hugging Face CLI via `huggingface_hub`
+- Verified imports on Juno login node:
+  - `torch.__version__ == 1.13.1+cu117`
+  - `torchvision.__version__ == 0.14.1+cu117`
+  - `torch.cuda.is_available()` is `False` on login node, expected until inside
+    SLURM GPU allocation
+- User's clean Juno clone:
+  - `/home/oxx220000/safefix_github`
+  - commit `a8cdbec pose`
+- `~/work/safefix` was overwritten from that clone using rsync with
+  `--delete --exclude log_pose`, then local Juno migration docs/scripts were
+  rsynced on top.
+
+### Dataset Decision
+
+- Do not rsync public datasets from UTD to Juno.
+- COCO 2017 is downloading directly on Juno under `~/work/data/coco` using the
+  official URLs from `DATASET_DOWNLOAD_REPRO.md`.
+  - background PID printed by Juno command: `2476871`
+  - log: `~/work/data/coco/download_coco2017_juno.log`
+  - note: initial UTD-to-Juno rsync was stopped at about 5.3 GB of
+    `train2017.zip`; the Juno `wget -c` continues from the partial file
+- Generated rainy images should be downloaded on Juno from Hugging Face dataset:
+  - `BZNR3/coco-pose-weather-edits`
+  - target: `~/work/data/coco-pose-weather-edits`
+  - user will login with `hf auth login`
+- A partial 1.0 GB generated-image rsync copy was deleted from Juno so the HF
+  download can create a clean dataset tree.
+- After user completed Hugging Face login, generated dataset download was
+  launched on Juno:
+  - PID: `2662091`
+  - target: `~/work/data/coco-pose-weather-edits`
+  - log:
+    `~/work/data/coco-pose-weather-edits/hf_download_coco_pose_weather_edits.log`
+- KITTI object download and first-5000 YOLO preparation were launched on Juno:
+  - PID: `2671658`
+  - raw KITTI target: `~/work/data/kitti_object`
+  - YOLO target: `~/work/data/kitti_yolov8_first5000`
+  - log: `~/work/data/kitti_object/download_kitti_object_juno.log`
+  - command downloads `data_object_image_2.zip`, `data_object_label_2.zip`,
+    and `data_object_calib.zip`, unzips them, then runs
+    `object_detection/prepare_kitti_yolo.py --subset-size 5000 --val-size 500`
+
+### Caveats
+
+- Git pull from Juno `~/work/safefix` failed because the remote is HTTPS and
+  needs GitHub credentials in a noninteractive shell. For now, use the user's
+  clean clone `/home/oxx220000/safefix_github` as source or configure SSH/token
+  auth later.
+- Per the user's request, `log_pose` output dirs and checkpoints were not copied.
+  Current resume scripts need a `--base-model`; either copy one specific
+  checkpoint later or rerun/create a base checkpoint on Juno.
+
 ## Session 107: Resume unfinished ratio-0.05 attribute refinements on GPU0
 
 **Date**: 2026-04-24

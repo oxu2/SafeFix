@@ -1,3 +1,84 @@
+# 04/28/2026 Update — Juno Qwen3 Brown-Rainy Ratio 0.1 RPC Results
+
+- The first Juno Qwen3 brown-rainy `ratio=0.1` RPC run completed successfully.
+- Common setup for this sweep:
+  - base AP for comparison: `0.5902`
+  - selected original samples: `2000`
+  - selected generated brown-rainy images: `1000`
+  - final train size: `3000`
+  - original candidate pool: `20000`
+  - generated target: `clothes_color=brown`, `weather=rainy`
+  - explicit generated extra counts:
+    `clothes_color:brown=1000,weather:rainy=1000`
+  - `extra_count_scale`: `10`
+
+| Job | R | P | C | Status | Held-out Test AP | Delta vs Base | AL Selection Time | End-to-End Time | Canonical Log |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| `185427` | `0.0` | `0.0` | `15.0` | completed | **`0.6042`** | `+0.0140` | `0.37 s` | `00:08:00` | `/work/oxx220000/safefix/log_pose/pose_resume_qwen3_brown_rainy_r0p1_r0p0_p0p0_c15p0_gpu0_20260428_205920.log` |
+| `185428` | `0.01` | `0.5` | `15.0` | running at last check | pending | pending | pending | pending | pending |
+| `185429` | `0.03` | `0.5` | `15.0` | pending at last check | pending | pending | pending | pending | pending |
+| `185430` | `0.03` | `0.5` | `8.0` | pending at last check | pending | pending | pending | pending | pending |
+
+- Completed `185427` metrics:
+  - held-out val: AP `0.6159`, AP50 `0.8568`, AP75 `0.6623`, AR `0.6908`
+  - held-out test: AP `0.6042`, AP50 `0.8390`, AP75 `0.6546`, AR `0.6766`
+- Interpretation:
+  - `185427` is above the canonical base by `+0.0140` AP
+  - it is slightly below the earlier local InternVL3 rainy `ratio=0.1`
+    conservative attribute row (`0.6071`), but above the earlier local
+    `random` (`0.6029`) and `stratified` (`0.6031`) rows
+
+# 04/28/2026 Update — COCO Pose Ratio 0.05 Rainy / Brown-Rainy Results
+
+- This table merges the earlier local InternVL3 rainy `ratio=0.05` runs with
+  the completed Juno Qwen3 brown-rainy `ratio=0.05` run.
+- Common setup:
+  - canonical base AP for comparison: `0.5902`
+  - selected original samples: `1000`
+  - selected generated images: `1000`
+  - final train size: `2000`
+  - original candidate pool: `20000`
+- RPC means the three attribute-selector parameters:
+  - `R`: `--al-attribute-rarity-power`; larger values increase rare attribute
+    weighting through inverse frequency.
+  - `P`: `--al-attribute-frequency-penalty`; larger values subtract more score
+    from frequent attribute values.
+  - `C`: `--al-attribute-class-balance`; `0` disables class balancing, finite
+    values add a soft class-balance bonus, and `inf` uses strict round-robin
+    class quotas.
+- For the local InternVL3 rainy rows, `attrx20` means
+  `--al-attribute-extra-count-scale 20` on the inferred generated rainy counts.
+  For the Juno Qwen3 brown-rainy row, the extra counts were explicit:
+  `clothes_color:brown=1000,weather:rainy=1000`.
+- The Juno `ratio=0.1` brown-rainy run was intentionally not relaunched in this
+  pass.
+
+| Setting | Metadata / generated target | Strategy | R | P | C | Held-out Test AP | Delta vs Base | AL Selection Time | End-to-End Time | Canonical Log |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Juno brown-rainy | Qwen3; `clothes_color=brown`, `weather=rainy` | `attribute` | `0.0` | `0.0` | `15.0` | **`0.5871`** | `-0.0031` | `0.41 s` | `00:06:11` | `/work/oxx220000/safefix/log_pose/pose_resume_qwen3_brown_rainy_r0p05_r0p0_p0p0_c15p0_gpu0_20260428_185219.log` |
+| local rainy | InternVL3; `weather=rainy` | `attribute` (`attrx20_r000_p0_c15`) | `0.0` | `0.0` | `15.0` | `0.5846` | `-0.0056` | `0.26 s` | `00:07:46` | `log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.05_attrx20_r000_p0_c15_gpu0_20260423_232656.log` |
+| local rainy | InternVL3; `weather=rainy` | `stratified` | `n/a` | `n/a` | `n/a` | `0.5815` | `-0.0087` | `0.22 s` | `00:07:46` | `log_pose/pose_resume_internvl3_epoch2_stratified_ratio0.05_gpu0_20260424_000907.log` |
+| local rainy | InternVL3; `weather=rainy` | `random` | `n/a` | `n/a` | `n/a` | `0.5792` | `-0.0110` | `0.00 s` | `00:07:39` | `log_pose/pose_resume_internvl3_epoch2_random_ratio0.05_gpu0_20260424_000907.log` |
+| local rainy | InternVL3; `weather=rainy` | `badge` fast approximate | `n/a` | `n/a` | `n/a` | `0.5754` | `-0.0148` | `64.34 s` | `00:08:53` | `log_pose/pose_resume_internvl3_epoch2_badge_ratio0.05_gpu0_20260424_121700.log` |
+| local rainy | InternVL3; `weather=rainy` | `attribute` (`attrx20_r000_p0_c0`) | `0.0` | `0.0` | `0.0` | `0.5745` | `-0.0157` | `0.25 s` | `00:07:52` | `log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.05_attrx20_r000_p0_c0_gpu0_20260424_121700.log` |
+| local rainy | InternVL3; `weather=rainy` | `coreset` | `n/a` | `n/a` | `n/a` | `0.5619` | `-0.0283` | `202.56 s` | `00:11:11` | `log_pose/pose_resume_internvl3_epoch2_coreset_ratio0.05_gpu0_20260424_000907.log` |
+| local rainy | InternVL3; `weather=rainy` | `attribute` (`attrx20_r0005_p005_c15`) | `0.005` | `0.05` | `15.0` | `0.5273` | `-0.0629` | `0.26 s` | `00:08:14` | `log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.05_attrx20_r0005_p005_c15_gpu0_20260424_000907.log` |
+| local rainy | InternVL3; `weather=rainy` | `attribute` (`attrx20_r0001_p01_c15`) | `0.001` | `0.1` | `15.0` | `0.5185` | `-0.0717` | `0.28 s` | `00:09:11` | `log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.05_attrx20_r0001_p01_c15_gpu0_20260424_000907.log` |
+
+- Juno brown-rainy validation metrics:
+  - held-out val: AP `0.6011`, AP50 `0.8492`, AP75 `0.6560`, AR `0.6834`
+  - held-out test: AP `0.5871`, AP50 `0.8308`, AP75 `0.6384`, AR `0.6712`
+- Main observations:
+  - the Juno Qwen3 brown-rainy row is now the best completed `ratio=0.05` row,
+    but it is still slightly below the canonical base AP (`-0.0031`)
+  - among the earlier local rainy rows, the best completed row remains
+    `attribute` (`attrx20_r000_p0_c15`) with AP `0.5846`
+  - the weather-steered local attribute settings with nonzero `R/P` are much
+    weaker at this ratio, especially `attrx20_r0001_p01_c15`
+  - the fast approximate `badge` row completed but did not beat `attribute`,
+    `stratified`, or `random`
+  - `coreset` is slower because its selection took `202.56 s`
+
 # 04/24/2026 Update — Pose Bug Compare Threshold Standard
 
 - Future pose bug/failure-set comparisons should use `acc_diff_threshold=0.02`.
@@ -38,38 +119,6 @@
 | `0.7` | `stratified` | `0.5902` | `0.6244` | `0.0342` | `12` | `12` | **`10`** | `0` | `0` | `5` | `7` | `2` |
 | `0.7` | `coreset` | `0.5902` | `0.6176` | `0.0274` | `12` | `12` | **`10`** | `0` | `0` | `5` | `7` | `2` |
 | `0.7` | `badge` | `0.5902` | `0.6191` | `0.0289` | `12` | `12` | **`10`** | `0` | `0` | `6` | `6` | `2` |
-
-# 04/24/2026 Update — COCO Pose InternVL3 Ratio 0.05 Results
-
-- The `ratio=0.05` COCO pose InternVL3 queue now has eight stable completed runs: four `attribute` settings plus `random`, `stratified`, `coreset`, and fast-path `badge`.
-- The original exact-BADGE row from `20260424_000907` failed before metrics. The completed `badge` row below is the fast approximate BADGE rerun after lowering `BadgeStrategy(exact_kmeanspp_max_select)` to `512`.
-- The additional `attribute` refinement `attrx20_r000_p0_c8` started in `log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.05_attrx20_r000_p0_c8_gpu0_20260424_121700.log` but stopped after `[Epoch 1] step 100/250`; it has no held-out metrics and is not included as a completed result.
-- Common setup:
-  - base AP for comparison: `0.5902`
-  - selected original samples: `1000`
-  - generated rainy images added: `1000`
-  - final train size: `2000`
-  - original candidate pool: `20000`
-  - `extra_count_scale`: `20`
-
-| Strategy | Selected Original | Final Train Size | Held-out Test AP | Delta vs Base | AL Selection Time | End-to-End Time | Canonical Log |
-|----------|-------------------|------------------|------------------|---------------|-------------------|-----------------|---------------|
-| `attribute` (`attrx20_r000_p0_c15`) | `1000` | `2000` | **`0.5846`** | `-0.0056` | `0.26 s` | `00:07:46` | `log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.05_attrx20_r000_p0_c15_gpu0_20260423_232656.log` |
-| `stratified` | `1000` | `2000` | `0.5815` | `-0.0087` | `0.22 s` | `00:07:46` | `log_pose/pose_resume_internvl3_epoch2_stratified_ratio0.05_gpu0_20260424_000907.log` |
-| `random` | `1000` | `2000` | `0.5792` | `-0.0110` | `0.00 s` | `00:07:39` | `log_pose/pose_resume_internvl3_epoch2_random_ratio0.05_gpu0_20260424_000907.log` |
-| `badge` fast approximate | `1000` | `2000` | `0.5754` | `-0.0148` | `64.34 s` | `00:08:53` | `log_pose/pose_resume_internvl3_epoch2_badge_ratio0.05_gpu0_20260424_121700.log` |
-| `attribute` (`attrx20_r000_p0_c0`) | `1000` | `2000` | `0.5745` | `-0.0157` | `0.25 s` | `00:07:52` | `log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.05_attrx20_r000_p0_c0_gpu0_20260424_121700.log` |
-| `coreset` | `1000` | `2000` | `0.5619` | `-0.0283` | `202.56 s` | `00:11:11` | `log_pose/pose_resume_internvl3_epoch2_coreset_ratio0.05_gpu0_20260424_000907.log` |
-| `attribute` (`attrx20_r0005_p005_c15`) | `1000` | `2000` | `0.5273` | `-0.0629` | `0.26 s` | `00:08:14` | `log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.05_attrx20_r0005_p005_c15_gpu0_20260424_000907.log` |
-| `attribute` (`attrx20_r0001_p01_c15`) | `1000` | `2000` | `0.5185` | `-0.0717` | `0.28 s` | `00:09:11` | `log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.05_attrx20_r0001_p01_c15_gpu0_20260424_000907.log` |
-
-- Main observations:
-  - this very small retained-original setting is below the corrected base AP for all completed rows
-  - the best completed `ratio=0.05` row is the conservative attribute setting `attrx20_r000_p0_c15` with AP `0.5846`
-  - the fast approximate `badge` rerun completed, but it did not beat `attribute`, `stratified`, or `random`
-  - the `C=0` class-balance-only refinement also did not improve over `C=15`, so the earlier conservative `C=15` setting remains the best completed `ratio=0.05` attribute point
-  - the weather-steered attribute settings are much weaker at this ratio, especially `attrx20_r0001_p01_c15`
-  - `stratified` and `random` are close behind the best completed attribute row, while `coreset` is slower and worse
 
 # 04/17/2026 Update — COCO Pose InternVL3 Resume Baselines And Attribute Sweeps Completed
 
