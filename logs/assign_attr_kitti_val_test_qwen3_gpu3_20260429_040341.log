@@ -1,0 +1,3 @@
+Using 1 GPU(s) with 23GiB memory allocation each
+Loading model: Qwen/Qwen3-VL-8B-Instruct (Qwen3 mode)...
+`torch_dtype` is deprecated! Use `dtype` instead!

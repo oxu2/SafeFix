@@ -5,6 +5,130 @@
 
 ---
 
+## Session 133: Run standalone KITTI slice analysis for YOLOv8n batch-size-16
+
+**Date**: 2026-04-29
+**Task**: kitti-detection-standalone-slice-analysis
+
+### Summary
+
+Confirmed that KITTI detection slice analysis is intended to run as a
+standalone `utils/stat_kitti_detection.py` step, not as an automatic trainer
+hook, because current KITTI BLIP/Qwen3 assignments are aligned to the 5000
+train images only.
+
+### What Changed
+
+- Verified existing batch-size-64 analysis outputs already existed for the
+  canonical GPU3 checkpoint:
+  - log: `logs/kitti_slice_analysis_train_bs64best_gpu3_20260429_021509.log`
+  - output root: `log_kitti/kitti_slice_stats`
+  - checkpoint:
+    `runs/kitti_yolov8/first5000_1240val_1241test_gpu3_e30_20260428_231728/weights/best.pt`
+  - split: `train`
+  - attribute files:
+    `save/attribute_kitti_qwen3_8B.json`,
+    `save/attribute_kitti_blip.json`
+  - overall train metrics: mAP50 `0.8744`, mAP50-95 `0.6051`
+  - Qwen3: `25` slices, `12` failure slices
+  - BLIP: `26` slices, `13` failure slices
+- Ran the same standalone analysis for the batch-size-16 GPU0 checkpoint:
+  - command used the local `fp` conda environment
+  - log:
+    `logs/kitti_slice_analysis_train_bs16_gpu0_20260429_012232.log`
+  - output root:
+    `log_kitti/kitti_slice_stats_bs16_gpu0_20260429_012232`
+  - checkpoint:
+    `runs/kitti_yolov8/first5000_1240val_1241test_gpu0_bs16_e30_20260429_012232/weights/best.pt`
+  - split: `train`
+  - total analysis time: `129.6 s`
+  - overall train metrics: mAP50 `0.8719`, mAP50-95 `0.6010`
+  - Qwen3: `25` slices, `12` failure slices
+  - BLIP: `26` slices, `14` failure slices
+- Batch-size-16 Qwen3 worst slices by mAP50-95:
+  - `traffic_density=heavy`: `0.3711`
+  - `weather=cloudy`: `0.3794`
+  - `weather=clear`: `0.4074`
+  - `background_style=highway`: `0.4074`
+  - `color=green`: `0.4458`
+- Batch-size-16 BLIP worst slices by mAP50-95:
+  - `lighting_condition=dim`: `0.3722`
+  - `background_style=rural`: `0.4775`
+  - `road_condition=snowy`: `0.5260`
+  - `background_style=highway`: `0.5274`
+  - `color=green`: `0.5279`
+
+### Validation
+
+- `python3 -m py_compile object_detection/train_yolov8_kitti.py utils/stat_kitti_detection.py`
+- Confirmed `object_detection/train_yolov8_kitti.py` has no remaining diff
+  from the temporary trainer-hook experiment.
+- Confirmed the new batch-size-16 JSON/CSV outputs exist under
+  `log_kitti/kitti_slice_stats_bs16_gpu0_20260429_012232`.
+
+### Caveats
+
+- Current KITTI BLIP and Qwen3 attribute JSON files cover the train split only.
+  Val/test slice analysis would require val/test assignment files.
+- The slice-analysis precision values use a low prediction confidence threshold
+  (`0.001`) and are therefore not directly comparable to the Ultralytics final
+  test precision printed by the trainer; use the slice mAP deltas primarily.
+
+### Status
+
+[x] **Standalone KITTI train-split slice analysis recorded**
+
+### Follow-up Update
+
+- Expanded `report.md` with a complete table of the batch-size-64 GPU3
+  failure train slices:
+  - all `12` Qwen3 failure slices
+  - all `13` BLIP failure slices
+- The table records attribute value, image count, mAP50, mAP50-95, and
+  mAP50-95 delta for each failure slice.
+
+## Session 132: Generalize shareable Juno quickstart
+
+**Date**: 2026-04-29
+**Task**: juno-labmate-quickstart-update
+
+### Summary
+
+Updated the shareable Juno quickstart so it can be sent to a lab mate without
+hard-coded personal NetIDs or historical job-user details.
+
+### What Changed
+
+- Rewrote `docs/juno_cxz220015_quickstart.md` to use `NetID` placeholders in
+  the title, Juno paths, conda paths, sync commands, job template, and result
+  copy examples.
+- Added a current H100 layout snapshot from Juno at `2026-04-29 02:16 CDT`:
+  - `g-04-02`: `4` H100 80GB GPUs, `4` allocated, `0` nominal free.
+  - `g-05-01`: `1` H100 NVL GPU, `1` allocated, `0` nominal free.
+  - `g-06-01`: `2` H100 NVL GPUs, `1` allocated, `1` nominal free, but node
+    memory was fully allocated (`500G / 500G`), so new jobs may still remain
+    pending.
+- Copied and generalized non-private operational material from
+  `docs/juno_migration.md`, including scheduler interpretation, code sync,
+  Juno-local dataset download examples, conda setup, minimal H100 `sbatch`
+  template, monitoring, and selected-result copy-back guidance.
+- Removed queue/user detail from the H100 snapshot in the shareable document.
+
+### Validation
+
+- Ran a text scan over `docs/juno_cxz220015_quickstart.md` for old personal
+  identifiers and historical local paths:
+  `cxz220015`, `220015`, `oxx220000`, `rxm`, `tqp`, `axm`, `/people/cs`, and
+  `/data/oxx`; no matches remained.
+- `report.md` was not updated because this is operational documentation, not a
+  stable experiment result.
+- `.handoff.md` was not updated because the active experiment baton did not
+  change.
+
+### Status
+
+[x] **Shareable Juno quickstart generalized for lab mate use**
+
 ## Session 131: Launch Juno brown-rainy baseline ratio sweep
 
 **Date**: 2026-04-29

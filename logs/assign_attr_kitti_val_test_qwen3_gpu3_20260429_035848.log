@@ -1,0 +1,12 @@
+Traceback (most recent call last):
+  File "/people/cs/o/oxx220000/safefix/utils/assign_attribute.py", line 83, in <module>
+    import torch
+  File "/people/cs/o/oxx220000/.conda/envs/qwen/lib/python3.10/site-packages/torch/__init__.py", line 367, in <module>
+    from torch._C import *  # noqa: F403
+ImportError: /people/cs/o/oxx220000/.conda/envs/qwen/lib/python3.10/site-packages/torch/lib/../../nvidia/cusparse/lib/libcusparse.so.12: undefined symbol: __nvJitLinkAddData_12_1, version libnvJitLink.so.12
+Traceback (most recent call last):
+  File "/people/cs/o/oxx220000/safefix/utils/assign_attribute.py", line 83, in <module>
+    import torch
+  File "/people/cs/o/oxx220000/.conda/envs/qwen/lib/python3.10/site-packages/torch/__init__.py", line 367, in <module>
+    from torch._C import *  # noqa: F403
+ImportError: /people/cs/o/oxx220000/.conda/envs/qwen/lib/python3.10/site-packages/torch/lib/../../nvidia/cusparse/lib/libcusparse.so.12: undefined symbol: __nvJitLinkAddData_12_1, version libnvJitLink.so.12
