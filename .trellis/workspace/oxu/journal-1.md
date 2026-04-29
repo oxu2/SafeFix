@@ -1745,6 +1745,81 @@ The user asked whether the `ratio=0.9` GPU0 queue had finished. It had not: the 
 
 [~] **In Progress**
 
+## Session 83 - Launch KITTI BLIP and Qwen3 val/test assignment
+
+**Date**: 2026-04-29
+**Task**: kitti-attribute-assignment-val-test-blip-qwen3
+
+### Summary
+
+The user asked to run KITTI attribute assignment for the `val` and `test` splits with BLIP on GPU `1` and Qwen3 on GPU `3`. BLIP completed both splits. Qwen3 initially failed because the shell startup prepended `/usr/local/cuda-12.0/lib64` ahead of the Qwen environment's `nvjitlink` library, causing the PyTorch `libcusparse.so.12` import to fail. Added a dedicated Qwen3 worker that cleans `LD_LIBRARY_PATH` after shell startup and launches the absolute Qwen environment Python. The corrected Qwen3 job is now actively processing the KITTI `val` split on GPU `3`; it will run `test` after `val` completes.
+
+### Changes
+
+- Added:
+  - `scripts/launch_kitti_attr_blip_gpu1_val_test.sh`
+  - `scripts/launch_kitti_attr_qwen3_gpu3_val_test.sh`
+  - `scripts/run_kitti_attr_qwen3_gpu3_val_test_worker.sh`
+- Updated:
+  - `.handoff.md`
+  - `.trellis/workspace/oxu/journal-1.md`
+
+### BLIP Results
+
+- Completed on GPU `1`.
+- Log:
+  - `logs/assign_attr_kitti_val_test_blip_gpu1_20260429_035848.log`
+- Outputs:
+  - `save/attribute_kitti_blip_val.json`
+  - `save/attribute_kitti_blip_val.csv`
+  - `save/attribute_kitti_blip_test.json`
+  - `save/attribute_kitti_blip_test.csv`
+- Split sizes from the log:
+  - `val`: `1240` images
+  - `test`: `1241` images
+
+### Qwen3 Status
+
+- Corrected active job:
+  - worker PID: `380368`
+  - Python PID at startup check: `380373`
+  - GPU: `3`
+  - log: `logs/assign_attr_kitti_val_test_qwen3_gpu3_20260429_040454.log`
+  - pidfile: `logs/assign_attr_kitti_val_test_qwen3_gpu3_20260429_040454.pid`
+- Startup check:
+  - model loaded successfully
+  - found `1240` KITTI `val` images
+  - reached `[1/1240]`
+- Expected outputs:
+  - `save/attribute_kitti_qwen3_8B_val.json`
+  - `save/attribute_kitti_qwen3_8B_val.csv`
+  - `save/attribute_kitti_qwen3_8B_val_partial.json`
+  - `save/attribute_kitti_qwen3_8B_test.json`
+  - `save/attribute_kitti_qwen3_8B_test.csv`
+  - `save/attribute_kitti_qwen3_8B_test_partial.json`
+
+### Important Notes
+
+- Ignore the failed Qwen3 logs before the corrected worker launch:
+  - `logs/assign_attr_kitti_val_test_qwen3_gpu3_20260429_040117.log`
+  - `logs/assign_attr_kitti_val_test_qwen3_gpu3_20260429_040341.log`
+- The failure signature was:
+  - `ImportError: ... libcusparse.so.12: undefined symbol: __nvJitLinkAddData_12_1`
+- The fix is in `scripts/run_kitti_attr_qwen3_gpu3_val_test_worker.sh`: remove the system CUDA `12.0` library entries from `LD_LIBRARY_PATH`, then prepend:
+  - `/people/cs/o/oxx220000/.conda/envs/qwen/lib/python3.10/site-packages/nvidia/nvjitlink/lib`
+- Do not update `report.md` for Qwen3 val/test until both splits complete. BLIP artifacts are complete, but the paired Qwen3 val/test assignment requested by the user is still in progress.
+
+### Next Checks
+
+- Monitor Qwen3:
+  - `tail -f logs/assign_attr_kitti_val_test_qwen3_gpu3_20260429_040454.log`
+  - `ps -fp 380368 380373`
+- After Qwen3 completes, verify all four split-specific JSON/CSV files exist and then update `report.md` if these assignment artifacts are being used for downstream KITTI val/test analysis.
+
+### Status
+
+[~] **In Progress**
+
 ## Session 89 - Record completed Juno brown-rainy ratio-0.1 run 185427
 
 **Date**: 2026-04-28
