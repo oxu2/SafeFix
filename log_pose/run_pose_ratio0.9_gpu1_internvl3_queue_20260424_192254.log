@@ -1,0 +1,17 @@
+Launching ratio=0.9 InternVL3 queue on GPU 1.
+  timestamp:         20260424_192254
+  base model:        log_pose/pose_keypointrcnn_train20k_internvl3_bs8_e2_rare1p1_gpu0_20260415_144530/best.pth
+  attribute file:    save/attribute_coco_pose_gemini_train20k_internvl3_8B.json
+  generated attr:    rainy
+  num added img:     1000
+  max train samples: 20000
+  focus:             weather
+  extra scale:       1.11111
+  start at:          attrx111_r0001_p01_c15
+[skip] attrx111_r000_p0_c15 before start-at=attrx111_r0001_p01_c15
+         out=log_pose/pose_keypointrcnn_resume_internvl3_attribute_ratio0.9_attrx111_r0001_p01_c15_gpu1_20260424_192254
+         R=0.001 P=0.1 C=15.0 extra_scale=1.11111
+[launch] attribute attrx111_r0001_p01_c15
+         log=log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.9_attrx111_r0001_p01_c15_gpu1_20260424_192254.log
+         pidfile=log_pose/pids/pose_resume_internvl3_epoch2_attribute_ratio0.9_attrx111_r0001_p01_c15_gpu1_20260424_192254.pid
+         pid=25094

@@ -23,6 +23,8 @@ Options:
   --data-root PATH          COCO root.
   --epochs-total N          Total epochs passed to train_pose_estimation.py. Default: 2
   --generated-attribute V   Generated attribute to append. Default: rainy
+  --generated-image-dir P   Generated image directory override.
+  --gpu ID                  CUDA_VISIBLE_DEVICES value. Default: 1
   --num-added-img N         Number of generated images. Default: 1000
   --max-train-samples N     Original train cap before sub-ratio. Default: 20000
   --batch-size N            Training batch size. Default: 8
@@ -44,6 +46,7 @@ GPU=1
 RATIO="0.9"
 EPOCHS_TOTAL=2
 GENERATED_ATTRIBUTE="rainy"
+GENERATED_IMAGE_DIR=""
 NUM_ADDED_IMG=1000
 MAX_TRAIN_SAMPLES=20000
 BATCH_SIZE=8
@@ -81,6 +84,14 @@ while [[ $# -gt 0 ]]; do
       ;;
     --generated-attribute)
       GENERATED_ATTRIBUTE="$2"
+      shift 2
+      ;;
+    --generated-image-dir)
+      GENERATED_IMAGE_DIR="$2"
+      shift 2
+      ;;
+    --gpu)
+      GPU="$2"
       shift 2
       ;;
     --num-added-img)
@@ -159,8 +170,8 @@ if [[ "$DETACH_CONTROLLER" -eq 1 ]]; then
   fi
 
   local_ts="$(date +%Y%m%d_%H%M%S)"
-  controller_log="log_pose/run_pose_ratio0.9_gpu1_internvl3_queue_${local_ts}.log"
-  controller_pid="log_pose/pids/run_pose_ratio0.9_gpu1_internvl3_queue_${local_ts}.pid"
+  controller_log="log_pose/run_pose_ratio0.9_gpu${GPU}_internvl3_queue_${local_ts}.log"
+  controller_pid="log_pose/pids/run_pose_ratio0.9_gpu${GPU}_internvl3_queue_${local_ts}.pid"
 
   detached_cmd=(
     bash "$0"
@@ -170,6 +181,8 @@ if [[ "$DETACH_CONTROLLER" -eq 1 ]]; then
     --data-root "$DATA_ROOT"
     --epochs-total "$EPOCHS_TOTAL"
     --generated-attribute "$GENERATED_ATTRIBUTE"
+    --generated-image-dir "$GENERATED_IMAGE_DIR"
+    --gpu "$GPU"
     --num-added-img "$NUM_ADDED_IMG"
     --max-train-samples "$MAX_TRAIN_SAMPLES"
     --batch-size "$BATCH_SIZE"
@@ -218,6 +231,9 @@ common_cmd_prefix() {
     --analyze-after-train false
     --assigner internvl3
   )
+  if [[ -n "${GENERATED_IMAGE_DIR}" ]]; then
+    COMMON_CMD+=(--generated-image-dir "${GENERATED_IMAGE_DIR}")
+  fi
 }
 
 launch_and_wait() {

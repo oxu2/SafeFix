@@ -83,12 +83,17 @@ ANALYSIS_SOURCE_DEFAULTS = {
     },
 }
 POSE_GENERATED_ATTRIBUTE_ROOTS = {
+    "brown_rainy": Path("/data/oxx220000/coco-pose-weather-edits/generated_coco_qwen3_1500_brown_rain_icedit"),
     "rainy": Path("/data/oxx220000/coco-pose-weather-edits/generated_coco_train1500_rain"),
 }
 POSE_GENERATED_IMAGE_SUFFIXES = {".png", ".jpg", ".jpeg"}
 POSE_AL_RANDOM_ALIASES = {"none", "0", "false", "no", "random", ""}
 POSE_AL_STRATEGIES = ["random", "stratified", "coreset", "badge", "attribute"]
 POSE_GENERATED_ATTRIBUTE_EXTRA_COUNTS = {
+    "brown_rainy": {
+        "clothes_color": {"brown": 1.0},
+        "weather": {"rainy": 1.0},
+    },
     "rainy": {"weather": {"rainy": 1.0}},
 }
 POSE_AL_IMAGE_SIZE = 224
@@ -987,7 +992,7 @@ def select_generated_image_ids(
     if len(available_ids) <= max_generated_samples:
         return available_ids
 
-    rng = random.Random(seed + 17)
+    rng = random.Random(seed)
     return sorted(rng.sample(available_ids, max_generated_samples))
 
 

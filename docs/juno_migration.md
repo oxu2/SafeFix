@@ -1,0 +1,364 @@
+# Juno Migration Notes
+
+This note records what must move from the UTD server to Juno for the current
+SafeFix COCO pose experiments.
+
+## Juno Rules Relevant To This Repo
+
+- Keep the repository, metadata, and normal logs under `~/work`. Put the conda
+  environment under the PI group path `/groups/yguo/oxx220000/conda/envs/ad`.
+- Use `~/scratch` for heavy batch-job I/O. Copy COCO and generated images from
+  scratch at the start of a SLURM job, run there, then write logs/results under
+  `~/work/safefix/log_pose/`.
+- Run GPU work through SLURM, not direct `nohup` from the login node.
+- Current Juno GPU partitions observed with `sinfo` on 2026-04-28:
+  - `h100`: physical H100, 80 GB or 94 GB VRAM.
+  - `a30`: physical A30, 24 GB VRAM.
+  - `a30-2.12gb`: half A30 virtual GPU, 12 GB VRAM.
+  - `a30-4.6gb`: quarter A30 virtual GPU, 6 GB VRAM.
+
+For the current Keypoint R-CNN COCO pose resume jobs, use `h100` first. `a30`
+may work with lower `--batch-size`, but the existing runs were validated with
+batch size `8` on UTD server GPUs.
+
+## Current Run Dependencies Not Covered By Git
+
+The following are required beyond a normal `git clone`:
+
+1. COCO 2017 data:
+   - Juno path: `~/work/data/coco`
+   - Download on Juno from the official COCO URLs in `DATASET_DOWNLOAD_REPRO.md`.
+   - Size observed on UTD: about `39G`
+   - Required structure:
+     - `train2017/`
+     - `val2017/`
+     - `annotations/person_keypoints_train2017.json`
+     - `annotations/person_keypoints_val2017.json`
+
+2. COCO pose generated rainy images:
+   - Juno path:
+     `~/work/data/coco-pose-weather-edits/generated_coco_train1500_rain`
+   - Download on Juno from Hugging Face dataset
+     `BZNR3/coco-pose-weather-edits`.
+   - Size observed on UTD: about `1.0G`
+   - Used by `train_pose_estimation.py` when `--attribute rainy` is set.
+
+3. COCO pose generated brown-rainy images:
+   - Juno path:
+     `~/work/data/coco-pose-weather-edits/generated_coco_qwen3_1500_brown_rain_icedit`
+   - Download on Juno from Hugging Face dataset
+     `BZNR3/coco-pose-weather-edits`.
+   - Current Juno check: `1500` files, about `58M`.
+   - Current experiment policy: keep this full directory intact, but append
+     only `1000` generated images per run, sampled deterministically with
+     `--seed 42`.
+   - Used by `train_pose_estimation.py` when `--attribute brown_rainy` is set.
+   - Attribute selection for this setting uses exact metadata keys and values:
+     - `clothes_color=brown`
+     - `weather=rainy`
+
+4. InternVL3 pose attribute metadata:
+   - `save/attribute_coco_pose_gemini_train20k_internvl3_8B.json`
+   - Also keep the paired CSV:
+     `save/attribute_coco_pose_gemini_train20k_internvl3_8B.csv`
+   - These are under `save/`, which is mostly gitignored except top-level CSV
+     and JSON files. Verify they exist after transfer.
+
+5. Qwen3 pose attribute metadata for brown-rainy selection:
+   - `save/attribute_coco_pose_gemini_train20k_qwen3_8B.json`
+   - Also keep the paired CSV:
+     `save/attribute_coco_pose_gemini_train20k_qwen3_8B.csv`
+   - The train20k JSON contains the relevant values:
+     - `clothes_color`: includes `brown`
+     - `weather`: includes `rainy`
+
+6. Resume checkpoint, only if you want to resume from the current UTD run:
+   - `log_pose/pose_keypointrcnn_train20k_internvl3_bs8_e2_rare1p1_gpu0_20260415_144530/best.pth`
+   - `.gitignore` ignores `*.pth` and most of `log_pose/`, so this checkpoint
+     will not move with Git.
+   - Current migration policy: do not copy `log_pose` output folders or
+     checkpoints by default. If the checkpoint is not copied, pass another
+     `--base-model` path on Juno or rerun the base model there first.
+
+7. Existing experiment logs:
+   - Top-level `log_pose/*.log` are unignored by `.gitignore`, but nested
+     output directories under `log_pose/pose_keypointrcnn_*` are ignored.
+   - Copy only log files for this migration. Do not copy nested output folders,
+     PID files, checkpoints, metrics JSONs, or predictions unless a specific run
+     must be resumed or inspected.
+
+Do not copy `.opencode/`, `.vscode/`, `__pycache__/`, `.pytest_cache/`, or
+PID files. They are local tooling or stale process state.
+
+## Recommended Juno Layout
+
+On Juno:
+
+```bash
+mkdir -p ~/work ~/scratch ~/work/data ~/work/artifacts
+cd ~/work
+git clone <repo-url> safefix
+```
+
+Place the non-git data here:
+
+```text
+~/work/data/coco
+~/work/data/coco-pose-weather-edits/generated_coco_train1500_rain
+~/work/data/coco-pose-weather-edits/generated_coco_qwen3_1500_brown_rain_icedit
+~/work/safefix/save/attribute_coco_pose_gemini_train20k_internvl3_8B.json
+~/work/safefix/save/attribute_coco_pose_gemini_train20k_qwen3_8B.json
+```
+
+## Transfer Commands From UTD Server
+
+Code should move by Git when possible:
+
+```bash
+ssh juno 'cd ~/work/safefix && git pull --ff-only'
+```
+
+Use Juno-local downloads for public datasets. COCO:
+
+```bash
+ssh juno 'mkdir -p ~/work/data/coco && cd ~/work/data/coco && nohup bash -lc '"'"'
+wget -c --no-check-certificate \
+  https://images.cocodataset.org/zips/train2017.zip \
+  https://images.cocodataset.org/zips/val2017.zip \
+  https://images.cocodataset.org/zips/test2017.zip \
+  https://images.cocodataset.org/annotations/annotations_trainval2017.zip \
+  https://images.cocodataset.org/annotations/image_info_test2017.zip &&
+unzip -q -n train2017.zip &&
+unzip -q -n val2017.zip &&
+unzip -q -n test2017.zip &&
+unzip -q -n annotations_trainval2017.zip &&
+unzip -q -n image_info_test2017.zip
+'"'"' > download_coco2017_juno.log 2>&1 & echo $!'
+```
+
+Generated rainy images from Hugging Face:
+
+```bash
+ssh juno
+module load miniconda
+conda activate /groups/yguo/oxx220000/conda/envs/ad
+hf auth login
+mkdir -p ~/work/data/coco-pose-weather-edits
+hf download BZNR3/coco-pose-weather-edits \
+  --repo-type dataset \
+  --local-dir ~/work/data/coco-pose-weather-edits \
+  --max-workers 8
+```
+
+The brown-rainy generated image directory should then exist at:
+
+```bash
+ls ~/work/data/coco-pose-weather-edits/generated_coco_qwen3_1500_brown_rain_icedit
+find ~/work/data/coco-pose-weather-edits/generated_coco_qwen3_1500_brown_rain_icedit -maxdepth 1 -type f | wc -l
+```
+
+Use rsync only for selected logs:
+
+```bash
+rsync -aP --include '*/' --include '*.log' --exclude '*' \
+  /people/cs/o/oxx220000/safefix/log_pose/ \
+  juno:~/work/safefix/log_pose/
+```
+
+If you later decide that the current resume checkpoint is required, copy only
+that checkpoint, not the full `log_pose` output tree:
+
+```bash
+rsync -aP \
+  /people/cs/o/oxx220000/safefix/log_pose/pose_keypointrcnn_train20k_internvl3_bs8_e2_rare1p1_gpu0_20260415_144530/best.pth \
+  juno:~/work/safefix/log_pose/pose_keypointrcnn_train20k_internvl3_bs8_e2_rare1p1_gpu0_20260415_144530/best.pth
+```
+
+## Conda Environment
+
+The current UTD server environment is:
+
+- Python `3.9.20`
+- PyTorch `1.13.1+cu117`
+- torchvision `0.14.1+cu117`
+
+For ongoing Juno work, prefer the clean SafeFix environment:
+
+```text
+/groups/yguo/oxx220000/conda/envs/sf
+```
+
+Do not use `~/` for the main shared training environment. A home-directory
+environment is acceptable for small personal tests, but the group path is better
+for SLURM jobs, quota stability, and later reproduction notes. See
+`docs/sf_environment.md` for the exact package list, recreation commands, and
+H100 validation.
+
+Historical `ad` setup:
+
+```bash
+module load miniconda
+conda create -p /groups/yguo/oxx220000/conda/envs/ad python=3.9 -y
+conda activate /groups/yguo/oxx220000/conda/envs/ad
+pip install torch==1.13.1+cu117 torchvision==0.14.1+cu117 \
+  --extra-index-url https://download.pytorch.org/whl/cu117
+pip install numpy==1.26.4 pillow pycocotools scipy scikit-learn matplotlib tqdm
+```
+
+Current Juno `ad` state after the April 28 sync:
+
+- Environment path:
+  `/groups/yguo/oxx220000/conda/envs/ad`
+- Current H100-ready GPU stack after the April 28 upgrade:
+  - `torch==2.4.1+cu121`
+  - `torchvision==0.19.1+cu121`
+  - `torchaudio==2.4.1+cu121`
+  - validation H100 smoke job reported:
+    - CUDA available: `True`
+    - device: `NVIDIA H100 80GB HBM3`
+    - capability: `(9, 0)`
+- Added / aligned safefix runtime packages for the current pose workflow:
+  - `transformers==4.26.1`
+  - `tokenizers==0.13.3`
+  - `huggingface-hub==0.26.2`
+  - `safetensors==0.4.5`
+  - `accelerate==1.1.1`
+  - `timm==0.4.12`
+  - `pandas==1.5.3`
+  - `opencv-python-headless==4.7.0.72`
+  - `opencv-python==4.10.0.84`
+  - `openai==1.55.0`
+  - `diffusers==0.31.0`
+  - `qwen-vl-utils==0.0.10`
+  - `lpips==0.1.4`
+  - `pytorch-fid==0.3.0`
+  - `wandb==0.12.21`
+  - `tensorboard==2.18.0`
+  - `scikit-image==0.24.0`
+  - `albumentations==1.4.0`
+  - `pycocoevalcap==1.2`
+  - `xtcocotools==1.14.3`
+  - `json-tricks==3.17.3`
+  - `mmengine==0.10.7`
+- Validation commands that passed:
+
+```bash
+cd ~/work/safefix
+/groups/yguo/oxx220000/conda/envs/ad/bin/python -c 'from utils.imports import *; print("utils.imports ok")'
+/groups/yguo/oxx220000/conda/envs/ad/bin/python -m py_compile train_pose_estimation.py utils/imports.py utils/active_learning.py
+/groups/yguo/oxx220000/conda/envs/ad/bin/python train_pose_estimation.py train --help
+bash scripts/juno_pose_brown_rainy_attribute.sbatch --ratio 0.05 --dry-run --no-scratch-copy
+```
+
+This is intentionally close to the active local environment for the safefix
+pose workflow, but it is not a byte-for-byte clone. Nonportable local editable,
+file, and git installs were skipped. `sentence-transformers==2.7.0` was also
+skipped because it conflicts with the active local `transformers==4.26.1`
+version.
+
+The current `ad` package snapshots are stored in:
+
+- `docs/juno_ad_current_pip_freeze.txt`
+- `docs/juno_ad_current_conda_export.txt`
+
+If exact reproduction becomes necessary, install `conda-pack` on the UTD server
+and pack the current environment:
+
+```bash
+conda install -n base -c conda-forge conda-pack
+conda-pack -p /people/cs/o/oxx220000/.conda/envs/ad -o ad-conda-env.tar.gz
+rsync -aP ad-conda-env.tar.gz <netid>@juno.utdallas.edu:~/work/
+```
+
+Then unpack on Juno:
+
+```bash
+mkdir -p /groups/yguo/oxx220000/conda/envs/ad
+tar -xzf ~/work/ad-conda-env.tar.gz -C /groups/yguo/oxx220000/conda/envs/ad
+/groups/yguo/oxx220000/conda/envs/ad/bin/conda-unpack
+```
+
+Packing is more faithful, but rebuilding is cleaner if Juno compilers/CUDA
+libraries differ.
+
+## Submit The Current Pose Queue On Juno
+
+From `~/work/safefix` on Juno:
+
+```bash
+sbatch scripts/juno_pose_resume.sbatch \
+  --queue ratio0.9 \
+  --base-model /path/to/base_or_resume_checkpoint.pth \
+  --start-at attrx111_r0001_p01_c15
+```
+
+For the unfinished ratio `0.05` refinement queue:
+
+```bash
+sbatch scripts/juno_pose_resume.sbatch \
+  --queue ratio0.05 \
+  --base-model /path/to/base_or_resume_checkpoint.pth \
+  --start-at attrx20_r000_p0_c8
+```
+
+For the brown-rainy attribute-selection run, use the dedicated wrapper. It
+selects original images with `clothes_color,weather` focus and accounts for the
+generated set as `clothes_color:brown` plus `weather:rainy`:
+
+```bash
+sbatch scripts/juno_pose_brown_rainy_attribute.sbatch \
+  --base-model ~/work/safefix/log_pose/pose_keypointrcnn_train20k_internvl3_bs8_e2_rare1p1_gpu0_20260415_144530/best.pth
+```
+
+If the Juno scratch cache already exists, prefer reading it directly and do not
+copy the dataset again for each job. The cache is currently:
+
+```text
+~/scratch/safefix_cache/data/coco
+~/scratch/safefix_cache/data/coco-pose-weather-edits/generated_coco_qwen3_1500_brown_rain_icedit
+~/scratch/safefix_cache/log_pose/pose_keypointrcnn_train20k_internvl3_bs8_e2_rare1p1_gpu0_20260415_144530/best.pth
+```
+
+Use `--no-scratch-copy` with those paths:
+
+```bash
+sbatch scripts/juno_pose_brown_rainy_attribute.sbatch \
+  --ratio 0.1 \
+  --data-root ~/scratch/safefix_cache/data/coco \
+  --generated-dir ~/scratch/safefix_cache/data/coco-pose-weather-edits/generated_coco_qwen3_1500_brown_rain_icedit \
+  --base-model ~/scratch/safefix_cache/log_pose/pose_keypointrcnn_train20k_internvl3_bs8_e2_rare1p1_gpu0_20260415_144530/best.pth \
+  --no-scratch-copy
+```
+
+The resolved defaults are:
+
+```text
+data root:       ~/work/data/coco
+generated dir:   ~/work/data/coco-pose-weather-edits/generated_coco_qwen3_1500_brown_rain_icedit
+attribute file:  ~/work/safefix/save/attribute_coco_pose_gemini_train20k_qwen3_8B.json
+focus:           clothes_color,weather
+extra counts:    clothes_color:brown=1000,weather:rainy=1000
+generated attr:  brown_rainy
+sub-ratio:       0.9
+num added img:   1000
+```
+
+Useful SLURM commands:
+
+```bash
+squeue --me
+scancel <jobid>
+tail -f slurm-<jobid>.out
+```
+
+The wrapper defaults are Juno paths, but can be overridden:
+
+```bash
+sbatch scripts/juno_pose_resume.sbatch \
+  --queue ratio0.9 \
+  --conda-env /groups/yguo/oxx220000/conda/envs/ad \
+  --data-root ~/work/data/coco \
+  --generated-dir ~/work/data/coco-pose-weather-edits/generated_coco_train1500_rain \
+  --partition h100-2.47gb \
+  --batch-size 8
+```

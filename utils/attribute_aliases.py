@@ -9,9 +9,13 @@ COCO_ATTRIBUTE_VALUE_ALIASES = {
 
 COCO_POSE_GENERATED_ATTRIBUTE_ALIASES = {
     "rain": "rainy",
+    "brown_rain": "brown_rainy",
+    "brown-rain": "brown_rainy",
+    "brown-rainy": "brown_rainy",
 }
 
 COCO_POSE_GENERATED_ATTRIBUTE_CANONICAL = {
+    "brown_rainy",
     "rainy",
 }
 
