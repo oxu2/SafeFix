@@ -5,6 +5,151 @@
 
 ---
 
+## Session 131: Launch Juno brown-rainy baseline ratio sweep
+
+**Date**: 2026-04-29
+**Task**: juno-brown-rainy-baseline-ratios-1gpu-pairs
+
+### Summary
+
+Checked the current Juno H100 memory situation on `g-04-02`, canceled an
+overwide pending 4-GPU baseline sweep, and launched the requested brown-rainy
+baseline methods as a one-GPU paired sweep.
+
+### What Changed
+
+- Added `scripts/juno_pose_brown_rainy_baselines_ratio_sweep.sbatch`.
+  - This is a 4-GPU variant that runs `random`, `stratified`, `coreset`, and
+    `badge` concurrently per ratio.
+  - It was submitted as Juno job `185514` and immediately canceled before it
+    started after rechecking the user's one-free-GPU constraint.
+- Added `scripts/juno_pose_brown_rainy_baselines_ratio_sweep_1gpu_pairs.sbatch`.
+  - Requests one H100, `16` CPUs, and `80G` host memory.
+  - Runs ratios sequentially: `0.05`, `0.1`, `0.3`, `0.5`, `0.7`, `0.9`.
+  - For each ratio, runs two methods at a time on the allocated GPU:
+    `random + stratified`, then `coreset + badge`.
+  - Uses the same scratch inputs as the Juno brown-rainy attribute jobs:
+    - COCO:
+      `/home/oxx220000/scratch/safefix_cache/data/coco`
+    - generated brown-rainy images:
+      `/home/oxx220000/scratch/safefix_cache/data/coco-pose-weather-edits/generated_coco_qwen3_1500_brown_rain_icedit`
+    - base checkpoint:
+      `/home/oxx220000/scratch/safefix_cache/log_pose/pose_keypointrcnn_train20k_internvl3_bs8_e2_rare1p1_gpu0_20260415_144530/best.pth`
+- Synced the new wrappers to `/work/oxx220000/safefix/scripts/` on Juno.
+- Submitted the one-GPU paired wrapper as Juno job `185516`.
+
+### Memory / Scheduling Check
+
+- Previous completed single-run H100 jobs reported host `MaxRSS` around
+  `5.9-8.9 GB`, so host memory is not the bottleneck.
+- The active `g-04-02` check showed one free H100 before job `185516` started.
+- Four experiments on one H100 were not safe because current pose jobs use
+  tens of GB of GPU memory each; the observed active H100 GPU memory examples
+  included roughly `18.6 GB` and `28.7 GB`.
+- After launching job `185516`, the first pair
+  `ratio=0.05 random + stratified` loaded on physical GPU `3` and used about
+  `22.5 GB / 81.6 GB`, confirming the two-at-a-time plan fits at startup.
+
+### Validation
+
+- `bash -n scripts/juno_pose_brown_rainy_baselines_ratio_sweep.sbatch`
+- `bash -n scripts/juno_pose_brown_rainy_baselines_ratio_sweep_1gpu_pairs.sbatch`
+- Remote Juno syntax checks passed for both wrappers.
+- Remote dry run for the one-GPU paired wrapper showed the expected ratio and
+  method ordering.
+- Juno queue after launch:
+  - `185496`: `br-rpc03-05-seq`, `RUNNING`, node `g-04-02`
+  - `185516`: `br-base-1gpu`, `RUNNING`, node `g-04-02`
+
+### Monitor
+
+- Queue:
+  `ssh juno 'squeue -j 185516 -o "%i %P %j %T %M %D %R"'`
+- Controller log:
+  `ssh juno 'cd /work/oxx220000/safefix && tail -f slurm-br-base-1gpu-185516.out'`
+- First pair logs:
+  - `/work/oxx220000/safefix/log_pose/pose_resume_qwen3_brown_rainy_random_ratio0p05_gpu0_20260429_013029.log`
+  - `/work/oxx220000/safefix/log_pose/pose_resume_qwen3_brown_rainy_stratified_ratio0p05_gpu0_20260429_013029.log`
+
+### Caveats
+
+- `report.md` was not updated because no stable result from this sweep has
+  completed yet.
+- If a later pair OOMs, reduce `--batch-size` to `4` or make the wrapper run
+  one method at a time.
+
+### Status
+
+[~] **Juno brown-rainy baseline ratio sweep running as job 185516**
+
+## Session 130: Launch KITTI YOLOv8n batch-size-16 GPU0 run
+
+**Date**: 2026-04-29
+**Task**: kitti-yolov8-gpu0-bs16-rerun
+
+### Summary
+
+Confirmed the previous local KITTI YOLOv8n 5000/1240/1241 run completed, then
+launched and completed a new local YOLOv8n run on physical GPU `0` with batch
+size `16`.
+
+### What Changed
+
+- Added `scripts/launch_kitti_yolov8_gpu0_bs16_e30.sh`.
+- The new helper keeps the previous KITTI setup unchanged except:
+  - `CUDA_VISIBLE_DEVICES=0`
+  - Ultralytics `--device 0`
+  - `--batch 16`
+  - run name prefix `first5000_1240val_1241test_gpu0_bs16_e30`
+- Launched outside the Codex sandbox so the detached process survives:
+  - PID: `314812`
+  - log:
+    `logs/kitti_yolov8_first5000_1240val_1241test_gpu0_bs16_e30_20260429_012232.log`
+  - pidfile:
+    `logs/kitti_yolov8_first5000_1240val_1241test_gpu0_bs16_e30_20260429_012232.pid`
+  - output directory:
+    `runs/kitti_yolov8/first5000_1240val_1241test_gpu0_bs16_e30_20260429_012232`
+- Early startup checks passed:
+  - Ultralytics reports `CUDA:0 (NVIDIA RTX A5000, 24248MiB)`
+  - `batch=16`, `epochs=30`, `imgsz=640`, `workers=4`
+  - training and validation caches loaded successfully
+  - epoch 1 validation: mAP50 `0.627`, mAP50-95 `0.367`
+  - epoch 2 validation: mAP50 `0.632`, mAP50-95 `0.377`
+- Completed results:
+  - final validation after epoch 30:
+    - all: precision `0.889`, recall `0.709`, mAP50 `0.819`, mAP50-95
+      `0.561`
+    - Car: mAP50 `0.942`, mAP50-95 `0.739`
+    - Pedestrian: mAP50 `0.695`, mAP50-95 `0.383`
+  - final held-out test:
+    - all: precision `0.8677`, recall `0.7530`, mAP50 `0.8454`, mAP50-95
+      `0.5797`
+    - Car: precision `0.900`, recall `0.893`, mAP50 `0.945`, mAP50-95
+      `0.747`
+    - Pedestrian: precision `0.836`, recall `0.613`, mAP50 `0.746`,
+      mAP50-95 `0.413`
+  - training time: `714.95 s` (`00:11:55`)
+  - final test evaluation time: `5.96 s` (`00:00:06`)
+  - test output directory:
+    `runs/kitti_yolov8/first5000_1240val_1241test_gpu0_bs16_e30_20260429_012232_test`
+  - checkpoints:
+    `runs/kitti_yolov8/first5000_1240val_1241test_gpu0_bs16_e30_20260429_012232/weights/best.pt`
+    and `last.pt`
+
+### Caveats
+
+- The first launch attempt from inside the sandbox produced an empty log and no
+  live YOLO process because sandbox teardown killed the detached child. The
+  active run is the later outside-sandbox launch with PID `314812`.
+- `report.md` was updated with the completed batch-size-16 result.
+- The final held-out test mAP50-95 `0.5797` is effectively tied with the
+  previous batch-size-64 result `0.5801`, while mAP50 is slightly higher
+  (`0.8454` versus `0.8422`).
+
+### Status
+
+[x] **KITTI YOLOv8n GPU0 batch-size-16 run completed and documented**
+
 ## Session 127: Install Juno GPU monitoring helpers
 
 **Date**: 2026-04-29

@@ -70,3 +70,13 @@ The following generation flags are not valid and may be ignored: ['top_p', 'top_
   Checkpoint saved to save/attribute_kitti_qwen3_8B_partial.json (4500 images done)
 [4600/5000] Processed 4600 images, 0.83s this image, avg 0.86s/img, ETA 5.7min
 [4700/5000] Processed 4700 images, 0.86s this image, avg 0.86s/img, ETA 4.3min
+[4800/5000] Processed 4800 images, 0.83s this image, avg 0.86s/img, ETA 2.9min
+[4900/5000] Processed 4900 images, 0.90s this image, avg 0.86s/img, ETA 1.4min
+[5000/5000] Processed 5000 images, 0.94s this image, avg 0.86s/img, ETA 0.0min
+  Checkpoint saved to save/attribute_kitti_qwen3_8B_partial.json (5000 images done)
+
+Done. Processed 5000 images in 71.8 minutes (1.20 hours)
+Average time per image: 0.86s
+Saved attribute annotations to save/attribute_kitti_qwen3_8B.json
+Saved attribute CSV to save/attribute_kitti_qwen3_8B.csv
+Removed partial checkpoint save/attribute_kitti_qwen3_8B_partial.json
