@@ -1,0 +1,1241 @@
+image_id,color,weather,background_style,traffic_density,lighting_condition,road_condition
+005000,black,sunny,residential,light,bright,dry
+005001,black,sunny,residential,light,bright,dry
+005002,black,sunny,residential,light,bright,dry
+005003,gray,sunny,residential,empty,dim,dry
+005004,silver,sunny,residential,light,bright,dry
+005005,blue,sunny,urban city,light,bright,dry
+005006,white,sunny,residential,light,bright,dry
+005007,blue,sunny,urban city,light,strong shadows,dry
+005008,white,sunny,rural,moderate,bright,dry
+005009,black,sunny,residential,light,bright,dry
+005010,black,sunny,urban city,light,bright,dry
+005011,black,sunny,residential,light,bright,dry
+005012,silver,sunny,residential,light,bright,dry
+005013,silver,sunny,residential,light,bright,dry
+005014,red,sunny,residential,light,bright,dry
+005015,gray,sunny,rural,light,bright,dry
+005016,white,sunny,urban city,light,strong shadows,dry
+005017,blue,sunny,urban city,light,strong shadows,dry
+005018,red,sunny,residential,light,bright,dry
+005019,silver,sunny,rural,moderate,bright,dry
+005020,brown,sunny,residential,light,strong shadows,dry
+005021,gray,sunny,residential,light,bright,dry
+005022,silver,sunny,residential,light,strong shadows,dry
+005023,gray,sunny,residential,light,bright,dry
+005024,gray,sunny,residential,light,bright,dry
+005025,gray,sunny,rural,light,bright,dry
+005026,red,sunny,urban city,light,bright,dry
+005027,white,sunny,urban city,light,bright,dry
+005028,gray,sunny,highway,light,bright,dry
+005029,silver,sunny,residential,light,bright,dry
+005030,blue,sunny,urban city,light,bright,dry
+005031,gray,sunny,urban city,light,bright,dry
+005032,white,sunny,residential,light,bright,dry
+005033,black,sunny,residential,light,strong shadows,dry
+005034,silver,sunny,residential,light,bright,dry
+005035,green,sunny,residential,light,strong shadows,dry
+005036,white,sunny,residential,light,bright,dry
+005037,brown,sunny,residential,light,bright,dry
+005038,white,sunny,residential,light,bright,dry
+005039,black,sunny,residential,light,bright,dry
+005040,silver,sunny,residential,light,bright,dry
+005041,black,sunny,urban city,light,bright,dry
+005042,gray,sunny,residential,empty,bright,dry
+005043,white,sunny,urban city,light,bright,dry
+005044,black,sunny,residential,light,bright,dry
+005045,silver,sunny,residential,light,bright,dry
+005046,white,sunny,residential,light,bright,dry
+005047,gray,sunny,rural,light,bright,dry
+005048,red,sunny,residential,light,bright,dry
+005049,white,sunny,residential,light,bright,dry
+005050,blue,sunny,urban city,empty,bright,dry
+005051,black,sunny,residential,light,bright,dry
+005052,black,sunny,residential,light,bright,dry
+005053,black,sunny,highway,moderate,bright,dry
+005054,black,sunny,residential,light,bright,dry
+005055,gray,clear,rural,light,bright,dry
+005056,black,sunny,residential,light,bright,dry
+005057,gray,sunny,residential,light,bright,dry
+005058,white,sunny,rural,moderate,bright,dry
+005059,gray,sunny,urban city,light,bright,dry
+005060,black,sunny,residential,light,bright,dry
+005061,white,sunny,urban city,light,bright,dry
+005062,silver,sunny,residential,light,bright,dry
+005063,gray,cloudy,rural,light,overcast,dry
+005064,gray,sunny,urban city,light,bright,wet
+005065,silver,sunny,urban city,light,bright,dry
+005066,red,sunny,rural,light,bright,dry
+005067,black,sunny,highway,heavy,bright,dry
+005068,gray,clear,rural,light,bright,dry
+005069,black,sunny,urban city,light,bright,wet
+005070,gray,sunny,urban city,light,bright,dry
+005071,white,sunny,residential,light,bright,dry
+005072,green,sunny,residential,light,bright,dry
+005073,white,sunny,highway,heavy,bright,dry
+005074,black,sunny,residential,light,bright,dry
+005075,gray,sunny,urban city,light,bright,wet
+005076,white,sunny,urban city,light,bright,dry
+005077,gray,sunny,residential,light,bright,dry
+005078,brown,sunny,residential,light,strong shadows,dry
+005079,silver,sunny,residential,light,bright,dry
+005080,gray,sunny,residential,light,bright,dry
+005081,blue,sunny,residential,light,bright,dry
+005082,white,sunny,urban city,light,bright,dry
+005083,white,sunny,urban city,light,bright,wet
+005084,silver,sunny,residential,light,bright,wet
+005085,silver,sunny,residential,light,strong shadows,dry
+005086,gray,sunny,urban city,light,bright,dry
+005087,silver,sunny,residential,light,bright,dry
+005088,silver,sunny,residential,light,bright,dry
+005089,silver,sunny,rural,moderate,bright,dry
+005090,black,sunny,residential,light,bright,dry
+005091,blue,sunny,residential,light,dim,dry
+005092,black,sunny,residential,light,bright,dry
+005093,gray,sunny,rural,light,bright,dry
+005094,white,sunny,rural,moderate,strong shadows,dry
+005095,black,sunny,residential,light,bright,dry
+005096,white,sunny,residential,light,bright,dry
+005097,red,sunny,residential,light,bright,dry
+005098,red,sunny,urban city,moderate,bright,dry
+005099,gray,sunny,residential,light,bright,dry
+005100,white,sunny,residential,light,bright,dry
+005101,gray,sunny,rural,light,bright,dry
+005102,black,sunny,urban city,light,bright,dry
+005103,white,sunny,residential,light,bright,dry
+005104,white,sunny,residential,light,bright,dry
+005105,black,sunny,residential,light,bright,dry
+005106,white,sunny,urban city,light,bright,dry
+005107,blue,sunny,urban city,light,strong shadows,dry
+005108,gray,sunny,rural,light,strong shadows,dry
+005109,black,sunny,residential,light,bright,dry
+005110,gray,sunny,urban city,light,bright,wet
+005111,black,sunny,residential,light,bright,dry
+005112,silver,sunny,urban city,light,bright,wet
+005113,gray,sunny,rural,light,bright,dry
+005114,white,sunny,urban city,light,bright,dry
+005115,green,sunny,residential,light,bright,dry
+005116,white,sunny,urban city,light,bright,dry
+005117,black,sunny,residential,light,bright,dry
+005118,yellow,sunny,residential,light,bright,dry
+005119,silver,sunny,residential,light,bright,dry
+005120,black,sunny,residential,light,bright,dry
+005121,gray,sunny,rural,light,bright,dry
+005122,white,sunny,residential,light,bright,dry
+005123,black,sunny,rural,light,bright,dry
+005124,blue,sunny,urban city,light,strong shadows,dry
+005125,black,sunny,residential,light,bright,dry
+005126,black,sunny,residential,light,bright,dry
+005127,black,sunny,residential,light,bright,dry
+005128,black,sunny,residential,light,bright,dry
+005129,white,sunny,urban city,light,strong shadows,dry
+005130,white,sunny,rural,light,bright,dry
+005131,gray,sunny,urban city,light,strong shadows,dry
+005132,blue,sunny,residential,light,bright,dry
+005133,black,sunny,urban city,light,bright,dry
+005134,white,sunny,urban city,light,bright,dry
+005135,black,sunny,residential,light,bright,dry
+005136,black,sunny,residential,light,bright,dry
+005137,silver,sunny,urban city,light,bright,dry
+005138,black,sunny,highway,moderate,bright,dry
+005139,silver,sunny,residential,light,bright,dry
+005140,black,sunny,residential,light,bright,dry
+005141,gray,sunny,rural,light,bright,dry
+005142,blue,sunny,urban city,light,bright,dry
+005143,gray,cloudy,rural,light,overcast,wet
+005144,gray,sunny,residential,light,bright,dry
+005145,black,sunny,residential,light,bright,dry
+005146,blue,sunny,residential,light,bright,dry
+005147,gray,sunny,urban city,light,bright,dry
+005148,red,sunny,rural,light,bright,dry
+005149,gray,sunny,residential,light,bright,dry
+005150,black,sunny,residential,light,bright,wet
+005151,red,sunny,rural,light,bright,dry
+005152,silver,sunny,residential,light,bright,dry
+005153,gray,sunny,rural,light,bright,dry
+005154,silver,sunny,residential,light,strong shadows,dry
+005155,gray,sunny,rural,light,bright,dry
+005156,black,sunny,residential,light,bright,dry
+005157,black,sunny,residential,light,strong shadows,dry
+005158,gray,clear,rural,light,bright,dry
+005159,silver,sunny,rural,light,bright,dry
+005160,black,sunny,residential,light,bright,dry
+005161,green,sunny,residential,light,bright,dry
+005162,red,sunny,residential,light,bright,dry
+005163,black,sunny,residential,light,bright,dry
+005164,green,sunny,highway,heavy,bright,dry
+005165,black,sunny,urban city,light,bright,dry
+005166,black,sunny,urban city,light,bright,dry
+005167,gray,sunny,rural,light,bright,dry
+005168,gray,sunny,urban city,light,bright,wet
+005169,red,sunny,urban city,light,bright,dry
+005170,black,sunny,urban city,light,bright,dry
+005171,silver,sunny,urban city,light,bright,dry
+005172,black,sunny,residential,light,bright,dry
+005173,red,sunny,rural,light,bright,dry
+005174,silver,sunny,residential,light,bright,dry
+005175,gray,sunny,urban city,light,bright,wet
+005176,black,sunny,urban city,light,bright,dry
+005177,blue,sunny,residential,light,bright,dry
+005178,white,sunny,residential,light,bright,dry
+005179,silver,sunny,residential,light,bright,dry
+005180,yellow,sunny,residential,light,bright,dry
+005181,gray,sunny,urban city,light,bright,dry
+005182,silver,sunny,residential,light,bright,dry
+005183,gray,sunny,rural,light,bright,dry
+005184,blue,sunny,residential,light,bright,dry
+005185,black,sunny,residential,light,bright,dry
+005186,silver,sunny,residential,light,bright,dry
+005187,gray,sunny,rural,light,bright,dry
+005188,black,sunny,residential,light,bright,dry
+005189,white,sunny,residential,light,bright,dry
+005190,black,sunny,residential,light,bright,dry
+005191,white,sunny,rural,moderate,bright,dry
+005192,white,sunny,residential,light,bright,dry
+005193,silver,sunny,residential,light,bright,dry
+005194,gray,clear,rural,light,bright,dry
+005195,black,sunny,residential,light,bright,dry
+005196,black,sunny,residential,light,bright,dry
+005197,gray,sunny,rural,light,bright,dry
+005198,silver,sunny,residential,light,bright,dry
+005199,black,sunny,residential,light,bright,dry
+005200,gray,sunny,urban city,light,bright,wet
+005201,silver,sunny,residential,light,bright,dry
+005202,gray,sunny,rural,light,bright,dry
+005203,silver,sunny,urban city,light,bright,dry
+005204,black,sunny,rural,empty,bright,dry
+005205,silver,sunny,rural,light,bright,dry
+005206,white,sunny,residential,light,bright,dry
+005207,gray,sunny,residential,light,bright,dry
+005208,white,sunny,residential,light,bright,dry
+005209,black,sunny,residential,light,bright,dry
+005210,black,sunny,rural,light,bright,dry
+005211,white,sunny,residential,light,bright,dry
+005212,blue,sunny,residential,light,bright,dry
+005213,black,sunny,residential,light,bright,dry
+005214,white,sunny,highway,heavy,bright,dry
+005215,gray,sunny,residential,light,bright,dry
+005216,black,sunny,residential,light,bright,dry
+005217,white,sunny,residential,light,bright,dry
+005218,blue,sunny,urban city,light,bright,dry
+005219,gray,sunny,rural,light,bright,dry
+005220,black,sunny,residential,light,bright,dry
+005221,silver,sunny,residential,light,bright,dry
+005222,silver,sunny,residential,light,bright,dry
+005223,red,sunny,residential,light,bright,dry
+005224,silver,sunny,residential,light,bright,dry
+005225,black,sunny,rural,light,bright,dry
+005226,blue,sunny,urban city,light,bright,dry
+005227,silver,sunny,residential,light,bright,dry
+005228,black,sunny,residential,light,bright,dry
+005229,white,sunny,rural,light,strong shadows,dry
+005230,green,sunny,residential,empty,bright,dry
+005231,blue,sunny,urban city,light,bright,dry
+005232,gray,sunny,residential,light,bright,dry
+005233,white,sunny,residential,light,bright,dry
+005234,gray,sunny,residential,light,bright,dry
+005235,black,sunny,residential,light,bright,dry
+005236,red,sunny,rural,light,bright,dry
+005237,gray,sunny,rural,light,bright,dry
+005238,gray,sunny,rural,light,bright,dry
+005239,yellow,sunny,residential,light,bright,dry
+005240,silver,sunny,urban city,light,bright,wet
+005241,white,sunny,residential,light,bright,dry
+005242,gray,sunny,urban city,light,bright,dry
+005243,white,sunny,residential,light,bright,dry
+005244,gray,clear,rural,light,bright,dry
+005245,black,sunny,urban city,light,bright,dry
+005246,gray,sunny,residential,light,bright,dry
+005247,black,sunny,rural,light,bright,dry
+005248,black,sunny,urban city,light,bright,dry
+005249,red,sunny,rural,light,bright,dry
+005250,black,sunny,urban city,light,bright,dry
+005251,silver,sunny,residential,light,bright,dry
+005252,gray,sunny,rural,light,bright,dry
+005253,white,sunny,urban city,light,bright,dry
+005254,gray,sunny,rural,empty,bright,dry
+005255,red,sunny,residential,light,bright,dry
+005256,silver,cloudy,rural,light,overcast,dry
+005257,black,sunny,residential,light,bright,dry
+005258,gray,sunny,urban city,light,overcast,dry
+005259,gray,sunny,urban city,light,bright,dry
+005260,black,sunny,rural,heavy,bright,dry
+005261,silver,sunny,urban city,light,bright,wet
+005262,gray,sunny,residential,light,bright,dry
+005263,black,sunny,residential,light,bright,dry
+005264,blue,sunny,residential,light,bright,dry
+005265,brown,sunny,residential,light,bright,dry
+005266,black,sunny,residential,light,strong shadows,dry
+005267,white,sunny,residential,light,bright,dry
+005268,gray,sunny,rural,light,bright,dry
+005269,yellow,sunny,urban city,light,bright,dry
+005270,white,sunny,urban city,light,bright,dry
+005271,gray,sunny,highway,light,bright,dry
+005272,black,sunny,rural,light,bright,dry
+005273,silver,sunny,urban city,light,bright,wet
+005274,silver,sunny,residential,light,bright,dry
+005275,gray,cloudy,rural,light,overcast,wet
+005276,white,sunny,urban city,light,bright,dry
+005277,white,sunny,residential,light,bright,dry
+005278,white,sunny,urban city,light,bright,dry
+005279,black,sunny,residential,light,bright,dry
+005280,blue,sunny,residential,light,bright,dry
+005281,gray,sunny,residential,light,bright,dry
+005282,gray,clear,rural,light,bright,dry
+005283,red,sunny,residential,light,bright,dry
+005284,gray,sunny,rural,light,bright,dry
+005285,black,sunny,residential,light,bright,dry
+005286,black,sunny,residential,light,bright,dry
+005287,blue,sunny,residential,light,bright,dry
+005288,red,sunny,rural,light,bright,dry
+005289,black,sunny,residential,light,strong shadows,dry
+005290,red,sunny,residential,light,bright,dry
+005291,red,sunny,rural,light,bright,dry
+005292,white,sunny,rural,light,bright,dry
+005293,blue,sunny,residential,light,bright,dry
+005294,red,sunny,urban city,light,bright,dry
+005295,white,sunny,residential,light,bright,dry
+005296,white,sunny,rural,light,bright,dry
+005297,gray,sunny,residential,light,bright,dry
+005298,gray,cloudy,rural,light,overcast,wet
+005299,gray,sunny,rural,light,bright,dry
+005300,silver,sunny,residential,light,bright,dry
+005301,blue,sunny,urban city,empty,bright,dry
+005302,gray,sunny,rural,light,bright,dry
+005303,gray,sunny,rural,light,bright,dry
+005304,yellow,sunny,rural,empty,bright,dry
+005305,gray,sunny,rural,light,bright,dry
+005306,gray,sunny,residential,light,strong shadows,dry
+005307,black,sunny,residential,empty,bright,dry
+005308,gray,sunny,urban city,light,bright,dry
+005309,black,sunny,rural,light,bright,dry
+005310,silver,sunny,residential,light,bright,dry
+005311,white,sunny,urban city,light,bright,dry
+005312,black,sunny,residential,light,bright,dry
+005313,gray,sunny,rural,light,bright,dry
+005314,white,sunny,urban city,moderate,overcast,dry
+005315,silver,sunny,residential,light,bright,dry
+005316,gray,sunny,urban city,light,bright,dry
+005317,blue,sunny,urban city,light,bright,dry
+005318,silver,sunny,rural,moderate,bright,dry
+005319,black,sunny,residential,light,bright,dry
+005320,silver,sunny,residential,light,bright,dry
+005321,black,sunny,highway,moderate,bright,dry
+005322,gray,sunny,residential,light,bright,dry
+005323,gray,sunny,urban city,light,bright,dry
+005324,blue,sunny,urban city,empty,bright,dry
+005325,gray,sunny,residential,light,bright,dry
+005326,red,sunny,rural,light,bright,dry
+005327,blue,sunny,residential,light,bright,dry
+005328,gray,sunny,rural,light,overcast,dry
+005329,blue,sunny,urban city,light,bright,dry
+005330,red,sunny,residential,light,bright,dry
+005331,silver,sunny,rural,light,bright,dry
+005332,gray,sunny,residential,light,bright,dry
+005333,black,sunny,residential,light,bright,dry
+005334,black,sunny,residential,light,bright,dry
+005335,black,sunny,residential,light,bright,dry
+005336,silver,sunny,urban city,light,bright,dry
+005337,black,sunny,urban city,light,bright,dry
+005338,gray,sunny,urban city,light,bright,dry
+005339,black,sunny,residential,light,bright,dry
+005340,gray,sunny,residential,light,bright,dry
+005341,green,sunny,residential,empty,bright,dry
+005342,gray,sunny,rural,light,bright,dry
+005343,gray,clear,rural,light,bright,dry
+005344,red,sunny,rural,light,bright,dry
+005345,red,sunny,rural,light,bright,dry
+005346,silver,sunny,residential,light,bright,dry
+005347,white,sunny,residential,light,bright,dry
+005348,black,sunny,residential,light,bright,dry
+005349,red,sunny,residential,light,bright,dry
+005350,black,sunny,residential,light,bright,dry
+005351,blue,sunny,residential,light,bright,dry
+005352,red,sunny,residential,light,bright,dry
+005353,black,sunny,residential,light,bright,dry
+005354,white,sunny,urban city,light,strong shadows,dry
+005355,black,sunny,residential,light,bright,wet
+005356,black,sunny,urban city,light,overcast,dry
+005357,white,sunny,urban city,light,strong shadows,dry
+005358,green,sunny,residential,empty,strong shadows,dry
+005359,white,sunny,residential,light,bright,dry
+005360,blue,sunny,residential,light,bright,dry
+005361,black,sunny,rural,light,bright,dry
+005362,black,sunny,urban city,light,bright,dry
+005363,gray,cloudy,rural,light,overcast,dry
+005364,black,sunny,residential,light,bright,dry
+005365,white,sunny,residential,light,bright,dry
+005366,silver,sunny,highway,heavy,bright,dry
+005367,gray,sunny,residential,light,bright,dry
+005368,black,sunny,residential,light,bright,dry
+005369,black,sunny,urban city,light,bright,dry
+005370,black,sunny,residential,light,bright,dry
+005371,silver,sunny,residential,light,bright,dry
+005372,black,sunny,residential,light,bright,dry
+005373,blue,sunny,residential,light,bright,dry
+005374,red,sunny,rural,light,bright,dry
+005375,gray,sunny,rural,light,bright,dry
+005376,white,sunny,urban city,light,strong shadows,dry
+005377,gray,clear,rural,light,bright,dry
+005378,black,sunny,rural,light,bright,dry
+005379,red,sunny,residential,light,bright,dry
+005380,gray,sunny,urban city,light,bright,dry
+005381,silver,sunny,residential,light,bright,dry
+005382,white,sunny,urban city,light,bright,dry
+005383,silver,sunny,urban city,light,bright,dry
+005384,silver,sunny,rural,light,bright,dry
+005385,black,sunny,residential,light,bright,dry
+005386,silver,sunny,residential,light,bright,dry
+005387,black,sunny,residential,light,bright,dry
+005388,silver,sunny,urban city,light,strong shadows,dry
+005389,silver,sunny,residential,light,bright,dry
+005390,gray,sunny,urban city,light,bright,dry
+005391,silver,sunny,urban city,light,bright,dry
+005392,silver,sunny,residential,light,bright,dry
+005393,gray,sunny,rural,light,bright,dry
+005394,black,sunny,residential,light,bright,dry
+005395,black,sunny,residential,light,bright,dry
+005396,black,sunny,rural,light,bright,dry
+005397,gray,sunny,residential,light,bright,dry
+005398,gray,sunny,residential,light,bright,dry
+005399,red,sunny,rural,light,bright,dry
+005400,red,sunny,rural,light,bright,dry
+005401,silver,sunny,rural,moderate,bright,dry
+005402,red,sunny,rural,light,bright,dry
+005403,red,sunny,urban city,light,bright,dry
+005404,black,sunny,residential,light,bright,dry
+005405,black,sunny,residential,light,bright,dry
+005406,silver,sunny,residential,light,bright,dry
+005407,silver,sunny,residential,light,bright,dry
+005408,gray,sunny,urban city,light,bright,dry
+005409,white,sunny,residential,light,bright,dry
+005410,white,sunny,residential,light,bright,dry
+005411,red,sunny,residential,light,bright,dry
+005412,white,sunny,urban city,light,bright,dry
+005413,gray,sunny,highway,light,bright,dry
+005414,red,sunny,rural,light,bright,dry
+005415,silver,sunny,residential,light,bright,dry
+005416,red,sunny,residential,light,bright,dry
+005417,gray,sunny,residential,light,bright,dry
+005418,black,sunny,urban city,light,bright,dry
+005419,white,sunny,urban city,light,bright,dry
+005420,black,sunny,rural,light,bright,dry
+005421,black,sunny,residential,light,bright,dry
+005422,blue,sunny,urban city,light,bright,dry
+005423,silver,sunny,residential,light,bright,dry
+005424,black,sunny,rural,light,bright,dry
+005425,white,sunny,residential,light,bright,dry
+005426,yellow,sunny,residential,light,bright,dry
+005427,yellow,sunny,residential,light,bright,dry
+005428,black,sunny,residential,light,bright,dry
+005429,blue,sunny,urban city,light,bright,dry
+005430,black,sunny,urban city,light,bright,dry
+005431,silver,sunny,rural,moderate,bright,dry
+005432,silver,sunny,residential,light,bright,wet
+005433,blue,sunny,urban city,light,bright,dry
+005434,yellow,sunny,urban city,light,bright,dry
+005435,gray,sunny,residential,light,bright,dry
+005436,silver,sunny,urban city,light,bright,dry
+005437,gray,clear,rural,light,bright,dry
+005438,brown,sunny,residential,light,bright,dry
+005439,blue,sunny,urban city,light,bright,dry
+005440,red,sunny,residential,light,bright,dry
+005441,silver,sunny,residential,light,bright,dry
+005442,red,sunny,residential,light,bright,dry
+005443,silver,sunny,residential,light,bright,dry
+005444,gray,sunny,rural,light,bright,dry
+005445,white,sunny,rural,light,bright,dry
+005446,silver,sunny,rural,light,bright,wet
+005447,white,cloudy,rural,light,overcast,wet
+005448,black,sunny,residential,light,bright,dry
+005449,black,sunny,residential,light,bright,dry
+005450,white,sunny,residential,light,bright,dry
+005451,black,sunny,residential,light,bright,dry
+005452,red,clear,highway,light,overcast,dry
+005453,blue,sunny,residential,light,bright,dry
+005454,red,sunny,rural,light,bright,dry
+005455,gray,sunny,residential,light,bright,dry
+005456,silver,sunny,rural,light,bright,dry
+005457,white,sunny,rural,light,bright,dry
+005458,white,sunny,residential,light,bright,dry
+005459,gray,sunny,urban city,light,bright,wet
+005460,yellow,cloudy,highway,light,overcast,dry
+005461,gray,sunny,residential,light,bright,dry
+005462,gray,sunny,residential,light,bright,dry
+005463,white,sunny,residential,empty,strong shadows,dry
+005464,red,sunny,rural,light,bright,dry
+005465,silver,sunny,residential,light,bright,dry
+005466,black,sunny,residential,light,strong shadows,dry
+005467,black,sunny,urban city,light,bright,dry
+005468,black,sunny,rural,light,bright,dry
+005469,silver,sunny,residential,light,bright,dry
+005470,blue,sunny,rural,light,bright,dry
+005471,gray,sunny,urban city,light,bright,dry
+005472,black,sunny,urban city,light,bright,dry
+005473,gray,sunny,urban city,light,bright,dry
+005474,red,cloudy,rural,light,overcast,dry
+005475,gray,sunny,rural,light,bright,dry
+005476,gray,sunny,urban city,light,bright,dry
+005477,gray,sunny,rural,light,bright,dry
+005478,black,sunny,residential,light,bright,dry
+005479,silver,sunny,residential,light,bright,dry
+005480,black,sunny,rural,light,bright,dry
+005481,blue,sunny,residential,light,bright,dry
+005482,silver,sunny,urban city,light,bright,dry
+005483,gray,sunny,rural,light,bright,dry
+005484,gray,sunny,rural,light,bright,dry
+005485,white,sunny,rural,light,bright,dry
+005486,silver,sunny,residential,light,bright,dry
+005487,white,sunny,residential,light,bright,dry
+005488,silver,sunny,residential,moderate,bright,dry
+005489,silver,sunny,residential,light,bright,dry
+005490,white,sunny,urban city,light,strong shadows,dry
+005491,white,sunny,residential,light,bright,dry
+005492,black,sunny,residential,light,bright,dry
+005493,silver,sunny,residential,light,bright,dry
+005494,white,sunny,residential,light,bright,dry
+005495,black,sunny,urban city,light,bright,wet
+005496,silver,sunny,residential,light,bright,dry
+005497,black,sunny,residential,light,bright,dry
+005498,white,sunny,highway,heavy,bright,dry
+005499,red,sunny,residential,light,bright,dry
+005500,silver,sunny,residential,light,bright,dry
+005501,red,sunny,urban city,light,bright,dry
+005502,gray,sunny,rural,light,bright,dry
+005503,gray,sunny,rural,light,bright,dry
+005504,black,sunny,residential,light,strong shadows,dry
+005505,silver,sunny,residential,light,bright,dry
+005506,gray,sunny,residential,light,bright,dry
+005507,red,sunny,rural,light,bright,dry
+005508,blue,sunny,rural,light,bright,dry
+005509,yellow,sunny,urban city,light,bright,dry
+005510,red,sunny,urban city,light,bright,dry
+005511,gray,sunny,urban city,light,bright,wet
+005512,blue,sunny,urban city,light,bright,dry
+005513,red,sunny,rural,light,bright,dry
+005514,white,sunny,residential,light,bright,dry
+005515,black,sunny,residential,light,bright,dry
+005516,red,sunny,residential,light,bright,dry
+005517,gray,sunny,residential,light,bright,dry
+005518,gray,sunny,residential,light,bright,dry
+005519,red,sunny,residential,light,strong shadows,dry
+005520,black,sunny,residential,light,bright,dry
+005521,yellow,sunny,residential,light,bright,wet
+005522,red,sunny,rural,light,bright,dry
+005523,yellow,sunny,residential,light,bright,dry
+005524,white,sunny,urban city,light,bright,dry
+005525,yellow,cloudy,rural,light,overcast,dry
+005526,blue,sunny,urban city,light,bright,dry
+005527,gray,sunny,residential,light,bright,dry
+005528,black,sunny,urban city,light,bright,dry
+005529,red,sunny,residential,light,bright,dry
+005530,black,sunny,residential,light,bright,dry
+005531,white,sunny,residential,light,bright,dry
+005532,blue,sunny,urban city,light,bright,dry
+005533,gray,sunny,residential,light,bright,dry
+005534,red,sunny,residential,light,bright,dry
+005535,gray,sunny,residential,light,bright,dry
+005536,gray,sunny,residential,light,bright,dry
+005537,white,sunny,residential,light,bright,dry
+005538,gray,clear,rural,light,bright,dry
+005539,white,sunny,residential,light,bright,dry
+005540,blue,sunny,urban city,light,bright,dry
+005541,white,sunny,residential,light,bright,dry
+005542,red,sunny,rural,heavy,bright,dry
+005543,black,sunny,rural,light,bright,dry
+005544,gray,clear,urban city,light,bright,dry
+005545,gray,sunny,urban city,light,bright,dry
+005546,silver,sunny,residential,light,bright,dry
+005547,black,sunny,residential,light,bright,dry
+005548,white,sunny,residential,light,bright,wet
+005549,black,sunny,rural,light,bright,dry
+005550,gray,sunny,rural,light,bright,dry
+005551,green,sunny,residential,light,bright,dry
+005552,black,sunny,residential,light,bright,dry
+005553,black,sunny,residential,light,bright,dry
+005554,gray,sunny,residential,light,bright,dry
+005555,red,sunny,residential,light,bright,dry
+005556,black,sunny,residential,light,bright,dry
+005557,green,sunny,highway,moderate,bright,dry
+005558,gray,sunny,rural,light,bright,dry
+005559,blue,sunny,urban city,light,bright,dry
+005560,silver,sunny,residential,light,bright,dry
+005561,gray,sunny,rural,light,bright,dry
+005562,black,sunny,residential,light,bright,dry
+005563,gray,sunny,residential,light,bright,dry
+005564,black,sunny,residential,light,bright,wet
+005565,black,sunny,rural,light,bright,dry
+005566,gray,cloudy,rural,light,overcast,wet
+005567,blue,sunny,urban city,light,bright,dry
+005568,white,sunny,urban city,light,bright,dry
+005569,red,sunny,rural,light,bright,dry
+005570,red,sunny,residential,light,bright,dry
+005571,black,sunny,residential,light,bright,dry
+005572,black,sunny,urban city,light,strong shadows,dry
+005573,white,sunny,rural,heavy,bright,dry
+005574,black,sunny,rural,light,bright,dry
+005575,white,sunny,urban city,light,bright,dry
+005576,black,sunny,residential,light,bright,dry
+005577,silver,sunny,residential,light,bright,dry
+005578,silver,sunny,residential,light,bright,dry
+005579,gray,sunny,urban city,light,bright,dry
+005580,silver,sunny,residential,light,bright,dry
+005581,gray,sunny,rural,light,bright,dry
+005582,gray,clear,rural,light,bright,dry
+005583,silver,sunny,residential,light,bright,dry
+005584,gray,sunny,rural,light,bright,dry
+005585,blue,sunny,residential,light,bright,dry
+005586,silver,sunny,residential,light,bright,dry
+005587,gray,sunny,residential,light,bright,dry
+005588,white,sunny,residential,light,bright,dry
+005589,silver,sunny,residential,light,bright,dry
+005590,blue,sunny,residential,light,bright,dry
+005591,black,sunny,residential,light,bright,dry
+005592,black,sunny,rural,light,bright,dry
+005593,black,clear,rural,light,bright,dry
+005594,white,sunny,residential,light,bright,dry
+005595,black,sunny,residential,light,bright,dry
+005596,black,sunny,urban city,light,bright,wet
+005597,gray,sunny,rural,light,bright,dry
+005598,white,sunny,urban city,light,bright,wet
+005599,black,sunny,rural,moderate,bright,dry
+005600,silver,sunny,residential,light,bright,dry
+005601,gray,sunny,rural,light,bright,dry
+005602,gray,sunny,urban city,light,bright,dry
+005603,red,cloudy,rural,light,overcast,dry
+005604,gray,sunny,urban city,light,bright,dry
+005605,silver,sunny,residential,light,strong shadows,dry
+005606,black,sunny,residential,light,bright,dry
+005607,red,sunny,rural,light,bright,dry
+005608,black,sunny,urban city,light,bright,dry
+005609,white,sunny,urban city,light,overcast,wet
+005610,red,sunny,residential,light,bright,dry
+005611,gray,sunny,residential,empty,bright,dry
+005612,black,sunny,residential,light,bright,dry
+005613,gray,sunny,residential,light,bright,dry
+005614,brown,sunny,residential,light,strong shadows,dry
+005615,gray,sunny,urban city,light,bright,dry
+005616,silver,sunny,residential,light,bright,dry
+005617,red,sunny,urban city,light,bright,dry
+005618,black,sunny,residential,light,bright,dry
+005619,gray,sunny,residential,light,bright,dry
+005620,white,clear,rural,light,bright,dry
+005621,white,sunny,rural,light,bright,dry
+005622,silver,sunny,residential,light,bright,dry
+005623,silver,sunny,residential,light,bright,dry
+005624,silver,sunny,rural,light,bright,dry
+005625,black,sunny,residential,light,bright,dry
+005626,white,sunny,rural,light,bright,dry
+005627,black,sunny,residential,light,bright,dry
+005628,silver,sunny,residential,light,bright,dry
+005629,white,sunny,residential,light,strong shadows,dry
+005630,white,sunny,residential,light,bright,dry
+005631,black,sunny,residential,light,bright,dry
+005632,white,sunny,residential,light,bright,dry
+005633,silver,sunny,urban city,light,bright,dry
+005634,white,sunny,residential,light,bright,dry
+005635,white,sunny,rural,light,bright,dry
+005636,silver,sunny,residential,light,bright,dry
+005637,blue,sunny,urban city,light,strong shadows,dry
+005638,gray,clear,rural,light,bright,dry
+005639,black,sunny,residential,light,bright,dry
+005640,red,cloudy,highway,light,overcast,dry
+005641,gray,sunny,rural,light,bright,dry
+005642,white,sunny,residential,light,bright,dry
+005643,silver,sunny,residential,light,bright,dry
+005644,white,sunny,residential,empty,bright,dry
+005645,silver,sunny,residential,light,bright,dry
+005646,white,sunny,rural,light,bright,dry
+005647,blue,sunny,urban city,empty,bright,dry
+005648,silver,sunny,residential,light,bright,dry
+005649,blue,sunny,rural,light,bright,dry
+005650,gray,sunny,rural,light,bright,dry
+005651,black,sunny,residential,light,bright,dry
+005652,white,sunny,highway,moderate,bright,dry
+005653,gray,sunny,rural,light,bright,dry
+005654,white,sunny,residential,light,bright,dry
+005655,gray,sunny,rural,light,bright,dry
+005656,gray,sunny,residential,light,bright,dry
+005657,gray,sunny,residential,light,bright,dry
+005658,white,sunny,rural,light,bright,wet
+005659,white,sunny,residential,light,bright,dry
+005660,black,sunny,residential,light,bright,dry
+005661,black,sunny,urban city,moderate,bright,dry
+005662,gray,sunny,rural,light,bright,dry
+005663,black,sunny,urban city,light,bright,dry
+005664,red,sunny,residential,light,bright,dry
+005665,white,sunny,urban city,light,bright,dry
+005666,red,sunny,urban city,light,bright,dry
+005667,silver,sunny,rural,light,bright,dry
+005668,gray,sunny,residential,light,bright,dry
+005669,black,sunny,residential,light,bright,dry
+005670,white,sunny,urban city,light,bright,dry
+005671,gray,sunny,urban city,light,bright,dry
+005672,black,sunny,residential,light,bright,dry
+005673,white,sunny,residential,light,bright,dry
+005674,red,sunny,residential,light,bright,dry
+005675,gray,sunny,residential,light,bright,wet
+005676,gray,sunny,highway,light,bright,dry
+005677,yellow,sunny,residential,light,bright,dry
+005678,black,sunny,rural,light,bright,dry
+005679,gray,sunny,residential,light,bright,dry
+005680,red,sunny,highway,heavy,bright,dry
+005681,gray,sunny,rural,light,bright,dry
+005682,silver,sunny,residential,light,bright,dry
+005683,blue,sunny,urban city,light,bright,dry
+005684,gray,sunny,residential,light,bright,dry
+005685,white,sunny,highway,moderate,bright,dry
+005686,blue,sunny,urban city,light,bright,dry
+005687,black,sunny,residential,light,bright,dry
+005688,white,sunny,urban city,light,bright,dry
+005689,white,sunny,residential,light,bright,dry
+005690,green,sunny,residential,empty,dim,dry
+005691,black,sunny,residential,light,bright,dry
+005692,white,sunny,urban city,light,bright,dry
+005693,black,sunny,residential,light,bright,dry
+005694,gray,sunny,residential,light,bright,dry
+005695,black,sunny,residential,light,bright,dry
+005696,black,sunny,urban city,light,bright,dry
+005697,red,sunny,residential,light,bright,dry
+005698,black,sunny,residential,light,bright,dry
+005699,gray,sunny,rural,light,bright,dry
+005700,silver,sunny,rural,heavy,bright,dry
+005701,gray,sunny,rural,light,bright,dry
+005702,gray,sunny,rural,light,bright,dry
+005703,white,sunny,urban city,light,bright,dry
+005704,gray,clear,rural,light,overcast,wet
+005705,red,sunny,rural,light,bright,dry
+005706,gray,sunny,rural,light,bright,dry
+005707,black,sunny,residential,light,bright,dry
+005708,black,sunny,residential,light,bright,dry
+005709,gray,cloudy,highway,light,overcast,wet
+005710,gray,sunny,residential,light,bright,dry
+005711,blue,sunny,urban city,empty,bright,dry
+005712,white,sunny,residential,light,bright,dry
+005713,gray,sunny,rural,light,bright,dry
+005714,white,sunny,urban city,moderate,bright,dry
+005715,gray,sunny,residential,light,bright,dry
+005716,black,sunny,residential,light,bright,dry
+005717,black,sunny,residential,light,bright,dry
+005718,red,sunny,urban city,light,bright,dry
+005719,white,sunny,rural,light,bright,dry
+005720,blue,sunny,urban city,light,bright,dry
+005721,black,sunny,urban city,light,bright,dry
+005722,black,sunny,rural,moderate,bright,dry
+005723,silver,sunny,residential,light,bright,wet
+005724,blue,sunny,urban city,empty,bright,dry
+005725,silver,rainy,rural,light,overcast,wet
+005726,gray,sunny,rural,light,bright,dry
+005727,black,clear,rural,light,overcast,dry
+005728,black,sunny,rural,moderate,bright,dry
+005729,black,sunny,residential,light,bright,dry
+005730,red,sunny,rural,light,bright,dry
+005731,white,sunny,residential,light,bright,dry
+005732,black,sunny,residential,light,bright,dry
+005733,silver,sunny,residential,light,strong shadows,dry
+005734,black,sunny,rural,light,bright,dry
+005735,blue,sunny,urban city,light,strong shadows,dry
+005736,blue,sunny,residential,light,bright,dry
+005737,red,sunny,rural,light,bright,dry
+005738,gray,sunny,rural,light,bright,dry
+005739,gray,cloudy,rural,light,overcast,dry
+005740,black,sunny,residential,empty,strong shadows,dry
+005741,black,sunny,residential,light,bright,dry
+005742,black,sunny,residential,light,bright,dry
+005743,white,sunny,urban city,light,bright,dry
+005744,blue,sunny,urban city,empty,bright,dry
+005745,gray,sunny,residential,light,bright,dry
+005746,red,sunny,urban city,empty,bright,dry
+005747,gray,sunny,residential,light,bright,dry
+005748,gray,sunny,residential,light,bright,dry
+005749,black,sunny,rural,light,bright,dry
+005750,black,sunny,residential,light,bright,dry
+005751,black,sunny,residential,light,bright,dry
+005752,white,sunny,rural,light,bright,dry
+005753,gray,sunny,rural,light,bright,dry
+005754,silver,sunny,rural,heavy,bright,dry
+005755,silver,sunny,rural,light,bright,dry
+005756,gray,sunny,rural,light,bright,dry
+005757,white,sunny,residential,light,bright,dry
+005758,black,sunny,rural,light,bright,dry
+005759,black,sunny,urban city,light,bright,dry
+005760,blue,sunny,urban city,light,bright,dry
+005761,white,sunny,residential,light,bright,dry
+005762,red,sunny,residential,light,bright,dry
+005763,silver,clear,urban city,light,bright,wet
+005764,silver,sunny,residential,light,bright,dry
+005765,black,sunny,urban city,light,bright,dry
+005766,green,sunny,residential,light,bright,dry
+005767,green,sunny,residential,light,bright,dry
+005768,brown,sunny,residential,light,bright,dry
+005769,gray,sunny,residential,light,bright,dry
+005770,black,sunny,residential,light,bright,dry
+005771,white,sunny,residential,light,bright,dry
+005772,red,sunny,rural,light,bright,dry
+005773,black,sunny,urban city,light,bright,dry
+005774,blue,sunny,rural,light,bright,dry
+005775,white,sunny,urban city,light,strong shadows,dry
+005776,yellow,sunny,rural,light,bright,wet
+005777,silver,sunny,residential,light,bright,dry
+005778,gray,sunny,residential,light,bright,dry
+005779,blue,sunny,urban city,light,bright,dry
+005780,red,sunny,rural,light,bright,dry
+005781,silver,sunny,residential,light,strong shadows,dry
+005782,black,cloudy,rural,light,overcast,dry
+005783,red,sunny,residential,light,bright,dry
+005784,black,sunny,residential,light,bright,dry
+005785,gray,sunny,rural,light,bright,dry
+005786,black,sunny,residential,light,bright,dry
+005787,white,sunny,rural,light,bright,dry
+005788,black,sunny,urban city,light,bright,dry
+005789,blue,sunny,residential,light,bright,dry
+005790,silver,sunny,urban city,light,overcast,wet
+005791,white,sunny,residential,light,bright,dry
+005792,gray,sunny,residential,light,bright,dry
+005793,black,sunny,residential,light,bright,dry
+005794,silver,sunny,residential,light,bright,dry
+005795,blue,sunny,urban city,light,bright,wet
+005796,silver,sunny,urban city,light,bright,dry
+005797,gray,sunny,residential,light,bright,dry
+005798,red,sunny,residential,light,bright,dry
+005799,red,sunny,rural,light,bright,dry
+005800,black,sunny,residential,light,bright,dry
+005801,blue,sunny,urban city,light,strong shadows,dry
+005802,gray,sunny,residential,light,bright,dry
+005803,silver,sunny,residential,light,bright,dry
+005804,blue,sunny,urban city,light,strong shadows,dry
+005805,gray,sunny,residential,empty,bright,dry
+005806,blue,sunny,urban city,light,bright,dry
+005807,silver,sunny,residential,light,bright,dry
+005808,blue,sunny,urban city,light,bright,dry
+005809,silver,sunny,rural,light,bright,dry
+005810,gray,sunny,residential,light,bright,dry
+005811,white,sunny,rural,light,bright,dry
+005812,white,sunny,urban city,light,strong shadows,dry
+005813,gray,sunny,urban city,light,bright,dry
+005814,gray,sunny,residential,light,bright,dry
+005815,black,sunny,rural,light,bright,dry
+005816,gray,sunny,rural,empty,bright,dry
+005817,blue,sunny,urban city,light,bright,dry
+005818,gray,sunny,rural,light,bright,dry
+005819,blue,sunny,residential,light,bright,dry
+005820,silver,sunny,residential,light,bright,dry
+005821,black,sunny,residential,light,bright,dry
+005822,yellow,sunny,residential,light,bright,dry
+005823,silver,sunny,rural,light,bright,dry
+005824,gray,sunny,urban city,light,bright,dry
+005825,gray,sunny,urban city,light,bright,dry
+005826,gray,sunny,rural,light,bright,dry
+005827,gray,sunny,residential,light,bright,dry
+005828,silver,sunny,residential,light,bright,dry
+005829,silver,sunny,residential,light,bright,dry
+005830,red,sunny,residential,light,bright,dry
+005831,black,sunny,urban city,light,bright,dry
+005832,red,sunny,residential,light,bright,dry
+005833,gray,sunny,rural,light,bright,dry
+005834,white,sunny,highway,heavy,bright,dry
+005835,blue,sunny,urban city,light,strong shadows,dry
+005836,black,sunny,residential,light,strong shadows,dry
+005837,gray,sunny,urban city,light,bright,dry
+005838,gray,sunny,urban city,light,bright,dry
+005839,silver,sunny,rural,light,bright,dry
+005840,silver,sunny,urban city,light,bright,dry
+005841,gray,clear,rural,light,bright,dry
+005842,gray,sunny,residential,light,bright,dry
+005843,white,sunny,residential,light,bright,dry
+005844,black,sunny,residential,light,bright,dry
+005845,gray,sunny,rural,light,bright,dry
+005846,white,sunny,urban city,light,bright,dry
+005847,green,sunny,residential,light,strong shadows,dry
+005848,red,sunny,rural,light,bright,dry
+005849,silver,sunny,residential,light,bright,dry
+005850,black,sunny,residential,light,bright,dry
+005851,black,sunny,rural,light,bright,dry
+005852,gray,cloudy,rural,light,overcast,dry
+005853,black,sunny,urban city,moderate,bright,dry
+005854,black,sunny,residential,light,bright,dry
+005855,gray,sunny,highway,heavy,bright,dry
+005856,gray,sunny,urban city,light,bright,dry
+005857,black,sunny,rural,light,bright,dry
+005858,black,sunny,residential,light,bright,dry
+005859,gray,clear,rural,light,bright,dry
+005860,white,sunny,urban city,light,bright,dry
+005861,red,sunny,rural,light,bright,dry
+005862,gray,sunny,residential,empty,bright,dry
+005863,silver,sunny,residential,light,bright,wet
+005864,red,sunny,residential,light,bright,dry
+005865,white,sunny,urban city,light,strong shadows,dry
+005866,white,sunny,urban city,light,bright,dry
+005867,gray,sunny,residential,empty,bright,dry
+005868,red,sunny,residential,moderate,bright,dry
+005869,gray,sunny,residential,light,bright,dry
+005870,brown,sunny,residential,light,strong shadows,dry
+005871,black,sunny,urban city,light,bright,dry
+005872,gray,sunny,rural,light,bright,dry
+005873,gray,sunny,urban city,light,bright,dry
+005874,white,sunny,rural,light,bright,dry
+005875,gray,sunny,rural,light,bright,dry
+005876,black,sunny,residential,light,bright,dry
+005877,silver,sunny,rural,moderate,bright,dry
+005878,gray,sunny,urban city,light,bright,dry
+005879,white,sunny,residential,light,bright,dry
+005880,white,sunny,residential,light,bright,dry
+005881,black,sunny,residential,light,bright,dry
+005882,gray,clear,urban city,light,bright,dry
+005883,gray,sunny,rural,light,bright,dry
+005884,black,sunny,residential,light,bright,dry
+005885,silver,sunny,residential,light,bright,dry
+005886,black,sunny,urban city,light,bright,dry
+005887,gray,sunny,residential,light,bright,dry
+005888,blue,sunny,urban city,light,bright,dry
+005889,white,sunny,residential,light,bright,dry
+005890,black,sunny,residential,light,bright,dry
+005891,black,sunny,urban city,light,bright,dry
+005892,black,sunny,residential,light,bright,dry
+005893,white,sunny,highway,heavy,bright,dry
+005894,white,sunny,rural,light,bright,dry
+005895,white,sunny,rural,light,strong shadows,dry
+005896,white,sunny,residential,empty,bright,dry
+005897,silver,sunny,residential,light,bright,dry
+005898,black,sunny,residential,light,bright,dry
+005899,blue,sunny,urban city,empty,strong shadows,dry
+005900,black,sunny,urban city,light,bright,dry
+005901,red,sunny,residential,light,bright,dry
+005902,blue,sunny,residential,light,strong shadows,dry
+005903,white,sunny,residential,light,bright,dry
+005904,silver,sunny,residential,light,dim,dry
+005905,white,sunny,urban city,light,bright,dry
+005906,blue,sunny,residential,light,bright,dry
+005907,gray,sunny,residential,light,bright,dry
+005908,black,sunny,residential,light,bright,dry
+005909,silver,sunny,residential,light,strong shadows,dry
+005910,gray,sunny,urban city,light,bright,dry
+005911,black,sunny,residential,light,bright,dry
+005912,black,sunny,urban city,light,bright,dry
+005913,gray,sunny,rural,light,bright,dry
+005914,gray,clear,rural,light,bright,dry
+005915,white,sunny,urban city,light,bright,dry
+005916,black,sunny,rural,light,bright,dry
+005917,silver,sunny,residential,light,bright,dry
+005918,white,sunny,residential,light,bright,dry
+005919,white,sunny,residential,light,bright,dry
+005920,white,sunny,urban city,light,bright,dry
+005921,red,sunny,rural,light,bright,dry
+005922,gray,clear,urban city,light,bright,dry
+005923,silver,sunny,residential,light,bright,dry
+005924,blue,sunny,urban city,empty,bright,dry
+005925,red,cloudy,rural,light,overcast,wet
+005926,silver,sunny,rural,light,bright,dry
+005927,gray,sunny,urban city,light,bright,dry
+005928,silver,sunny,residential,light,bright,dry
+005929,black,sunny,residential,light,bright,dry
+005930,green,sunny,residential,light,bright,dry
+005931,blue,sunny,urban city,light,bright,dry
+005932,red,sunny,rural,light,bright,wet
+005933,black,sunny,residential,light,bright,dry
+005934,black,sunny,natural,light,strong shadows,dry
+005935,silver,sunny,rural,heavy,bright,dry
+005936,black,sunny,residential,light,bright,dry
+005937,blue,sunny,urban city,light,bright,dry
+005938,black,sunny,rural,light,bright,dry
+005939,gray,cloudy,rural,light,overcast,dry
+005940,gray,sunny,residential,light,bright,dry
+005941,gray,sunny,rural,light,bright,dry
+005942,black,sunny,rural,light,bright,dry
+005943,silver,sunny,residential,light,bright,dry
+005944,gray,sunny,rural,light,bright,dry
+005945,gray,sunny,urban city,light,bright,dry
+005946,white,sunny,residential,light,bright,dry
+005947,white,sunny,residential,light,bright,dry
+005948,gray,sunny,residential,light,bright,dry
+005949,white,sunny,urban city,light,bright,dry
+005950,black,sunny,residential,light,bright,dry
+005951,white,sunny,residential,light,bright,dry
+005952,green,sunny,highway,moderate,bright,dry
+005953,white,sunny,urban city,light,strong shadows,dry
+005954,blue,sunny,urban city,light,bright,dry
+005955,silver,sunny,residential,light,bright,dry
+005956,silver,sunny,residential,light,bright,dry
+005957,black,sunny,residential,light,bright,dry
+005958,blue,sunny,urban city,light,bright,dry
+005959,silver,sunny,residential,light,bright,dry
+005960,black,sunny,residential,light,strong shadows,dry
+005961,white,sunny,rural,light,bright,dry
+005962,silver,sunny,residential,light,bright,dry
+005963,silver,sunny,residential,light,bright,dry
+005964,gray,sunny,residential,light,strong shadows,dry
+005965,gray,sunny,urban city,light,bright,wet
+005966,gray,sunny,residential,empty,bright,dry
+005967,white,sunny,residential,light,bright,dry
+005968,gray,sunny,rural,light,bright,dry
+005969,gray,sunny,residential,light,bright,dry
+005970,black,sunny,residential,light,bright,dry
+005971,red,sunny,rural,light,bright,dry
+005972,black,sunny,urban city,light,bright,wet
+005973,silver,sunny,residential,light,bright,dry
+005974,red,sunny,urban city,light,bright,dry
+005975,silver,sunny,residential,light,bright,dry
+005976,gray,sunny,residential,empty,bright,dry
+005977,white,sunny,residential,light,strong shadows,dry
+005978,black,sunny,residential,empty,bright,wet
+005979,blue,sunny,urban city,light,strong shadows,dry
+005980,gray,sunny,residential,light,strong shadows,dry
+005981,white,sunny,rural,moderate,bright,dry
+005982,silver,sunny,residential,light,bright,dry
+005983,white,sunny,urban city,moderate,bright,dry
+005984,gray,clear,urban city,light,bright,dry
+005985,gray,sunny,urban city,light,bright,dry
+005986,white,sunny,highway,moderate,bright,dry
+005987,white,sunny,urban city,light,bright,wet
+005988,blue,sunny,urban city,light,bright,dry
+005989,gray,sunny,residential,empty,bright,dry
+005990,black,sunny,residential,light,bright,dry
+005991,gray,sunny,residential,light,bright,dry
+005992,red,sunny,residential,light,bright,dry
+005993,gray,sunny,residential,light,strong shadows,dry
+005994,brown,sunny,urban city,light,bright,dry
+005995,black,sunny,residential,light,bright,dry
+005996,yellow,sunny,residential,light,bright,dry
+005997,gray,clear,rural,light,bright,dry
+005998,silver,sunny,rural,light,bright,dry
+005999,black,sunny,residential,light,bright,dry
+006000,gray,sunny,urban city,light,strong shadows,dry
+006001,gray,cloudy,rural,light,overcast,wet
+006002,white,sunny,residential,light,bright,dry
+006003,blue,sunny,residential,light,bright,dry
+006004,silver,sunny,residential,light,bright,dry
+006005,white,sunny,residential,light,bright,dry
+006006,white,sunny,urban city,light,strong shadows,dry
+006007,red,sunny,residential,light,bright,dry
+006008,black,sunny,highway,heavy,bright,dry
+006009,gray,sunny,residential,light,bright,dry
+006010,gray,sunny,rural,light,bright,dry
+006011,black,sunny,urban city,light,bright,dry
+006012,red,sunny,rural,light,bright,dry
+006013,black,sunny,residential,light,bright,dry
+006014,silver,sunny,residential,light,bright,dry
+006015,silver,sunny,rural,light,bright,dry
+006016,red,sunny,residential,light,bright,dry
+006017,black,sunny,residential,light,bright,dry
+006018,black,sunny,residential,light,bright,dry
+006019,silver,sunny,rural,light,bright,dry
+006020,white,sunny,residential,light,bright,dry
+006021,blue,sunny,residential,light,bright,dry
+006022,silver,sunny,residential,light,bright,dry
+006023,black,sunny,highway,light,bright,dry
+006024,silver,sunny,urban city,light,bright,dry
+006025,silver,sunny,residential,light,bright,dry
+006026,black,sunny,residential,light,bright,dry
+006027,black,sunny,residential,light,bright,dry
+006028,gray,sunny,residential,light,bright,dry
+006029,blue,sunny,urban city,light,bright,dry
+006030,white,sunny,residential,light,bright,dry
+006031,black,sunny,residential,light,bright,dry
+006032,red,sunny,rural,light,bright,dry
+006033,white,sunny,residential,light,bright,dry
+006034,red,sunny,residential,light,bright,dry
+006035,blue,sunny,urban city,light,strong shadows,dry
+006036,black,sunny,urban city,light,bright,dry
+006037,white,sunny,residential,light,strong shadows,dry
+006038,gray,clear,rural,light,bright,dry
+006039,black,sunny,residential,light,bright,dry
+006040,blue,sunny,residential,light,bright,dry
+006041,white,sunny,rural,moderate,bright,dry
+006042,red,sunny,residential,light,bright,dry
+006043,black,sunny,residential,light,bright,dry
+006044,black,sunny,residential,light,bright,dry
+006045,black,sunny,rural,moderate,bright,dry
+006046,gray,sunny,urban city,light,bright,dry
+006047,gray,sunny,residential,light,bright,dry
+006048,gray,sunny,highway,moderate,bright,dry
+006049,gray,sunny,rural,light,bright,dry
+006050,red,sunny,residential,light,bright,dry
+006051,black,sunny,urban city,light,bright,dry
+006052,white,sunny,residential,light,bright,dry
+006053,blue,sunny,urban city,light,bright,dry
+006054,silver,sunny,residential,light,bright,dry
+006055,black,sunny,residential,light,bright,dry
+006056,silver,sunny,residential,light,bright,wet
+006057,silver,sunny,residential,light,bright,dry
+006058,white,sunny,residential,light,bright,dry
+006059,gray,sunny,rural,light,bright,dry
+006060,black,sunny,residential,light,bright,dry
+006061,gray,sunny,rural,light,bright,dry
+006062,black,sunny,residential,light,bright,dry
+006063,gray,sunny,highway,moderate,bright,dry
+006064,black,sunny,residential,light,bright,dry
+006065,gray,sunny,residential,light,bright,dry
+006066,black,sunny,residential,light,bright,dry
+006067,gray,sunny,residential,light,bright,dry
+006068,black,sunny,residential,light,bright,dry
+006069,white,sunny,residential,light,bright,dry
+006070,white,sunny,urban city,light,bright,dry
+006071,white,sunny,urban city,light,strong shadows,dry
+006072,gray,sunny,residential,light,bright,dry
+006073,black,sunny,residential,light,bright,wet
+006074,white,sunny,residential,light,bright,dry
+006075,brown,sunny,residential,light,bright,dry
+006076,blue,sunny,urban city,light,bright,dry
+006077,silver,sunny,residential,light,bright,dry
+006078,silver,sunny,residential,light,bright,dry
+006079,gray,sunny,rural,light,bright,dry
+006080,black,sunny,rural,light,bright,dry
+006081,silver,sunny,rural,light,bright,dry
+006082,black,sunny,urban city,light,bright,dry
+006083,white,sunny,urban city,light,strong shadows,dry
+006084,silver,sunny,residential,light,bright,dry
+006085,red,sunny,residential,light,bright,dry
+006086,black,sunny,rural,light,bright,dry
+006087,brown,sunny,urban city,light,strong shadows,dry
+006088,black,sunny,urban city,light,bright,dry
+006089,blue,sunny,urban city,light,strong shadows,dry
+006090,white,sunny,residential,light,bright,dry
+006091,blue,sunny,residential,empty,bright,dry
+006092,black,sunny,residential,light,bright,dry
+006093,white,sunny,residential,light,bright,dry
+006094,green,sunny,residential,empty,dim,dry
+006095,white,sunny,residential,light,bright,dry
+006096,white,sunny,residential,light,bright,dry
+006097,silver,sunny,residential,light,bright,dry
+006098,black,sunny,residential,light,bright,dry
+006099,red,sunny,rural,light,bright,dry
+006100,gray,sunny,residential,light,bright,dry
+006101,white,sunny,residential,empty,strong shadows,dry
+006102,black,sunny,residential,light,bright,dry
+006103,black,sunny,residential,light,bright,dry
+006104,gray,sunny,rural,light,bright,dry
+006105,gray,sunny,residential,light,bright,dry
+006106,silver,sunny,residential,light,bright,dry
+006107,black,sunny,residential,light,bright,dry
+006108,white,sunny,rural,light,bright,dry
+006109,gray,sunny,residential,light,bright,dry
+006110,red,sunny,residential,light,bright,dry
+006111,black,sunny,residential,light,bright,dry
+006112,gray,sunny,residential,light,bright,dry
+006113,white,sunny,residential,light,bright,dry
+006114,white,sunny,residential,light,bright,dry
+006115,silver,sunny,residential,light,bright,dry
+006116,gray,sunny,rural,light,bright,dry
+006117,white,sunny,residential,light,bright,dry
+006118,gray,sunny,urban city,light,bright,wet
+006119,yellow,sunny,rural,light,bright,dry
+006120,black,sunny,rural,light,bright,dry
+006121,blue,sunny,urban city,light,bright,dry
+006122,white,sunny,urban city,light,bright,dry
+006123,black,sunny,residential,light,bright,dry
+006124,black,sunny,rural,light,bright,dry
+006125,white,sunny,residential,light,bright,dry
+006126,silver,sunny,residential,light,bright,dry
+006127,white,sunny,rural,moderate,bright,dry
+006128,black,sunny,residential,light,strong shadows,dry
+006129,red,sunny,rural,light,bright,dry
+006130,gray,sunny,urban city,light,bright,dry
+006131,gray,sunny,residential,empty,bright,dry
+006132,black,sunny,residential,light,bright,dry
+006133,gray,cloudy,rural,light,overcast,wet
+006134,black,sunny,rural,light,bright,dry
+006135,silver,sunny,residential,light,bright,dry
+006136,white,cloudy,rural,light,overcast,wet
+006137,black,sunny,urban city,light,bright,dry
+006138,blue,sunny,residential,light,bright,dry
+006139,blue,sunny,urban city,light,bright,dry
+006140,brown,sunny,residential,light,bright,dry
+006141,black,sunny,residential,light,strong shadows,dry
+006142,white,sunny,residential,light,bright,dry
+006143,black,sunny,residential,light,bright,dry
+006144,white,sunny,rural,moderate,overcast,dry
+006145,black,sunny,residential,light,bright,dry
+006146,silver,sunny,residential,light,bright,dry
+006147,black,sunny,residential,light,bright,dry
+006148,gray,sunny,urban city,light,bright,wet
+006149,gray,sunny,residential,light,bright,dry
+006150,black,sunny,residential,light,bright,dry
+006151,blue,sunny,urban city,light,bright,dry
+006152,blue,sunny,urban city,light,strong shadows,dry
+006153,black,sunny,rural,light,bright,dry
+006154,black,sunny,highway,light,bright,dry
+006155,silver,sunny,urban city,light,strong shadows,dry
+006156,black,sunny,residential,light,bright,dry
+006157,black,sunny,residential,light,bright,dry
+006158,blue,sunny,urban city,empty,bright,dry
+006159,silver,sunny,residential,light,strong shadows,dry
+006160,white,sunny,rural,light,bright,dry
+006161,black,sunny,residential,light,bright,dry
+006162,black,sunny,residential,light,bright,dry
+006163,red,sunny,residential,light,bright,dry
+006164,blue,sunny,urban city,empty,bright,dry
+006165,gray,clear,urban city,light,bright,dry
+006166,white,sunny,residential,light,bright,dry
+006167,black,sunny,residential,light,bright,dry
+006168,gray,sunny,urban city,light,bright,dry
+006169,white,sunny,residential,light,bright,dry
+006170,red,sunny,rural,light,bright,dry
+006171,white,sunny,residential,empty,bright,dry
+006172,green,sunny,urban city,light,bright,dry
+006173,white,cloudy,rural,light,overcast,wet
+006174,gray,sunny,urban city,light,bright,dry
+006175,blue,sunny,residential,light,bright,dry
+006176,black,sunny,urban city,light,bright,dry
+006177,gray,clear,highway,light,bright,dry
+006178,red,sunny,residential,light,bright,dry
+006179,white,sunny,urban city,light,bright,dry
+006180,black,sunny,residential,light,bright,dry
+006181,white,sunny,residential,light,bright,dry
+006182,black,sunny,urban city,light,bright,wet
+006183,silver,sunny,residential,light,bright,dry
+006184,blue,sunny,residential,empty,strong shadows,dry
+006185,white,sunny,residential,light,bright,dry
+006186,white,sunny,residential,light,bright,dry
+006187,silver,sunny,residential,light,bright,dry
+006188,gray,sunny,residential,light,bright,dry
+006189,white,sunny,urban city,light,bright,dry
+006190,gray,sunny,urban city,light,bright,dry
+006191,black,sunny,residential,light,bright,dry
+006192,white,sunny,residential,light,bright,dry
+006193,gray,sunny,residential,light,strong shadows,dry
+006194,blue,sunny,urban city,empty,strong shadows,dry
+006195,black,sunny,residential,light,bright,dry
+006196,silver,clear,urban city,light,bright,wet
+006197,black,sunny,residential,light,bright,dry
+006198,black,sunny,residential,light,bright,dry
+006199,black,sunny,residential,light,bright,dry
+006200,silver,sunny,residential,light,bright,dry
+006201,blue,sunny,urban city,light,bright,dry
+006202,silver,sunny,rural,heavy,bright,dry
+006203,black,sunny,residential,light,bright,dry
+006204,black,sunny,residential,light,bright,dry
+006205,white,sunny,rural,light,bright,dry
+006206,gray,sunny,rural,light,strong shadows,dry
+006207,red,sunny,rural,light,bright,dry
+006208,silver,sunny,residential,light,bright,dry
+006209,black,sunny,rural,light,bright,dry
+006210,black,sunny,urban city,light,bright,dry
+006211,black,sunny,urban city,moderate,bright,dry
+006212,black,sunny,rural,light,bright,dry
+006213,gray,sunny,urban city,light,bright,dry
+006214,white,sunny,rural,light,bright,dry
+006215,blue,sunny,urban city,light,bright,dry
+006216,gray,sunny,residential,light,strong shadows,dry
+006217,black,sunny,rural,light,bright,dry
+006218,gray,sunny,rural,light,bright,dry
+006219,gray,sunny,rural,light,bright,dry
+006220,red,sunny,rural,light,bright,wet
+006221,white,sunny,residential,light,bright,dry
+006222,blue,sunny,urban city,light,strong shadows,dry
+006223,white,sunny,rural,light,bright,wet
+006224,red,sunny,urban city,moderate,bright,dry
+006225,silver,sunny,residential,light,bright,dry
+006226,gray,sunny,residential,light,bright,dry
+006227,black,sunny,rural,light,bright,dry
+006228,blue,sunny,urban city,empty,strong shadows,dry
+006229,gray,sunny,urban city,light,bright,dry
+006230,white,sunny,residential,empty,bright,dry
+006231,silver,sunny,residential,light,bright,dry
+006232,brown,sunny,residential,light,bright,dry
+006233,black,sunny,residential,light,bright,dry
+006234,silver,sunny,rural,light,bright,dry
+006235,red,sunny,rural,light,bright,dry
+006236,white,sunny,urban city,moderate,bright,dry
+006237,gray,sunny,residential,light,bright,dry
+006238,white,sunny,rural,heavy,bright,dry
+006239,silver,sunny,rural,empty,bright,dry
