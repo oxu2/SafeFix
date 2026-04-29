@@ -1,0 +1,24 @@
+Output file: save/attribute_kitti_qwen3_8B.json
+CSV output file: save/attribute_kitti_qwen3_8B.csv
+Partial file: save/attribute_kitti_qwen3_8B_partial.json
+Using 1 GPU(s) with 23.9GiB memory allocation each
+Loading model: Qwen/Qwen3-VL-8B-Instruct (Qwen3 mode)...
+`torch_dtype` is deprecated! Use `dtype` instead!
+Traceback (most recent call last):
+  File "/people/cs/o/oxx220000/safefix/utils/assign_attribute.py", line 332, in <module>
+    model = AutoModelForImageTextToText.from_pretrained(
+  File "/people/cs/o/oxx220000/.conda/envs/qwen/lib/python3.10/site-packages/transformers/models/auto/auto_factory.py", line 604, in from_pretrained
+    return model_class.from_pretrained(
+  File "/people/cs/o/oxx220000/.conda/envs/qwen/lib/python3.10/site-packages/transformers/modeling_utils.py", line 277, in _wrapper
+    return func(*args, **kwargs)
+  File "/people/cs/o/oxx220000/.conda/envs/qwen/lib/python3.10/site-packages/transformers/modeling_utils.py", line 5051, in from_pretrained
+    ) = cls._load_pretrained_model(
+  File "/people/cs/o/oxx220000/.conda/envs/qwen/lib/python3.10/site-packages/transformers/modeling_utils.py", line 5471, in _load_pretrained_model
+    _error_msgs, disk_offload_index = load_shard_file(args)
+  File "/people/cs/o/oxx220000/.conda/envs/qwen/lib/python3.10/site-packages/transformers/modeling_utils.py", line 847, in load_shard_file
+    disk_offload_index = _load_state_dict_into_meta_model(
+  File "/people/cs/o/oxx220000/.conda/envs/qwen/lib/python3.10/site-packages/torch/utils/_contextlib.py", line 116, in decorate_context
+    return func(*args, **kwargs)
+  File "/people/cs/o/oxx220000/.conda/envs/qwen/lib/python3.10/site-packages/transformers/modeling_utils.py", line 748, in _load_state_dict_into_meta_model
+    param = param[...]
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 96.00 MiB. GPU 0 has a total capacity of 23.68 GiB of which 37.69 MiB is free. Process 265841 has 16.82 GiB memory in use. Including non-PyTorch memory, this process has 6.81 GiB memory in use. Of the allocated memory 6.55 GiB is allocated by PyTorch, and 61.74 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)

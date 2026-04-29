@@ -1,0 +1,74 @@
+{
+    "Corpus": {
+        "color": {
+            "data": [],
+            "word": ["white", "black", "gray", "silver", "red", "blue", "green", "yellow", "brown"],
+            "prompt": ["a #1 main target object in a driving scene"],
+            "type": "description",
+            "question": "What is the dominant visible color of the most prominent target object or person?"
+        },
+        "object_scale": {
+            "data": [],
+            "word": ["small", "medium", "large"],
+            "prompt": ["a #1 target object in a driving scene"],
+            "type": "description",
+            "question": "How large is the most prominent target object or person in the image?"
+        },
+        "viewpoint": {
+            "data": [],
+            "word": ["front", "rear", "side", "front-side", "rear-side"],
+            "prompt": ["a #1 view of the main target object in a driving scene"],
+            "type": "description",
+            "question": "What is the viewing angle of the most prominent target object or person?"
+        },
+        "occlusion": {
+            "data": [],
+            "word": ["none", "partial", "heavy"],
+            "prompt": ["a #1 occluded target object in a driving scene"],
+            "type": "description",
+            "question": "How much is the most prominent target object or person occluded?"
+        },
+        "truncation": {
+            "data": [],
+            "word": ["none", "partial", "heavy"],
+            "prompt": ["a #1 truncated target object in a driving scene"],
+            "type": "description",
+            "question": "How much is the most prominent target object or person cut off by the image border?"
+        },
+        "motion_state": {
+            "data": [],
+            "word": ["moving", "stationary"],
+            "prompt": ["a #1 target object in a driving scene"],
+            "type": "description",
+            "question": "Is the most prominent target object or person moving or stationary?"
+        },
+        "background_style": {
+            "data": [],
+            "word": ["city street", "residential street", "highway", "parking area", "service lane", "tree-lined road"],
+            "prompt": ["a driving scene on a #1"],
+            "type": "description",
+            "question": "What type of road or surrounding scene best matches the image?"
+        },
+        "traffic_density": {
+            "data": [],
+            "word": ["sparse", "light", "moderate", "heavy"],
+            "prompt": ["a driving scene with #1 traffic"],
+            "type": "description",
+            "question": "How crowded is the scene with visible vehicles, cyclists, or pedestrians?"
+        },
+        "lighting_condition": {
+            "data": [],
+            "word": ["bright", "overcast", "strong shadows", "glare", "dim"],
+            "prompt": ["a driving scene with #1 lighting"],
+            "type": "description",
+            "question": "What best describes the lighting condition of the scene?"
+        },
+        "weather": {
+            "data": [],
+            "word": ["clear", "cloudy", "rainy", "foggy", "snowy"],
+            "prompt": ["a driving scene in #1 weather"],
+            "type": "description",
+            "question": "What is the weather condition like in the scene?"
+        }
+    }
+}

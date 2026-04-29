@@ -1,4 +1,39 @@
-# 04/29/2026 Update — KITTI YOLOv8n 5000/1240/1241 Result
+# 04/29/2026 Update — KITTI Attribute Assignment (BLIP Completed, Qwen3 In-Progress)
+
+- Completed BLIP attribute assignment on 5000 KITTI train images.
+- Corpus: `save/corpus_kitti_gemini_clean.json` (6 attributes, no "unknown"/"NA")
+  - Removed `time_of_day` (redundant with `lighting_condition`, KITTI is nearly
+    all daytime) from original Gemini corpus; added `color` from GPT corpus.
+- BLIP output: `save/attribute_kitti_blip.json`, `save/attribute_kitti_blip.csv`
+- BLIP log: `logs/assign_attr_kitti_train_blip_gpu2_*.log`
+- BLIP runtime: ~7 minutes (similarity-based, not generative)
+
+### BLIP Attribute Distribution (5000 KITTI train images)
+
+| Attribute | Top values |
+|-----------|-----------|
+| `color` | gray 46.4%, white 25.0%, black 13.5%, blue 7.0%, silver 3.3%, red 2.8% |
+| `weather` | clear 67.4%, sunny 32.5%, rainy 0.1%, cloudy 0.0% |
+| `background_style` | residential 38.3%, highway 32.4%, urban city 24.8%, natural 4.0%, rural 0.5% |
+| `traffic_density` | moderate 77.5%, empty 19.3%, light 3.2%, heavy 0.0% |
+| `lighting_condition` | strong shadows 89.2%, overcast 7.0%, glare 2.9%, dim 0.9% |
+| `road_condition` | dry 62.7%, wet 25.4%, snowy 11.7%, muddy 0.2% |
+
+- Qwen3-VL-8B attribute assignment in-progress on GPU 3 (~2200/5000 at time
+  of BLIP completion).
+  - Output: `save/attribute_kitti_qwen3_8B.json`
+  - Log: `logs/assign_attr_kitti_train_qwen3_gemini6c_gpu3_*.log`
+  - ETA: ~44 min remaining
+- InternVL3-8B attribute assignment launched on GPU 2 after BLIP completed.
+  - Output: `save/attribute_kitti_internvl3_8B.json`
+  - Log: `logs/assign_attr_kitti_train_internvl3_gpu2_*.log`
+- Available KITTI corpus files:
+  - `save/corpus_kitti_gemini_clean.json` — 6 attrs (color, weather, background_style, traffic_density, lighting_condition, road_condition); used for all three assigners
+  - `save/corpus_kitti_object_gpt_clean.json` — 10 attrs (adds object_scale, viewpoint, occlusion, truncation, motion_state); available for future use
+  - `save/corpus_kitti_gemini.json` — original 6 attrs with "unknown" options (superseded)
+  - `save/corpus_kitti_object_gpt.json` — original 10 attrs with "unclear" option (superseded)
+
+
 
 - Completed the local KITTI object-detection run using YOLOv8n pretrained
   weights.

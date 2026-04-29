@@ -1,0 +1,46 @@
+{
+    "Corpus": {
+        "color": {
+            "data": [],
+            "word": ["white", "black", "gray", "silver", "red", "blue", "green", "yellow", "brown"],
+            "prompt": ["a #1 main target object in a driving scene"],
+            "type": "description",
+            "question": "What is the dominant visible color of the most prominent target object or person?"
+        },
+        "weather": {
+            "data": [],
+            "word": ["sunny", "cloudy", "rainy", "foggy", "clear", "snowy"],
+            "prompt": ["a driving scene in #1 weather"],
+            "type": "description",
+            "question": "What is the weather condition like in the scene?"
+        },
+        "background_style": {
+            "data": [],
+            "word": ["urban city", "rural", "natural", "highway", "residential"],
+            "prompt": ["a driving scene in an #1 area"],
+            "type": "description",
+            "question": "What is the background style or location type of the driving scene?"
+        },
+        "traffic_density": {
+            "data": [],
+            "word": ["empty", "light", "moderate", "heavy"],
+            "prompt": ["a driving scene with #1 traffic"],
+            "type": "description",
+            "question": "What is the level of traffic density in the scene?"
+        },
+        "lighting_condition": {
+            "data": [],
+            "word": ["bright", "dim", "strong shadows", "overcast", "glare"],
+            "prompt": ["a driving scene with #1 lighting"],
+            "type": "description",
+            "question": "What best describes the overall lighting condition in the scene?"
+        },
+        "road_condition": {
+            "data": [],
+            "word": ["dry", "wet", "snowy", "muddy"],
+            "prompt": ["a driving scene on a #1 road"],
+            "type": "description",
+            "question": "What is the surface condition of the road?"
+        }
+    }
+}
