@@ -1,0 +1,16 @@
+Output file: save/attribute_kitti_qwen3_8B.json
+CSV output file: save/attribute_kitti_qwen3_8B.csv
+Partial file: save/attribute_kitti_qwen3_8B_partial.json
+Using 1 GPU(s) with 23GiB memory allocation each
+Loading model: Qwen/Qwen3-VL-8B-Instruct (Qwen3 mode)...
+`torch_dtype` is deprecated! Use `dtype` instead!
+Model loaded.
+Found 5000 images in KITTI dataset at /data/oxx220000/kitti_yolov8_first5000 (split=train)
+Total images: 5000
+Corpus attributes: ['time_of_day', 'weather', 'background_style', 'traffic_density', 'lighting_condition', 'road_condition']
+Remaining images to process: 5000
+
+Processing 5000 images across 6 attributes...
+Attributes: ['time_of_day', 'weather', 'background_style', 'traffic_density', 'lighting_condition', 'road_condition']
+The following generation flags are not valid and may be ignored: ['top_p', 'top_k']. Set `TRANSFORMERS_VERBOSITY=info` for more details.
+[1/5000] Processed 1 images, 1.75s this image, avg 1.75s/img, ETA 146.2min

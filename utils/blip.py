@@ -20,7 +20,9 @@ from utils.defines import *
 IMAGE_EXTENSIONS = ('.jpg', '.jpeg', '.png', '.bmp', '.tiff')
 DEFAULT_FOLDER_ROOT = 'data/imagenet_subset'
 DEFAULT_COCO_ROOT = '/data/oxx220000/coco'
+DEFAULT_KITTI_ROOT = '/data/oxx220000/kitti_yolov8_first5000'
 DEFAULT_COCO_POSE_CORPUS = 'save/corpus_coco_pose_gemini.json'
+DEFAULT_KITTI_CORPUS = 'save/corpus_kitti_gemini_clean.json'
 DEFAULT_BLIP_ENV = 'ad'
 
 
@@ -63,13 +65,14 @@ def ensure_parent_dir(path):
 
 
 def default_attribute_output_path(dataset_name, corpus_path):
-    if dataset_name != 'coco_pose':
-        return 'save/attribute10.json'
-
-    corpus_name = Path(corpus_path).name
-    if corpus_name == 'corpus_coco_pose_gemini.json':
-        return 'save/attribute_coco_pose_gemini_blip.json'
-    return 'save/attribute_coco_pose_blip.json'
+    if dataset_name == 'kitti':
+        return 'save/attribute_kitti_blip.json'
+    if dataset_name == 'coco_pose':
+        corpus_name = Path(corpus_path).name
+        if corpus_name == 'corpus_coco_pose_gemini.json':
+            return 'save/attribute_coco_pose_gemini_blip.json'
+        return 'save/attribute_coco_pose_blip.json'
+    return 'save/attribute10.json'
 
 
 def default_csv_output_path(output_attributes):
@@ -77,6 +80,15 @@ def default_csv_output_path(output_attributes):
 
 
 def default_output_paths(dataset_name):
+    if dataset_name == 'kitti':
+        return {
+            'labels': 'save/labels_kitti.npy',
+            'text_labels': 'save/label_kitti_txt.npy',
+            'train_idx': 'save/train_idx_kitti.npy',
+            'val_idx': 'save/val_idx_kitti.npy',
+            'attributes': None,
+            'corpus': DEFAULT_KITTI_CORPUS,
+        }
     if dataset_name == 'coco_pose':
         return {
             'labels': 'save/labels_coco_pose.npy',
@@ -220,6 +232,38 @@ def collect_coco_pose_dataset(coco_root, split, annotation_file=None, image_dir=
     return all_datas, labels, label_names_dict, sample_rows
 
 
+def collect_kitti_dataset(kitti_root, split='train'):
+    import glob
+    all_datas = []
+    labels = []
+    sample_rows = []
+
+    if split == 'all':
+        search_path = os.path.join(kitti_root, 'images', '**', '*.*')
+        image_paths = sorted(glob.glob(search_path, recursive=True))
+    else:
+        split_dir = os.path.join(kitti_root, 'images', split)
+        if not os.path.isdir(split_dir):
+            raise FileNotFoundError(f"KITTI split directory not found: {split_dir}")
+        search_path = os.path.join(split_dir, '*.*')
+        image_paths = sorted(glob.glob(search_path))
+
+    image_paths = [p for p in image_paths if p.lower().endswith(IMAGE_EXTENSIONS)]
+    for image_path in image_paths:
+        fname = os.path.basename(image_path)
+        all_datas.append(image_path)
+        labels.append(1)
+        sample_rows.append({
+            'image_path': image_path,
+            'image_id': fname.split('.')[0],
+            'file_name': fname,
+            'split': split,
+        })
+    label_names_dict = {1: 'vehicle'}
+    print(f"Found {len(all_datas)} images in KITTI dataset at {kitti_root} (split={split})")
+    return all_datas, labels, label_names_dict, sample_rows
+
+
 def write_attribute_csv(csv_path, sample_rows, attributes_dict, attr_names, dataset_name):
     if dataset_name == 'coco_pose':
         fieldnames = ['image_id', *attr_names]
@@ -249,8 +293,8 @@ parser.add_argument(
     '--dataset',
     type=str,
     default='folder',
-    choices=['folder', 'coco_pose'],
-    help='Dataset layout to read: class-folder images or COCO person keypoints',
+    choices=['folder', 'coco_pose', 'kitti'],
+    help='Dataset layout to read: class-folder images, COCO person keypoints, or KITTI YOLO',
 )
 parser.add_argument(
     '--root_dir',
@@ -265,11 +309,17 @@ parser.add_argument(
     help='COCO root containing train2017/val2017 and annotations/',
 )
 parser.add_argument(
+    '--kitti_root',
+    type=str,
+    default=DEFAULT_KITTI_ROOT,
+    help='KITTI YOLO root directory',
+)
+parser.add_argument(
     '--split',
     type=str,
     default='all',
-    choices=['train', 'val', 'all'],
-    help='COCO split to annotate when --dataset coco_pose',
+    choices=['train', 'val', 'test', 'all'],
+    help='Split to annotate (COCO: train/val/all, KITTI: train/val/test/all)',
 )
 parser.add_argument(
     '--annotation_file',
@@ -372,7 +422,12 @@ for path in [
 ]:
     ensure_parent_dir(path)
 
-if args.dataset == 'coco_pose':
+if args.dataset == 'kitti':
+    all_datas, labels, label_names_dict, sample_rows = collect_kitti_dataset(
+        kitti_root=args.kitti_root,
+        split=args.split,
+    )
+elif args.dataset == 'coco_pose':
     all_datas, labels, label_names_dict, sample_rows = collect_coco_pose_dataset(
         coco_root=args.coco_root,
         split=args.split,

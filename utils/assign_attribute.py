@@ -186,7 +186,7 @@ if args.corpus is None:
     if args.dataset == 'coco_pose':
         args.corpus = 'save/corpus_coco_pose.json'
     elif args.dataset == 'kitti':
-        args.corpus = 'save/corpus_kitti_gemini.json'
+        args.corpus = 'save/corpus_kitti_gemini_clean.json'
     elif args.dataset == 'celeba':
         args.corpus = 'save/corpus_celeba.json'
     else:

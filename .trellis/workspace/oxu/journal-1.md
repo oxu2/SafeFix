@@ -5,6 +5,133 @@
 
 ---
 
+## Session 127: Install Juno GPU monitoring helpers
+
+**Date**: 2026-04-29
+**Task**: install-juno-gpu-monitoring-tools
+
+### Summary
+
+Installed and verified user-level GPU monitoring helpers in the Juno conda
+environments used by this project.
+
+### What Changed
+
+- Installed or confirmed these packages in Juno `ad`:
+  - `nvitop==1.6.2`
+  - `gpustat==1.1.1`
+- Installed these packages in Juno `sf`:
+  - `nvitop==1.6.2`
+  - `gpustat==1.1.1`
+- Verified versions with:
+  - `/groups/yguo/oxx220000/conda/envs/ad/bin/nvitop --version`
+  - `/groups/yguo/oxx220000/conda/envs/ad/bin/gpustat --version`
+  - `/groups/yguo/oxx220000/conda/envs/sf/bin/nvitop --version`
+  - `/groups/yguo/oxx220000/conda/envs/sf/bin/gpustat --version`
+- Verified the tools work on compute node `g-04-02`:
+  - `/groups/yguo/oxx220000/conda/envs/ad/bin/gpustat --no-color`
+  - `/groups/yguo/oxx220000/conda/envs/ad/bin/nvitop -1`
+
+### Caveats
+
+- `nvitop` and `gpustat` require NVIDIA Management Library (NVML), so they do
+  not work on the Juno login node `juno-l-01`.
+- Run them from an allocated GPU compute node, or through `ssh <node>` when the
+  cluster permits direct access.
+- `nvtop`, `smap`, and `sview` were not installed by this pass. `nvtop` is a
+  system/conda binary rather than a Python package, while `smap`/`sview` are
+  SLURM-side tools that may not be available to users on this cluster.
+- `.handoff.md` was not updated because the active experiment baton did not
+  change.
+- `report.md` was not updated because this is operational environment context,
+  not a stable experiment result.
+
+### Status
+
+[x] **Juno GPU monitoring helpers installed**
+
+## Session 128: Document ad hoc local-to-Juno code sync
+
+**Date**: 2026-04-29
+**Task**: document-local-python-sync-to-juno
+
+### Summary
+
+Added concise `rsync` examples for syncing local uncommitted Python files,
+SLURM scripts, directories, and broader code changes from the UTD server to
+Juno.
+
+### What Changed
+
+- Updated `docs/juno_migration.md` under `Transfer Commands From UTD Server`.
+- Added examples for:
+  - one Python file
+  - one SLURM/script file
+  - one directory
+  - broader code sync excluding `.git/`, Python caches, `log_pose/`, `runs/`,
+    and `outputs/`
+  - verifying synced files and checking script syntax on Juno
+- Recorded portable `~/work/safefix` examples for these ad hoc sync commands.
+
+### Caveats
+
+- `.handoff.md` was not updated because the active experiment baton did not
+  change.
+- `report.md` was not updated because this is operational workflow
+  documentation, not a stable experiment result.
+
+### Status
+
+[x] **Local-to-Juno sync commands documented**
+
+## Session 129: Add shareable Juno quickstart for cxz220015
+
+**Date**: 2026-04-29
+**Task**: add-friend-facing-juno-sync-doc
+
+### Summary
+
+Created a clean Juno quickstart for `cxz220015` and removed hard-coded personal
+paths from the recently added generic sync examples in `docs/juno_migration.md`.
+
+### What Changed
+
+- Added `docs/juno_cxz220015_quickstart.md`.
+- The new document covers:
+  - assumed repo path `/work/cxz220015/safefix`
+  - one-file, one-script, one-directory, and broader `rsync` sync commands
+  - SLURM queue and GPU allocation checks
+  - `nvitop`/`gpustat` usage caveats on login versus compute nodes
+  - basic `sbatch` submission and monitoring commands
+- Updated the generic ad hoc sync section in `docs/juno_migration.md` to use
+  `~/work/safefix` and `<netid>` placeholders instead of a hard-coded user path.
+
+### Caveats
+
+- Existing internal migration notes, handoff entries, journal history, and
+  reports still contain historical experiment artifact paths. These were not
+  globally rewritten because they are part of reproducibility context.
+- Share `docs/juno_cxz220015_quickstart.md` with the friend instead of the full
+  internal migration or handoff notes.
+- `.handoff.md` was not updated because the active experiment baton did not
+  change.
+- `report.md` was not updated because this is operational workflow
+  documentation, not a stable experiment result.
+
+### Status
+
+[x] **Friend-facing Juno quickstart added**
+
+### Follow-up Update
+
+- Replaced the project-specific directory name in
+  `docs/juno_cxz220015_quickstart.md` with the generic name `project`.
+- Verified the shareable quickstart no longer contains:
+  - `safefix`
+  - the owner's NetID
+  - private `/people`, `/groups`, `/data`, `/home`, or `/work` paths for the
+    owner
+
 ## Session 124: Document Juno scheduler behavior
 
 **Date**: 2026-04-29

@@ -182,6 +182,52 @@ Code should move by Git when possible:
 ssh juno 'cd ~/work/safefix && git pull --ff-only'
 ```
 
+For ad hoc local edits that are not committed yet, sync only the changed file or
+directory with `rsync`. Prefer `~/work/safefix` in examples so the command is
+portable across Juno users. If a full path is needed, replace `<netid>` with the
+target Juno username, for example `/work/<netid>/safefix`.
+
+One Python file:
+
+```bash
+rsync -av utils/my_new_eval.py \
+  juno:~/work/safefix/utils/my_new_eval.py
+```
+
+One script:
+
+```bash
+rsync -av scripts/my_job.sbatch \
+  juno:~/work/safefix/scripts/my_job.sbatch
+```
+
+One directory, preserving relative contents:
+
+```bash
+rsync -av scripts/ \
+  juno:~/work/safefix/scripts/
+```
+
+For a broader code sync, exclude heavy outputs and generated artifacts:
+
+```bash
+rsync -av \
+  --exclude '.git/' \
+  --exclude '__pycache__/' \
+  --exclude '*.pyc' \
+  --exclude 'log_pose/' \
+  --exclude 'runs/' \
+  --exclude 'outputs/' \
+  ./ juno:~/work/safefix/
+```
+
+After syncing, verify on Juno before submitting:
+
+```bash
+ssh juno 'cd ~/work/safefix && ls -l utils/my_new_eval.py'
+ssh juno 'cd ~/work/safefix && bash -n scripts/my_job.sbatch'
+```
+
 Use Juno-local downloads for public datasets. COCO:
 
 ```bash
