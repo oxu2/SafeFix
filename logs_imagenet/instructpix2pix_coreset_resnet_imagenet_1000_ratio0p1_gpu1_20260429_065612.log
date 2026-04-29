@@ -1,0 +1,135 @@
+Random seed set to 42
+Using fine-tuning learning rate 1e-05 for resumed model
+Current time: 0429070414
+skip_feasible flag is True; skipping feasible JSON loading for pinkcolor_fabrictexture.
+Using ImageNet source data directory: data/imagenet_subset
+Using generated image directory: data/pinkcolor_fabrictexture_instruct_pix2pix_seed42_1k
+[DEBUG] Normal mode: looking for generated images in directory: data/pinkcolor_fabrictexture_instruct_pix2pix_seed42_1k
+[DEBUG] Starting traversal of class subfolders for generated images...
+[DEBUG] Candidate images before feasible filtering: 1000
+[DEBUG] Total candidate generated images before sampling: 1000
+[DEBUG] Sampled generated images: 1000 items
+Added 1000 generated images.
+Using Active Learning strategy to select 1040 samples from 10400
+Starting Active Learning data selection using 'coreset' strategy...
+Dataset: imagenet, Model: resnet
+Train samples: 10400, Val samples: 1300
+Target selection ratio: 0.1
+Embedding dimension: 256
+Initial labeled samples: 400
+Using batch size 32 for Active Learning feature extraction
+Extracting embeddings from 10400 training samples...
+Train embeddings shape: torch.Size([10400, 256])
+Extracting embeddings from 1300 validation samples...
+Core-set selection: choosing 1040 from 10400 samples...
+Progress: ░░░░░░░░░░░░░░░░░░░░ 0/1040█░░░░░░░░░░░░░░░░░░░ 52/1040██░░░░░░░░░░░░░░░░░░ 104/1040███░░░░░░░░░░░░░░░░░ 156/1040████░░░░░░░░░░░░░░░░ 208/1040█████░░░░░░░░░░░░░░░ 260/1040██████░░░░░░░░░░░░░░ 312/1040███████░░░░░░░░░░░░░ 364/1040████████░░░░░░░░░░░░ 416/1040█████████░░░░░░░░░░░ 468/1040██████████░░░░░░░░░░ 520/1040███████████░░░░░░░░░ 572/1040████████████░░░░░░░░ 624/1040█████████████░░░░░░░ 676/1040██████████████░░░░░░ 728/1040███████████████░░░░░ 780/1040████████████████░░░░ 832/1040█████████████████░░░ 884/1040██████████████████░░ 936/1040███████████████████░ 988/1040████████████████████ 1040/1040 - Complete!
+
+Class distribution in selected samples:
+  Class backpack: 154 samples (14.8%)
+  Class barber_chair: 78 samples (7.5%)
+  Class coffee_mug: 40 samples (3.8%)
+  Class desk: 25 samples (2.4%)
+  Class electric_guitar: 38 samples (3.7%)
+  Class park_bench: 74 samples (7.1%)
+  Class pitcher: 115 samples (11.1%)
+  Class purse: 252 samples (24.2%)
+  Class rocking_chair: 79 samples (7.6%)
+  Class water_bottle: 185 samples (17.8%)
+
+Class distribution in random baseline:
+  Class backpack: 98 samples (9.4%)
+  Class barber_chair: 93 samples (8.9%)
+  Class coffee_mug: 116 samples (11.2%)
+  Class desk: 96 samples (9.2%)
+  Class electric_guitar: 89 samples (8.6%)
+  Class park_bench: 116 samples (11.2%)
+  Class pitcher: 108 samples (10.4%)
+  Class purse: 120 samples (11.5%)
+  Class rocking_chair: 93 samples (8.9%)
+  Class water_bottle: 111 samples (10.7%)
+Active Learning selection completed. Selected 1040 samples using 'coreset' strategy.
+[TIMING] Active Learning selection (ImageNet) took 37.72 seconds
+
+[Active Learning subset (before adding generated images)] class distribution:
+  Class backpack: 154 samples (14.8%)
+  Class barber_chair: 78 samples (7.5%)
+  Class coffee_mug: 40 samples (3.8%)
+  Class desk: 25 samples (2.4%)
+  Class electric_guitar: 38 samples (3.7%)
+  Class park_bench: 74 samples (7.1%)
+  Class pitcher: 115 samples (11.1%)
+  Class purse: 252 samples (24.2%)
+  Class rocking_chair: 79 samples (7.6%)
+  Class water_bottle: 185 samples (17.8%)
+Added 1000 ImageNet pinkcolor_fabrictexture images using Active Learning (coreset): 1040 -> 2040
+Resumed model from /people/cs/o/oxx220000/safefix/save/models/model_imagenet_resnet_base.pth (best val acc: 0.7223076923076923)
+Epoch [1/15], Train Loss: 1.4198, Train Acc: 0.5794, Val Loss: 1.0764, Val Acc: 0.6785
+Epoch [2/15], Train Loss: 1.1411, Train Acc: 0.6397, Val Loss: 1.0649, Val Acc: 0.6831
+Epoch [3/15], Train Loss: 1.0490, Train Acc: 0.6652, Val Loss: 1.0427, Val Acc: 0.6869
+Epoch [4/15], Train Loss: 0.9961, Train Acc: 0.6804, Val Loss: 1.0698, Val Acc: 0.6708
+Epoch [5/15], Train Loss: 0.9848, Train Acc: 0.6799, Val Loss: 1.0457, Val Acc: 0.6815
+Epoch [6/15], Train Loss: 0.9458, Train Acc: 0.6838, Val Loss: 1.0320, Val Acc: 0.6908
+Epoch [7/15], Train Loss: 0.9039, Train Acc: 0.6995, Val Loss: 1.0317, Val Acc: 0.6846
+Epoch [8/15], Train Loss: 0.9136, Train Acc: 0.7039, Val Loss: 1.0260, Val Acc: 0.6885
+Epoch [9/15], Train Loss: 0.8966, Train Acc: 0.7172, Val Loss: 1.0316, Val Acc: 0.6854
+Epoch [10/15], Train Loss: 0.9082, Train Acc: 0.7074, Val Loss: 1.0348, Val Acc: 0.6892
+Epoch [11/15], Train Loss: 0.9037, Train Acc: 0.6985, Val Loss: 1.0368, Val Acc: 0.6838
+Epoch [12/15], Train Loss: 0.8903, Train Acc: 0.7118, Val Loss: 1.0310, Val Acc: 0.6931
+Epoch [13/15], Train Loss: 0.8882, Train Acc: 0.7083, Val Loss: 1.0315, Val Acc: 0.6915
+Epoch [14/15], Train Loss: 0.8762, Train Acc: 0.7078, Val Loss: 1.0220, Val Acc: 0.6954
+Epoch [15/15], Train Loss: 0.9146, Train Acc: 0.7010, Val Loss: 1.0269, Val Acc: 0.6938
+Model Test ACC: 0.7115, test loss: 0.8970
+Generating predictions in memory (--save_preds False).
+Prediction segments -> train: 2040, val: 1300, test: 1300
+Combined predictions length: 13000
+Total training time for 15 epochs: 93.18 seconds
+Total Active Learning selection time: 37.72 seconds
+End-to-end wall time (data prep + selection + training + setup): 131.87 seconds
+
+Running model diagnostics on generated predictions...
+Using in-memory predictions for diagnostics (--save_preds False).
+Start detect_prediction_correlation
+
+ACC: 0.640625 	Rare Case: attribute "color", description "green"
+ACC: 0.625000 	Rare Case: attribute "color", description "tan"
+ACC: 0.592593 	Rare Case: attribute "color", description "silver"
+ACC: 0.625000 	Rare Case: attribute "color", description "maroon"
+ACC: 0.666667 	Hard case: attribute "color", description "multicolored"
+ACC: 0.636364 	Rare Case: attribute "background", description "sky"
+ACC: 0.621951 	Hard case: attribute "background", description "trees"
+ACC: 0.571429 	Rare Case: attribute "background", description "buildings"
+ACC: 0.660377 	Hard case: attribute "background", description "grass"
+ACC: 0.640000 	Rare Case: attribute "background", description "rocks"
+ACC: 0.500000 	Rare Case: attribute "background", description "bridge"
+ACC: 0.642857 	Rare Case: attribute "background", description "water"
+ACC: 0.660377 	Rare Case: attribute "background", description "house"
+ACC: 0.673469 	Rare Case: attribute "texture", description "plastic"
+ACC: 0.666667 	Rare Case: attribute "texture", description "fabric"
+ACC: 0.641921 	Hard case: attribute "texture", description "glass"
+
+Comparing accuracy with log file: logs/compare/stat_imagenet_resnet_compare.log
+Overall accuracy: 0.718077 -> 0.695385: declined
+
+Attribute-specific accuracy comparison:
+color, green, 0.674419 -> 0.640625: declined
+color, pink, 0.699029 -> 0.770492: improved
+color, tan, 0.700000 -> 0.625000: declined
+color, orange, 0.690909 -> 0.777778: improved
+color, yellow, 0.688889 -> 0.750000: improved
+color, purple, 0.684211 -> 0.777778: improved
+color, black, 0.665289 -> 0.688742: improved
+background, sky, 0.698630 -> 0.636364: declined
+background, inside a house, 0.691684 -> 0.702823: improved
+background, buildings, 0.707317 -> 0.571429: declined
+background, rocks, 0.659091 -> 0.640000: declined
+background, street, 0.662162 -> 0.818182: improved
+texture, metallic, 0.676471 -> 0.700000: improved
+texture, wooden, 0.698393 -> 0.706832: improved
+texture, leather, 0.588235 -> 0.857143: improved
+texture, fabric, 0.658537 -> 0.666667: improved
+
+Compared 16 attribute-specific accuracies.
+Skipping Active Learning vs Random comparison: no log file found at logs_imagenet/AL_resnet_imagenet_random_1000.log or logs_imagenet/AL_random_resnet_imagenet_1000_ratio0.1.log
+
+Random selection comparison skipped: None not found
+Current time: 0429070414

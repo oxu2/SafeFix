@@ -1,0 +1,33 @@
+Random seed set to 42
+Adjusted al_embedding_dim for ResNet on ImageNet to 256
+Using fine-tuning learning rate 1e-05 for resumed model
+Current time: 0429065428
+skip_feasible flag is True; skipping feasible JSON loading for pinkcolor_fabrictexture.
+Using ImageNet source data directory: data/imagenet_subset
+Using generated image directory: data/pinkcolor_fabrictexture_instruct_pix2pix_seed42_1k
+[DEBUG] Normal mode: looking for generated images in directory: data/pinkcolor_fabrictexture_instruct_pix2pix_seed42_1k
+[DEBUG] Starting traversal of class subfolders for generated images...
+[DEBUG] Candidate images before feasible filtering: 1000
+[DEBUG] Total candidate generated images before sampling: 1000
+[DEBUG] Sampled generated images: 1000 items
+Added 1000 generated images.
+Using random sampling to select 7279 samples from 10400
+
+[Active Learning subset (before adding generated images)] class distribution:
+  Class backpack: 743 samples (10.2%)
+  Class barber_chair: 711 samples (9.8%)
+  Class coffee_mug: 725 samples (10.0%)
+  Class desk: 723 samples (9.9%)
+  Class electric_guitar: 711 samples (9.8%)
+  Class park_bench: 733 samples (10.1%)
+  Class pitcher: 725 samples (10.0%)
+  Class purse: 745 samples (10.2%)
+  Class rocking_chair: 712 samples (9.8%)
+  Class water_bottle: 751 samples (10.3%)
+Added 1000 ImageNet pinkcolor_fabrictexture images using Random sampling: 7279 -> 8279
+Resumed model from /people/cs/o/oxx220000/safefix/save/models/model_imagenet_resnet_base.pth (best val acc: 0.7223076923076923)
+Epoch [1/15], Train Loss: 0.5273, Train Acc: 0.8369, Val Loss: 0.8991, Val Acc: 0.7069
+Epoch [2/15], Train Loss: 0.4883, Train Acc: 0.8468, Val Loss: 0.8888, Val Acc: 0.7123
+Epoch [3/15], Train Loss: 0.4689, Train Acc: 0.8526, Val Loss: 0.8891, Val Acc: 0.7077
+Epoch [4/15], Train Loss: 0.4469, Train Acc: 0.8594, Val Loss: 0.8853, Val Acc: 0.7138
+Epoch [5/15], Train Loss: 0.4390, Train Acc: 0.8669, Val Loss: 0.8759, Val Acc: 0.7077

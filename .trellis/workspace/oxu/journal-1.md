@@ -5,6 +5,336 @@
 
 ---
 
+## Session 138: Launch CelebA instruct-pix2pix seed-42 1k local AL sweep
+
+**Date**: 2026-04-29
+**Task**: celeba-redhair-brownskin-sademotion-instructpix2pix-seed42-1k-local-sweep
+
+### Summary
+
+Started a local CelebA active-learning sweep using the corrected generated
+image subset `data/redhair_brownskin_sademotion_instruct_pix2pix_seed42_1k`.
+
+### What Changed
+
+- Added launcher:
+  `scripts/run_celeba_redhair_brownskin_sademotion_instructpix2pix_ratio_queues.sh`
+  - GPU `1`: ratios `0.1`, then `0.3`
+  - GPU `2`: ratio `0.5`
+  - GPU `3`: ratio `0.7`
+  - non-attribute baselines:
+    `random`, `stratified`, `coreset`, `badge`
+  - `hierarchical` remains deferred for CelebA because prior notes found it
+    impractically slow at CelebA scale.
+  - attribute RPC rows use Qwen3 CelebA metadata
+    `save/attribute_celeba_trainval_qwen3_8B.json`, entropy `False`, focus
+    `hair color,skin,emotion`, and explicit generated extra counts:
+    `hair color:red=1000,skin:brown=1000,emotion:sad=1000`
+  - selected RPC rows from stronger prior CelebA probes:
+    - `r003_p05_c15`
+    - `r000_p0_c15`
+    - `r000_p0_cinf`
+    - `r003_p05_cinf`
+  - per-ratio generated-count scale is `1/ratio`, matching prior CelebA
+    scaled-count practice.
+
+### Active Run
+
+- Launch stamp: `20260429_071551`
+- PID file:
+  `logs_celeba/instructpix2pix_queues_20260429_071551.pids`
+- Worker PIDs at launch:
+  - GPU `1`: `453812`,
+    `logs_celeba/instructpix2pix_queue_gpu1_20260429_071551.log`
+  - GPU `2`: `453813`,
+    `logs_celeba/instructpix2pix_queue_gpu2_20260429_071551.log`
+  - GPU `3`: `453814`,
+    `logs_celeba/instructpix2pix_queue_gpu3_20260429_071551.log`
+- First row logs started:
+  - `logs_celeba/instructpix2pix_random_resnet_celeba_1000_ratio0p1_gpu1_20260429_071551.log`
+  - `logs_celeba/instructpix2pix_random_resnet_celeba_1000_ratio0p5_gpu2_20260429_071551.log`
+  - `logs_celeba/instructpix2pix_random_resnet_celeba_1000_ratio0p7_gpu3_20260429_071551.log`
+
+### Validation
+
+- `bash -n scripts/run_celeba_redhair_brownskin_sademotion_instructpix2pix_ratio_queues.sh`
+  passed.
+- Startup logs for all three workers show:
+  - selected `1000` generated filenames
+  - added `1000` generated
+    `redhair_brownskin_sademotion` images
+  - resumed from `weights/model_celeba_resnet_base.pth`
+
+### Caveats / Next Steps
+
+- This sweep is running concurrently with the active ImageNet local
+  instruct-pix2pix sweep on GPUs `1`, `2`, and `3`, per the user's explicit GPU
+  assignment.
+- `report.md` was not updated because no new CelebA instruct-pix2pix result is
+  complete yet.
+- Monitor with:
+  `tail -f logs_celeba/instructpix2pix_queue_gpu1_20260429_071551.log`
+
+### Status
+
+[~] **CelebA instruct-pix2pix seed-42 1k local sweep is running**
+
+---
+
+## Session 137: Launch ImageNet instruct-pix2pix seed-42 1k local AL sweep
+
+**Date**: 2026-04-29
+**Task**: imagenet-pinkfabric-instructpix2pix-seed42-1k-local-sweep
+
+### Summary
+
+Started a local ImageNet active-learning sweep using the corrected generated
+image subset `data/pinkcolor_fabrictexture_instruct_pix2pix_seed42_1k`.
+
+### What Changed
+
+- Updated `alpred.py`:
+  - added `--data_dir` for explicit source dataset roots
+  - defaults now prefer the recent seed-42 1k generated directories:
+    `data/hibug_redhair_brownskin_seed42_1k`,
+    `data/redhair_brownskin_sademotion_instruct_pix2pix_seed42_1k`,
+    and `data/pinkcolor_fabrictexture_instruct_pix2pix_seed42_1k`
+  - ImageNet and CelebA source data default to Juno scratch copies when
+    available, then local paths
+  - CelebA generated-image paths now support absolute paths and HiBUG-style
+    filenames such as `redhair_brownskin_014405.png`
+  - `--save_preds False` now keeps combined predictions in memory for
+    diagnostics instead of requiring a saved `.npy`; `--save_preds True` still
+    writes the file
+- Added launcher:
+  `scripts/run_imagenet_pinkfabric_instructpix2pix_ratio_queues.sh`
+  - GPU `1`: ratios `0.1`, then `0.3`
+  - GPU `2`: ratio `0.5`
+  - GPU `3`: ratio `0.7`
+  - methods per ratio:
+    `random`, `stratified`, `coreset`, `badge`, then attribute RPC rows
+  - attribute RPC rows all use `--al_attribute_use_entropy False`:
+    - `r000_p0_c15`
+    - `r001_p5_cinf`
+    - `r01_p5_c15`
+    - `r08_p10_c4`
+  - worker queues are launched via `setsid nohup` so they survive the parent
+    shell exiting
+
+### Active Run
+
+- Launch stamp: `20260429_065612`
+- PID file:
+  `logs/imagenet_instructpix2pix_queues_20260429_065612.pids`
+- Worker PIDs at launch:
+  - GPU `1`: `426929`,
+    `logs/imagenet_instructpix2pix_queue_gpu1_20260429_065612.log`
+  - GPU `2`: `426930`,
+    `logs/imagenet_instructpix2pix_queue_gpu2_20260429_065612.log`
+  - GPU `3`: `426931`,
+    `logs/imagenet_instructpix2pix_queue_gpu3_20260429_065612.log`
+- First completed sanity check:
+  `logs_imagenet/instructpix2pix_random_resnet_imagenet_1000_ratio0p1_gpu1_20260429_065612.log`
+  - used generated directory:
+    `data/pinkcolor_fabrictexture_instruct_pix2pix_seed42_1k`
+  - candidate generated images: `1000`
+  - sampled generated images: `1000`
+  - test ACC: `0.7062`
+  - diagnostics used in-memory predictions with `--save_preds False`
+
+### Caveats / Next Steps
+
+- Earlier aborted launch stamps used either the full generated directory or
+  `--save_preds True`; use stamp `20260429_065612` as the corrected active
+  sweep.
+- The first `stratified` rows for ratios `0.1`, `0.5`, and `0.7` completed
+  training and diagnostics, then old-code workers exited at the optional
+  random-vs-AL comparison hint because `random_log_name` was undefined when no
+  random baseline log was found. Fixed `alpred.py` to skip that comparison
+  cleanly when the random log is absent.
+- Updated the queue resume logic to skip any existing log containing
+  `Model Test ACC:`. Resumed workers:
+  - GPU `1`: `436342`,
+    `logs/imagenet_instructpix2pix_queue_gpu1_resume_20260429_065612.log`
+  - GPU `2`: `436353`,
+    `logs/imagenet_instructpix2pix_queue_gpu2_resume_20260429_065612.log`
+  - GPU `3`: `438348`,
+    `logs/imagenet_instructpix2pix_queue_gpu3_resume_20260429_065612.log`
+  These workers skipped completed random/stratified rows and continued at
+  `coreset`.
+- Removed empty untracked logs from aborted early launch stamps
+  `064515`, `064549`, `064744`, and `064947`.
+- `report.md` was not updated because the sweep is still active and only the
+  first sanity-check row has completed.
+
+### Status
+
+[~] **ImageNet instruct-pix2pix seed-42 1k local sweep is running**
+
+---
+
+## Session 135: Copy HiBUG redhair-brownskin seed-42 1k subset to Juno scratch
+
+**Date**: 2026-04-29
+**Task**: hibug-redhair-brownskin-seed42-1k-juno-copy
+
+### Summary
+
+Created a deterministic 1,000-image subset from the local HiBUG
+`redhair_brownskin` generated images and copied it to Juno scratch for future
+experiments.
+
+### What Changed
+
+- Source image directory:
+  `data/hibug_redhair_brownskin`
+  -> `/data/oxx220000/hibug_generated/hibug_redhair_brownskin`
+- Selection method:
+  - list all top-level image files with common image suffixes
+  - sort filenames lexicographically
+  - sample with `random.Random(42).sample(files, 1000)`
+- Local manifest:
+  `/tmp/hibug_redhair_brownskin_seed42_1k_files.txt`
+- Juno copied image directory:
+  `/home/oxx220000/scratch/safefix_cache/data/hibug_redhair_brownskin_seed42_1k`
+- Juno copied manifest:
+  `/home/oxx220000/scratch/safefix_cache/data/hibug_redhair_brownskin_seed42_1k_files.txt`
+
+### Validation
+
+- Local source contained `10925` top-level images.
+- `rsync --files-from=/tmp/hibug_redhair_brownskin_seed42_1k_files.txt`
+  completed successfully.
+- Remote Juno verification:
+  - image count: `1000`
+  - manifest line count: `1000`
+
+### Status
+
+[x] **Completed HiBUG redhair-brownskin seed-42 1k subset copy to Juno**
+
+---
+
+## Session 136: Copy instruct-pix2pix seed-42 1k subsets to Juno scratch
+
+**Date**: 2026-04-29
+**Task**: instruct-pix2pix-seed42-1k-juno-copy
+
+### Summary
+
+Copied two additional local instruct-pix2pix generated-image subsets to Juno
+scratch for future experiments.
+
+### What Changed
+
+- Source:
+  `data/redhair_brownskin_sademotion_instruct_pix2pix`
+  - local total: `1200` top-level images
+  - selection:
+    `random.Random(42).sample(sorted(relative_image_paths), 1000)`
+  - local manifest:
+    `/tmp/redhair_brownskin_sademotion_instruct_pix2pix_seed42_1k_files.txt`
+  - Juno image directory:
+    `/home/oxx220000/scratch/safefix_cache/data/redhair_brownskin_sademotion_instruct_pix2pix_seed42_1k`
+  - Juno manifest:
+    `/home/oxx220000/scratch/safefix_cache/data/redhair_brownskin_sademotion_instruct_pix2pix_seed42_1k_files.txt`
+- Source:
+  `data/pinkcolor_fabrictexture_instruct_pix2pix`
+  - local total: `1227` images under `10` class subdirectories
+  - selection:
+    for each class directory, sample
+    `random.Random(42).sample(sorted(class_relative_image_paths), 100)`
+  - local manifest:
+    `/tmp/pinkcolor_fabrictexture_instruct_pix2pix_seed42_100perclass_1k_files.txt`
+  - Juno image directory:
+    `/home/oxx220000/scratch/safefix_cache/data/pinkcolor_fabrictexture_instruct_pix2pix_seed42_100perclass_1k`
+  - Juno manifest:
+    `/home/oxx220000/scratch/safefix_cache/data/pinkcolor_fabrictexture_instruct_pix2pix_seed42_100perclass_1k_files.txt`
+
+### Validation
+
+- Remote Juno verification:
+  - redhair/brownskin/sad-emotion image count: `1000`
+  - redhair/brownskin/sad-emotion manifest line count: `1000`
+  - pink/fabric image count: `1000`
+  - pink/fabric manifest line count: `1000`
+  - pink/fabric per-class counts:
+    `backpack=100`, `barber_chair=100`, `coffee_mug=100`, `desk=100`,
+    `electric_guitar=100`, `park_bench=100`, `pitcher=100`, `purse=100`,
+    `rocking_chair=100`, `water_bottle=100`
+  - for both intended destinations, sorted copied files match the sorted
+    manifest entries exactly.
+
+### Caveats
+
+- An earlier random 1,000-file copy of
+  `pinkcolor_fabrictexture_instruct_pix2pix` was started before the user
+  clarified the desired class-balanced sampling. The intended balanced subset
+  is the directory with `100perclass` in the name:
+  `/home/oxx220000/scratch/safefix_cache/data/pinkcolor_fabrictexture_instruct_pix2pix_seed42_100perclass_1k`.
+
+### Status
+
+[x] **Completed instruct-pix2pix seed-42 1k subset copies to Juno**
+
+---
+
+## Session 137: Create local seed-42 1k image subset directories
+
+**Date**: 2026-04-29
+**Task**: local-seed42-1k-image-subsets
+
+### Summary
+
+Created local deterministic 1,000-image subset directories under `data/` so
+the selected files are directly available in the repo workspace.
+
+### What Changed
+
+- Created `data/hibug_redhair_brownskin_seed42_1k`.
+  - Source: `data/hibug_redhair_brownskin`
+  - Source image count: `10925`
+  - Selection:
+    `random.Random(42).sample(sorted(relative_image_paths), 1000)`
+  - Manifest:
+    `data/hibug_redhair_brownskin_seed42_1k/seed42_1k_manifest.txt`
+- Created `data/redhair_brownskin_sademotion_instruct_pix2pix_seed42_1k`.
+  - Source: `data/redhair_brownskin_sademotion_instruct_pix2pix`
+  - Source image count: `1200`
+  - Selection:
+    `random.Random(42).sample(sorted(relative_image_paths), 1000)`
+  - Manifest:
+    `data/redhair_brownskin_sademotion_instruct_pix2pix_seed42_1k/seed42_1k_manifest.txt`
+- Created `data/pinkcolor_fabrictexture_instruct_pix2pix_seed42_1k`.
+  - Source: `data/pinkcolor_fabrictexture_instruct_pix2pix`
+  - Source image count: `1227`
+  - Selection:
+    `random.Random(42).sample(sorted(relative_image_paths), 1000)`
+  - Manifest:
+    `data/pinkcolor_fabrictexture_instruct_pix2pix_seed42_1k/seed42_1k_manifest.txt`
+  - Preserved relative class subdirectories to avoid filename collisions.
+
+### Validation
+
+- Each local subset contains exactly `1000` image files.
+- Each local manifest contains exactly `1000` lines.
+- Approximate sizes:
+  - `data/hibug_redhair_brownskin_seed42_1k`: `386M`
+  - `data/redhair_brownskin_sademotion_instruct_pix2pix_seed42_1k`: `8.1M`
+  - `data/pinkcolor_fabrictexture_instruct_pix2pix_seed42_1k`: `6.4M`
+
+### Caveats
+
+- The local `pinkcolor_fabrictexture_instruct_pix2pix_seed42_1k` directory is
+  a global seed-42 sample over all relative image paths. It is distinct from
+  the Juno `100perclass` class-balanced subset recorded in Session 136.
+
+### Status
+
+[x] **Completed local seed-42 1k image subset directories**
+
+---
+
 ## Session 134: Record Juno brown-rainy baseline partial results and install CLI helpers
 
 **Date**: 2026-04-29

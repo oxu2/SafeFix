@@ -1,0 +1,36 @@
+Random seed set to 42
+Adjusted al_embedding_dim for ResNet on ImageNet to 256
+Using fine-tuning learning rate 1e-05 for resumed model
+Current time: 0429071555
+skip_feasible flag is True; skipping feasible JSON loading for pinkcolor_fabrictexture.
+Using ImageNet source data directory: data/imagenet_subset
+Using generated image directory: data/pinkcolor_fabrictexture_instruct_pix2pix_seed42_1k
+[DEBUG] Normal mode: looking for generated images in directory: data/pinkcolor_fabrictexture_instruct_pix2pix_seed42_1k
+[DEBUG] Starting traversal of class subfolders for generated images...
+[DEBUG] Candidate images before feasible filtering: 1000
+[DEBUG] Total candidate generated images before sampling: 1000
+[DEBUG] Sampled generated images: 1000 items
+Added 1000 generated images.
+Using random sampling to select 3120 samples from 10400
+
+[Active Learning subset (before adding generated images)] class distribution:
+  Class backpack: 326 samples (10.4%)
+  Class barber_chair: 297 samples (9.5%)
+  Class coffee_mug: 301 samples (9.6%)
+  Class desk: 311 samples (10.0%)
+  Class electric_guitar: 320 samples (10.3%)
+  Class park_bench: 336 samples (10.8%)
+  Class pitcher: 316 samples (10.1%)
+  Class purse: 297 samples (9.5%)
+  Class rocking_chair: 299 samples (9.6%)
+  Class water_bottle: 317 samples (10.2%)
+Added 1000 ImageNet pinkcolor_fabrictexture images using Random sampling: 3120 -> 4120
+Resumed model from /people/cs/o/oxx220000/safefix/save/models/model_imagenet_resnet_base.pth (best val acc: 0.7223076923076923)
+Epoch [1/15], Train Loss: 0.7774, Train Acc: 0.7667, Val Loss: 0.9376, Val Acc: 0.7092
+Epoch [2/15], Train Loss: 0.6594, Train Acc: 0.7888, Val Loss: 0.9285, Val Acc: 0.7123
+Epoch [3/15], Train Loss: 0.6139, Train Acc: 0.8039, Val Loss: 0.9279, Val Acc: 0.7131
+Epoch [4/15], Train Loss: 0.5907, Train Acc: 0.8165, Val Loss: 0.9205, Val Acc: 0.7146
+Epoch [5/15], Train Loss: 0.5842, Train Acc: 0.8199, Val Loss: 0.9232, Val Acc: 0.7062
+Epoch [6/15], Train Loss: 0.5786, Train Acc: 0.8189, Val Loss: 0.9145, Val Acc: 0.7069
+Epoch [7/15], Train Loss: 0.5751, Train Acc: 0.8184, Val Loss: 0.9131, Val Acc: 0.7046
+Epoch [8/15], Train Loss: 0.5720, Train Acc: 0.8182, Val Loss: 0.9119, Val Acc: 0.7123

@@ -1,0 +1,56 @@
+Random seed set to 42
+Adjusted al_embedding_dim for ResNet on ImageNet to 256
+Using fine-tuning learning rate 1e-05 for resumed model
+Current time: 0429065055
+skip_feasible flag is True; skipping feasible JSON loading for pinkcolor_fabrictexture.
+Using ImageNet source data directory: data/imagenet_subset
+Using generated image directory: data/pinkcolor_fabrictexture_instruct_pix2pix_seed42_1k
+[DEBUG] Normal mode: looking for generated images in directory: data/pinkcolor_fabrictexture_instruct_pix2pix_seed42_1k
+[DEBUG] Starting traversal of class subfolders for generated images...
+[DEBUG] Candidate images before feasible filtering: 1000
+[DEBUG] Total candidate generated images before sampling: 1000
+[DEBUG] Sampled generated images: 1000 items
+Added 1000 generated images.
+Using random sampling to select 5200 samples from 10400
+
+[Active Learning subset (before adding generated images)] class distribution:
+  Class backpack: 523 samples (10.1%)
+  Class barber_chair: 514 samples (9.9%)
+  Class coffee_mug: 496 samples (9.5%)
+  Class desk: 527 samples (10.1%)
+  Class electric_guitar: 503 samples (9.7%)
+  Class park_bench: 545 samples (10.5%)
+  Class pitcher: 522 samples (10.0%)
+  Class purse: 525 samples (10.1%)
+  Class rocking_chair: 517 samples (9.9%)
+  Class water_bottle: 528 samples (10.2%)
+Added 1000 ImageNet pinkcolor_fabrictexture images using Random sampling: 5200 -> 6200
+Resumed model from /people/cs/o/oxx220000/safefix/save/models/model_imagenet_resnet_base.pth (best val acc: 0.7223076923076923)
+Epoch [1/15], Train Loss: 0.5997, Train Acc: 0.8142, Val Loss: 0.9036, Val Acc: 0.7085
+Epoch [2/15], Train Loss: 0.5323, Train Acc: 0.8308, Val Loss: 0.8898, Val Acc: 0.7169
+Epoch [3/15], Train Loss: 0.5152, Train Acc: 0.8366, Val Loss: 0.8898, Val Acc: 0.7154
+Epoch [4/15], Train Loss: 0.4962, Train Acc: 0.8439, Val Loss: 0.8956, Val Acc: 0.7092
+Epoch [5/15], Train Loss: 0.4846, Train Acc: 0.8471, Val Loss: 0.8974, Val Acc: 0.7085
+Epoch [6/15], Train Loss: 0.4744, Train Acc: 0.8494, Val Loss: 0.8878, Val Acc: 0.7169
+Epoch [7/15], Train Loss: 0.4618, Train Acc: 0.8587, Val Loss: 0.8868, Val Acc: 0.7154
+Epoch [8/15], Train Loss: 0.4627, Train Acc: 0.8558, Val Loss: 0.8935, Val Acc: 0.7169
+Epoch [9/15], Train Loss: 0.4649, Train Acc: 0.8582, Val Loss: 0.8858, Val Acc: 0.7177
+Epoch [10/15], Train Loss: 0.4568, Train Acc: 0.8577, Val Loss: 0.8889, Val Acc: 0.7131
+Epoch [11/15], Train Loss: 0.4503, Train Acc: 0.8619, Val Loss: 0.8855, Val Acc: 0.7192
+Epoch [12/15], Train Loss: 0.4415, Train Acc: 0.8637, Val Loss: 0.8906, Val Acc: 0.7162
+Epoch [13/15], Train Loss: 0.4441, Train Acc: 0.8629, Val Loss: 0.8885, Val Acc: 0.7138
+Epoch [14/15], Train Loss: 0.4503, Train Acc: 0.8621, Val Loss: 0.8907, Val Acc: 0.7138
+Epoch [15/15], Train Loss: 0.4441, Train Acc: 0.8666, Val Loss: 0.8965, Val Acc: 0.7169
+Model Test ACC: 0.7438, test loss: 0.7762
+Skipping prediction saving (--save_preds False).
+Total training time for 15 epochs: 152.28 seconds
+Total Active Learning selection time: 0.00 seconds
+End-to-end wall time (data prep + selection + training + setup): 153.74 seconds
+
+Running model diagnostics on generated predictions...
+Traceback (most recent call last):
+  File "/people/cs/o/oxx220000/safefix/alpred.py", line 2082, in <module>
+    if not os.path.exists(prediction_file):
+  File "/people/cs/o/oxx220000/.conda/envs/ad/lib/python3.9/site-packages/numpy/lib/npyio.py", line 427, in load
+    fid = stack.enter_context(open(os_fspath(file), "rb"))
+FileNotFoundError: [Errno 2] No such file or directory: '/people/cs/o/oxx220000/safefix/save/pred/predictions_imagenet_resnet_pinkcolor_fabrictexture_1000imgs_0429065055.npy'
