@@ -5,6 +5,98 @@
 
 ---
 
+## Session 124: Document Juno scheduler behavior
+
+**Date**: 2026-04-29
+**Task**: document-juno-scheduler-guidance
+
+### Summary
+
+Added the Juno support response about scheduler behavior and multi-run workflow
+to the durable migration notes.
+
+### What Changed
+
+- Updated `docs/juno_migration.md` with a new
+  `Juno Scheduler And Multi-Run Workflow` section.
+- Documented that the Juno `4` running / `8` submitted job policy is an upper
+  bound, not a guarantee that four single-GPU jobs will run concurrently.
+- Recorded the scheduler check order:
+  - resources
+  - priority
+  - user limits
+- Added guidance for pending reasons:
+  - `PENDING (Resources)` means no matching GPU is currently free in the
+    requested partition.
+  - `PENDING (Priority)` means the job is waiting behind higher-priority work.
+- Added workflow guidance for single-GPU sweeps across `h100` and `a30`,
+  including the current repo caveat that Keypoint R-CNN batch size `8` is
+  validated on `h100`, while A30 should be retried with a lower batch size after
+  job `185433` failed with CUDA OOM.
+- Added queue-check commands using `sinfo`, `squeue`, and `sacct`.
+- Added a command pattern for checking nominally free H100 GPUs by comparing
+  node `CfgTRES` and `AllocTRES`, plus a `scontrol show job` pattern for pending
+  job resource requests.
+
+### Caveats
+
+- `report.md` was not updated because this is operational Juno workflow
+  guidance, not a stable experiment result.
+- `.handoff.md` was not updated because the active baton-pass state did not
+  change.
+
+### Status
+
+[x] **Juno scheduler guidance documented**
+
+## Session 125: Cancel parallel H100 queue and add sequential RPC sweep
+
+**Date**: 2026-04-29
+**Task**: juno-brown-rainy-sequential-rpc03-05
+
+### Summary
+
+Canceled the over-parallelized Juno H100 brown-rainy queue and added a single
+sequential H100 sweep wrapper for the `ratio=0.3` and `ratio=0.5` RPC settings.
+
+### What Changed
+
+- Confirmed Juno job `185438` had already completed successfully before this
+  cancellation pass:
+  - ratio `0.3`, `R=0.0`, `P=0.0`, `C=15.0`
+  - state `COMPLETED`, elapsed `00:16:09`, node `g-04-02`
+- Canceled remaining H100 jobs:
+  - `185439`
+  - `185440`
+  - `185441`
+  - `185442`
+  - `185443`
+  - `185444`
+  - `185445`
+- Added `scripts/juno_pose_brown_rainy_rpc03_05_sweep.sbatch`.
+- The new wrapper requests one H100 and runs the seven missing brown-rainy RPC
+  settings sequentially:
+  - ratio `0.3`: `(R=0.01, P=0.5, C=15.0)`, `(R=0.03, P=0.5, C=15.0)`,
+    `(R=0.03, P=0.5, C=8.0)`
+  - ratio `0.5`: the same four RPC settings
+- The wrapper reuses:
+  - `scripts/juno_pose_brown_rainy_attribute.sbatch`
+  - `/home/oxx220000/scratch/safefix_cache/data/coco`
+  - `/home/oxx220000/scratch/safefix_cache/data/coco-pose-weather-edits/generated_coco_qwen3_1500_brown_rain_icedit`
+  - `/home/oxx220000/scratch/safefix_cache/log_pose/pose_keypointrcnn_train20k_internvl3_bs8_e2_rare1p1_gpu0_20260415_144530/best.pth`
+- Updated `docs/juno_migration.md` with the sequential wrapper command and
+  table of RPC settings.
+
+### Caveats
+
+- `185439` had already started before cancellation and was in SLURM `CG`
+  cleanup when first checked after `scancel`.
+- `report.md` was not updated because there are no new completed metrics yet.
+
+### Status
+
+[~] **Sequential Juno RPC wrapper prepared**
+
 ## Session 123: Correct KITTI YOLOv8 GPU placement and environment notes
 
 **Date**: 2026-04-28

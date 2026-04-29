@@ -17,11 +17,74 @@ SafeFix COCO pose experiments.
   - `a30-2.12gb`: half A30 virtual GPU, 12 GB VRAM.
   - `a30-4.6gb`: quarter A30 virtual GPU, 6 GB VRAM.
 
-For the current Keypoint R-CNN COCO pose resume jobs, use `h100` first. `a30`
-may work with lower `--batch-size`, but batch size `8` is not a safe A30
-default: Juno probe `185433` failed on `a30` with CUDA OOM during backward after
-reporting about `23.49 GiB` usable GPU memory. Retry A30 only with a lower
-`--batch-size`, such as `4` or smaller.
+## Juno Scheduler And Multi-Run Workflow
+
+The Juno orientation user limit should be treated as an upper bound, not a
+concurrency guarantee. The reported policy is up to `4` running jobs and `8`
+submitted jobs per user, but a job only starts when all scheduler checks pass:
+
+1. `Resources`: a suitable GPU is physically available in the requested
+   partition.
+2. `Priority`: the job is high enough in the queue after fairshare, job age,
+   and job size are considered.
+3. `Limits`: the user is still under the running-job cap.
+
+Therefore, four independent `--gres=gpu:1` jobs may run at once only if
+resources and priority also allow it. `PENDING (Resources)` means the requested
+partition does not currently have a matching free GPU for that job. `PENDING
+(Priority)` means the scheduler is holding the job behind higher-priority work,
+even if the user is below the nominal job cap.
+
+For independent single-GPU experiment sweeps:
+
+- Keep H100-only or H100-sensitive jobs on `h100` when the workload needs H100
+  memory or speed.
+- Submit some jobs to `a30` only after confirming the workload fits A30 memory
+  and the slower runtime is acceptable.
+- For this repo's current Keypoint R-CNN COCO pose resume jobs, `h100` remains
+  the validated default at `--batch-size 8`. The A30 probe job `185433` failed
+  with CUDA OOM at `--batch-size 8`, so A30 should be retried with lower
+  `--batch-size`, such as `4` or smaller.
+- Prefer smaller batches of submissions, for example `2` to `4` jobs at a time,
+  instead of filling all `8` submitted slots when the queue is congested.
+- Monitor both partitions before and after submission, then move only jobs that
+  are safe for the target GPU.
+
+Useful queue checks:
+
+```bash
+sinfo -p h100,a30
+squeue --me -o "%i %P %j %T %M %D %R"
+sacct -j <jobid> --format=JobID,JobName%32,Partition,State,ExitCode,Elapsed,NodeList
+```
+
+To check which H100 nodes still have unallocated GPUs, compare each node's
+configured GPU TRES with allocated GPU TRES:
+
+```bash
+sinfo -p h100 -N -o "%N %t %G %C %m"
+squeue -p h100 -t RUNNING -o "%i %u %P %j %T %M %N %b"
+scontrol show node g-04-02 | egrep "NodeName=|Gres=|State=|CfgTRES=|AllocTRES="
+scontrol show node g-05-01 | egrep "NodeName=|Gres=|State=|CfgTRES=|AllocTRES="
+scontrol show node g-06-01 | egrep "NodeName=|Gres=|State=|CfgTRES=|AllocTRES="
+```
+
+Interpretation:
+
+- `CfgTRES` is the node capacity, for example `gres/gpu=4`.
+- `AllocTRES` is what SLURM has already allocated, for example
+  `gres/gpu=3`.
+- A node with `CfgTRES gres/gpu=4` and `AllocTRES gres/gpu=3` has one nominally
+  unallocated GPU.
+- A nominally unallocated GPU may still not be schedulable for a new job if CPU,
+  memory, priority, or planned allocations block it. Check `AllocTRES` memory
+  and the node `State` as well as GPU count.
+
+To inspect why a pending job is not starting and what it requested:
+
+```bash
+scontrol show job <jobid> | egrep "JobId=|JobState=|Reason=|Partition=|NumNodes=|NumCPUs=|ReqTRES=|AllocTRES=|TRESPerNode=|MinMemory"
+```
 
 ## Current Run Dependencies Not Covered By Git
 
@@ -331,6 +394,27 @@ sbatch scripts/juno_pose_brown_rainy_attribute.sbatch \
   --base-model ~/scratch/safefix_cache/log_pose/pose_keypointrcnn_train20k_internvl3_bs8_e2_rare1p1_gpu0_20260415_144530/best.pth \
   --no-scratch-copy
 ```
+
+For the remaining `ratio=0.3` and `ratio=0.5` brown-rainy RPC grid, prefer one
+sequential H100 allocation instead of several independent pending jobs:
+
+```bash
+sbatch scripts/juno_pose_brown_rainy_rpc03_05_sweep.sbatch
+```
+
+The sequential wrapper runs these seven missing settings in order. The
+`ratio=0.3`, `R=0.0`, `P=0.0`, `C=15.0` row already completed as Juno job
+`185438`, so it is not rerun by default.
+
+| Ratio | R | P | C |
+| --- | --- | --- | --- |
+| `0.3` | `0.01` | `0.5` | `15.0` |
+| `0.3` | `0.03` | `0.5` | `15.0` |
+| `0.3` | `0.03` | `0.5` | `8.0` |
+| `0.5` | `0.0` | `0.0` | `15.0` |
+| `0.5` | `0.01` | `0.5` | `15.0` |
+| `0.5` | `0.03` | `0.5` | `15.0` |
+| `0.5` | `0.03` | `0.5` | `8.0` |
 
 The resolved defaults are:
 
