@@ -1,6 +1,7 @@
 # 04/28/2026 Update — Juno Qwen3 Brown-Rainy Ratio 0.1 RPC Results
 
-- The first Juno Qwen3 brown-rainy `ratio=0.1` RPC run completed successfully.
+- All four Juno Qwen3 brown-rainy `ratio=0.1` RPC runs completed
+  successfully.
 - Common setup for this sweep:
   - base AP for comparison: `0.5902`
   - selected original samples: `2000`
@@ -14,19 +15,34 @@
 
 | Job | R | P | C | Status | Held-out Test AP | Delta vs Base | AL Selection Time | End-to-End Time | Canonical Log |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| `185427` | `0.0` | `0.0` | `15.0` | completed | **`0.6042`** | `+0.0140` | `0.37 s` | `00:08:00` | `/work/oxx220000/safefix/log_pose/pose_resume_qwen3_brown_rainy_r0p1_r0p0_p0p0_c15p0_gpu0_20260428_205920.log` |
-| `185428` | `0.01` | `0.5` | `15.0` | running at last check | pending | pending | pending | pending | pending |
-| `185429` | `0.03` | `0.5` | `15.0` | pending at last check | pending | pending | pending | pending | pending |
-| `185430` | `0.03` | `0.5` | `8.0` | pending at last check | pending | pending | pending | pending | pending |
+| `185429` | `0.03` | `0.5` | `15.0` | completed | **`0.6183`** | `+0.0281` | `0.36 s` | `00:07:48` | `/work/oxx220000/safefix/log_pose/pose_resume_qwen3_brown_rainy_r0p1_r0p03_p0p5_c15p0_gpu0_20260428_211734.log` |
+| `185430` | `0.03` | `0.5` | `8.0` | completed | `0.6165` | `+0.0263` | `0.35 s` | `00:07:41` | `/work/oxx220000/safefix/log_pose/pose_resume_qwen3_brown_rainy_r0p1_r0p03_p0p5_c8p0_gpu0_20260428_212637.log` |
+| `185428` | `0.01` | `0.5` | `15.0` | completed | `0.6152` | `+0.0250` | `0.36 s` | `00:07:51` | `/work/oxx220000/safefix/log_pose/pose_resume_qwen3_brown_rainy_r0p1_r0p01_p0p5_c15p0_gpu0_20260428_210833.log` |
+| `185427` | `0.0` | `0.0` | `15.0` | completed | `0.6042` | `+0.0140` | `0.37 s` | `00:08:00` | `/work/oxx220000/safefix/log_pose/pose_resume_qwen3_brown_rainy_r0p1_r0p0_p0p0_c15p0_gpu0_20260428_205920.log` |
 
+- Completed `185429` metrics:
+  - held-out val: AP `0.6288`, AP50 `0.8604`, AP75 `0.6925`, AR `0.6995`
+  - held-out test: AP `0.6183`, AP50 `0.8466`, AP75 `0.6782`, AR `0.6860`
+- Completed `185430` metrics:
+  - held-out val: AP `0.6285`, AP50 `0.8629`, AP75 `0.6882`, AR `0.6984`
+  - held-out test: AP `0.6165`, AP50 `0.8489`, AP75 `0.6690`, AR `0.6854`
+- Completed `185428` metrics:
+  - held-out val: AP `0.6235`, AP50 `0.8485`, AP75 `0.6833`, AR `0.6971`
+  - held-out test: AP `0.6152`, AP50 `0.8403`, AP75 `0.6717`, AR `0.6872`
 - Completed `185427` metrics:
   - held-out val: AP `0.6159`, AP50 `0.8568`, AP75 `0.6623`, AR `0.6908`
   - held-out test: AP `0.6042`, AP50 `0.8390`, AP75 `0.6546`, AR `0.6766`
 - Interpretation:
-  - `185427` is above the canonical base by `+0.0140` AP
-  - it is slightly below the earlier local InternVL3 rainy `ratio=0.1`
-    conservative attribute row (`0.6071`), but above the earlier local
-    `random` (`0.6029`) and `stratified` (`0.6031`) rows
+  - `185429` is the best completed Juno Qwen3 brown-rainy `ratio=0.1` row so
+    far, with test AP `0.6183` (`+0.0281` over the canonical base)
+  - all three nonzero `R/P` rows beat the conservative all-zero
+    rarity/frequency row (`185427`)
+  - with `R=0.03` and `P=0.5`, the softer class-balance setting `C=8.0`
+    (`185430`, AP `0.6165`) trails `C=15.0` (`185429`, AP `0.6183`) but still
+    beats the lower-rarity `R=0.01`, `P=0.5`, `C=15.0` setting
+  - `185429` is also above the earlier local InternVL3 rainy `ratio=0.1`
+    conservative attribute row (`0.6071`), plus the earlier local `random`
+    (`0.6029`) and `stratified` (`0.6031`) rows
 
 # 04/28/2026 Update — COCO Pose Ratio 0.05 Rainy / Brown-Rainy Results
 

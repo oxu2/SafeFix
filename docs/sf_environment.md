@@ -108,6 +108,53 @@ work:
 - `safetensors`
 - `json-tricks`
 
+## RTMPose Add-On
+
+On 2026-04-28, the `sf` environment was extended for RTMPose Tiny evaluation on
+Juno A30. The historical `ad` environment was intentionally not modified.
+
+The validated RTMPose-related package set after installation cleanup is:
+
+- `mmcv==2.1.0`
+- `mmdet==3.2.0`
+- `mmpose==1.3.2`
+- `mmengine==0.10.7`
+- `opencv-python-headless==4.10.0.84`
+- `numpy==1.26.4`
+
+Installation notes:
+
+- `openmim==0.3.9` was used to install OpenMMLab packages.
+- The first `mmpose` install attempt failed while building `chumpy`; installing
+  `chumpy==0.70` with `--no-build-isolation` fixed that step.
+- `mmcv==2.2.0` installed cleanly for torch `2.4` / CUDA `12.1`, but
+  `mmdet` rejects it because it requires `mmcv<2.2.0`.
+- `mmcv==2.1.0` was installed from the OpenMMLab `cu121/torch2.1.0` wheel index
+  and validated by import under the current torch `2.4.1+cu121` stack.
+- `opencv-python==4.13.0.92` was removed because it pulled a NumPy `2.x`
+  requirement; the environment was restored to `numpy==1.26.4` plus
+  `opencv-python-headless==4.10.0.84`.
+
+Validation passed on Juno:
+
+```bash
+/groups/yguo/oxx220000/conda/envs/sf/bin/python -c \
+  'import torch, torchvision, numpy, cv2, mmcv, mmdet, mmpose, pycocotools'
+```
+
+RTMPose runner files:
+
+- `utils/run_rtmpose_eval_and_analysis.py`
+- `pose_estimation/rtmpose_assets/rtmpose_tiny_coco_juno_eval.py`
+- `scripts/juno_rtmpose_tiny_a30.sbatch`
+
+The RTMPose runner uses seed `42` and deterministic settings. It evaluates
+RTMPose Tiny on COCO val, writes COCO-format keypoint predictions, and then runs
+qwen3, internvl3, and blip attribute slice analyses on the SafeFix held-out
+`val` and `test` splits. The current RTMPose config is top-down and uses COCO
+ground-truth person boxes, so its AP is not directly comparable to
+detector-inclusive Keypoint R-CNN AP.
+
 The repo import and syntax validation passed with `sf` for:
 
 ```text

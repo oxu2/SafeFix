@@ -5,6 +5,293 @@
 
 ---
 
+## Session 119: Prepare RTMPose Tiny A30 evaluation with qwen3/internvl3/blip analysis
+
+**Date**: 2026-04-28
+**Task**: rtmpose-tiny-a30-sf-analysis
+
+### Summary
+
+Prepared RTMPose Tiny evaluation on Juno A30 using the `sf` environment only,
+added a reproducible seed-42 runner, installed and validated MMPose dependencies,
+and submitted the A30 job.
+
+### Current Juno Brown-Rainy Status
+
+- Checked jobs `185438`-`185445` for the ratio `0.3` and `0.5` brown-rainy
+  H100 sweep.
+- All eight were still pending at the check:
+  - `185438`: pending, reason `Resources`
+  - `185439`-`185445`: pending, reason `Priority`
+- No new held-out metrics are available yet for those jobs.
+
+### RTMPose Runner Files
+
+Added locally and copied to `/work/oxx220000/safefix` on Juno:
+
+- `utils/run_rtmpose_eval_and_analysis.py`
+- `pose_estimation/rtmpose_assets/rtmpose_tiny_coco_juno_eval.py`
+- `scripts/juno_rtmpose_tiny_a30.sbatch`
+
+The runner:
+
+- sets seed `42`
+- sets deterministic torch/CUDNN flags where available
+- evaluates RTMPose Tiny on COCO val
+- writes COCO-format keypoint predictions as
+  `rtmpose_tiny_coco_val.keypoints.json`
+- runs SafeFix slice analysis for:
+  - qwen3 attributes
+  - internvl3 attributes
+  - blip attributes
+- runs each attribute source on both held-out `val` and `test` splits using the
+  same RTMPose full-val prediction file
+- uses `analysis_acc_diff_threshold=0.02`
+
+Important caveat:
+
+- The current RTMPose config is top-down and uses COCO ground-truth person boxes
+  via `CocoDataset`. Its AP is useful as an RTMPose pose-quality reference and
+  for attribute-slice comparison, but it is not a detector-inclusive AP directly
+  comparable to Keypoint R-CNN.
+
+### sf Environment Changes
+
+- Per user direction, did not modify `ad`.
+- Installed RTMPose dependencies into `sf`:
+  - `/groups/yguo/oxx220000/conda/envs/sf`
+- `openmim` installation initially downgraded/changed several common packages
+  and installed incompatible OpenMMLab versions:
+  - `mmcv==2.2.0`
+  - `mmdet==3.3.0`
+  - `numpy==2.2.6`
+  - `opencv-python==4.13.0.92`
+- Corrected and validated final package state:
+  - `torch==2.4.1+cu121`
+  - `torchvision==0.19.1+cu121`
+  - `numpy==1.26.4`
+  - `cv2==4.10.0` from `opencv-python-headless==4.10.0.84`
+  - `mmcv==2.1.0`
+  - `mmdet==3.2.0`
+  - `mmpose==1.3.2`
+  - `mmengine==0.10.7`
+  - `pycocotools` import OK
+- `mmcv==2.1.0` had to be installed from the OpenMMLab
+  `cu121/torch2.1.0` wheel index because the torch `2.4` index only provided
+  `mmcv==2.2.0`, which `mmdet` rejects.
+
+### Validation
+
+- Local checks:
+  - `bash -n scripts/juno_rtmpose_tiny_a30.sbatch`
+  - `python3 -m py_compile utils/run_rtmpose_eval_and_analysis.py`
+  - `git diff --check`
+- Juno checks:
+  - copied runner files into their repo paths
+  - compiled `utils/run_rtmpose_eval_and_analysis.py` with `sf`
+  - imported `torch`, `torchvision`, `numpy`, `cv2`, `mmcv`, `mmdet`,
+    `mmpose`, and `pycocotools` with `sf`
+  - loaded `pose_estimation/rtmpose_assets/rtmpose_tiny_coco_juno_eval.py`
+    with `mmengine.Config`
+  - config check reported:
+    - seed `42`
+    - deterministic `True`
+    - batch size `32`
+    - data root `/home/oxx220000/scratch/safefix_cache/data/coco/`
+
+### Submitted Job
+
+- Job id: `185461`
+- Partition: `a30`
+- Job name: `rtmpose-tiny-a30`
+- Launch:
+  - `sbatch --partition=a30 scripts/juno_rtmpose_tiny_a30.sbatch --python /groups/yguo/oxx220000/conda/envs/sf/bin/python --data-root /home/oxx220000/scratch/safefix_cache/data/coco --seed 42`
+- Latest checked state:
+  - `PENDING`, reason `Resources`
+
+Monitor:
+
+```bash
+ssh juno 'squeue -j 185461 -o "%i %P %j %T %M %D %R"'
+ssh juno 'cd /work/oxx220000/safefix && tail -f slurm-rtmpose-tiny-a30-185461.out'
+```
+
+### Documentation Updated
+
+- Updated `.handoff.md` with the RTMPose A30 baton.
+- Updated `docs/sf_environment.md` with RTMPose dependency changes and
+  validation notes.
+- Did not update `report.md` because RTMPose metrics are not complete yet.
+
+### Status
+
+[~] **RTMPose Tiny A30 Submitted; Waiting for Resources**
+
+## Session 118: Submit Juno brown-rainy ratio 0.3 and 0.5 RPC4 H100 jobs
+
+**Date**: 2026-04-28
+**Task**: launch-juno-brown-rainy-ratio03-ratio05-rpc4
+
+### Summary
+
+Submitted the same brown-rainy RPC4 parameter grid used for the completed
+`ratio=0.1` Juno sweep at `ratio=0.3` and `ratio=0.5`, all on the `h100`
+partition.
+
+### Launch Inputs
+
+- Repo:
+  - `~/work/safefix`
+- Data root:
+  - `/home/oxx220000/scratch/safefix_cache/data/coco`
+- Brown-rainy generated images:
+  - `/home/oxx220000/scratch/safefix_cache/data/coco-pose-weather-edits/generated_coco_qwen3_1500_brown_rain_icedit`
+- Base checkpoint:
+  - `/home/oxx220000/scratch/safefix_cache/log_pose/pose_keypointrcnn_train20k_internvl3_bs8_e2_rare1p1_gpu0_20260415_144530/best.pth`
+- Launcher:
+  - `scripts/juno_pose_brown_rainy_attribute.sbatch`
+- Common launch flags:
+  - `--partition=h100`
+  - `--no-scratch-copy`
+  - `--num-added-img` left at launcher default `1000`
+  - `--batch-size` left at launcher default `8`
+
+### Submitted Jobs
+
+| Job | Ratio | R | P | C | State At Launch Check |
+| --- | --- | --- | --- | --- | --- |
+| `185438` | `0.3` | `0.0` | `0.0` | `15.0` | `PENDING` (`Resources`) |
+| `185439` | `0.3` | `0.01` | `0.5` | `15.0` | `PENDING` (`Priority`) |
+| `185440` | `0.3` | `0.03` | `0.5` | `15.0` | `PENDING` (`Priority`) |
+| `185441` | `0.3` | `0.03` | `0.5` | `8.0` | `PENDING` (`Priority`) |
+| `185442` | `0.5` | `0.0` | `0.0` | `15.0` | `PENDING` (`Priority`) |
+| `185443` | `0.5` | `0.01` | `0.5` | `15.0` | `PENDING` (`Priority`) |
+| `185444` | `0.5` | `0.03` | `0.5` | `15.0` | `PENDING` (`Priority`) |
+| `185445` | `0.5` | `0.03` | `0.5` | `8.0` | `PENDING` (`Priority`) |
+
+### Monitor
+
+```bash
+ssh juno 'squeue -j 185438,185439,185440,185441,185442,185443,185444,185445 -o "%i %P %j %T %M %D %R"'
+```
+
+Expected SLURM stdout names once jobs start:
+
+- `slurm-br-r03-r000-p0-c15-185438.out`
+- `slurm-br-r03-r001-p05-c15-185439.out`
+- `slurm-br-r03-r003-p05-c15-185440.out`
+- `slurm-br-r03-r003-p05-c8-185441.out`
+- `slurm-br-r05-r000-p0-c15-185442.out`
+- `slurm-br-r05-r001-p05-c15-185443.out`
+- `slurm-br-r05-r003-p05-c15-185444.out`
+- `slurm-br-r05-r003-p05-c8-185445.out`
+
+### Documentation
+
+- Updated `.handoff.md` with the new active Juno baton.
+- Did not update `report.md` because these launches do not yet have stable
+  completed metrics.
+
+### Status
+
+[~] **Submitted; Waiting in Queue**
+
+## Session 117: Check Juno brown-rainy RPC results and update docs
+
+**Date**: 2026-04-28
+**Task**: juno-brown-rainy-rpc-status-update
+
+### Summary
+
+Checked the Juno SLURM state for the latest brown-rainy pose jobs, found all
+four `ratio=0.1` RPC results completed, and diagnosed the A30 probe failure as
+CUDA OOM at batch size `8`.
+
+### Juno Status Check
+
+- Checked:
+  - `squeue -j 185427,185428,185429,185430,185433`
+  - `sacct -j 185427,185428,185429,185430,185433`
+- Results:
+  - `185427`: completed, `R=0.0`, `P=0.0`, `C=15.0`
+  - `185428`: completed, `R=0.01`, `P=0.5`, `C=15.0`
+  - `185429`: completed, `R=0.03`, `P=0.5`, `C=15.0`
+  - `185430`: completed, `R=0.03`, `P=0.5`, `C=8.0`
+  - `185433`: failed on `a30`, exit code `1:0`
+
+### Completed Ratio 0.1 Metrics
+
+- `185427`:
+  - log:
+    `/work/oxx220000/safefix/log_pose/pose_resume_qwen3_brown_rainy_r0p1_r0p0_p0p0_c15p0_gpu0_20260428_205920.log`
+  - held-out test AP `0.604214737755279`
+  - end-to-end elapsed `00:08:00`
+- `185428`:
+  - log:
+    `/work/oxx220000/safefix/log_pose/pose_resume_qwen3_brown_rainy_r0p1_r0p01_p0p5_c15p0_gpu0_20260428_210833.log`
+  - held-out val: AP `0.6234638157778021`, AP50 `0.8484936386365421`,
+    AP75 `0.6832811799716932`, AR `0.6971391417425228`
+  - held-out test: AP `0.6151620042215786`, AP50 `0.8403480586100149`,
+    AP75 `0.6716747330194116`, AR `0.6871794871794872`
+  - selection time `0.36s`
+  - end-to-end elapsed `00:07:51`
+- `185429`:
+  - log:
+    `/work/oxx220000/safefix/log_pose/pose_resume_qwen3_brown_rainy_r0p1_r0p03_p0p5_c15p0_gpu0_20260428_211734.log`
+  - held-out val: AP `0.6287525561698588`, AP50 `0.860389692417761`,
+    AP75 `0.6925054129024772`, AR `0.699479843953186`
+  - held-out test: AP `0.6183150766876291`, AP50 `0.8466313872809632`,
+    AP75 `0.6781745928139952`, AR `0.685958485958486`
+  - selection time `0.36s`
+  - end-to-end elapsed `00:07:48`
+- `185430`:
+  - log:
+    `/work/oxx220000/safefix/log_pose/pose_resume_qwen3_brown_rainy_r0p1_r0p03_p0p5_c8p0_gpu0_20260428_212637.log`
+  - held-out val: AP `0.6284580007522153`, AP50 `0.8628590084849288`,
+    AP75 `0.6881865065535514`, AR `0.6984070221066321`
+  - held-out test: AP `0.6164810970168545`, AP50 `0.8489222733573507`,
+    AP75 `0.6689615380641067`, AR `0.6853785103785104`
+  - selection time `0.35s`
+  - end-to-end elapsed `00:07:41`
+
+### Interpretation
+
+- `185429` is the best completed `ratio=0.1` Juno Qwen3 brown-rainy RPC row so
+  far, with held-out test AP `0.6183150766876291`.
+- The nonzero rarity/frequency rows all beat the conservative `R=0.0`, `P=0.0`,
+  `C=15.0` row.
+- At `R=0.03`, `P=0.5`, the `C=15.0` row (`185429`) is slightly stronger than
+  `C=8.0` (`185430`).
+
+### A30 Probe Failure
+
+- `185433`:
+  - job name: `br-r005-r000-p0-c0-a30`
+  - final state: `FAILED`
+  - elapsed: `00:05:40`
+  - node: `g-01-01`
+  - log:
+    `/work/oxx220000/safefix/log_pose/pose_resume_qwen3_brown_rainy_r0p05_r0p0_p0p0_c0p0_gpu0_20260428_211503.log`
+- Failure:
+  - CUDA OOM during backward at batch size `8`
+  - A30 reported about `23.49 GiB` capacity, only about `428 MiB` free, and
+    failed while trying to allocate another `1.25 GiB`
+- Conclusion:
+  - keep H100 as the validated target for batch size `8`
+  - if A30 must be used, relaunch with a lower `--batch-size`, likely `4` or
+    smaller
+
+### Documentation Updated
+
+- Updated `.handoff.md` with the latest baton state.
+- Updated `report.md` with completed `185428`, `185429`, and `185430` metrics
+  and the new current-best interpretation.
+- Updated `docs/juno_migration.md` to record the observed A30 batch-size-8 OOM.
+
+### Status
+
+[OK] **RPC4 Completed; A30 bs8 Failed**
+
 ## Session 116: Upgrade Juno ad PyTorch for H100 and relaunch ratio 0.05
 
 **Date**: 2026-04-28
