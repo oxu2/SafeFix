@@ -5,6 +5,145 @@
 
 ---
 
+## Session 134: Record Juno brown-rainy baseline partial results and install CLI helpers
+
+**Date**: 2026-04-29
+**Task**: juno-brown-rainy-baseline-report-and-cli-tools
+
+### Summary
+
+Recorded the stable completed portion of the Juno brown-rainy baseline ratio
+sweep in `report.md` and installed small user-local CLI helpers on Juno for
+faster future log and metrics inspection.
+
+### What Changed
+
+- Updated `report.md` with completed Juno job `185516` baseline results for
+  ratios `0.05`, `0.1`, and `0.3`.
+- Added a new report section:
+  `04/29/2026 Update — Juno Brown-Rainy Baseline Ratio Sweep Partial Results`.
+- Recorded the common Juno setup:
+  - active job: `185516` (`br-base-1gpu`)
+  - one H100 on `g-04-02`
+  - base checkpoint:
+    `/home/oxx220000/scratch/safefix_cache/log_pose/pose_keypointrcnn_train20k_internvl3_bs8_e2_rare1p1_gpu0_20260415_144530/best.pth`
+  - generated brown-rainy source:
+    `/home/oxx220000/scratch/safefix_cache/data/coco-pose-weather-edits/generated_coco_qwen3_1500_brown_rain_icedit`
+  - batch size `8`, seed `42`, two total epochs
+- Installed user-local helper binaries on Juno under `~/.local/bin`:
+  - `rg` / ripgrep `14.1.1`
+  - `jq` `1.7.1`
+  - `fd` `10.2.0`
+- No conda environment was modified. Interactive Juno shells already include
+  `~/.local/bin` in PATH; non-interactive SSH commands can use
+  `PATH="$HOME/.local/bin:$PATH"` when needed.
+
+### Key Completed Results
+
+- Best completed test AP so far:
+  - `ratio=0.30`, `coreset`, test AP `0.6256`
+- Best completed validation AP so far:
+  - `ratio=0.30`, `stratified`, val AP `0.6324`
+- Completed test AP summary:
+  - `0.05`: random `0.5797`, stratified `0.5976`, coreset `0.5527`,
+    badge `0.5782`
+  - `0.10`: random `0.6048`, stratified `0.6110`, coreset `0.5877`,
+    badge `0.5985`
+  - `0.30`: random `0.6127`, stratified `0.6243`, coreset `0.6256`,
+    badge `0.6153`
+
+### Commands / Validation
+
+- Queried Juno metrics directly from:
+  - `/work/oxx220000/safefix/log_pose/pose_keypointrcnn_resume_qwen3_brown_rainy_*_ratio*_gpu0_20260429_*/test_metrics.json`
+  - `/work/oxx220000/safefix/log_pose/pose_keypointrcnn_resume_qwen3_brown_rainy_*_ratio*_gpu0_20260429_*/val_metrics_best.json`
+- Installed and verified:
+  - `rg --version`
+  - `jq --version`
+  - `fd --version`
+
+### Caveats / Next Steps
+
+- Ratios `0.5`, `0.7`, and `0.9` were not written to `report.md` yet because
+  they were not all complete at the time of this update.
+- Once job `185516` finishes, collect and append the remaining stable rows.
+- Current recommendation remains to prioritize a seed-stability rerun for
+  `ratio=0.30` `coreset` and `stratified` after the sweep completes.
+
+### Status
+
+[x] **Completed partial-result report update and Juno CLI helper install**
+
+### Follow-up Update: Missing Qwen3 Brown-Rainy Attribute Ratios
+
+- Added `scripts/juno_pose_brown_rainy_attribute_missing_ratio_pairs.sbatch`.
+- Purpose:
+  - fill missing Qwen3 brown-rainy `attribute` RPC rows for ratios `0.7` and
+    `0.9`
+  - keep at most two training processes active on one allocated H100
+  - start the next queued task as soon as any active task finishes, rather than
+    waiting for both active tasks
+- Default queue order interleaves ratios so the first two tasks are:
+  - `ratio=0.7`, `R=0.0`, `P=0.0`, `C=15.0`
+  - `ratio=0.9`, `R=0.0`, `P=0.0`, `C=15.0`
+- Standard RPC rows run for both `0.7` and `0.9`:
+  - `R=0.0`, `P=0.0`, `C=15.0`
+  - `R=0.01`, `P=0.5`, `C=15.0`
+  - `R=0.03`, `P=0.5`, `C=15.0`
+  - `R=0.03`, `P=0.5`, `C=8.0`
+- Added two extra `ratio=0.7` nonzero-`R/P` probes based on the report's
+  strong `ratio=0.7` attribute behavior:
+  - `R=0.01`, `P=0.5`, `C=0.0`
+  - `R=0.03`, `P=0.5`, `C=0.0`
+- Synced the script to Juno:
+  `/work/oxx220000/safefix/scripts/juno_pose_brown_rainy_attribute_missing_ratio_pairs.sbatch`
+- Validation:
+  - local `bash -n scripts/juno_pose_brown_rainy_attribute_missing_ratio_pairs.sbatch`
+  - remote Juno `bash -n`
+  - remote dry-run showed `queued_tasks=10` and the intended interleaved
+    `0.7` / `0.9` task order
+  - Juno Bash is `5.1.8`, compatible with the script's `wait -n -p` logic
+- Submitted to Juno:
+  - job id: `185548`
+  - job name: `br-attr-miss`
+  - state at submit: `PENDING`
+  - pending alongside active baseline sweep `185516`
+- Monitor:
+  - `ssh juno 'squeue -j 185548 -o "%.18i %.9P %.28j %.8T %.10M %.6D %R"'`
+  - once running:
+    `ssh juno 'cd /work/oxx220000/safefix && tail -f slurm-br-attr-miss-185548.out'`
+
+### Follow-up Update: Report Current Completed Juno / Local Results
+
+- Updated `report.md` again so the top brown-rainy snapshot now reflects all
+  stable completed Juno results available at the check time.
+- Baseline job `185516` was still running, but ratios `0.05`, `0.1`, `0.3`,
+  and `0.5` were complete and are now recorded in the top baseline table.
+- Newly added baseline `ratio=0.5` rows:
+  - `random`: val AP `0.6251`, test AP `0.6219`
+  - `stratified`: val AP `0.6343`, test AP `0.6230`
+  - `coreset`: val AP `0.6248`, test AP `0.6167`
+  - `badge`: val AP `0.6300`, test AP `0.6206`
+- Added a top-level Juno Qwen3 brown-rainy attribute table covering:
+  - completed `ratio=0.05` conservative row
+  - completed `ratio=0.10` RPC rows
+  - completed `ratio=0.30` RPC rows
+  - completed `ratio=0.50` RPC rows
+  - completed `ratio=0.70` conservative row from job `185548`
+  - completed `ratio=0.90` conservative row from job `185548`
+- Best completed Juno brown-rainy result at this checkpoint:
+  - `attribute`, `ratio=0.70`, `R=0.00`, `P=0.0`, `C=15.0`
+  - val AP `0.6364`, test AP `0.6313`
+- Best completed baseline result remains:
+  - `ratio=0.30`, `coreset`, test AP `0.6256`
+- Active jobs during the update:
+  - `185516` (`br-base-1gpu`), `RUNNING`
+  - `185548` (`br-attr-miss`), `RUNNING`
+- Local completed results already preserved in `report.md` include the KITTI
+  YOLOv8n batch-size-16 run and its KITTI slice analysis, plus the older local
+  InternVL3 COCO pose comparison sections; no new local result files newer than
+  those stable report sections were identified for this brown-rainy update.
+
 ## Session 133: Run standalone KITTI slice analysis for YOLOv8n batch-size-16
 
 **Date**: 2026-04-29
