@@ -8,8 +8,8 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-1.md`
-- **Total Sessions**: 14
-- **Last Active**: 2026-04-12
+- **Total Sessions**: 119
+- **Last Active**: 2026-04-28
 <!-- @@@/auto:current-status -->
 
 ---
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~380 | Active |
+| `journal-1.md` | 9201 | Active; exceeds nominal 2000-line rotation limit |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +29,9 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits |
 |---|------|-------|---------|
+| 119 | 2026-04-28 | Prepare RTMPose Tiny A30 evaluation with qwen3/internvl3/blip analysis | - |
+| 118 | 2026-04-28 | Submit Juno brown-rainy ratio 0.3 and 0.5 RPC4 H100 jobs | - |
+| 117 | 2026-04-28 | Check Juno brown-rainy RPC results and update docs | - |
 | 1 | 2026-04-12 | COCO Gemini attribute assignment and report consolidation | - |
 | 2 | 2026-04-12 | Two-week project context digest for future agents | - |
 | 3 | 2026-04-12 | Pose 20k held-out slice-analysis report update | - |

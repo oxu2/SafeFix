@@ -18,8 +18,10 @@ SafeFix COCO pose experiments.
   - `a30-4.6gb`: quarter A30 virtual GPU, 6 GB VRAM.
 
 For the current Keypoint R-CNN COCO pose resume jobs, use `h100` first. `a30`
-may work with lower `--batch-size`, but the existing runs were validated with
-batch size `8` on UTD server GPUs.
+may work with lower `--batch-size`, but batch size `8` is not a safe A30
+default: Juno probe `185433` failed on `a30` with CUDA OOM during backward after
+reporting about `23.49 GiB` usable GPU memory. Retry A30 only with a lower
+`--batch-size`, such as `4` or smaller.
 
 ## Current Run Dependencies Not Covered By Git
 
