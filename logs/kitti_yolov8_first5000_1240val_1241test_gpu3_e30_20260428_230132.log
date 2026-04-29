@@ -1,0 +1,21 @@
+Current time: 0428230132
+Training start timestamp: 2026-04-28 23:01:32
+Traceback (most recent call last):
+  File "object_detection/train_yolov8_kitti.py", line 85, in main
+    from ultralytics import YOLO
+  File "/people/cs/o/oxx220000/.local/lib/python3.8/site-packages/ultralytics/__init__.py", line 13, in <module>
+    from ultralytics.utils import ASSETS, SETTINGS
+  File "/people/cs/o/oxx220000/.local/lib/python3.8/site-packages/ultralytics/utils/__init__.py", line 26, in <module>
+    import torch
+  File "/people/cs/o/oxx220000/.local/lib/python3.8/site-packages/torch/__init__.py", line 290, in <module>
+    from torch._C import *  # noqa: F403
+ImportError: /people/cs/o/oxx220000/.local/lib/python3.8/site-packages/torch/lib/../../nvidia/cusparse/lib/libcusparse.so.12: undefined symbol: __nvJitLinkAddData_12_1, version libnvJitLink.so.12
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "object_detection/train_yolov8_kitti.py", line 149, in <module>
+    main()
+  File "object_detection/train_yolov8_kitti.py", line 87, in main
+    raise ImportError(
+ImportError: ultralytics is required. Install with: pip install ultralytics

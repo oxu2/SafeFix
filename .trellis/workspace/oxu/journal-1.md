@@ -5,6 +5,254 @@
 
 ---
 
+## Session 123: Correct KITTI YOLOv8 GPU placement and environment notes
+
+**Date**: 2026-04-28
+**Task**: kitti-yolov8-gpu3-fp-env-batch
+
+### Summary
+
+Fixed the local KITTI YOLOv8n launch so it actually runs on physical GPU `3`,
+exported the working `fp` conda environment, and documented the recommended
+future KITTI environment and batch settings.
+
+### What Changed
+
+- Killed earlier mistaken KITTI launches that landed on physical GPU `0`.
+- Root cause:
+  - `CUDA_VISIBLE_DEVICES=3` was set in the shell, but the helper passed
+    Ultralytics `--device 0`.
+  - Ultralytics rewrites `CUDA_VISIBLE_DEVICES` from its `device` argument, so
+    `--device 0` sent the run to physical GPU `0`.
+- Updated `scripts/launch_kitti_yolov8_gpu3_e30.sh`:
+  - `conda activate fp`
+  - `CUDA_DEVICE_ORDER=PCI_BUS_ID`
+  - `CUDA_VISIBLE_DEVICES=3`
+  - Ultralytics `--device 3`
+  - `batch=64`
+  - `--plots false`
+- Updated `object_detection/train_yolov8_kitti.py` with a `--plots` flag and
+  passes it through to `model.train(...)`.
+- Exported the conda environment:
+  - `utils/fp-kitti-env.yml`
+- Updated `.gitignore`:
+  - KITTI `.log` files are no longer ignored.
+  - `.pid`, `.png`, `.jpg`, and `.jpeg` files remain ignored.
+  - KITTI `args.yaml`, `results.csv`, `weights/best.pt`, and
+    `weights/last.pt` can be tracked.
+- Updated `object_detection/README.md` with the `fp` environment, GPU3 launch
+  behavior, moderate `batch=64` recommendation, plots/checkpoint behavior, and
+  checkpoint size note.
+
+### Active Run
+
+- PID: `219998`
+- Log:
+  `logs/kitti_yolov8_first5000_1240val_1241test_gpu3_e30_20260428_231728.log`
+- Output directory:
+  `runs/kitti_yolov8/first5000_1240val_1241test_gpu3_e30_20260428_231728`
+- Verified GPU placement:
+  - physical GPU index `3`
+  - UUID `GPU-e3ce52a2-3737-fae7-a3bd-9adfee05cbc5`
+- Settings:
+  - pretrained `weights/yolov8n.pt`
+  - `epochs=30`
+  - `batch=64`
+  - `imgsz=640`
+  - `workers=4`
+  - `plots=False`
+- Early checkpoint files exist after epoch 1:
+  - `weights/best.pt`: about `18.4 MB`
+  - `weights/last.pt`: about `18.4 MB`
+- Current YOLOv8n checkpoints are below GitHub's `100 MB` hard file limit.
+
+### Caveats
+
+- The active KITTI run is still in progress; do not update `report.md` until
+  final validation and test metrics complete.
+- `batch=64` was chosen as a moderate pretrained fine-tuning setting. It uses
+  less memory than `batch=112` but gives more normal optimization behavior and
+  more steps per epoch.
+
+### Status
+
+[~] **KITTI YOLOv8n pretrained GPU3 run in progress**
+
+## Session 122: Relaunch KITTI YOLOv8n 5000/1240/1241 split on GPU 3
+
+**Date**: 2026-04-28
+**Task**: kitti-yolov8-5000-1240-1241-gpu3
+
+### Summary
+
+Reprepared the local KITTI YOLO dataset to match the documented
+`5000 / 1240 / 1241` split and launched a pretrained YOLOv8n training run on
+physical GPU `3`.
+
+### Split Preparation
+
+- Ran:
+  - `python3 object_detection/prepare_kitti_yolo.py --kitti-root /data/oxx220000/kitti_object --output-root /data/oxx220000/kitti_yolov8_first5000 --subset-size 5000 --val-size 1240`
+- Verified actual split files:
+  - `train_ids.txt`: `5000`
+  - `val_ids.txt`: `1240`
+  - `test_ids.txt`: `1241`
+- Verified YAML now includes:
+  - `train: images/train`
+  - `val: images/val`
+  - `test: images/test`
+  - `names: ['Car', 'Pedestrian']`
+- Removed stale Ultralytics cache files from the older `5000 / 500 / no-test`
+  setup before launching training:
+  - `/data/oxx220000/kitti_yolov8_first5000/labels/train.cache`
+  - `/data/oxx220000/kitti_yolov8_first5000/labels/val.cache`
+
+### Environment Choice
+
+- The earlier successful KITTI YOLOv8 run was not using local `ad`.
+- Checked local environments:
+  - `ad`: Torch imports, but `ultralytics` is missing.
+  - `qwen`: has a CUDA `libcusparse` / `libnvJitLink` symbol issue.
+  - system `python3`: Python `3.8`, has Ultralytics but the same CUDA symbol
+    issue.
+  - `fp`: Python `3.10.18`, Torch `2.9.1+cu128`, Ultralytics import OK.
+- Therefore the new run uses `fp`, matching the earlier successful log's
+  Python/Torch family.
+
+### Training Launch
+
+- Added launch helper:
+  - `scripts/launch_kitti_yolov8_gpu3_e30.sh`
+- Effective training settings:
+  - pretrained YOLOv8n: `weights/yolov8n.pt`
+  - `epochs=30`
+  - `batch=4`
+  - `imgsz=640`
+  - `workers=4`
+  - `CUDA_VISIBLE_DEVICES=3`
+  - Ultralytics `--device 0`, which maps to physical GPU `3`
+- Live run:
+  - PID: `205430`
+  - log:
+    `logs/kitti_yolov8_first5000_1240val_1241test_gpu3_e30_20260428_230512.log`
+  - output directory:
+    `runs/kitti_yolov8/first5000_1240val_1241test_gpu3_e30_20260428_230512`
+- The log header confirms:
+  - Ultralytics `8.4.33`
+  - Python `3.10.18`
+  - Torch `2.9.1+cu128`
+  - `batch=4`
+  - `epochs=30`
+  - `data=/data/oxx220000/kitti_yolov8_first5000/kitti_first5000.yaml`
+
+### Caveats
+
+- A first attempted default-`python3` launch failed before training due to a
+  Torch/CUDA symbol error; log:
+  `logs/kitti_yolov8_first5000_1240val_1241test_gpu3_e30_20260428_230132.log`.
+- A second early run started with a relative project path and was stopped
+  immediately because Ultralytics placed output under
+  `runs/detect/runs/kitti_yolov8/...`; canonical relaunch is PID `205430`.
+- `report.md` was not updated because the new test metrics are not complete yet.
+
+### Status
+
+[~] **KITTI YOLOv8n GPU3 run in progress**
+
+## Session 121: Document previous RTMPose Tiny result in report
+
+**Date**: 2026-04-29
+**Task**: document-previous-rtmpose-tiny-result
+
+### Summary
+
+Located the previous completed RTMPose Tiny COCO pose evaluation in local logs
+and added a top-of-file summary to `report.md`.
+
+### Result Source
+
+- Completed metric log:
+  `log_pose/rtmpose_tiny_coco_gpu3_probe/20260403_131401/20260403_131401.log`
+- Metric JSON:
+  `log_pose/rtmpose_tiny_coco_gpu3_probe/20260403_131401/20260403_131401.json`
+- Config snapshot:
+  `log_pose/rtmpose_tiny_coco_gpu3_probe/20260403_131401/vis_data/config.py`
+- Related but not result-bearing:
+  - `log_pose/NA/rtmpose_tiny_coco_gpu3_20260403_131338.log` is empty.
+  - `log_pose/rtmpose_tiny_coco_gpu3_latest/20260403_131220/20260403_131220.log`
+    has setup/config output but no final COCO metric line.
+
+### Metrics
+
+- COCO keypoint AP: `0.6966775579701486`
+- AP50: `0.9056114938423302`
+- AP75: `0.7755176193877302`
+- AR: `0.7254250629722923`
+
+### Caveats
+
+- This was a top-down MMPose COCO-val evaluation using COCO ground-truth person
+  boxes through `CocoDataset`; do not compare it directly to detector-inclusive
+  Keypoint R-CNN held-out AP.
+- The newer Juno A30 RTMPose Tiny job `185461` was still `PENDING (Resources)`
+  when checked, so it has no completed result yet.
+
+### Download Note
+
+- The Hugging Face `BZNR3/coco-pose-weather-edits` local download was started
+  to restore the brown/rainy generated data under
+  `/data/oxx220000/coco-pose-weather-edits`.
+- The first foreground download reached roughly 1000 files and then stopped on
+  Hugging Face HTTP `429 Too Many Requests` due to the 1000 requests / 5 minutes
+  limit. It can be resumed with the same `hf download` command after the limit
+  cools down.
+- A second foreground resume with `--max-workers 1` progressed past the first
+  interruption and was then moved to a background process:
+  - PID: `187178`
+  - log: `logs/hf_download_coco_pose_weather_edits_resume_20260428_224913.log`
+  - latest checked local file count under
+    `generated_coco_qwen3_1500_brown_rain`: about `1848`
+
+### Status
+
+[x] **Previous RTMPose Tiny local result documented**
+
+## Session 120: Confirm Juno brown-rainy ratio 0.1 completion in report
+
+**Date**: 2026-04-28
+**Task**: confirm-juno-ratio01-report
+
+### Summary
+
+Rechecked the Juno SLURM accounting state for the completed Qwen3 brown-rainy
+`ratio=0.1` RPC jobs and updated the human-facing report with final job states.
+
+### Juno Confirmation
+
+Command:
+
+```bash
+ssh juno 'sacct -j 185427,185428,185429,185430 --format=JobID,JobName%32,Partition,State,ExitCode,Elapsed,NodeList -P'
+```
+
+Results:
+
+- `185427`: `COMPLETED`, exit code `0:0`, elapsed `00:09:14`, node `g-04-02`
+- `185428`: `COMPLETED`, exit code `0:0`, elapsed `00:09:01`, node `g-04-02`
+- `185429`: `COMPLETED`, exit code `0:0`, elapsed `00:09:03`, node `g-04-02`
+- `185430`: `COMPLETED`, exit code `0:0`, elapsed `00:08:40`, node `g-04-02`
+
+### Documentation Updated
+
+- Updated `report.md` under the `04/28/2026 Update — Juno Qwen3 Brown-Rainy
+  Ratio 0.1 RPC Results` section with final SLURM accounting confirmation.
+- Did not update `.handoff.md` because the active baton did not change; the
+  ratio `0.1` results were already listed there as complete.
+
+### Status
+
+[x] **Ratio 0.1 RPC jobs confirmed complete in report**
+
 ## Session 119: Prepare RTMPose Tiny A30 evaluation with qwen3/internvl3/blip analysis
 
 **Date**: 2026-04-28

@@ -1,7 +1,61 @@
+# 04/29/2026 Update — Previous RTMPose Tiny COCO Pose Result
+
+- The only completed previous RTMPose Tiny COCO pose result currently present
+  in the local repo is the 2026-04-03 GPU3 probe:
+  - metric log:
+    `log_pose/rtmpose_tiny_coco_gpu3_probe/20260403_131401/20260403_131401.log`
+  - metric JSON:
+    `log_pose/rtmpose_tiny_coco_gpu3_probe/20260403_131401/20260403_131401.json`
+  - config snapshot:
+    `log_pose/rtmpose_tiny_coco_gpu3_probe/20260403_131401/vis_data/config.py`
+- Evaluation setup from the log/config:
+  - checkpoint:
+    `pose_estimation/rtmpose_assets/rtmpose-tiny_simcc-coco_pt-aic-coco_420e-256x192-e613ba3f_20230127.pth`
+  - COCO annotation:
+    `/data/oxx220000/coco/annotations/person_keypoints_val2017.json`
+  - data root: `/data/oxx220000/coco/`
+  - batch size: `8`
+  - seed: `21`
+  - GPU: `NVIDIA RTX A5000`
+  - runtime: Python `3.9.20`, PyTorch `1.13.1+cu117`,
+    TorchVision `0.14.1+cu117`, MMEngine `0.10.7`
+- Completed COCO keypoint metrics:
+  - AP: `0.6966775579701486`
+  - AP50: `0.9056114938423302`
+  - AP75: `0.7755176193877302`
+  - AP(M): `0.6734239791412847`
+  - AP(L): `0.7385393035542115`
+  - AR: `0.7254250629722923`
+  - AR50: `0.9151448362720404`
+  - AR75: `0.7950251889168766`
+  - AR(M): `0.6931439497405082`
+  - AR(L): `0.773950204384987`
+- Related paths without a completed metric:
+  - `log_pose/NA/rtmpose_tiny_coco_gpu3_20260403_131338.log` exists but is
+    empty.
+  - `log_pose/rtmpose_tiny_coco_gpu3_latest/20260403_131220/20260403_131220.log`
+    contains setup/config output but no final COCO metric line.
+  - The newer Juno A30 RTMPose Tiny job `185461` was still `PENDING
+    (Resources)` at the latest check, so it has no result yet.
+- Interpretation note:
+  - This RTMPose Tiny result is a top-down COCO-val evaluation using COCO
+    ground-truth person boxes through MMPose `CocoDataset`; treat the AP as a
+    pose-quality reference, not as a detector-inclusive number directly
+    comparable to the Keypoint R-CNN held-out AP rows.
+
 # 04/28/2026 Update — Juno Qwen3 Brown-Rainy Ratio 0.1 RPC Results
 
 - All four Juno Qwen3 brown-rainy `ratio=0.1` RPC runs completed
   successfully.
+- Final SLURM accounting confirmation on Juno:
+  - `185427`: `COMPLETED`, exit code `0:0`, elapsed `00:09:14`, node
+    `g-04-02`
+  - `185428`: `COMPLETED`, exit code `0:0`, elapsed `00:09:01`, node
+    `g-04-02`
+  - `185429`: `COMPLETED`, exit code `0:0`, elapsed `00:09:03`, node
+    `g-04-02`
+  - `185430`: `COMPLETED`, exit code `0:0`, elapsed `00:08:40`, node
+    `g-04-02`
 - Common setup for this sweep:
   - base AP for comparison: `0.5902`
   - selected original samples: `2000`

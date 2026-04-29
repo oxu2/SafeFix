@@ -2,6 +2,10 @@
 __pycache__/
 .pytest_cache/
 .DS_Store
+*.pid
+*.png
+*.jpg
+*.jpeg
 
 # Weights
 *.pth
@@ -35,7 +39,8 @@ log_pose/base_reference/*
 /safefix_*
 
 # Logs
-logs/
+logs/*
+!logs/*kitti*.log
 
 # IDE & AI Tools
 .vscode
@@ -48,6 +53,14 @@ logs/
 # Other
 tasks/
 runs/*
+!runs/kitti_yolov8/
+runs/kitti_yolov8/*
+!runs/kitti_yolov8/first5000*/
+!runs/kitti_yolov8/first5000*/args.yaml
+!runs/kitti_yolov8/first5000*/results.csv
+!runs/kitti_yolov8/first5000*/weights/
+!runs/kitti_yolov8/first5000*/weights/last.pt
+!runs/kitti_yolov8/first5000*/weights/best.pt
 *.npy
 
 TMLR_26_SafeFix

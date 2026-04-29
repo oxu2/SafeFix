@@ -40,33 +40,66 @@ This writes:
 
 ## 3) Train YOLOv8
 
+Use the local `fp` conda environment for KITTI YOLOv8 runs. The exported
+environment snapshot is `utils/fp-kitti-env.yml`.
+
+For the current local GPU workstation, prefer the launch helper when running on
+physical GPU 3:
+
+```bash
+bash scripts/launch_kitti_yolov8_gpu3_e30.sh
+```
+
+The helper uses `conda activate fp`, `CUDA_DEVICE_ORDER=PCI_BUS_ID`, and
+Ultralytics `--device 3`. Do not change the Ultralytics device argument back to
+`0` for this host; Ultralytics rewrites `CUDA_VISIBLE_DEVICES` from that value,
+which sends the job to physical GPU 0.
+
+For pretrained YOLOv8n fine-tuning at `imgsz=640` on a 24 GB RTX A5000,
+`batch=64` is the current local default. It is less aggressive than targeting
+maximum memory occupancy while still avoiding the very low throughput of
+`batch=4`. Ultralytics documents `batch=16` as a normal fixed-size example and
+`batch=-1` as AutoBatch for roughly 60% CUDA memory use when that is desired.
+
 Pretrained baseline:
 
 ```bash
+conda activate fp
 python3 object_detection/train_yolov8_kitti.py \
   --data-yaml /data/oxx220000/kitti_yolov8_first5000/kitti_first5000.yaml \
   --pretrained true \
-  --weights yolov8n.pt \
+  --weights weights/yolov8n.pt \
   --epochs 100 \
-  --batch 16 \
+  --batch 64 \
   --imgsz 640 \
-  --device 0
+  --device 3
 ```
 
 From scratch:
 
 ```bash
+conda activate fp
 python3 object_detection/train_yolov8_kitti.py \
   --data-yaml /data/oxx220000/kitti_yolov8_first5000/kitti_first5000.yaml \
   --pretrained false \
   --model-cfg yolov8n.yaml \
   --epochs 100 \
-  --batch 16 \
+  --batch 64 \
   --imgsz 640 \
-  --device 0
+  --device 3
 ```
 
 After training, the script will also run `model.val(split="test")` automatically when the dataset yaml includes a `test:` entry.
+
+Ultralytics writes resumable artifacts under
+`runs/kitti_yolov8/<run-name>/weights/`. Resume from
+`weights/last.pt`; use `weights/best.pt` for evaluation or model selection.
+The previous completed local run
+`runs/kitti_yolov8/first5000_gpu1_e30_20260409_194735/` has both files. A new
+run only has `args.yaml` until it reaches the first checkpoint save point.
+For the current YOLOv8n KITTI run, `best.pt` and `last.pt` are about `18.4 MB`
+each, below GitHub's 100 MB hard file limit. Larger model families can exceed
+that limit and should be checked before tracking.
 
 ## Dependencies
 
