@@ -1,3 +1,68 @@
+# 04/29/2026 Update — KITTI YOLOv8n 5000/1240/1241 Result
+
+- Completed the local KITTI object-detection run using YOLOv8n pretrained
+  weights.
+- Dataset split:
+  - train: `5000`
+  - val: `1240`
+  - test: `1241`
+  - classes: `Car`, `Pedestrian`
+- Training setup:
+  - script: `object_detection/train_yolov8_kitti.py`
+  - launch helper: `scripts/launch_kitti_yolov8_gpu3_e30.sh`
+  - environment: local `fp` conda; exported snapshot:
+    `utils/fp-kitti-env.yml`
+  - pretrained weights: `weights/yolov8n.pt`
+  - epochs: `30`
+  - batch size: `64`
+  - image size: `640`
+  - GPU: physical GPU `3`
+  - Ultralytics: `8.4.33`
+  - Python: `3.10.18`
+  - PyTorch: `2.9.1+cu128`
+- Canonical artifacts:
+  - log:
+    `logs/kitti_yolov8_first5000_1240val_1241test_gpu3_e30_20260428_231728.log`
+  - run directory:
+    `runs/kitti_yolov8/first5000_1240val_1241test_gpu3_e30_20260428_231728`
+  - final test evaluation directory:
+    `runs/kitti_yolov8/first5000_1240val_1241test_gpu3_e30_20260428_231728_test`
+  - checkpoint for resume:
+    `runs/kitti_yolov8/first5000_1240val_1241test_gpu3_e30_20260428_231728/weights/last.pt`
+  - best checkpoint:
+    `runs/kitti_yolov8/first5000_1240val_1241test_gpu3_e30_20260428_231728/weights/best.pt`
+- Runtime:
+  - training: `621.63 s` (`00:10:22`)
+  - final test evaluation: `34.57 s` (`00:00:35`)
+- Final validation metrics after epoch 30:
+  - precision: `0.8512`
+  - recall: `0.7332`
+  - mAP50: `0.8212`
+  - mAP50-95: `0.5620`
+- Final held-out test metrics:
+
+| Class | Images | Instances | Precision | Recall | mAP50 | mAP50-95 |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| all | `1241` | `5369` | `0.8650` | `0.7433` | `0.8422` | `0.5801` |
+| Car | `1107` | `4666` | `0.908` | `0.889` | `0.945` | `0.7478` |
+| Pedestrian | `283` | `703` | `0.822` | `0.598` | `0.739` | `0.4125` |
+
+- Checkpoint size:
+  - `best.pt` and `last.pt` are each about `6.2 MB`, below GitHub's `100 MB`
+    hard per-file limit.
+- Attribute-analysis status:
+  - Found qwen3, internvl3, and blip attribute JSONs for COCO pose, e.g.
+    `save/attribute_coco_pose_gemini_train20k_qwen3_8B.json`,
+    `save/attribute_coco_pose_gemini_train20k_internvl3_8B.json`, and
+    `save/attribute_coco_pose_gemini_train20k_blip.json`.
+  - Did not find KITTI-specific qwen3, internvl3, or blip attribute JSONs.
+  - Did not run qwen3/internvl3/blip slice analysis for KITTI because the
+    available JSONs are COCO pose metadata and the existing
+    `utils/stat_pose_estimation.py` analysis is COCO keypoint-specific.
+  - A KITTI attribute corpus exists at `save/corpus_kitti_object_gpt.json`, but
+    KITTI attribute assignment artifacts still need to be generated before
+    object-detection slice analysis can be run.
+
 # 04/29/2026 Update — Previous RTMPose Tiny COCO Pose Result
 
 - The only completed previous RTMPose Tiny COCO pose result currently present

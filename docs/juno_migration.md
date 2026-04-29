@@ -39,12 +39,11 @@ For independent single-GPU experiment sweeps:
 
 - Keep H100-only or H100-sensitive jobs on `h100` when the workload needs H100
   memory or speed.
-- Submit some jobs to `a30` only after confirming the workload fits A30 memory
-  and the slower runtime is acceptable.
-- For this repo's current Keypoint R-CNN COCO pose resume jobs, `h100` remains
-  the validated default at `--batch-size 8`. The A30 probe job `185433` failed
-  with CUDA OOM at `--batch-size 8`, so A30 should be retried with lower
-  `--batch-size`, such as `4` or smaller.
+- For COCO training and COCO pose resume jobs in this repo, use `h100` only.
+  Do not plan COCO runs on `a30` by default because memory is the limiting
+  resource. The A30 probe job `185433` failed with CUDA OOM at
+  `--batch-size 8`, and the current project policy is to reserve A30 only for
+  smaller non-COCO work or explicit memory-fit probes.
 - Prefer smaller batches of submissions, for example `2` to `4` jobs at a time,
   instead of filling all `8` submitted slots when the queue is congested.
 - Monitor both partitions before and after submission, then move only jobs that
