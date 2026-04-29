@@ -43,6 +43,12 @@ def parse_args():
     parser.add_argument("--name", type=str, default="first5000")
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument(
+        "--plots",
+        type=str2bool,
+        default=False,
+        help="Save Ultralytics diagnostic plots and batch images.",
+    )
+    parser.add_argument(
         "--eval-test",
         type=str2bool,
         default=True,
@@ -102,6 +108,7 @@ def main():
         name=args.name,
         seed=args.seed,
         pretrained=args.pretrained,
+        plots=args.plots,
     )
     train_elapsed = time.time() - train_start_time
     overall_elapsed = time.time() - overall_start_time
