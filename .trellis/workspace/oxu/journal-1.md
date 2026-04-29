@@ -86,6 +86,18 @@ sequential H100 sweep wrapper for the `ratio=0.3` and `ratio=0.5` RPC settings.
   - `/home/oxx220000/scratch/safefix_cache/log_pose/pose_keypointrcnn_train20k_internvl3_bs8_e2_rare1p1_gpu0_20260415_144530/best.pth`
 - Updated `docs/juno_migration.md` with the sequential wrapper command and
   table of RPC settings.
+- Synced the wrapper to Juno:
+  - `/work/oxx220000/safefix/scripts/juno_pose_brown_rainy_rpc03_05_sweep.sbatch`
+- Juno-side checks passed:
+  - `bash -n scripts/juno_pose_brown_rainy_rpc03_05_sweep.sbatch`
+  - `bash scripts/juno_pose_brown_rainy_rpc03_05_sweep.sbatch --dry-run`
+- Submitted the sequential H100 job:
+  - job id: `185496`
+  - partition: `h100`
+  - job name: `br-rpc03-05-seq`
+  - latest checked state: `PENDING`, reason `(Resources)`
+  - stdout: `/work/oxx220000/safefix/slurm-br-rpc03-05-seq-185496.out`
+  - stderr: `/work/oxx220000/safefix/slurm-br-rpc03-05-seq-185496.err`
 
 ### Caveats
 
@@ -95,7 +107,59 @@ sequential H100 sweep wrapper for the `ratio=0.3` and `ratio=0.5` RPC settings.
 
 ### Status
 
-[~] **Sequential Juno RPC wrapper prepared**
+[~] **Sequential Juno RPC job submitted**
+
+## Session 126: Cancel A30 RTMPose job and compare partition pressure
+
+**Date**: 2026-04-29
+**Task**: cancel-a30-rtmpose-compare-h100-a30-queue
+
+### Summary
+
+Canceled the pending RTMPose Tiny A30 job and compared current A30 versus H100
+queue pressure on Juno.
+
+### What Changed
+
+- Canceled Juno job `185461`:
+  - job name: `rtmpose-tiny-a30`
+  - partition: `a30`
+  - final state: `CANCELLED by 777123`
+  - exit code: `0:0`
+  - elapsed: `00:00:00`
+- Current user queue after cancellation:
+  - `185496`: `h100`, `br-rpc03-05-seq`, `PENDING (Resources)`
+- Updated `.handoff.md` so future agents do not treat `185461` as active.
+
+### Queue Comparison
+
+- A30 has more queued users/jobs than H100 at the latest check.
+- A30 node allocation:
+  - `g-01-01`: `CfgTRES gres/gpu=2`, `AllocTRES gres/gpu=2`
+  - `g-02-01`: `CfgTRES gres/gpu=2`, `AllocTRES gres/gpu=2`
+- H100 node allocation:
+  - `g-04-02`: `CfgTRES gres/gpu=4`, `AllocTRES gres/gpu=3`, memory
+    `492G/500G` allocated
+  - `g-05-01`: `CfgTRES gres/gpu=1`, `AllocTRES gres/gpu=1`, memory
+    `500G/500G` allocated
+  - `g-06-01`: `CfgTRES gres/gpu=2`, `AllocTRES gres/gpu=1`, memory
+    `500G/500G` allocated
+
+### Interpretation
+
+- A30 is more directly GPU-saturated: all four A30 GPUs are allocated.
+- H100 has nominally unallocated GPUs on `g-04-02` and `g-06-01`, but the
+  remaining schedulability is blocked by memory pressure, which explains
+  `185496` staying `PENDING (Resources)`.
+- Project policy update:
+  - future COCO training and COCO pose resume jobs should use `h100` only
+  - do not use `a30` for COCO by default because memory is the limiting
+    resource
+  - reserve `a30` for smaller non-COCO work or explicit memory-fit probes
+
+### Status
+
+[x] **A30 job canceled; partition pressure compared**
 
 ## Session 123: Correct KITTI YOLOv8 GPU placement and environment notes
 
@@ -169,6 +233,42 @@ future KITTI environment and batch settings.
 ### Status
 
 [~] **KITTI YOLOv8n pretrained GPU3 run in progress**
+
+### Completion Update
+
+- The active KITTI run completed successfully.
+- Canonical log:
+  `logs/kitti_yolov8_first5000_1240val_1241test_gpu3_e30_20260428_231728.log`
+- Canonical run directory:
+  `runs/kitti_yolov8/first5000_1240val_1241test_gpu3_e30_20260428_231728`
+- Final test evaluation directory:
+  `runs/kitti_yolov8/first5000_1240val_1241test_gpu3_e30_20260428_231728_test`
+- Final held-out test metrics:
+  - all: precision `0.8650`, recall `0.7433`, mAP50 `0.8422`, mAP50-95
+    `0.5801`
+  - Car: precision `0.908`, recall `0.889`, mAP50 `0.945`, mAP50-95
+    `0.7478`
+  - Pedestrian: precision `0.822`, recall `0.598`, mAP50 `0.739`, mAP50-95
+    `0.4125`
+- Runtime:
+  - training `621.63 s` (`00:10:22`)
+  - final test evaluation `34.57 s` (`00:00:35`)
+- Checkpoints:
+  - `weights/best.pt`
+  - `weights/last.pt`
+  - both are about `6.2 MB`
+- Updated `report.md` with the completed KITTI result.
+- Searched for KITTI qwen3/internvl3/blip attribute JSONs and did not find any.
+  The existing qwen3/internvl3/blip JSONs are COCO pose metadata and are not
+  valid for KITTI object-detection analysis.
+- Did not run KITTI slice analysis because KITTI-specific attribute assignment
+  artifacts are missing. `save/corpus_kitti_object_gpt.json` exists as the
+  corpus/spec, but the actual assigned KITTI attribute JSONs still need to be
+  generated before analysis.
+
+### Status
+
+[x] **KITTI YOLOv8n pretrained GPU3 run completed and documented**
 
 ## Session 122: Relaunch KITTI YOLOv8n 5000/1240/1241 split on GPU 3
 
