@@ -1,0 +1,5 @@
+[2026-04-29 07:15:51] Launching CelebA instruct-pix2pix local queues, stamp=20260429_071551
+Generated:      data/redhair_brownskin_sademotion_instruct_pix2pix_seed42_1k
+Base model:     weights/model_celeba_resnet_base.pth
+Attribute file: save/attribute_celeba_trainval_qwen3_8B.json
+[2026-04-29 07:15:51] gpu=1 ratio=0.1 method=random log=logs_celeba/instructpix2pix_random_resnet_celeba_1000_ratio0p1_gpu1_20260429_071551.log

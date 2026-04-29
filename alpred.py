@@ -55,6 +55,63 @@ def _resolve_existing_path(*candidates):
     )
 
 
+def _first_existing_dir(*candidates):
+    """Return the first existing directory from an ordered candidate list."""
+    for candidate in candidates:
+        if candidate is None:
+            continue
+        path = Path(candidate).expanduser()
+        if path.is_dir():
+            return path
+    return None
+
+
+def _juno_scratch_data_dir(*parts):
+    return Path("/home/oxx220000/scratch/safefix_cache/data").joinpath(*parts)
+
+
+def _default_generated_dir(dataset, attributes):
+    """Resolve a generated-image directory, preferring recent Juno scratch copies."""
+    if dataset == "imagenet":
+        candidates = [
+            Path(f"data/{attributes}_instruct_pix2pix_seed42_1k"),
+            _juno_scratch_data_dir(f"imagenet_{attributes}_seed42_100perclass_1k"),
+            _juno_scratch_data_dir(f"{attributes}_instruct_pix2pix_seed42_1k"),
+            _juno_scratch_data_dir(f"{attributes}_instruct_pix2pix_seed42_100perclass_1k"),
+            _juno_scratch_data_dir(f"imagenet_{attributes}"),
+            Path(f"data/imagenet_{attributes}"),
+            Path(f"/data/oxx220000/imagenet_{attributes}"),
+        ]
+    else:
+        candidates = [
+            Path(f"data/hibug_{attributes}_seed42_1k"),
+            Path(f"data/{attributes}_instruct_pix2pix_seed42_1k"),
+            _juno_scratch_data_dir(f"hibug_{attributes}_seed42_1k"),
+            _juno_scratch_data_dir(f"{attributes}_instruct_pix2pix_seed42_1k"),
+            Path(f"exampleData/{attributes}"),
+            Path(f"/data/oxx220000/{attributes}"),
+        ]
+    return _first_existing_dir(*candidates)
+
+
+def _extract_celeba_base_id(generated_stem, attributes):
+    """Extract the original CelebA image id from Safefix or HiBUG generated names."""
+    if re.match(r"^\d+", generated_stem):
+        return generated_stem.split("_", 1)[0]
+
+    attr_prefix = f"{attributes}_"
+    if generated_stem.startswith(attr_prefix):
+        suffix = generated_stem[len(attr_prefix):].split("_")[-1]
+        if suffix.isdigit():
+            return suffix
+
+    trailing_digits = re.search(r"(\d+)$", generated_stem)
+    if trailing_digits:
+        return trailing_digits.group(1)
+
+    return None
+
+
 def _files_match(path_a, path_b, chunk_size=1024 * 1024):
     """Return True when two files have identical contents."""
     path_a = Path(path_a)
@@ -220,6 +277,8 @@ parser.add_argument('--feasible_file', type=str, default=None,
 #                     help='Use original dataset labels (default: False); if False, uses labels from feasible_file')
 parser.add_argument('--gen_image_dir', type=str, default=None,
                     help='(Optional) Directory containing generated images. Defaults to exampleData/<attributes>')
+parser.add_argument('--data_dir', type=str, default=None,
+                    help='(Optional) Source dataset directory. Defaults to Juno scratch copies when available, then local paths.')
 parser.add_argument('--pretrained', type=str2bool, default=False,
                     help='Use pre-trained weights (default: False)')
 parser.add_argument('--lr', type=float, default=1e-4,
@@ -427,6 +486,7 @@ overall_start_time = time.time()
 al_total_time = 0.0
 diag_labels_imagenet = None
 diag_split_imagenet = None
+predictions_for_diagnostics = None
 
 if args.attribute_file is None:
     args.attribute_file = str(dataset_default_attribute_path(args.dataset))
@@ -493,7 +553,8 @@ if args.no_controlnet:
     args.gen_image_dir = f"no_controlnet_{attributes}"
     print(f"Ablation mode enabled (ControlNet disabled): using image directory {args.gen_image_dir}")
 elif args.gen_image_dir is None:
-    args.gen_image_dir = f"exampleData/{attributes}"
+    default_generated_dir = _default_generated_dir(args.dataset, attributes)
+    args.gen_image_dir = str(default_generated_dir) if default_generated_dir else f"exampleData/{attributes}"
 
 verbose = args.verbose
 test_loader = None
@@ -635,13 +696,23 @@ else:
 
 if args.dataset == 'imagenet':
     # Ensure generated images directory uses the 'imagenet_' prefix
-    default_imagenet_gen_dir = f"data/imagenet_{attributes}"
-    if os.path.isdir(default_imagenet_gen_dir):
-        args.gen_image_dir = default_imagenet_gen_dir
-    elif not os.path.isdir(args.gen_image_dir):
-        args.gen_image_dir = default_imagenet_gen_dir
+    if args.gen_image_dir is None or not os.path.isdir(args.gen_image_dir):
+        default_imagenet_gen_dir = _default_generated_dir("imagenet", attributes)
+        if default_imagenet_gen_dir is not None:
+            args.gen_image_dir = str(default_imagenet_gen_dir)
     # Load ImageNet subset from folders
-    data_dir = Path("data/imagenet_subset")
+    data_dir = _first_existing_dir(
+        args.data_dir,
+        _juno_scratch_data_dir("imagenet_subset"),
+        Path("data/imagenet_subset"),
+    )
+    if data_dir is None:
+        raise FileNotFoundError(
+            "ImageNet source data directory not found. Pass --data_dir or copy it to "
+            f"{_juno_scratch_data_dir('imagenet_subset')}"
+        )
+    if verbose:
+        print(f"Using ImageNet source data directory: {data_dir}")
     feature_extractor = CLIPImageProcessor.from_pretrained("openai/clip-vit-base-patch32")
     if args.model == 'clip':
         train_transform = clip_processor_transform(feature_extractor)
@@ -794,20 +865,9 @@ if args.dataset == 'imagenet':
     elif not gen_use_generated and not args.simple:
         # Normal mode: generated-images + feasible filter (mirrors CelebA logic)
         # Determine generated-image directory: use default if exists, otherwise try fallbacks
-        default_gen_dir = f"data/imagenet_{attributes}"
-        fallback_dirs = [
-            f"/home/jovyan/ouser/imagenet_{attributes}",
-            f"/data/oxx220000/imagenet_{attributes}"
-        ]
-        if os.path.exists(default_gen_dir):
-            args.gen_image_dir = default_gen_dir
-        else:
-            for d in fallback_dirs:
-                if os.path.exists(d):
-                    args.gen_image_dir = d
-                    break
-            else:
-                args.gen_image_dir = default_gen_dir
+        if args.gen_image_dir is None or not os.path.exists(args.gen_image_dir):
+            default_gen_dir = _default_generated_dir("imagenet", attributes)
+            args.gen_image_dir = str(default_gen_dir) if default_gen_dir else f"data/imagenet_{attributes}"
         if verbose:
             print(f"Using generated image directory: {args.gen_image_dir}")
         if verbose:
@@ -1021,11 +1081,20 @@ elif args.dataset == 'celeba':
         lines = [line.strip('\n').split(' ')[0] for line in f.readlines()]
         
 
-    if os.path.exists('/home/jovyan/ouser/dataset/img_align_celeba/'):
-        input_dir = '/home/jovyan/ouser/dataset/img_align_celeba/'
-    else:
-        input_dir = '/data/oxx220000/img_align_celeba/'    
-    all_datas = [input_dir + line for line in lines][1:]
+    input_dir = _first_existing_dir(
+        args.data_dir,
+        _juno_scratch_data_dir("img_align_celeba"),
+        Path("/home/jovyan/ouser/dataset/img_align_celeba"),
+        Path("/data/oxx220000/img_align_celeba"),
+    )
+    if input_dir is None:
+        raise FileNotFoundError(
+            "CelebA source data directory not found. Pass --data_dir or copy it to "
+            f"{_juno_scratch_data_dir('img_align_celeba')}"
+        )
+    if verbose:
+        print(f"Using CelebA source data directory: {input_dir}")
+    all_datas = [str(input_dir / line) for line in lines][1:]
 
     train_idx = np.load("data/celebA/train_idx.npy")[:80000]
     split_cache_dir = "save"
@@ -1155,12 +1224,13 @@ elif args.dataset == 'celeba':
         else:
             import re  # ensure this import is at the top of the file
             all_files = os.listdir(args.gen_image_dir)
-            # Match files named "<digits>_<attribute>" or "<digits>_<attribute>_<seed>"
+            # Match Safefix names "<digits>_<attribute>[_seed]" and HiBUG names "<attribute>_<digits>".
             regex = re.compile(rf'^\d+_{re.escape(attributes)}(?:_\d+)?$')
+            hibug_regex = re.compile(rf'^{re.escape(attributes)}_\d+$')
             file_keys = [
                 os.path.splitext(f)[0]
                 for f in all_files
-                if regex.match(os.path.splitext(f)[0])
+                if regex.match(os.path.splitext(f)[0]) or hibug_regex.match(os.path.splitext(f)[0])
             ]
             sample_keys = file_keys
 
@@ -1197,7 +1267,7 @@ elif args.dataset == 'celeba':
             # In simple ablation mode, infer label from filename prefix: 'yes'->1, 'no'->0
             prefix = filename.split('_')[0].lower()
             lbl = 1 if prefix == 'yes' else 0
-            image_path = f"./{args.gen_image_dir}/{filename}{extension}"
+            image_path = str(Path(args.gen_image_dir) / f"{filename}{extension}")
             modified_image_paths.append(image_path)
             modified_image_labels.append(lbl)
             if verbose:
@@ -1206,7 +1276,7 @@ elif args.dataset == 'celeba':
         # Existing ablation or non-ablation logic follows...
         # Determine the correct extension based on ablation flag
         # Get the image file path...
-        image_path = f"./{args.gen_image_dir}/{filename}{extension}"
+        image_path = str(Path(args.gen_image_dir) / f"{filename}{extension}")
         if not os.path.exists(image_path):
             print(f"Warning: Modified image {image_path} not found.")
             continue
@@ -1219,7 +1289,10 @@ elif args.dataset == 'celeba':
                 print(f"Warning: Could not extract base number from ablation filename {filename}")
                 continue
         else:
-            base = filename.split('_')[0]
+            base = _extract_celeba_base_id(filename, attributes)
+            if base is None:
+                print(f"Warning: Could not extract base number from generated filename {filename}")
+                continue
         if args.no_controlnet and base is None:
             print(f"Debug: Ablation filename {filename} resulted in base=None")
             continue
@@ -1651,9 +1724,12 @@ def evaluate(model, data_loader, save_preds=False):
         return acc, np.array(all_preds), np.array(all_labels)
     return acc, avg_loss
 
-# After training, save predictions for each dataset
-def save_predictions(model, train_loader, valid_loader, test_loader=None):
-    print("Generating and saving predictions...")
+# After training, collect predictions for diagnostics and optionally save them.
+def save_predictions(model, train_loader, valid_loader, test_loader=None, write_file=True):
+    if write_file:
+        print("Generating and saving predictions...")
+    else:
+        print("Generating predictions in memory (--save_preds False).")
 
     # Get predictions for training set
     _, train_preds, _ = evaluate(model, train_loader, save_preds=True)
@@ -1752,17 +1828,21 @@ def save_predictions(model, train_loader, valid_loader, test_loader=None):
 
     # Use simple naming if in simple ablation mode
     pred_key = "simple" if args.no_controlnet and args.simple else attributes
-    pred_dir = canonical_save_path("pred")
-    os.makedirs(pred_dir, exist_ok=True)
-    np.save(
-        os.path.join(
-            pred_dir,
-            f"predictions_{args.dataset}_{args.model}_{pred_key}_{args.num_added_img}imgs{suffix}_{time_now}.npy",
-        ),
-        combined_preds
-    )
+    if write_file:
+        pred_dir = canonical_save_path("pred")
+        os.makedirs(pred_dir, exist_ok=True)
+        np.save(
+            os.path.join(
+                pred_dir,
+                f"predictions_{args.dataset}_{args.model}_{pred_key}_{args.num_added_img}imgs{suffix}_{time_now}.npy",
+            ),
+            combined_preds
+        )
+
+    return combined_preds
 
 def train_model(model, train_loader, valid_loader, criterion, optimizer, scheduler=None, num_epochs=20, test_loader=None):
+    global predictions_for_diagnostics
     # Track best validation performance
     best_val_acc = 0.0
     best_model_state = None
@@ -1899,12 +1979,13 @@ def train_model(model, train_loader, valid_loader, criterion, optimizer, schedul
         test_acc, test_loss = evaluate(model, test_loader)
         print(f"Model Test ACC: {test_acc:.4f}, test loss: {test_loss:.4f}")
 
-    # Save predictions after training (can be disabled with --save_preds False)
-    if args.save_preds:
-        save_predictions(model, train_loader, valid_loader, test_loader=test_loader)
-    else:
-        if verbose:
-            print("Skipping prediction saving (--save_preds False).")
+    predictions_for_diagnostics = save_predictions(
+        model,
+        train_loader,
+        valid_loader,
+        test_loader=test_loader,
+        write_file=args.save_preds,
+    )
     # Return training history for external use
     return train_loss_history, train_acc_history, val_loss_history, val_acc_history
 
@@ -2007,78 +2088,92 @@ prediction_file = str(
         f"pred/predictions_{args.dataset}_{args.model}_{attributes}_{args.num_added_img}imgs{suffix}_{time_now}.npy"
     )
 )
-predictions = np.load(prediction_file)
-run_diagnostics = True
-
-# Prepare labels and split for diagnostics based on dataset
-if args.dataset == 'imagenet':
-    # Prefer generated-mode labels if present, otherwise fall back to original split
-    if diag_labels_imagenet is not None and diag_split_imagenet is not None:
-        labels_to_diagnose = diag_labels_imagenet
-        split = diag_split_imagenet
+if not os.path.exists(prediction_file):
+    if predictions_for_diagnostics is not None:
+        print("Using in-memory predictions for diagnostics (--save_preds False).")
+        prediction_file = None
+        run_diagnostics = True
     else:
-        data_dir = Path("data/imagenet_subset")
-        full_ds = ImageFolder(data_dir)
-        labels_all = np.array(full_ds.targets)
-        expected_train = len(train_idx)
-        expected_val = len(val_idx)
-        expected_test = len(test_idx) if 'test_idx' in locals() else 0
-        total_predictions = len(predictions)
-        total_without_test = expected_train + expected_val
-        total_with_test = total_without_test + expected_test
-
-        if expected_test and total_predictions == total_with_test:
-            labels_to_diagnose = np.concatenate([labels_all[train_idx], labels_all[val_idx], labels_all[test_idx]])
-            split = [TRAIN] * expected_train + [VALID] * expected_val + [TEST] * expected_test
-        elif total_predictions == total_without_test:
-            labels_to_diagnose = np.concatenate([labels_all[train_idx], labels_all[val_idx]])
-            split = [TRAIN] * expected_train + [VALID] * expected_val
-            if expected_test:
-                print(
-                    "Warning: Predictions file omits test samples (expected total "
-                    f"{total_with_test}, got {total_predictions}). Diagnostics run on train+val only."
-                )
-        else:
-            print(
-                "Warning: Predictions length ({}) does not match expected counts ({}/{}).".format(
-                    total_predictions, total_without_test, total_with_test
-                )
-            )
-            labels_to_diagnose = np.concatenate([labels_all[train_idx], labels_all[val_idx]])
-            split = [TRAIN] * expected_train + [VALID] * expected_val
-elif args.dataset == 'celeba':
-    # CelebA attribute metadata only covers the original images, not generated samples.
-    # Saved predictions may include a generated-image segment, so strip it back out before diagnostics.
-    orig_train_count = len(train_labels)
-    valid_count = len(valid_labels)
-    test_count = len(test_labels)
-    unlabeled_count = len(unlabeled_labels)
-    generated_count = len(modified_image_labels)
-
-    labels_to_diagnose = np.concatenate((train_labels, valid_labels, test_labels, unlabeled_labels))
-    split = (
-        [TRAIN] * orig_train_count +
-        [VALID] * valid_count +
-        [TEST] * test_count +
-        [UNLABELED] * unlabeled_count
-    )
-
-    expected_original_total = len(labels_to_diagnose)
-    expected_with_generated = expected_original_total + generated_count
-
-    if generated_count > 0 and len(predictions) == expected_with_generated:
-        train_end = orig_train_count
-        valid_end = train_end + valid_count
-        test_end = valid_end + test_count
-        generated_end = test_end + generated_count
-        predictions = np.concatenate((predictions[:test_end], predictions[generated_end:]))
-    elif len(predictions) != expected_original_total:
-        print(
-            "Warning: Skipping CelebA diagnostics because predictions length "
-            f"({len(predictions)}) does not match expected original-only length "
-            f"({expected_original_total}) or generated-inclusive length ({expected_with_generated})."
-        )
+        print(f"Skipping model diagnostics because prediction file was not found: {prediction_file}")
+        prediction_file = None
         run_diagnostics = False
+else:
+    run_diagnostics = True
+
+if run_diagnostics:
+    if prediction_file is not None:
+        predictions = np.load(prediction_file)
+    else:
+        predictions = predictions_for_diagnostics
+
+    # Prepare labels and split for diagnostics based on dataset
+    if args.dataset == 'imagenet':
+        # Prefer generated-mode labels if present, otherwise fall back to original split
+        if diag_labels_imagenet is not None and diag_split_imagenet is not None:
+            labels_to_diagnose = diag_labels_imagenet
+            split = diag_split_imagenet
+        else:
+            full_ds = ImageFolder(data_dir)
+            labels_all = np.array(full_ds.targets)
+            expected_train = len(train_idx)
+            expected_val = len(val_idx)
+            expected_test = len(test_idx) if 'test_idx' in locals() else 0
+            total_predictions = len(predictions)
+            total_without_test = expected_train + expected_val
+            total_with_test = total_without_test + expected_test
+
+            if expected_test and total_predictions == total_with_test:
+                labels_to_diagnose = np.concatenate([labels_all[train_idx], labels_all[val_idx], labels_all[test_idx]])
+                split = [TRAIN] * expected_train + [VALID] * expected_val + [TEST] * expected_test
+            elif total_predictions == total_without_test:
+                labels_to_diagnose = np.concatenate([labels_all[train_idx], labels_all[val_idx]])
+                split = [TRAIN] * expected_train + [VALID] * expected_val
+                if expected_test:
+                    print(
+                        "Warning: Predictions file omits test samples (expected total "
+                        f"{total_with_test}, got {total_predictions}). Diagnostics run on train+val only."
+                    )
+            else:
+                print(
+                    "Warning: Predictions length ({}) does not match expected counts ({}/{}).".format(
+                        total_predictions, total_without_test, total_with_test
+                    )
+                )
+                labels_to_diagnose = np.concatenate([labels_all[train_idx], labels_all[val_idx]])
+                split = [TRAIN] * expected_train + [VALID] * expected_val
+    elif args.dataset == 'celeba':
+        # CelebA attribute metadata only covers the original images, not generated samples.
+        # Saved predictions may include a generated-image segment, so strip it back out before diagnostics.
+        orig_train_count = len(train_labels)
+        valid_count = len(valid_labels)
+        test_count = len(test_labels)
+        unlabeled_count = len(unlabeled_labels)
+        generated_count = len(modified_image_labels)
+
+        labels_to_diagnose = np.concatenate((train_labels, valid_labels, test_labels, unlabeled_labels))
+        split = (
+            [TRAIN] * orig_train_count +
+            [VALID] * valid_count +
+            [TEST] * test_count +
+            [UNLABELED] * unlabeled_count
+        )
+
+        expected_original_total = len(labels_to_diagnose)
+        expected_with_generated = expected_original_total + generated_count
+
+        if generated_count > 0 and len(predictions) == expected_with_generated:
+            train_end = orig_train_count
+            valid_end = train_end + valid_count
+            test_end = valid_end + test_count
+            generated_end = test_end + generated_count
+            predictions = np.concatenate((predictions[:test_end], predictions[generated_end:]))
+        elif len(predictions) != expected_original_total:
+            print(
+                "Warning: Skipping CelebA diagnostics because predictions length "
+                f"({len(predictions)}) does not match expected original-only length "
+                f"({expected_original_total}) or generated-inclusive length ({expected_with_generated})."
+            )
+            run_diagnostics = False
 
 # Run diagnostics for both datasets (skip for any generated-only mode or combined AL mode)
 if run_diagnostics and not gen_use_generated and not args.al_combined:
@@ -2284,12 +2379,6 @@ if not gen_use_generated and not args.al_combined:
                     print(f"Could not parse the random selection log file: {random_log_path}")
             else:
                 print(f"\nRandom selection comparison skipped: {random_log_path} not found")
-                print("To enable comparison, run the random selection baseline:")
-                print(f"CUDA_VISIBLE_DEVICES=X python -u alpred.py \\")
-                print(f"  --dataset {args.dataset} --model {args.model} --num_added_img {args.num_added_img} \\")
-                print(f"  --attributes {args.attributes} --num_epochs {args.num_epochs} \\")
-                print(f"  --use_active_learning False --sub_ratio {args.sub_ratio} \\")
-                print(f"  > logs_{args.dataset}/{random_log_name} 2>&1 < /dev/null &")
 else:
     # Special case for generated-only mode or al_combined mode
     print("Skipping model diagnostics")
