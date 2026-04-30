@@ -5,6 +5,62 @@
 
 ---
 
+## Session 148: Audit Recent Results Against Report
+
+**Date**: 2026-04-29
+**Task**: audit-recent-local-and-juno-results-against-report
+
+### Summary
+
+The user asked whether the recently completed runs, including Juno work, were
+all written into `report.md`. I audited local logs from the last day, the
+current report, and Juno SLURM queue/accounting.
+
+### Findings
+
+- Local ImageNet/CelebA instruct-pix2pix `ratio=0.9` supplemental rows from
+  stamp `20260429_2130` are complete and already recorded in `report.md`.
+  There is no remaining active local `ratio=0.9` worker from this launch.
+- Juno has no currently queued/running jobs for this user at the check time.
+- Juno accounting for 2026-04-29 shows:
+  - `185516` (`br-base-1gpu`) completed with exit code `0:0`; already in
+    `report.md`.
+  - `185548` (`br-attr-miss`) completed with exit code `0:0`; already in
+    `report.md`.
+  - `185848` (`celeba-ip2p-smoke`) was cancelled before running; it has
+    `Elapsed=00:00:00` and is not a stable result for `report.md`.
+- The local CelebA HiBUG `redhair_brownskin` sweep from stamp
+  `20260429_183807` had completed all `32` expected logs and was missing from
+  `report.md`.
+
+### What Changed
+
+- Updated `report.md` with a new completed CelebA HiBUG
+  `redhair_brownskin` section containing all `32` rows from
+  `logs_celeba/hibug_redhair_brownskin_*_20260429_183807.log`.
+- Best HiBUG row recorded:
+  - `ratio=0.5`, `attribute_r003_p05_cinf`
+  - test ACC `0.9131`, test loss `0.3492`
+  - log:
+    `logs_celeba/hibug_redhair_brownskin_attribute_r003_p05_cinf_resnet_celeba_1000_ratio0p5_gpu2_20260429_183807.log`
+- The HiBUG section notes that no row exceeds the base checkpoint test
+  accuracy `0.9140`.
+
+### Validation
+
+- Counted `32` completed HiBUG result logs for stamp `20260429_183807`.
+- Extracted `Model Test ACC` from all `32` logs.
+- Error scan over those logs found no `Traceback`, `Error`, `Killed`,
+  `CUDA out of memory`, `No such file`, or `FileNotFound`.
+- Juno `squeue` showed no active jobs; `sacct` showed the completed/cancelled
+  statuses above.
+
+### Status
+
+[OK] **Recent stable completed local and Juno results are now reflected in `report.md`; cancelled/non-running Juno smoke work is intentionally not reported.**
+
+---
+
 ## Session 147: Check Missing Ratio 0.9 Instruct-Pix2Pix Status
 
 **Date**: 2026-04-29
@@ -71,7 +127,34 @@ sets have unreported or pending `ratio=0.9` runs.
 
 ### Status
 
-[~] **Missing ImageNet/CelebA ratio 0.9 rows are now running locally on GPUs 1/2/3 with stamp `20260429_2130`**
+[OK] **Missing ImageNet/CelebA ratio 0.9 rows completed locally under stamp `20260429_2130` and are recorded in `report.md`.**
+
+### Follow-up: Moved CelebA Badge 0.9 To GPU 1
+
+- User noticed GPU `1` was no longer active after the ImageNet `ratio=0.9`
+  worker finished. Confirmed ImageNet `ratio=0.9` completed all 8 rows.
+- Per user request, moved the remaining CelebA `badge` `ratio=0.9` row to
+  GPU `1`.
+- To avoid duplicate execution, stopped the GPU `2` CelebA-baseline queue
+  parent before it could launch its original GPU `2` `badge` row:
+  - stopped parent: PID `127118`
+  - allowed current GPU `2` `coreset` child PID `150300` to finish
+  - after `coreset` completed, killed only stopped parent PID `127118`
+  - verified no
+    `logs_celeba/instructpix2pix_badge_resnet_celeba_1000_ratio0p9_gpu2_20260429_2130.log`
+    was created
+- GPU `1` standalone badge command used the existing launcher function:
+  `STAMP=20260429_2130 bash -lc 'source scripts/run_missing_ratio0p9_instructpix2pix_gpu123.sh; run_celeba_one 1 badge'`
+- Completed rows:
+  - GPU `1` CelebA `badge`:
+    `logs_celeba/instructpix2pix_badge_resnet_celeba_1000_ratio0p9_gpu1_20260429_2130.log`,
+    `Model Test ACC: 0.9108`, test loss `0.3468`
+  - GPU `2` CelebA `coreset`:
+    `logs_celeba/instructpix2pix_coreset_resnet_celeba_1000_ratio0p9_gpu2_20260429_2130.log`,
+    `Model Test ACC: 0.9092`, test loss `0.3542`
+- Final follow-up:
+  GPU `3` completed the remaining CelebA attribute rows. Later process checks
+  found no active `20260429_2130` local `ratio=0.9` workers.
 
 ---
 
