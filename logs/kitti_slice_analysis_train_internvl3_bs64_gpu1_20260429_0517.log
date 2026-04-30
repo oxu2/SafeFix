@@ -1,0 +1,78 @@
+Loading YOLOv8 model from runs/kitti_yolov8/first5000_1240val_1241test_gpu3_e30_20260428_231728/weights/best.pt...
+Eval split 'train': 5000 images
+Train image IDs for attribute alignment: 5000
+
+Phase 1: Running inference and matching on 5000 images...
+  [1/5000] images processed
+  [500/5000] images processed
+  [1000/5000] images processed
+  [1500/5000] images processed
+  [2000/5000] images processed
+  [2500/5000] images processed
+  [3000/5000] images processed
+  [3500/5000] images processed
+  [4000/5000] images processed
+  [4500/5000] images processed
+  [5000/5000] images processed
+Inference + matching complete in 146.5s
+
+Overall train metrics:
+  Images: 5000, GT: 22117, Pred: 124370
+  mAP50: 0.8744, mAP50-95: 0.6051
+  Precision: 0.1730, Recall: 0.9726
+
+============================================================
+Analyzing with attribute file: save/attribute_kitti_internvl3_8B.json
+============================================================
+Attributes: ['color', 'weather', 'background_style', 'traffic_density', 'lighting_condition', 'road_condition']
+Attribute coverage on train: 5000/5000 images
+
+Total slices evaluated: 25
+Failure cases (mAP50-95 < overall - 0.02): 12
+
+Top 12 failure slices:
+  background_style=highway | images=510 | mAP50-95=0.3732 | delta=-0.2319 | train_share=0.102
+  traffic_density=heavy | images=31 | mAP50-95=0.3753 | delta=-0.2298 | train_share=0.0062
+  road_condition=wet | images=30 | mAP50-95=0.4253 | delta=-0.1798 | train_share=0.006
+  lighting_condition=glare | images=127 | mAP50-95=0.4830 | delta=-0.1221 | train_share=0.0254
+  color=red | images=372 | mAP50-95=0.5187 | delta=-0.0864 | train_share=0.0744
+  weather=clear | images=577 | mAP50-95=0.5347 | delta=-0.0704 | train_share=0.1154
+  color=black | images=697 | mAP50-95=0.5523 | delta=-0.0528 | train_share=0.1394
+  color=green | images=265 | mAP50-95=0.5532 | delta=-0.0519 | train_share=0.053
+  color=gray | images=2271 | mAP50-95=0.5749 | delta=-0.0302 | train_share=0.4542
+  traffic_density=moderate | images=1213 | mAP50-95=0.5775 | delta=-0.0275 | train_share=0.2426
+  lighting_condition=bright | images=2385 | mAP50-95=0.5778 | delta=-0.0273 | train_share=0.477
+  background_style=urban city | images=1425 | mAP50-95=0.5812 | delta=-0.0239 | train_share=0.285
+
+All slices (sorted by mAP50-95):
+  background_style    =highway              | imgs=  510 | mAP50=0.4744 | mAP50-95=0.3732 | delta=-0.2319 ***FAILURE***
+  traffic_density     =heavy                | imgs=   31 | mAP50=0.4702 | mAP50-95=0.3753 | delta=-0.2298 ***FAILURE***
+  road_condition      =wet                  | imgs=   30 | mAP50=0.6714 | mAP50-95=0.4253 | delta=-0.1798 ***FAILURE***
+  lighting_condition  =glare                | imgs=  127 | mAP50=0.7665 | mAP50-95=0.4830 | delta=-0.1221 ***FAILURE***
+  color               =red                  | imgs=  372 | mAP50=0.7509 | mAP50-95=0.5187 | delta=-0.0864 ***FAILURE***
+  weather             =clear                | imgs=  577 | mAP50=0.7415 | mAP50-95=0.5347 | delta=-0.0704 ***FAILURE***
+  color               =black                | imgs=  697 | mAP50=0.8070 | mAP50-95=0.5523 | delta=-0.0528 ***FAILURE***
+  color               =green                | imgs=  265 | mAP50=0.8124 | mAP50-95=0.5532 | delta=-0.0519 ***FAILURE***
+  color               =gray                 | imgs= 2271 | mAP50=0.8521 | mAP50-95=0.5749 | delta=-0.0302 ***FAILURE***
+  traffic_density     =moderate             | imgs= 1213 | mAP50=0.8534 | mAP50-95=0.5775 | delta=-0.0275 ***FAILURE***
+  lighting_condition  =bright               | imgs= 2385 | mAP50=0.8577 | mAP50-95=0.5778 | delta=-0.0273 ***FAILURE***
+  background_style    =urban city           | imgs= 1425 | mAP50=0.8646 | mAP50-95=0.5812 | delta=-0.0239 ***FAILURE***
+  color               =white                | imgs=  715 | mAP50=0.8811 | mAP50-95=0.5856 | delta=-0.0195
+  lighting_condition  =dim                  | imgs=   34 | mAP50=0.8718 | mAP50-95=0.5981 | delta=-0.0070
+  traffic_density     =light                | imgs= 3134 | mAP50=0.8711 | mAP50-95=0.5994 | delta=-0.0057
+  road_condition      =dry                  | imgs= 4970 | mAP50=0.8750 | mAP50-95=0.6056 | delta=+0.0005
+  weather             =sunny                | imgs= 4421 | mAP50=0.8776 | mAP50-95=0.6076 | delta=+0.0025
+  color               =yellow               | imgs=   57 | mAP50=0.9036 | mAP50-95=0.6126 | delta=+0.0075
+  lighting_condition  =strong shadows       | imgs= 2453 | mAP50=0.8884 | mAP50-95=0.6266 | delta=+0.0215
+  color               =silver               | imgs=   29 | mAP50=0.8939 | mAP50-95=0.6300 | delta=+0.0249
+  background_style    =residential          | imgs= 2681 | mAP50=0.8795 | mAP50-95=0.6432 | delta=+0.0381
+  color               =brown                | imgs=   53 | mAP50=0.8984 | mAP50-95=0.6451 | delta=+0.0400
+  background_style    =rural                | imgs=  382 | mAP50=0.8883 | mAP50-95=0.6451 | delta=+0.0400
+  color               =blue                 | imgs=  541 | mAP50=0.9312 | mAP50-95=0.6896 | delta=+0.0845
+  traffic_density     =empty                | imgs=  622 | mAP50=0.9578 | mAP50-95=0.7083 | delta=+0.1032
+
+Saved JSON to log_kitti/kitti_slice_stats_internvl3_bs64_gpu1_20260429_0517/attribute_kitti_internvl3_8B/train_slice_stats.json
+Saved CSV to log_kitti/kitti_slice_stats_internvl3_bs64_gpu1_20260429_0517/attribute_kitti_internvl3_8B/train_slice_stats.csv
+Slice analysis for attribute_kitti_internvl3_8B: 1.2s
+
+Total analysis time: 147.9s (2.5min)

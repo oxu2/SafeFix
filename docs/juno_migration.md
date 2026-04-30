@@ -49,6 +49,26 @@ For independent single-GPU experiment sweeps:
 - Monitor both partitions before and after submission, then move only jobs that
   are safe for the target GPU.
 
+### Short PyTorch Sweep Policy From Juno
+
+Sasmita's guidance on 2026-04-29 for short independent PyTorch sweeps:
+
+- For a single-node, one-GPU case such as `8` independent experiments that each
+  take about `10` to `30` minutes and fit in one H100's GPU memory, Juno
+  recommends using a **Parallel Launcher**.
+- For a multi-GPU case such as `8` independent experiments that should run
+  concurrently across about `2` to `3` H100 GPUs, Juno also recommends using a
+  **Launcher** rather than many separate manual submissions.
+- The stated reason is HPC efficiency: Launcher is the preferred Juno workflow
+  for handling multiple short independent experiments flexibly without filling
+  the queue with many small jobs.
+- Treat SLURM job arrays as a reasonable fallback only when Launcher is
+  unavailable or when a specific experiment layout is easier to express as an
+  array. For the cases above, Juno's direct recommendation is Launcher.
+- Before using Launcher for real GPU sweeps, run a small GPU-node smoke test
+  that confirms the Launcher job can see CUDA and can run a tiny PyTorch CUDA
+  operation on the allocated GPU node.
+
 Useful queue checks:
 
 ```bash
@@ -86,6 +106,88 @@ scontrol show job <jobid> | egrep "JobId=|JobState=|Reason=|Partition=|NumNodes=
 ```
 
 ## Current Run Dependencies Not Covered By Git
+
+The following are required beyond a normal `git clone`:
+
+### CelebA `alpred.py` Resume Runs
+
+For CelebA resume-from-base active-learning runs with `alpred.py`, the current
+Juno state checked on 2026-04-29 is:
+
+- Full CelebA source images are copied and verified:
+  - path:
+    `/home/oxx220000/scratch/safefix_cache/data/img_align_celeba`
+  - file count: `202599`
+  - size: `1.7G`
+- CelebA red-hair brown-skin sad-emotion instruct-pix2pix seed-42 1k generated
+  subset is copied and verified:
+  - image path:
+    `/home/oxx220000/scratch/safefix_cache/data/redhair_brownskin_sademotion_instruct_pix2pix_seed42_1k`
+  - manifest:
+    `/home/oxx220000/scratch/safefix_cache/data/redhair_brownskin_sademotion_instruct_pix2pix_seed42_1k_files.txt`
+  - image count: `1000`
+  - manifest lines: `1000`
+- HiBUG red-hair brown-skin seed-42 1k generated subset is also copied and
+  verified:
+  - path:
+    `/home/oxx220000/scratch/safefix_cache/data/hibug_redhair_brownskin_seed42_1k`
+  - image count: `1000`
+- Repo-local CelebA metadata needed by `alpred.py` has been copied to Juno:
+  - path: `/home/oxx220000/work/safefix/data/celebA`
+  - size: about `101M`
+  - includes at least:
+    `list_attr_celeba.txt`, `train_idx.npy`, `labels.npy`,
+    `predictions.npy`, and the attribute index text files.
+- Qwen3 CelebA attribute metadata is present:
+  - path:
+    `/home/oxx220000/work/safefix/save/attribute_celeba_trainval_qwen3_8B.json`
+  - SHA-256:
+    `152d2d415ac8c5de12bd64f6cae4515b77a1e9ece158604d12068b4baa6af6ab`
+- The CelebA resume checkpoint is present:
+  - path:
+    `/home/oxx220000/work/safefix/weights/model_celeba_resnet_base.pth`
+  - size: `2.7M`
+  - SHA-256:
+    `dafdd2481587604df6e32f614ad9c42df8c165c6a6bce9e568bddd6814916dc0`
+
+Important path caveat:
+
+- The generated CelebA subset is in Juno scratch, not under
+  `/home/oxx220000/work/safefix/data/`.
+- `alpred.py` can discover the scratch generated directory by default when
+  `--gen_image_dir` is omitted, but local queue scripts that hardcode
+  `GEN_DIR="data/redhair_brownskin_sademotion_instruct_pix2pix_seed42_1k"`
+  will fail on Juno unless that path is overridden, patched to the scratch
+  path, or replaced with a Juno-specific launcher.
+- For direct Juno runs, use:
+
+```bash
+--data_dir /home/oxx220000/scratch/safefix_cache/data/img_align_celeba \
+--gen_image_dir /home/oxx220000/scratch/safefix_cache/data/redhair_brownskin_sademotion_instruct_pix2pix_seed42_1k \
+--resume_model weights/model_celeba_resnet_base.pth \
+--attribute_file save/attribute_celeba_trainval_qwen3_8B.json
+```
+
+The original base-run log is not currently present on Juno. This is not a
+blocker for loading `weights/model_celeba_resnet_base.pth`; it only means helper
+code may not recover the base test accuracy from a local log.
+
+One-epoch GPU smoke test:
+
+- Script:
+  `scripts/juno_celeba_instructpix2pix_smoke.sbatch`
+- Purpose:
+  verify that CelebA `alpred.py` resume training works on a Juno H100 while
+  using the scratch cached
+  `redhair_brownskin_sademotion_instruct_pix2pix_seed42_1k` generated subset.
+- The script stages a runnable repo copy under
+  `$HOME/scratch/safefix_runs/celeba_ip2p_smoke_${SLURM_JOB_ID}_${TIMESTAMP}`
+  and runs from that scratch copy so run-time `save/` and `logs_celeba/` writes
+  happen under scratch.
+- Submitted on 2026-04-29 as SLURM job `185848`; initial state was
+  `PENDING (Resources)` on `h100`.
+
+### COCO Pose Runs
 
 The following are required beyond a normal `git clone`:
 

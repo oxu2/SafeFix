@@ -1,0 +1,14 @@
+Current time: 0429194722
+Selected 1000 filenames for sampling
+Added 1000 generated redhair_brownskin images, before training set has 80000 images, now 81000
+Core-set selection: choosing 24000 from 80000 samples...
+Using approximate core-set selection for large job: 24000 selections from 80000 samples.
+CelebA: Combined 24000 selected samples with 1000 generated images using Active Learning
+Resumed model from /people/cs/o/oxx220000/safefix/weights/model_celeba_resnet_base.pth (best val acc: 0.914, base test acc: 0.9140)
+Recovered base test acc from log: logs/celeba_resnet_base_redhair_brownskin_sademotion_0imgs_20260416_022317.log
+Epoch [1/15], Train Loss: 0.2640, Train Acc: 0.9645, Val Loss: 0.3774, Val Acc: 0.9034
+Epoch [2/15], Train Loss: 0.2602, Train Acc: 0.9661, Val Loss: 0.4037, Val Acc: 0.9007
+Epoch [3/15], Train Loss: 0.2578, Train Acc: 0.9673, Val Loss: 0.3624, Val Acc: 0.9066
+Epoch [4/15], Train Loss: 0.2562, Train Acc: 0.9677, Val Loss: 0.3771, Val Acc: 0.9001
+Epoch [5/15], Train Loss: 0.2561, Train Acc: 0.9674, Val Loss: 0.3898, Val Acc: 0.9018
+Epoch [6/15], Train Loss: 0.2554, Train Acc: 0.9676, Val Loss: 0.3680, Val Acc: 0.9037

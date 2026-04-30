@@ -1,0 +1,18 @@
+Current time: 0429193719
+Selected 1000 filenames for sampling
+Added 1000 generated redhair_brownskin images, before training set has 80000 images, now 81000
+CelebA: Combined 56000 selected samples with 1000 generated images using Active Learning
+Resumed model from /people/cs/o/oxx220000/safefix/weights/model_celeba_resnet_base.pth (best val acc: 0.914, base test acc: 0.9140)
+Recovered base test acc from log: logs/celeba_resnet_base_redhair_brownskin_sademotion_0imgs_20260416_022317.log
+Epoch [1/15], Train Loss: 0.2380, Train Acc: 0.9784, Val Loss: 0.3735, Val Acc: 0.9034
+Epoch [2/15], Train Loss: 0.2357, Train Acc: 0.9780, Val Loss: 0.3547, Val Acc: 0.9079
+Epoch [3/15], Train Loss: 0.2350, Train Acc: 0.9788, Val Loss: 0.3841, Val Acc: 0.8979
+Epoch [4/15], Train Loss: 0.2339, Train Acc: 0.9788, Val Loss: 0.3599, Val Acc: 0.9043
+Epoch [5/15], Train Loss: 0.2327, Train Acc: 0.9802, Val Loss: 0.3844, Val Acc: 0.8986
+Epoch [6/15], Train Loss: 0.2325, Train Acc: 0.9798, Val Loss: 0.3555, Val Acc: 0.9061
+Epoch [7/15], Train Loss: 0.2318, Train Acc: 0.9809, Val Loss: 0.3481, Val Acc: 0.9079
+Epoch [8/15], Train Loss: 0.2308, Train Acc: 0.9806, Val Loss: 0.3581, Val Acc: 0.9058
+Epoch [9/15], Train Loss: 0.2309, Train Acc: 0.9811, Val Loss: 0.3603, Val Acc: 0.9040
+Epoch [10/15], Train Loss: 0.2304, Train Acc: 0.9811, Val Loss: 0.3509, Val Acc: 0.9061
+Epoch [11/15], Train Loss: 0.2304, Train Acc: 0.9810, Val Loss: 0.3646, Val Acc: 0.9034
+Epoch [12/15], Train Loss: 0.2311, Train Acc: 0.9806, Val Loss: 0.3580, Val Acc: 0.9055
