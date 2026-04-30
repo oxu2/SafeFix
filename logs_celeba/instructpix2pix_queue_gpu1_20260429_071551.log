@@ -3,3 +3,13 @@ Generated:      data/redhair_brownskin_sademotion_instruct_pix2pix_seed42_1k
 Base model:     weights/model_celeba_resnet_base.pth
 Attribute file: save/attribute_celeba_trainval_qwen3_8B.json
 [2026-04-29 07:15:51] gpu=1 ratio=0.1 method=random log=logs_celeba/instructpix2pix_random_resnet_celeba_1000_ratio0p1_gpu1_20260429_071551.log
+[2026-04-29 07:24:53] gpu=1 ratio=0.1 method=stratified log=logs_celeba/instructpix2pix_stratified_resnet_celeba_1000_ratio0p1_gpu1_20260429_071551.log
+[2026-04-29 07:37:43] gpu=1 ratio=0.1 method=coreset log=logs_celeba/instructpix2pix_coreset_resnet_celeba_1000_ratio0p1_gpu1_20260429_071551.log
+[2026-04-29 07:47:44] gpu=1 ratio=0.1 method=badge log=logs_celeba/instructpix2pix_badge_resnet_celeba_1000_ratio0p1_gpu1_20260429_071551.log
+[2026-04-29 07:56:35] gpu=1 ratio=0.1 method=attribute_r003_p05_c15 log=logs_celeba/instructpix2pix_attribute_r003_p05_c15_resnet_celeba_1000_ratio0p1_gpu1_20260429_071551.log
+[2026-04-29 08:03:20] gpu=1 ratio=0.1 method=attribute_r000_p0_c15 log=logs_celeba/instructpix2pix_attribute_r000_p0_c15_resnet_celeba_1000_ratio0p1_gpu1_20260429_071551.log
+[2026-04-29 08:09:12] gpu=1 ratio=0.1 method=attribute_r000_p0_cinf log=logs_celeba/instructpix2pix_attribute_r000_p0_cinf_resnet_celeba_1000_ratio0p1_gpu1_20260429_071551.log
+[2026-04-29 08:15:09] gpu=1 ratio=0.1 method=attribute_r003_p05_cinf log=logs_celeba/instructpix2pix_attribute_r003_p05_cinf_resnet_celeba_1000_ratio0p1_gpu1_20260429_071551.log
+[2026-04-29 08:21:11] gpu=1 ratio=0.3 method=random log=logs_celeba/instructpix2pix_random_resnet_celeba_1000_ratio0p3_gpu1_20260429_071551.log
+[2026-04-29 08:33:05] gpu=1 ratio=0.3 method=stratified log=logs_celeba/instructpix2pix_stratified_resnet_celeba_1000_ratio0p3_gpu1_20260429_071551.log
+[2026-04-29 08:44:32] gpu=1 ratio=0.3 method=coreset log=logs_celeba/instructpix2pix_coreset_resnet_celeba_1000_ratio0p3_gpu1_20260429_071551.log

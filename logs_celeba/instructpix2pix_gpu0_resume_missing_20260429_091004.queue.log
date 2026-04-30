@@ -1,0 +1,6 @@
+[2026-04-29 15:44:55] Starting CelebA instruct-pix2pix GPU 0 missing-row resume, stamp=20260429_091004
+Source stamp: 20260429_071551
+[2026-04-29 15:44:55] gpu=0 ratio=0.3 method=coreset log=logs_celeba/instructpix2pix_coreset_resnet_celeba_1000_ratio0p3_gpu0_resume_20260429_091004.log
+[2026-04-29 15:53:32] gpu=0 ratio=0.3 method=badge log=logs_celeba/instructpix2pix_badge_resnet_celeba_1000_ratio0p3_gpu0_resume_20260429_091004.log
+[2026-04-29 16:01:14] gpu=0 ratio=0.3 method=attribute_r003_p05_c15 log=logs_celeba/instructpix2pix_attribute_r003_p05_c15_resnet_celeba_1000_ratio0p3_gpu0_resume_20260429_091004.log
+[2026-04-29 16:08:15] gpu=0 ratio=0.3 method=attribute_r000_p0_c15 log=logs_celeba/instructpix2pix_attribute_r000_p0_c15_resnet_celeba_1000_ratio0p3_gpu0_resume_20260429_091004.log

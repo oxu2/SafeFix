@@ -21,6 +21,12 @@ The files here are copied from the current canonical outputs so the original pat
    - Current attribute vocabulary definition used for the clean reruns.
 6. `test_predictions.json`
    - Raw keypoint predictions used to compute `test_slice_stats.json`.
+7. `qwen3_kitti_train5000_non_red_non_cloudy_matches.csv`
+   - KITTI train-side Qwen3 rows that satisfy neither `color=red` nor
+     `weather=cloudy`.
+   - Columns mirror the earlier Qwen3 handoff CSV style:
+     `row_idx,image_id,color,weather`.
+   - Contains `4,508` data rows from the `5,000` KITTI train assignment rows.
 
 ## Main Findings
 
@@ -53,6 +59,11 @@ The files here are copied from the current canonical outputs so the original pat
 - `test_slice_stats.json`
   - source:
     `log_pose/pose_keypointrcnn_train20k_blip_bs8_e2_rare0p97_20260412_021252/slice_analysis/blip_postcleanup_clean/test_slice_stats.json`
+- `qwen3_kitti_train5000_non_red_non_cloudy_matches.csv`
+  - source attribute CSV: `save/attribute_kitti_qwen3_8B.csv`
+  - canonical copy: `save/qwen3_kitti_train5000_non_red_non_cloudy_matches.csv`
+  - filter: keep rows where `color != red` and `weather != cloudy`
+  - target counts in the source CSV: `492` rows satisfy `color=red OR
+    weather=cloudy`; `12` rows satisfy both.
 
 ## Notes
-

@@ -1,19 +1,217 @@
+# 04/29/2026 Update — Top Result Tables
+
+## Brown-Rainy Combined Baseline And Qwen3 Attribute Results
+
+- This table combines the completed Juno brown-rainy baseline rows and Qwen3
+  attribute rows.
+- Within each ratio, the highest `Test AP` among all methods is bolded.
+
+| Ratio | Method | Test AP | Test AP50 | Test AP75 | Val AP | Val AP50 | Val AP75 |
+| ---: | --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| `0.05` | `random` | `0.5797` | `0.8208` | `0.6263` | `0.5890` | `0.8375` | `0.6406` |
+| `0.05` | `stratified` | **`0.5976`** | `0.8331` | `0.6492` | `0.6022` | `0.8454` | `0.6604` |
+| `0.05` | `coreset` | `0.5527` | `0.7997` | `0.5914` | `0.5639` | `0.8072` | `0.6129` |
+| `0.05` | `badge` | `0.5782` | `0.8217` | `0.6284` | `0.5936` | `0.8361` | `0.6445` |
+| `0.05` | `qwen3_attr_r000_p0_c15` | `0.5871` | `0.8308` | `0.6384` | `0.6011` | `0.8492` | `0.6560` |
+| `0.10` | `random` | `0.6048` | `0.8421` | `0.6521` | `0.6170` | `0.8562` | `0.6767` |
+| `0.10` | `stratified` | `0.6110` | `0.8440` | `0.6646` | `0.6189` | `0.8533` | `0.6776` |
+| `0.10` | `coreset` | `0.5877` | `0.8333` | `0.6371` | `0.5950` | `0.8423` | `0.6441` |
+| `0.10` | `badge` | `0.5985` | `0.8370` | `0.6467` | `0.6121` | `0.8539` | `0.6679` |
+| `0.10` | `qwen3_attr_r000_p0_c15` | `0.6042` | `0.8390` | `0.6546` | `0.6159` | `0.8568` | `0.6623` |
+| `0.10` | `qwen3_attr_r001_p5_c15` | `0.6152` | `0.8403` | `0.6717` | `0.6235` | `0.8485` | `0.6833` |
+| `0.10` | `qwen3_attr_r003_p5_c8` | `0.6165` | `0.8489` | `0.6690` | `0.6285` | `0.8629` | `0.6882` |
+| `0.10` | `qwen3_attr_r003_p5_c15` | **`0.6183`** | `0.8466` | `0.6782` | `0.6288` | `0.8604` | `0.6925` |
+| `0.30` | `random` | `0.6127` | `0.8441` | `0.6626` | `0.6192` | `0.8580` | `0.6652` |
+| `0.30` | `stratified` | `0.6243` | `0.8533` | `0.6816` | `0.6324` | `0.8635` | `0.6837` |
+| `0.30` | `coreset` | `0.6256` | `0.8511` | `0.6778` | `0.6306` | `0.8628` | `0.6910` |
+| `0.30` | `badge` | `0.6153` | `0.8523` | `0.6628` | `0.6212` | `0.8605` | `0.6776` |
+| `0.30` | `qwen3_attr_r000_p0_c15` | `0.6288` | `0.8572` | `0.6926` | `0.6309` | `0.8621` | `0.6899` |
+| `0.30` | `qwen3_attr_r001_p5_c15` | **`0.6306`** | `0.8567` | `0.6849` | `0.6266` | `0.8620` | `0.6892` |
+| `0.30` | `qwen3_attr_r003_p5_c8` | `0.6110` | `0.8445` | `0.6640` | `0.6254` | `0.8578` | `0.6847` |
+| `0.30` | `qwen3_attr_r003_p5_c15` | `0.6176` | `0.8516` | `0.6663` | `0.6266` | `0.8591` | `0.6860` |
+| `0.50` | `random` | `0.6219` | `0.8521` | `0.6770` | `0.6251` | `0.8641` | `0.6849` |
+| `0.50` | `stratified` | **`0.6230`** | `0.8553` | `0.6786` | `0.6343` | `0.8650` | `0.6914` |
+| `0.50` | `coreset` | `0.6167` | `0.8546` | `0.6733` | `0.6248` | `0.8584` | `0.6823` |
+| `0.50` | `badge` | `0.6206` | `0.8591` | `0.6696` | `0.6300` | `0.8679` | `0.6907` |
+| `0.50` | `qwen3_attr_r000_p0_c15` | `0.6203` | `0.8544` | `0.6753` | `0.6272` | `0.8562` | `0.6897` |
+| `0.50` | `qwen3_attr_r001_p5_c15` | `0.6208` | `0.8547` | `0.6774` | `0.6290` | `0.8672` | `0.6870` |
+| `0.50` | `qwen3_attr_r003_p5_c8` | `0.6162` | `0.8525` | `0.6667` | `0.6257` | `0.8602` | `0.6874` |
+| `0.50` | `qwen3_attr_r003_p5_c15` | `0.5866` | `0.8338` | `0.6357` | `0.5916` | `0.8412` | `0.6453` |
+| `0.70` | `random` | **`0.6332`** | `0.8615` | `0.6904` | `0.6334` | `0.8629` | `0.6916` |
+| `0.70` | `stratified` | `0.6299` | `0.8559` | `0.6916` | `0.6364` | `0.8639` | `0.6968` |
+| `0.70` | `coreset` | `0.6275` | `0.8576` | `0.6839` | `0.6341` | `0.8652` | `0.6973` |
+| `0.70` | `badge` | `0.6256` | `0.8544` | `0.6738` | `0.6379` | `0.8621` | `0.7016` |
+| `0.70` | `qwen3_attr_r000_p0_c15` | `0.6313` | `0.8583` | `0.6932` | `0.6364` | `0.8650` | `0.6953` |
+| `0.70` | `qwen3_attr_r001_p5_c0` | `0.6247` | `0.8558` | `0.6819` | `0.6370` | `0.8615` | `0.7007` |
+| `0.70` | `qwen3_attr_r001_p5_c15` | `0.6290` | `0.8572` | `0.6815` | `0.6394` | `0.8642` | `0.7029` |
+| `0.70` | `qwen3_attr_r003_p5_c0` | `0.6247` | `0.8558` | `0.6819` | `0.6370` | `0.8615` | `0.7007` |
+| `0.70` | `qwen3_attr_r003_p5_c8` | `0.6300` | `0.8548` | `0.6852` | `0.6331` | `0.8607` | `0.6920` |
+| `0.70` | `qwen3_attr_r003_p5_c15` | `0.6319` | `0.8571` | `0.6884` | `0.6377` | `0.8703` | `0.6922` |
+| `0.90` | `random` | `0.6180` | `0.8517` | `0.6673` | `0.6155` | `0.8520` | `0.6737` |
+| `0.90` | `stratified` | **`0.6291`** | `0.8629` | `0.6867` | `0.6380` | `0.8641` | `0.6962` |
+| `0.90` | `coreset` | `0.6202` | `0.8570` | `0.6714` | `0.6288` | `0.8614` | `0.6876` |
+| `0.90` | `badge` | `0.6213` | `0.8563` | `0.6732` | `0.6266` | `0.8622` | `0.6880` |
+| `0.90` | `qwen3_attr_r000_p0_c15` | `0.6268` | `0.8579` | `0.6836` | `0.6339` | `0.8706` | `0.6908` |
+| `0.90` | `qwen3_attr_r001_p5_c15` | `0.6255` | `0.8572` | `0.6805` | `0.6282` | `0.8606` | `0.6829` |
+| `0.90` | `qwen3_attr_r003_p5_c8` | `0.6255` | `0.8572` | `0.6805` | `0.6282` | `0.8606` | `0.6829` |
+| `0.90` | `qwen3_attr_r003_p5_c15` | `0.6255` | `0.8572` | `0.6805` | `0.6282` | `0.8606` | `0.6829` |
+
+## KITTI Batch-Size-16 InternVL3 Slice Analysis
+
+- InternVL3-8B assignment on the 5000 KITTI train images is complete:
+  `save/attribute_kitti_internvl3_8B.json`,
+  `save/attribute_kitti_internvl3_8B.csv`.
+- Assignment log:
+  `logs/assign_attr_kitti_train_internvl3_gpu2_20260429_004725.log`
+  (`269.4` minutes, `4.49` hours).
+- Batch-size-16 YOLOv8n checkpoint analysis:
+  - checkpoint:
+    `runs/kitti_yolov8/first5000_1240val_1241test_gpu0_bs16_e30_20260429_012232/weights/best.pt`
+  - log:
+    `logs/kitti_slice_analysis_train_internvl3_bs16_gpu2_20260429_0517.log`
+  - output:
+    `log_kitti/kitti_slice_stats_internvl3_bs16_gpu2_20260429_0517/attribute_kitti_internvl3_8B/train_slice_stats.csv`
+  - overall train metrics: mAP50 `0.8719`, mAP50-95 `0.6010`
+  - evaluated slices: `25`; failure slices: `13`
+
+| Attribute value | Images | mAP50 | mAP50-95 | Delta mAP50-95 |
+| --- | ---: | ---: | ---: | ---: |
+| `traffic_density=heavy` | `31` | `0.4690` | `0.3667` | `-0.2343` |
+| `background_style=highway` | `510` | `0.4729` | `0.3700` | `-0.2310` |
+| `road_condition=wet` | `30` | `0.5624` | `0.4008` | `-0.2002` |
+| `lighting_condition=glare` | `127` | `0.7206` | `0.4725` | `-0.1285` |
+| `color=red` | `372` | `0.7446` | `0.5092` | `-0.0918` |
+| `color=black` | `697` | `0.8015` | `0.5405` | `-0.0605` |
+| `weather=clear` | `577` | `0.7569` | `0.5412` | `-0.0599` |
+| `color=green` | `265` | `0.8169` | `0.5681` | `-0.0329` |
+| `color=gray` | `2271` | `0.8477` | `0.5702` | `-0.0308` |
+| `lighting_condition=bright` | `2385` | `0.8563` | `0.5728` | `-0.0282` |
+| `traffic_density=moderate` | `1213` | `0.8552` | `0.5742` | `-0.0268` |
+| `background_style=urban city` | `1425` | `0.8630` | `0.5784` | `-0.0226` |
+| `color=white` | `715` | `0.8795` | `0.5809` | `-0.0201` |
+
+# 04/29/2026 Update — Local Instruct-Pix2Pix AL Results
+
+- This section records the completed local active-learning (AL) runs from the
+  ImageNet and CelebA instruct-pix2pix seed-42 1k sweeps launched earlier on
+  April 29, 2026.
+- ImageNet stamp `20260429_065612` is complete for all planned rows.
+- CelebA stamp `20260429_071551` is complete for all planned rows after the
+  later GPU `1/2/3` resume workers.
+- Both sweeps use exactly `1000` generated instruct-pix2pix images and resume
+  from the corresponding ResNet base checkpoint.
+
+## Completed ImageNet Pink-Fabric Instruct-Pix2Pix Results
+
+- Dataset: `imagenet`
+- Model: `resnet`
+- Generated directory:
+  `data/pinkcolor_fabrictexture_instruct_pix2pix_seed42_1k`
+- Source data: `data/imagenet_subset`
+- Base checkpoint: `save/models/model_imagenet_resnet_base.pth`
+- Planned rows: `32`; completed rows: `32`
+- Best completed test accuracy: `0.7523` at `ratio=0.7`,
+  `attribute_r000_p0_c15`.
+
+| Ratio | Method | Test ACC | Test loss | Log |
+| ---: | --- | ---: | ---: | --- |
+| `0.1` | `random` | `0.7062` | `0.8958` | `logs_imagenet/instructpix2pix_random_resnet_imagenet_1000_ratio0p1_gpu1_20260429_065612.log` |
+| `0.1` | `stratified` | `0.7085` | `0.8927` | `logs_imagenet/instructpix2pix_stratified_resnet_imagenet_1000_ratio0p1_gpu1_20260429_065612.log` |
+| `0.1` | `coreset` | `0.7115` | `0.8970` | `logs_imagenet/instructpix2pix_coreset_resnet_imagenet_1000_ratio0p1_gpu1_20260429_065612.log` |
+| `0.1` | `badge` | `0.7077` | `0.8870` | `logs_imagenet/instructpix2pix_badge_resnet_imagenet_1000_ratio0p1_gpu1_20260429_065612.log` |
+| `0.1` | `attribute_r000_p0_c15` | `0.7000` | `0.8918` | `logs_imagenet/instructpix2pix_attribute_r000_p0_c15_resnet_imagenet_1000_ratio0p1_gpu1_20260429_065612.log` |
+| `0.1` | `attribute_r001_p5_cinf` | `0.7100` | `0.8813` | `logs_imagenet/instructpix2pix_attribute_r001_p5_cinf_resnet_imagenet_1000_ratio0p1_gpu1_20260429_065612.log` |
+| `0.1` | `attribute_r01_p5_c15` | `0.7146` | `0.8803` | `logs_imagenet/instructpix2pix_attribute_r01_p5_c15_resnet_imagenet_1000_ratio0p1_gpu1_20260429_065612.log` |
+| `0.1` | `attribute_r08_p10_c4` | `0.7077` | `0.8832` | `logs_imagenet/instructpix2pix_attribute_r08_p10_c4_resnet_imagenet_1000_ratio0p1_gpu1_20260429_065612.log` |
+| `0.3` | `random` | `0.7385` | `0.8175` | `logs_imagenet/instructpix2pix_random_resnet_imagenet_1000_ratio0p3_gpu1_20260429_065612.log` |
+| `0.3` | `stratified` | `0.7415` | `0.8118` | `logs_imagenet/instructpix2pix_stratified_resnet_imagenet_1000_ratio0p3_gpu1_20260429_065612.log` |
+| `0.3` | `coreset` | `0.7277` | `0.8325` | `logs_imagenet/instructpix2pix_coreset_resnet_imagenet_1000_ratio0p3_gpu1_20260429_065612.log` |
+| `0.3` | `badge` | `0.7315` | `0.8214` | `logs_imagenet/instructpix2pix_badge_resnet_imagenet_1000_ratio0p3_gpu1_20260429_065612.log` |
+| `0.3` | `attribute_r000_p0_c15` | `0.7362` | `0.8025` | `logs_imagenet/instructpix2pix_attribute_r000_p0_c15_resnet_imagenet_1000_ratio0p3_gpu1_20260429_065612.log` |
+| `0.3` | `attribute_r001_p5_cinf` | `0.7369` | `0.7992` | `logs_imagenet/instructpix2pix_attribute_r001_p5_cinf_resnet_imagenet_1000_ratio0p3_gpu1_20260429_065612.log` |
+| `0.3` | `attribute_r01_p5_c15` | `0.7369` | `0.8053` | `logs_imagenet/instructpix2pix_attribute_r01_p5_c15_resnet_imagenet_1000_ratio0p3_gpu1_20260429_065612.log` |
+| `0.3` | `attribute_r08_p10_c4` | `0.7315` | `0.8086` | `logs_imagenet/instructpix2pix_attribute_r08_p10_c4_resnet_imagenet_1000_ratio0p3_gpu1_20260429_065612.log` |
+| `0.5` | `random` | `0.7438` | `0.7762` | `logs_imagenet/instructpix2pix_random_resnet_imagenet_1000_ratio0p5_gpu2_20260429_065612.log` |
+| `0.5` | `stratified` | `0.7477` | `0.7895` | `logs_imagenet/instructpix2pix_stratified_resnet_imagenet_1000_ratio0p5_gpu2_20260429_065612.log` |
+| `0.5` | `coreset` | `0.7408` | `0.7956` | `logs_imagenet/instructpix2pix_coreset_resnet_imagenet_1000_ratio0p5_gpu2_20260429_065612.log` |
+| `0.5` | `badge` | `0.7446` | `0.7858` | `logs_imagenet/instructpix2pix_badge_resnet_imagenet_1000_ratio0p5_gpu2_20260429_065612.log` |
+| `0.5` | `attribute_r000_p0_c15` | `0.7385` | `0.7992` | `logs_imagenet/instructpix2pix_attribute_r000_p0_c15_resnet_imagenet_1000_ratio0p5_gpu2_20260429_065612.log` |
+| `0.5` | `attribute_r001_p5_cinf` | `0.7415` | `0.7857` | `logs_imagenet/instructpix2pix_attribute_r001_p5_cinf_resnet_imagenet_1000_ratio0p5_gpu2_20260429_065612.log` |
+| `0.5` | `attribute_r01_p5_c15` | `0.7369` | `0.7960` | `logs_imagenet/instructpix2pix_attribute_r01_p5_c15_resnet_imagenet_1000_ratio0p5_gpu2_20260429_065612.log` |
+| `0.5` | `attribute_r08_p10_c4` | `0.7462` | `0.7904` | `logs_imagenet/instructpix2pix_attribute_r08_p10_c4_resnet_imagenet_1000_ratio0p5_gpu2_20260429_065612.log` |
+| `0.7` | `random` | `0.7477` | `0.7832` | `logs_imagenet/instructpix2pix_random_resnet_imagenet_1000_ratio0p7_gpu3_20260429_065612.log` |
+| `0.7` | `stratified` | `0.7454` | `0.7841` | `logs_imagenet/instructpix2pix_stratified_resnet_imagenet_1000_ratio0p7_gpu3_20260429_065612.log` |
+| `0.7` | `coreset` | `0.7500` | `0.7825` | `logs_imagenet/instructpix2pix_coreset_resnet_imagenet_1000_ratio0p7_gpu3_20260429_065612.log` |
+| `0.7` | `badge` | `0.7446` | `0.7832` | `logs_imagenet/instructpix2pix_badge_resnet_imagenet_1000_ratio0p7_gpu3_20260429_065612.log` |
+| `0.7` | `attribute_r000_p0_c15` | **`0.7523`** | `0.7815` | `logs_imagenet/instructpix2pix_attribute_r000_p0_c15_resnet_imagenet_1000_ratio0p7_gpu3_20260429_065612.log` |
+| `0.7` | `attribute_r001_p5_cinf` | `0.7438` | `0.7884` | `logs_imagenet/instructpix2pix_attribute_r001_p5_cinf_resnet_imagenet_1000_ratio0p7_gpu3_20260429_065612.log` |
+| `0.7` | `attribute_r01_p5_c15` | `0.7408` | `0.7945` | `logs_imagenet/instructpix2pix_attribute_r01_p5_c15_resnet_imagenet_1000_ratio0p7_gpu3_20260429_065612.log` |
+| `0.7` | `attribute_r08_p10_c4` | `0.7462` | `0.7903` | `logs_imagenet/instructpix2pix_attribute_r08_p10_c4_resnet_imagenet_1000_ratio0p7_gpu3_20260429_065612.log` |
+
+## Completed CelebA Red-Hair Brown-Skin Sad-Emotion Instruct-Pix2Pix Results
+
+- Dataset: `celeba`
+- Model: `resnet`
+- Generated directory:
+  `data/redhair_brownskin_sademotion_instruct_pix2pix_seed42_1k`
+- Base checkpoint: `weights/model_celeba_resnet_base.pth`
+- Attribute metadata: `save/attribute_celeba_trainval_qwen3_8B.json`
+- Planned rows: `32`; completed rows from stamp `20260429_071551`: `32`
+- Best completed test accuracy: `0.9132` at `ratio=0.5`, `stratified`.
+- The base checkpoint log reports base test accuracy `0.9140`, so no completed
+  instruct-pix2pix CelebA row has exceeded the base model yet.
+
+| Ratio | Method | Test ACC | Test loss | Log |
+| ---: | --- | ---: | ---: | --- |
+| `0.1` | `random` | `0.9108` | `0.3396` | `logs_celeba/instructpix2pix_random_resnet_celeba_1000_ratio0p1_gpu1_20260429_071551.log` |
+| `0.1` | `stratified` | `0.9082` | `0.3719` | `logs_celeba/instructpix2pix_stratified_resnet_celeba_1000_ratio0p1_gpu1_20260429_071551.log` |
+| `0.1` | `coreset` | `0.9096` | `0.3570` | `logs_celeba/instructpix2pix_coreset_resnet_celeba_1000_ratio0p1_gpu1_20260429_071551.log` |
+| `0.1` | `badge` | `0.9127` | `0.3392` | `logs_celeba/instructpix2pix_badge_resnet_celeba_1000_ratio0p1_gpu1_20260429_071551.log` |
+| `0.1` | `attribute_r003_p05_c15` | `0.9120` | `0.3563` | `logs_celeba/instructpix2pix_attribute_r003_p05_c15_resnet_celeba_1000_ratio0p1_gpu1_20260429_071551.log` |
+| `0.1` | `attribute_r000_p0_c15` | `0.9068` | `0.3765` | `logs_celeba/instructpix2pix_attribute_r000_p0_c15_resnet_celeba_1000_ratio0p1_gpu1_20260429_071551.log` |
+| `0.1` | `attribute_r000_p0_cinf` | `0.9071` | `0.3752` | `logs_celeba/instructpix2pix_attribute_r000_p0_cinf_resnet_celeba_1000_ratio0p1_gpu1_20260429_071551.log` |
+| `0.1` | `attribute_r003_p05_cinf` | `0.9025` | `0.3851` | `logs_celeba/instructpix2pix_attribute_r003_p05_cinf_resnet_celeba_1000_ratio0p1_gpu1_20260429_071551.log` |
+| `0.3` | `random` | `0.9091` | `0.3507` | `logs_celeba/instructpix2pix_random_resnet_celeba_1000_ratio0p3_gpu1_20260429_071551.log` |
+| `0.3` | `stratified` | `0.9127` | `0.3490` | `logs_celeba/instructpix2pix_stratified_resnet_celeba_1000_ratio0p3_gpu1_20260429_071551.log` |
+| `0.3` | `coreset` | `0.9099` | `0.3536` | `logs_celeba/instructpix2pix_coreset_resnet_celeba_1000_ratio0p3_gpu1_20260429_071551.log` |
+| `0.3` | `badge` | `0.9099` | `0.3422` | `logs_celeba/instructpix2pix_badge_resnet_celeba_1000_ratio0p3_gpu1_20260429_071551.log` |
+| `0.3` | `attribute_r003_p05_c15` | `0.9101` | `0.3692` | `logs_celeba/instructpix2pix_attribute_r003_p05_c15_resnet_celeba_1000_ratio0p3_gpu1_20260429_071551.log` |
+| `0.3` | `attribute_r000_p0_c15` | `0.9095` | `0.3629` | `logs_celeba/instructpix2pix_attribute_r000_p0_c15_resnet_celeba_1000_ratio0p3_gpu1_20260429_071551.log` |
+| `0.3` | `attribute_r000_p0_cinf` | `0.9095` | `0.3626` | `logs_celeba/instructpix2pix_attribute_r000_p0_cinf_resnet_celeba_1000_ratio0p3_gpu1_20260429_071551.log` |
+| `0.3` | `attribute_r003_p05_cinf` | `0.9038` | `0.3801` | `logs_celeba/instructpix2pix_attribute_r003_p05_cinf_resnet_celeba_1000_ratio0p3_gpu1_20260429_071551.log` |
+| `0.5` | `random` | `0.9098` | `0.3499` | `logs_celeba/instructpix2pix_random_resnet_celeba_1000_ratio0p5_gpu2_20260429_071551.log` |
+| `0.5` | `stratified` | **`0.9132`** | `0.3510` | `logs_celeba/instructpix2pix_stratified_resnet_celeba_1000_ratio0p5_gpu2_20260429_071551.log` |
+| `0.5` | `coreset` | `0.9095` | `0.3558` | `logs_celeba/instructpix2pix_coreset_resnet_celeba_1000_ratio0p5_gpu2_20260429_071551.log` |
+| `0.5` | `badge` | `0.9093` | `0.3419` | `logs_celeba/instructpix2pix_badge_resnet_celeba_1000_ratio0p5_gpu2_20260429_071551.log` |
+| `0.5` | `attribute_r003_p05_c15` | `0.9040` | `0.3798` | `logs_celeba/instructpix2pix_attribute_r003_p05_c15_resnet_celeba_1000_ratio0p5_gpu2_20260429_071551.log` |
+| `0.5` | `attribute_r000_p0_c15` | `0.9095` | `0.3563` | `logs_celeba/instructpix2pix_attribute_r000_p0_c15_resnet_celeba_1000_ratio0p5_gpu2_20260429_071551.log` |
+| `0.5` | `attribute_r000_p0_cinf` | `0.9094` | `0.3565` | `logs_celeba/instructpix2pix_attribute_r000_p0_cinf_resnet_celeba_1000_ratio0p5_gpu2_20260429_071551.log` |
+| `0.5` | `attribute_r003_p05_cinf` | `0.9110` | `0.3602` | `logs_celeba/instructpix2pix_attribute_r003_p05_cinf_resnet_celeba_1000_ratio0p5_gpu2_20260429_071551.log` |
+| `0.7` | `random` | `0.9116` | `0.3477` | `logs_celeba/instructpix2pix_random_resnet_celeba_1000_ratio0p7_gpu3_20260429_071551.log` |
+| `0.7` | `stratified` | `0.9086` | `0.3635` | `logs_celeba/instructpix2pix_stratified_resnet_celeba_1000_ratio0p7_gpu3_20260429_071551.log` |
+| `0.7` | `coreset` | `0.9067` | `0.3667` | `logs_celeba/instructpix2pix_coreset_resnet_celeba_1000_ratio0p7_gpu3_20260429_071551.log` |
+| `0.7` | `badge` | `0.9123` | `0.3372` | `logs_celeba/instructpix2pix_badge_resnet_celeba_1000_ratio0p7_gpu3_20260429_071551.log` |
+| `0.7` | `attribute_r003_p05_c15` | `0.9108` | `0.3588` | `logs_celeba/instructpix2pix_attribute_r003_p05_c15_resnet_celeba_1000_ratio0p7_gpu3_20260429_071551.log` |
+| `0.7` | `attribute_r000_p0_c15` | `0.9107` | `0.3558` | `logs_celeba/instructpix2pix_attribute_r000_p0_c15_resnet_celeba_1000_ratio0p7_gpu3_20260429_071551.log` |
+| `0.7` | `attribute_r000_p0_cinf` | `0.9109` | `0.3559` | `logs_celeba/instructpix2pix_attribute_r000_p0_cinf_resnet_celeba_1000_ratio0p7_gpu3_20260429_071551.log` |
+| `0.7` | `attribute_r003_p05_cinf` | `0.9116` | `0.3547` | `logs_celeba/instructpix2pix_attribute_r003_p05_cinf_resnet_celeba_1000_ratio0p7_gpu3_20260429_071551.log` |
+
 # 04/29/2026 Update — Brown-Rainy Completed Result Snapshot
 
 - This section records all stable brown-rainy COCO pose results currently
   completed on Juno and complements the local completed experiment sections
   already preserved below.
-- Juno job `185516` (`br-base-1gpu`) is still active for the one-GPU H100
-  paired baseline sweep.
+- Juno job `185516` (`br-base-1gpu`) completed successfully with exit code
+  `0:0` after `08:47:21`.
 - The sweep runs ratios sequentially (`0.05`, `0.1`, `0.3`, `0.5`, `0.7`,
   `0.9`) and runs two methods at a time per ratio:
   `random + stratified`, then `coreset + badge`.
-- Stable completed baseline results are currently available for ratios `0.05`,
-  `0.1`, `0.3`, and `0.5`; `0.7` and `0.9` were still running at the latest
-  check.
-- Juno job `185548` (`br-attr-miss`) is also active for missing Qwen3
-  brown-rainy attribute RPC rows. It runs at most two training processes at
-  once and starts the next queued task as soon as one active task finishes.
+- Stable completed baseline results are now available for all planned ratios:
+  `0.05`, `0.1`, `0.3`, `0.5`, `0.7`, and `0.9`.
+- Juno job `185548` (`br-attr-miss`) also completed successfully with exit
+  code `0:0` after `05:28:16`.
+- No expected brown-rainy baseline or missing attribute RPC result file was
+  missing at the completion check.
 - Training resumes from the same base checkpoint used by the recent
   brown-rainy experiments:
   `/home/oxx220000/scratch/safefix_cache/log_pose/pose_keypointrcnn_train20k_internvl3_bs8_e2_rare1p1_gpu0_20260415_144530/best.pth`
@@ -43,11 +241,18 @@
 | `0.50` | `stratified` | `0.6343` | `0.8650` | `0.6914` | `0.6230` | `0.8553` | `0.6786` |
 | `0.50` | `coreset` | `0.6248` | `0.8584` | `0.6823` | `0.6167` | `0.8546` | `0.6733` |
 | `0.50` | `badge` | `0.6300` | `0.8679` | `0.6907` | `0.6206` | `0.8591` | `0.6696` |
+| `0.70` | `random` | `0.6334` | `0.8629` | `0.6916` | **`0.6332`** | `0.8615` | `0.6904` |
+| `0.70` | `stratified` | `0.6364` | `0.8639` | `0.6968` | `0.6299` | `0.8559` | `0.6916` |
+| `0.70` | `coreset` | `0.6341` | `0.8652` | `0.6973` | `0.6275` | `0.8576` | `0.6839` |
+| `0.70` | `badge` | `0.6379` | `0.8621` | `0.7016` | `0.6256` | `0.8544` | `0.6738` |
+| `0.90` | `random` | `0.6155` | `0.8520` | `0.6737` | `0.6180` | `0.8517` | `0.6673` |
+| `0.90` | `stratified` | **`0.6380`** | `0.8641` | `0.6962` | `0.6291` | `0.8629` | `0.6867` |
+| `0.90` | `coreset` | `0.6288` | `0.8614` | `0.6876` | `0.6202` | `0.8570` | `0.6714` |
+| `0.90` | `badge` | `0.6266` | `0.8622` | `0.6880` | `0.6213` | `0.8563` | `0.6732` |
 
-- Best completed baseline test AP so far: `ratio=0.30`, `coreset`, test AP
-  `0.6256`.
-- Best completed baseline validation AP so far: `ratio=0.50`, `stratified`,
-  val AP `0.6343`.
+- Best completed baseline test AP: `ratio=0.70`, `random`, test AP `0.6332`.
+- Best completed baseline validation AP: `ratio=0.90`, `stratified`, val AP
+  `0.6380`.
 
 ## Completed Juno Qwen3 Brown-Rainy Attribute Results
 
@@ -70,16 +275,22 @@ These runs use Qwen3 train20k metadata, generated target
 | `0.50` | `0.01` | `0.5` | `15.0` | `0.6290` | `0.8672` | `0.6870` | `0.6208` | `0.8547` | `0.6774` |
 | `0.50` | `0.03` | `0.5` | `8.0` | `0.6257` | `0.8602` | `0.6874` | `0.6162` | `0.8525` | `0.6667` |
 | `0.50` | `0.03` | `0.5` | `15.0` | `0.5916` | `0.8412` | `0.6453` | `0.5866` | `0.8338` | `0.6357` |
-| `0.70` | `0.00` | `0.0` | `15.0` | **`0.6364`** | `0.8650` | `0.6953` | **`0.6313`** | `0.8583` | `0.6932` |
+| `0.70` | `0.00` | `0.0` | `15.0` | `0.6364` | `0.8650` | `0.6953` | `0.6313` | `0.8583` | `0.6932` |
+| `0.70` | `0.01` | `0.5` | `0.0` | `0.6370` | `0.8615` | `0.7007` | `0.6247` | `0.8558` | `0.6819` |
+| `0.70` | `0.01` | `0.5` | `15.0` | **`0.6394`** | `0.8642` | **`0.7029`** | `0.6290` | `0.8572` | `0.6815` |
+| `0.70` | `0.03` | `0.5` | `0.0` | `0.6370` | `0.8615` | `0.7007` | `0.6247` | `0.8558` | `0.6819` |
+| `0.70` | `0.03` | `0.5` | `8.0` | `0.6331` | `0.8607` | `0.6920` | `0.6300` | `0.8548` | `0.6852` |
+| `0.70` | `0.03` | `0.5` | `15.0` | `0.6377` | `0.8703` | `0.6922` | **`0.6319`** | `0.8571` | `0.6884` |
 | `0.90` | `0.00` | `0.0` | `15.0` | `0.6339` | `0.8706` | `0.6908` | `0.6268` | `0.8579` | `0.6836` |
+| `0.90` | `0.01` | `0.5` | `15.0` | `0.6282` | `0.8606` | `0.6829` | `0.6255` | `0.8572` | `0.6805` |
+| `0.90` | `0.03` | `0.5` | `8.0` | `0.6282` | `0.8606` | `0.6829` | `0.6255` | `0.8572` | `0.6805` |
+| `0.90` | `0.03` | `0.5` | `15.0` | `0.6282` | `0.8606` | `0.6829` | `0.6255` | `0.8572` | `0.6805` |
 
 - Best completed Qwen3 brown-rainy attribute test AP so far:
-  `ratio=0.70`, `R=0.00`, `P=0.0`, `C=15.0`, test AP `0.6313`.
-- The strongest completed Juno brown-rainy result overall is currently this
-  `ratio=0.70` attribute row, above the best completed baseline row
-  (`ratio=0.30`, `coreset`, test AP `0.6256`).
-- The remaining `0.70` and `0.90` attribute RPC rows are still running under
-  job `185548`, so they are intentionally not included yet.
+  `ratio=0.70`, `R=0.03`, `P=0.5`, `C=15.0`, test AP `0.6319`.
+- The strongest completed Juno brown-rainy result overall is currently the
+  baseline `ratio=0.70` `random` row, test AP `0.6332`, slightly above the
+  best completed attribute row.
 
 # 04/29/2026 Update — KITTI Attribute Assignment and Slice Analysis
 
@@ -188,6 +399,20 @@ batch-size-64 overall train mAP50-95 (`0.6051`).
   - overall train metrics: mAP50 `0.8719`, mAP50-95 `0.6010`
   - Qwen3: `25` slices, `12` failure slices
   - BLIP: `26` slices, `14` failure slices
+  - InternVL3: `25` slices, `13` failure slices
+    - log:
+      `logs/kitti_slice_analysis_train_internvl3_bs16_gpu2_20260429_0517.log`
+    - output root:
+      `log_kitti/kitti_slice_stats_internvl3_bs16_gpu2_20260429_0517`
+
+- KITTI YOLOv8n pretrained batch-size recommendation:
+  - Use `batch=16` as the default for future KITTI pretrained YOLOv8n runs.
+  - The batch-size-16 and batch-size-64 runs are effectively tied on held-out
+    test mAP50-95 (`0.5797` vs `0.5801`), while batch size 16 is slightly
+    higher on held-out test mAP50 (`0.8454` vs `0.8422`).
+  - Runtime difference is small for this 30-epoch setup: batch size 64 training
+    took `621.63 s` (`10.36 min`), and batch size 16 training took `714.95 s`
+    (`11.92 min`).
 
 ### KITTI Batch-Size-16 Worst Train Slices
 
@@ -201,6 +426,10 @@ batch-size-64 overall train mAP50-95 (`0.6051`).
 | BLIP | `background_style=rural` | `23` | `0.7622` | `0.4775` | `-0.1235` |
 | BLIP | `road_condition=snowy` | `585` | `0.7645` | `0.5260` | `-0.0750` |
 | BLIP | `background_style=highway` | `1621` | `0.7703` | `0.5274` | `-0.0736` |
+| InternVL3 | `traffic_density=heavy` | `31` | `0.4690` | `0.3667` | `-0.2343` |
+| InternVL3 | `background_style=highway` | `510` | `0.4729` | `0.3700` | `-0.2310` |
+| InternVL3 | `road_condition=wet` | `30` | `0.5624` | `0.4008` | `-0.2002` |
+| InternVL3 | `lighting_condition=glare` | `127` | `0.7206` | `0.4725` | `-0.1285` |
 
 - Completed BLIP attribute assignment on 5000 KITTI train images.
 - Corpus: `save/corpus_kitti_gemini_clean.json` (6 attributes, no "unknown"/"NA")
@@ -226,10 +455,12 @@ batch-size-64 overall train mAP50-95 (`0.6051`).
   - Output: `save/attribute_kitti_qwen3_8B.json`,
     `save/attribute_kitti_qwen3_8B.csv`
   - Log: `logs/assign_attr_kitti_train_qwen3_gemini6c_gpu3_*.log`
-- InternVL3-8B attribute assignment has partial artifacts in the current repo.
-  - Partial output: `save/attribute_kitti_internvl3_8B_partial.json`,
+- InternVL3-8B attribute assignment completed for the same 5000 KITTI train
+  images.
+  - Output: `save/attribute_kitti_internvl3_8B.json`,
     `save/attribute_kitti_internvl3_8B.csv`
-  - Log: `logs/assign_attr_kitti_train_internvl3_gpu2_*.log`
+  - Log: `logs/assign_attr_kitti_train_internvl3_gpu2_20260429_004725.log`
+  - Runtime: `269.4` minutes (`4.49` hours)
 - Available KITTI corpus files:
   - `save/corpus_kitti_gemini_clean.json` — 6 attrs (color, weather, background_style, traffic_density, lighting_condition, road_condition); used for all three assigners
   - `save/corpus_kitti_object_gpt_clean.json` — 10 attrs (adds object_scale, viewpoint, occlusion, truncation, motion_state); available for future use

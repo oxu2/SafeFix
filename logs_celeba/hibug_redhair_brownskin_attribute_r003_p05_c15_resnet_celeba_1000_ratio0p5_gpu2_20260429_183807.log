@@ -1,0 +1,32 @@
+Current time: 0429193948
+Selected 1000 filenames for sampling
+Added 1000 generated redhair_brownskin images, before training set has 80000 images, now 81000
+
+Attribute distribution in selected samples:
+  [hair color] black: 17688 samples (44.2%)
+  [hair color] brown: 9871 samples (24.7%)
+  [hair color] blonde: 5185 samples (13.0%)
+  [hair color] gray: 2861 samples (7.2%)
+  [hair color] white: 2651 samples (6.6%)
+  [hair color] red: 1739 samples (4.3%)
+  [hair color] yellow: 5 samples (0.0%)
+  [skin] brown: 21864 samples (54.7%)
+  [skin] white: 15076 samples (37.7%)
+  [skin] black: 3060 samples (7.6%)
+CelebA: Combined 40000 selected samples with 1000 generated images using Active Learning
+Resumed model from /people/cs/o/oxx220000/safefix/weights/model_celeba_resnet_base.pth (best val acc: 0.914, base test acc: 0.9140)
+Recovered base test acc from log: logs/celeba_resnet_base_redhair_brownskin_sademotion_0imgs_20260416_022317.log
+Epoch [1/15], Train Loss: 0.2579, Train Acc: 0.9745, Val Loss: 0.3546, Val Acc: 0.9098
+Epoch [2/15], Train Loss: 0.2544, Train Acc: 0.9751, Val Loss: 0.3580, Val Acc: 0.9092
+Epoch [3/15], Train Loss: 0.2534, Train Acc: 0.9750, Val Loss: 0.3620, Val Acc: 0.9064
+Epoch [4/15], Train Loss: 0.2521, Train Acc: 0.9756, Val Loss: 0.3577, Val Acc: 0.9087
+Epoch [5/15], Train Loss: 0.2521, Train Acc: 0.9756, Val Loss: 0.3772, Val Acc: 0.9012
+Epoch [6/15], Train Loss: 0.2511, Train Acc: 0.9760, Val Loss: 0.3673, Val Acc: 0.9034
+Epoch [7/15], Train Loss: 0.2502, Train Acc: 0.9771, Val Loss: 0.3598, Val Acc: 0.9040
+Epoch [8/15], Train Loss: 0.2506, Train Acc: 0.9767, Val Loss: 0.3588, Val Acc: 0.9052
+Epoch [9/15], Train Loss: 0.2500, Train Acc: 0.9770, Val Loss: 0.3765, Val Acc: 0.9023
+Epoch [10/15], Train Loss: 0.2497, Train Acc: 0.9773, Val Loss: 0.3776, Val Acc: 0.9014
+Epoch [11/15], Train Loss: 0.2486, Train Acc: 0.9779, Val Loss: 0.3722, Val Acc: 0.9046
+Epoch [12/15], Train Loss: 0.2495, Train Acc: 0.9769, Val Loss: 0.3797, Val Acc: 0.9018
+Epoch [13/15], Train Loss: 0.2488, Train Acc: 0.9767, Val Loss: 0.3673, Val Acc: 0.9040
+Epoch [14/15], Train Loss: 0.2482, Train Acc: 0.9778, Val Loss: 0.3728, Val Acc: 0.9019

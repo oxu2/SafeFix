@@ -1,0 +1,15 @@
+[2026-04-29 16:54:11] Launching CelebA instruct-pix2pix local queues, stamp=20260429_071551
+Generated:      data/redhair_brownskin_sademotion_instruct_pix2pix_seed42_1k
+Base model:     weights/model_celeba_resnet_base.pth
+Attribute file: save/attribute_celeba_trainval_qwen3_8B.json
+[2026-04-29 16:54:11] gpu=3 ratio=0.7 method=random log=logs_celeba/instructpix2pix_random_resnet_celeba_1000_ratio0p7_gpu3_20260429_071551.log
+[2026-04-29 16:54:11] gpu=3 ratio=0.7 method=random already completed; skipping
+[2026-04-29 16:54:11] gpu=3 ratio=0.7 method=stratified log=logs_celeba/instructpix2pix_stratified_resnet_celeba_1000_ratio0p7_gpu3_20260429_071551.log
+[2026-04-29 16:54:11] gpu=3 ratio=0.7 method=stratified already completed; skipping
+[2026-04-29 16:54:11] gpu=3 ratio=0.7 method=coreset log=logs_celeba/instructpix2pix_coreset_resnet_celeba_1000_ratio0p7_gpu3_20260429_071551.log
+[2026-04-29 16:54:11] gpu=3 ratio=0.7 method=coreset already completed; skipping
+[2026-04-29 16:54:11] gpu=3 ratio=0.7 method=badge log=logs_celeba/instructpix2pix_badge_resnet_celeba_1000_ratio0p7_gpu3_20260429_071551.log
+[2026-04-29 17:09:29] gpu=3 ratio=0.7 method=attribute_r003_p05_c15 log=logs_celeba/instructpix2pix_attribute_r003_p05_c15_resnet_celeba_1000_ratio0p7_gpu3_20260429_071551.log
+[2026-04-29 17:27:21] gpu=3 ratio=0.7 method=attribute_r000_p0_c15 log=logs_celeba/instructpix2pix_attribute_r000_p0_c15_resnet_celeba_1000_ratio0p7_gpu3_20260429_071551.log
+[2026-04-29 17:45:32] gpu=3 ratio=0.7 method=attribute_r000_p0_cinf log=logs_celeba/instructpix2pix_attribute_r000_p0_cinf_resnet_celeba_1000_ratio0p7_gpu3_20260429_071551.log
+[2026-04-29 18:00:08] gpu=3 ratio=0.7 method=attribute_r003_p05_cinf log=logs_celeba/instructpix2pix_attribute_r003_p05_cinf_resnet_celeba_1000_ratio0p7_gpu3_20260429_071551.log

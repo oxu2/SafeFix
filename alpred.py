@@ -1277,6 +1277,12 @@ elif args.dataset == 'celeba':
         # Determine the correct extension based on ablation flag
         # Get the image file path...
         image_path = str(Path(args.gen_image_dir) / f"{filename}{extension}")
+        if not args.no_controlnet and not os.path.exists(image_path):
+            for candidate_extension in (".png", ".jpeg", ".jpg"):
+                candidate_path = Path(args.gen_image_dir) / f"{filename}{candidate_extension}"
+                if candidate_path.exists():
+                    image_path = str(candidate_path)
+                    break
         if not os.path.exists(image_path):
             print(f"Warning: Modified image {image_path} not found.")
             continue

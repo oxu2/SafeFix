@@ -5,6 +5,543 @@
 
 ---
 
+## Session 146: Build KITTI Qwen3 non-red / non-cloudy bxz handoff CSV
+
+**Date**: 2026-04-29
+**Task**: kitti-qwen3-non-red-non-cloudy-bxz-csv
+
+### Summary
+
+The user asked to use the existing KITTI Qwen3 attribute assignment to select
+the `color=red OR weather=cloudy` image IDs and prepare the non-satisfying
+images as a CSV for `bxz`, following the earlier bxz handoff style. Mirrored
+the existing `qwen3_train20k_non_brown_non_rainy_matches.csv` format by keeping
+only rows that satisfy neither target attribute.
+
+### Main Changes
+
+- Added:
+  - `save/qwen3_kitti_train5000_non_red_non_cloudy_matches.csv`
+  - `bxz/qwen3_kitti_train5000_non_red_non_cloudy_matches.csv`
+- Updated:
+  - `bxz/README.md`
+
+### Details
+
+- Source attribute CSV:
+  - `save/attribute_kitti_qwen3_8B.csv`
+- Filter:
+  - target-satisfying rows are `color == red OR weather == cloudy`
+  - handoff CSV keeps non-satisfying rows where `color != red` and
+    `weather != cloudy`
+- Output columns:
+  - `row_idx,image_id,color,weather`
+- Counts from the `5,000` KITTI train rows:
+  - `492` rows satisfy `color=red OR weather=cloudy`
+  - `12` rows satisfy both `color=red` and `weather=cloudy`
+  - `4,508` rows satisfy neither target and are written to the CSV
+
+### Validation
+
+- [OK] `wc -l save/qwen3_kitti_train5000_non_red_non_cloudy_matches.csv bxz/qwen3_kitti_train5000_non_red_non_cloudy_matches.csv`
+  - both files have `4,509` lines including the header
+- [OK] Parsed both generated CSVs and verified `bad_rows 0` for rows where
+  `color=red OR weather=cloudy`.
+
+### Important Notes
+
+- This task did not update `.handoff.md` because the active baton-pass state did
+  not change.
+- `report.md` was not updated because this is a handoff artifact, not a stable
+  experiment result table.
+
+### Status
+
+[OK] **Completed**
+
+## Session 145: Launch local CelebA HiBUG redhair-brownskin sweep
+
+**Date**: 2026-04-29
+**Task**: celeba-hibug-redhair-brownskin-local-sweep-and-juno-pending-check
+
+### Follow-up: Duplicate Orphaned Child Processes Killed
+
+- User noticed GPUs `1`, `2`, and `3` each had two Python processes.
+- Confirmed old orphaned child processes from the aborted first launch were
+  still alive:
+  - GPU `1`: PID `53060`, duplicate `ratio=0.1`, `use_active_learning False`
+  - GPU `2`: PID `53058`, duplicate `ratio=0.5`, `use_active_learning False`
+  - GPU `3`: PID `53062`, duplicate `ratio=0.7`, `use_active_learning False`
+- These were not the corrected active queue workers; they had `PPID=1` and
+  came from the earlier `20260429_183659` attempt whose bash worker PIDs had
+  already been killed.
+- Killed only duplicate orphaned Python PIDs:
+  `kill 53058 53060 53062`.
+- Post-kill `nvidia-smi --query-compute-apps=...` showed only one safefix
+  Python process on each target GPU:
+  - GPU `1`: PID `59665`
+  - GPU `2`: PID `55099`
+  - GPU `3`: PID `55100`
+- Active queue parents remain:
+  `55069`, `55070`, `55071`.
+
+### Follow-up: Cancelled Stale Juno Smoke Job
+
+- Rechecked Juno job `185848` after user noticed it was still pending.
+- `squeue` / `scontrol show job 185848` showed:
+  - job name: `celeba-ip2p-smoke`
+  - state: `PENDING`
+  - reason: `Resources`
+  - elapsed: `00:00:00`
+  - requested resources: `gres/gpu=1`, `cpu=8`, `mem=80G`
+  - command:
+    `/work/oxx220000/safefix/scripts/juno_celeba_instructpix2pix_smoke.sbatch`
+- `sacct -j 185848` confirmed it never ran:
+  `State=PENDING`, `Elapsed=00:00:00`, `Start=Unknown`,
+  `NodeList=None assigned`.
+- The full local CelebA
+  `redhair_brownskin_sademotion_instruct_pix2pix_seed42_1k` sweep is already
+  complete and recorded in `report.md`; this Juno job was only the older
+  one-epoch smoke test and was not a stable report result.
+- Per user instruction to kill duplicates, cancelled it:
+  `ssh juno 'scancel 185848 ...'`.
+- Post-cancel accounting:
+  `State=CANCELLED by 777123`, `Elapsed=00:00:00`,
+  `NodeList=None assigned`, `End=2026-04-29T18:46:35`.
+
+### Summary
+
+Checked Juno job `185848`, confirmed it is the older one-epoch
+`redhair_brownskin_sademotion` instruct-pix2pix smoke test rather than the
+requested two-attribute HiBUG `redhair_brownskin` run, then launched the
+two-attribute local sweep on GPUs `1`, `2`, and `3`.
+
+### What Changed
+
+- Added:
+  `scripts/run_celeba_hibug_redhair_brownskin_ratio_queues.sh`
+  - generated directory:
+    `data/hibug_redhair_brownskin_seed42_1k`
+  - attributes:
+    `redhair_brownskin`
+  - attribute AL focus:
+    `hair color,skin`
+  - generated count hints:
+    `hair color:red=1000,skin:brown=1000`
+  - GPU allocation matches the previous local CelebA queues:
+    GPU `1` runs ratios `0.1` and `0.3`, GPU `2` runs ratio `0.5`, and
+    GPU `3` runs ratio `0.7`.
+- Updated `alpred.py` CelebA generated-image loading so non-ablation generated
+  images fall back from `.jpg` to existing `.png` / `.jpeg` files. This is
+  needed for HiBUG images such as `redhair_brownskin_006516.png`.
+
+### Commands And Artifacts
+
+- Syntax checks:
+  - `bash -n scripts/run_celeba_hibug_redhair_brownskin_ratio_queues.sh`
+  - `/people/cs/o/oxx220000/.conda/envs/ad/bin/python -m py_compile alpred.py`
+- First attempted launch:
+  - stamp: `20260429_183659`
+  - issue: selected 1000 filenames but added `0` images because the loader
+    searched for `.jpg`; worker PIDs `53032`, `53033`, and `53034` were killed.
+- Active corrected launch:
+  - command:
+    `STAMP=20260429_183807 bash scripts/run_celeba_hibug_redhair_brownskin_ratio_queues.sh`
+  - PID file:
+    `logs_celeba/hibug_redhair_brownskin_queues_20260429_183807.pids`
+  - worker PIDs/logs:
+    - GPU `1`: PID `55069`,
+      `logs_celeba/hibug_redhair_brownskin_queue_gpu1_20260429_183807.log`
+    - GPU `2`: PID `55070`,
+      `logs_celeba/hibug_redhair_brownskin_queue_gpu2_20260429_183807.log`
+    - GPU `3`: PID `55071`,
+      `logs_celeba/hibug_redhair_brownskin_queue_gpu3_20260429_183807.log`
+  - startup logs confirmed:
+    `Selected 1000 filenames for sampling` and
+    `Added 1000 generated redhair_brownskin images` on all three GPUs.
+
+### Juno Pending Analysis
+
+- `scontrol show job 185848`:
+  - job name: `celeba-ip2p-smoke`
+  - command:
+    `/work/oxx220000/safefix/scripts/juno_celeba_instructpix2pix_smoke.sbatch`
+  - requested TRES:
+    `cpu=8,mem=80G,node=1,billing=8,gres/gpu=1`
+  - state:
+    `PENDING`, reason `Resources`
+  - scheduler estimated start time:
+    `2026-04-30T21:06:32`
+- `scontrol show node` on the H100 nodes showed why the request is not placed:
+  - `g-04-02` has an H100 free but is `MIXED+RESERVED`, reservation
+    `czhang`, and only about `6197 MB` free memory despite the job requesting
+    `80G`.
+  - `g-05-01` and `g-06-01` have their full `500G` node memory allocated.
+- Conclusion:
+  the job is pending before execution because no H100 node currently satisfies
+  the GPU + `80G` memory request under the active reservation/allocation state.
+
+### Status
+
+[~] **Local HiBUG two-attribute CelebA sweep is running on GPUs 1/2/3 with stamp `20260429_183807`; stale Juno smoke job `185848` has been cancelled**
+
+---
+
+## Session 143: Record completed local and Juno experiment results
+
+**Date**: 2026-04-29
+**Task**: record-local-celeba-and-juno-brown-rainy-completions
+
+### Summary
+
+Verified that the local CelebA instruct-pix2pix sweep and the two recent Juno
+brown-rainy jobs completed, then updated `report.md` with the stable results.
+
+### What Changed
+
+- Updated `report.md`:
+  - local CelebA instruct-pix2pix stamp `20260429_071551` is now recorded as
+    complete for all `32/32` planned rows
+  - removed the stale "CelebA rows still running" section
+  - Juno brown-rainy baseline job `185516` is now recorded as completed
+  - Juno brown-rainy missing-attribute job `185548` is now recorded as
+    completed
+  - added the completed brown-rainy baseline `ratio=0.7` and `ratio=0.9`
+    rows
+  - added the completed brown-rainy attribute `ratio=0.7` and `ratio=0.9`
+    missing RPC rows
+
+### Validation
+
+- Local CelebA:
+  - checked every
+    `logs_celeba/instructpix2pix_*_resnet_celeba_1000_ratio0p*_gpu*_20260429_071551.log`
+  - all `32` planned logs contain `Model Test ACC:`
+  - no active local worker PIDs remained for the original or resumed queues
+- Juno:
+  - `sacct -j 185516,185548` reported both jobs `COMPLETED` with exit code
+    `0:0`
+  - job `185516`: elapsed `08:47:21`
+  - job `185548`: elapsed `05:28:16`
+  - checked expected result rows and found no missing brown-rainy baseline or
+    missing-attribute RPC result files
+
+### Key Results
+
+- Best local CelebA instruct-pix2pix test ACC:
+  `ratio=0.5`, `stratified`, `0.9132`.
+- Best completed Juno brown-rainy baseline test AP:
+  `ratio=0.7`, `random`, `0.6332`.
+- Best completed Juno brown-rainy attribute test AP:
+  `ratio=0.7`, `R=0.03`, `P=0.5`, `C=15.0`, `0.6319`.
+
+### Status
+
+[x] **Report updated with completed local CelebA and Juno brown-rainy results**
+
+---
+
+## Session 144: Complete KITTI InternVL3 Slice Analysis And Report Top Tables
+
+**Date**: 2026-04-29
+**Task**: kitti-internvl3-bs16-slice-analysis-and-report-top-tables
+
+### Summary
+
+Verified that the KITTI train-split InternVL3-8B assignment finished for all
+`5000` train images, then ran train-split slice analysis for the two canonical
+YOLOv8n pretrained KITTI checkpoints. Recorded that future KITTI pretrained
+YOLOv8n runs should default to `batch=16`, and added top-of-report summary
+tables for the brown-rainy and KITTI InternVL3 results.
+
+### What Changed
+
+- Updated `report.md`:
+  - added a top `Brown-Rainy Combined Baseline And Qwen3 Attribute Results`
+    table with all completed rows and the best `Test AP` bolded within each
+    ratio
+  - added a top `KITTI Batch-Size-16 InternVL3 Slice Analysis` section with
+    all `13` InternVL3 failure slices
+  - InternVL3-8B KITTI assignment is now complete.
+  - Batch-size-16 train-split slice analysis now includes InternVL3.
+  - Future KITTI pretrained YOLOv8n default is `batch=16`.
+- Confirmed assignment artifacts:
+  - `save/attribute_kitti_internvl3_8B.json`
+  - `save/attribute_kitti_internvl3_8B.csv`
+  - log: `logs/assign_attr_kitti_train_internvl3_gpu2_20260429_004725.log`
+  - runtime: `269.4` minutes (`4.49` hours)
+- Ran InternVL3 slice analysis:
+  - batch-size-64 checkpoint on GPU `1`:
+    `logs/kitti_slice_analysis_train_internvl3_bs64_gpu1_20260429_0517.log`
+    -> `log_kitti/kitti_slice_stats_internvl3_bs64_gpu1_20260429_0517`
+  - batch-size-16 checkpoint on GPU `2`:
+    `logs/kitti_slice_analysis_train_internvl3_bs16_gpu2_20260429_0517.log`
+    -> `log_kitti/kitti_slice_stats_internvl3_bs16_gpu2_20260429_0517`
+
+### Key Results
+
+- Batch-size-64 train-split InternVL3 slice analysis:
+  - overall train mAP50 `0.8744`, mAP50-95 `0.6051`
+  - `25` slices, `12` failure slices
+  - worst slices: `background_style=highway`,
+    `traffic_density=heavy`, `road_condition=wet`
+- Batch-size-16 train-split InternVL3 slice analysis:
+  - overall train mAP50 `0.8719`, mAP50-95 `0.6010`
+  - `25` slices, `13` failure slices
+  - worst slices: `traffic_density=heavy`,
+    `background_style=highway`, `road_condition=wet`
+- Batch-size comparison from training logs:
+  - batch size `64`: training `621.63 s` (`10.36 min`), held-out test
+    mAP50 `0.8422`, mAP50-95 `0.5801`
+  - batch size `16`: training `714.95 s` (`11.92 min`), held-out test
+    mAP50 `0.8454`, mAP50-95 `0.5797`
+
+### Status
+
+[x] **KITTI train-split BLIP/Qwen3/InternVL3 slice analysis is available for the batch-size-16 checkpoint**
+
+---
+
+## Session 142: Submit Juno CelebA one-epoch instruct-pix2pix smoke test
+
+**Date**: 2026-04-29
+**Task**: juno-celeba-ip2p-one-epoch-smoke
+
+### Summary
+
+Added and submitted a Juno H100 smoke-test SLURM script for one epoch of
+CelebA `alpred.py` using the
+`redhair_brownskin_sademotion_instruct_pix2pix_seed42_1k` generated subset.
+
+### What Changed
+
+- Added:
+  `scripts/juno_celeba_instructpix2pix_smoke.sbatch`
+- Synced to Juno:
+  - `scripts/juno_celeba_instructpix2pix_smoke.sbatch`
+  - `alpred.py`
+- Script behavior:
+  - allocates one H100
+  - stages a runnable repo copy under:
+    `$HOME/scratch/safefix_runs/celeba_ip2p_smoke_${SLURM_JOB_ID}_${TIMESTAMP}`
+  - runs from that scratch repo copy so `alpred.py` writes `save/` and
+    `logs_celeba/` under scratch
+  - reads CelebA source images from scratch cache:
+    `/home/oxx220000/scratch/safefix_cache/data/img_align_celeba`
+  - reads generated images from scratch cache:
+    `/home/oxx220000/scratch/safefix_cache/data/redhair_brownskin_sademotion_instruct_pix2pix_seed42_1k`
+  - uses resume checkpoint copied into the scratch repo:
+    `weights/model_celeba_resnet_base.pth`
+  - copies `logs_celeba/` back to the persistent repo after the run
+
+### Test Command
+
+- Dry-run passed on Juno login node:
+  `cd ~/work/safefix && bash scripts/juno_celeba_instructpix2pix_smoke.sbatch --dry-run`
+- Submitted real job:
+  `cd ~/work/safefix && sbatch --parsable scripts/juno_celeba_instructpix2pix_smoke.sbatch`
+- SLURM job id: `185848`
+- Initial queue state:
+  `PENDING (Resources)` on partition `h100`
+
+### `alpred.py` Settings
+
+- dataset: `celeba`
+- model: `resnet`
+- attributes: `redhair_brownskin_sademotion`
+- generated images: `1000`
+- generated directory:
+  `/home/oxx220000/scratch/safefix_cache/data/redhair_brownskin_sademotion_instruct_pix2pix_seed42_1k`
+- epochs: `1`
+- resume model: `weights/model_celeba_resnet_base.pth`
+- `--use_active_learning False`
+- `--sub_ratio 0.1`
+- `--save_preds False`
+- `--save_model False`
+
+### Status
+
+[~] **Juno job `185848` is pending for H100 resources**
+
+---
+
+## Session 141: Verify and complete Juno CelebA `alpred.py` resume inputs
+
+**Date**: 2026-04-29
+**Task**: juno-celeba-alpred-resume-input-check
+
+### Summary
+
+Checked the previous Juno CelebA data copies and copied the missing lightweight
+repo-side inputs needed for CelebA `alpred.py` resume-from-base runs.
+
+### Juno State Checked
+
+- Full CelebA source images are complete on Juno:
+  - path:
+    `/home/oxx220000/scratch/safefix_cache/data/img_align_celeba`
+  - count: `202599` files
+  - size: `1.7G`
+- CelebA red-hair brown-skin sad-emotion instruct-pix2pix seed-42 1k subset is
+  complete on Juno:
+  - path:
+    `/home/oxx220000/scratch/safefix_cache/data/redhair_brownskin_sademotion_instruct_pix2pix_seed42_1k`
+  - count: `1000` files
+  - manifest:
+    `/home/oxx220000/scratch/safefix_cache/data/redhair_brownskin_sademotion_instruct_pix2pix_seed42_1k_files.txt`
+  - manifest lines: `1000`
+- HiBUG red-hair brown-skin seed-42 1k subset is complete on Juno:
+  - path:
+    `/home/oxx220000/scratch/safefix_cache/data/hibug_redhair_brownskin_seed42_1k`
+  - count: `1000` files
+
+### What Changed
+
+- Copied missing CelebA resume checkpoint to Juno:
+  - local: `weights/model_celeba_resnet_base.pth`
+  - Juno:
+    `/home/oxx220000/work/safefix/weights/model_celeba_resnet_base.pth`
+  - SHA-256:
+    `dafdd2481587604df6e32f614ad9c42df8c165c6a6bce9e568bddd6814916dc0`
+- Copied repo-side CelebA metadata/index files to Juno:
+  - local: `data/celebA/`
+  - Juno: `/home/oxx220000/work/safefix/data/celebA/`
+  - size: about `101M`
+  - includes `list_attr_celeba.txt`, `train_idx.npy`, `labels.npy`,
+    `predictions.npy`, and attribute index text files
+- Verified Qwen3 CelebA metadata was already present on Juno:
+  - path:
+    `/home/oxx220000/work/safefix/save/attribute_celeba_trainval_qwen3_8B.json`
+  - SHA-256:
+    `152d2d415ac8c5de12bd64f6cae4515b77a1e9ece158604d12068b4baa6af6ab`
+- Updated `docs/juno_migration.md` with a CelebA `alpred.py` resume dependency
+  section and the scratch path caveat.
+
+### Caveats / Next Steps
+
+- The generated CelebA subset is only in Juno scratch, not under
+  `/home/oxx220000/work/safefix/data/`.
+- Direct `alpred.py` runs should pass:
+  `--gen_image_dir /home/oxx220000/scratch/safefix_cache/data/redhair_brownskin_sademotion_instruct_pix2pix_seed42_1k`
+  or omit `--gen_image_dir` and rely on the current scratch-aware defaults.
+- Existing local queue scripts hardcode
+  `GEN_DIR="data/redhair_brownskin_sademotion_instruct_pix2pix_seed42_1k"`;
+  patch or replace them for Juno instead of using them unchanged.
+- The original base-run log is not present on Juno. This is not a checkpoint
+  blocker, but helper code may not recover the base test accuracy from local
+  logs unless that log is copied too.
+
+### Status
+
+[x] **Juno CelebA resume inputs are ready; launcher path still needs Juno-specific handling**
+
+---
+
+## Session 140: Document Juno Launcher guidance for short PyTorch sweeps
+
+**Date**: 2026-04-29
+**Task**: juno-short-sweep-launcher-guidance-doc
+
+### Summary
+
+Added Sasmita's Juno guidance about using Launcher for short independent
+PyTorch GPU sweeps.
+
+### What Changed
+
+- Updated `docs/juno_migration.md` under `Juno Scheduler And Multi-Run
+  Workflow` with a new subsection:
+  `Short PyTorch Sweep Policy From Juno`.
+- Captured the 2026-04-29 guidance:
+  - one H100 running `8` short independent experiments that fit in GPU memory:
+    use a Parallel Launcher
+  - `2` to `3` H100 GPUs running the same style of short independent sweep:
+    use Launcher
+  - job arrays are documented as a fallback only when Launcher is unavailable
+    or a layout is easier to express as an array
+  - run a GPU-node Launcher smoke test before using it for real sweeps
+
+### Status
+
+[x] **Juno Launcher guidance documented**
+
+---
+
+## Session 139: Record instruct-pix2pix results and resume missing CelebA rows on GPU 0
+
+**Date**: 2026-04-29
+**Task**: report-local-instructpix2pix-results-and-gpu0-resume
+
+### Summary
+
+Recorded completed local ImageNet and CelebA instruct-pix2pix active-learning
+results in `report.md`, then launched a focused CelebA missing-row resume on
+GPU `0`.
+
+### What Changed
+
+- Updated `report.md` with:
+  - full completed ImageNet pink-fabric instruct-pix2pix seed-42 1k matrix
+    from stamp `20260429_065612` (`32/32` rows complete)
+  - completed CelebA red-hair brown-skin sad-emotion instruct-pix2pix rows from
+    stamp `20260429_071551` (`17/32` rows complete)
+  - explicit list of CelebA rows still pending and now running on GPU `0`
+- Added resume launcher:
+  `scripts/run_celeba_instructpix2pix_gpu0_resume_missing_20260429.sh`
+  - source stamp checked for completed rows: `20260429_071551`
+  - resume stamp: `20260429_091004`
+  - GPU: `0`
+  - reruns only rows without a completed `Model Test ACC:` source-stamp log
+
+### Completed Result Highlights
+
+- ImageNet completed best test ACC:
+  - `ratio=0.7`, `attribute_r000_p0_c15`, test ACC `0.7523`
+  - log:
+    `logs_imagenet/instructpix2pix_attribute_r000_p0_c15_resnet_imagenet_1000_ratio0p7_gpu3_20260429_065612.log`
+- CelebA completed best test ACC in the partial matrix:
+  - `ratio=0.5`, `stratified`, test ACC `0.9132`
+  - log:
+    `logs_celeba/instructpix2pix_stratified_resnet_celeba_1000_ratio0p5_gpu2_20260429_071551.log`
+  - base checkpoint log reports base test ACC `0.9140`, so no completed
+    CelebA instruct-pix2pix row has exceeded base yet.
+
+### Active Run
+
+- Launch command used:
+  `STAMP=20260429_091004 setsid nohup bash scripts/run_celeba_instructpix2pix_gpu0_resume_missing_20260429.sh > logs_celeba/instructpix2pix_gpu0_resume_missing_20260429_091004.queue.log 2>&1 < /dev/null &`
+- Worker PID at launch: `45971`
+- PID file:
+  `logs_celeba/pids/instructpix2pix_gpu0_resume_missing_20260429_091004.pid`
+- Queue log:
+  `logs_celeba/instructpix2pix_gpu0_resume_missing_20260429_091004.queue.log`
+- First row started:
+  `logs_celeba/instructpix2pix_coreset_resnet_celeba_1000_ratio0p3_gpu0_resume_20260429_091004.log`
+
+### Remaining Rows In GPU 0 Resume
+
+- `ratio=0.3`: `coreset`, `badge`, `attribute_r003_p05_c15`,
+  `attribute_r000_p0_c15`, `attribute_r000_p0_cinf`,
+  `attribute_r003_p05_cinf`
+- `ratio=0.5`: `attribute_r003_p05_c15`, `attribute_r000_p0_c15`,
+  `attribute_r000_p0_cinf`, `attribute_r003_p05_cinf`
+- `ratio=0.7`: `badge`, `attribute_r003_p05_c15`,
+  `attribute_r000_p0_c15`, `attribute_r000_p0_cinf`,
+  `attribute_r003_p05_cinf`
+
+### Validation
+
+- `bash -n scripts/run_celeba_instructpix2pix_gpu0_resume_missing_20260429.sh`
+  passed.
+- `ps -fp 45971` showed the resume worker alive immediately after launch.
+- Queue log showed startup and the first GPU `0` row beginning.
+
+### Status
+
+[~] **CelebA missing instruct-pix2pix rows are running on GPU 0**
+
+---
+
 ## Session 138: Launch CelebA instruct-pix2pix seed-42 1k local AL sweep
 
 **Date**: 2026-04-29
@@ -70,10 +607,25 @@ image subset `data/redhair_brownskin_sademotion_instruct_pix2pix_seed42_1k`.
 - This sweep is running concurrently with the active ImageNet local
   instruct-pix2pix sweep on GPUs `1`, `2`, and `3`, per the user's explicit GPU
   assignment.
+- The first launch workers exited before all ratios finished. No traceback was
+  found in the partial logs; the unfinished logs stopped mid-epoch.
+- Resumed the remaining work using the same stamp `20260429_071551` so the
+  launcher skips logs that already contain `Model Test ACC:` and reruns only
+  incomplete entries:
+  - GPU `1` resume PID `6231`, log:
+    `logs_celeba/instructpix2pix_queue_gpu1_resume_20260429_071551.log`
+    - handles remaining `ratio=0.3` work, starting at `coreset`
+  - GPU `2` resume PID `6234`, log:
+    `logs_celeba/instructpix2pix_queue_gpu2_resume_20260429_071551.log`
+    - handles remaining `ratio=0.5` RPC rows, starting at `r003_p05_c15`
+  - GPU `3` resume PID `6238`, log:
+    `logs_celeba/instructpix2pix_queue_gpu3_resume_20260429_071551.log`
+    - handles remaining `ratio=0.7` work, starting at `badge`
 - `report.md` was not updated because no new CelebA instruct-pix2pix result is
   complete yet.
 - Monitor with:
   `tail -f logs_celeba/instructpix2pix_queue_gpu1_20260429_071551.log`
+  or the corresponding `*_resume_20260429_071551.log` files.
 
 ### Status
 
@@ -164,12 +716,60 @@ image subset `data/pinkcolor_fabrictexture_instruct_pix2pix_seed42_1k`.
   `coreset`.
 - Removed empty untracked logs from aborted early launch stamps
   `064515`, `064549`, `064744`, and `064947`.
+- Fixed the optional random-vs-AL comparison path in `alpred.py`: when no
+  random baseline log exists, it now prints a skip message and exits cleanly
+  instead of printing a command with an undefined `random_log_name`.
+- Synced the final `alpred.py` and queue launcher to Juno:
+  - `/work/oxx220000/safefix/alpred.py`
+  - `/work/oxx220000/safefix/scripts/run_imagenet_pinkfabric_instructpix2pix_ratio_queues.sh`
+  - remote `python3 -m py_compile alpred.py` passed.
 - `report.md` was not updated because the sweep is still active and only the
   first sanity-check row has completed.
 
 ### Status
 
 [~] **ImageNet instruct-pix2pix seed-42 1k local sweep is running**
+
+---
+
+## Session 138: Copy full CelebA and ImageNet source datasets to Juno scratch
+
+**Date**: 2026-04-29
+**Task**: full-source-datasets-to-juno-scratch
+
+### Summary
+
+Copied the full source datasets needed by `alpred.py` to Juno scratch cache.
+
+### What Changed
+
+- Copied local CelebA aligned images:
+  - source: `/data/oxx220000/img_align_celeba/`
+  - destination:
+    `/home/oxx220000/scratch/safefix_cache/data/img_align_celeba/`
+- Copied local ImageNet subset:
+  - source: `data/imagenet_subset/`
+  - destination:
+    `/home/oxx220000/scratch/safefix_cache/data/imagenet_subset/`
+
+### Validation
+
+- Local source counts:
+  - CelebA: `202599` files
+  - ImageNet subset: `13000` files
+- Juno destination counts:
+  - CelebA: `202599` files, `1.7G`
+  - ImageNet subset: `13000` files, `1.4G`
+
+### Caveats
+
+- CelebA was slow because it contains `202599` small files and Juno cannot see
+  `/data/oxx220000/img_align_celeba` directly, so it had to stream from the
+  local machine.
+
+### Status
+
+[x] **Completed full source dataset copies to Juno scratch**
 
 ---
 
