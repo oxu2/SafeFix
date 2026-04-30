@@ -5,6 +5,33 @@
 
 ---
 
+## Session 149: Report Best Rows By Ratio
+
+**Date**: 2026-04-30
+**Task**: report-best-results-by-ratio
+
+### Summary
+
+The user clarified that the best result should be selected within each
+`ratio`, not as a single global best row across all ratios.
+
+### What Changed
+
+- Updated the recent `report.md` result sections to summarize best test
+  accuracy by ratio:
+  - Completed ImageNet pink-fabric instruct-pix2pix results.
+  - Completed CelebA redhair-brownskin-sad-emotion instruct-pix2pix results.
+  - Completed CelebA HiBUG redhair-brownskin results.
+- In those tables, bolded the best `Test ACC` within each ratio group instead
+  of only bolding the global maximum.
+- Updated `.handoff.md` so the HiBUG baton summary records per-ratio bests.
+
+### Status
+
+[OK] **Recent report best-row summaries are grouped by ratio.**
+
+---
+
 ## Session 148: Audit Recent Results Against Report
 
 **Date**: 2026-04-29
@@ -38,11 +65,11 @@ current report, and Juno SLURM queue/accounting.
 - Updated `report.md` with a new completed CelebA HiBUG
   `redhair_brownskin` section containing all `32` rows from
   `logs_celeba/hibug_redhair_brownskin_*_20260429_183807.log`.
-- Best HiBUG row recorded:
-  - `ratio=0.5`, `attribute_r003_p05_cinf`
-  - test ACC `0.9131`, test loss `0.3492`
-  - log:
-    `logs_celeba/hibug_redhair_brownskin_attribute_r003_p05_cinf_resnet_celeba_1000_ratio0p5_gpu2_20260429_183807.log`
+- Best HiBUG rows are now recorded by ratio in `report.md`:
+  - `0.1`: `badge`, test ACC `0.9084`
+  - `0.3`: `stratified`, test ACC `0.9121`
+  - `0.5`: `attribute_r003_p05_cinf`, test ACC `0.9131`
+  - `0.7`: `attribute_r003_p05_c15`, test ACC `0.9116`
 - The HiBUG section notes that no row exceeds the base checkpoint test
   accuracy `0.9140`.
 
