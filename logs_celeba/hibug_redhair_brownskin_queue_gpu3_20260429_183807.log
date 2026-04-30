@@ -7,3 +7,7 @@ Attributes:     redhair_brownskin
 [2026-04-29 18:58:13] gpu=3 ratio=0.7 method=stratified log=logs_celeba/hibug_redhair_brownskin_stratified_resnet_celeba_1000_ratio0p7_gpu3_20260429_183807.log
 [2026-04-29 19:17:11] gpu=3 ratio=0.7 method=coreset log=logs_celeba/hibug_redhair_brownskin_coreset_resnet_celeba_1000_ratio0p7_gpu3_20260429_183807.log
 [2026-04-29 19:37:15] gpu=3 ratio=0.7 method=badge log=logs_celeba/hibug_redhair_brownskin_badge_resnet_celeba_1000_ratio0p7_gpu3_20260429_183807.log
+[2026-04-29 19:57:30] gpu=3 ratio=0.7 method=attribute_r003_p05_c15 log=logs_celeba/hibug_redhair_brownskin_attribute_r003_p05_c15_resnet_celeba_1000_ratio0p7_gpu3_20260429_183807.log
+[2026-04-29 20:16:52] gpu=3 ratio=0.7 method=attribute_r000_p0_c15 log=logs_celeba/hibug_redhair_brownskin_attribute_r000_p0_c15_resnet_celeba_1000_ratio0p7_gpu3_20260429_183807.log
+[2026-04-29 20:36:04] gpu=3 ratio=0.7 method=attribute_r000_p0_cinf log=logs_celeba/hibug_redhair_brownskin_attribute_r000_p0_cinf_resnet_celeba_1000_ratio0p7_gpu3_20260429_183807.log
+[2026-04-29 20:52:57] gpu=3 ratio=0.7 method=attribute_r003_p05_cinf log=logs_celeba/hibug_redhair_brownskin_attribute_r003_p05_cinf_resnet_celeba_1000_ratio0p7_gpu3_20260429_183807.log
