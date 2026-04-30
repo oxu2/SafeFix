@@ -5,6 +5,76 @@
 
 ---
 
+## Session 147: Check Missing Ratio 0.9 Instruct-Pix2Pix Status
+
+**Date**: 2026-04-29
+**Task**: check-and-prepare-missing-ratio0p9-instructpix2pix
+
+### Summary
+
+Checked whether the current ImageNet, CelebA, and COCO/brown-rainy result
+sets have unreported or pending `ratio=0.9` runs.
+
+### Findings
+
+- Current `report.md` already records COCO/brown-rainy `ratio=0.90`
+  baseline and Qwen3 attribute rows.
+- Current 20260429 ImageNet pink-fabric instruct-pix2pix report section still
+  has only ratios `0.1`, `0.3`, `0.5`, and `0.7`.
+- Current 20260429 CelebA redhair-brownskin-sad-emotion instruct-pix2pix report
+  section still has only ratios `0.1`, `0.3`, `0.5`, and `0.7`.
+- `find logs_imagenet logs_celeba -maxdepth 1 -name '*ratio0p9*.log'`
+  returned no current ImageNet/CelebA 0.9 logs.
+- Older archived ImageNet 0.9 logs exist under `logs/logs_imagenet/` from
+  April 15, but they are not the current 20260429 instruct-pix2pix sweep.
+- Older COCO pose `ratio0.9` logs exist under `log_pose/` from April 24 and
+  April 28; they are not missing current ImageNet/CelebA rows.
+- Host `ps -ef` check found no current ImageNet/CelebA `sub_ratio 0.9`
+  safefix process and no `run_missing_ratio0p9...` worker.
+
+### What Changed
+
+- Added `scripts/run_missing_ratio0p9_instructpix2pix_gpu123.sh`, a dedicated
+  launcher for the missing current ImageNet/CelebA `ratio=0.9` rows:
+  - GPU `1`: ImageNet pink-fabric 0.9, all `8` methods/RPC rows.
+  - GPU `2`: CelebA 0.9 non-attribute rows: `random`, `stratified`,
+    `coreset`, `badge`.
+  - GPU `3`: CelebA 0.9 attribute rows:
+    `r003_p05_c15`, `r000_p0_c15`, `r000_p0_cinf`, `r003_p05_cinf`.
+- Syntax check passed:
+  `bash -n scripts/run_missing_ratio0p9_instructpix2pix_gpu123.sh`.
+
+### Launch Update
+
+- Rechecked GPU state after the user said the target GPUs looked free:
+  - GPU `0` remained occupied by another user's CAMA process.
+  - GPU `1`, GPU `2`, and GPU `3` were free enough for the requested jobs.
+- Launched:
+  `STAMP=20260429_2130 bash scripts/run_missing_ratio0p9_instructpix2pix_gpu123.sh`
+- PID file:
+  `logs/ratio0p9_missing_gpu123_20260429_2130.pids`
+- Worker PIDs/logs:
+  - GPU `1`: PID `127117`,
+    `logs/ratio0p9_missing_gpu1_imagenet_20260429_2130.log`
+  - GPU `2`: PID `127118`,
+    `logs/ratio0p9_missing_gpu2_celeba_baselines_20260429_2130.log`
+  - GPU `3`: PID `127119`,
+    `logs/ratio0p9_missing_gpu3_celeba_attributes_20260429_2130.log`
+- Startup check showed child Python processes on all three target GPUs:
+  - GPU `1`: PID `127136`
+  - GPU `2`: PID `127139`
+  - GPU `3`: PID `127134`
+- First row logs created:
+  - `logs_imagenet/instructpix2pix_random_resnet_imagenet_1000_ratio0p9_gpu1_20260429_2130.log`
+  - `logs_celeba/instructpix2pix_random_resnet_celeba_1000_ratio0p9_gpu2_20260429_2130.log`
+  - `logs_celeba/instructpix2pix_attribute_r003_p05_c15_resnet_celeba_1000_ratio0p9_gpu3_20260429_2130.log`
+
+### Status
+
+[~] **Missing ImageNet/CelebA ratio 0.9 rows are now running locally on GPUs 1/2/3 with stamp `20260429_2130`**
+
+---
+
 ## Session 146: Build KITTI Qwen3 non-red / non-cloudy bxz handoff CSV
 
 **Date**: 2026-04-29
