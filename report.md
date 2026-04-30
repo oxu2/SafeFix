@@ -95,9 +95,11 @@
 - This section records the completed local active-learning (AL) runs from the
   ImageNet and CelebA instruct-pix2pix seed-42 1k sweeps launched earlier on
   April 29, 2026.
-- ImageNet stamp `20260429_065612` is complete for all planned rows.
-- CelebA stamp `20260429_071551` is complete for all planned rows after the
-  later GPU `1/2/3` resume workers.
+- ImageNet stamp `20260429_065612` is complete for all originally planned
+  rows; supplemental `ratio=0.9` rows completed under stamp `20260429_2130`.
+- CelebA stamp `20260429_071551` is complete for all originally planned rows
+  after the later GPU `1/2/3` resume workers; supplemental `ratio=0.9` rows
+  completed under stamp `20260429_2130`.
 - Both sweeps use exactly `1000` generated instruct-pix2pix images and resume
   from the corresponding ResNet base checkpoint.
 
@@ -109,9 +111,10 @@
   `data/pinkcolor_fabrictexture_instruct_pix2pix_seed42_1k`
 - Source data: `data/imagenet_subset`
 - Base checkpoint: `save/models/model_imagenet_resnet_base.pth`
-- Planned rows: `32`; completed rows: `32`
+- Original planned rows: `32`; supplemental `ratio=0.9` rows: `8`;
+  completed rows: `40`.
 - Best completed test accuracy: `0.7523` at `ratio=0.7`,
-  `attribute_r000_p0_c15`.
+  `attribute_r000_p0_c15`, tied by `ratio=0.9`, `attribute_r001_p5_cinf`.
 
 | Ratio | Method | Test ACC | Test loss | Log |
 | ---: | --- | ---: | ---: | --- |
@@ -147,6 +150,14 @@
 | `0.7` | `attribute_r001_p5_cinf` | `0.7438` | `0.7884` | `logs_imagenet/instructpix2pix_attribute_r001_p5_cinf_resnet_imagenet_1000_ratio0p7_gpu3_20260429_065612.log` |
 | `0.7` | `attribute_r01_p5_c15` | `0.7408` | `0.7945` | `logs_imagenet/instructpix2pix_attribute_r01_p5_c15_resnet_imagenet_1000_ratio0p7_gpu3_20260429_065612.log` |
 | `0.7` | `attribute_r08_p10_c4` | `0.7462` | `0.7903` | `logs_imagenet/instructpix2pix_attribute_r08_p10_c4_resnet_imagenet_1000_ratio0p7_gpu3_20260429_065612.log` |
+| `0.9` | `random` | `0.7423` | `0.7842` | `logs_imagenet/instructpix2pix_random_resnet_imagenet_1000_ratio0p9_gpu1_20260429_2130.log` |
+| `0.9` | `stratified` | `0.7446` | `0.7869` | `logs_imagenet/instructpix2pix_stratified_resnet_imagenet_1000_ratio0p9_gpu1_20260429_2130.log` |
+| `0.9` | `coreset` | `0.7485` | `0.7841` | `logs_imagenet/instructpix2pix_coreset_resnet_imagenet_1000_ratio0p9_gpu1_20260429_2130.log` |
+| `0.9` | `badge` | `0.7423` | `0.7900` | `logs_imagenet/instructpix2pix_badge_resnet_imagenet_1000_ratio0p9_gpu1_20260429_2130.log` |
+| `0.9` | `attribute_r000_p0_c15` | `0.7385` | `0.7883` | `logs_imagenet/instructpix2pix_attribute_r000_p0_c15_resnet_imagenet_1000_ratio0p9_gpu1_20260429_2130.log` |
+| `0.9` | `attribute_r001_p5_cinf` | **`0.7523`** | `0.7792` | `logs_imagenet/instructpix2pix_attribute_r001_p5_cinf_resnet_imagenet_1000_ratio0p9_gpu1_20260429_2130.log` |
+| `0.9` | `attribute_r01_p5_c15` | `0.7477` | `0.7824` | `logs_imagenet/instructpix2pix_attribute_r01_p5_c15_resnet_imagenet_1000_ratio0p9_gpu1_20260429_2130.log` |
+| `0.9` | `attribute_r08_p10_c4` | `0.7392` | `0.7823` | `logs_imagenet/instructpix2pix_attribute_r08_p10_c4_resnet_imagenet_1000_ratio0p9_gpu1_20260429_2130.log` |
 
 ## Completed CelebA Red-Hair Brown-Skin Sad-Emotion Instruct-Pix2Pix Results
 
@@ -156,7 +167,8 @@
   `data/redhair_brownskin_sademotion_instruct_pix2pix_seed42_1k`
 - Base checkpoint: `weights/model_celeba_resnet_base.pth`
 - Attribute metadata: `save/attribute_celeba_trainval_qwen3_8B.json`
-- Planned rows: `32`; completed rows from stamp `20260429_071551`: `32`
+- Original planned rows from stamp `20260429_071551`: `32`; supplemental
+  `ratio=0.9` rows from stamp `20260429_2130`: `8`; completed rows: `40`.
 - Best completed test accuracy: `0.9132` at `ratio=0.5`, `stratified`.
 - The base checkpoint log reports base test accuracy `0.9140`, so no completed
   instruct-pix2pix CelebA row has exceeded the base model yet.
@@ -195,6 +207,64 @@
 | `0.7` | `attribute_r000_p0_c15` | `0.9107` | `0.3558` | `logs_celeba/instructpix2pix_attribute_r000_p0_c15_resnet_celeba_1000_ratio0p7_gpu3_20260429_071551.log` |
 | `0.7` | `attribute_r000_p0_cinf` | `0.9109` | `0.3559` | `logs_celeba/instructpix2pix_attribute_r000_p0_cinf_resnet_celeba_1000_ratio0p7_gpu3_20260429_071551.log` |
 | `0.7` | `attribute_r003_p05_cinf` | `0.9116` | `0.3547` | `logs_celeba/instructpix2pix_attribute_r003_p05_cinf_resnet_celeba_1000_ratio0p7_gpu3_20260429_071551.log` |
+| `0.9` | `random` | `0.9104` | `0.3538` | `logs_celeba/instructpix2pix_random_resnet_celeba_1000_ratio0p9_gpu2_20260429_2130.log` |
+| `0.9` | `stratified` | `0.9099` | `0.3752` | `logs_celeba/instructpix2pix_stratified_resnet_celeba_1000_ratio0p9_gpu2_20260429_2130.log` |
+| `0.9` | `coreset` | `0.9092` | `0.3542` | `logs_celeba/instructpix2pix_coreset_resnet_celeba_1000_ratio0p9_gpu2_20260429_2130.log` |
+| `0.9` | `badge` | `0.9108` | `0.3468` | `logs_celeba/instructpix2pix_badge_resnet_celeba_1000_ratio0p9_gpu1_20260429_2130.log` |
+| `0.9` | `attribute_r003_p05_c15` | `0.9103` | `0.3553` | `logs_celeba/instructpix2pix_attribute_r003_p05_c15_resnet_celeba_1000_ratio0p9_gpu3_20260429_2130.log` |
+| `0.9` | `attribute_r000_p0_c15` | `0.9108` | `0.3556` | `logs_celeba/instructpix2pix_attribute_r000_p0_c15_resnet_celeba_1000_ratio0p9_gpu3_20260429_2130.log` |
+| `0.9` | `attribute_r000_p0_cinf` | `0.9111` | `0.3562` | `logs_celeba/instructpix2pix_attribute_r000_p0_cinf_resnet_celeba_1000_ratio0p9_gpu3_20260429_2130.log` |
+| `0.9` | `attribute_r003_p05_cinf` | `0.9089` | `0.3692` | `logs_celeba/instructpix2pix_attribute_r003_p05_cinf_resnet_celeba_1000_ratio0p9_gpu3_20260429_2130.log` |
+
+## Completed CelebA HiBUG Red-Hair Brown-Skin Results
+
+- Dataset: `celeba`
+- Model: `resnet`
+- Generated directory: `data/hibug_redhair_brownskin_seed42_1k`
+- Base checkpoint: `weights/model_celeba_resnet_base.pth`
+- Attribute metadata: `save/attribute_celeba_trainval_qwen3_8B.json`
+- Completed rows from stamp `20260429_183807`: `32`.
+- Error scan over the completed logs found no `Traceback`, `Error`, `Killed`,
+  `CUDA out of memory`, `No such file`, or `FileNotFound` messages.
+- Best completed test accuracy: `0.9131` at `ratio=0.5`,
+  `attribute_r003_p05_cinf`.
+- The base checkpoint log reports base test accuracy `0.9140`, so no completed
+  HiBUG CelebA row has exceeded the base model yet.
+
+| Ratio | Method | Test ACC | Test loss | Log |
+| ---: | --- | ---: | ---: | --- |
+| `0.1` | `random` | `0.9052` | `0.3499` | `logs_celeba/hibug_redhair_brownskin_random_resnet_celeba_1000_ratio0p1_gpu1_20260429_183807.log` |
+| `0.1` | `stratified` | `0.9038` | `0.3679` | `logs_celeba/hibug_redhair_brownskin_stratified_resnet_celeba_1000_ratio0p1_gpu1_20260429_183807.log` |
+| `0.1` | `coreset` | `0.9035` | `0.3674` | `logs_celeba/hibug_redhair_brownskin_coreset_resnet_celeba_1000_ratio0p1_gpu1_20260429_183807.log` |
+| `0.1` | `badge` | `0.9084` | `0.3499` | `logs_celeba/hibug_redhair_brownskin_badge_resnet_celeba_1000_ratio0p1_gpu1_20260429_183807.log` |
+| `0.1` | `attribute_r003_p05_c15` | `0.8954` | `0.3912` | `logs_celeba/hibug_redhair_brownskin_attribute_r003_p05_c15_resnet_celeba_1000_ratio0p1_gpu1_20260429_183807.log` |
+| `0.1` | `attribute_r000_p0_c15` | `0.9008` | `0.3973` | `logs_celeba/hibug_redhair_brownskin_attribute_r000_p0_c15_resnet_celeba_1000_ratio0p1_gpu1_20260429_183807.log` |
+| `0.1` | `attribute_r000_p0_cinf` | `0.9007` | `0.3984` | `logs_celeba/hibug_redhair_brownskin_attribute_r000_p0_cinf_resnet_celeba_1000_ratio0p1_gpu1_20260429_183807.log` |
+| `0.1` | `attribute_r003_p05_cinf` | `0.8929` | `0.4136` | `logs_celeba/hibug_redhair_brownskin_attribute_r003_p05_cinf_resnet_celeba_1000_ratio0p1_gpu1_20260429_183807.log` |
+| `0.3` | `random` | `0.9076` | `0.3458` | `logs_celeba/hibug_redhair_brownskin_random_resnet_celeba_1000_ratio0p3_gpu1_20260429_183807.log` |
+| `0.3` | `stratified` | `0.9121` | `0.3522` | `logs_celeba/hibug_redhair_brownskin_stratified_resnet_celeba_1000_ratio0p3_gpu1_20260429_183807.log` |
+| `0.3` | `coreset` | `0.9064` | `0.3665` | `logs_celeba/hibug_redhair_brownskin_coreset_resnet_celeba_1000_ratio0p3_gpu1_20260429_183807.log` |
+| `0.3` | `badge` | `0.9065` | `0.3604` | `logs_celeba/hibug_redhair_brownskin_badge_resnet_celeba_1000_ratio0p3_gpu1_20260429_183807.log` |
+| `0.3` | `attribute_r003_p05_c15` | `0.9009` | `0.3719` | `logs_celeba/hibug_redhair_brownskin_attribute_r003_p05_c15_resnet_celeba_1000_ratio0p3_gpu1_20260429_183807.log` |
+| `0.3` | `attribute_r000_p0_c15` | `0.9087` | `0.3632` | `logs_celeba/hibug_redhair_brownskin_attribute_r000_p0_c15_resnet_celeba_1000_ratio0p3_gpu1_20260429_183807.log` |
+| `0.3` | `attribute_r000_p0_cinf` | `0.9095` | `0.3620` | `logs_celeba/hibug_redhair_brownskin_attribute_r000_p0_cinf_resnet_celeba_1000_ratio0p3_gpu1_20260429_183807.log` |
+| `0.3` | `attribute_r003_p05_cinf` | `0.9064` | `0.3668` | `logs_celeba/hibug_redhair_brownskin_attribute_r003_p05_cinf_resnet_celeba_1000_ratio0p3_gpu1_20260429_183807.log` |
+| `0.5` | `random` | `0.9096` | `0.3407` | `logs_celeba/hibug_redhair_brownskin_random_resnet_celeba_1000_ratio0p5_gpu2_20260429_183807.log` |
+| `0.5` | `stratified` | `0.9112` | `0.3535` | `logs_celeba/hibug_redhair_brownskin_stratified_resnet_celeba_1000_ratio0p5_gpu2_20260429_183807.log` |
+| `0.5` | `coreset` | `0.9102` | `0.3441` | `logs_celeba/hibug_redhair_brownskin_coreset_resnet_celeba_1000_ratio0p5_gpu2_20260429_183807.log` |
+| `0.5` | `badge` | `0.9121` | `0.3316` | `logs_celeba/hibug_redhair_brownskin_badge_resnet_celeba_1000_ratio0p5_gpu2_20260429_183807.log` |
+| `0.5` | `attribute_r003_p05_c15` | `0.9100` | `0.3593` | `logs_celeba/hibug_redhair_brownskin_attribute_r003_p05_c15_resnet_celeba_1000_ratio0p5_gpu2_20260429_183807.log` |
+| `0.5` | `attribute_r000_p0_c15` | `0.9081` | `0.3586` | `logs_celeba/hibug_redhair_brownskin_attribute_r000_p0_c15_resnet_celeba_1000_ratio0p5_gpu2_20260429_183807.log` |
+| `0.5` | `attribute_r000_p0_cinf` | `0.9081` | `0.3589` | `logs_celeba/hibug_redhair_brownskin_attribute_r000_p0_cinf_resnet_celeba_1000_ratio0p5_gpu2_20260429_183807.log` |
+| `0.5` | `attribute_r003_p05_cinf` | **`0.9131`** | `0.3492` | `logs_celeba/hibug_redhair_brownskin_attribute_r003_p05_cinf_resnet_celeba_1000_ratio0p5_gpu2_20260429_183807.log` |
+| `0.7` | `random` | `0.9057` | `0.3463` | `logs_celeba/hibug_redhair_brownskin_random_resnet_celeba_1000_ratio0p7_gpu3_20260429_183807.log` |
+| `0.7` | `stratified` | `0.9102` | `0.3519` | `logs_celeba/hibug_redhair_brownskin_stratified_resnet_celeba_1000_ratio0p7_gpu3_20260429_183807.log` |
+| `0.7` | `coreset` | `0.9052` | `0.3651` | `logs_celeba/hibug_redhair_brownskin_coreset_resnet_celeba_1000_ratio0p7_gpu3_20260429_183807.log` |
+| `0.7` | `badge` | `0.9072` | `0.3579` | `logs_celeba/hibug_redhair_brownskin_badge_resnet_celeba_1000_ratio0p7_gpu3_20260429_183807.log` |
+| `0.7` | `attribute_r003_p05_c15` | `0.9116` | `0.3457` | `logs_celeba/hibug_redhair_brownskin_attribute_r003_p05_c15_resnet_celeba_1000_ratio0p7_gpu3_20260429_183807.log` |
+| `0.7` | `attribute_r000_p0_c15` | `0.9085` | `0.3662` | `logs_celeba/hibug_redhair_brownskin_attribute_r000_p0_c15_resnet_celeba_1000_ratio0p7_gpu3_20260429_183807.log` |
+| `0.7` | `attribute_r000_p0_cinf` | `0.9084` | `0.3663` | `logs_celeba/hibug_redhair_brownskin_attribute_r000_p0_cinf_resnet_celeba_1000_ratio0p7_gpu3_20260429_183807.log` |
+| `0.7` | `attribute_r003_p05_cinf` | `0.9073` | `0.3662` | `logs_celeba/hibug_redhair_brownskin_attribute_r003_p05_cinf_resnet_celeba_1000_ratio0p7_gpu3_20260429_183807.log` |
 
 # 04/29/2026 Update — Brown-Rainy Completed Result Snapshot
 
