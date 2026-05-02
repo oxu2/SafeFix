@@ -7,12 +7,43 @@ import json
 import os
 import random
 import shutil
+import sys
 from pathlib import Path
 import time
 from typing import Dict, List, Sequence
 
+import numpy as np
+
+
+REPO_ROOT = Path(__file__).resolve().parents[1]
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
 
 IMAGE_EXTENSIONS = {".png", ".jpg", ".jpeg", ".bmp"}
+DEFAULT_GENERATED_ATTRIBUTE_COUNTS = {
+    "color": {"red": 1.0},
+    "weather": {"cloudy": 1.0},
+}
+
+
+class Tee:
+    def __init__(self, *streams):
+        self.streams = streams
+
+    def write(self, data):
+        for stream in self.streams:
+            stream.write(data)
+        return len(data)
+
+    def flush(self):
+        for stream in self.streams:
+            stream.flush()
+
+    def isatty(self):
+        return any(getattr(stream, "isatty", lambda: False)() for stream in self.streams)
+
+    def __getattr__(self, name):
+        return getattr(self.streams[0], name)
 
 
 def str2bool(value: str) -> bool:
@@ -71,12 +102,128 @@ def parse_args():
     )
     parser.add_argument(
         "--selection-strategy",
-        choices=["random", "stratified"],
+        choices=["random", "stratified", "attribute", "coreset", "badge", "entropy"],
         default="random",
         help=(
             "How to select original KITTI train images before adding generated images. "
-            "For detection, stratified groups images by the set of YOLO classes present."
+            "For detection, stratified groups images by the set of YOLO classes present. "
+            "Attribute, coreset, and badge use the shared active-learning selectors. "
+            "Entropy uses a YOLO detection-confidence entropy proxy."
         ),
+    )
+    parser.add_argument(
+        "--al-entropy-conf-thres",
+        type=float,
+        default=0.001,
+        help="Confidence threshold for the YOLO entropy proxy prediction pass.",
+    )
+    parser.add_argument(
+        "--al-entropy-iou",
+        type=float,
+        default=0.7,
+        help="IoU threshold for the YOLO entropy proxy prediction pass.",
+    )
+    parser.add_argument(
+        "--al-entropy-batch",
+        type=int,
+        default=16,
+        help="Prediction batch size for entropy proxy selection.",
+    )
+    parser.add_argument(
+        "--al-initial-labeled",
+        type=int,
+        default=400,
+        help="Number of validation proxy embeddings used as the labeled set for coreset/BADGE.",
+    )
+    parser.add_argument(
+        "--al-embedding-thumbnail-size",
+        type=int,
+        default=8,
+        help="Thumbnail side length for lightweight KITTI image embeddings used by coreset/BADGE.",
+    )
+    parser.add_argument(
+        "--al-fast-selection",
+        type=str2bool,
+        default=True,
+        help=(
+            "Use the approximate coreset/BADGE selection paths from utils.active_learning. "
+            "Set false to use exact k-center or exact BADGE k-means++ when feasible."
+        ),
+    )
+    parser.add_argument(
+        "--attribute-file",
+        type=Path,
+        default=Path("save/attribute_kitti_qwen3_8B.json"),
+        help="KITTI train attribute metadata JSON used by --selection-strategy attribute.",
+    )
+    parser.add_argument(
+        "--al-attribute-focus",
+        type=str,
+        default="color,weather",
+        help="Comma-separated attribute keys for attribute selection.",
+    )
+    parser.add_argument(
+        "--al-attribute-rarity-power",
+        type=float,
+        default=0.03,
+        help="R component exponent for attribute selection.",
+    )
+    parser.add_argument(
+        "--al-attribute-use-rarity",
+        type=str2bool,
+        default=True,
+        help="Include the R component in attribute selection.",
+    )
+    parser.add_argument(
+        "--al-attribute-uncertainty-boost",
+        type=float,
+        default=1.0,
+        help="Bonus for uncertain metadata entries, if present.",
+    )
+    parser.add_argument(
+        "--al-attribute-log-path",
+        type=Path,
+        default=None,
+        help="Optional diagnostic log used for log-derived failure weights.",
+    )
+    parser.add_argument(
+        "--al-attribute-log-acc-scale",
+        type=float,
+        default=0.0,
+        help="Scale for log-derived failure weights.",
+    )
+    parser.add_argument(
+        "--al-attribute-extra-counts",
+        type=str,
+        default=None,
+        help=(
+            "Extra generated attribute counts, e.g. 'color:red=1000;weather:cloudy=1000'. "
+            "Defaults to red/cloudy counts from --num-added-img."
+        ),
+    )
+    parser.add_argument(
+        "--al-attribute-extra-count-scale",
+        type=float,
+        default=1.0,
+        help="Multiplier applied to extra generated attribute counts.",
+    )
+    parser.add_argument(
+        "--al-attribute-frequency-penalty",
+        type=float,
+        default=5.0,
+        help="P component weight for penalizing over-represented attribute values.",
+    )
+    parser.add_argument(
+        "--al-attribute-class-balance",
+        type=str,
+        default="15",
+        help="C component weight for label-set class balancing; accepts 'inf'.",
+    )
+    parser.add_argument(
+        "--al-conditional-rarity",
+        type=str2bool,
+        default=False,
+        help="Use class-conditional rarity instead of global rarity.",
     )
     parser.add_argument("--num-added-img", type=int, default=1000)
     parser.add_argument("--seed", type=int, default=42)
@@ -147,7 +294,35 @@ def parse_args():
         default=False,
         help="Only write the derived YOLO dataset and manifests; do not train.",
     )
+    parser.add_argument(
+        "--write-log",
+        type=str2bool,
+        default=True,
+        help="Write stdout/stderr to a persistent log file while also printing to console.",
+    )
+    parser.add_argument(
+        "--log-dir",
+        type=Path,
+        default=Path("logs"),
+        help="Directory for auto-generated logs when --log-file is not set.",
+    )
+    parser.add_argument(
+        "--log-file",
+        type=Path,
+        default=None,
+        help="Optional explicit log path. Overrides --log-dir.",
+    )
     return parser.parse_args()
+
+
+def _make_run_name(args) -> str:
+    if args.name is not None:
+        return args.name
+    ratio_tag = str(args.sub_ratio).replace(".", "p")
+    return (
+        f"kitti_ratio{ratio_tag}_{args.selection_strategy}_red_cloudy_gen{args.num_added_img}"
+        f"_seed{args.seed}"
+    )
 
 
 def _format_duration(seconds: float) -> str:
@@ -160,6 +335,27 @@ def _format_duration(seconds: float) -> str:
 
 def _timestamp_str(ts: float) -> str:
     return datetime.datetime.fromtimestamp(ts).strftime("%Y-%m-%d %H:%M:%S")
+
+
+def _stamp_str(ts: float) -> str:
+    return datetime.datetime.fromtimestamp(ts).strftime("%Y%m%d_%H%M%S")
+
+
+def _setup_log(args, run_name: str, start_time: float):
+    if not args.write_log:
+        return None, None, None
+
+    log_path = args.log_file
+    if log_path is None:
+        log_path = args.log_dir / f"{run_name}_{_stamp_str(start_time)}.log"
+    log_path.parent.mkdir(parents=True, exist_ok=True)
+
+    original_stdout = sys.stdout
+    original_stderr = sys.stderr
+    log_handle = log_path.open("w", encoding="utf-8", buffering=1)
+    sys.stdout = Tee(original_stdout, log_handle)
+    sys.stderr = Tee(original_stderr, log_handle)
+    return log_path, log_handle, (original_stdout, original_stderr)
 
 
 def _dataset_has_split(data_yaml: Path, split_name: str) -> bool:
@@ -244,6 +440,23 @@ def _label_signature(label_path: Path) -> str:
     return "+".join(sorted(class_ids, key=lambda value: int(value) if value.isdigit() else value))
 
 
+def _resolve_image_path(image_dir: Path, image_id: str) -> Path:
+    for ext in [".png", ".jpg", ".jpeg", ".bmp"]:
+        candidate = image_dir / f"{image_id}{ext}"
+        if candidate.exists():
+            return candidate
+    raise FileNotFoundError(f"Image for id {image_id} not found in {image_dir}")
+
+
+class KittiSelectionProxyDataset:
+    def __init__(self, metadata_indices: Sequence[int], class_labels: Sequence[int]):
+        self.attribute_metadata_indices = list(metadata_indices)
+        self.al_targets = list(class_labels)
+
+    def __len__(self):
+        return len(self.attribute_metadata_indices)
+
+
 def _stratified_sample_ids(
     image_ids: Sequence[str],
     label_dir: Path,
@@ -284,6 +497,345 @@ def _stratified_sample_ids(
         selected.extend(rng.sample(remaining, n_select - len(selected)))
 
     return sorted(selected)
+
+
+def _image_proxy_embedding(image_path: Path, thumbnail_size: int) -> np.ndarray:
+    from PIL import Image
+
+    side = max(int(thumbnail_size), 2)
+    with Image.open(image_path) as image:
+        image = image.convert("RGB").resize((side, side), Image.BILINEAR)
+        arr = np.asarray(image, dtype=np.float32) / 255.0
+
+    flat = arr.reshape(-1)
+    means = arr.mean(axis=(0, 1))
+    stds = arr.std(axis=(0, 1))
+    mins = arr.min(axis=(0, 1))
+    maxs = arr.max(axis=(0, 1))
+    return np.concatenate([flat, means, stds, mins, maxs], axis=0).astype(np.float32)
+
+
+def _extract_proxy_embeddings(
+    image_ids: Sequence[str],
+    image_dir: Path,
+    thumbnail_size: int,
+) -> np.ndarray:
+    embeddings = []
+    for idx, image_id in enumerate(image_ids):
+        if idx > 0 and idx % 1000 == 0:
+            print(f"  Extracted proxy embeddings for {idx}/{len(image_ids)} images...")
+        embeddings.append(_image_proxy_embedding(_resolve_image_path(image_dir, image_id), thumbnail_size))
+    if not embeddings:
+        return np.empty((0, 0), dtype=np.float32)
+    return np.stack(embeddings, axis=0)
+
+
+def _label_signature_targets(image_ids: Sequence[str], label_dir: Path, signature_to_label=None):
+    signatures = [_label_signature(label_dir / f"{image_id}.txt") for image_id in image_ids]
+    if signature_to_label is None:
+        signature_to_label = {
+            signature: idx for idx, signature in enumerate(sorted(set(signatures)))
+        }
+    targets = np.array([signature_to_label[signature] for signature in signatures], dtype=np.int64)
+    return targets, signature_to_label
+
+
+def _select_embedding_ids(
+    strategy_name: str,
+    train_ids: Sequence[str],
+    train_image_dir: Path,
+    train_label_dir: Path,
+    val_image_dir: Path,
+    val_label_dir: Path,
+    n_select: int,
+    args,
+) -> List[str]:
+    from utils.active_learning import BadgeStrategy, CoreSetStrategy
+
+    print(
+        f"KITTI {strategy_name} selection: extracting lightweight image embeddings "
+        f"for {len(train_ids)} train candidates."
+    )
+    val_ids = [p.stem for p in _list_images(val_image_dir)] if val_image_dir.exists() else []
+    if not val_ids:
+        raise RuntimeError(f"{strategy_name} selection requires validation images as a labeled proxy.")
+
+    all_signatures = {
+        _label_signature(train_label_dir / f"{image_id}.txt") for image_id in train_ids
+    }
+    all_signatures.update(
+        _label_signature(val_label_dir / f"{image_id}.txt") for image_id in val_ids
+    )
+    signature_to_label = {
+        signature: idx for idx, signature in enumerate(sorted(all_signatures))
+    }
+
+    train_embeddings = _extract_proxy_embeddings(
+        train_ids,
+        train_image_dir,
+        args.al_embedding_thumbnail_size,
+    )
+    train_targets, _ = _label_signature_targets(train_ids, train_label_dir, signature_to_label)
+
+    print(f"KITTI {strategy_name} selection: extracting validation proxy embeddings from {len(val_ids)} images.")
+    val_embeddings = _extract_proxy_embeddings(
+        val_ids,
+        val_image_dir,
+        args.al_embedding_thumbnail_size,
+    )
+    val_targets, _ = _label_signature_targets(val_ids, val_label_dir, signature_to_label)
+    initial_size = min(max(int(args.al_initial_labeled), 1), len(val_embeddings))
+    labeled_embeddings = val_embeddings[:initial_size]
+    labeled_targets = val_targets[:initial_size]
+
+    if strategy_name == "coreset":
+        strategy = CoreSetStrategy(
+            embedding_dim=train_embeddings.shape[1],
+            exact_kcenter_max_select=(1 if args.al_fast_selection else 4096),
+            exact_kcenter_max_samples=(1 if args.al_fast_selection else 20000),
+        )
+        selected_indices = strategy.greedy_k_center(
+            labeled_embeddings=labeled_embeddings,
+            unlabeled_embeddings=train_embeddings,
+            n_select=n_select,
+            random_seed=args.seed,
+        )
+    elif strategy_name == "badge":
+        strategy = BadgeStrategy(
+            exact_kmeanspp_max_select=(1 if args.al_fast_selection else 512),
+            exact_kmeanspp_max_samples=(1 if args.al_fast_selection else 20000),
+        )
+        selected_indices = strategy.select(
+            labeled_embeddings=labeled_embeddings,
+            unlabeled_embeddings=train_embeddings,
+            labeled_targets=labeled_targets,
+            n_select=n_select,
+            random_seed=args.seed,
+        )
+        if strategy.last_proxy_stats:
+            print("KITTI BADGE proxy stats:")
+            print(json.dumps(strategy.last_proxy_stats, indent=2))
+    else:
+        raise ValueError(f"Unsupported embedding strategy: {strategy_name}")
+
+    selected_ids = [train_ids[int(idx)] for idx in selected_indices]
+    unique_selected = sorted(set(selected_ids))
+    if len(unique_selected) < n_select:
+        selected_set = set(unique_selected)
+        for idx in np.argsort(train_targets):
+            image_id = train_ids[int(idx)]
+            if image_id not in selected_set:
+                unique_selected.append(image_id)
+                selected_set.add(image_id)
+            if len(unique_selected) >= n_select:
+                break
+
+    print(
+        f"KITTI {strategy_name} selection completed: selected {len(unique_selected)} "
+        f"images using proxy label signatures {signature_to_label}."
+    )
+    return sorted(unique_selected[:n_select])
+
+
+def _binary_entropy(values: np.ndarray) -> np.ndarray:
+    probs = np.clip(values.astype(np.float64), 1e-6, 1.0 - 1e-6)
+    return -(probs * np.log(probs) + (1.0 - probs) * np.log(1.0 - probs))
+
+
+def _batched(sequence: Sequence, batch_size: int):
+    step = max(int(batch_size), 1)
+    for start in range(0, len(sequence), step):
+        yield start, sequence[start : start + step]
+
+
+def _select_entropy_ids(
+    image_ids: Sequence[str],
+    image_dir: Path,
+    n_select: int,
+    args,
+) -> List[str]:
+    try:
+        from ultralytics import YOLO
+    except ImportError as exc:
+        raise ImportError(
+            "ultralytics is required for KITTI entropy selection."
+        ) from exc
+
+    if not args.resume_model.exists():
+        raise FileNotFoundError(f"Resume checkpoint not found: {args.resume_model}")
+
+    print(
+        "KITTI entropy selection: scoring "
+        f"{len(image_ids)} train candidates with {args.resume_model}."
+    )
+    model = YOLO(str(args.resume_model))
+    image_paths = [_resolve_image_path(image_dir, image_id) for image_id in image_ids]
+    scores: List[float] = []
+
+    for start, batch_paths in _batched(image_paths, args.al_entropy_batch):
+        if start > 0 and start % 1000 == 0:
+            print(f"  Entropy-scored {start}/{len(image_paths)} images...")
+        results = model.predict(
+            source=[str(path) for path in batch_paths],
+            imgsz=args.imgsz,
+            device=args.device,
+            batch=len(batch_paths),
+            conf=args.al_entropy_conf_thres,
+            iou=args.al_entropy_iou,
+            verbose=False,
+            stream=False,
+        )
+        for result in results:
+            boxes = getattr(result, "boxes", None)
+            conf_tensor = getattr(boxes, "conf", None) if boxes is not None else None
+            if conf_tensor is None or len(conf_tensor) == 0:
+                scores.append(0.0)
+                continue
+            conf = conf_tensor.detach().float().cpu().numpy()
+            entropy = _binary_entropy(conf)
+            scores.append(float(entropy.max()))
+
+    if len(scores) != len(image_ids):
+        raise RuntimeError(
+            f"Entropy selection scored {len(scores)} images, expected {len(image_ids)}."
+        )
+
+    scores_array = np.asarray(scores, dtype=np.float64)
+    order = np.argsort(-scores_array, kind="mergesort")[:n_select]
+    selected_ids = [image_ids[int(idx)] for idx in order]
+    selected_scores = scores_array[order]
+    print(
+        "KITTI entropy selection completed: "
+        f"selected {len(selected_ids)} images; score range "
+        f"{selected_scores.min():.6f}-{selected_scores.max():.6f}, "
+        f"mean {selected_scores.mean():.6f}."
+    )
+    return sorted(selected_ids)
+
+
+def _parse_focus_attributes(raw_focus: str) -> List[str]:
+    return [part.strip() for part in str(raw_focus or "").split(",") if part.strip()]
+
+
+def _resolve_attribute_extra_counts(args) -> Dict[str, Dict[str, float]]:
+    from utils.active_learning import parse_attribute_value_counts
+
+    if args.al_attribute_extra_counts:
+        extra_counts = parse_attribute_value_counts(
+            args.al_attribute_extra_counts,
+            default_count=args.num_added_img,
+        )
+    else:
+        extra_counts = {
+            attr_name: {
+                value: float(multiplier) * float(args.num_added_img)
+                for value, multiplier in value_map.items()
+            }
+            for attr_name, value_map in DEFAULT_GENERATED_ATTRIBUTE_COUNTS.items()
+        }
+
+    scale = max(float(args.al_attribute_extra_count_scale), 0.0)
+    if scale != 1.0:
+        extra_counts = {
+            attr_name: {
+                value: float(count) * scale
+                for value, count in value_map.items()
+            }
+            for attr_name, value_map in extra_counts.items()
+        }
+    return extra_counts
+
+
+def _select_attribute_ids(
+    image_ids: Sequence[str],
+    label_dir: Path,
+    n_select: int,
+    args,
+) -> List[str]:
+    from utils.active_learning import (
+        AttributeFocusedStrategy,
+        load_attribute_metadata,
+        parse_attribute_priority_log,
+        parse_float_with_infinity,
+    )
+
+    if not args.attribute_file.exists():
+        raise FileNotFoundError(f"Attribute metadata file not found: {args.attribute_file}")
+
+    metadata = load_attribute_metadata(str(args.attribute_file))
+    metadata_lengths = [
+        len(attr_info.get("data", []))
+        for attr_info in metadata.values()
+        if isinstance(attr_info, dict)
+    ]
+    if not metadata_lengths:
+        raise ValueError(f"No attribute data arrays found in {args.attribute_file}")
+    if min(metadata_lengths) < len(image_ids):
+        raise ValueError(
+            f"Attribute metadata {args.attribute_file} covers {min(metadata_lengths)} images, "
+            f"but {len(image_ids)} KITTI train images are available."
+        )
+
+    focus_attributes = _parse_focus_attributes(args.al_attribute_focus)
+    extra_counts = _resolve_attribute_extra_counts(args)
+
+    signatures = [_label_signature(label_dir / f"{image_id}.txt") for image_id in image_ids]
+    signature_to_label = {
+        signature: idx for idx, signature in enumerate(sorted(set(signatures)))
+    }
+    proxy_labels = [signature_to_label[signature] for signature in signatures]
+    proxy_dataset = KittiSelectionProxyDataset(
+        metadata_indices=list(range(len(image_ids))),
+        class_labels=proxy_labels,
+    )
+
+    value_weights = None
+    if args.al_attribute_log_path is not None and args.al_attribute_log_path.exists():
+        value_weights = parse_attribute_priority_log(str(args.al_attribute_log_path))
+
+    class_balance = parse_float_with_infinity(args.al_attribute_class_balance, default=0.0)
+    strategy = AttributeFocusedStrategy(
+        attribute_metadata=metadata,
+        focus_attributes=focus_attributes,
+        rarity_power=args.al_attribute_rarity_power,
+        uncertain_boost=args.al_attribute_uncertainty_boost,
+        value_weights=value_weights,
+        log_acc_scale=args.al_attribute_log_acc_scale,
+        extra_counts=extra_counts,
+        frequency_penalty=args.al_attribute_frequency_penalty,
+        class_balance_weight=class_balance,
+        conditional_rarity=args.al_conditional_rarity,
+        use_rarity=args.al_attribute_use_rarity,
+        use_entropy=False,
+    )
+
+    debug_attribute = focus_attributes[0] if focus_attributes else None
+    print("KITTI attribute selection config:")
+    print(
+        json.dumps(
+            {
+                "attribute_file": str(args.attribute_file),
+                "focus_attributes": focus_attributes,
+                "rarity_power": args.al_attribute_rarity_power,
+                "use_rarity": args.al_attribute_use_rarity,
+                "frequency_penalty": args.al_attribute_frequency_penalty,
+                "class_balance": args.al_attribute_class_balance,
+                "conditional_rarity": args.al_conditional_rarity,
+                "extra_counts": extra_counts,
+                "label_signature_to_proxy_class": signature_to_label,
+            },
+            indent=2,
+        )
+    )
+
+    selected_indices = strategy.select(
+        proxy_dataset,
+        n_select,
+        random_seed=args.seed,
+        debug_attribute=debug_attribute,
+    )
+    selected_ids = [image_ids[int(idx)] for idx in selected_indices]
+    return sorted(selected_ids)
 
 
 def _prepare_split_copy(
@@ -361,6 +913,31 @@ def prepare_dataset(args) -> Path:
                 base_train_labels,
                 original_sample_count,
                 rng,
+            )
+        elif args.selection_strategy in {"coreset", "badge"}:
+            selected_original_ids = _select_embedding_ids(
+                args.selection_strategy,
+                train_ids,
+                base_train_images,
+                base_train_labels,
+                base_val_images,
+                base_val_labels,
+                original_sample_count,
+                args,
+            )
+        elif args.selection_strategy == "entropy":
+            selected_original_ids = _select_entropy_ids(
+                train_ids,
+                base_train_images,
+                original_sample_count,
+                args,
+            )
+        elif args.selection_strategy == "attribute":
+            selected_original_ids = _select_attribute_ids(
+                train_ids,
+                base_train_labels,
+                original_sample_count,
+                args,
             )
         else:
             selected_original_ids = sorted(rng.sample(train_ids, original_sample_count))
@@ -442,6 +1019,37 @@ def prepare_dataset(args) -> Path:
         "seed": args.seed,
         "sub_ratio": args.sub_ratio,
         "selection_strategy": args.selection_strategy,
+        "al_initial_labeled": (
+            args.al_initial_labeled if args.selection_strategy in {"coreset", "badge"} else None
+        ),
+        "al_embedding_thumbnail_size": (
+            args.al_embedding_thumbnail_size if args.selection_strategy in {"coreset", "badge"} else None
+        ),
+        "al_fast_selection": (
+            args.al_fast_selection if args.selection_strategy in {"coreset", "badge"} else None
+        ),
+        "al_entropy_conf_thres": (
+            args.al_entropy_conf_thres if args.selection_strategy == "entropy" else None
+        ),
+        "al_entropy_iou": args.al_entropy_iou if args.selection_strategy == "entropy" else None,
+        "al_entropy_batch": args.al_entropy_batch if args.selection_strategy == "entropy" else None,
+        "attribute_file": str(args.attribute_file) if args.selection_strategy == "attribute" else None,
+        "al_attribute_focus": args.al_attribute_focus if args.selection_strategy == "attribute" else None,
+        "al_attribute_rarity_power": (
+            args.al_attribute_rarity_power if args.selection_strategy == "attribute" else None
+        ),
+        "al_attribute_frequency_penalty": (
+            args.al_attribute_frequency_penalty if args.selection_strategy == "attribute" else None
+        ),
+        "al_attribute_class_balance": (
+            args.al_attribute_class_balance if args.selection_strategy == "attribute" else None
+        ),
+        "al_conditional_rarity": (
+            args.al_conditional_rarity if args.selection_strategy == "attribute" else None
+        ),
+        "al_attribute_extra_counts": (
+            _resolve_attribute_extra_counts(args) if args.selection_strategy == "attribute" else None
+        ),
         "original_candidates": len(train_ids),
         "selected_original": len(selected_original_ids),
         "generated_candidates_with_labels": len(generated_candidates),
@@ -486,13 +1094,7 @@ def train_yolov8(args, data_yaml: Path):
     if not args.resume_model.exists():
         raise FileNotFoundError(f"Resume checkpoint not found: {args.resume_model}")
 
-    run_name = args.name
-    if run_name is None:
-        ratio_tag = str(args.sub_ratio).replace(".", "p")
-        run_name = (
-            f"kitti_ratio{ratio_tag}_{args.selection_strategy}_red_cloudy_gen{args.num_added_img}"
-            f"_seed{args.seed}"
-        )
+    run_name = _make_run_name(args)
 
     model = YOLO(str(args.resume_model))
     train_start_time = time.time()
@@ -551,20 +1153,31 @@ def train_yolov8(args, data_yaml: Path):
 
 def main():
     overall_start_time = time.time()
-    print("Current time:", datetime.datetime.now().strftime("%m%d%H%M%S"))
-    print(f"Start timestamp: {_timestamp_str(overall_start_time)}")
     args = parse_args()
+    run_name = _make_run_name(args)
+    log_path, log_handle, original_streams = _setup_log(args, run_name, overall_start_time)
+    try:
+        if log_path is not None:
+            print(f"Log file: {log_path}")
+        print("Current time:", datetime.datetime.now().strftime("%m%d%H%M%S"))
+        print(f"Start timestamp: {_timestamp_str(overall_start_time)}")
 
-    data_yaml = prepare_dataset(args)
-    if args.prepare_only:
-        print("prepare-only mode enabled; skipping training.")
-    else:
-        train_yolov8(args, data_yaml)
+        data_yaml = prepare_dataset(args)
+        if args.prepare_only:
+            print("prepare-only mode enabled; skipping training.")
+        else:
+            train_yolov8(args, data_yaml)
 
-    overall_elapsed = time.time() - overall_start_time
-    end_timestamp = time.time()
-    print(f"End timestamp: {_timestamp_str(end_timestamp)}")
-    print(f"End-to-end elapsed (HH:MM:SS): {_format_duration(overall_elapsed)}")
+        overall_elapsed = time.time() - overall_start_time
+        end_timestamp = time.time()
+        print(f"End timestamp: {_timestamp_str(end_timestamp)}")
+        print(f"End-to-end elapsed (HH:MM:SS): {_format_duration(overall_elapsed)}")
+    finally:
+        if log_handle is not None:
+            log_handle.flush()
+            if original_streams is not None:
+                sys.stdout, sys.stderr = original_streams
+            log_handle.close()
 
 
 if __name__ == "__main__":

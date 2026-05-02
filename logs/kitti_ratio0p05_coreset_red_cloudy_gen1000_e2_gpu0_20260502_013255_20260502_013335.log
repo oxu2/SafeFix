@@ -1,0 +1,12 @@
+Log file: logs/kitti_ratio0p05_coreset_red_cloudy_gen1000_e2_gpu0_20260502_013255_20260502_013335.log
+Current time: 0502013335
+Start timestamp: 2026-05-02 01:33:35
+KITTI coreset selection: extracting lightweight image embeddings for 5000 train candidates.
+  Extracted proxy embeddings for 1000/5000 images...
+  Extracted proxy embeddings for 2000/5000 images...
+  Extracted proxy embeddings for 3000/5000 images...
+  Extracted proxy embeddings for 4000/5000 images...
+KITTI coreset selection: extracting validation proxy embeddings from 1240 images.
+  Extracted proxy embeddings for 1000/1240 images...
+Core-set selection: choosing 250 from 5000 samples...
+Progress: ░░░░░░░░░░░░░░░░░░░░ 0/250░░░░░░░░░░░░░░░░░░░░ 12/250█░░░░░░░░░░░░░░░░░░░ 24/250██░░░░░░░░░░░░░░░░░░ 36/250███░░░░░░░░░░░░░░░░░ 48/250████░░░░░░░░░░░░░░░░ 60/250█████░░░░░░░░░░░░░░░ 72/250██████░░░░░░░░░░░░░░ 84/250███████░░░░░░░░░░░░░ 96/250████████░░░░░░░░░░░░ 108/250

@@ -1,0 +1,5 @@
+Log file: logs/kitti_ratio0p05_badge_red_cloudy_gen1000_e2_gpu0_20260502_013255_20260502_013434.log
+Current time: 0502013434
+Start timestamp: 2026-05-02 01:34:34
+KITTI badge selection: extracting lightweight image embeddings for 5000 train candidates.
+  Extracted proxy embeddings for 1000/5000 images...

@@ -5,6 +5,463 @@
 
 ---
 
+## Session 161: Relaunch ImageNet RPC8 with Entropy Disabled
+
+**Date**: 2026-05-02
+**Task**: imagenet-controlnet-rpc8-noentropy-rerun
+
+### Summary
+
+The user decided the ImageNet ControlNet RPC8 ablation should match the
+metadata-only setup used by CelebA/COCO/KITTI, so the previous ImageNet RPC8
+grid with `--al_attribute_use_entropy True` needs a no-entropy rerun.
+
+### What Changed
+
+- Added executable launcher:
+  `scripts/run_imagenet_controlnet_rpc8_noentropy_gpu3.sh`
+- The launcher runs ImageNet ControlNet only, serially on GPU `3`.
+- It covers:
+  - ratios: `0.1 0.3 0.5 0.7 0.9`
+  - tags: `none only_r only_p only_c no_r no_p no_c anchor`
+  - total rows: `40`
+- It uses the same core ImageNet settings as the previous RPC8 run:
+  - base model: `weights/model_imagenet_resnet_base.pth`
+  - attribute metadata: `save/attribute10_internvl3_8B.json`
+  - generated directory: `data/imagenet_pinkcolor_fabrictexture`
+  - data directory: `data/imagenet_subset`
+  - `num_added_img=1000`, `num_epochs=15`, `lr=1e-5`
+- Key correction:
+  `--al_attribute_use_entropy False`
+- Logs are written as:
+  `logs_imagenet/controlnet_rpc8_noentropy_<tag>_resnet_imagenet_1000_ratio<ratio>_gpu3_<stamp>.log`
+
+### Validation
+
+- `bash -n scripts/run_imagenet_controlnet_rpc8_noentropy_gpu3.sh` passed.
+- Dry-run validation:
+  - command count: `40`
+  - `--al_attribute_use_entropy False` count: `40`
+  - `--al_attribute_use_entropy True` count: `0`
+
+### Launch Status
+
+Launched detached on GPU `3` with stamp `20260502_023905`:
+
+- parent worker PID: `959463`
+- worker output:
+  `logs/imagenet_controlnet_rpc8_noentropy_gpu3_20260502_023905.out`
+- PID file:
+  `logs/imagenet_controlnet_rpc8_noentropy_gpu3_20260502_023905.pid`
+- first row log:
+  `logs_imagenet/controlnet_rpc8_noentropy_none_resnet_imagenet_1000_ratio0p1_gpu3_20260502_023905.log`
+
+Startup check showed the first row entered training. GPU process snapshot
+showed an `ad` environment Python process on physical GPU `3` using about
+`3.9 GiB`. Error marker scan over the worker output and first row log found no
+startup `Traceback`, `CUDA out of memory`, `Killed`, missing-file, or runtime
+error markers.
+
+Follow-up check: the first row completed and the worker advanced to
+`ratio=0.1 tag=only_r`.
+
+- completed first row:
+  `ratio=0.1 tag=none`
+- log:
+  `logs_imagenet/controlnet_rpc8_noentropy_none_resnet_imagenet_1000_ratio0p1_gpu3_20260502_023905.log`
+- Test ACC `0.7308`, test loss `0.8392`
+- Active-learning selection time `0.07s`
+- end-to-end wall time `116.52s`
+
+Do not update `report.md` until completed no-entropy rows are parsed.
+
+---
+
+## Session 160: Entropy Switch Audit for Recent RPC/AL Runs
+
+**Date**: 2026-05-02
+**Task**: entropy-switch-audit-coco-kitti-imagenet
+
+### Summary
+
+Audited the actual entropy switches used by the recent ImageNet ControlNet,
+COCO brown-rainy pose, CelebA, and KITTI generated-image selection runs after
+the user noticed that older CelebA experiments used entropy off by default.
+
+### Findings
+
+- `alpred.py` defaults `--al_attribute_use_entropy` to `False`.
+- Recent CelebA launchers explicitly pass `--al_attribute_use_entropy False`;
+  no CelebA logs showed dynamic entropy selection messages.
+- ImageNet ControlNet RPC8 sweep stamp `20260501_231910` is different:
+  `scripts/run_rpc_8combo_ratio_sweep_gpu123.sh` passes
+  `--al_attribute_use_entropy True` for ImageNet. Therefore the ImageNet
+  RPC8 `none` rows mean `R/P/C` all disabled while `U` remains enabled
+  (`entropy-only` inside the attribute selector), not a random baseline.
+- COCO brown-rainy RPC8 rows in the same launcher pass
+  `--al-attribute-use-entropy false`. In addition,
+  `train_pose_estimation.py` currently ignores that flag even if true and
+  constructs `AttributeFocusedStrategy(..., use_entropy=False)`. Recent COCO
+  RPC8 selection times around `0.3s-0.4s` are consistent with metadata-only
+  scoring.
+- KITTI generated-image 10-epoch sweep uses `random`, `attribute`,
+  `stratified`, `coreset_fast`, and `badge_fast`; the attribute path in
+  `object_detection/train_yolov8_kitti_generated.py` constructs
+  `AttributeFocusedStrategy(..., use_entropy=False)`. The sweep logs show
+  `al_entropy_*: null` for non-entropy rows.
+- The only KITTI entropy run so far is the explicit smoke test:
+  `selection_strategy=entropy`, log
+  `logs/kitti_ratio0p05_entropy_red_cloudy_gen1000_e1_gpu3_20260502_022729.log`.
+  It completed successfully with test mAP50 `0.7705`, mAP50-95 `0.4301`, and
+  elapsed time `00:02:35`.
+
+### Caveat
+
+The ImageNet ControlNet RPC8 grid and the COCO/KITTI metadata-only grids are
+not using the same fixed value for the `U`/entropy term. Treat ImageNet RPC8
+`none` as entropy-only. Treat COCO RPC8 `none` and KITTI non-entropy rows as
+metadata-only/no-RPC controls unless they are explicitly relaunched with an
+entropy strategy.
+
+---
+
+## Session 159: KITTI Generated-Image 10-Epoch Ratio Sweep Launch
+
+**Date**: 2026-05-02
+**Task**: kitti-generated-al-ratio-sweep-e10-gpu03
+
+### Summary
+
+Prepared and launched the recommended 10-epoch KITTI generated-image
+active-learning ratio sweep. The user asked to run the default recommended
+setting rather than the earlier 2-epoch probes, with GPU `0` running
+`random`, `attribute`, and `stratified` serially, and GPU `3` running
+simplified `coreset` and `badge` serially. Both queues loop over ratios
+`0.1`, `0.3`, `0.5`, `0.7`, and `0.9`.
+
+### What Changed
+
+- Added launcher:
+  `scripts/run_kitti_generated_al_ratio_sweep_gpu03.sh`
+- The launcher uses:
+  - source dataset: `/data/oxx220000/kitti_yolov8_first5000`
+  - generated pool:
+    `/data/oxx220000/kitti-weather-edits/generated_kitti1352_red_cloudy_icedit_upscaled`
+  - resume checkpoint from `object_detection/train_yolov8_kitti_generated.py`
+    default:
+    `runs/kitti_yolov8/first5000_1240val_1241test_gpu0_bs16_e30_20260429_012232/weights/best.pt`
+  - `num_added_img=1000`
+  - `epochs=10`, `batch=16`, `imgsz=640`, `workers=4`
+  - `AdamW`, `lr0=2e-4`, `lrf=0.1`, `warmup_epochs=1.0`
+  - seed `42`
+- GPU `0` queue per ratio:
+  `random -> attribute_r003_p5_c15 -> stratified`
+- GPU `3` queue per ratio:
+  `coreset_fast -> badge_fast`
+- Individual run logs are written to:
+  `logs/kitti_ratio<ratio>_<method>_red_cloudy_gen1000_e10_gpu<gpu>_<stamp>.log`
+- Worker output logs are written to:
+  `logs/kitti_generated_al_ratio_sweep_gpu0_<stamp>.out`
+  and `logs/kitti_generated_al_ratio_sweep_gpu3_<stamp>.out`
+
+### Validation
+
+- `bash -n scripts/run_kitti_generated_al_ratio_sweep_gpu03.sh` passed.
+- `DRY_RUN=1 STAMP=dryrun2 bash scripts/run_kitti_generated_al_ratio_sweep_gpu03.sh`
+  expanded the intended `25` rows:
+  - `5` ratios * `3` GPU0 methods = `15` runs
+  - `5` ratios * `2` GPU3 methods = `10` runs
+- First launch stamp `20260502_015551` used background shell functions and was
+  killed by SIGHUP after the launcher shell exited. It produced no individual
+  run logs and should be ignored.
+- The launcher was fixed to start each queue through `setsid nohup` worker
+  mode.
+
+### Launch Status
+
+Launched the fixed sweep with stamp `20260502_015837`:
+
+- GPU `0`: parent PID `929778`
+  - worker output:
+    `logs/kitti_generated_al_ratio_sweep_gpu0_20260502_015837.out`
+  - first run:
+    `random`, ratio `0.1`
+  - first run log:
+    `logs/kitti_ratio0p1_random_red_cloudy_gen1000_e10_gpu0_20260502_015837.log`
+  - startup check: dataset prepared with `500` original + `1000` generated
+    images, then entered 10-epoch training.
+- GPU `3`: parent PID `929779`
+  - worker output:
+    `logs/kitti_generated_al_ratio_sweep_gpu3_20260502_015837.out`
+  - first run:
+    `coreset_fast`, ratio `0.1`
+  - first run log:
+    `logs/kitti_ratio0p1_coreset_fast_red_cloudy_gen1000_e10_gpu3_20260502_015837.log`
+  - startup check: lightweight embedding extraction reached validation proxy
+    embeddings after processing all `5000` train candidates.
+- PID file:
+  `logs/kitti_generated_al_ratio_sweep_gpu03_20260502_015837.pids`
+- Startup error scan over worker outputs and first run logs found no
+  `Traceback`, `CUDA out of memory`, `Killed`, `No such file`,
+  `FileNotFound`, `RuntimeError`, or `Error` markers.
+
+### GPU Placement Correction
+
+- The first GPU `3` worker from stamp `20260502_015837` was incorrectly
+  landing on physical GPU `0` because the launcher combined an outer
+  `CUDA_VISIBLE_DEVICES=3` with `--device 0`. That produced duplicate KITTI
+  training on GPU `0`.
+- Stopped the invalid GPU `3` worker from stamp `20260502_015837`:
+  parent PID `929779`, child PID `929807`. Its GPU `3` logs from that stamp
+  are partial and should be ignored.
+- Patched `scripts/run_kitti_generated_al_ratio_sweep_gpu03.sh` so launched
+  workers pass the physical GPU id through `--device "${gpu}"`.
+- Relaunched only the GPU `3` queue with stamp `20260502_020651`:
+  parent PID `936349`, worker output
+  `logs/kitti_generated_al_ratio_sweep_gpu3_20260502_020651.out`, first run
+  log
+  `logs/kitti_ratio0p1_coreset_fast_red_cloudy_gen1000_e10_gpu3_20260502_020651.log`.
+- Monitoring after the relaunch showed the corrected placement. At the latest
+  check after `ratio=0.1 coreset_fast` finished and `ratio=0.1 badge_fast`
+  entered training:
+  - physical GPU `0` UUID `GPU-3748291f-f6f8-8463-5e88-c21706e40419` has one
+    KITTI CUDA process, PID `939278`, from the valid GPU `0` queue
+  - physical GPU `3` UUID `GPU-e3ce52a2-3737-fae7-a3bd-9adfee05cbc5` has one
+    KITTI CUDA process, PID `938545`, from the corrected GPU `3` queue
+- `pgrep` shows many same-command Python children during training; these are
+  DataLoader/worker child processes and are not additional CUDA training rows.
+- Error scan over the active GPU `0` and corrected GPU `3` worker outputs found
+  no error markers.
+- Follow-up check: GPU `3` appears idle during the fast coreset/BADGE proxy
+  selection stage because that step extracts lightweight embeddings on CPU
+  before YOLO training starts. After `ratio=0.1 badge_fast` finished, the
+  `ratio=0.3 coreset_fast` row entered training and monitoring showed physical
+  GPU `3` active at about `77%` utilization with CUDA PID `941459`.
+- Updated `scripts/run_kitti_generated_al_ratio_sweep_gpu03.sh` for future
+  launches to match the recent working launcher pattern:
+  `CUDA_VISIBLE_DEVICES=<physical_gpu>` plus Ultralytics `--device 0` inside
+  the mapped process. The dry-run path now respects `QUEUE_MODE=gpu3` and
+  prints only the GPU `3` queue when requested.
+- Validation after the launcher patch:
+  `bash -n scripts/run_kitti_generated_al_ratio_sweep_gpu03.sh` passed, and
+  `DRY_RUN=1 QUEUE_MODE=gpu3 STAMP=dryrun_gpu3 bash scripts/run_kitti_generated_al_ratio_sweep_gpu03.sh`
+  showed commands with `CUDA_VISIBLE_DEVICES=3 ... --device 0`.
+
+### Status
+
+[RUNNING] **KITTI generated-image 10-epoch active-learning ratio sweep is
+running with the valid GPU `0` queue under stamp `20260502_015837` and the
+corrected GPU `3` queue under stamp `20260502_020651`.**
+
+Monitor with:
+
+```bash
+ps -fp 929778 936349
+tail -n 80 logs/kitti_generated_al_ratio_sweep_gpu0_20260502_015837.out
+tail -n 80 logs/kitti_generated_al_ratio_sweep_gpu3_20260502_020651.out
+```
+
+Do not treat stamp `20260502_015551` as a real launch. Do not treat GPU `3`
+logs from stamp `20260502_015837` as valid results.
+
+### Entropy Smoke Follow-Up
+
+- The user asked whether the entropy method had not been run yet, and asked
+  for a 1-epoch GPU `3` smoke test.
+- Confirmed `object_detection/train_yolov8_kitti_generated.py` did not support
+  an entropy selection strategy before this follow-up. It only supported
+  `random`, `stratified`, `attribute`, `coreset`, and `badge`.
+- Added `--selection-strategy entropy` to
+  `object_detection/train_yolov8_kitti_generated.py`.
+  - The implementation is a YOLO detection-confidence entropy proxy because
+    Ultralytics postprocessed detection results expose confidences, not full
+    class logits.
+  - It scores original KITTI train candidates using the resume checkpoint,
+    computes binary entropy from predicted detection confidences, and selects
+    the highest-entropy images.
+  - New knobs:
+    `--al-entropy-conf-thres`, `--al-entropy-iou`, and `--al-entropy-batch`.
+- Added helper launcher:
+  `scripts/run_kitti_entropy_smoke_gpu3_after_queue.sh`.
+  - Default smoke: `ratio=0.05`, `epochs=1`, `num_added_img=1000`,
+    `batch=16`, `imgsz=640`, seed `42`.
+  - It waits for the current GPU `3` sweep parent PID before launching so the
+    smoke test does not overlap with the main coreset/BADGE sweep and distort
+    its runtime logs.
+- Validation:
+  - `python3 -m py_compile object_detection/train_yolov8_kitti_generated.py`
+    passed.
+  - `bash -n scripts/run_kitti_entropy_smoke_gpu3_after_queue.sh` passed.
+  - `bash scripts/run_kitti_entropy_smoke_gpu3_after_queue.sh --help` works.
+- Queued entropy smoke:
+  - waiter PID: `948779`
+  - waits for GPU `3` sweep parent PID `936349`
+  - launcher output:
+    `logs/kitti_entropy_smoke_gpu3_after_queue_20260502_022310.out`
+  - eventual run log:
+    `logs/kitti_ratio0p05_entropy_red_cloudy_gen1000_e1_gpu3_20260502_022310.log`
+- Two stale queued waiters from failed inline launch attempts were killed:
+  PIDs `947538` and `948467`. They were only waiting and had not started
+  training.
+
+---
+
+## Session 158: KITTI Generated-Image AL Selection Probes
+
+**Date**: 2026-05-02
+**Task**: kitti-generated-ratio0p05-al-selection-probes
+
+### Summary
+
+Extended the KITTI generated-image YOLOv8 resume script to use the shared
+active-learning selectors, then ran short `ratio=0.05`, 2-epoch probes for
+attribute, random, simplified coreset, and simplified BADGE. The user clarified
+that coreset/BADGE should use the simplified paths because exact selection is
+too slow, and one of those runs should be placed on GPU `3`; the completed
+fast BADGE run used GPU `3`.
+
+All comparable rows use:
+
+- source dataset: `/data/oxx220000/kitti_yolov8_first5000/`
+- generated pool:
+  `/data/oxx220000/kitti-weather-edits/generated_kitti1352_red_cloudy_icedit_upscaled`
+- generated pool size used by the script: `1309`
+- `sub_ratio=0.05`, selecting `250` original KITTI train images from `5000`
+- `num_added_img=1000`, adding `1000` generated red-cloudy images
+- final train size: `1250`
+- resume checkpoint:
+  `runs/kitti_yolov8/first5000_1240val_1241test_gpu0_bs16_e30_20260429_012232/weights/best.pt`
+- fine-tuning: `epochs=2`, `batch=16`, `imgsz=640`, `AdamW`,
+  `lr0=2e-4`, `lrf=0.1`, `warmup_epochs=1.0`, seed `42`
+
+### What Changed
+
+- Updated `object_detection/train_yolov8_kitti_generated.py` to support:
+  - `--selection-strategy attribute`
+  - `--selection-strategy coreset`
+  - `--selection-strategy badge`
+  - fast approximate coreset/BADGE via `--al-fast-selection true`
+  - lightweight image proxy embeddings for KITTI selection
+  - YOLO label-set signatures as proxy labels for coreset/BADGE
+  - script-level tee logging via `--log-file`, `--log-dir`, and
+    `--write-log`
+- Updated `utils/imports.py` so `timm` is optional, allowing
+  `utils.active_learning` to import in the YOLO `fp` environment where `timm`
+  is not installed.
+- Added stable human-facing KITTI results to `report.md` in:
+  `05/02/2026 Update — KITTI Generated-Image Ratio 0.05 Two-Epoch Selection Probe`.
+
+### Validation
+
+- `python3 -m py_compile object_detection/train_yolov8_kitti_generated.py utils/imports.py`
+  passed earlier in this work.
+- Attribute prepare-only probe passed.
+- Coreset/BADGE exact prepare-only probes worked but took about `1:49`, so
+  the final coreset/BADGE comparisons use the simplified fast paths.
+- Error scan over the four completed comparison logs found no `Traceback`,
+  `CUDA out of memory`, `Killed`, `No such file`, `FileNotFound`,
+  `RuntimeError`, or `Error` markers.
+
+### Completed Runs
+
+| Method | GPU | Run directory | Val mAP50 | Val mAP50-95 | Test mAP50 | Test mAP50-95 | Elapsed | Log |
+| --- | ---: | --- | ---: | ---: | ---: | ---: | --- | --- |
+| `attribute_r003_p5_c15` | `0` | `runs/kitti_yolov8/kitti_ratio0p05_attribute_r003_p5_c15_red_cloudy_gen1000_e2_gpu0_20260502_012750` | `0.7166` | `0.3437` | `0.7512` | `0.3647` | `00:00:51` | `logs/kitti_ratio0p05_attribute_r003_p5_c15_red_cloudy_gen1000_e2_gpu0_20260502_012750_20260502_012750.log` |
+| `random` | `0` | `runs/kitti_yolov8/kitti_ratio0p05_random_red_cloudy_gen1000_e2_gpu0_20260502_013255` | `0.7342` | `0.3886` | `0.7683` | `0.4088` | `00:00:39` | `logs/kitti_ratio0p05_random_red_cloudy_gen1000_e2_gpu0_20260502_013255_20260502_013255.log` |
+| `coreset_fast` | `0` | `runs/kitti_yolov8/kitti_ratio0p05_coreset_fast_red_cloudy_gen1000_e2_gpu0_20260502_013545` | `0.7236` | `0.3877` | `0.7581` | `0.4066` | `00:01:54` | `logs/kitti_ratio0p05_coreset_fast_red_cloudy_gen1000_e2_gpu0_20260502_013545_20260502_013545.log` |
+| `badge_fast` | `3` | `runs/kitti_yolov8/kitti_ratio0p05_badge_fast_red_cloudy_gen1000_e2_gpu3_20260502_013545` | `0.7333` | `0.3963` | `0.7793` | `0.4158` | `00:01:54` | `logs/kitti_ratio0p05_badge_fast_red_cloudy_gen1000_e2_gpu3_20260502_013545_20260502_013545.log` |
+
+Test precision/recall for the completed rows:
+
+- `attribute_r003_p5_c15`: precision `0.8069`, recall `0.6567`
+- `random`: precision `0.8314`, recall `0.6578`
+- `coreset_fast`: precision `0.8268`, recall `0.6541`
+- `badge_fast`: precision `0.8192`, recall `0.6844`
+
+### Caveats
+
+- The partial exact coreset/BADGE attempt from stamp `20260502_013255` was
+  killed after the user clarified to use the simplified versions. Ignore:
+  - `logs/kitti_ratio0p05_coreset_red_cloudy_gen1000_e2_gpu0_20260502_013255_20260502_013335.log`
+  - `logs/kitti_ratio0p05_badge_red_cloudy_gen1000_e2_gpu0_20260502_013255_20260502_013434.log`
+- These are short 2-epoch probes, not the recommended final 10-epoch KITTI
+  generated-image fine-tuning setting.
+
+### Status
+
+[DONE] **The requested simplified coreset/BADGE comparison is complete; fast
+BADGE ran on GPU `3`, and the stable 2-epoch KITTI comparison table is recorded
+in `report.md`.**
+
+---
+
+## Session 157: ImageNet RPC 8-Combination Ratio Sweep Report Update
+
+**Date**: 2026-05-02
+**Task**: imagenet-rpc8-ratio-sweep-report-update
+
+### Summary
+
+Checked the ImageNet ControlNet half of the full RPC `2^3` ratio sweep launched
+under stamp `20260501_231910`. GPU `3` finished all ImageNet rows, producing
+all `40` expected logs:
+
+```text
+5 ratios * 8 RPC settings = 40 ImageNet rows
+```
+
+The COCO brown-rainy workers from the same launcher are still running:
+
+- GPU `1`: parent PID `800646`
+- GPU `2`: parent PID `800647`
+
+### Verification
+
+- `ps -fp 800646 800647 800648` showed GPU `3` parent PID `800648` no longer
+  running, while the two COCO workers are still alive.
+- `ls logs_imagenet/controlnet_rpc8_*_20260501_231910.log` returned all `40`
+  expected ImageNet logs.
+- `rg -c "Model Test ACC" logs_imagenet/controlnet_rpc8_*_20260501_231910.log`
+  showed exactly one final test line in every ImageNet log.
+- Error scan over the ImageNet logs and GPU `3` worker output found no
+  `Traceback`, `CUDA out of memory`, `Killed`, `No such file`, `FileNotFound`,
+  `RuntimeError`, or `Error` markers.
+
+### Report Update
+
+Updated `report.md` with:
+
+- section:
+  `05/02/2026 Update — ImageNet RPC 8-Combination Ratio Sweep`
+- all `40` ImageNet ControlNet rows across ratios
+  `0.1 0.3 0.5 0.7 0.9`
+- columns:
+  `Ratio`, `Setting`, `Active components`, `Test ACC`, `Best Val ACC`,
+  `Test loss`, and `Log`
+
+Best ImageNet Test ACC by ratio:
+
+- `0.1`: `no_r`, Test ACC `0.7369`
+- `0.3`: `none`, Test ACC `0.7438`
+- `0.5`: `none`, Test ACC `0.7454`
+- `0.7`: `none`, Test ACC `0.7485`
+- `0.9`: `only_p`, Test ACC `0.7562`
+
+Best overall ImageNet row in this sweep:
+
+- `only_p` at ratio `0.9`, Test ACC `0.7562`, Best Val ACC `0.7262`,
+  Test loss `0.7870`
+- log:
+  `logs_imagenet/controlnet_rpc8_only_p_resnet_imagenet_1000_ratio0p9_gpu3_20260501_231910.log`
+
+### Status
+
+[PARTIAL DONE] **ImageNet RPC 8-combination ratio sweep is complete and
+recorded in `report.md`; COCO from the same launch still needs monitoring and
+reporting after GPU `1`/`2` workers finish.**
+
+---
+
 ## Session 156: KITTI Generated-Image YOLOv8 Resume Script
 
 **Date**: 2026-05-02
@@ -113,8 +570,72 @@ further download is running. A process check found no remaining
 
 ### Status
 
-[READY] **KITTI generated-image YOLOv8 resume script is implemented and
-validated in prepare-only mode. No KITTI training run has been launched yet.**
+[DONE] **KITTI generated-image YOLOv8 resume script is implemented and passed
+a 1-epoch GPU smoke run.**
+
+Smoke run requested by the user:
+
+```bash
+CUDA_VISIBLE_DEVICES=0 python -u object_detection/train_yolov8_kitti_generated.py \
+  --sub-ratio 0.05 \
+  --selection-strategy stratified \
+  --num-added-img 1000 \
+  --prepared-root /data/oxx220000/kitti_yolov8_ratio0p05_stratified_red_cloudy_gen1000_seed42 \
+  --overwrite-prepared true \
+  --epochs 1 \
+  --batch 16 \
+  --imgsz 640 \
+  --device 0 \
+  --workers 4 \
+  --project /people/cs/o/oxx220000/safefix/runs/kitti_yolov8 \
+  --name kitti_ratio0p05_stratified_red_cloudy_gen1000_e1_gpu0_20260502_011659 \
+  --eval-test true
+```
+
+Smoke run artifacts:
+
+- Derived dataset:
+  `/data/oxx220000/kitti_yolov8_ratio0p05_stratified_red_cloudy_gen1000_seed42`
+- Train run:
+  `runs/kitti_yolov8/kitti_ratio0p05_stratified_red_cloudy_gen1000_e1_gpu0_20260502_011659`
+- Test evaluation run:
+  `runs/kitti_yolov8/kitti_ratio0p05_stratified_red_cloudy_gen1000_e1_gpu0_20260502_011659_test`
+- Selection summary:
+  `250` original KITTI train images selected from `5000`, plus `1000`
+  generated red-cloudy images selected from `1309`, for `1250` train images.
+- Validation split:
+  mAP50 `0.67209`, mAP50-95 `0.35703`, precision `0.82872`, recall `0.57158`
+  after 1 epoch.
+- Test split:
+  mAP50 `0.69916`, mAP50-95 `0.37174`, precision `0.82058`, recall `0.59635`
+  after 1 epoch.
+- Runtime:
+  `00:01:30` end-to-end on GPU `0`; peak training memory was about `2.15G`.
+
+Important caveat: this is a code/data-path sanity check only, not a final KITTI
+result. The recommended real resume setting remains `10` fine-tuning epochs
+with `AdamW`, `lr0=2e-4`, `lrf=0.1`, and `warmup_epochs=1.0`.
+
+### Logging Update
+
+After the smoke run, the user asked that future runs always keep a log file for
+metrics and runtime inspection. Updated
+`object_detection/train_yolov8_kitti_generated.py` so it tees stdout/stderr to a
+persistent log by default:
+
+- Default behavior:
+  writes `logs/<run_name>_<YYYYmmdd_HHMMSS>.log` while still printing to the
+  console.
+- Explicit control:
+  - `--log-file <path>` writes to an exact path.
+  - `--log-dir <path>` changes the auto-log directory.
+  - `--write-log false` disables script-level tee logging.
+- Validation:
+  - `python3 -m py_compile object_detection/train_yolov8_kitti_generated.py`
+  - prepare-only log probe:
+    `python3 object_detection/train_yolov8_kitti_generated.py --prepared-root /tmp/kitti_yolov8_log_probe --sub-ratio 0.05 --selection-strategy stratified --num-added-img 2 --prepare-only true --overwrite-prepared true --log-file /tmp/kitti_yolov8_log_probe.log`
+  - Probe log:
+    `/tmp/kitti_yolov8_log_probe.log`
 
 Example command:
 

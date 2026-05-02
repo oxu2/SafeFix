@@ -1,0 +1,63 @@
+Current time: 0502024315
+Added 1000 generated images.
+
+Attribute distribution in selected samples:
+  [color] black: 134 samples (12.9%)
+  [color] brown: 132 samples (12.7%)
+  [color] blue: 127 samples (12.2%)
+  [color] white: 111 samples (10.7%)
+  [color] red: 101 samples (9.7%)
+  [color] green: 98 samples (9.4%)
+  [color] silver: 71 samples (6.8%)
+  [color] gray: 65 samples (6.2%)
+  [color] tan: 54 samples (5.2%)
+  [color] multicolored: 36 samples (3.5%)
+  [color] pink: 34 samples (3.3%)
+  [color] yellow: 34 samples (3.3%)
+  [color] orange: 21 samples (2.0%)
+  [color] purple: 18 samples (1.7%)
+  [color] maroon: 4 samples (0.4%)
+  [background] wall: 216 samples (20.8%)
+  [background] trees: 176 samples (16.9%)
+  [background] buildings: 146 samples (14.0%)
+  [background] house: 133 samples (12.8%)
+  [background] grass: 110 samples (10.6%)
+  [background] street: 85 samples (8.2%)
+  [background] sky: 71 samples (6.8%)
+  [background] water: 41 samples (3.9%)
+  [background] snow: 21 samples (2.0%)
+  [background] wild: 18 samples (1.7%)
+  [background] rocks: 10 samples (1.0%)
+  [background] bridge: 7 samples (0.7%)
+  [background] inside a house: 6 samples (0.6%)
+  [texture] metallic: 277 samples (26.6%)
+  [texture] fabric: 202 samples (19.4%)
+  [texture] plastic: 153 samples (14.7%)
+  [texture] leather: 132 samples (12.7%)
+  [texture] glass: 123 samples (11.8%)
+  [texture] wooden: 88 samples (8.5%)
+  [texture] ceramic: 65 samples (6.2%)
+
+[Active Learning subset (before adding generated images)] class distribution:
+  Class backpack: 26 samples (2.5%)
+  Class barber_chair: 167 samples (16.1%)
+  Class coffee_mug: 16 samples (1.5%)
+  Class desk: 62 samples (6.0%)
+  Class electric_guitar: 33 samples (3.2%)
+  Class park_bench: 149 samples (14.3%)
+  Class pitcher: 106 samples (10.2%)
+  Class purse: 99 samples (9.5%)
+  Class rocking_chair: 131 samples (12.6%)
+  Class water_bottle: 251 samples (24.1%)
+Added 1000 ImageNet pinkcolor_fabrictexture images using Active Learning (attribute): 1040 -> 2040
+Resumed model from /people/cs/o/oxx220000/safefix/weights/model_imagenet_resnet_base.pth (best val acc: 0.7223076923076923)
+Epoch [1/15], Train Loss: 0.5545, Train Acc: 0.8240, Val Loss: 0.9789, Val Acc: 0.6954
+Epoch [2/15], Train Loss: 0.4799, Train Acc: 0.8525, Val Loss: 0.9656, Val Acc: 0.6962
+Epoch [3/15], Train Loss: 0.4296, Train Acc: 0.8676, Val Loss: 0.9663, Val Acc: 0.6954
+Epoch [4/15], Train Loss: 0.3969, Train Acc: 0.8873, Val Loss: 0.9516, Val Acc: 0.7062
+Epoch [5/15], Train Loss: 0.4111, Train Acc: 0.8740, Val Loss: 0.9541, Val Acc: 0.7054
+Epoch [6/15], Train Loss: 0.3903, Train Acc: 0.8789, Val Loss: 0.9532, Val Acc: 0.7008
+Epoch [7/15], Train Loss: 0.4023, Train Acc: 0.8755, Val Loss: 0.9499, Val Acc: 0.7008
+Epoch [8/15], Train Loss: 0.3749, Train Acc: 0.8941, Val Loss: 0.9656, Val Acc: 0.6977
+Epoch [9/15], Train Loss: 0.3817, Train Acc: 0.8877, Val Loss: 0.9550, Val Acc: 0.7000
+Epoch [10/15], Train Loss: 0.3692, Train Acc: 0.8877, Val Loss: 0.9509, Val Acc: 0.6985
