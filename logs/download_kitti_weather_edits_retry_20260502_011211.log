@@ -1,0 +1,4 @@
+Returning existing local_dir `/data/oxx220000/kitti-weather-edits` as remote repo cannot be accessed in `snapshot_download` (429 Client Error: Too Many Requests for url: https://huggingface.co/api/datasets/BZNR3/kitti-weather-edits/revision/main (Request ID: Root=1-69f595bb-2c2c606b0c53fbeb5b423f58;d06b7f07-e68a-47a5-93c2-74ad8089838a)
+
+We had to rate limit you, you hit the quota of 1000 api requests per 5 minutes period. Upgrade to a PRO user or Team/Enterprise organization account (https://hf.co/pricing) to get higher limits. See https://huggingface.co/docs/hub/rate-limits).
+/data/oxx220000/kitti-weather-edits

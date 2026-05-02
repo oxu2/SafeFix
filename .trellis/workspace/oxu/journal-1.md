@@ -5,6 +5,637 @@
 
 ---
 
+## Session 156: KITTI Generated-Image YOLOv8 Resume Script
+
+**Date**: 2026-05-02
+**Task**: kitti-generated-random-selection-resume-script
+
+### Summary
+
+Added a KITTI-specific YOLOv8 script that mirrors the ImageNet/COCO generated
+augmentation workflow at the dataset-construction level. The source dataset is
+`/data/oxx220000/kitti_yolov8_first5000/`. For each run, the script selects a
+`sub_ratio` subset from the 5000 original KITTI train images, samples generated
+images from the downloaded red-cloudy generated image directory, reuses the
+matching source KITTI YOLO labels, and fine-tunes from an existing YOLOv8
+checkpoint. The user clarified that the generated-image pool size is `1309`
+currently; `1500` was not the original-image subset size.
+
+### What Changed
+
+- Added:
+  `object_detection/train_yolov8_kitti_generated.py`
+- Default source dataset:
+  `/data/oxx220000/kitti_yolov8_first5000`
+- Default generated directory:
+  `/data/oxx220000/kitti-weather-edits/generated_kitti1352_red_cloudy_icedit_upscaled`
+- Default generated selection:
+  `--num-added-img 1000`
+- Original image selection:
+  `--sub-ratio` over the 5000 original KITTI train images.
+  For example, `--sub-ratio 0.1` selects `500` original images before adding
+  the sampled generated images.
+- Fine-tuning defaults:
+  - `--epochs 10`
+  - `--batch 16`
+  - `--workers 4`
+  - `--optimizer AdamW`
+  - `--lr0 2e-4`
+  - `--lrf 0.1`
+  - `--warmup-epochs 1.0`
+- Previous plain KITTI settings, recovered from
+  `scripts/launch_kitti_yolov8_gpu0_bs16_e30.sh`,
+  `runs/kitti_yolov8/first5000_1240val_1241test_gpu0_bs16_e30_20260429_012232/args.yaml`,
+  and the matching log:
+  - source dataset:
+    `/data/oxx220000/kitti_yolov8_first5000/kitti_first5000.yaml`
+  - initial weights: `weights/yolov8n.pt`
+  - `epochs=30`, `batch=16`, `imgsz=640`, `workers=4`, `pretrained=true`
+  - Ultralytics setting: `optimizer=auto`, nominal `lr0=0.01`, `lrf=0.01`
+  - actual optimizer selected by Ultralytics:
+    `AdamW(lr=0.001667, momentum=0.9)`
+  - val result: mAP50 `0.8186`, mAP50-95 `0.5609`
+  - test result: mAP50 `0.8454`, mAP50-95 `0.5797`
+- The script writes a derived YOLO dataset root with:
+  - `images/train`, `labels/train`
+  - copied/hardlinked original subset
+  - generated images named `gen_red_cloudy_<source_id>.<ext>`
+  - labels copied from the matching source KITTI train label
+  - unchanged validation/test splits from the first-5000 dataset
+  - `selected_original_ids.txt`
+  - `selected_generated_source_ids.txt`
+  - `selection_summary.json`
+  - `kitti_random_generated.yaml`
+
+### Download Status
+
+Requested dataset:
+`https://huggingface.co/datasets/BZNR3/kitti-weather-edits/tree/main/generated_kitti1352_red_cloudy_icedit_upscaled`
+
+Local directory:
+`/data/oxx220000/kitti-weather-edits/generated_kitti1352_red_cloudy_icedit_upscaled`
+
+Download commands:
+
+- First background download:
+  - PID `893621`
+  - log `logs/download_kitti_weather_edits_20260502_010727.log`
+- Retry:
+  - PID `898608`
+  - log `logs/download_kitti_weather_edits_retry_20260502_011211.log`
+
+The Hugging Face download hit a `429 Too Many Requests` rate limit after
+`1309/1352` files. The user said `1309` is enough and asked to stop, so no
+further download is running. A process check found no remaining
+`hf download BZNR3/kitti-weather-edits` process.
+
+### Validation
+
+- `python3 -m py_compile object_detection/train_yolov8_kitti_generated.py`
+  passed.
+- Prepare-only probe with `--sub-ratio 0.1 --num-added-img 2` passed.
+- Prepare-only probe with `--sub-ratio 0.1 --num-added-img 1000` passed after
+  adding the fine-tuning defaults:
+  - original candidates: `5000`
+  - selected original: `500`
+  - generated candidates with matching labels: `1309`
+  - selected generated: `1000`
+  - final train images: `1500`
+  - val images: `1240`
+  - test images: `1241`
+  - epochs: `10`
+  - optimizer: `AdamW`
+  - lr0: `0.0002`
+  - lrf: `0.1`
+  - warmup epochs: `1.0`
+  - output:
+    `/tmp/kitti_yolov8_generated_probe_default1000/kitti_random_generated.yaml`
+
+### Status
+
+[READY] **KITTI generated-image YOLOv8 resume script is implemented and
+validated in prepare-only mode. No KITTI training run has been launched yet.**
+
+Example command:
+
+```bash
+python3 object_detection/train_yolov8_kitti_generated.py \
+  --sub-ratio 0.1 \
+  --num-added-img 1000 \
+  --prepared-root /data/oxx220000/kitti_yolov8_ratio0p1_red_cloudy_gen1000_seed42 \
+  --device 3
+```
+
+---
+
+## Session 155: RPC 8-Combination Ratio-Sweep Launcher
+
+**Date**: 2026-05-01
+**Task**: rpc-8combo-ratio-sweep-gpu123-launcher
+
+### Summary
+
+Prepared a new launcher for the full RPC component ablation grid requested by
+the user. The design treats RPC as three binary score components, producing
+`2^3 = 8` settings for each ratio and dataset:
+
+- `none`: no `R`, no `P`, no `C`
+- `only_r`, `only_p`, `only_c`
+- `no_r` (`P+C`), `no_p` (`R+C`), `no_c` (`R+P`)
+- `anchor` (`R+P+C`)
+
+No `no_u` row is included in this launcher. Non-RPC settings are held at the
+existing dataset-specific defaults: ImageNet keeps entropy enabled as in the
+previous ControlNet anchor, while COCO keeps entropy disabled.
+
+### What Changed
+
+- Added executable launcher:
+  `scripts/run_rpc_8combo_ratio_sweep_gpu123.sh`.
+- The script covers:
+  - datasets: ImageNet ControlNet `pinkcolor_fabrictexture` and COCO
+    brown-rainy pose
+  - ratios: `0.1 0.3 0.5 0.7 0.9`
+  - tags: `none only_r only_p only_c no_r no_p no_c anchor`
+- Output log naming:
+  - ImageNet:
+    `logs_imagenet/controlnet_rpc8_<tag>_resnet_imagenet_1000_ratio<ratio_tag>_gpu<gpu>_<stamp>.log`
+  - COCO:
+    `log_pose/pose_qwen3_brown_rainy_rpc8_<tag>_ratio<ratio_tag>_gpu<gpu>_<stamp>.log`
+
+### GPU Assignment
+
+The user said GPUs `1/2/3` are available, so no availability check was done.
+The launcher uses prior speed and memory behavior:
+
+- COCO is large and slow, about `43-44` minutes per ratio `0.9` row in recent
+  logs, so it is split across GPU `1` and GPU `2`.
+- ImageNet is small and fast, about `3.3-3.8` minutes per row in recent logs,
+  so all ImageNet rows run serially on GPU `3`.
+- COCO split is weighted by approximate selected train size:
+  - GPU `1`: COCO ratios `0.9 0.3 0.1`
+  - GPU `2`: COCO ratios `0.7 0.5`
+  - GPU `3`: ImageNet ratios `0.1 0.3 0.5 0.7 0.9`
+
+### Validation
+
+- `bash -n scripts/run_rpc_8combo_ratio_sweep_gpu123.sh` passed.
+- `DRY_RUN=1 STAMP=dryrun scripts/run_rpc_8combo_ratio_sweep_gpu123.sh`
+  completed and expanded all planned commands.
+- The planned grid is `80` training rows total:
+  `2 datasets * 5 ratios * 8 RPC settings`.
+
+### Status
+
+### Launch Update
+
+The first attempt with stamp `20260501_231850` was launched from the sandbox
+and produced namespace-local PIDs (`12`, `13`, `14`) with empty worker output.
+Treat that PID file as invalid for monitoring.
+
+The real host launch was started with stamp `20260501_231910`:
+
+- GPU `1`: parent PID `800646`, COCO ratios `0.9 0.3 0.1`, worker output
+  `logs/rpc8_ratio_sweep_gpu1_20260501_231910.out`
+- GPU `2`: parent PID `800647`, COCO ratios `0.7 0.5`, worker output
+  `logs/rpc8_ratio_sweep_gpu2_20260501_231910.out`
+- GPU `3`: parent PID `800648`, ImageNet ratios `0.1 0.3 0.5 0.7 0.9`,
+  worker output `logs/rpc8_ratio_sweep_gpu3_20260501_231910.out`
+
+PID file:
+`logs/rpc8_ratio_sweep_gpu123_20260501_231910.pids`.
+
+Startup check:
+
+- `ps -fp 800646 800647 800648` showed all three host parent worker processes
+  alive.
+- GPU `1` first row started:
+  `log_pose/pose_qwen3_brown_rainy_rpc8_none_ratio0p9_gpu1_20260501_231910.log`
+  and reached training after selecting `18000` original samples and adding
+  `1000` generated images.
+- GPU `2` first row started:
+  `log_pose/pose_qwen3_brown_rainy_rpc8_none_ratio0p7_gpu2_20260501_231910.log`
+  and reached training after selecting `14000` original samples and adding
+  `1000` generated images.
+- GPU `3` first row started:
+  `logs_imagenet/controlnet_rpc8_none_resnet_imagenet_1000_ratio0p1_gpu3_20260501_231910.log`
+  and reached epoch `9/15` at the first startup check.
+- Error scan over these first logs found no `Traceback`,
+  `CUDA out of memory`, `Killed`, `Error`, `No such file`, or
+  `FileNotFound`.
+
+[RUNNING] **RPC 8-combination ratio sweep is running under host stamp
+`20260501_231910`.**
+
+To launch:
+
+```bash
+scripts/run_rpc_8combo_ratio_sweep_gpu123.sh
+```
+
+To preview commands:
+
+```bash
+DRY_RUN=1 scripts/run_rpc_8combo_ratio_sweep_gpu123.sh
+```
+
+---
+
+## Session 153: RPC Component Ablation Implementation
+
+**Date**: 2026-05-01
+**Task**: rpc-component-ablation-remove-terms
+
+### Summary
+
+Implemented true RPC component-removal support for the attribute selector.
+The important correction is that removing the rarity term is not the same as
+setting `rarity_power=0`; the latter leaves a constant rarity addend in every
+sample score. The selector now has an explicit rarity include/exclude switch.
+
+### What Changed
+
+- Added `use_rarity` to `AttributeFocusedStrategy` in
+  `utils/active_learning.py`.
+- Exposed the flag through:
+  - `alpred.py`: `--al_attribute_use_rarity False`
+  - `train_pose_estimation.py`: `--al-attribute-use-rarity false`
+- Changed the all-zero/all-removed fallback in `AttributeFocusedStrategy` to
+  use the same seeded `random.sample` behavior as the plain random branch.
+- Added launchers:
+  - `scripts/run_imagenet_controlnet_rpc_component_ablation_gpu0123.sh`
+  - `scripts/run_pose_brown_rainy_rpc_component_ablation_gpu0123.sh`
+- Updated `report.md` with the corrected RPC ablation semantics.
+
+### Launcher Semantics
+
+- ImageNet ControlNet ablation launcher uses
+  `data/imagenet_pinkcolor_fabrictexture`, `ratio=0.7`, InternVL3 metadata,
+  and runs `anchor`, `no_r`, `no_p`, `no_c`, plus `no_u` because the ImageNet
+  anchor keeps entropy on.
+- COCO brown-rainy ablation launcher uses `ratio=0.9`, Qwen3 metadata, and
+  runs `no_r`, `no_p`, and `no_c` by default. Set `INCLUDE_ANCHOR=1` to rerun
+  the anchor in the same launcher.
+
+### Validation
+
+- Syntax checks passed:
+  - `bash -n scripts/run_imagenet_controlnet_rpc_component_ablation_gpu0123.sh`
+  - `bash -n scripts/run_pose_brown_rainy_rpc_component_ablation_gpu0123.sh`
+  - `python3 -m py_compile alpred.py train_pose_estimation.py utils/active_learning.py`
+- Dry-run worker checks produced the expected `no_r` commands for ImageNet and
+  COCO.
+- Selector-only sanity check with all components removed matched seeded
+  `random.sample` exactly:
+  `[1, 8, 2, 13, 18, 19]`.
+
+### Status
+
+### Launch Update
+
+Launched the RPC component ablations locally with stamp `20260501_164751`.
+Allocation:
+
+- GPU `0`: COCO brown-rainy `no_r`, parent PID `511643`,
+  `log_pose/pose_qwen3_brown_rainy_rpc_ablation_no_r_ratio0p9_gpu0_20260501_164751.log`
+- GPU `1`: COCO brown-rainy `no_p`, parent PID `511644`,
+  `log_pose/pose_qwen3_brown_rainy_rpc_ablation_no_p_ratio0p9_gpu1_20260501_164751.log`
+- GPU `2`: COCO brown-rainy `no_c`, parent PID `511645`,
+  `log_pose/pose_qwen3_brown_rainy_rpc_ablation_no_c_ratio0p9_gpu2_20260501_164751.log`
+- GPU `3`: ImageNet ControlNet serial queue `anchor no_r no_p no_c no_u`,
+  parent PID `511646`, first log
+  `logs_imagenet/controlnet_rpc_ablation_anchor_resnet_imagenet_1000_ratio0p7_gpu3_20260501_164751.log`
+
+PID file:
+`logs/rpc_component_ablation_gpu0123_20260501_164751.pids`.
+
+Startup checks:
+
+- All three COCO logs reached training after selection.
+- ImageNet anchor reached training after selecting `7279` original samples and
+  adding `1000` generated images.
+- The COCO `no_r` debug breakdown shows `R=0.0000`, confirming true rarity
+  removal.
+- GPU memory after startup:
+  - GPU `0`: about `18217 MiB`
+  - GPU `1`: about `18188 MiB`
+  - GPU `2`: about `20373 MiB`
+  - GPU `3`: about `3879 MiB`
+- Error scan over the active first logs found no `Traceback`, `Error`,
+  `Killed`, `CUDA out of memory`, `No such file`, or `FileNotFound`.
+
+### Completion Update
+
+All four parent PIDs finished and `nvidia-smi` showed no active compute
+processes from this batch. The completed stable results were added to
+`report.md` in the new
+`05/01/2026 Update — RPC Component Removal Ablations` section.
+
+ImageNet ControlNet `ratio=0.7` results:
+
+- `anchor`: test ACC `0.7423`, best val ACC `0.7208`, log
+  `logs_imagenet/controlnet_rpc_ablation_anchor_resnet_imagenet_1000_ratio0p7_gpu3_20260501_164751.log`
+- `no_r`: test ACC `0.7431`, best val ACC `0.7200`, log
+  `logs_imagenet/controlnet_rpc_ablation_no_r_resnet_imagenet_1000_ratio0p7_gpu3_20260501_164751.log`
+- `no_p`: test ACC `0.7469`, best val ACC `0.7169`, log
+  `logs_imagenet/controlnet_rpc_ablation_no_p_resnet_imagenet_1000_ratio0p7_gpu3_20260501_164751.log`
+- `no_c`: test ACC `0.7477`, best val ACC `0.7208`, log
+  `logs_imagenet/controlnet_rpc_ablation_no_c_resnet_imagenet_1000_ratio0p7_gpu3_20260501_164751.log`
+- `no_u`: test ACC `0.7438`, best val ACC `0.7215`, log
+  `logs_imagenet/controlnet_rpc_ablation_no_u_resnet_imagenet_1000_ratio0p7_gpu3_20260501_164751.log`
+
+COCO brown-rainy `ratio=0.9` results:
+
+- `no_r`: test AP `0.6198`, AP50 `0.8537`, AP75 `0.6742`; val AP
+  `0.6242`, log
+  `log_pose/pose_qwen3_brown_rainy_rpc_ablation_no_r_ratio0p9_gpu0_20260501_164751.log`
+- `no_p`: test AP `0.6222`, AP50 `0.8602`, AP75 `0.6696`; val AP
+  `0.6300`, log
+  `log_pose/pose_qwen3_brown_rainy_rpc_ablation_no_p_ratio0p9_gpu1_20260501_164751.log`
+- `no_c`: test AP `0.6160`, AP50 `0.8553`, AP75 `0.6693`; val AP
+  `0.6276`, log
+  `log_pose/pose_qwen3_brown_rainy_rpc_ablation_no_c_ratio0p9_gpu2_20260501_164751.log`
+
+Interpretation:
+
+- For ImageNet ControlNet at `ratio=0.7`, removing class balance (`no_c`)
+  produced the best test ACC in this batch.
+- For COCO brown-rainy at `ratio=0.9`, all removal rows are below the existing
+  anchor test AP `0.6355`; `no_p` is the strongest among the three removal
+  rows.
+
+### Status
+
+[OK] **RPC component ablations with stamp `20260501_164751` are complete and
+recorded in `report.md`.**
+
+---
+
+## Session 154: RPC Only-One-Component Ablation Launch
+
+**Date**: 2026-05-01
+**Task**: rpc-only-one-component-ablation
+
+### Summary
+
+The user requested the complementary "two no, one yes" RPC ablations. These
+are `only_r`, `only_p`, and `only_c`, meaning only one of the RPC components is
+kept active while the other two are removed.
+
+### What Changed
+
+- Extended `scripts/run_imagenet_controlnet_rpc_component_ablation_gpu0123.sh`
+  to support `only_r`, `only_p`, and `only_c`.
+- Extended `scripts/run_pose_brown_rainy_rpc_component_ablation_gpu0123.sh`
+  to support `only_r`, `only_p`, and `only_c`.
+- Validation:
+  - `bash -n` passed on both launchers.
+  - Dry-run checks confirmed the override arguments for ImageNet `only_p` and
+    COCO `only_c`.
+
+### Launched Jobs
+
+Launch stamp: `20260501_173952`.
+
+PID file:
+`logs/rpc_component_only_ablation_gpu0123_20260501_173952.pids`.
+
+- GPU `0`: COCO brown-rainy `only_r`, parent PID `550053`,
+  `log_pose/pose_qwen3_brown_rainy_rpc_ablation_only_r_ratio0p9_gpu0_20260501_173952.log`
+- GPU `1`: COCO brown-rainy `only_p`, parent PID `550054`,
+  `log_pose/pose_qwen3_brown_rainy_rpc_ablation_only_p_ratio0p9_gpu1_20260501_173952.log`
+- GPU `2`: COCO brown-rainy `only_c`, parent PID `550055`,
+  `log_pose/pose_qwen3_brown_rainy_rpc_ablation_only_c_ratio0p9_gpu2_20260501_173952.log`
+- GPU `3`: ImageNet ControlNet serial queue `only_r only_p only_c`, parent PID
+  `550056`, first log
+  `logs_imagenet/controlnet_rpc_ablation_only_r_resnet_imagenet_1000_ratio0p7_gpu3_20260501_173952.log`
+
+### Startup Check
+
+- All three COCO jobs reached training.
+- ImageNet `only_r` reached training.
+- Error scan over the active first logs found no `Traceback`, `Error`,
+  `Killed`, `CUDA out of memory`, `No such file`, or `FileNotFound`.
+- GPU memory after startup:
+  - GPU `0`: about `23605 MiB`
+  - GPU `1`: about `23698 MiB`
+  - GPU `2`: about `19623 MiB`
+  - GPU `3`: about `3879 MiB`
+
+### Status
+
+### Completion Update
+
+All four parent PIDs finished. The completed stable results were added to
+`report.md` in the new
+`05/01/2026 Update — RPC Only-One-Component Ablations` section.
+
+ImageNet ControlNet `ratio=0.7` results:
+
+- `only_r`: test ACC `0.7469`, best val ACC `0.7223`, test loss `0.7883`,
+  log
+  `logs_imagenet/controlnet_rpc_ablation_only_r_resnet_imagenet_1000_ratio0p7_gpu3_20260501_173952.log`
+- `only_p`: test ACC `0.7431`, best val ACC `0.7146`, test loss `0.7991`,
+  log
+  `logs_imagenet/controlnet_rpc_ablation_only_p_resnet_imagenet_1000_ratio0p7_gpu3_20260501_173952.log`
+- `only_c`: test ACC `0.7415`, best val ACC `0.7238`, test loss `0.8071`,
+  log
+  `logs_imagenet/controlnet_rpc_ablation_only_c_resnet_imagenet_1000_ratio0p7_gpu3_20260501_173952.log`
+
+COCO brown-rainy `ratio=0.9` results:
+
+- `only_r`: test AP `0.6171`, AP50 `0.8556`, AP75 `0.6703`; val AP
+  `0.6265`, log
+  `log_pose/pose_qwen3_brown_rainy_rpc_ablation_only_r_ratio0p9_gpu0_20260501_173952.log`
+- `only_p`: test AP `0.6193`, AP50 `0.8588`, AP75 `0.6712`; val AP
+  `0.6286`, log
+  `log_pose/pose_qwen3_brown_rainy_rpc_ablation_only_p_ratio0p9_gpu1_20260501_173952.log`
+- `only_c`: test AP `0.6264`, AP50 `0.8576`, AP75 `0.6826`; val AP
+  `0.6328`, log
+  `log_pose/pose_qwen3_brown_rainy_rpc_ablation_only_c_ratio0p9_gpu2_20260501_173952.log`
+
+Interpretation:
+
+- For ImageNet ControlNet at `ratio=0.7`, keeping only rarity (`only_r`) gives
+  the strongest only-component test ACC.
+- For COCO brown-rainy at `ratio=0.9`, keeping only class balance (`only_c`)
+  gives the strongest only-component test AP and val AP.
+
+Validation:
+
+- `ps -fp 550053 550054 550055 550056` showed no live parent PIDs.
+- Error scan over the completed only-component logs found no `Traceback`,
+  `CUDA out of memory`, `Killed`, `Error`, `No such file`, or
+  `FileNotFound`.
+
+[OK] **RPC only-one-component ablations with stamp `20260501_173952` are
+complete and recorded in `report.md`.**
+
+---
+
+## Session 152: Ratio 1.0 ControlNet Full-Data Launch
+
+**Date**: 2026-05-01
+**Task**: ratio1p0-controlnet-full-gpu0123
+
+### Summary
+
+Launched full-data (`ratio=1.0`) ControlNet resume runs requested by the user.
+Because `ratio=1.0` keeps all original samples, these runs use
+`--use_active_learning False` / `--use-active-learning False` and do not do
+subset selection before appending generated images.
+
+### What Changed
+
+- Added launcher:
+  `scripts/run_ratio1_controlnet_full_gpu0123.sh`.
+- Fixed the launcher to export `STAMP` so child workers and the PID file use a
+  consistent timestamp in future launches.
+- Current launch stamp:
+  - parent/PID stamp: `20260501_150815`
+  - actual child log stamp: `20260501_150816`
+  The PID file was corrected to point to the actual child logs.
+
+### Launched Jobs
+
+- GPU `0`: CelebA ControlNet `redhair_brownskin_sademotion`,
+  `logs_celeba/controlnet_redhair_brownskin_sademotion_resnet_celeba_1000_ratio1p0_gpu0_20260501_150816.log`
+- GPU `1`: CelebA ControlNet `redhair_brownskin_unfiltered` directory with
+  `--attributes redhair_brownskin`,
+  `logs_celeba/controlnet_redhair_brownskin_unfiltered_resnet_celeba_1000_ratio1p0_gpu1_20260501_150816.log`
+- GPU `2`: CelebA ControlNet `redhair_brownskin`,
+  `logs_celeba/controlnet_redhair_brownskin_resnet_celeba_1000_ratio1p0_gpu2_20260501_150816.log`
+- GPU `3`: serial queue:
+  1. ImageNet ControlNet `pinkcolor_fabrictexture`,
+     `logs_imagenet/controlnet_pinkcolor_fabrictexture_resnet_imagenet_1000_ratio1p0_gpu3_20260501_150816.log`
+  2. COCO pose brown-rainy Qwen3 generated images,
+     `log_pose/pose_qwen3_brown_rainy_full_ratio1p0_gpu3_20260501_150816.log`
+
+PID file:
+`logs/controlnet_ratio1p0_gpu0123_20260501_150815.pids`.
+
+### Startup Check
+
+- All three CelebA logs confirm `Selected 1000 filenames for sampling` and
+  `Added 1000 generated ... images`, with `80000 -> 81000` training samples.
+- ImageNet log confirms `Added 1000 generated images` and
+  `10400 -> 11400` training samples; it had reached epoch `4/15` at the first
+  check.
+- At startup, the GPU `3` queue was still on ImageNet; COCO pose started later
+  after the ImageNet run finished.
+
+### Completion Update
+
+All five ratio `1.0` full-data ControlNet runs completed. No parent queue PIDs
+remain alive. The stable results were added to `report.md` in the new
+`05/01/2026 Update — Ratio 1.0 Full-Data ControlNet Results` section, and the
+COCO pose `ratio=1.00` row was also added to the Brown-Rainy summary/detail
+tables.
+
+Results:
+
+- ImageNet `pinkcolor_fabrictexture`: test ACC `0.7400`, best val ACC
+  `0.7292`, log
+  `logs_imagenet/controlnet_pinkcolor_fabrictexture_resnet_imagenet_1000_ratio1p0_gpu3_20260501_150816.log`
+- CelebA `redhair_brownskin_sademotion`: test ACC `0.9114`, best val ACC
+  `0.9133`, log
+  `logs_celeba/controlnet_redhair_brownskin_sademotion_resnet_celeba_1000_ratio1p0_gpu0_20260501_150816.log`
+- CelebA `redhair_brownskin_unfiltered`: test ACC `0.9108`, best val ACC
+  `0.9136`, log
+  `logs_celeba/controlnet_redhair_brownskin_unfiltered_resnet_celeba_1000_ratio1p0_gpu1_20260501_150816.log`
+- CelebA `redhair_brownskin`: test ACC `0.9102`, best val ACC `0.9126`, log
+  `logs_celeba/controlnet_redhair_brownskin_resnet_celeba_1000_ratio1p0_gpu2_20260501_150816.log`
+- COCO pose `brown_rainy`: test AP `0.6259`, AP50 `0.8544`, AP75 `0.6812`,
+  val AP `0.6310`, log
+  `log_pose/pose_qwen3_brown_rainy_full_ratio1p0_gpu3_20260501_150816.log`
+
+### Status
+
+[OK] **Ratio `1.0` full-data ControlNet results are complete and recorded in
+`report.md`.**
+
+---
+
+## Session 150: ImageNet InternVL3 Ratio 0.7 RPC Rerun
+
+**Date**: 2026-05-01
+**Task**: imagenet-internvl3-ratio0p7-rpc4-rerun
+
+### Summary
+
+Reran the ImageNet pinkcolor-fabrictexture `ratio=0.7` attribute strategy with
+InternVL3 metadata using four RPC settings on GPUs `0`, `1`, `2`, and `3`.
+
+### What Changed
+
+- Added launcher:
+  `scripts/run_imagenet_internvl3_ratio0p7_rpc4_gpu0123.sh`.
+- The first launch stamp `20260501_124909` used the wrong generated-image
+  directory and each log showed `Warning: requested 1000, but only 0
+  available`; those runs were stopped and excluded.
+- Relaunched with stamp `20260501_125055`, forcing
+  `--gen_image_dir data/imagenet_pinkcolor_fabrictexture`.
+- All four valid logs confirmed `Added 1000 generated images` and completed
+  `15/15` epochs.
+- Updated `report.md` with the stable ratio `0.7` InternVL3 RPC rerun table.
+- Follow-up report formatting update: removed the top-level
+  `# 3/13/2026 Update` heading, merged the rerun rows into the nearby
+  `Ratio = 0.7` table, and bolded the best row in that table
+  (`r001_p5_cinf`, test ACC `0.7446`).
+
+### Results
+
+- `r000_p0_c15`: test ACC `0.7392`, val ACC `0.7131`,
+  `logs_imagenet/internvl3_ratio0p7_r000_p0_c15_resnet_imagenet_1000_gpu0_20260501_125055.log`
+- `r001_p5_cinf`: test ACC `0.7446`, val ACC `0.7115`,
+  `logs_imagenet/internvl3_ratio0p7_r001_p5_cinf_resnet_imagenet_1000_gpu1_20260501_125055.log`
+- `r01_p5_c15`: test ACC `0.7400`, val ACC `0.7131`,
+  `logs_imagenet/internvl3_ratio0p7_r01_p5_c15_resnet_imagenet_1000_gpu2_20260501_125055.log`
+- `r08_p10_c4`: test ACC `0.7423`, val ACC `0.7100`,
+  `logs_imagenet/internvl3_ratio0p7_r08_p10_c4_resnet_imagenet_1000_gpu3_20260501_125055.log`
+
+### Status
+
+[OK] **Best rerun row is `r001_p5_cinf`, test ACC `0.7446`.**
+
+---
+
+## Session 151: Recent Ratio Random-vs-Attribute Plot
+
+**Date**: 2026-05-01
+**Task**: recent-ratio-random-vs-attribute-summary
+
+### Summary
+
+Created a ratio-axis line plot comparing `random` against the best
+`attribute` result per ratio for recent ratio-grouped tables.
+
+### What Changed
+
+- Added plotting script:
+  `utils/plot_recent_ratio_random_vs_attribute.py`.
+- Generated:
+  - `figures/recent_ratio_random_vs_best_attribute.png`
+  - `figures/recent_ratio_random_vs_best_attribute.csv`
+- Updated `report.md` near the top with the figure link and source CSV.
+- The plot x-axis is `ratio`.
+- The `attribute` series is intentionally labeled only as `attribute`; concrete
+  RPC details are omitted from the plot/CSV method label per user request.
+
+### Included Recent Result Groups
+
+- ImageNet base active learning
+- Brown-Rainy COCO pose
+- ImageNet instruct-pix2pix
+- CelebA instruct-pix2pix
+- CelebA HiBUG
+
+### Status
+
+[OK] **Figure and CSV are generated and linked from `report.md`.**
+
+---
+
 ## Session 149: Report Best Rows By Ratio
 
 **Date**: 2026-04-30

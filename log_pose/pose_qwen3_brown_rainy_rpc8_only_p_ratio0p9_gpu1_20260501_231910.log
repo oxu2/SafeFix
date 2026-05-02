@@ -1,0 +1,86 @@
+Current time: 0502004500
+Training start timestamp: 2026-05-02 00:45:00
+Deterministic settings: seed=42, cudnn.deterministic=True, cudnn.benchmark=False, CUBLAS_WORKSPACE_CONFIG=:4096:8
+loading annotations into memory...
+Done (t=5.90s)
+creating index...
+index created!
+loading annotations into memory...
+Done (t=0.19s)
+creating index...
+index created!
+
+Attribute distribution in selected samples:
+  [clothes_color] white: 4423 samples (24.6%)
+  [clothes_color] black: 3697 samples (20.5%)
+  [clothes_color] blue: 3365 samples (18.7%)
+  [clothes_color] gray: 1896 samples (10.5%)
+  [clothes_color] red: 1861 samples (10.3%)
+  [clothes_color] green: 879 samples (4.9%)
+  [clothes_color] pink: 704 samples (3.9%)
+  [clothes_color] brown: 609 samples (3.4%)
+  [clothes_color] yellow: 566 samples (3.1%)
+  [weather] clear: 7100 samples (39.4%)
+  [weather] sunny: 6792 samples (37.7%)
+  [weather] cloudy: 2533 samples (14.1%)
+  [weather] snowy: 1014 samples (5.6%)
+  [weather] rainy: 561 samples (3.1%)
+Debug attribute breakdown for 'clothes_color':
+  value=yellow, freq=566, indices=[12,55,84,87,109,166,196,237,241,271,...], R=0.0000, U=0.0000, L=0.0000, B=0.0000
+  value=pink, freq=704, indices=[15,86,105,123,126,146,154,178,182,198,...], R=0.0000, U=0.0000, L=0.0000, B=0.0000
+  value=green, freq=879, indices=[124,153,158,162,172,179,185,189,209,256,...], R=0.0000, U=0.0000, L=0.0000, B=0.0000
+  value=brown, freq=1720.1100000000001, indices=[2,31,33,59,61,102,115,157,192,199,...], R=0.0000, U=0.0000, L=0.0000, B=0.0000
+  value=red, freq=1861, indices=[20,22,24,39,73,108,110,121,127,129,...], R=0.0000, U=0.0000, L=0.0000, B=0.0000
+  value=gray, freq=1896, indices=[4,8,13,32,36,41,42,47,54,60,...], R=0.0000, U=0.0000, L=0.0000, B=0.0000
+  value=blue, freq=3365, indices=[0,6,10,14,16,26,45,50,56,63,...], R=0.0000, U=0.0000, L=0.0000, B=0.0000
+  value=white, freq=4423, indices=[1,3,5,9,11,17,21,23,28,29,...], R=0.0000, U=0.0000, L=0.0000, B=0.0000
+  value=black, freq=5697, indices=[7,18,19,25,27,40,48,51,52,53,...], R=0.0000, U=0.0000, L=0.0000, B=0.0000
+Warning: filtered out 186 generated images whose reused COCO boxes collapse under the generated image size. Examples: 315 (512x336), 1144 (512x384), 2089 (512x368), 2281 (512x384), 2562 (512x336)
+Generated augmentation source: attribute=brown_rainy, dir=/data/oxx220000/coco-pose-weather-edits/generated_coco_qwen3_1500_brown_rain_icedit
+Train sampling summary: original_candidates=20000, selected_original=18000 (sub_ratio=0.9), selection_strategy=attribute, selection_time=0.34s, generated_available=1314, generated_selected=1000, final_train=19000
+Dataset sizes after split: train=19000, val=1173, test=1173
+Loaded model weights from log_pose/pose_keypointrcnn_train20k_internvl3_bs8_e2_rare1p1_gpu0_20260415_144530/best.pth (epoch 0, best AP 0.6401)
+Using fresh optimizer / scheduler state after --resume-model. Training will start from epoch index 1 with the current optimizer hyperparameters (lr=0.005, momentum=0.9, weight_decay=0.0005, step_size=8, gamma=0.1).
+/people/cs/o/oxx220000/.conda/envs/ad/lib/python3.9/site-packages/torch/autograd/__init__.py:197: UserWarning: upsample_bilinear2d_backward_out_cuda does not have a deterministic implementation, but you set 'torch.use_deterministic_algorithms(True, warn_only=True)'. You can file an issue at https://github.com/pytorch/pytorch/issues to help us prioritize adding deterministic support for this operation. (Triggered internally at ../aten/src/ATen/Context.cpp:82.)
+  Variable._execution_engine.run_backward(  # Calls into the C++ engine to run the backward pass
+[Epoch 1] step 50/2375: total=3.0527 (loss_classifier=0.0399, loss_box_reg=0.0636, loss_keypoint=2.9449, loss_objectness=0.0013, loss_rpn_box_reg=0.0030)
+[Epoch 1] step 100/2375: total=3.5345 (loss_classifier=0.0835, loss_box_reg=0.1265, loss_keypoint=3.3096, loss_objectness=0.0050, loss_rpn_box_reg=0.0099)
+[Epoch 1] step 150/2375: total=3.8044 (loss_classifier=0.0883, loss_box_reg=0.1168, loss_keypoint=3.5799, loss_objectness=0.0082, loss_rpn_box_reg=0.0113)
+[Epoch 1] step 200/2375: total=3.3370 (loss_classifier=0.0782, loss_box_reg=0.1093, loss_keypoint=3.1375, loss_objectness=0.0048, loss_rpn_box_reg=0.0072)
+[Epoch 1] step 250/2375: total=3.7632 (loss_classifier=0.0654, loss_box_reg=0.1054, loss_keypoint=3.5761, loss_objectness=0.0031, loss_rpn_box_reg=0.0132)
+[Epoch 1] step 300/2375: total=3.8160 (loss_classifier=0.0575, loss_box_reg=0.0991, loss_keypoint=3.6409, loss_objectness=0.0079, loss_rpn_box_reg=0.0106)
+[Epoch 1] step 350/2375: total=3.5421 (loss_classifier=0.0693, loss_box_reg=0.0976, loss_keypoint=3.3501, loss_objectness=0.0175, loss_rpn_box_reg=0.0076)
+[Epoch 1] step 400/2375: total=3.3026 (loss_classifier=0.0575, loss_box_reg=0.0967, loss_keypoint=3.1380, loss_objectness=0.0049, loss_rpn_box_reg=0.0055)
+[Epoch 1] step 450/2375: total=3.5965 (loss_classifier=0.0801, loss_box_reg=0.1330, loss_keypoint=3.3769, loss_objectness=0.0021, loss_rpn_box_reg=0.0045)
+[Epoch 1] step 500/2375: total=2.8429 (loss_classifier=0.0319, loss_box_reg=0.0530, loss_keypoint=2.7534, loss_objectness=0.0024, loss_rpn_box_reg=0.0023)
+[Epoch 1] step 550/2375: total=3.2756 (loss_classifier=0.0410, loss_box_reg=0.0762, loss_keypoint=3.1499, loss_objectness=0.0043, loss_rpn_box_reg=0.0042)
+[Epoch 1] step 600/2375: total=3.5288 (loss_classifier=0.0604, loss_box_reg=0.0978, loss_keypoint=3.3594, loss_objectness=0.0066, loss_rpn_box_reg=0.0047)
+[Epoch 1] step 650/2375: total=3.2501 (loss_classifier=0.0603, loss_box_reg=0.0953, loss_keypoint=3.0832, loss_objectness=0.0055, loss_rpn_box_reg=0.0057)
+[Epoch 1] step 700/2375: total=3.2398 (loss_classifier=0.0462, loss_box_reg=0.0988, loss_keypoint=3.0850, loss_objectness=0.0034, loss_rpn_box_reg=0.0064)
+[Epoch 1] step 750/2375: total=3.3959 (loss_classifier=0.0634, loss_box_reg=0.1031, loss_keypoint=3.2057, loss_objectness=0.0190, loss_rpn_box_reg=0.0047)
+[Epoch 1] step 800/2375: total=4.6791 (loss_classifier=0.0752, loss_box_reg=0.1463, loss_keypoint=4.4417, loss_objectness=0.0081, loss_rpn_box_reg=0.0078)
+[Epoch 1] step 850/2375: total=3.6203 (loss_classifier=0.1022, loss_box_reg=0.1380, loss_keypoint=3.3664, loss_objectness=0.0065, loss_rpn_box_reg=0.0072)
+[Epoch 1] step 900/2375: total=3.9571 (loss_classifier=0.0841, loss_box_reg=0.1244, loss_keypoint=3.7349, loss_objectness=0.0044, loss_rpn_box_reg=0.0092)
+[Epoch 1] step 950/2375: total=3.3781 (loss_classifier=0.0687, loss_box_reg=0.1149, loss_keypoint=3.1782, loss_objectness=0.0080, loss_rpn_box_reg=0.0083)
+[Epoch 1] step 1000/2375: total=3.6774 (loss_classifier=0.0648, loss_box_reg=0.1194, loss_keypoint=3.4740, loss_objectness=0.0085, loss_rpn_box_reg=0.0108)
+[Epoch 1] step 1050/2375: total=3.2901 (loss_classifier=0.0585, loss_box_reg=0.0765, loss_keypoint=3.1493, loss_objectness=0.0024, loss_rpn_box_reg=0.0034)
+[Epoch 1] step 1100/2375: total=3.0524 (loss_classifier=0.0304, loss_box_reg=0.0676, loss_keypoint=2.9488, loss_objectness=0.0019, loss_rpn_box_reg=0.0038)
+[Epoch 1] step 1150/2375: total=3.2657 (loss_classifier=0.0620, loss_box_reg=0.0908, loss_keypoint=3.0865, loss_objectness=0.0217, loss_rpn_box_reg=0.0048)
+[Epoch 1] step 1200/2375: total=3.1571 (loss_classifier=0.0707, loss_box_reg=0.1201, loss_keypoint=2.9493, loss_objectness=0.0076, loss_rpn_box_reg=0.0093)
+[Epoch 1] step 1250/2375: total=3.7905 (loss_classifier=0.0655, loss_box_reg=0.0812, loss_keypoint=3.6321, loss_objectness=0.0082, loss_rpn_box_reg=0.0035)
+[Epoch 1] step 1300/2375: total=3.6274 (loss_classifier=0.0738, loss_box_reg=0.0887, loss_keypoint=3.4158, loss_objectness=0.0408, loss_rpn_box_reg=0.0084)
+[Epoch 1] step 1350/2375: total=3.9811 (loss_classifier=0.0466, loss_box_reg=0.0898, loss_keypoint=3.8240, loss_objectness=0.0134, loss_rpn_box_reg=0.0073)
+[Epoch 1] step 1400/2375: total=3.6826 (loss_classifier=0.0686, loss_box_reg=0.1403, loss_keypoint=3.4517, loss_objectness=0.0083, loss_rpn_box_reg=0.0137)
+[Epoch 1] step 1450/2375: total=3.4103 (loss_classifier=0.0592, loss_box_reg=0.0873, loss_keypoint=3.2566, loss_objectness=0.0022, loss_rpn_box_reg=0.0050)
+[Epoch 1] step 1500/2375: total=3.6816 (loss_classifier=0.0724, loss_box_reg=0.1545, loss_keypoint=3.4428, loss_objectness=0.0020, loss_rpn_box_reg=0.0099)
+[Epoch 1] step 1550/2375: total=3.3266 (loss_classifier=0.0677, loss_box_reg=0.0989, loss_keypoint=3.1488, loss_objectness=0.0056, loss_rpn_box_reg=0.0056)
+[Epoch 1] step 1600/2375: total=3.8532 (loss_classifier=0.0805, loss_box_reg=0.1535, loss_keypoint=3.5907, loss_objectness=0.0178, loss_rpn_box_reg=0.0108)
+[Epoch 1] step 1650/2375: total=3.3518 (loss_classifier=0.0496, loss_box_reg=0.0967, loss_keypoint=3.1667, loss_objectness=0.0066, loss_rpn_box_reg=0.0323)
+[Epoch 1] step 1700/2375: total=3.4077 (loss_classifier=0.0399, loss_box_reg=0.0752, loss_keypoint=3.2820, loss_objectness=0.0024, loss_rpn_box_reg=0.0081)
+[Epoch 1] step 1750/2375: total=3.4593 (loss_classifier=0.0592, loss_box_reg=0.0864, loss_keypoint=3.2991, loss_objectness=0.0085, loss_rpn_box_reg=0.0060)
+[Epoch 1] step 1800/2375: total=5.4433 (loss_classifier=0.0677, loss_box_reg=0.0967, loss_keypoint=5.2453, loss_objectness=0.0272, loss_rpn_box_reg=0.0064)
+[Epoch 1] step 1850/2375: total=3.7820 (loss_classifier=0.0846, loss_box_reg=0.1057, loss_keypoint=3.5534, loss_objectness=0.0270, loss_rpn_box_reg=0.0114)
+[Epoch 1] step 1900/2375: total=3.8364 (loss_classifier=0.0808, loss_box_reg=0.1265, loss_keypoint=3.5955, loss_objectness=0.0117, loss_rpn_box_reg=0.0220)
+[Epoch 1] step 1950/2375: total=4.7643 (loss_classifier=0.1735, loss_box_reg=0.2275, loss_keypoint=4.3278, loss_objectness=0.0166, loss_rpn_box_reg=0.0188)
+[Epoch 1] step 2000/2375: total=3.4767 (loss_classifier=0.0512, loss_box_reg=0.0888, loss_keypoint=3.3252, loss_objectness=0.0041, loss_rpn_box_reg=0.0074)
+[Epoch 1] step 2050/2375: total=3.1053 (loss_classifier=0.0459, loss_box_reg=0.0706, loss_keypoint=2.9781, loss_objectness=0.0040, loss_rpn_box_reg=0.0067)

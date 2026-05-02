@@ -1,0 +1,64 @@
+Current time: 0501124913
+Warning: requested 1000, but only 0 available.
+Added 0 generated images.
+
+Attribute distribution in selected samples:
+  [color] white: 1486 samples (20.4%)
+  [color] brown: 1480 samples (20.3%)
+  [color] black: 1036 samples (14.2%)
+  [color] blue: 863 samples (11.9%)
+  [color] red: 484 samples (6.6%)
+  [color] green: 465 samples (6.4%)
+  [color] gray: 355 samples (4.9%)
+  [color] tan: 257 samples (3.5%)
+  [color] pink: 173 samples (2.4%)
+  [color] silver: 169 samples (2.3%)
+  [color] yellow: 154 samples (2.1%)
+  [color] multicolored: 137 samples (1.9%)
+  [color] orange: 119 samples (1.6%)
+  [color] purple: 73 samples (1.0%)
+  [color] maroon: 28 samples (0.4%)
+  [background] wall: 5176 samples (71.1%)
+  [background] trees: 798 samples (11.0%)
+  [background] house: 312 samples (4.3%)
+  [background] buildings: 234 samples (3.2%)
+  [background] grass: 229 samples (3.1%)
+  [background] sky: 139 samples (1.9%)
+  [background] street: 130 samples (1.8%)
+  [background] water: 117 samples (1.6%)
+  [background] snow: 66 samples (0.9%)
+  [background] wild: 32 samples (0.4%)
+  [background] rocks: 22 samples (0.3%)
+  [background] inside a house: 14 samples (0.2%)
+  [background] bridge: 10 samples (0.1%)
+  [texture] wooden: 1784 samples (24.5%)
+  [texture] plastic: 1353 samples (18.6%)
+  [texture] fabric: 1347 samples (18.5%)
+  [texture] ceramic: 1153 samples (15.8%)
+  [texture] leather: 682 samples (9.4%)
+  [texture] metallic: 678 samples (9.3%)
+  [texture] glass: 282 samples (3.9%)
+
+[Active Learning subset (before adding generated images)] class distribution:
+  Class backpack: 728 samples (10.0%)
+  Class barber_chair: 728 samples (10.0%)
+  Class coffee_mug: 728 samples (10.0%)
+  Class desk: 728 samples (10.0%)
+  Class electric_guitar: 728 samples (10.0%)
+  Class park_bench: 728 samples (10.0%)
+  Class pitcher: 728 samples (10.0%)
+  Class purse: 728 samples (10.0%)
+  Class rocking_chair: 727 samples (10.0%)
+  Class water_bottle: 728 samples (10.0%)
+Added 0 ImageNet pinkcolor_fabrictexture images using Active Learning (attribute): 7279 -> 7279
+Resumed model from /people/cs/o/oxx220000/safefix/weights/model_imagenet_resnet_base.pth (best val acc: 0.7223076923076923)
+Epoch [1/15], Train Loss: 0.3836, Train Acc: 0.8851, Val Loss: 0.8972, Val Acc: 0.7115
+Epoch [2/15], Train Loss: 0.3677, Train Acc: 0.8939, Val Loss: 0.9129, Val Acc: 0.7092
+Epoch [3/15], Train Loss: 0.3596, Train Acc: 0.8952, Val Loss: 0.9079, Val Acc: 0.7023
+Epoch [4/15], Train Loss: 0.3492, Train Acc: 0.8953, Val Loss: 0.9098, Val Acc: 0.7100
+Epoch [5/15], Train Loss: 0.3438, Train Acc: 0.8994, Val Loss: 0.9070, Val Acc: 0.7123
+Epoch [6/15], Train Loss: 0.3403, Train Acc: 0.9020, Val Loss: 0.9063, Val Acc: 0.7092
+Epoch [7/15], Train Loss: 0.3219, Train Acc: 0.9095, Val Loss: 0.8969, Val Acc: 0.7177
+Epoch [8/15], Train Loss: 0.3288, Train Acc: 0.9081, Val Loss: 0.9065, Val Acc: 0.7131
+Epoch [9/15], Train Loss: 0.3206, Train Acc: 0.9103, Val Loss: 0.8989, Val Acc: 0.7169
+Epoch [10/15], Train Loss: 0.3143, Train Acc: 0.9108, Val Loss: 0.9065, Val Acc: 0.7169

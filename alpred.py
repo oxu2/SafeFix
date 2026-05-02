@@ -399,6 +399,8 @@ parser.add_argument('--al_attribute_focus', type=str, default=None,
                     help='Comma-separated attribute keys to prioritize (defaults to all attributes in metadata)')
 parser.add_argument('--al_attribute_rarity_power', type=float, default=0.01,
                     help='Exponent controlling emphasis on rare attribute values (default: 0.01)')
+parser.add_argument('--al_attribute_use_rarity', type=str2bool, default=True,
+                    help='Attribute strategy: include the rarity score term. Set False to remove R from RPC ablations.')
 parser.add_argument('--al_attribute_uncertainty_boost', type=float, default=1.0,
                     help='Score bonus for samples flagged as uncertain in attribute metadata (default: 1.0)')
 parser.add_argument('--al_attribute_use_entropy', type=str2bool, default=False,

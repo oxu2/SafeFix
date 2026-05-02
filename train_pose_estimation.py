@@ -209,6 +209,15 @@ def parse_args():
         help="Rarity exponent for pose attribute selection.",
     )
     train_parser.add_argument(
+        "--al-attribute-use-rarity",
+        type=str2bool,
+        default=True,
+        help=(
+            "Include the rarity score term in pose attribute AL. Set false to "
+            "remove R from RPC ablations; this differs from rarity power 0."
+        ),
+    )
+    train_parser.add_argument(
         "--al-attribute-uncertainty-boost",
         type=float,
         default=1.0,
@@ -740,6 +749,7 @@ def select_original_train_image_ids(
                         default=0.0,
                     ),
                     conditional_rarity=getattr(args, "al_conditional_rarity", False),
+                    use_rarity=getattr(args, "al_attribute_use_rarity", True),
                     use_entropy=False,
                 )
                 selected_local_indices = strategy.select(

@@ -1,0 +1,82 @@
+Current time: 0501150818
+Selected 1000 filenames for sampling
+Added 1000 generated redhair_brownskin_sademotion images, before training set has 80000 images, now 81000
+CelebA: Combined 80000 selected samples with 1000 generated images using Random sampling
+Resumed model from /people/cs/o/oxx220000/safefix/weights/model_celeba_resnet_base.pth (best val acc: 0.914, base test acc: 0.9140)
+Recovered base test acc from log: logs/celeba_resnet_base_redhair_brownskin_sademotion_0imgs_20260416_022317.log
+Epoch [1/15], Train Loss: 0.2288, Train Acc: 0.9845, Val Loss: 0.3375, Val Acc: 0.9133
+Epoch [2/15], Train Loss: 0.2284, Train Acc: 0.9844, Val Loss: 0.3798, Val Acc: 0.8986
+Epoch [3/15], Train Loss: 0.2279, Train Acc: 0.9851, Val Loss: 0.3527, Val Acc: 0.9074
+Epoch [4/15], Train Loss: 0.2264, Train Acc: 0.9859, Val Loss: 0.3550, Val Acc: 0.9069
+Epoch [5/15], Train Loss: 0.2257, Train Acc: 0.9865, Val Loss: 0.3872, Val Acc: 0.9012
+Epoch [6/15], Train Loss: 0.2249, Train Acc: 0.9868, Val Loss: 0.3467, Val Acc: 0.9084
+Epoch [7/15], Train Loss: 0.2244, Train Acc: 0.9866, Val Loss: 0.3510, Val Acc: 0.9064
+Epoch [8/15], Train Loss: 0.2245, Train Acc: 0.9871, Val Loss: 0.3465, Val Acc: 0.9097
+Epoch [9/15], Train Loss: 0.2242, Train Acc: 0.9871, Val Loss: 0.3634, Val Acc: 0.9053
+Epoch [10/15], Train Loss: 0.2239, Train Acc: 0.9873, Val Loss: 0.3633, Val Acc: 0.9058
+Epoch [11/15], Train Loss: 0.2237, Train Acc: 0.9873, Val Loss: 0.3518, Val Acc: 0.9076
+Epoch [12/15], Train Loss: 0.2238, Train Acc: 0.9873, Val Loss: 0.3524, Val Acc: 0.9075
+Epoch [13/15], Train Loss: 0.2233, Train Acc: 0.9878, Val Loss: 0.3570, Val Acc: 0.9063
+Epoch [14/15], Train Loss: 0.2232, Train Acc: 0.9875, Val Loss: 0.3561, Val Acc: 0.9068
+Epoch [15/15], Train Loss: 0.2230, Train Acc: 0.9879, Val Loss: 0.3599, Val Acc: 0.9058
+Model Test ACC: 0.9114, test loss: 0.3422
+Generating and saving predictions...
+/people/cs/o/oxx220000/safefix/alpred.py:1789: DeprecationWarning: Conversion of an array with ndim > 0 to a scalar is deprecated, and will error in future. Ensure you extract a single element from your array before performing this operation. (Deprecated NumPy 1.25.)
+  full_orig_preds[idx] = pred
+Combined predictions length: 181000 (should match combined_labels length: 181000)
+Total training time for 15 epochs: 1651.78 seconds
+Total Active Learning selection time: 0.00 seconds
+End-to-end wall time (data prep + selection + training + setup): 1654.37 seconds
+
+Running model diagnostics on generated predictions...
+Start detect_failure_by_label
+
+Start detect_prediction_correlation
+
+The accuracy with "hair color" = "white" is 0.9173553719008265
+Correct predictions: 222/242
+The accuracy with "hair color" = "yellow" is 0.8333333333333334
+Correct predictions: 25/30
+ACC: 0.833333 	Rare Case: attribute "hair color", description "yellow"
+The accuracy with "hair color" = "blonde" is 0.9191036840106342
+Correct predictions: 2420/2633
+The accuracy with "hair color" = "black" is 0.9125716008441362
+Correct predictions: 3027/3317
+The accuracy with "hair color" = "gray" is 0.9229357798165138
+Correct predictions: 503/545
+The accuracy with "hair color" = "brown" is 0.9126279863481229
+Correct predictions: 2674/2930
+The accuracy with "hair color" = "red" is 0.8646864686468647
+Correct predictions: 262/303
+ACC: 0.864686 	Rare Case: attribute "hair color", description "red"
+The accuracy with "skin" = "white" is 0.9140423846306199
+Correct predictions: 4615/5049
+The accuracy with "skin" = "black" is 0.9140386571719227
+Correct predictions: 1797/1966
+The accuracy with "skin" = "brown" is 0.9115577889447236
+Correct predictions: 2721/2985
+ACC: 0.869565 	Rare Case: attribute "emotion", description "angry"
+Start detect_failure_prediction_correlation
+
+Model diagnostics complete.
+
+Comparing accuracy with log file: logs/compare/stat_origin_resnet_compare.log
+Overall accuracy: 0.906750 -> 0.913300: improved
+
+Attribute-specific accuracy comparison:
+beard, No, 0.893557 -> 0.913706: improved
+gender, female, 0.849626 -> 0.912500: improved
+hair color, white, 0.930328 -> 0.917355: declined
+hair color, yellow, 0.918919 -> 0.833333: declined
+hair color, blonde, 0.880229 -> 0.919104: improved
+hair color, black, 0.921358 -> 0.912572: declined
+hair color, gray, 0.977444 -> 0.922936: declined
+hair color, brown, 0.899712 -> 0.912628: improved
+hair color, red, 0.900161 -> 0.864686: declined
+skin, brown, 0.889450 -> 0.911558: improved
+emotion, sad, 0.851711 -> 0.921788: improved
+emotion, surprised, 0.882006 -> 0.904406: improved
+emotion, pensive, 0.859833 -> 0.907975: improved
+
+Compared 13 attribute-specific accuracies.
+Current time: 0501150818

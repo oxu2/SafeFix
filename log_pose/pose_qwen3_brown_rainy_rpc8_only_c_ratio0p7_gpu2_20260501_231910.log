@@ -1,0 +1,37 @@
+Current time: 0502010339
+Training start timestamp: 2026-05-02 01:03:39
+Deterministic settings: seed=42, cudnn.deterministic=True, cudnn.benchmark=False, CUBLAS_WORKSPACE_CONFIG=:4096:8
+loading annotations into memory...
+Done (t=5.95s)
+creating index...
+index created!
+loading annotations into memory...
+Done (t=0.20s)
+creating index...
+index created!
+Warning: filtered out 186 generated images whose reused COCO boxes collapse under the generated image size. Examples: 315 (512x336), 1144 (512x384), 2089 (512x368), 2281 (512x384), 2562 (512x336)
+Generated augmentation source: attribute=brown_rainy, dir=/data/oxx220000/coco-pose-weather-edits/generated_coco_qwen3_1500_brown_rain_icedit
+Train sampling summary: original_candidates=20000, selected_original=14000 (sub_ratio=0.7), selection_strategy=attribute, selection_time=0.38s, generated_available=1314, generated_selected=1000, final_train=15000
+Dataset sizes after split: train=15000, val=1173, test=1173
+Loaded model weights from log_pose/pose_keypointrcnn_train20k_internvl3_bs8_e2_rare1p1_gpu0_20260415_144530/best.pth (epoch 0, best AP 0.6401)
+Using fresh optimizer / scheduler state after --resume-model. Training will start from epoch index 1 with the current optimizer hyperparameters (lr=0.005, momentum=0.9, weight_decay=0.0005, step_size=8, gamma=0.1).
+/people/cs/o/oxx220000/.conda/envs/ad/lib/python3.9/site-packages/torch/autograd/__init__.py:197: UserWarning: upsample_bilinear2d_backward_out_cuda does not have a deterministic implementation, but you set 'torch.use_deterministic_algorithms(True, warn_only=True)'. You can file an issue at https://github.com/pytorch/pytorch/issues to help us prioritize adding deterministic support for this operation. (Triggered internally at ../aten/src/ATen/Context.cpp:82.)
+  Variable._execution_engine.run_backward(  # Calls into the C++ engine to run the backward pass
+[Epoch 1] step 50/1875: total=3.9092 (loss_classifier=0.0865, loss_box_reg=0.2035, loss_keypoint=3.5992, loss_objectness=0.0087, loss_rpn_box_reg=0.0112)
+[Epoch 1] step 100/1875: total=3.1618 (loss_classifier=0.0601, loss_box_reg=0.1144, loss_keypoint=2.9760, loss_objectness=0.0062, loss_rpn_box_reg=0.0050)
+[Epoch 1] step 150/1875: total=3.5880 (loss_classifier=0.0557, loss_box_reg=0.0938, loss_keypoint=3.4271, loss_objectness=0.0063, loss_rpn_box_reg=0.0051)
+[Epoch 1] step 200/1875: total=3.5225 (loss_classifier=0.0558, loss_box_reg=0.1226, loss_keypoint=3.3299, loss_objectness=0.0078, loss_rpn_box_reg=0.0064)
+[Epoch 1] step 250/1875: total=3.7244 (loss_classifier=0.0855, loss_box_reg=0.1846, loss_keypoint=3.4307, loss_objectness=0.0058, loss_rpn_box_reg=0.0180)
+[Epoch 1] step 300/1875: total=3.2822 (loss_classifier=0.0669, loss_box_reg=0.0929, loss_keypoint=3.1100, loss_objectness=0.0074, loss_rpn_box_reg=0.0050)
+[Epoch 1] step 350/1875: total=4.4347 (loss_classifier=0.0733, loss_box_reg=0.1356, loss_keypoint=4.2141, loss_objectness=0.0023, loss_rpn_box_reg=0.0094)
+[Epoch 1] step 400/1875: total=3.7365 (loss_classifier=0.0943, loss_box_reg=0.1576, loss_keypoint=3.4672, loss_objectness=0.0091, loss_rpn_box_reg=0.0083)
+[Epoch 1] step 450/1875: total=3.9385 (loss_classifier=0.1206, loss_box_reg=0.2044, loss_keypoint=3.5919, loss_objectness=0.0107, loss_rpn_box_reg=0.0109)
+[Epoch 1] step 500/1875: total=4.0093 (loss_classifier=0.1340, loss_box_reg=0.1799, loss_keypoint=3.4870, loss_objectness=0.1782, loss_rpn_box_reg=0.0303)
+[Epoch 1] step 550/1875: total=3.8315 (loss_classifier=0.0785, loss_box_reg=0.1136, loss_keypoint=3.6276, loss_objectness=0.0027, loss_rpn_box_reg=0.0091)
+[Epoch 1] step 600/1875: total=3.6804 (loss_classifier=0.0734, loss_box_reg=0.1159, loss_keypoint=3.4598, loss_objectness=0.0144, loss_rpn_box_reg=0.0168)
+[Epoch 1] step 650/1875: total=3.7666 (loss_classifier=0.0857, loss_box_reg=0.1270, loss_keypoint=3.5065, loss_objectness=0.0327, loss_rpn_box_reg=0.0147)
+[Epoch 1] step 700/1875: total=4.3307 (loss_classifier=0.1580, loss_box_reg=0.1942, loss_keypoint=3.8690, loss_objectness=0.0849, loss_rpn_box_reg=0.0247)
+[Epoch 1] step 750/1875: total=3.7141 (loss_classifier=0.1189, loss_box_reg=0.1781, loss_keypoint=3.3732, loss_objectness=0.0111, loss_rpn_box_reg=0.0330)
+[Epoch 1] step 800/1875: total=3.3049 (loss_classifier=0.0655, loss_box_reg=0.1242, loss_keypoint=3.0879, loss_objectness=0.0116, loss_rpn_box_reg=0.0158)
+[Epoch 1] step 850/1875: total=3.2995 (loss_classifier=0.0654, loss_box_reg=0.1075, loss_keypoint=3.1095, loss_objectness=0.0062, loss_rpn_box_reg=0.0110)
+[Epoch 1] step 900/1875: total=4.1468 (loss_classifier=0.1119, loss_box_reg=0.2141, loss_keypoint=3.7906, loss_objectness=0.0120, loss_rpn_box_reg=0.0182)

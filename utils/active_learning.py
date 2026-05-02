@@ -893,6 +893,7 @@ class AttributeFocusedStrategy:
         frequency_penalty=0.0,
         class_balance_weight=0.0,
         conditional_rarity=False,
+        use_rarity=True,
         use_entropy=False,
     ):
 
@@ -914,6 +915,8 @@ class AttributeFocusedStrategy:
                 stratification (use float('inf') for strict round-robin quotas).
             conditional_rarity: If True, compute rarity relative to the class label
                 (P(val|class)) instead of global P(val).
+            use_rarity: If False, omit the rarity component from the score. This
+                is not equivalent to rarity_power=0, which makes rarity constant.
         """
         if isinstance(attribute_metadata, str):
 
@@ -962,6 +965,10 @@ class AttributeFocusedStrategy:
             parsed_balance = 0.0
         self.class_balance_weight = parsed_balance if math.isinf(parsed_balance) else max(parsed_balance, 0.0)
         self.conditional_rarity = conditional_rarity
+        if isinstance(use_rarity, str):
+            self.use_rarity = use_rarity.strip().lower() not in {"0", "false", "no", "off"}
+        else:
+            self.use_rarity = bool(use_rarity)
         self.use_entropy = use_entropy
 
     def _log_attribute_distribution(self, metadata_indices, local_indices, label):
@@ -1381,10 +1388,12 @@ class AttributeFocusedStrategy:
                     # Global Rarity: P(val)
                     frequency = attribute_counts[attr_name].get(value, 0)
                 
-                rarity = 1.0 / ((frequency if frequency > 0 else 1) + self.epsilon)
-                if self.rarity_power != 1.0:
-                    rarity = rarity ** self.rarity_power
-                sample_score += rarity
+                rarity = 0.0
+                if self.use_rarity:
+                    rarity = 1.0 / ((frequency if frequency > 0 else 1) + self.epsilon)
+                    if self.rarity_power != 1.0:
+                        rarity = rarity ** self.rarity_power
+                    sample_score += rarity
 
                 if self.use_entropy:
                     if entropy_scores is not None and local_idx < len(entropy_scores):
@@ -1420,12 +1429,13 @@ class AttributeFocusedStrategy:
             scores[local_idx] = sample_score
 
         if np.all(scores == 0):
-            noise = rng.uniform(low=0.0, high=1.0, size=total_samples)
+            random.seed(random_seed)
             if self.class_balance_weight > 0 and class_labels:
+                noise = rng.uniform(low=0.0, high=1.0, size=total_samples)
                 balanced_pick = self._select_with_class_balance(noise, class_labels, n_select)
                 if balanced_pick is not None:
                     return balanced_pick
-            return rng.choice(total_samples, size=n_select, replace=False).tolist()
+            return random.sample(range(total_samples), n_select)
 
         # Tie-break by adding a small amount of random noise (stable selection)
         noise = rng.uniform(low=0.0, high=1e-6, size=total_samples)
@@ -1633,6 +1643,7 @@ def active_learning_selection(train_dataset, val_dataset, args, device, verbose=
         class_balance_raw = getattr(args, 'al_attribute_class_balance', 0.0)
         class_balance_weight = parse_float_with_infinity(class_balance_raw)
         use_entropy = getattr(args, 'al_attribute_use_entropy', False)
+        use_rarity = getattr(args, 'al_attribute_use_rarity', True)
 
         try:
             extra_count_scale = float(extra_count_scale)
@@ -1720,6 +1731,7 @@ def active_learning_selection(train_dataset, val_dataset, args, device, verbose=
                 frequency_penalty=frequency_penalty,
                 class_balance_weight=class_balance_weight,
                 conditional_rarity=getattr(args, 'al_conditional_rarity', False),
+                use_rarity=use_rarity,
                 use_entropy=use_entropy,
             )
             debug_attr = None
