@@ -371,10 +371,10 @@ parser.add_argument('--use_active_learning', type=str2bool, default=True,
                     help='Use Active Learning strategy for data selection (default: True)')
 parser.add_argument('--al_strategy', type=str, default='attribute',
                     choices=['coreset', 'badge', 'stratified', 'diversity', 'hybrid', 'hierarchical',
-                             'attribute', 'uncertainty_stratified', 'gen_probe',
+                             'attribute', 'entropy', 'uncertainty_stratified', 'gen_probe',
                              'random', 'none', '0', 'false', 'no'],
                     help='Active Learning strategy: coreset, badge, stratified, diversity, hybrid, hierarchical, '
-                         'attribute, uncertainty_stratified, gen_probe, or random/none/0/false (all map to plain random selection)')
+                         'attribute, entropy, uncertainty_stratified, gen_probe, or random/none/0/false (all map to plain random selection)')
 parser.add_argument('--al_probe_model', type=str, default=None,
                     help='Path to the model trained ONLY on generated images, used for the gen_probe AL strategy.')
 parser.add_argument('--al_embedding_dim', type=int, default=512,

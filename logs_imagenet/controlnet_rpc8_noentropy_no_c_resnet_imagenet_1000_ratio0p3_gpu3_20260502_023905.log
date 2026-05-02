@@ -1,0 +1,119 @@
+Current time: 0502031247
+Added 1000 generated images.
+
+Attribute distribution in selected samples:
+  [color] white: 482 samples (15.4%)
+  [color] blue: 453 samples (14.5%)
+  [color] brown: 425 samples (13.6%)
+  [color] black: 359 samples (11.5%)
+  [color] green: 288 samples (9.2%)
+  [color] red: 259 samples (8.3%)
+  [color] silver: 220 samples (7.1%)
+  [color] gray: 193 samples (6.2%)
+  [color] tan: 108 samples (3.5%)
+  [color] yellow: 83 samples (2.7%)
+  [color] orange: 72 samples (2.3%)
+  [color] pink: 66 samples (2.1%)
+  [color] multicolored: 63 samples (2.0%)
+  [color] purple: 35 samples (1.1%)
+  [color] maroon: 14 samples (0.4%)
+  [background] wall: 1191 samples (38.2%)
+  [background] trees: 469 samples (15.0%)
+  [background] house: 332 samples (10.6%)
+  [background] buildings: 263 samples (8.4%)
+  [background] grass: 243 samples (7.8%)
+  [background] street: 173 samples (5.5%)
+  [background] sky: 166 samples (5.3%)
+  [background] water: 120 samples (3.8%)
+  [background] snow: 81 samples (2.6%)
+  [background] wild: 34 samples (1.1%)
+  [background] rocks: 23 samples (0.7%)
+  [background] bridge: 14 samples (0.4%)
+  [background] inside a house: 11 samples (0.4%)
+  [texture] metallic: 673 samples (21.6%)
+  [texture] wooden: 647 samples (20.7%)
+  [texture] fabric: 587 samples (18.8%)
+  [texture] plastic: 556 samples (17.8%)
+  [texture] glass: 276 samples (8.8%)
+  [texture] ceramic: 206 samples (6.6%)
+  [texture] leather: 175 samples (5.6%)
+
+[Active Learning subset (before adding generated images)] class distribution:
+  Class backpack: 302 samples (9.7%)
+  Class barber_chair: 407 samples (13.0%)
+  Class coffee_mug: 161 samples (5.2%)
+  Class desk: 308 samples (9.9%)
+  Class electric_guitar: 166 samples (5.3%)
+  Class park_bench: 419 samples (13.4%)
+  Class pitcher: 344 samples (11.0%)
+  Class purse: 158 samples (5.1%)
+  Class rocking_chair: 323 samples (10.4%)
+  Class water_bottle: 532 samples (17.1%)
+Added 1000 ImageNet pinkcolor_fabrictexture images using Active Learning (attribute): 3120 -> 4120
+Resumed model from /people/cs/o/oxx220000/safefix/weights/model_imagenet_resnet_base.pth (best val acc: 0.7223076923076923)
+Epoch [1/15], Train Loss: 0.4441, Train Acc: 0.8607, Val Loss: 0.9291, Val Acc: 0.7108
+Epoch [2/15], Train Loss: 0.4111, Train Acc: 0.8765, Val Loss: 0.9126, Val Acc: 0.7054
+Epoch [3/15], Train Loss: 0.3709, Train Acc: 0.8905, Val Loss: 0.9178, Val Acc: 0.7100
+Epoch [4/15], Train Loss: 0.3544, Train Acc: 0.8964, Val Loss: 0.9098, Val Acc: 0.7092
+Epoch [5/15], Train Loss: 0.3463, Train Acc: 0.8942, Val Loss: 0.9164, Val Acc: 0.7062
+Epoch [6/15], Train Loss: 0.3400, Train Acc: 0.9056, Val Loss: 0.9109, Val Acc: 0.7100
+Epoch [7/15], Train Loss: 0.3191, Train Acc: 0.9119, Val Loss: 0.9111, Val Acc: 0.7138
+Epoch [8/15], Train Loss: 0.3332, Train Acc: 0.9024, Val Loss: 0.9159, Val Acc: 0.7123
+Epoch [9/15], Train Loss: 0.3246, Train Acc: 0.9053, Val Loss: 0.9242, Val Acc: 0.7100
+Epoch [10/15], Train Loss: 0.3122, Train Acc: 0.9129, Val Loss: 0.9266, Val Acc: 0.7069
+Epoch [11/15], Train Loss: 0.3193, Train Acc: 0.9070, Val Loss: 0.9127, Val Acc: 0.7100
+Epoch [12/15], Train Loss: 0.3141, Train Acc: 0.9070, Val Loss: 0.9162, Val Acc: 0.7077
+Epoch [13/15], Train Loss: 0.2982, Train Acc: 0.9197, Val Loss: 0.9158, Val Acc: 0.7115
+Epoch [14/15], Train Loss: 0.3071, Train Acc: 0.9146, Val Loss: 0.9107, Val Acc: 0.7115
+Epoch [15/15], Train Loss: 0.3078, Train Acc: 0.9141, Val Loss: 0.9235, Val Acc: 0.7069
+Model Test ACC: 0.7369, test loss: 0.8207
+Generating predictions in memory (--save_preds False).
+Combined predictions length: 13000
+Total training time for 15 epochs: 146.40 seconds
+Total Active Learning selection time: 0.09 seconds
+End-to-end wall time (data prep + selection + training + setup): 148.31 seconds
+
+Running model diagnostics on generated predictions...
+Using in-memory predictions for diagnostics (--save_preds False).
+Start detect_prediction_correlation
+
+ACC: 0.634615 	Hard case: attribute "color", description "red"
+ACC: 0.606557 	Rare Case: attribute "color", description "tan"
+ACC: 0.333333 	Rare Case: attribute "color", description "silver"
+ACC: 0.583333 	Rare Case: attribute "color", description "gray"
+ACC: 0.555556 	Rare Case: attribute "color", description "multicolored"
+ACC: 0.666667 	Rare Case: attribute "color", description "purple"
+ACC: 0.615385 	Rare Case: attribute "background", description "sky"
+ACC: 0.604520 	Hard case: attribute "background", description "trees"
+ACC: 0.666667 	Rare Case: attribute "background", description "inside a house"
+ACC: 0.000000 	Rare Case: attribute "background", description "bridge"
+ACC: 0.333333 	Rare Case: attribute "background", description "snow"
+ACC: 0.641026 	Rare Case: attribute "texture", description "metallic"
+ACC: 0.000000 	Hard case: attribute "texture", description "ceramic"
+
+Comparing accuracy with log file: logs/compare/stat_imagenet_resnet_compare.log
+Overall accuracy: 0.718077 -> 0.713846: declined
+
+Attribute-specific accuracy comparison:
+color, green, 0.674419 -> 0.773585: improved
+color, pink, 0.699029 -> 0.814815: improved
+color, tan, 0.700000 -> 0.606557: declined
+color, orange, 0.690909 -> 0.750000: improved
+color, yellow, 0.688889 -> 0.863636: improved
+color, purple, 0.684211 -> 0.666667: declined
+color, black, 0.665289 -> 0.732394: improved
+background, sky, 0.698630 -> 0.615385: declined
+background, inside a house, 0.691684 -> 0.666667: declined
+background, buildings, 0.707317 -> 0.806452: improved
+background, rocks, 0.659091 -> 0.714286: improved
+background, street, 0.662162 -> 0.857143: improved
+texture, metallic, 0.676471 -> 0.641026: declined
+texture, wooden, 0.698393 -> 0.710197: improved
+texture, leather, 0.588235 -> 0.833333: improved
+texture, fabric, 0.658537 -> 0.728814: improved
+
+Compared 16 attribute-specific accuracies.
+Skipping Active Learning vs Random comparison: no log file found at logs_imagenet/AL_resnet_imagenet_random_1000.log or logs_imagenet/AL_random_resnet_imagenet_1000_ratio0.3.log
+
+Random selection comparison skipped: None not found
+Current time: 0502031247

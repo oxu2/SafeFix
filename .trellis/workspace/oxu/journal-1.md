@@ -5,6 +5,193 @@
 
 ---
 
+## Session 163: Overnight Experiment Result Consolidation
+
+**Date**: 2026-05-02
+**Task**: consolidate-recent-experiments-into-report
+
+### Summary
+
+The user asked to organize the experiments from the last dozen-plus hours into
+`report.md` and report whether any errors or unfinished jobs remained.
+
+### What Changed
+
+- Updated `report.md` with a new section:
+  `05/02/2026 Update — Overnight Sweep Results and Completion Status`.
+- Updated `.handoff.md` so the active baton no longer says the recent queues
+  are still running.
+- No code was changed in this consolidation pass.
+
+### Parsed Completed Sweeps
+
+- KITTI generated-image 10-epoch sweep:
+  - `25/25` non-entropy rows complete across ratios
+    `0.1 0.3 0.5 0.7 0.9` and strategies `random`,
+    `attribute_r003_p5_c15`, `stratified`, `coreset_fast`, `badge_fast`.
+  - Logs:
+    `logs/kitti_ratio*_red_cloudy_gen1000_e10_gpu0_20260502_015837.log`
+    and
+    `logs/kitti_ratio*_red_cloudy_gen1000_e10_gpu3_20260502_020651.log`.
+- KITTI/CelebA/COCO entropy baseline queue:
+  - `15/15` rows complete.
+  - Logs:
+    `logs/kitti_ratio*_entropy_red_cloudy_gen1000_e10_gpu3_20260502_025110.log`,
+    `logs_celeba/controlnet_entropy_redhair_brownskin_sademotion_resnet_celeba_1000_ratio*_gpu3_20260502_025110.log`,
+    and
+    `log_pose/pose_qwen3_brown_rainy_entropy_ratio*_gpu3_20260502_025110.log`.
+- ImageNet ControlNet RPC8 no-entropy rerun:
+  - `40/40` rows complete.
+  - Logs:
+    `logs_imagenet/controlnet_rpc8_noentropy_*_20260502_023905.log`.
+- COCO brown-rainy RPC8 metadata-only sweep:
+  - `40/40` rows complete.
+  - Logs:
+    `log_pose/pose_qwen3_brown_rainy_rpc8_*_ratio*_gpu*_20260501_231910.log`.
+
+### Key Results Added To Report
+
+- KITTI 10-epoch best by mAP50:
+  `0.1` entropy `0.8255`; `0.3` entropy `0.8357`;
+  `0.5` coreset_fast `0.8436`; `0.7` entropy `0.8472`;
+  `0.9` entropy `0.8492`.
+- KITTI 10-epoch best by mAP50-95:
+  `0.1` entropy `0.5497`; `0.3` entropy `0.5636`;
+  `0.5` entropy `0.5766`; `0.7` entropy `0.5784`;
+  `0.9` attribute_r003_p5_c15 `0.5850`.
+- CelebA entropy best row:
+  ratio `0.7`, Test ACC `0.9153`, Best Val ACC `0.9156`.
+- COCO entropy best row:
+  ratio `0.7`, Test AP `0.6293`, AP50 `0.8599`, AP75 `0.6842`.
+- ImageNet RPC8 no-entropy best overall row:
+  `only_c` at ratio `0.9`, Test ACC `0.7538`.
+- COCO RPC8 metadata-only best overall row:
+  `anchor` at ratio `0.7`, Test AP `0.6327`.
+
+### Validation And Error Status
+
+- Checked launcher parent PIDs:
+  `ps -fp 800646 800647 929778 936349 959463 973369`; none remained alive.
+- Checked current GPU compute processes with:
+  `nvidia-smi --query-compute-apps=gpu_uuid,pid,process_name,used_memory --format=csv,noheader`.
+  The two observed Python processes were owned by `dal973975` and were
+  unrelated to safefix launchers.
+- Scanned recent experiment logs with:
+  `rg -n "Traceback|CUDA out of memory|Killed|RuntimeError|Error|No such file|failed|FAILED|Exception" logs log_pose logs_celeba logs_imagenet -g '*20260502*.log' -g '*20260501_231910.log'`.
+- No experiment training/evaluation logs in the parsed sweeps showed error
+  markers.
+- The only scan hits were earlier Hugging Face HTTP 429 download-rate-limit
+  messages:
+  - `logs/download_kitti_weather_edits_20260502_010727.log`
+  - `logs/download_kitti_weather_edits_retry_20260502_011211.log`
+
+### Caveats
+
+- The COCO pose training logs include:
+  `No saved best/last model checkpoint was found after training. Skipping the post-train reload step and using the in-memory final model for evaluation.`
+  This appeared in completed runs and did not prevent held-out test metrics or
+  final artifact directories from being produced.
+- The entropy baseline launcher still has the known mixed timestamp caveat:
+  parent worker output `20260502_025109`, row logs `20260502_025110`.
+
+---
+
+## Session 162: Entropy Baseline Launcher for KITTI, CelebA, and COCO
+
+**Date**: 2026-05-02
+**Task**: entropy-baselines-kitti-celeba-coco-gpu3
+
+### Summary
+
+The user asked whether the entropy baseline had been run for KITTI, CelebA,
+and COCO, then asked to verify whether the existing active-learning code could
+be reused and to launch a serial GPU `3` ratio sweep for all three datasets in
+parallel with the already-running ablations.
+
+### Findings
+
+- Comparable entropy baselines had not been run for the main KITTI, CelebA,
+  and COCO sweeps.
+- KITTI had only the earlier smoke test:
+  `logs/kitti_ratio0p05_entropy_red_cloudy_gen1000_e1_gpu3_20260502_022729.log`.
+- CelebA's historical `alpred.py` runs did not include entropy as a standalone
+  strategy; `--al_attribute_use_entropy` defaulted to `False`.
+- COCO brown-rainy RPC/attribute runs used metadata-only selection; pose
+  attribute selection was forced to `use_entropy=False`.
+
+### What Changed
+
+- Added standalone entropy selection support for CelebA/ImageNet-style
+  active learning:
+  - `alpred.py`
+  - `utils/active_learning.py`
+- Added standalone entropy selection support for COCO pose:
+  - `train_pose_estimation.py`
+  - CLI flag: `--al-entropy-batch-size`
+  - strategy: `--al-strategy entropy`
+- Added launcher:
+  `scripts/run_entropy_baselines_kitti_celeba_coco_gpu3.sh`
+- The launcher runs serially on GPU `3`:
+  - datasets: `kitti -> celeba -> coco`
+  - ratios: `0.1 0.3 0.5 0.7 0.9`
+  - total rows: `15`
+- Default settings:
+  - KITTI: YOLOv8 generated red-cloudy, `epochs=10`, `batch=16`,
+    `num_added_img=1000`, physical `--device 3`
+  - CelebA: `redhair_brownskin_sademotion`, `epochs=15`, `batch_size=64`,
+    `lr=1e-5`, resume `weights/model_celeba_resnet_base.pth`
+  - COCO: brown-rainy pose, `epochs=2`, `batch_size=8`, `lr=0.005`, resume
+    `log_pose/pose_keypointrcnn_train20k_internvl3_bs8_e2_rare1p1_gpu0_20260415_144530/best.pth`
+
+### Validation
+
+- `/people/cs/o/oxx220000/.conda/envs/ad/bin/python -m py_compile alpred.py utils/active_learning.py train_pose_estimation.py`
+  passed.
+- `/people/cs/o/oxx220000/.conda/envs/fp/bin/python -m py_compile object_detection/train_yolov8_kitti_generated.py`
+  passed.
+- `bash -n scripts/run_entropy_baselines_kitti_celeba_coco_gpu3.sh` passed.
+- Dry-run expanded the intended `15` serial commands.
+
+### Launch Status
+
+Launched detached on GPU `3`:
+
+- parent launcher stamp: `20260502_025109`
+- parent worker PID: `973369`
+- worker output:
+  `logs/entropy_baselines_kitti_celeba_coco_gpu3_20260502_025109.out`
+- PID file:
+  `logs/entropy_baselines_kitti_celeba_coco_gpu3_20260502_025109.pid`
+
+The first row is running:
+
+- dataset: KITTI
+- ratio: `0.1`
+- child PID: `973383`
+- log:
+  `logs/kitti_ratio0p1_entropy_red_cloudy_gen1000_e10_gpu3_20260502_025110.log`
+- latest startup check: entropy scoring completed for `5000` KITTI train
+  candidates, dataset preparation selected `500` original images plus `1000`
+  generated images, and YOLO training entered epoch `2/10`.
+- scanned startup logs showed no `Traceback`, `CUDA out of memory`, `Killed`,
+  missing-file, or runtime-error markers.
+
+### Caveats
+
+- The first launched worker recomputed the timestamp after detaching, so the
+  worker output is stamped `20260502_025109` while individual row logs are
+  stamped `20260502_025110`.
+- `scripts/run_entropy_baselines_kitti_celeba_coco_gpu3.sh` was patched after
+  launch to export `STAMP`, `GPU`, `RATIOS`, `DATASETS`, and the dataset
+  configuration variables before invoking the detached worker. Future launches
+  should keep one consistent stamp.
+- COCO entropy selection is newly implemented and will run after the five
+  KITTI rows and five CelebA rows. If COCO hits memory pressure, reduce
+  `COCO_BATCH` and/or `--al-entropy-batch-size`.
+- Do not update `report.md` until stable completed rows are parsed.
+
+---
+
 ## Session 161: Relaunch ImageNet RPC8 with Entropy Disabled
 
 **Date**: 2026-05-02
