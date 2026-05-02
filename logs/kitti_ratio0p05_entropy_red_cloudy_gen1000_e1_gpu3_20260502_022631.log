@@ -1,0 +1,4 @@
+Log file: /people/cs/o/oxx220000/safefix/logs/kitti_ratio0p05_entropy_red_cloudy_gen1000_e1_gpu3_20260502_022631.log
+Current time: 0502022641
+Start timestamp: 2026-05-02 02:26:41
+KITTI entropy selection: scoring 5000 train candidates with runs/kitti_yolov8/first5000_1240val_1241test_gpu0_bs16_e30_20260429_012232/weights/best.pt.

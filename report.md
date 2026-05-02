@@ -83,6 +83,68 @@ checkpoints as the component-removal ablations above.
 | `only_p` | frequency penalty `P` | `0.6193` | **`0.8588`** | `0.6712` | `0.6286` | `0.8621` | `0.6873` | `log_pose/pose_qwen3_brown_rainy_rpc_ablation_only_p_ratio0p9_gpu1_20260501_173952.log` |
 | `only_c` | class balance `C` | **`0.6264`** | `0.8576` | **`0.6826`** | **`0.6328`** | **`0.8633`** | **`0.6885`** | `log_pose/pose_qwen3_brown_rainy_rpc_ablation_only_c_ratio0p9_gpu2_20260501_173952.log` |
 
+## 05/02/2026 Update — ImageNet RPC 8-Combination Ratio Sweep
+
+The ImageNet ControlNet half of the full RPC binary component sweep is
+complete under stamp `20260501_231910`. This grid evaluates all `2^3 = 8`
+combinations of rarity (`R`), frequency penalty (`P`), and class balance (`C`)
+for ratios `0.1`, `0.3`, `0.5`, `0.7`, and `0.9`. Entropy stays enabled, and
+no `no_u` row is included. The COCO brown-rainy half of the same launcher is
+still running, so this section records only the completed ImageNet results.
+
+- Generated directory: `data/imagenet_pinkcolor_fabrictexture`
+- Attribute metadata: `save/attribute10_internvl3_8B.json`
+- Base checkpoint: `weights/model_imagenet_resnet_base.pth`
+- Added generated images per row: `1000`
+
+| Ratio | Setting | Active components | Test ACC | Best Val ACC | Test loss | Log |
+| --- | --- | --- | ---: | ---: | ---: | --- |
+| `0.1` | `none` | none | `0.7285` | `0.7115` | `0.8612` | `logs_imagenet/controlnet_rpc8_none_resnet_imagenet_1000_ratio0p1_gpu3_20260501_231910.log` |
+| `0.1` | `only_r` | `R` | `0.7300` | `0.7077` | `0.8644` | `logs_imagenet/controlnet_rpc8_only_r_resnet_imagenet_1000_ratio0p1_gpu3_20260501_231910.log` |
+| `0.1` | `only_p` | `P` | `0.7262` | **`0.7162`** | `0.8634` | `logs_imagenet/controlnet_rpc8_only_p_resnet_imagenet_1000_ratio0p1_gpu3_20260501_231910.log` |
+| `0.1` | `only_c` | `C` | `0.7277` | `0.7085` | `0.8448` | `logs_imagenet/controlnet_rpc8_only_c_resnet_imagenet_1000_ratio0p1_gpu3_20260501_231910.log` |
+| `0.1` | `no_r` | `P+C` | **`0.7369`** | `0.7131` | `0.8502` | `logs_imagenet/controlnet_rpc8_no_r_resnet_imagenet_1000_ratio0p1_gpu3_20260501_231910.log` |
+| `0.1` | `no_p` | `R+C` | `0.7308` | `0.7108` | `0.8474` | `logs_imagenet/controlnet_rpc8_no_p_resnet_imagenet_1000_ratio0p1_gpu3_20260501_231910.log` |
+| `0.1` | `no_c` | `R+P` | `0.7315` | `0.7108` | `0.8610` | `logs_imagenet/controlnet_rpc8_no_c_resnet_imagenet_1000_ratio0p1_gpu3_20260501_231910.log` |
+| `0.1` | `anchor` | `R+P+C` | `0.7238` | `0.7138` | `0.8512` | `logs_imagenet/controlnet_rpc8_anchor_resnet_imagenet_1000_ratio0p1_gpu3_20260501_231910.log` |
+| `0.3` | `none` | none | **`0.7438`** | `0.7162` | `0.8343` | `logs_imagenet/controlnet_rpc8_none_resnet_imagenet_1000_ratio0p3_gpu3_20260501_231910.log` |
+| `0.3` | `only_r` | `R` | `0.7415` | `0.7146` | `0.8261` | `logs_imagenet/controlnet_rpc8_only_r_resnet_imagenet_1000_ratio0p3_gpu3_20260501_231910.log` |
+| `0.3` | `only_p` | `P` | `0.7392` | `0.7154` | `0.8176` | `logs_imagenet/controlnet_rpc8_only_p_resnet_imagenet_1000_ratio0p3_gpu3_20260501_231910.log` |
+| `0.3` | `only_c` | `C` | `0.7392` | **`0.7169`** | `0.8124` | `logs_imagenet/controlnet_rpc8_only_c_resnet_imagenet_1000_ratio0p3_gpu3_20260501_231910.log` |
+| `0.3` | `no_r` | `P+C` | `0.7308` | `0.7162` | `0.8253` | `logs_imagenet/controlnet_rpc8_no_r_resnet_imagenet_1000_ratio0p3_gpu3_20260501_231910.log` |
+| `0.3` | `no_p` | `R+C` | `0.7369` | `0.7154` | `0.8232` | `logs_imagenet/controlnet_rpc8_no_p_resnet_imagenet_1000_ratio0p3_gpu3_20260501_231910.log` |
+| `0.3` | `no_c` | `R+P` | `0.7315` | `0.7154` | `0.8429` | `logs_imagenet/controlnet_rpc8_no_c_resnet_imagenet_1000_ratio0p3_gpu3_20260501_231910.log` |
+| `0.3` | `anchor` | `R+P+C` | `0.7377` | `0.7131` | `0.8224` | `logs_imagenet/controlnet_rpc8_anchor_resnet_imagenet_1000_ratio0p3_gpu3_20260501_231910.log` |
+| `0.5` | `none` | none | **`0.7454`** | `0.7200` | `0.8100` | `logs_imagenet/controlnet_rpc8_none_resnet_imagenet_1000_ratio0p5_gpu3_20260501_231910.log` |
+| `0.5` | `only_r` | `R` | `0.7415` | **`0.7215`** | `0.8134` | `logs_imagenet/controlnet_rpc8_only_r_resnet_imagenet_1000_ratio0p5_gpu3_20260501_231910.log` |
+| `0.5` | `only_p` | `P` | `0.7408` | `0.7162` | `0.8119` | `logs_imagenet/controlnet_rpc8_only_p_resnet_imagenet_1000_ratio0p5_gpu3_20260501_231910.log` |
+| `0.5` | `only_c` | `C` | `0.7346` | `0.7208` | `0.8034` | `logs_imagenet/controlnet_rpc8_only_c_resnet_imagenet_1000_ratio0p5_gpu3_20260501_231910.log` |
+| `0.5` | `no_r` | `P+C` | `0.7369` | `0.7169` | `0.8108` | `logs_imagenet/controlnet_rpc8_no_r_resnet_imagenet_1000_ratio0p5_gpu3_20260501_231910.log` |
+| `0.5` | `no_p` | `R+C` | `0.7415` | `0.7169` | `0.8056` | `logs_imagenet/controlnet_rpc8_no_p_resnet_imagenet_1000_ratio0p5_gpu3_20260501_231910.log` |
+| `0.5` | `no_c` | `R+P` | `0.7446` | `0.7146` | `0.8194` | `logs_imagenet/controlnet_rpc8_no_c_resnet_imagenet_1000_ratio0p5_gpu3_20260501_231910.log` |
+| `0.5` | `anchor` | `R+P+C` | `0.7362` | `0.7192` | `0.8071` | `logs_imagenet/controlnet_rpc8_anchor_resnet_imagenet_1000_ratio0p5_gpu3_20260501_231910.log` |
+| `0.7` | `none` | none | **`0.7485`** | `0.7208` | `0.8014` | `logs_imagenet/controlnet_rpc8_none_resnet_imagenet_1000_ratio0p7_gpu3_20260501_231910.log` |
+| `0.7` | `only_r` | `R` | `0.7469` | `0.7223` | `0.7883` | `logs_imagenet/controlnet_rpc8_only_r_resnet_imagenet_1000_ratio0p7_gpu3_20260501_231910.log` |
+| `0.7` | `only_p` | `P` | `0.7431` | `0.7146` | `0.7991` | `logs_imagenet/controlnet_rpc8_only_p_resnet_imagenet_1000_ratio0p7_gpu3_20260501_231910.log` |
+| `0.7` | `only_c` | `C` | `0.7415` | **`0.7238`** | `0.8071` | `logs_imagenet/controlnet_rpc8_only_c_resnet_imagenet_1000_ratio0p7_gpu3_20260501_231910.log` |
+| `0.7` | `no_r` | `P+C` | `0.7431` | `0.7200` | `0.7961` | `logs_imagenet/controlnet_rpc8_no_r_resnet_imagenet_1000_ratio0p7_gpu3_20260501_231910.log` |
+| `0.7` | `no_p` | `R+C` | `0.7469` | `0.7169` | `0.7863` | `logs_imagenet/controlnet_rpc8_no_p_resnet_imagenet_1000_ratio0p7_gpu3_20260501_231910.log` |
+| `0.7` | `no_c` | `R+P` | `0.7477` | `0.7208` | `0.7922` | `logs_imagenet/controlnet_rpc8_no_c_resnet_imagenet_1000_ratio0p7_gpu3_20260501_231910.log` |
+| `0.7` | `anchor` | `R+P+C` | `0.7423` | `0.7208` | `0.8007` | `logs_imagenet/controlnet_rpc8_anchor_resnet_imagenet_1000_ratio0p7_gpu3_20260501_231910.log` |
+| `0.9` | `none` | none | `0.7508` | `0.7254` | `0.7902` | `logs_imagenet/controlnet_rpc8_none_resnet_imagenet_1000_ratio0p9_gpu3_20260501_231910.log` |
+| `0.9` | `only_r` | `R` | `0.7500` | `0.7231` | `0.7836` | `logs_imagenet/controlnet_rpc8_only_r_resnet_imagenet_1000_ratio0p9_gpu3_20260501_231910.log` |
+| `0.9` | `only_p` | `P` | **`0.7562`** | **`0.7262`** | `0.7870` | `logs_imagenet/controlnet_rpc8_only_p_resnet_imagenet_1000_ratio0p9_gpu3_20260501_231910.log` |
+| `0.9` | `only_c` | `C` | `0.7477` | `0.7246` | `0.7891` | `logs_imagenet/controlnet_rpc8_only_c_resnet_imagenet_1000_ratio0p9_gpu3_20260501_231910.log` |
+| `0.9` | `no_r` | `P+C` | `0.7508` | `0.7231` | `0.7827` | `logs_imagenet/controlnet_rpc8_no_r_resnet_imagenet_1000_ratio0p9_gpu3_20260501_231910.log` |
+| `0.9` | `no_p` | `R+C` | `0.7415` | **`0.7262`** | `0.7975` | `logs_imagenet/controlnet_rpc8_no_p_resnet_imagenet_1000_ratio0p9_gpu3_20260501_231910.log` |
+| `0.9` | `no_c` | `R+P` | `0.7423` | `0.7223` | `0.7981` | `logs_imagenet/controlnet_rpc8_no_c_resnet_imagenet_1000_ratio0p9_gpu3_20260501_231910.log` |
+| `0.9` | `anchor` | `R+P+C` | `0.7523` | `0.7208` | `0.7920` | `logs_imagenet/controlnet_rpc8_anchor_resnet_imagenet_1000_ratio0p9_gpu3_20260501_231910.log` |
+
+Summary by ratio: best Test ACC is `no_r` at ratio `0.1`, `none` at ratios
+`0.3`, `0.5`, and `0.7`, and `only_p` at ratio `0.9`. The best overall
+ImageNet result in this sweep is `only_p` at ratio `0.9` with Test ACC
+`0.7562`.
+
 ### Ratio = 0.1
 | Strategy | Test ACC | Val ACC |
 |---|---|---|
@@ -212,6 +274,67 @@ checkpoints as the component-removal ablations above.
 | `0.90` | `qwen3_attr_r003_p5_c8` | `0.6255` | `0.8572` | `0.6805` | `0.6282` | `0.8606` | `0.6829` |
 | `0.90` | `qwen3_attr_r003_p5_c15` | **`0.6355`** | `0.8572` | `0.6805` | `0.6282` | `0.8606` | `0.6829` |
 | `1.00` | `full_data_controlnet` | **`0.6259`** | `0.8544` | `0.6812` | `0.6310` | `0.8594` | `0.6865` |
+
+## 05/02/2026 Update — KITTI Generated-Image YOLOv8 Smoke Check
+
+This is a 1-epoch sanity check for the new KITTI generated-image resume path,
+not a final comparable KITTI result.
+
+- Script:
+  `object_detection/train_yolov8_kitti_generated.py`
+- Resume checkpoint:
+  `runs/kitti_yolov8/first5000_1240val_1241test_gpu0_bs16_e30_20260429_012232/weights/best.pt`
+- Source dataset:
+  `/data/oxx220000/kitti_yolov8_first5000/`
+- Generated pool:
+  `/data/oxx220000/kitti-weather-edits/generated_kitti1352_red_cloudy_icedit_upscaled`
+- Setting:
+  `ratio=0.05`, `selection=stratified`, `250` original train images plus
+  `1000` generated red-cloudy images, `batch=16`, `imgsz=640`, `epochs=1`,
+  `AdamW`, `lr0=2e-4`, `lrf=0.1`.
+- Run:
+  `runs/kitti_yolov8/kitti_ratio0p05_stratified_red_cloudy_gen1000_e1_gpu0_20260502_011659`
+- Val after 1 epoch:
+  precision `0.82872`, recall `0.57158`, mAP50 `0.67209`, mAP50-95 `0.35703`
+- Test after 1 epoch:
+  precision `0.82058`, recall `0.59635`, mAP50 `0.69916`, mAP50-95 `0.37174`
+
+## 05/02/2026 Update — KITTI Generated-Image Ratio 0.05 Two-Epoch Selection Probe
+
+These are short 2-epoch probes for comparing selection methods on the KITTI
+generated-image setup. They resume from the same batch-size-16 KITTI YOLOv8n
+checkpoint and use the same final training size: `250` selected original KITTI
+train images plus `1000` generated red-cloudy images (`1250` train images
+total). The generated pool has `1309` usable images.
+
+- Resume checkpoint:
+  `runs/kitti_yolov8/first5000_1240val_1241test_gpu0_bs16_e30_20260429_012232/weights/best.pt`
+- Source dataset:
+  `/data/oxx220000/kitti_yolov8_first5000/`
+- Generated pool:
+  `/data/oxx220000/kitti-weather-edits/generated_kitti1352_red_cloudy_icedit_upscaled`
+- Common fine-tuning setting:
+  `epochs=2`, `batch=16`, `imgsz=640`, `AdamW`, `lr0=2e-4`, `lrf=0.1`,
+  `warmup_epochs=1.0`, seed `42`
+- Attribute setting:
+  Qwen3 metadata `save/attribute_kitti_qwen3_8B.json`, focus
+  `color,weather`, generated extra counts `color:red=1000` and
+  `weather:cloudy=1000`, `R=0.03`, `P=5`, `C=15`
+- Fast coreset/BADGE setting:
+  simplified shared active-learning selectors with lightweight image proxy
+  embeddings and YOLO label-signature proxy labels; exact coreset/BADGE logs
+  from the interrupted attempt are excluded from this table.
+
+| Method | Selection mode | GPU | Val mAP50 | Val mAP50-95 | Test Precision | Test Recall | Test mAP50 | Test mAP50-95 | Elapsed | Log |
+| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- | --- |
+| `attribute_r003_p5_c15` | Qwen3 color/weather RPC | `0` | `0.7166` | `0.3437` | `0.8069` | `0.6567` | `0.7512` | `0.3647` | `00:00:51` | `logs/kitti_ratio0p05_attribute_r003_p5_c15_red_cloudy_gen1000_e2_gpu0_20260502_012750_20260502_012750.log` |
+| `random` | seeded random original subset | `0` | `0.7342` | `0.3886` | **`0.8314`** | `0.6578` | `0.7683` | `0.4088` | `00:00:39` | `logs/kitti_ratio0p05_random_red_cloudy_gen1000_e2_gpu0_20260502_013255_20260502_013255.log` |
+| `coreset_fast` | approximate coreset proxy | `0` | `0.7236` | `0.3877` | `0.8268` | `0.6541` | `0.7581` | `0.4066` | `00:01:54` | `logs/kitti_ratio0p05_coreset_fast_red_cloudy_gen1000_e2_gpu0_20260502_013545_20260502_013545.log` |
+| `badge_fast` | approximate BADGE weighted gradient-norm proxy | `3` | `0.7333` | **`0.3963`** | `0.8192` | **`0.6844`** | **`0.7793`** | **`0.4158`** | `00:01:54` | `logs/kitti_ratio0p05_badge_fast_red_cloudy_gen1000_e2_gpu3_20260502_013545_20260502_013545.log` |
+
+In this short probe, `badge_fast` is strongest on test mAP50 and mAP50-95.
+`random` is second on test mAP50-95, and both simplified active-learning
+baselines avoid the slow exact selection path.
 
 ## KITTI Batch-Size-16 InternVL3 Slice Analysis
 

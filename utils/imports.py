@@ -54,7 +54,10 @@ from transformers import (
     CLIPModel,
     CLIPConfig
 )
-from timm import create_model
+try:
+    from timm import create_model
+except ModuleNotFoundError:
+    create_model = None
 
 # Computer Vision and Image Processing
 from PIL import Image
