@@ -14,6 +14,115 @@ is `ratio`; each panel compares `random` against the best available
 
 Source CSV: `figures/recent_ratio_random_vs_best_attribute.csv`.
 
+## 05/02/2026 Update — Overnight Sweep Results and Completion Status
+
+This update records the sweeps launched during the last overnight block. All
+rows listed below reached their normal completion markers. Error-marker scans
+over the relevant `20260501_231910` and `20260502` experiment logs found no
+`Traceback`, `CUDA out of memory`, `Killed`, missing-file, or runtime-error
+markers. The only scanned errors were from earlier KITTI weather download logs:
+Hugging Face HTTP 429 rate limits in
+`logs/download_kitti_weather_edits_20260502_010727.log` and the follow-up
+retry note in `logs/download_kitti_weather_edits_retry_20260502_011211.log`.
+
+Current GPU processes observed during the check were owned by another user
+(`dal973975`) and were unrelated to these safefix launchers.
+
+| Sweep | Stamp | Rows | Status | Error markers |
+| --- | --- | ---: | --- | --- |
+| KITTI generated-image 10-epoch sweep (`random`, `attribute_r003_p5_c15`, `stratified`, `coreset_fast`, `badge_fast`) | `20260502_015837`, `20260502_020651` | `25/25` | complete | none |
+| KITTI/CelebA/COCO entropy baselines | `20260502_025110` | `15/15` | complete | none |
+| ImageNet ControlNet RPC8 no-entropy rerun | `20260502_023905` | `40/40` | complete | none |
+| COCO brown-rainy RPC8 metadata-only sweep | `20260501_231910` | `40/40` | complete | none |
+
+### KITTI Generated Red-Cloudy, 10-Epoch Sweep
+
+- Source dataset: `/data/oxx220000/kitti_yolov8_first5000`
+- Generated pool:
+  `/data/oxx220000/kitti-weather-edits/generated_kitti1352_red_cloudy_icedit_upscaled`
+- Added generated images per row: `1000`
+- Training: YOLOv8 resume, `epochs=10`, `batch=16`, `imgsz=640`, `AdamW`,
+  `lr0=2e-4`, `lrf=0.1`, `warmup_epochs=1.0`, seed `42`
+
+| Ratio | Best by mAP50 | mAP50 | mAP50-95 | Best by mAP50-95 | mAP50 | mAP50-95 |
+| ---: | --- | ---: | ---: | --- | ---: | ---: |
+| `0.1` | `entropy` | **`0.8255`** | **`0.5497`** | `entropy` | **`0.8255`** | **`0.5497`** |
+| `0.3` | `entropy` | **`0.8357`** | **`0.5636`** | `entropy` | **`0.8357`** | **`0.5636`** |
+| `0.5` | `coreset_fast` | **`0.8436`** | `0.5759` | `entropy` | `0.8414` | **`0.5766`** |
+| `0.7` | `entropy` | **`0.8472`** | **`0.5784`** | `entropy` | **`0.8472`** | **`0.5784`** |
+| `0.9` | `entropy` | **`0.8492`** | `0.5830` | `attribute_r003_p5_c15` | `0.8437` | **`0.5850`** |
+
+All KITTI 10-epoch logs completed. Full parsed rows are under
+`logs/kitti_ratio*_red_cloudy_gen1000_e10_gpu0_20260502_015837.log`,
+`logs/kitti_ratio*_red_cloudy_gen1000_e10_gpu3_20260502_020651.log`, and
+`logs/kitti_ratio*_entropy_red_cloudy_gen1000_e10_gpu3_20260502_025110.log`.
+
+### CelebA Entropy Baseline
+
+- Generated target: `redhair_brownskin_sademotion`
+- Base checkpoint: `weights/model_celeba_resnet_base.pth`
+- Added generated images per row: `1000`
+- Training: `epochs=15`, `batch_size=64`, `lr=1e-5`
+
+| Ratio | Test ACC | Best Val ACC | Test loss | Selection time (s) | Log |
+| ---: | ---: | ---: | ---: | ---: | --- |
+| `0.1` | `0.9124` | `0.9145` | `0.2092` | `49.33` | `logs_celeba/controlnet_entropy_redhair_brownskin_sademotion_resnet_celeba_1000_ratio0p1_gpu3_20260502_025110.log` |
+| `0.3` | `0.9139` | `0.9152` | `0.2116` | `50.74` | `logs_celeba/controlnet_entropy_redhair_brownskin_sademotion_resnet_celeba_1000_ratio0p3_gpu3_20260502_025110.log` |
+| `0.5` | `0.9129` | `0.9154` | `0.2233` | `48.78` | `logs_celeba/controlnet_entropy_redhair_brownskin_sademotion_resnet_celeba_1000_ratio0p5_gpu3_20260502_025110.log` |
+| `0.7` | **`0.9153`** | **`0.9156`** | `0.2383` | `50.50` | `logs_celeba/controlnet_entropy_redhair_brownskin_sademotion_resnet_celeba_1000_ratio0p7_gpu3_20260502_025110.log` |
+| `0.9` | `0.9135` | `0.9122` | `0.3072` | `51.45` | `logs_celeba/controlnet_entropy_redhair_brownskin_sademotion_resnet_celeba_1000_ratio0p9_gpu3_20260502_025110.log` |
+
+### COCO Brown-Rainy Entropy Baseline
+
+- Generated pool:
+  `/data/oxx220000/coco-pose-weather-edits/generated_coco_qwen3_1500_brown_rain_icedit`
+- Base checkpoint:
+  `log_pose/pose_keypointrcnn_train20k_internvl3_bs8_e2_rare1p1_gpu0_20260415_144530/best.pth`
+- Added generated images per row: `1000`
+- Training: `epochs=2`, `batch_size=8`, `lr=0.005`
+
+| Ratio | Test AP | Test AP50 | Test AP75 | Val AP | Log |
+| ---: | ---: | ---: | ---: | ---: | --- |
+| `0.1` | `0.6231` | `0.8545` | `0.6807` | `0.6293` | `log_pose/pose_qwen3_brown_rainy_entropy_ratio0p1_gpu3_20260502_025110.log` |
+| `0.3` | `0.6215` | `0.8542` | `0.6744` | `0.6323` | `log_pose/pose_qwen3_brown_rainy_entropy_ratio0p3_gpu3_20260502_025110.log` |
+| `0.5` | `0.6282` | `0.8557` | `0.6834` | `0.6350` | `log_pose/pose_qwen3_brown_rainy_entropy_ratio0p5_gpu3_20260502_025110.log` |
+| `0.7` | **`0.6293`** | **`0.8599`** | **`0.6842`** | **`0.6356`** | `log_pose/pose_qwen3_brown_rainy_entropy_ratio0p7_gpu3_20260502_025110.log` |
+| `0.9` | `0.6170` | `0.8499` | `0.6739` | `0.6235` | `log_pose/pose_qwen3_brown_rainy_entropy_ratio0p9_gpu3_20260502_025110.log` |
+
+### ImageNet ControlNet RPC8 No-Entropy Rerun
+
+This rerun uses the same ImageNet ControlNet RPC8 grid as the earlier
+`20260501_231910` sweep, but with `--al_attribute_use_entropy False`.
+
+| Ratio | Best setting by Test ACC | Test ACC | Best Val ACC | Test loss | Log |
+| ---: | --- | ---: | ---: | ---: | --- |
+| `0.1` | `only_c` / `only_r` | **`0.7354`** | `0.7123` / `0.7177` | `0.8472` / `0.8465` | `logs_imagenet/controlnet_rpc8_noentropy_only_c_resnet_imagenet_1000_ratio0p1_gpu3_20260502_023905.log`, `logs_imagenet/controlnet_rpc8_noentropy_only_r_resnet_imagenet_1000_ratio0p1_gpu3_20260502_023905.log` |
+| `0.3` | `only_c` | **`0.7492`** | `0.7231` | `0.7987` | `logs_imagenet/controlnet_rpc8_noentropy_only_c_resnet_imagenet_1000_ratio0p3_gpu3_20260502_023905.log` |
+| `0.5` | `none` | **`0.7508`** | `0.7262` | `0.7806` | `logs_imagenet/controlnet_rpc8_noentropy_none_resnet_imagenet_1000_ratio0p5_gpu3_20260502_023905.log` |
+| `0.7` | `no_p` | **`0.7508`** | **`0.7323`** | `0.7858` | `logs_imagenet/controlnet_rpc8_noentropy_no_p_resnet_imagenet_1000_ratio0p7_gpu3_20260502_023905.log` |
+| `0.9` | `only_c` | **`0.7538`** | `0.7285` | `0.7791` | `logs_imagenet/controlnet_rpc8_noentropy_only_c_resnet_imagenet_1000_ratio0p9_gpu3_20260502_023905.log` |
+
+Best overall no-entropy ImageNet row: `only_c` at ratio `0.9`, Test ACC
+`0.7538`. For comparison, the earlier entropy-enabled ImageNet RPC8 sweep's
+best overall row was `only_p` at ratio `0.9`, Test ACC `0.7562`.
+
+### COCO Brown-Rainy RPC8 Metadata-Only Sweep
+
+This is the COCO half of the `20260501_231910` RPC8 launcher. The pose code
+used metadata-only attribute selection (`use_entropy=False`).
+
+| Ratio | Best setting by Test AP | Test AP | Test AP50 | Test AP75 | Val AP | Log |
+| ---: | --- | ---: | ---: | ---: | ---: | --- |
+| `0.1` | `anchor` | **`0.6165`** | **`0.8467`** | **`0.6751`** | **`0.6294`** | `log_pose/pose_qwen3_brown_rainy_rpc8_anchor_ratio0p1_gpu1_20260501_231910.log` |
+| `0.3` | `only_c` | **`0.6316`** | **`0.8580`** | **`0.6958`** | **`0.6382`** | `log_pose/pose_qwen3_brown_rainy_rpc8_only_c_ratio0p3_gpu1_20260501_231910.log` |
+| `0.5` | `no_r` | **`0.6295`** | **`0.8625`** | **`0.6785`** | **`0.6367`** | `log_pose/pose_qwen3_brown_rainy_rpc8_no_r_ratio0p5_gpu2_20260501_231910.log` |
+| `0.7` | `anchor` | **`0.6327`** | **`0.8609`** | **`0.6939`** | `0.6342` | `log_pose/pose_qwen3_brown_rainy_rpc8_anchor_ratio0p7_gpu2_20260501_231910.log` |
+| `0.9` | `no_r` | **`0.6276`** | `0.8552` | **`0.6853`** | `0.6310` | `log_pose/pose_qwen3_brown_rainy_rpc8_no_r_ratio0p9_gpu1_20260501_231910.log` |
+
+Best overall COCO RPC8 metadata-only row: `anchor` at ratio `0.7`, Test AP
+`0.6327`. The best Val AP in the parsed grid is `only_c` at ratio `0.3`,
+Val AP `0.6382`.
+
 ## 05/01/2026 Update — Ratio 1.0 Full-Data ControlNet Results
 
 These runs use all original training samples (`ratio=1.0`) and append `1000`
@@ -89,8 +198,8 @@ The ImageNet ControlNet half of the full RPC binary component sweep is
 complete under stamp `20260501_231910`. This grid evaluates all `2^3 = 8`
 combinations of rarity (`R`), frequency penalty (`P`), and class balance (`C`)
 for ratios `0.1`, `0.3`, `0.5`, `0.7`, and `0.9`. Entropy stays enabled, and
-no `no_u` row is included. The COCO brown-rainy half of the same launcher is
-still running, so this section records only the completed ImageNet results.
+no `no_u` row is included. The COCO brown-rainy half of the same launcher
+completed later and is summarized in the overnight status section above.
 
 - Generated directory: `data/imagenet_pinkcolor_fabrictexture`
 - Attribute metadata: `save/attribute10_internvl3_8B.json`

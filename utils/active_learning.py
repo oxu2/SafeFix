@@ -874,6 +874,97 @@ class UncertaintyStratifiedStrategy:
         return selected_indices
 
 
+def _build_resnet_entropy_model(args, device, train_dataset):
+    """Build the same ResNet family used by alpred.py for entropy scoring."""
+    targets = extract_targets_from_dataset(train_dataset)
+    if targets is not None and len(targets) > 0:
+        num_classes = int(np.unique(targets).size)
+    elif getattr(args, "dataset", None) == "imagenet":
+        num_classes = 10
+    else:
+        num_classes = 2
+
+    if getattr(args, "dataset", None) == "imagenet":
+        model = models.resnet18(weights=None)
+        model.fc = nn.Linear(model.fc.in_features, num_classes)
+    else:
+        weights = ResNet18_Weights.IMAGENET1K_V1 if getattr(args, "pretrained", False) else None
+        model = models.resnet18(weights=weights)
+        model.layer3 = nn.Identity()
+        model.layer4 = nn.Identity()
+        model.avgpool = nn.AdaptiveAvgPool2d((1, 1))
+        model.fc = nn.Sequential(
+            nn.Dropout(p=0.7),
+            nn.Linear(128, 1),
+        )
+
+    resume_model = getattr(args, "resume_model", None)
+    if resume_model:
+        resume_path = Path(resume_model).expanduser()
+        if not resume_path.exists():
+            raise FileNotFoundError(f"Entropy strategy resume model not found: {resume_path}")
+        checkpoint = torch.load(str(resume_path), map_location=device)
+        state_dict = checkpoint.get("model_state_dict", checkpoint)
+        model.load_state_dict(state_dict)
+
+    return model.to(device)
+
+
+def entropy_sample_with_model(train_dataset, args, device, n_select):
+    """Select samples with highest predictive entropy from the resume/base model."""
+    if getattr(args, "model", "resnet") != "resnet":
+        raise ValueError("Pure entropy strategy currently supports alpred.py ResNet runs only.")
+
+    print(f"Entropy sampling: choosing {n_select} most uncertain samples...")
+    model = _build_resnet_entropy_model(args, device, train_dataset)
+    model.eval()
+
+    batch_size = max(1, min(int(getattr(args, "batch_size", 32)), 32))
+    loader = DataLoader(
+        train_dataset,
+        batch_size=batch_size,
+        shuffle=False,
+        num_workers=getattr(args, "workers", 2),
+        pin_memory=True,
+    )
+
+    scores = []
+    with torch.no_grad():
+        for batch in loader:
+            inputs = batch[0] if isinstance(batch, (list, tuple)) else batch
+            inputs = inputs.to(device, non_blocking=True)
+            outputs = model(inputs)
+
+            if outputs.dim() > 1 and outputs.shape[1] > 1:
+                probs = torch.softmax(outputs, dim=1)
+                entropy = -torch.sum(probs * torch.log(probs + 1e-8), dim=1)
+            else:
+                probs = torch.sigmoid(outputs.reshape(-1))
+                entropy = -(
+                    probs * torch.log(probs + 1e-8)
+                    + (1.0 - probs) * torch.log(1.0 - probs + 1e-8)
+                )
+            scores.extend(entropy.detach().cpu().numpy().tolist())
+
+    scores = np.asarray(scores, dtype=np.float64)
+    if scores.shape[0] != len(train_dataset):
+        raise RuntimeError(
+            f"Entropy scoring produced {scores.shape[0]} scores for {len(train_dataset)} samples."
+        )
+
+    if n_select >= len(scores):
+        return list(range(len(scores)))
+
+    selected_indices = np.argsort(scores)[::-1][:n_select].tolist()
+    print(
+        "Entropy sampling completed: "
+        f"selected {len(selected_indices)} samples; "
+        f"score range {scores[selected_indices].min():.4f}-{scores[selected_indices].max():.4f}, "
+        f"mean {scores[selected_indices].mean():.4f}."
+    )
+    return selected_indices
+
+
 class AttributeFocusedStrategy:
     """
     Attribute-driven sampling strategy that prioritizes underrepresented
@@ -1627,6 +1718,23 @@ def active_learning_selection(train_dataset, val_dataset, args, device, verbose=
         except Exception as e:
             if verbose:
                 print(f"Stratified sampling failed: {e}, falling back to random")
+            random.seed(args.seed)
+            return random.sample(range(total_train_samples), target_samples)
+
+    elif al_strategy == 'entropy':
+        try:
+            selected_indices = entropy_sample_with_model(
+                train_dataset,
+                args,
+                device,
+                target_samples,
+            )
+            if verbose:
+                print(f"Entropy Active Learning selection completed. Selected {len(selected_indices)} samples.")
+            return selected_indices
+        except Exception as e:
+            if verbose:
+                print(f"Entropy sampling failed: {e}, falling back to random")
             random.seed(args.seed)
             return random.sample(range(total_train_samples), target_samples)
 

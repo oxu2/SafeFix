@@ -88,7 +88,7 @@ POSE_GENERATED_ATTRIBUTE_ROOTS = {
 }
 POSE_GENERATED_IMAGE_SUFFIXES = {".png", ".jpg", ".jpeg"}
 POSE_AL_RANDOM_ALIASES = {"none", "0", "false", "no", "random", ""}
-POSE_AL_STRATEGIES = ["random", "stratified", "coreset", "badge", "attribute"]
+POSE_AL_STRATEGIES = ["random", "stratified", "coreset", "badge", "attribute", "entropy"]
 POSE_GENERATED_ATTRIBUTE_EXTRA_COUNTS = {
     "brown_rainy": {
         "clothes_color": {"brown": 1.0},
@@ -166,8 +166,14 @@ def parse_args():
         choices=[*POSE_AL_STRATEGIES, "none", "0", "false", "no"],
         help=(
             "Subset selection strategy for the original train split when --sub-ratio < 1. "
-            "Supported: random, stratified, coreset, badge, attribute."
+            "Supported: random, stratified, coreset, badge, attribute, entropy."
         ),
+    )
+    train_parser.add_argument(
+        "--al-entropy-batch-size",
+        type=int,
+        default=2,
+        help="Batch size for pose detection-confidence entropy selection.",
     )
     train_parser.add_argument(
         "--al-initial-labeled",
@@ -635,6 +641,82 @@ def extract_pose_al_embeddings(
     return torch.cat(embeddings, dim=0)
 
 
+def binary_entropy_tensor(values: torch.Tensor) -> torch.Tensor:
+    values = torch.clamp(values, min=1e-8, max=1.0 - 1e-8)
+    return -(values * torch.log(values) + (1.0 - values) * torch.log(1.0 - values))
+
+
+def select_pose_entropy_indices(
+    selection_dataset,
+    *,
+    selected_count: int,
+    seed: int,
+    args,
+) -> List[int]:
+    if selected_count >= len(selection_dataset):
+        return list(range(len(selection_dataset)))
+
+    selection_device = resolve_device(getattr(args, "device", "cuda"))
+    model = create_keypointrcnn_model(
+        num_keypoints=17,
+        pretrained=getattr(args, "pretrained", True),
+    ).to(selection_device)
+
+    checkpoint_path = getattr(args, "resume_model", None) or getattr(args, "resume", None)
+    if checkpoint_path is not None:
+        load_model_checkpoint(
+            checkpoint_path=checkpoint_path,
+            model=model,
+            map_location="cpu",
+        )
+
+    model.eval()
+    batch_size = max(1, min(int(getattr(args, "al_entropy_batch_size", 2)), 4))
+    num_workers = max(0, min(getattr(args, "num_workers", 4), 4))
+    loader = build_pose_selection_loader(
+        selection_dataset,
+        batch_size=batch_size,
+        num_workers=num_workers,
+        seed=seed,
+    )
+
+    scores: List[float] = []
+    print(
+        "Pose entropy selection: scoring "
+        f"{len(selection_dataset)} candidates with detection-confidence entropy."
+    )
+    with torch.no_grad():
+        for images, _ in loader:
+            batch = [image.to(selection_device, non_blocking=True) for image in images]
+            outputs = model(batch)
+            for output in outputs:
+                detection_scores = output.get("scores")
+                if detection_scores is None or detection_scores.numel() == 0:
+                    scores.append(0.0)
+                    continue
+                entropy = binary_entropy_tensor(detection_scores.detach())
+                scores.append(float(entropy.max().cpu()))
+
+    if len(scores) != len(selection_dataset):
+        raise RuntimeError(
+            f"Pose entropy scoring produced {len(scores)} scores for {len(selection_dataset)} samples."
+        )
+
+    score_array = np.asarray(scores, dtype=np.float64)
+    selected_local_indices = np.argsort(score_array)[::-1][:selected_count].tolist()
+    selected_scores = score_array[selected_local_indices]
+    print(
+        "Pose entropy selection completed: "
+        f"selected {len(selected_local_indices)} images; "
+        f"score range {selected_scores.min():.6f}-{selected_scores.max():.6f}, "
+        f"mean {selected_scores.mean():.6f}."
+    )
+    del model
+    if selection_device.type == "cuda":
+        torch.cuda.empty_cache()
+    return [int(idx) for idx in selected_local_indices]
+
+
 def select_original_train_image_ids(
     full_train_dataset,
     val_dataset,
@@ -758,6 +840,13 @@ def select_original_train_image_ids(
                     random_seed=seed,
                     debug_attribute=(focus_attributes[0] if focus_attributes else None),
                 )
+    elif strategy_name == "entropy":
+        selected_local_indices = select_pose_entropy_indices(
+            selection_dataset,
+            selected_count=selected_count,
+            seed=seed,
+            args=args,
+        )
     else:
         feature_batch_size = max(1, min(getattr(args, "al_feature_batch_size", 16), 32))
         feature_num_workers = max(0, min(getattr(args, "num_workers", 4), 4))

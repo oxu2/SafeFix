@@ -1,0 +1,103 @@
+Current time: 0502040318
+Selected 1000 filenames for sampling
+Added 1000 generated redhair_brownskin_sademotion images, before training set has 80000 images, now 81000
+Entropy sampling: choosing 56000 most uncertain samples...
+Entropy sampling completed: selected 56000 samples; score range 0.1797-0.6931, mean 0.3351.
+CelebA: Combined 56000 selected samples with 1000 generated images using Active Learning
+Resumed model from /people/cs/o/oxx220000/safefix/weights/model_celeba_resnet_base.pth (best val acc: 0.914, base test acc: 0.9140)
+Recovered base test acc from log: logs/celeba_resnet_base_redhair_brownskin_sademotion_0imgs_20260416_022317.log
+Epoch [1/15], Train Loss: 0.1762, Train Acc: 0.9695, Val Loss: 0.3066, Val Acc: 0.9072
+Epoch [2/15], Train Loss: 0.1752, Train Acc: 0.9711, Val Loss: 0.2348, Val Acc: 0.9156
+Epoch [3/15], Train Loss: 0.1749, Train Acc: 0.9720, Val Loss: 0.2591, Val Acc: 0.9130
+Epoch [4/15], Train Loss: 0.1732, Train Acc: 0.9738, Val Loss: 0.2451, Val Acc: 0.9141
+Epoch [5/15], Train Loss: 0.1730, Train Acc: 0.9740, Val Loss: 0.2477, Val Acc: 0.9139
+Epoch [6/15], Train Loss: 0.1726, Train Acc: 0.9741, Val Loss: 0.2950, Val Acc: 0.9055
+Epoch [7/15], Train Loss: 0.1725, Train Acc: 0.9755, Val Loss: 0.2525, Val Acc: 0.9135
+Epoch [8/15], Train Loss: 0.1722, Train Acc: 0.9753, Val Loss: 0.2463, Val Acc: 0.9147
+Epoch [9/15], Train Loss: 0.1724, Train Acc: 0.9748, Val Loss: 0.2531, Val Acc: 0.9123
+Epoch [10/15], Train Loss: 0.1715, Train Acc: 0.9757, Val Loss: 0.2565, Val Acc: 0.9134
+Epoch [11/15], Train Loss: 0.1715, Train Acc: 0.9754, Val Loss: 0.2526, Val Acc: 0.9135
+Epoch [12/15], Train Loss: 0.1713, Train Acc: 0.9757, Val Loss: 0.2487, Val Acc: 0.9141
+Epoch [13/15], Train Loss: 0.1717, Train Acc: 0.9755, Val Loss: 0.2612, Val Acc: 0.9115
+Epoch [14/15], Train Loss: 0.1714, Train Acc: 0.9754, Val Loss: 0.2668, Val Acc: 0.9107
+Epoch [15/15], Train Loss: 0.1711, Train Acc: 0.9764, Val Loss: 0.2556, Val Acc: 0.9131
+Model Test ACC: 0.9153, test loss: 0.2383
+Generating and saving predictions...
+/people/cs/o/oxx220000/safefix/alpred.py:1791: DeprecationWarning: Conversion of an array with ndim > 0 to a scalar is deprecated, and will error in future. Ensure you extract a single element from your array before performing this operation. (Deprecated NumPy 1.25.)
+  full_orig_preds[idx] = pred
+Combined predictions length: 181000 (should match combined_labels length: 157000)
+Total training time for 15 epochs: 1189.05 seconds
+Total Active Learning selection time: 50.50 seconds
+End-to-end wall time (data prep + selection + training + setup): 1242.01 seconds
+
+Running model diagnostics on generated predictions...
+Start detect_failure_by_label
+
+Start detect_prediction_correlation
+
+The accuracy with "hair color" = "white" is 0.9214876033057852
+Correct predictions: 223/242
+The accuracy with "hair color" = "yellow" is 0.9
+Correct predictions: 27/30
+ACC: 0.900000 	Rare Case: attribute "hair color", description "yellow"
+The accuracy with "hair color" = "blonde" is 0.9221420432966199
+Correct predictions: 2428/2633
+The accuracy with "hair color" = "black" is 0.9116671691287308
+Correct predictions: 3024/3317
+The accuracy with "hair color" = "gray" is 0.9247706422018349
+Correct predictions: 504/545
+The accuracy with "hair color" = "brown" is 0.9160409556313993
+Correct predictions: 2684/2930
+The accuracy with "hair color" = "red" is 0.8778877887788779
+Correct predictions: 266/303
+ACC: 0.877888 	Rare Case: attribute "hair color", description "red"
+The accuracy with "skin" = "white" is 0.918201624083977
+Correct predictions: 4636/5049
+The accuracy with "skin" = "black" is 0.9079348931841302
+Correct predictions: 1785/1966
+The accuracy with "skin" = "brown" is 0.916247906197655
+Correct predictions: 2735/2985
+ACC: 0.905512 	Rare Case: attribute "emotion", description "calm"
+ACC: 0.905237 	Hard case: attribute "emotion", description "surprised"
+ACC: 0.891304 	Rare Case: attribute "emotion", description "angry"
+Start detect_failure_prediction_correlation
+
+Model diagnostics complete.
+
+Comparing accuracy with log file: logs/compare/stat_origin_resnet_compare.log
+Overall accuracy: 0.906750 -> 0.915600: improved
+
+Attribute-specific accuracy comparison:
+beard, No, 0.893557 -> 0.916094: improved
+gender, female, 0.849626 -> 0.916723: improved
+hair color, white, 0.930328 -> 0.921488: declined
+hair color, yellow, 0.918919 -> 0.900000: declined
+hair color, blonde, 0.880229 -> 0.922142: improved
+hair color, black, 0.921358 -> 0.911667: declined
+hair color, gray, 0.977444 -> 0.924771: declined
+hair color, brown, 0.899712 -> 0.916041: improved
+hair color, red, 0.900161 -> 0.877888: declined
+skin, brown, 0.889450 -> 0.916248: improved
+emotion, sad, 0.851711 -> 0.929236: improved
+emotion, surprised, 0.882006 -> 0.905237: improved
+emotion, pensive, 0.859833 -> 0.907975: improved
+
+Compared 13 attribute-specific accuracies.
+Using log file: logs/AL_resnet_celeba_random_1000.log
+
+================================================================================
+ACTIVE LEARNING vs RANDOM SELECTION COMPARISON
+================================================================================
+Comparing current Active Learning results with random selection: logs/AL_resnet_celeba_random_1000.log
+Overall accuracy: Random 0.914000 -> Active Learning 0.915600 (Δ=+0.001600): ACTIVE LEARNING WINS
+
+Attribute-specific Active Learning vs Random Selection comparison:
+
+------------------------------------------------------------
+ACTIVE LEARNING vs RANDOM SELECTION SUMMARY:
+Total compared attributes: 0
+Active Learning wins: 0
+Random Selection wins: 0
+Ties: 0
+------------------------------------------------------------
+Current time: 0502040318

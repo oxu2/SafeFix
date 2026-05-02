@@ -75,3 +75,90 @@ Using fresh optimizer / scheduler state after --resume-model. Training will star
 [Epoch 1] step 1500/1875: total=3.2846 (loss_classifier=0.0798, loss_box_reg=0.1743, loss_keypoint=3.0115, loss_objectness=0.0113, loss_rpn_box_reg=0.0077)
 [Epoch 1] step 1550/1875: total=3.4275 (loss_classifier=0.0879, loss_box_reg=0.1652, loss_keypoint=3.1569, loss_objectness=0.0074, loss_rpn_box_reg=0.0100)
 [Epoch 1] step 1600/1875: total=3.4737 (loss_classifier=0.0911, loss_box_reg=0.1313, loss_keypoint=3.2319, loss_objectness=0.0103, loss_rpn_box_reg=0.0091)
+[Epoch 1] step 1650/1875: total=3.4462 (loss_classifier=0.0668, loss_box_reg=0.0978, loss_keypoint=3.2529, loss_objectness=0.0108, loss_rpn_box_reg=0.0178)
+[Epoch 1] step 1700/1875: total=2.8743 (loss_classifier=0.0337, loss_box_reg=0.0785, loss_keypoint=2.7531, loss_objectness=0.0028, loss_rpn_box_reg=0.0063)
+[Epoch 1] step 1750/1875: total=3.4580 (loss_classifier=0.0534, loss_box_reg=0.0647, loss_keypoint=3.3306, loss_objectness=0.0044, loss_rpn_box_reg=0.0049)
+[Epoch 1] step 1800/1875: total=3.5907 (loss_classifier=0.0930, loss_box_reg=0.1406, loss_keypoint=3.3313, loss_objectness=0.0137, loss_rpn_box_reg=0.0121)
+[Epoch 1] step 1850/1875: total=3.2994 (loss_classifier=0.0890, loss_box_reg=0.1576, loss_keypoint=3.0316, loss_objectness=0.0032, loss_rpn_box_reg=0.0180)
+[Epoch 1] done in 1988.5s, avg_train_loss=3.6387
+Loading and preparing results...
+DONE (t=0.31s)
+creating index...
+index created!
+Running per image evaluation...
+Evaluate annotation type *keypoints*
+DONE (t=3.75s).
+Accumulating evaluation results...
+DONE (t=0.07s).
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=   all | maxDets= 20 ] = 0.635
+ Average Precision  (AP) @[ IoU=0.50      | area=   all | maxDets= 20 ] = 0.861
+ Average Precision  (AP) @[ IoU=0.75      | area=   all | maxDets= 20 ] = 0.693
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=medium | maxDets= 20 ] = 0.590
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= large | maxDets= 20 ] = 0.703
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets= 20 ] = 0.707
+ Average Recall     (AR) @[ IoU=0.50      | area=   all | maxDets= 20 ] = 0.909
+ Average Recall     (AR) @[ IoU=0.75      | area=   all | maxDets= 20 ] = 0.759
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=medium | maxDets= 20 ] = 0.658
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= large | maxDets= 20 ] = 0.773
+{"epoch": 1, "train_loss": 3.6386817273457845, "epoch_time_sec": 1988.5071902275085, "AP": 0.6354245953135902, "AP50": 0.8606169755880121, "AP75": 0.6931377695719614, "AR": 0.7066319895968791, "eval_time_sec": 67.74071741104126}
+No saved best/last model checkpoint was found after training. Skipping the post-train reload step and using the in-memory final model for evaluation.
+Loading and preparing results...
+DONE (t=0.34s)
+creating index...
+index created!
+Running per image evaluation...
+Evaluate annotation type *keypoints*
+DONE (t=3.05s).
+Accumulating evaluation results...
+DONE (t=0.07s).
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=   all | maxDets= 20 ] = 0.635
+ Average Precision  (AP) @[ IoU=0.50      | area=   all | maxDets= 20 ] = 0.861
+ Average Precision  (AP) @[ IoU=0.75      | area=   all | maxDets= 20 ] = 0.693
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=medium | maxDets= 20 ] = 0.590
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= large | maxDets= 20 ] = 0.703
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets= 20 ] = 0.707
+ Average Recall     (AR) @[ IoU=0.50      | area=   all | maxDets= 20 ] = 0.909
+ Average Recall     (AR) @[ IoU=0.75      | area=   all | maxDets= 20 ] = 0.759
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=medium | maxDets= 20 ] = 0.658
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= large | maxDets= 20 ] = 0.773
+Held-out val metrics (final in-memory model):
+{
+  "AP": 0.6354245953135902,
+  "AP50": 0.8606169755880121,
+  "AP75": 0.6931377695719614,
+  "AR": 0.7066319895968791
+}
+Loading and preparing results...
+DONE (t=0.33s)
+creating index...
+index created!
+Running per image evaluation...
+Evaluate annotation type *keypoints*
+DONE (t=2.92s).
+Accumulating evaluation results...
+DONE (t=0.06s).
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=   all | maxDets= 20 ] = 0.630
+ Average Precision  (AP) @[ IoU=0.50      | area=   all | maxDets= 20 ] = 0.858
+ Average Precision  (AP) @[ IoU=0.75      | area=   all | maxDets= 20 ] = 0.692
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area=medium | maxDets= 20 ] = 0.579
+ Average Precision  (AP) @[ IoU=0.50:0.95 | area= large | maxDets= 20 ] = 0.710
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=   all | maxDets= 20 ] = 0.696
+ Average Recall     (AR) @[ IoU=0.50      | area=   all | maxDets= 20 ] = 0.900
+ Average Recall     (AR) @[ IoU=0.75      | area=   all | maxDets= 20 ] = 0.753
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area=medium | maxDets= 20 ] = 0.647
+ Average Recall     (AR) @[ IoU=0.50:0.95 | area= large | maxDets= 20 ] = 0.769
+Held-out test metrics:
+{
+  "AP": 0.6301867035171265,
+  "AP50": 0.8576850597560843,
+  "AP75": 0.6923272501981187,
+  "AR": 0.6959706959706959
+}
+Total training time for 2 epochs: 2190.80 seconds
+Total training-only epoch time: 1988.51 seconds
+Total evaluation time: 67.74 seconds
+End-to-end wall time (data prep + training + evaluation + setup): 2203.74 seconds
+Training end timestamp: 2026-05-02 02:52:37
+Training elapsed (HH:MM:SS): 00:36:31
+End-to-end elapsed (HH:MM:SS): 00:36:44
+Training complete. Artifacts: log_pose/pose_keypointrcnn_resume_qwen3_brown_rainy_rpc8_no_p_ratio0p7_gpu2_20260501_231910
