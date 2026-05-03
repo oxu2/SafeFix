@@ -43,7 +43,9 @@ from utils.active_learning import (
     AttributeFocusedStrategy,
     BadgeStrategy,
     CoreSetStrategy,
+    PPALStrategy,
     StratifiedStrategy,
+    UncertaintyHerdingStrategy,
     parse_attribute_priority_log,
     parse_attribute_value_counts,
     parse_float_with_infinity,
@@ -88,7 +90,7 @@ POSE_GENERATED_ATTRIBUTE_ROOTS = {
 }
 POSE_GENERATED_IMAGE_SUFFIXES = {".png", ".jpg", ".jpeg"}
 POSE_AL_RANDOM_ALIASES = {"none", "0", "false", "no", "random", ""}
-POSE_AL_STRATEGIES = ["random", "stratified", "coreset", "badge", "attribute", "entropy"]
+POSE_AL_STRATEGIES = ["random", "stratified", "coreset", "badge", "uherding", "ppal", "attribute", "entropy"]
 POSE_GENERATED_ATTRIBUTE_EXTRA_COUNTS = {
     "brown_rainy": {
         "clothes_color": {"brown": 1.0},
@@ -166,7 +168,7 @@ def parse_args():
         choices=[*POSE_AL_STRATEGIES, "none", "0", "false", "no"],
         help=(
             "Subset selection strategy for the original train split when --sub-ratio < 1. "
-            "Supported: random, stratified, coreset, badge, attribute, entropy."
+            "Supported: random, stratified, coreset, badge, uherding, ppal, attribute, entropy."
         ),
     )
     train_parser.add_argument(
@@ -179,7 +181,7 @@ def parse_args():
         "--al-initial-labeled",
         type=int,
         default=400,
-        help="Proxy labeled set size drawn from the validation split for coreset/badge.",
+        help="Proxy labeled set size drawn from the validation split for coreset/badge/uherding/PPAL.",
     )
     train_parser.add_argument(
         "--al-feature-batch-size",
@@ -191,7 +193,44 @@ def parse_args():
         "--al-proxy-bins",
         type=int,
         default=4,
-        help="Number of pose-complexity bins used as pseudo-labels for stratified/badge selection.",
+        help="Number of pose-complexity bins used as pseudo-labels for stratified/badge/PPAL selection.",
+    )
+    train_parser.add_argument(
+        "--al-ppal-temperature",
+        type=float,
+        default=1.0,
+        help="Temperature for PPAL proxy centroid probabilities.",
+    )
+    train_parser.add_argument(
+        "--al-ppal-uncertainty",
+        type=str,
+        choices=["binary_entropy", "entropy", "margin", "confidence"],
+        default="binary_entropy",
+        help="Proxy uncertainty measure used by PPAL.",
+    )
+    train_parser.add_argument(
+        "--al-ppal-pool-expand-ratio",
+        type=float,
+        default=4.0,
+        help="PPAL uncertainty pool size multiplier before diversity selection.",
+    )
+    train_parser.add_argument(
+        "--al-ppal-class-weight-ub",
+        type=float,
+        default=0.2,
+        help="Upper-bound scale for PPAL proxy class-quality weighting.",
+    )
+    train_parser.add_argument(
+        "--al-ppal-class-weight-alpha",
+        type=float,
+        default=0.3,
+        help="Shape parameter for PPAL proxy class-quality weighting.",
+    )
+    train_parser.add_argument(
+        "--al-ppal-diversity-power",
+        type=float,
+        default=1.0,
+        help="Power applied to PPAL diversity distance weights.",
     )
     train_parser.add_argument(
         "--al-attribute-file",
@@ -890,17 +929,17 @@ def select_original_train_image_ids(
                 n_select=selected_count,
                 random_seed=seed,
             )
-        elif strategy_name == "badge":
+        elif strategy_name in {"badge", "uherding", "ppal"}:
             val_proxy_targets = compute_pose_proxy_targets(
                 proxy_val_dataset,
                 n_bins=getattr(args, "al_proxy_bins", 4),
             )
             if val_proxy_targets is None or np.unique(val_proxy_targets).size < 2:
-                print("Pose BADGE could not build proxy targets from validation images; falling back to random.")
+                print(f"Pose {strategy_name} could not build proxy targets from validation images; falling back to random.")
                 rng = random.Random(seed)
                 selected_local_indices = sorted(rng.sample(range(len(candidate_ids)), selected_count))
                 effective_strategy = "random"
-            else:
+            elif strategy_name == "badge":
                 selected_local_indices = BadgeStrategy().select(
                     labeled_embeddings=val_embeddings,
                     unlabeled_embeddings=train_embeddings,
@@ -908,6 +947,37 @@ def select_original_train_image_ids(
                     n_select=selected_count,
                     random_seed=seed,
                 )
+            elif strategy_name == "uherding":
+                strategy = UncertaintyHerdingStrategy()
+                selected_local_indices = strategy.select(
+                    labeled_embeddings=val_embeddings,
+                    unlabeled_embeddings=train_embeddings,
+                    labeled_targets=val_proxy_targets,
+                    n_select=selected_count,
+                    random_seed=seed,
+                )
+                if strategy.last_proxy_stats:
+                    print("Pose UHerding proxy stats:")
+                    print(json.dumps(strategy.last_proxy_stats, indent=2))
+            else:
+                strategy = PPALStrategy(
+                    temperature=getattr(args, "al_ppal_temperature", 1.0),
+                    uncertainty=getattr(args, "al_ppal_uncertainty", "binary_entropy"),
+                    pool_expand_ratio=getattr(args, "al_ppal_pool_expand_ratio", 4.0),
+                    class_weight_ub=getattr(args, "al_ppal_class_weight_ub", 0.2),
+                    class_weight_alpha=getattr(args, "al_ppal_class_weight_alpha", 0.3),
+                    diversity_power=getattr(args, "al_ppal_diversity_power", 1.0),
+                )
+                selected_local_indices = strategy.select(
+                    labeled_embeddings=val_embeddings,
+                    unlabeled_embeddings=train_embeddings,
+                    labeled_targets=val_proxy_targets,
+                    n_select=selected_count,
+                    random_seed=seed,
+                )
+                if strategy.last_proxy_stats:
+                    print("Pose PPAL proxy stats:")
+                    print(json.dumps(strategy.last_proxy_stats, indent=2))
         else:
             raise ValueError(f"Unsupported pose AL strategy '{strategy_name}'")
 

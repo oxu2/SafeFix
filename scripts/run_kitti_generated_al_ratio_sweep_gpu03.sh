@@ -105,11 +105,18 @@ run_one() {
     )
   fi
 
-  if [[ "${strategy}" == "coreset" || "${strategy}" == "badge" ]]; then
+  if [[ "${strategy}" == "coreset" || "${strategy}" == "badge" || "${strategy}" == "uherding" || "${strategy}" == "ppal" ]]; then
     args+=(
       --al-fast-selection true
       --al-initial-labeled 400
       --al-embedding-thumbnail-size 8
+    )
+  fi
+
+  if [[ "${strategy}" == "uherding" ]]; then
+    args+=(
+      --al-uherding-uncertainty margin
+      --al-uherding-temperature 1.0
     )
   fi
 
@@ -139,6 +146,8 @@ run_gpu3_queue() {
   for ratio in "${RATIOS[@]}"; do
     run_one 3 "${ratio}" coreset coreset_fast
     run_one 3 "${ratio}" badge badge_fast
+    run_one 3 "${ratio}" uherding uherding_fast
+    run_one 3 "${ratio}" ppal ppal_fast
   done
 }
 
@@ -154,7 +163,7 @@ fi
 if [[ "${QUEUE_MODE}" == "gpu3" ]]; then
   if [[ "${DRY_RUN}" == "1" ]]; then
     echo "Dry run for stamp ${STAMP}"
-    echo "GPU3 queue: coreset_fast -> badge_fast for ratios ${RATIOS[*]}"
+    echo "GPU3 queue: coreset_fast -> badge_fast -> uherding_fast -> ppal_fast for ratios ${RATIOS[*]}"
   fi
   run_gpu3_queue
   exit 0
@@ -164,7 +173,7 @@ if [[ "${DRY_RUN}" == "1" ]]; then
   echo "Dry run for stamp ${STAMP}"
   echo "GPU0 queue: random -> attribute -> stratified for ratios ${RATIOS[*]}"
   run_gpu0_queue
-  echo "GPU3 queue: coreset_fast -> badge_fast for ratios ${RATIOS[*]}"
+  echo "GPU3 queue: coreset_fast -> badge_fast -> uherding_fast -> ppal_fast for ratios ${RATIOS[*]}"
   run_gpu3_queue
   exit 0
 fi

@@ -5,6 +5,525 @@
 
 ---
 
+## Session 168: PPAL Fast Strategy Implementation
+
+**Date**: 2026-05-02
+**Task**: implement-ppal-active-learning-fast-path-imagenet-coco-kitti
+
+### Summary
+
+Implemented a local fast PPAL (`ppal`) active-learning strategy based on the
+reference `ChenhongyiYang/PPAL` two-stage acquisition flow:
+difficulty-calibrated uncertainty pool followed by category-aware diversity
+selection. The implementation does not import MMDetection PPAL; it adapts the
+method to safefix's existing proxy-embedding path used by fast Coreset/BADGE.
+
+### What Changed
+
+- Added `PPALStrategy` in `utils/active_learning.py`.
+  - Uses validation proxy centroids for class probabilities.
+  - Computes PPAL-style binary-entropy uncertainty by default.
+  - Computes proxy class-quality weights using PPAL defaults:
+    `class_weight_ub=0.2`, `class_weight_alpha=0.3`.
+  - Builds an uncertainty shortlist with `pool_expand_ratio=4.0`.
+  - Uses exact category-aware diversity for small jobs and
+    `fast_ppal_weighted_uncertainty_diversity` for large jobs.
+- Wired ImageNet/CelebA-style `alpred.py` active learning:
+  - CLI strategy `--al_strategy ppal`
+  - PPAL knobs:
+    `--al_ppal_temperature`, `--al_ppal_uncertainty`,
+    `--al_ppal_pool_expand_ratio`, `--al_ppal_class_weight_ub`,
+    `--al_ppal_class_weight_alpha`, `--al_ppal_diversity_power`
+- Wired COCO pose:
+  - `train_pose_estimation.py`
+  - CLI strategy `--al-strategy ppal`
+  - Uses the same pose proxy embeddings and pose-complexity pseudo-labels as
+    BADGE/UHerding.
+- Wired KITTI generated-image YOLO selection:
+  - `object_detection/train_yolov8_kitti_generated.py`
+  - CLI strategy `--selection-strategy ppal`
+  - Uses lightweight thumbnail embeddings and validation label-signature
+    pseudo-labels.
+- Updated KITTI generated AL ratio launcher:
+  - `scripts/run_kitti_generated_al_ratio_sweep_gpu03.sh`
+  - GPU3 queue now includes `ppal_fast` after `uherding_fast`.
+- Added launcher:
+  - `scripts/run_ppal_baselines_gpu12.sh`
+  - GPU1 runs ImageNet ratios then KITTI ratios.
+  - GPU2 runs COCO pose ratios.
+  - Supports `DRY_RUN=1 RATIOS=...` and defaults to ratios
+    `0.1 0.3 0.5 0.7 0.9`.
+
+### Validation
+
+- Syntax checks passed:
+  - `/people/cs/o/oxx220000/.conda/envs/ad/bin/python -m py_compile alpred.py utils/active_learning.py train_pose_estimation.py`
+  - `/people/cs/o/oxx220000/.conda/envs/fp/bin/python -m py_compile object_detection/train_yolov8_kitti_generated.py utils/active_learning.py`
+  - `bash -n scripts/run_kitti_generated_al_ratio_sweep_gpu03.sh`
+  - `bash -n scripts/run_ppal_baselines_gpu12.sh`
+- Synthetic PPAL fast-path smoke passed:
+  - selected `25/25` unique indices from `200` candidates.
+  - selection mode:
+    `fast_ppal_weighted_uncertainty_diversity`
+  - uncertainty pool size:
+    `100`
+- Dry-run launcher check passed:
+  - `DRY_RUN=1 RATIOS=0.1 scripts/run_ppal_baselines_gpu12.sh`
+  - emitted valid ImageNet, KITTI, and COCO commands with `ppal`.
+
+### Caveats / Next Steps
+
+- No full GPU training or one-epoch smoke was launched in this session.
+- `report.md` was not updated because there are no completed PPAL experiment
+  results yet.
+- To launch the default PPAL ratio sweep:
+  `scripts/run_ppal_baselines_gpu12.sh`
+
+---
+
+## Session 169: PPAL Ratio 0.1 One-Epoch Smoke Tests
+
+**Date**: 2026-05-02
+**Task**: run-ppal-ratio0p1-one-epoch-smokes-gpu23
+
+### Summary
+
+Ran PPAL ratio `0.1` smoke jobs using the requested GPUs:
+
+- GPU `2`: ImageNet `1` epoch, then COCO pose.
+- GPU `3`: KITTI generated-image YOLO `1` epoch.
+
+COCO needed a corrected run with `--epochs 2`, because the resume checkpoint
+stores `epoch 0` and `train_pose_estimation.py --epochs 1` starts at epoch
+index `1`, which means no additional training epoch. The corrected COCO run
+trained exactly one additional epoch (`Epoch 1`).
+
+### Selection Times
+
+- ImageNet PPAL ratio `0.1`, GPU `2`:
+  - selection time: `17.38s`
+  - log:
+    `logs_imagenet/ppal_smoke_resnet_imagenet_1000_ratio0p1_e1_gpu2_20260502_170640_ppal_e1.log`
+  - completion marker:
+    `Model Test ACC: 0.7315, test loss: 0.8604`
+- KITTI PPAL ratio `0.1`, GPU `3`:
+  - selection time: `57.42s`
+  - log:
+    `logs/kitti_ratio0p1_ppal_fast_red_cloudy_gen1000_e1_gpu3_20260502_170640_ppal_e1.log`
+  - held-out test metrics:
+    mAP50 `0.7880`, mAP50-95 `0.4840`
+- COCO pose PPAL ratio `0.1`, GPU `2`, corrected one-epoch run:
+  - selection time: `64.86s`
+  - log:
+    `log_pose/pose_qwen3_brown_rainy_ppal_ratio0p1_e1actual_gpu2_20260502_171030_ppal_e1actual.log`
+  - epoch marker:
+    `[Epoch 1] done in 361.4s, avg_train_loss=4.4055`
+  - held-out val metrics:
+    AP `0.6094`, AP50 `0.8500`
+  - held-out test metrics:
+    AP `0.5911`, AP50 `0.8345`
+
+### Caveats
+
+- The first COCO command with `--epochs 1` measured selection time
+  (`67.97s`) but skipped training due to resume epoch indexing; use the
+  corrected `e1actual` log above for the one-epoch smoke result.
+- No `Traceback`, `CUDA out of memory`, `Killed`, runtime error, or exception
+  markers were found in the three final smoke logs.
+- `report.md` was not updated because these are implementation smoke checks,
+  not stable sweep results.
+
+---
+
+## Session 170: PPAL Baseline Sweep Launch on GPUs 1/2/3
+
+**Date**: 2026-05-02
+**Task**: launch-ppal-baselines-gpu1-celeba-gpu2-coco-gpu3-imagenet-kitti
+
+### Summary
+
+The user asked to run PPAL with this GPU assignment:
+
+- GPU `1`: CelebA
+- GPU `2`: COCO pose
+- GPU `3`: ImageNet, then KITTI
+
+The user message ended with `ratio for`, so the launch used the existing sweep
+default ratios: `0.1 0.3 0.5 0.7 0.9`.
+
+### What Changed
+
+- Added launcher:
+  `scripts/run_ppal_baselines_gpu123.sh`
+- Queue layout:
+  - GPU `1`: CelebA ratios.
+  - GPU `2`: COCO pose ratios.
+  - GPU `3`: ImageNet ratios, then KITTI ratios.
+- Launcher defaults:
+  - PPAL settings:
+    `pool_expand_ratio=4.0`, `class_weight_ub=0.2`,
+    `class_weight_alpha=0.3`, `diversity_power=1.0`
+  - ImageNet/CelebA epochs: `15`
+  - COCO epochs: `2`
+    - This is intentional for one additional epoch from the current resume
+      checkpoint convention, where `epoch 0` means `--epochs 1` skips
+      training.
+  - KITTI epochs: `10`
+
+### Validation Before Launch
+
+- Passed:
+  - `bash -n scripts/run_ppal_baselines_gpu123.sh`
+  - `DRY_RUN=1 RATIOS=0.1 scripts/run_ppal_baselines_gpu123.sh`
+- The first attempt launched inside the normal sandbox and the detached
+  workers were killed by sandbox lifecycle handling. It created empty
+  controller outputs under stamp `20260502_185417`; ignore that stamp.
+- Relaunched outside the sandbox using the approved `bash` prefix.
+
+### Active Launch
+
+Active stamp: `20260502_185507`
+
+- GPU `1` CelebA worker:
+  - PID `1587597`
+  - controller output:
+    `logs_celeba/ppal_gpu1_celeba_20260502_185507.out`
+  - first row log:
+    `logs_celeba/controlnet_ppal_redhair_brownskin_sademotion_resnet_celeba_1000_ratio0p1_gpu1_20260502_185507.log`
+- GPU `2` COCO worker:
+  - PID `1587598`
+  - controller output:
+    `log_pose/ppal_gpu2_coco_20260502_185507.out`
+  - first row log:
+    `log_pose/pose_qwen3_brown_rainy_ppal_ratio0p1_gpu2_20260502_185507.log`
+- GPU `3` ImageNet/KITTI worker:
+  - PID `1587599`
+  - controller output:
+    `logs/ppal_gpu3_imagenet_then_kitti_20260502_185507.out`
+  - first row log:
+    `logs_imagenet/ppal_resnet_imagenet_1000_ratio0p1_gpu3_20260502_185507.log`
+- PID file:
+  `logs/ppal_baselines_gpu123_20260502_185507.pids`
+
+### Startup Check
+
+- Parent worker PIDs were alive after launch.
+- Controller outputs showed each worker started the intended first row.
+- Startup error-marker scan over controller outputs and first-row logs found no
+  `Traceback`, `CUDA out of memory`, `Killed`, runtime error, exception,
+  missing-file, or not-found markers.
+- Follow-up check in the same session:
+  - parent worker PIDs `1587597`, `1587598`, and `1587599` were still alive.
+  - COCO ratio `0.1` selection completed with `selection_time=66.60s` in
+    `log_pose/pose_qwen3_brown_rainy_ppal_ratio0p1_gpu2_20260502_185507.log`.
+  - ImageNet ratio `0.1` completed with selector time `16.58s` and
+    `Model Test ACC: 0.7285` in
+    `logs_imagenet/ppal_resnet_imagenet_1000_ratio0p1_gpu3_20260502_185507.log`.
+
+### Caveats / Next Steps
+
+- The launch has only been startup-checked. Rows are still running.
+- Ignore the empty controller outputs and PID file from stamp
+  `20260502_185417`; those sandbox-launched detached processes did not
+  persist.
+- Do not update `report.md` until rows complete and are parsed.
+
+---
+
+## Session 167: UHerding Sweep Status Check
+
+**Date**: 2026-05-02
+**Task**: check-uherding-sweep-completion-and-errors
+
+### Summary
+
+Checked the active UHerding baseline sweep after the fast-path relaunch.
+
+### Current Status
+
+- ImageNet GPU `1` queue completed all five ratios under stamp
+  `20260502_140255`.
+- KITTI GPU `1` queue completed all five ratios under stamp
+  `20260502_140255`.
+- CelebA GPU `3` queue completed all five ratios under stamp
+  `20260502_1440fast`.
+- COCO GPU `2` queue under stamp `20260502_1440fast` completed ratios
+  `0.1`, `0.3`, and `0.5`.
+- COCO ratio `0.7` is currently running on GPU `2`; ratio `0.9` has not
+  started yet.
+
+### Selection Times Observed
+
+- ImageNet:
+  - `0.1`: `69.58s`
+  - `0.3`: `274.30s`
+  - `0.5`: `542.74s`
+  - `0.7`: `30.19s`
+  - `0.9`: `24.19s`
+- KITTI:
+  - `0.1`: `75.02s`
+  - `0.3`: `76.44s`
+  - `0.5`: `72.04s`
+  - `0.7`: `73.09s`
+  - `0.9`: `83.63s`
+- CelebA:
+  - `0.1`: `98.71s`
+  - `0.3`: `65.20s`
+  - `0.5`: `60.87s`
+  - `0.7`: `70.46s`
+  - `0.9`: `53.60s`
+- COCO:
+  - `0.1`: `134.41s`
+  - `0.3`: `92.97s`
+  - `0.5`: `93.81s`
+  - `0.7`: `79.93s`
+
+### Error / Stuck Check
+
+- Error-marker scan over the current UHerding launcher outputs and row logs
+  found no `Traceback`, `CUDA out of memory`, `Killed`, runtime error,
+  exception, missing-file, or failure markers.
+- COCO ratio `0.7` is past UHerding selection and in normal training:
+  last observed progress reached `[Epoch 1] step 550/1875`.
+- GPU `2` was active at `100%` utilization with the COCO ratio `0.7`
+  process alive, so this does not look like selection-level deadlock.
+
+### Caveats
+
+- Do not update `report.md` yet because the full UHerding sweep is not
+  complete until COCO ratios `0.7` and `0.9` finish.
+
+---
+
+## Session 164: Uncertainty Herding Implementation and Smoke Tests
+
+**Date**: 2026-05-02
+**Task**: implement-uherding-and-smoke-ratio0p1-imagenet-kitti
+
+### Summary
+
+Implemented a local lightweight Uncertainty Herding (`uherding`) active
+learning strategy based on the BorealisAI UHerding objective: greedy
+feature-space coverage weighted by proxy uncertainty. The implementation reuses
+the existing safefix fast Coreset/BADGE proxy-embedding setup instead of
+importing the upstream `pycls` framework.
+
+### What Changed
+
+- Added `UncertaintyHerdingStrategy` in `utils/active_learning.py`.
+  - Uses validation proxy centroids to produce class probabilities.
+  - Supports margin, entropy, and confidence uncertainty.
+  - Uses an RBF coverage kernel with median-distance scale by default.
+  - Uses an exact uncertainty-coverage path for small jobs and a fast
+    weighted-coverage path for current sweep-scale jobs.
+- Wired `uherding` into ImageNet/CelebA-style active learning:
+  - `alpred.py`
+  - `utils/active_learning.py`
+- Wired `uherding` into KITTI generated-image YOLO selection:
+  - `object_detection/train_yolov8_kitti_generated.py`
+  - CLI: `--selection-strategy uherding`
+  - added KITTI selector timing:
+    `Total KITTI original selection time: ... seconds`
+- Updated the KITTI generated AL launcher:
+  - `scripts/run_kitti_generated_al_ratio_sweep_gpu03.sh`
+  - GPU3 queue now includes `uherding_fast` after `coreset_fast` and
+    `badge_fast`.
+
+### Validation
+
+- Compile and shell syntax checks passed:
+  - `/people/cs/o/oxx220000/.conda/envs/ad/bin/python -m py_compile alpred.py utils/active_learning.py`
+  - `/people/cs/o/oxx220000/.conda/envs/fp/bin/python -m py_compile object_detection/train_yolov8_kitti_generated.py utils/active_learning.py`
+  - `bash -n scripts/run_kitti_generated_al_ratio_sweep_gpu03.sh`
+- Synthetic selector smoke passed:
+  - selected `7/7` unique indices with `selection_mode=fast_weighted_kcenter`.
+
+### Ratio 0.1 One-Epoch Smoke Tests
+
+- ImageNet, GPU `1`, ratio `0.1`, `uherding`, `1` epoch:
+  - log:
+    `logs_imagenet/uherding_smoke_resnet_imagenet_1000_ratio0p1_gpu1_20260502_134912.log`
+  - selected `1040` original samples before adding `1000` generated images.
+  - selector time:
+    `24.47` seconds.
+  - completion marker:
+    `Model Test ACC: 0.7277, test loss: 0.8639`.
+- KITTI, GPU `2`, ratio `0.1`, `uherding`, `1` epoch:
+  - first untimed smoke also completed:
+    `logs/kitti_ratio0p1_uherding_fast_red_cloudy_gen1000_e1_gpu2_20260502_134912.log`
+  - timed rerun log:
+    `logs/kitti_ratio0p1_uherding_fast_red_cloudy_gen1000_e1_gpu2_20260502_135120.log`
+  - selected `500` original samples before adding `1000` generated images.
+  - selector time:
+    `50.66` seconds.
+  - held-out test metrics from timed rerun:
+    mAP50 `0.7840`, mAP50-95 `0.4690`.
+
+### Caveats
+
+- KITTI selector timing includes thumbnail proxy embedding extraction for all
+  train candidates plus validation proxy embeddings, not only the final greedy
+  coverage loop.
+- `report.md` was not updated because these are implementation smoke tests,
+  not stable sweep results.
+
+---
+
+## Session 165: UHerding Baseline Ratio Sweep Launch
+
+**Date**: 2026-05-02
+**Task**: launch-uherding-baselines-imagenet-kitti-coco-celeba
+
+### Summary
+
+The user asked to run the UHerding baseline for ratios
+`0.1 0.3 0.5 0.7 0.9` with GPU assignment:
+
+- GPU `1`: ImageNet then KITTI, serially
+- GPU `2`: COCO pose, serially
+- GPU `3`: CelebA, serially
+
+### What Changed
+
+- Added COCO pose support for `--al-strategy uherding`:
+  - `train_pose_estimation.py`
+  - Uses the same pose proxy embeddings as coreset/BADGE.
+  - Uses pose-complexity validation proxy labels and
+    `UncertaintyHerdingStrategy`.
+- Added launcher:
+  - `scripts/run_uherding_baselines_gpu123.sh`
+- The launcher covers `20` total rows:
+  - ImageNet `5` rows on GPU `1`
+  - KITTI `5` rows on GPU `1`, after ImageNet finishes
+  - COCO `5` rows on GPU `2`
+  - CelebA `5` rows on GPU `3`
+
+### Validation
+
+- Passed:
+  - `bash -n scripts/run_uherding_baselines_gpu123.sh`
+  - `/people/cs/o/oxx220000/.conda/envs/ad/bin/python -m py_compile alpred.py utils/active_learning.py train_pose_estimation.py`
+  - `/people/cs/o/oxx220000/.conda/envs/fp/bin/python -m py_compile object_detection/train_yolov8_kitti_generated.py utils/active_learning.py`
+- Dry-run confirmed the intended dataset/GPU/ratio expansion and `uherding`
+  arguments.
+
+### Launch Status
+
+Launched detached with stamp `20260502_140255`:
+
+- GPU `1` worker:
+  - PID `1346727`
+  - queue: ImageNet ratios, then KITTI ratios
+  - output:
+    `logs/uherding_gpu1_imagenet_then_kitti_20260502_140255.out`
+  - first row log:
+    `logs_imagenet/uherding_resnet_imagenet_1000_ratio0p1_gpu1_20260502_140255.log`
+- GPU `2` worker:
+  - PID `1346728`
+  - queue: COCO ratios
+  - output:
+    `log_pose/uherding_gpu2_coco_20260502_140255.out`
+  - first row log:
+    `log_pose/pose_qwen3_brown_rainy_uherding_ratio0p1_gpu2_20260502_140255.log`
+- GPU `3` worker:
+  - PID `1346729`
+  - queue: CelebA ratios
+  - output:
+    `logs_celeba/uherding_gpu3_celeba_20260502_140255.out`
+  - first row log:
+    `logs_celeba/controlnet_uherding_redhair_brownskin_sademotion_resnet_celeba_1000_ratio0p1_gpu3_20260502_140255.log`
+- PID file:
+  `logs/uherding_baselines_gpu123_20260502_140255.pids`
+
+### Startup Check
+
+- Parent worker PIDs were alive.
+- GPU compute processes appeared on the three assigned GPUs.
+- First-row logs were created.
+- ImageNet ratio `0.1` had entered training and reached at least
+  `Epoch [2/15]`.
+- Startup error-marker scan over the first-row logs found no
+  `Traceback`, `CUDA out of memory`, `Killed`, runtime error, exception, or
+  failure markers.
+
+### Caveats
+
+- Do not update `report.md` until rows complete and are parsed.
+- COCO and CelebA first-row logs may stay quiet during feature extraction or
+  training setup because their launch uses `--verbose False`.
+
+---
+
+## Session 166: UHerding Fast-Path Patch and Relaunch
+
+**Date**: 2026-05-02
+**Task**: check-uherding-progress-and-fix-stuck-selection
+
+### Status Before Patch
+
+- GPU `1` ImageNet/KITTI worker `1346727` was alive and progressing.
+- ImageNet completed:
+  - ratio `0.1`: Test ACC `0.7331`, selection time `69.58s`
+  - ratio `0.3`: Test ACC `0.7469`, selection time `274.30s`
+- ImageNet ratio `0.5` was training and had reached at least `Epoch [12/15]`.
+- COCO ratio `0.1` and CelebA ratio `0.1` under stamp `20260502_140255`
+  appeared stuck in UHerding selection:
+  - COCO log stopped after annotation loading:
+    `log_pose/pose_qwen3_brown_rainy_uherding_ratio0p1_gpu2_20260502_140255.log`
+  - CelebA log stopped after generated-image addition:
+    `logs_celeba/controlnet_uherding_redhair_brownskin_sademotion_resnet_celeba_1000_ratio0p1_gpu3_20260502_140255.log`
+  - child processes were alive but had accumulated very large CPU time.
+
+### What Changed
+
+- Patched `utils.active_learning.UncertaintyHerdingStrategy` large-job fast
+  path.
+- Old behavior:
+  - iterative weighted k-center, recomputing candidate coverage once per
+    selected sample.
+  - too expensive for CelebA/COCO-scale `n_select`.
+- New behavior:
+  - one-pass weighted uncertainty coverage:
+    `scores = uncertainty * (1 - initial_labeled_coverage)`
+  - sample without replacement using the score distribution.
+  - selection mode recorded as:
+    `fast_weighted_uncertainty_coverage`.
+- Validation:
+  - `/people/cs/o/oxx220000/.conda/envs/ad/bin/python -m py_compile utils/active_learning.py train_pose_estimation.py alpred.py`
+  - `/people/cs/o/oxx220000/.conda/envs/fp/bin/python -m py_compile utils/active_learning.py object_detection/train_yolov8_kitti_generated.py`
+  - synthetic selector test selected `200/200` unique indices and reported
+    `fast_weighted_uncertainty_coverage`.
+
+### Relaunch
+
+- Stopped the stuck original COCO/CelebA jobs:
+  - COCO parent `1346728`, child `1346749`
+  - CelebA parent `1346729`, child `1346753`
+- Left GPU `1` worker `1346727` running because it was actively training.
+- Relaunched patched queues:
+  - COCO GPU `2`, stamp `20260502_1440fast`
+    - PID `1368085`
+    - worker output:
+      `log_pose/uherding_gpu2_coco_20260502_1440fast.out`
+    - first row log:
+      `log_pose/pose_qwen3_brown_rainy_uherding_ratio0p1_gpu2_20260502_1440fast.log`
+  - CelebA GPU `3`, stamp `20260502_1440fast`
+    - PID `1368086`
+    - worker output:
+      `logs_celeba/uherding_gpu3_celeba_20260502_1440fast.out`
+    - first row log:
+      `logs_celeba/controlnet_uherding_redhair_brownskin_sademotion_resnet_celeba_1000_ratio0p1_gpu3_20260502_1440fast.log`
+
+### Current Caveat
+
+- Relaunched COCO/CelebA rows had created first-row logs and were alive, but
+  had not yet reached their selection-time lines at the time of this note.
+- Future GPU `1` subprocesses should import the patched selector; the already
+  running ImageNet ratio `0.5` process used the old selector but had already
+  passed selection and was training.
+
+---
+
 ## Session 163: Overnight Experiment Result Consolidation
 
 **Date**: 2026-05-02

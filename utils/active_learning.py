@@ -646,6 +646,537 @@ class BadgeStrategy:
         )
 
 
+class UncertaintyHerdingStrategy:
+    """
+    Lightweight uncertainty herding over proxy embeddings.
+
+    The upstream UHerding objective greedily maximizes feature-space coverage
+    weighted by predictive uncertainty. This version keeps the same core idea
+    while fitting the existing safefix fast AL path: a validation proxy set
+    builds centroid probabilities, and selection favors uncertain candidates
+    that add new RBF coverage in the embedding space.
+    """
+
+    def __init__(
+        self,
+        temperature=1.0,
+        uncertainty="margin",
+        kernel_scale=None,
+        exact_max_select=512,
+        exact_max_samples=10000,
+    ):
+        self.temperature = max(float(temperature), 1e-6)
+        self.uncertainty = str(uncertainty or "margin").lower().strip()
+        self.kernel_scale = kernel_scale
+        self.exact_max_select = max(int(exact_max_select), 1)
+        self.exact_max_samples = max(int(exact_max_samples), 1)
+        self.last_proxy_stats = {}
+
+    def _normalize_rows(self, array):
+        array = np.asarray(array, dtype=np.float32)
+        norms = np.linalg.norm(array, axis=1, keepdims=True)
+        norms = np.maximum(norms, 1e-12)
+        return array / norms
+
+    def _softmax(self, logits):
+        stabilized = logits - np.max(logits, axis=1, keepdims=True)
+        exp_logits = np.exp(stabilized)
+        normalizer = np.sum(exp_logits, axis=1, keepdims=True)
+        return exp_logits / np.maximum(normalizer, 1e-12)
+
+    def _build_centroids(self, labeled_embeddings, labeled_targets):
+        unique_targets = np.unique(labeled_targets)
+        if unique_targets.size < 2:
+            raise ValueError("UHerding requires at least two classes in the labeled proxy set")
+
+        centroids = []
+        centroid_labels = []
+        for target in unique_targets:
+            mask = labeled_targets == target
+            if not np.any(mask):
+                continue
+            centroids.append(np.mean(labeled_embeddings[mask], axis=0))
+            centroid_labels.append(int(target))
+
+        if len(centroids) < 2:
+            raise ValueError("UHerding could not form at least two class centroids")
+
+        return self._normalize_rows(np.stack(centroids, axis=0)), np.array(centroid_labels, dtype=int)
+
+    def _uncertainty_scores(self, probs):
+        if self.uncertainty == "entropy":
+            scores = -np.sum(probs * np.log(np.maximum(probs, 1e-12)), axis=1)
+            normalizer = np.log(max(probs.shape[1], 2))
+            return scores / max(normalizer, 1e-12)
+
+        if self.uncertainty in {"confidence", "least_confidence", "conf"}:
+            return 1.0 - np.max(probs, axis=1)
+
+        if self.uncertainty == "margin":
+            sorted_probs = np.sort(probs, axis=1)
+            return 1.0 - (sorted_probs[:, -1] - sorted_probs[:, -2])
+
+        raise ValueError(f"Unsupported UHerding uncertainty measure: {self.uncertainty}")
+
+    def _proxy_uncertainty(self, labeled_embeddings, unlabeled_embeddings, labeled_targets):
+        labeled_embeddings = self._normalize_rows(labeled_embeddings)
+        unlabeled_embeddings = self._normalize_rows(unlabeled_embeddings)
+        labeled_targets = np.asarray(labeled_targets, dtype=int)
+
+        centroids, centroid_labels = self._build_centroids(labeled_embeddings, labeled_targets)
+        distances = euclidean_distances(unlabeled_embeddings, centroids, squared=True)
+        probs = self._softmax(-distances / self.temperature)
+        predicted_labels = centroid_labels[np.argmax(probs, axis=1)]
+        uncertainties = self._uncertainty_scores(probs)
+        uncertainties = np.asarray(uncertainties, dtype=np.float64)
+        uncertainties = np.maximum(uncertainties, 0.0)
+
+        self.last_proxy_stats = {
+            "n_proxy_classes": int(len(centroid_labels)),
+            "uncertainty": self.uncertainty,
+            "uncertainty_min": float(np.min(uncertainties)),
+            "uncertainty_mean": float(np.mean(uncertainties)),
+            "uncertainty_max": float(np.max(uncertainties)),
+            "predicted_class_hist": {
+                int(label): int(count)
+                for label, count in zip(*np.unique(predicted_labels, return_counts=True))
+            },
+        }
+        return uncertainties, unlabeled_embeddings, labeled_embeddings
+
+    def _resolve_kernel_scale(self, unlabeled_embeddings, random_seed):
+        if self.kernel_scale is not None and float(self.kernel_scale) > 0:
+            return float(self.kernel_scale)
+
+        n_samples = unlabeled_embeddings.shape[0]
+        sample_size = min(n_samples, 512)
+        rng = np.random.default_rng(random_seed)
+        sample_indices = rng.choice(n_samples, size=sample_size, replace=False)
+        sample = unlabeled_embeddings[sample_indices]
+        distances = euclidean_distances(sample, sample)
+        distances = distances[distances > 1e-12]
+        if distances.size == 0:
+            return 1.0
+        return max(float(np.median(distances)), 1e-6)
+
+    def _initial_similarity(self, labeled_embeddings, unlabeled_embeddings, kernel_scale):
+        if labeled_embeddings.size == 0:
+            return np.zeros(unlabeled_embeddings.shape[0], dtype=np.float64)
+
+        distances = euclidean_distances(unlabeled_embeddings, labeled_embeddings)
+        min_distances = np.min(distances, axis=1)
+        return np.exp(-np.square(min_distances / kernel_scale))
+
+    def _fast_select(self, unlabeled_embeddings, labeled_embeddings, uncertainties, n_select, random_seed):
+        n_samples = unlabeled_embeddings.shape[0]
+        rng = np.random.default_rng(random_seed)
+
+        kernel_scale = self._resolve_kernel_scale(unlabeled_embeddings, random_seed)
+        coverage = self._initial_similarity(labeled_embeddings, unlabeled_embeddings, kernel_scale)
+        scores = np.maximum(uncertainties * (1.0 - coverage), 0.0)
+        total_score = float(np.sum(scores))
+        if not np.isfinite(total_score) or total_score <= 1e-12:
+            selected = rng.choice(n_samples, size=n_select, replace=False).tolist()
+        else:
+            probabilities = scores / total_score
+            selected = rng.choice(n_samples, size=n_select, replace=False, p=probabilities).tolist()
+
+        self.last_proxy_stats["selection_mode"] = "fast_weighted_uncertainty_coverage"
+        self.last_proxy_stats["kernel_scale"] = float(kernel_scale)
+        self.last_proxy_stats["weighted_score_min"] = float(np.min(scores))
+        self.last_proxy_stats["weighted_score_mean"] = float(np.mean(scores))
+        self.last_proxy_stats["weighted_score_max"] = float(np.max(scores))
+        return selected
+
+    def _exact_select(self, unlabeled_embeddings, labeled_embeddings, uncertainties, n_select, random_seed):
+        n_samples = unlabeled_embeddings.shape[0]
+        kernel_scale = self._resolve_kernel_scale(unlabeled_embeddings, random_seed)
+        all_embeddings = np.concatenate([labeled_embeddings, unlabeled_embeddings], axis=0)
+        distances = euclidean_distances(all_embeddings, all_embeddings)
+        kernel_all = np.exp(-np.square(distances / kernel_scale))
+
+        n_labeled = labeled_embeddings.shape[0]
+        if n_labeled > 0:
+            coverage = np.max(kernel_all[:n_labeled], axis=0)
+        else:
+            coverage = np.zeros(kernel_all.shape[0], dtype=np.float64)
+
+        all_uncertainties = np.concatenate(
+            [np.zeros(n_labeled, dtype=np.float64), uncertainties], axis=0
+        )
+        selected_inner = []
+        selected_mask = np.zeros(kernel_all.shape[0], dtype=bool)
+        selected_mask[:n_labeled] = True
+
+        for _ in range(n_select):
+            gains = np.maximum(kernel_all - coverage[None, :], 0.0)
+            scores = gains.dot(all_uncertainties) / max(float(np.sum(all_uncertainties)), 1e-12)
+            scores[selected_mask] = -np.inf
+            next_idx = int(np.argmax(scores))
+            selected_inner.append(next_idx)
+            selected_mask[next_idx] = True
+            coverage = np.maximum(coverage, kernel_all[next_idx])
+
+        self.last_proxy_stats["selection_mode"] = "exact_uncertainty_coverage"
+        self.last_proxy_stats["kernel_scale"] = float(kernel_scale)
+        return [idx - n_labeled for idx in selected_inner]
+
+    def select(self, labeled_embeddings, unlabeled_embeddings, labeled_targets, n_select, random_seed=42):
+        n_samples = len(unlabeled_embeddings)
+        if n_select <= 0:
+            self.last_proxy_stats = {"selection_mode": "empty_selection"}
+            return []
+        if n_select >= n_samples:
+            self.last_proxy_stats = {"selection_mode": "all_samples"}
+            return list(range(n_samples))
+
+        uncertainties, unlabeled_embeddings, labeled_embeddings = self._proxy_uncertainty(
+            labeled_embeddings=labeled_embeddings,
+            unlabeled_embeddings=unlabeled_embeddings,
+            labeled_targets=labeled_targets,
+        )
+
+        if (
+            n_select <= self.exact_max_select
+            and n_samples <= self.exact_max_samples
+        ):
+            return self._exact_select(
+                unlabeled_embeddings,
+                labeled_embeddings,
+                uncertainties,
+                n_select,
+                random_seed,
+            )
+
+        return self._fast_select(
+            unlabeled_embeddings,
+            labeled_embeddings,
+            uncertainties,
+            n_select,
+            random_seed,
+        )
+
+
+class PPALStrategy:
+    """
+    Fast proxy implementation of PPAL-style active learning.
+
+    PPAL first builds a difficulty-calibrated uncertainty pool and then selects
+    diverse images from that pool. This implementation keeps that two-stage
+    structure with the lightweight embeddings already used by the local
+    Coreset/BADGE paths:
+      1. validation proxy centroids estimate class probabilities;
+      2. per-class proxy quality calibrates uncertainty weights;
+      3. a top uncertainty pool is reduced by category-aware diversity.
+    """
+
+    def __init__(
+        self,
+        temperature=1.0,
+        uncertainty="binary_entropy",
+        pool_expand_ratio=4.0,
+        class_weight_ub=0.2,
+        class_weight_alpha=0.3,
+        diversity_power=1.0,
+        exact_max_select=512,
+        exact_max_pool=4096,
+    ):
+        self.temperature = max(float(temperature), 1e-6)
+        self.uncertainty = str(uncertainty or "binary_entropy").lower().strip()
+        self.pool_expand_ratio = max(float(pool_expand_ratio), 1.0)
+        self.class_weight_ub = max(float(class_weight_ub), 0.0)
+        self.class_weight_alpha = max(float(class_weight_alpha), 1e-6)
+        self.diversity_power = max(float(diversity_power), 0.0)
+        self.exact_max_select = max(int(exact_max_select), 1)
+        self.exact_max_pool = max(int(exact_max_pool), 1)
+        self.last_proxy_stats = {}
+
+    def _normalize_rows(self, array):
+        array = np.asarray(array, dtype=np.float32)
+        norms = np.linalg.norm(array, axis=1, keepdims=True)
+        norms = np.maximum(norms, 1e-12)
+        return array / norms
+
+    def _softmax(self, logits):
+        stabilized = logits - np.max(logits, axis=1, keepdims=True)
+        exp_logits = np.exp(stabilized)
+        normalizer = np.sum(exp_logits, axis=1, keepdims=True)
+        return exp_logits / np.maximum(normalizer, 1e-12)
+
+    def _weighted_sample_without_replacement(self, weights, n_select, random_seed=42):
+        n_samples = len(weights)
+        if n_select >= n_samples:
+            return list(range(n_samples))
+
+        rng = np.random.default_rng(random_seed)
+        weights = np.asarray(weights, dtype=np.float64)
+        weights = np.maximum(weights, 0.0)
+        total_weight = float(np.sum(weights))
+        if not np.isfinite(total_weight) or total_weight <= 1e-12:
+            return rng.choice(n_samples, size=n_select, replace=False).tolist()
+
+        probabilities = weights / total_weight
+        return rng.choice(n_samples, size=n_select, replace=False, p=probabilities).tolist()
+
+    def _build_centroids(self, labeled_embeddings, labeled_targets):
+        unique_targets = np.unique(labeled_targets)
+        if unique_targets.size < 2:
+            raise ValueError("PPAL requires at least two classes in the labeled proxy set")
+
+        centroids = []
+        centroid_labels = []
+        for target in unique_targets:
+            mask = labeled_targets == target
+            if not np.any(mask):
+                continue
+            centroids.append(np.mean(labeled_embeddings[mask], axis=0))
+            centroid_labels.append(int(target))
+
+        if len(centroids) < 2:
+            raise ValueError("PPAL could not form at least two class centroids")
+
+        centroids = self._normalize_rows(np.stack(centroids, axis=0))
+        return centroids, np.array(centroid_labels, dtype=int)
+
+    def _centroid_probs(self, embeddings, centroids):
+        distances = euclidean_distances(embeddings, centroids, squared=True)
+        return self._softmax(-distances / self.temperature)
+
+    def _uncertainty_scores(self, probs):
+        probs = np.asarray(probs, dtype=np.float64)
+        if self.uncertainty in {"binary_entropy", "ppal", "dcus"}:
+            max_probs = np.max(probs, axis=1)
+            scores = -(
+                max_probs * np.log(np.maximum(max_probs, 1e-12))
+                + (1.0 - max_probs) * np.log(np.maximum(1.0 - max_probs, 1e-12))
+            )
+            return scores / np.log(2.0)
+
+        if self.uncertainty == "entropy":
+            scores = -np.sum(probs * np.log(np.maximum(probs, 1e-12)), axis=1)
+            normalizer = np.log(max(probs.shape[1], 2))
+            return scores / max(normalizer, 1e-12)
+
+        if self.uncertainty in {"confidence", "least_confidence", "conf"}:
+            return 1.0 - np.max(probs, axis=1)
+
+        if self.uncertainty == "margin":
+            sorted_probs = np.sort(probs, axis=1)
+            return 1.0 - (sorted_probs[:, -1] - sorted_probs[:, -2])
+
+        raise ValueError(f"Unsupported PPAL uncertainty measure: {self.uncertainty}")
+
+    def _class_quality_weights(self, labeled_probs, labeled_targets, centroid_labels):
+        label_to_centroid = {int(label): idx for idx, label in enumerate(centroid_labels)}
+        qualities = {}
+        weights = {}
+        b = np.exp(1.0 / self.class_weight_alpha) - 1.0
+
+        for label in centroid_labels:
+            label = int(label)
+            class_mask = labeled_targets == label
+            centroid_idx = label_to_centroid[label]
+            if np.any(class_mask):
+                quality = float(np.mean(labeled_probs[class_mask, centroid_idx]))
+            else:
+                quality = 0.0
+            quality = float(np.clip(quality, 0.0, 1.0))
+            reverse_quality = 1.0 - quality
+            weight = 1.0 + (
+                self.class_weight_alpha
+                * np.log(b * reverse_quality + 1.0)
+                * self.class_weight_ub
+            )
+            qualities[label] = quality
+            weights[label] = float(max(weight, 1.0))
+
+        return qualities, weights
+
+    def _proxy_scores(self, labeled_embeddings, unlabeled_embeddings, labeled_targets):
+        labeled_embeddings = self._normalize_rows(labeled_embeddings)
+        unlabeled_embeddings = self._normalize_rows(unlabeled_embeddings)
+        labeled_targets = np.asarray(labeled_targets, dtype=int)
+
+        centroids, centroid_labels = self._build_centroids(labeled_embeddings, labeled_targets)
+        labeled_probs = self._centroid_probs(labeled_embeddings, centroids)
+        unlabeled_probs = self._centroid_probs(unlabeled_embeddings, centroids)
+        predicted_class_indices = np.argmax(unlabeled_probs, axis=1)
+        predicted_labels = centroid_labels[predicted_class_indices]
+        uncertainties = np.maximum(self._uncertainty_scores(unlabeled_probs), 0.0)
+        class_qualities, class_weights = self._class_quality_weights(
+            labeled_probs,
+            labeled_targets,
+            centroid_labels,
+        )
+        weights = np.array([class_weights.get(int(label), 1.0) for label in predicted_labels])
+        scores = uncertainties * weights
+
+        self.last_proxy_stats = {
+            "n_proxy_classes": int(len(centroid_labels)),
+            "uncertainty": self.uncertainty,
+            "pool_expand_ratio": float(self.pool_expand_ratio),
+            "class_weight_ub": float(self.class_weight_ub),
+            "class_weight_alpha": float(self.class_weight_alpha),
+            "uncertainty_min": float(np.min(uncertainties)),
+            "uncertainty_mean": float(np.mean(uncertainties)),
+            "uncertainty_max": float(np.max(uncertainties)),
+            "score_min": float(np.min(scores)),
+            "score_mean": float(np.mean(scores)),
+            "score_max": float(np.max(scores)),
+            "predicted_class_hist": {
+                int(label): int(count)
+                for label, count in zip(*np.unique(predicted_labels, return_counts=True))
+            },
+            "class_quality": {int(k): float(v) for k, v in class_qualities.items()},
+            "class_weight": {int(k): float(v) for k, v in class_weights.items()},
+        }
+        return scores, predicted_labels, unlabeled_embeddings, labeled_embeddings
+
+    def _build_pool(self, scores, n_select):
+        n_samples = len(scores)
+        pool_size = int(math.ceil(n_select * self.pool_expand_ratio))
+        pool_size = max(n_select, min(n_samples, pool_size))
+        if pool_size >= n_samples:
+            pool_indices = np.arange(n_samples)
+        else:
+            pool_indices = np.argpartition(-scores, pool_size - 1)[:pool_size]
+        pool_indices = pool_indices[np.argsort(-scores[pool_indices])]
+        self.last_proxy_stats["uncertainty_pool_size"] = int(len(pool_indices))
+        return pool_indices
+
+    def _class_conditioned_distances(self, pool_embeddings, pool_labels, selected_pool_idx):
+        selected_embedding = pool_embeddings[selected_pool_idx:selected_pool_idx + 1]
+        distances = euclidean_distances(pool_embeddings, selected_embedding).reshape(-1)
+        label_match = pool_labels == pool_labels[selected_pool_idx]
+        return np.where(label_match, distances, 2.0)
+
+    def _exact_diversity_select(self, pool_embeddings, pool_labels, pool_scores, n_select):
+        if n_select >= len(pool_scores):
+            return list(range(len(pool_scores)))
+
+        selected = [int(np.argmax(pool_scores))]
+        min_distances = self._class_conditioned_distances(
+            pool_embeddings,
+            pool_labels,
+            selected[0],
+        )
+        min_distances[selected[0]] = 0.0
+
+        while len(selected) < n_select:
+            diversity = np.maximum(min_distances, 1e-12) ** self.diversity_power
+            selection_scores = pool_scores * diversity
+            selection_scores[selected] = -np.inf
+            next_idx = int(np.argmax(selection_scores))
+            if not np.isfinite(selection_scores[next_idx]):
+                remaining = np.setdiff1d(
+                    np.arange(len(pool_scores)),
+                    np.array(selected),
+                    assume_unique=False,
+                )
+                if remaining.size == 0:
+                    break
+                next_idx = int(remaining[np.argmax(pool_scores[remaining])])
+            selected.append(next_idx)
+            new_distances = self._class_conditioned_distances(
+                pool_embeddings,
+                pool_labels,
+                next_idx,
+            )
+            min_distances = np.minimum(min_distances, new_distances)
+            min_distances[selected] = 0.0
+
+        return selected
+
+    def _fast_diversity_select(
+        self,
+        pool_indices,
+        unlabeled_embeddings,
+        labeled_embeddings,
+        scores,
+        predicted_labels,
+        n_select,
+        random_seed,
+    ):
+        pool_embeddings = unlabeled_embeddings[pool_indices]
+        pool_scores = scores[pool_indices].astype(np.float64)
+        pool_labels = predicted_labels[pool_indices]
+
+        if labeled_embeddings.size > 0:
+            distances_to_labeled = euclidean_distances(pool_embeddings, labeled_embeddings)
+            diversity_scores = np.min(distances_to_labeled, axis=1)
+        else:
+            diversity_scores = np.ones(len(pool_indices), dtype=np.float64)
+
+        _, label_counts = np.unique(pool_labels, return_counts=True)
+        label_to_count = {
+            int(label): int(count)
+            for label, count in zip(*np.unique(pool_labels, return_counts=True))
+        }
+        mean_count = float(np.mean(label_counts)) if len(label_counts) else 1.0
+        balance_scores = np.array(
+            [math.sqrt(mean_count / max(label_to_count.get(int(label), 1), 1)) for label in pool_labels],
+            dtype=np.float64,
+        )
+        weights = pool_scores * np.maximum(diversity_scores, 1e-12) ** self.diversity_power
+        weights = weights * balance_scores
+
+        selected_pool_local = self._weighted_sample_without_replacement(
+            weights,
+            n_select,
+            random_seed=random_seed,
+        )
+        self.last_proxy_stats["selection_mode"] = "fast_ppal_weighted_uncertainty_diversity"
+        self.last_proxy_stats["diversity_min"] = float(np.min(diversity_scores))
+        self.last_proxy_stats["diversity_mean"] = float(np.mean(diversity_scores))
+        self.last_proxy_stats["diversity_max"] = float(np.max(diversity_scores))
+        self.last_proxy_stats["weighted_score_min"] = float(np.min(weights))
+        self.last_proxy_stats["weighted_score_mean"] = float(np.mean(weights))
+        self.last_proxy_stats["weighted_score_max"] = float(np.max(weights))
+        return pool_indices[selected_pool_local].tolist()
+
+    def select(self, labeled_embeddings, unlabeled_embeddings, labeled_targets, n_select, random_seed=42):
+        n_samples = len(unlabeled_embeddings)
+        if n_select <= 0:
+            self.last_proxy_stats = {"selection_mode": "empty_selection"}
+            return []
+        if n_select >= n_samples:
+            self.last_proxy_stats = {"selection_mode": "all_samples"}
+            return list(range(n_samples))
+
+        scores, predicted_labels, unlabeled_embeddings, labeled_embeddings = self._proxy_scores(
+            labeled_embeddings=labeled_embeddings,
+            unlabeled_embeddings=unlabeled_embeddings,
+            labeled_targets=labeled_targets,
+        )
+        pool_indices = self._build_pool(scores, n_select)
+
+        if (
+            n_select <= self.exact_max_select
+            and len(pool_indices) <= self.exact_max_pool
+        ):
+            pool_embeddings = unlabeled_embeddings[pool_indices]
+            pool_labels = predicted_labels[pool_indices]
+            pool_scores = scores[pool_indices].astype(np.float64)
+            selected_pool_local = self._exact_diversity_select(
+                pool_embeddings,
+                pool_labels,
+                pool_scores,
+                n_select,
+            )
+            self.last_proxy_stats["selection_mode"] = "exact_ppal_category_kcenter"
+            return pool_indices[selected_pool_local].tolist()
+
+        return self._fast_diversity_select(
+            pool_indices=pool_indices,
+            unlabeled_embeddings=unlabeled_embeddings,
+            labeled_embeddings=labeled_embeddings,
+            scores=scores,
+            predicted_labels=predicted_labels,
+            n_select=n_select,
+            random_seed=random_seed,
+        )
+
+
 class HybridStrategy:
     """
     Hybrid strategy combining multiple sampling methods
@@ -2129,6 +2660,118 @@ def active_learning_selection(train_dataset, val_dataset, args, device, verbose=
             except Exception as exc:
                 if verbose:
                     print(f"BADGE selection failed ({exc}). Falling back to diversity.")
+                strategy = DiversityStrategy(n_clusters=getattr(args, 'al_clusters', target_samples // 10))
+                selected_indices = strategy.diversity_sample(
+                    embeddings=train_embeddings,
+                    n_select=target_samples,
+                    random_seed=args.seed
+                )
+
+    elif al_strategy == 'uherding':
+        val_loader = DataLoader(val_dataset, batch_size=al_batch_size, shuffle=False,
+                               num_workers=args.workers, pin_memory=True)
+
+        if verbose:
+            print(f"Extracting embeddings from {len(val_dataset)} validation samples for UHerding...")
+        val_embeddings = extract_embeddings_for_al(feature_model, val_loader, device,
+                                                   args.model, args.al_embedding_dim)
+
+        val_targets = extract_targets_from_dataset(val_dataset)
+        if val_targets is None:
+            if verbose:
+                print("UHerding failed: could not extract validation targets for the proxy classifier. Falling back to diversity.")
+            strategy = DiversityStrategy(n_clusters=getattr(args, 'al_clusters', target_samples // 10))
+            selected_indices = strategy.diversity_sample(
+                embeddings=train_embeddings,
+                n_select=target_samples,
+                random_seed=args.seed
+            )
+        else:
+            try:
+                strategy = UncertaintyHerdingStrategy()
+                selected_indices = strategy.select(
+                    labeled_embeddings=val_embeddings,
+                    unlabeled_embeddings=train_embeddings,
+                    labeled_targets=val_targets,
+                    n_select=target_samples,
+                    random_seed=args.seed
+                )
+                if verbose and strategy.last_proxy_stats:
+                    stats = strategy.last_proxy_stats
+                    print(
+                        "UHerding proxy classifier: "
+                        f"{stats['n_proxy_classes']} classes, "
+                        f"uncertainty={stats['uncertainty']}, "
+                        f"uncertainty min/mean/max="
+                        f"{stats['uncertainty_min']:.4f}/"
+                        f"{stats['uncertainty_mean']:.4f}/"
+                        f"{stats['uncertainty_max']:.4f}, "
+                        f"mode={stats['selection_mode']}"
+                    )
+                    print(f"UHerding predicted class histogram: {stats['predicted_class_hist']}")
+            except Exception as exc:
+                if verbose:
+                    print(f"UHerding selection failed ({exc}). Falling back to diversity.")
+                strategy = DiversityStrategy(n_clusters=getattr(args, 'al_clusters', target_samples // 10))
+                selected_indices = strategy.diversity_sample(
+                    embeddings=train_embeddings,
+                    n_select=target_samples,
+                    random_seed=args.seed
+                )
+
+    elif al_strategy == 'ppal':
+        val_loader = DataLoader(val_dataset, batch_size=al_batch_size, shuffle=False,
+                               num_workers=args.workers, pin_memory=True)
+
+        if verbose:
+            print(f"Extracting embeddings from {len(val_dataset)} validation samples for PPAL...")
+        val_embeddings = extract_embeddings_for_al(feature_model, val_loader, device,
+                                                   args.model, args.al_embedding_dim)
+
+        val_targets = extract_targets_from_dataset(val_dataset)
+        if val_targets is None:
+            if verbose:
+                print("PPAL failed: could not extract validation targets for the proxy classifier. Falling back to diversity.")
+            strategy = DiversityStrategy(n_clusters=getattr(args, 'al_clusters', target_samples // 10))
+            selected_indices = strategy.diversity_sample(
+                embeddings=train_embeddings,
+                n_select=target_samples,
+                random_seed=args.seed
+            )
+        else:
+            try:
+                strategy = PPALStrategy(
+                    temperature=getattr(args, 'al_ppal_temperature', 1.0),
+                    uncertainty=getattr(args, 'al_ppal_uncertainty', 'binary_entropy'),
+                    pool_expand_ratio=getattr(args, 'al_ppal_pool_expand_ratio', 4.0),
+                    class_weight_ub=getattr(args, 'al_ppal_class_weight_ub', 0.2),
+                    class_weight_alpha=getattr(args, 'al_ppal_class_weight_alpha', 0.3),
+                    diversity_power=getattr(args, 'al_ppal_diversity_power', 1.0),
+                )
+                selected_indices = strategy.select(
+                    labeled_embeddings=val_embeddings,
+                    unlabeled_embeddings=train_embeddings,
+                    labeled_targets=val_targets,
+                    n_select=target_samples,
+                    random_seed=args.seed
+                )
+                if verbose and strategy.last_proxy_stats:
+                    stats = strategy.last_proxy_stats
+                    print(
+                        "PPAL proxy classifier: "
+                        f"{stats['n_proxy_classes']} classes, "
+                        f"uncertainty={stats['uncertainty']}, "
+                        f"pool={stats['uncertainty_pool_size']}, "
+                        f"uncertainty min/mean/max="
+                        f"{stats['uncertainty_min']:.4f}/"
+                        f"{stats['uncertainty_mean']:.4f}/"
+                        f"{stats['uncertainty_max']:.4f}, "
+                        f"mode={stats['selection_mode']}"
+                    )
+                    print(f"PPAL predicted class histogram: {stats['predicted_class_hist']}")
+            except Exception as exc:
+                if verbose:
+                    print(f"PPAL selection failed ({exc}). Falling back to diversity.")
                 strategy = DiversityStrategy(n_clusters=getattr(args, 'al_clusters', target_samples // 10))
                 selected_indices = strategy.diversity_sample(
                     embeddings=train_embeddings,
