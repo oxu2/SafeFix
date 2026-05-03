@@ -1,0 +1,108 @@
+Current time: 0502185654
+Added 1000 generated images.
+
+Class distribution in selected samples:
+  Class backpack: 321 samples (10.3%)
+  Class barber_chair: 259 samples (8.3%)
+  Class coffee_mug: 322 samples (10.3%)
+  Class desk: 300 samples (9.6%)
+  Class electric_guitar: 323 samples (10.4%)
+  Class park_bench: 336 samples (10.8%)
+  Class pitcher: 331 samples (10.6%)
+  Class purse: 313 samples (10.0%)
+  Class rocking_chair: 297 samples (9.5%)
+  Class water_bottle: 318 samples (10.2%)
+
+Class distribution in random baseline:
+  Class backpack: 312 samples (10.0%)
+  Class barber_chair: 304 samples (9.7%)
+  Class coffee_mug: 345 samples (11.1%)
+  Class desk: 292 samples (9.4%)
+  Class electric_guitar: 308 samples (9.9%)
+  Class park_bench: 314 samples (10.1%)
+  Class pitcher: 331 samples (10.6%)
+  Class purse: 320 samples (10.3%)
+  Class rocking_chair: 284 samples (9.1%)
+  Class water_bottle: 310 samples (9.9%)
+
+[Active Learning subset (before adding generated images)] class distribution:
+  Class backpack: 321 samples (10.3%)
+  Class barber_chair: 259 samples (8.3%)
+  Class coffee_mug: 322 samples (10.3%)
+  Class desk: 300 samples (9.6%)
+  Class electric_guitar: 323 samples (10.4%)
+  Class park_bench: 336 samples (10.8%)
+  Class pitcher: 331 samples (10.6%)
+  Class purse: 313 samples (10.0%)
+  Class rocking_chair: 297 samples (9.5%)
+  Class water_bottle: 318 samples (10.2%)
+Added 1000 ImageNet pinkcolor_fabrictexture images using Active Learning (ppal): 3120 -> 4120
+Resumed model from /people/cs/o/oxx220000/safefix/weights/model_imagenet_resnet_base.pth (best val acc: 0.7223076923076923)
+Epoch [1/15], Train Loss: 0.4324, Train Acc: 0.8701, Val Loss: 0.9177, Val Acc: 0.7100
+Epoch [2/15], Train Loss: 0.4135, Train Acc: 0.8675, Val Loss: 0.9097, Val Acc: 0.7200
+Epoch [3/15], Train Loss: 0.3899, Train Acc: 0.8813, Val Loss: 0.9080, Val Acc: 0.7162
+Epoch [4/15], Train Loss: 0.3635, Train Acc: 0.8910, Val Loss: 0.8937, Val Acc: 0.7123
+Epoch [5/15], Train Loss: 0.3658, Train Acc: 0.8886, Val Loss: 0.8872, Val Acc: 0.7108
+Epoch [6/15], Train Loss: 0.3510, Train Acc: 0.8925, Val Loss: 0.9027, Val Acc: 0.7162
+Epoch [7/15], Train Loss: 0.3480, Train Acc: 0.8959, Val Loss: 0.9065, Val Acc: 0.7100
+Epoch [8/15], Train Loss: 0.3474, Train Acc: 0.8910, Val Loss: 0.9057, Val Acc: 0.7108
+Epoch [9/15], Train Loss: 0.3444, Train Acc: 0.8968, Val Loss: 0.9035, Val Acc: 0.7146
+Epoch [10/15], Train Loss: 0.3308, Train Acc: 0.9090, Val Loss: 0.9040, Val Acc: 0.7108
+Epoch [11/15], Train Loss: 0.3327, Train Acc: 0.8985, Val Loss: 0.9062, Val Acc: 0.7154
+Epoch [12/15], Train Loss: 0.3316, Train Acc: 0.9034, Val Loss: 0.8989, Val Acc: 0.7146
+Epoch [13/15], Train Loss: 0.3197, Train Acc: 0.9117, Val Loss: 0.9136, Val Acc: 0.7146
+Epoch [14/15], Train Loss: 0.3337, Train Acc: 0.9029, Val Loss: 0.9014, Val Acc: 0.7108
+Epoch [15/15], Train Loss: 0.3159, Train Acc: 0.9109, Val Loss: 0.9026, Val Acc: 0.7146
+Model Test ACC: 0.7392, test loss: 0.8049
+Generating predictions in memory (--save_preds False).
+Combined predictions length: 13000
+Total training time for 15 epochs: 123.34 seconds
+Total Active Learning selection time: 17.02 seconds
+End-to-end wall time (data prep + selection + training + setup): 141.18 seconds
+
+Running model diagnostics on generated predictions...
+Using in-memory predictions for diagnostics (--save_preds False).
+Start detect_prediction_correlation
+
+ACC: 0.657534 	Rare Case: attribute "color", description "red"
+ACC: 0.689286 	Hard case: attribute "color", description "white"
+ACC: 0.703704 	Rare Case: attribute "color", description "silver"
+ACC: 0.687500 	Rare Case: attribute "color", description "maroon"
+ACC: 0.682927 	Hard case: attribute "color", description "multicolored"
+ACC: 0.708609 	Hard case: attribute "color", description "black"
+ACC: 0.670732 	Hard case: attribute "background", description "trees"
+ACC: 0.428571 	Rare Case: attribute "background", description "buildings"
+ACC: 0.679245 	Hard case: attribute "background", description "grass"
+ACC: 0.680000 	Rare Case: attribute "background", description "rocks"
+ACC: 0.500000 	Rare Case: attribute "background", description "bridge"
+ACC: 0.642857 	Rare Case: attribute "background", description "water"
+ACC: 0.660377 	Rare Case: attribute "background", description "house"
+ACC: 0.673469 	Rare Case: attribute "texture", description "plastic"
+ACC: 0.689956 	Hard case: attribute "texture", description "glass"
+
+Comparing accuracy with log file: logs/compare/stat_imagenet_resnet_compare.log
+Overall accuracy: 0.718077 -> 0.720000: improved
+
+Attribute-specific accuracy comparison:
+color, green, 0.674419 -> 0.734375: improved
+color, pink, 0.699029 -> 0.770492: improved
+color, tan, 0.700000 -> 0.750000: improved
+color, orange, 0.690909 -> 0.822222: improved
+color, yellow, 0.688889 -> 0.767857: improved
+color, purple, 0.684211 -> 0.777778: improved
+color, black, 0.665289 -> 0.708609: improved
+background, sky, 0.698630 -> 0.727273: improved
+background, inside a house, 0.691684 -> 0.728083: improved
+background, buildings, 0.707317 -> 0.428571: declined
+background, rocks, 0.659091 -> 0.680000: improved
+background, street, 0.662162 -> 0.909091: improved
+texture, metallic, 0.676471 -> 0.750000: improved
+texture, wooden, 0.698393 -> 0.724224: improved
+texture, leather, 0.588235 -> 0.857143: improved
+texture, fabric, 0.658537 -> 0.740741: improved
+
+Compared 16 attribute-specific accuracies.
+Skipping Active Learning vs Random comparison: no log file found at logs_imagenet/AL_resnet_imagenet_random_1000.log or logs_imagenet/AL_random_resnet_imagenet_1000_ratio0.3.log
+
+Random selection comparison skipped: None not found
+Current time: 0502185654

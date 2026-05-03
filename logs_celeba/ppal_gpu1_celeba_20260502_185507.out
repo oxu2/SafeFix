@@ -1,0 +1,10 @@
+[2026-05-02 18:55:07] START dataset=celeba ratio=0.1 gpu=1 log=logs_celeba/controlnet_ppal_redhair_brownskin_sademotion_resnet_celeba_1000_ratio0p1_gpu1_20260502_185507.log
+[2026-05-02 18:59:30] END dataset=celeba ratio=0.1 gpu=1
+[2026-05-02 18:59:30] START dataset=celeba ratio=0.3 gpu=1 log=logs_celeba/controlnet_ppal_redhair_brownskin_sademotion_resnet_celeba_1000_ratio0p3_gpu1_20260502_185507.log
+[2026-05-02 19:08:18] END dataset=celeba ratio=0.3 gpu=1
+[2026-05-02 19:08:18] START dataset=celeba ratio=0.5 gpu=1 log=logs_celeba/controlnet_ppal_redhair_brownskin_sademotion_resnet_celeba_1000_ratio0p5_gpu1_20260502_185507.log
+[2026-05-02 19:21:51] END dataset=celeba ratio=0.5 gpu=1
+[2026-05-02 19:21:51] START dataset=celeba ratio=0.7 gpu=1 log=logs_celeba/controlnet_ppal_redhair_brownskin_sademotion_resnet_celeba_1000_ratio0p7_gpu1_20260502_185507.log
+[2026-05-02 19:40:17] END dataset=celeba ratio=0.7 gpu=1
+[2026-05-02 19:40:17] START dataset=celeba ratio=0.9 gpu=1 log=logs_celeba/controlnet_ppal_redhair_brownskin_sademotion_resnet_celeba_1000_ratio0p9_gpu1_20260502_185507.log
+[2026-05-02 19:59:59] END dataset=celeba ratio=0.9 gpu=1

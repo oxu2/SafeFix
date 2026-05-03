@@ -370,10 +370,10 @@ parser.add_argument('--lr_backbone', type=float, default=None,
 parser.add_argument('--use_active_learning', type=str2bool, default=True,
                     help='Use Active Learning strategy for data selection (default: True)')
 parser.add_argument('--al_strategy', type=str, default='attribute',
-                    choices=['coreset', 'badge', 'stratified', 'diversity', 'hybrid', 'hierarchical',
+                    choices=['coreset', 'badge', 'uherding', 'ppal', 'stratified', 'diversity', 'hybrid', 'hierarchical',
                              'attribute', 'entropy', 'uncertainty_stratified', 'gen_probe',
                              'random', 'none', '0', 'false', 'no'],
-                    help='Active Learning strategy: coreset, badge, stratified, diversity, hybrid, hierarchical, '
+                    help='Active Learning strategy: coreset, badge, uherding, ppal, stratified, diversity, hybrid, hierarchical, '
                          'attribute, entropy, uncertainty_stratified, gen_probe, or random/none/0/false (all map to plain random selection)')
 parser.add_argument('--al_probe_model', type=str, default=None,
                     help='Path to the model trained ONLY on generated images, used for the gen_probe AL strategy.')
@@ -389,6 +389,20 @@ parser.add_argument('--al_stratified_ratio', type=float, default=0.4,
 # Diversity strategy parameters  
 parser.add_argument('--al_clusters', type=int, default=None,
                     help='Number of clusters for diversity strategy (default: n_select//10)')
+# PPAL strategy parameters
+parser.add_argument('--al_ppal_temperature', type=float, default=1.0,
+                    help='Temperature for PPAL proxy centroid probabilities (default: 1.0)')
+parser.add_argument('--al_ppal_uncertainty', type=str, default='binary_entropy',
+                    choices=['binary_entropy', 'entropy', 'margin', 'confidence'],
+                    help='Proxy uncertainty measure used by PPAL (default: binary_entropy)')
+parser.add_argument('--al_ppal_pool_expand_ratio', type=float, default=4.0,
+                    help='PPAL uncertainty pool size multiplier before diversity selection (default: 4.0)')
+parser.add_argument('--al_ppal_class_weight_ub', type=float, default=0.2,
+                    help='Upper-bound scale for PPAL proxy class-quality weighting (default: 0.2)')
+parser.add_argument('--al_ppal_class_weight_alpha', type=float, default=0.3,
+                    help='Shape parameter for PPAL proxy class-quality weighting (default: 0.3)')
+parser.add_argument('--al_ppal_diversity_power', type=float, default=1.0,
+                    help='Power applied to PPAL diversity distance weights (default: 1.0)')
 # Hierarchical strategy parameters
 parser.add_argument('--al_w_err', type=float, default=0.6,
                     help='Weight for error rate in hierarchical difficulty calculation (default: 0.6)')

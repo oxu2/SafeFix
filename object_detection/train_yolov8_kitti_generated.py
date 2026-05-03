@@ -102,12 +102,12 @@ def parse_args():
     )
     parser.add_argument(
         "--selection-strategy",
-        choices=["random", "stratified", "attribute", "coreset", "badge", "entropy"],
+        choices=["random", "stratified", "attribute", "coreset", "badge", "uherding", "ppal", "entropy"],
         default="random",
         help=(
             "How to select original KITTI train images before adding generated images. "
             "For detection, stratified groups images by the set of YOLO classes present. "
-            "Attribute, coreset, and badge use the shared active-learning selectors. "
+            "Attribute, coreset, badge, uherding, and ppal use the shared active-learning selectors. "
             "Entropy uses a YOLO detection-confidence entropy proxy."
         ),
     )
@@ -133,21 +133,78 @@ def parse_args():
         "--al-initial-labeled",
         type=int,
         default=400,
-        help="Number of validation proxy embeddings used as the labeled set for coreset/BADGE.",
+        help="Number of validation proxy embeddings used as the labeled set for coreset/BADGE/UHerding/PPAL.",
     )
     parser.add_argument(
         "--al-embedding-thumbnail-size",
         type=int,
         default=8,
-        help="Thumbnail side length for lightweight KITTI image embeddings used by coreset/BADGE.",
+        help="Thumbnail side length for lightweight KITTI image embeddings used by coreset/BADGE/UHerding/PPAL.",
     )
     parser.add_argument(
         "--al-fast-selection",
         type=str2bool,
         default=True,
         help=(
-            "Use the approximate coreset/BADGE selection paths from utils.active_learning. "
-            "Set false to use exact k-center or exact BADGE k-means++ when feasible."
+            "Use the approximate coreset/BADGE/UHerding/PPAL selection paths from utils.active_learning. "
+            "Set false to use exact k-center, exact BADGE k-means++, exact UHerding, or exact PPAL when feasible."
+        ),
+    )
+    parser.add_argument(
+        "--al-ppal-temperature",
+        type=float,
+        default=1.0,
+        help="Temperature for PPAL proxy centroid probabilities.",
+    )
+    parser.add_argument(
+        "--al-ppal-uncertainty",
+        choices=["binary_entropy", "entropy", "margin", "confidence"],
+        default="binary_entropy",
+        help="Proxy uncertainty measure used by PPAL.",
+    )
+    parser.add_argument(
+        "--al-ppal-pool-expand-ratio",
+        type=float,
+        default=4.0,
+        help="PPAL uncertainty pool size multiplier before diversity selection.",
+    )
+    parser.add_argument(
+        "--al-ppal-class-weight-ub",
+        type=float,
+        default=0.2,
+        help="Upper-bound scale for PPAL proxy class-quality weighting.",
+    )
+    parser.add_argument(
+        "--al-ppal-class-weight-alpha",
+        type=float,
+        default=0.3,
+        help="Shape parameter for PPAL proxy class-quality weighting.",
+    )
+    parser.add_argument(
+        "--al-ppal-diversity-power",
+        type=float,
+        default=1.0,
+        help="Power applied to PPAL diversity distance weights.",
+    )
+    parser.add_argument(
+        "--al-uherding-temperature",
+        type=float,
+        default=1.0,
+        help="Temperature for the proxy centroid probabilities used by UHerding.",
+    )
+    parser.add_argument(
+        "--al-uherding-uncertainty",
+        choices=["margin", "entropy", "confidence"],
+        default="margin",
+        help="Proxy uncertainty measure used by UHerding.",
+    )
+    parser.add_argument(
+        "--al-uherding-kernel-scale",
+        type=float,
+        default=0.0,
+        help=(
+            "RBF kernel scale for UHerding. Non-positive values use a median-distance "
+            "estimate from the candidate embeddings."
         ),
     )
     parser.add_argument(
@@ -550,7 +607,7 @@ def _select_embedding_ids(
     n_select: int,
     args,
 ) -> List[str]:
-    from utils.active_learning import BadgeStrategy, CoreSetStrategy
+    from utils.active_learning import BadgeStrategy, CoreSetStrategy, PPALStrategy, UncertaintyHerdingStrategy
 
     print(
         f"KITTI {strategy_name} selection: extracting lightweight image embeddings "
@@ -614,6 +671,49 @@ def _select_embedding_ids(
         )
         if strategy.last_proxy_stats:
             print("KITTI BADGE proxy stats:")
+            print(json.dumps(strategy.last_proxy_stats, indent=2))
+    elif strategy_name == "uherding":
+        strategy = UncertaintyHerdingStrategy(
+            temperature=args.al_uherding_temperature,
+            uncertainty=args.al_uherding_uncertainty,
+            kernel_scale=(
+                args.al_uherding_kernel_scale
+                if args.al_uherding_kernel_scale > 0.0
+                else None
+            ),
+            exact_max_select=(1 if args.al_fast_selection else 512),
+            exact_max_samples=(1 if args.al_fast_selection else 10000),
+        )
+        selected_indices = strategy.select(
+            labeled_embeddings=labeled_embeddings,
+            unlabeled_embeddings=train_embeddings,
+            labeled_targets=labeled_targets,
+            n_select=n_select,
+            random_seed=args.seed,
+        )
+        if strategy.last_proxy_stats:
+            print("KITTI UHerding proxy stats:")
+            print(json.dumps(strategy.last_proxy_stats, indent=2))
+    elif strategy_name == "ppal":
+        strategy = PPALStrategy(
+            temperature=args.al_ppal_temperature,
+            uncertainty=args.al_ppal_uncertainty,
+            pool_expand_ratio=args.al_ppal_pool_expand_ratio,
+            class_weight_ub=args.al_ppal_class_weight_ub,
+            class_weight_alpha=args.al_ppal_class_weight_alpha,
+            diversity_power=args.al_ppal_diversity_power,
+            exact_max_select=(1 if args.al_fast_selection else 512),
+            exact_max_pool=(1 if args.al_fast_selection else 4096),
+        )
+        selected_indices = strategy.select(
+            labeled_embeddings=labeled_embeddings,
+            unlabeled_embeddings=train_embeddings,
+            labeled_targets=labeled_targets,
+            n_select=n_select,
+            random_seed=args.seed,
+        )
+        if strategy.last_proxy_stats:
+            print("KITTI PPAL proxy stats:")
             print(json.dumps(strategy.last_proxy_stats, indent=2))
     else:
         raise ValueError(f"Unsupported embedding strategy: {strategy_name}")
@@ -906,6 +1006,7 @@ def prepare_dataset(args) -> Path:
         raise ValueError(
             f"--sub-ratio {args.sub_ratio} selected zero images from {len(train_ids)} candidates"
         )
+    original_selection_start = time.time()
     if original_sample_count < len(train_ids):
         if args.selection_strategy == "stratified":
             selected_original_ids = _stratified_sample_ids(
@@ -914,7 +1015,7 @@ def prepare_dataset(args) -> Path:
                 original_sample_count,
                 rng,
             )
-        elif args.selection_strategy in {"coreset", "badge"}:
+        elif args.selection_strategy in {"coreset", "badge", "uherding", "ppal"}:
             selected_original_ids = _select_embedding_ids(
                 args.selection_strategy,
                 train_ids,
@@ -943,6 +1044,8 @@ def prepare_dataset(args) -> Path:
             selected_original_ids = sorted(rng.sample(train_ids, original_sample_count))
     else:
         selected_original_ids = list(train_ids)
+    original_selection_time = time.time() - original_selection_start
+    print(f"Total KITTI original selection time: {original_selection_time:.2f} seconds")
 
     generated_candidates = _select_generated_candidates(args.generated_image_dir, base_train_labels)
     if not generated_candidates:
@@ -1020,13 +1123,40 @@ def prepare_dataset(args) -> Path:
         "sub_ratio": args.sub_ratio,
         "selection_strategy": args.selection_strategy,
         "al_initial_labeled": (
-            args.al_initial_labeled if args.selection_strategy in {"coreset", "badge"} else None
+            args.al_initial_labeled if args.selection_strategy in {"coreset", "badge", "uherding", "ppal"} else None
         ),
         "al_embedding_thumbnail_size": (
-            args.al_embedding_thumbnail_size if args.selection_strategy in {"coreset", "badge"} else None
+            args.al_embedding_thumbnail_size if args.selection_strategy in {"coreset", "badge", "uherding", "ppal"} else None
         ),
         "al_fast_selection": (
-            args.al_fast_selection if args.selection_strategy in {"coreset", "badge"} else None
+            args.al_fast_selection if args.selection_strategy in {"coreset", "badge", "uherding", "ppal"} else None
+        ),
+        "al_ppal_temperature": (
+            args.al_ppal_temperature if args.selection_strategy == "ppal" else None
+        ),
+        "al_ppal_uncertainty": (
+            args.al_ppal_uncertainty if args.selection_strategy == "ppal" else None
+        ),
+        "al_ppal_pool_expand_ratio": (
+            args.al_ppal_pool_expand_ratio if args.selection_strategy == "ppal" else None
+        ),
+        "al_ppal_class_weight_ub": (
+            args.al_ppal_class_weight_ub if args.selection_strategy == "ppal" else None
+        ),
+        "al_ppal_class_weight_alpha": (
+            args.al_ppal_class_weight_alpha if args.selection_strategy == "ppal" else None
+        ),
+        "al_ppal_diversity_power": (
+            args.al_ppal_diversity_power if args.selection_strategy == "ppal" else None
+        ),
+        "al_uherding_temperature": (
+            args.al_uherding_temperature if args.selection_strategy == "uherding" else None
+        ),
+        "al_uherding_uncertainty": (
+            args.al_uherding_uncertainty if args.selection_strategy == "uherding" else None
+        ),
+        "al_uherding_kernel_scale": (
+            args.al_uherding_kernel_scale if args.selection_strategy == "uherding" else None
         ),
         "al_entropy_conf_thres": (
             args.al_entropy_conf_thres if args.selection_strategy == "entropy" else None
@@ -1052,6 +1182,7 @@ def prepare_dataset(args) -> Path:
         ),
         "original_candidates": len(train_ids),
         "selected_original": len(selected_original_ids),
+        "original_selection_time_seconds": original_selection_time,
         "generated_candidates_with_labels": len(generated_candidates),
         "selected_generated": len(selected_generated_ids),
         "final_train_images": len(selected_original_ids) + len(selected_generated_ids),
