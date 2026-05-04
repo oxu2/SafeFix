@@ -5,6 +5,860 @@
 
 ---
 
+## Session 178: Redistribute remaining CelebA main-fill runs to GPUs 0 and 2
+
+**Date**: 2026-05-04
+**Task**: redistribute-celeba-mainfill-gpu0123
+
+The user reported that GPUs `0` and `2` were idle and asked to average the
+remaining CelebA work across the four GPUs.
+
+State before redistribution:
+
+- The active CelebA main-fill stamp was still `20260504_024733`.
+- GPU `1` was already running the final ratio `0.9` refinement row
+  `r002_p05_c15`.
+- GPU `3` was already running ratio `0.7` attribute `r000_p0_cinf`.
+- Ratio `0.7` attribute `r003_p05_c15` and `r003_p05_cinf` had not started.
+
+Actions:
+
+- Added manual launcher:
+  `scripts/run_celeba_ratio0p7_remaining_gpu02.sh`.
+- Stopped only the old GPU `3` queue controller PID `203990` so it would not
+  later duplicate the remaining ratio `0.7` rows. The already-running GPU `3`
+  training process was left alive.
+- Launched the two not-yet-started ratio `0.7` core RPC rows:
+  - GPU `0`: `r003_p05_c15`
+    - worker PID `240660`
+    - controller output:
+      `logs_celeba/mainfill_ratio0p7_manual_r003_p05_c15_gpu0_20260504_093138.out`
+    - row log:
+      `logs_celeba/mainfill_attribute_r003_p05_c15_resnet_celeba_1000_ratio0p7_gpu0_20260504_024733.log`
+  - GPU `2`: `r003_p05_cinf`
+    - worker PID `240662`
+    - controller output:
+      `logs_celeba/mainfill_ratio0p7_manual_r003_p05_cinf_gpu2_20260504_093138.out`
+    - row log:
+      `logs_celeba/mainfill_attribute_r003_p05_cinf_resnet_celeba_1000_ratio0p7_gpu2_20260504_024733.log`
+
+Startup validation:
+
+- `bash -n scripts/run_celeba_ratio0p7_remaining_gpu02.sh`
+- Host process check confirmed CelebA work on GPUs `0`, `1`, `2`, and `3`.
+- The new GPU `0` and GPU `2` row logs reached dataset setup and base-model
+  resume lines without immediate startup errors.
+
+Continuation:
+
+- After the four ratio `0.7` core rows finish, parse their Test ACCs:
+  `r000_p0_c15`, `r000_p0_cinf`, `r003_p05_c15`, `r003_p05_cinf`.
+- Compare the best ratio `0.7` attribute against the current best same-table
+  baseline `0.9153`. If the best attribute is within `0.002` of that baseline
+  or beats it, run refinement RPCs `r003_p05_c8` and `r002_p05_c15`; otherwise
+  run those two plus `r001_p05_c15` and `r001_p05_cinf`.
+
+## Session 177: Launch KITTI extra RPC search for ratios 0.7 and 0.1
+
+**Date**: 2026-05-04
+**Task**: launch-kitti-extra-rpc-ratio0p7-ratio0p1
+
+The user asked to inspect which KITTI red-cloudy RPC combinations had already
+run for ratios `0.7` and `0.1`, then run additional useful combinations on
+GPUs `2` and `3`, later clarifying that already-run RPC combinations should not
+be repeated and that half of the ratio-`0.7` work should move to GPU `0`.
+
+Existing completed KITTI RPC coverage for the target ratios:
+
+- Ratio `0.1`: `r000_p0_c15`, `r001_p5_c15`, `r003_p5_c8`; an earlier short
+  probe also covered `r003_p5_c15`.
+- Ratio `0.7`: `r000_p0_c15`, `r001_p5_c15`, `r003_p5_c8`.
+
+Added launcher:
+`scripts/run_kitti_rpc_extra_ratio0p7_0p1_gpu23.sh`.
+
+Launched missing common RPC points with stamp `20260504_021221`:
+
+- GPU `0`, ratio `0.7`:
+  - `r001_p5_cinf`
+  - `r01_p5_c15`
+  - `r08_p10_c4`
+  - Controller output:
+    `logs/kitti_rpc_extra_ratio0p7_gpu0_20260504_021221.out`
+- GPU `2`, ratio `0.7`:
+  - `r000_p0_cinf`
+  - `r003_p05_c15`
+  - `r003_p05_cinf`
+  - Controller output:
+    `logs/kitti_rpc_extra_ratio0p7_gpu2_20260504_021221.out`
+- GPU `3`, ratio `0.1`:
+  - `r001_p5_cinf`
+  - `r01_p5_c15`
+  - `r08_p10_c4`
+  - `r000_p0_cinf`
+  - `r003_p05_c15`
+  - `r003_p05_cinf`
+  - Controller output:
+    `logs/kitti_rpc_extra_ratio0p1_gpu3_20260504_021221.out`
+
+PID file:
+`logs/kitti_rpc_extra_ratio0p7_0p1_gpu023_20260504_021221.pids`.
+
+Startup validation:
+
+- `bash -n scripts/run_kitti_rpc_extra_ratio0p7_0p1_gpu23.sh`
+- Dry-run confirmed no repeated seed-only reruns were left after the user's
+  clarification.
+- Parent PIDs `189308`, `189309`, and `189310` were alive.
+- First workers reached YOLO training on GPUs `0`, `2`, and `3`.
+- Startup error-marker scan over the three controller outputs and new row logs
+  found no `Traceback`, `CUDA out of memory`, `Killed`, `RuntimeError`,
+  `Exception`, missing-file, or not-found markers.
+
+Continuation rule:
+
+- When these queues finish, parse Test mAP50-95 for the new rows.
+- Update the `Best Attribute` cells in `report.md` section `KITTI Red-Cloudy
+  Generated-Image YOLOv8, Test mAP50-95` only if a new RPC beats the current
+  best attribute for that ratio:
+  - ratio `0.1`: current Best Attribute `0.5321`
+  - ratio `0.7`: current Best Attribute `0.5780`
+
+### Completion update
+
+The extra RPC queue with stamp `20260504_021221` finished. All 12 row logs
+reached `End timestamp:`, and an error-marker scan over controller outputs and
+row logs found no `Traceback`, `CUDA out of memory`, `Killed`, `RuntimeError`,
+`Exception`, missing-file, or not-found markers.
+
+Parsed final held-out test results:
+
+| Ratio | RPC | Test mAP50-95 | Test mAP50 | Test Precision | Test Recall | Log |
+| ---: | --- | ---: | ---: | ---: | ---: | --- |
+| `0.1` | `r000_p0_cinf` | **`0.5372`** | `0.8185` | `0.8415` | `0.7285` | `logs/kitti_ratio0p1_attribute_r000_p0_cinf_seed42_red_cloudy_gen1000_e10_gpu3_20260504_021221.log` |
+| `0.1` | `r001_p5_cinf` | `0.5001` | `0.8119` | `0.8659` | `0.7014` | `logs/kitti_ratio0p1_attribute_r001_p5_cinf_seed42_red_cloudy_gen1000_e10_gpu3_20260504_021221.log` |
+| `0.1` | `r003_p05_c15` | `0.5051` | `0.8125` | `0.8327` | `0.7199` | `logs/kitti_ratio0p1_attribute_r003_p05_c15_seed42_red_cloudy_gen1000_e10_gpu3_20260504_021221.log` |
+| `0.1` | `r003_p05_cinf` | `0.5001` | `0.8119` | `0.8659` | `0.7014` | `logs/kitti_ratio0p1_attribute_r003_p05_cinf_seed42_red_cloudy_gen1000_e10_gpu3_20260504_021221.log` |
+| `0.1` | `r01_p5_c15` | `0.4995` | `0.8092` | `0.8445` | `0.7178` | `logs/kitti_ratio0p1_attribute_r01_p5_c15_seed42_red_cloudy_gen1000_e10_gpu3_20260504_021221.log` |
+| `0.1` | `r08_p10_c4` | `0.4899` | `0.8007` | `0.8255` | `0.7139` | `logs/kitti_ratio0p1_attribute_r08_p10_c4_seed42_red_cloudy_gen1000_e10_gpu3_20260504_021221.log` |
+| `0.7` | `r000_p0_cinf` | **`0.5780`** | `0.8406` | `0.8617` | `0.7421` | `logs/kitti_ratio0p7_attribute_r000_p0_cinf_seed42_red_cloudy_gen1000_e10_gpu2_20260504_021221.log` |
+| `0.7` | `r001_p5_cinf` | `0.5767` | `0.8436` | `0.8430` | `0.7685` | `logs/kitti_ratio0p7_attribute_r001_p5_cinf_seed42_red_cloudy_gen1000_e10_gpu0_20260504_021221.log` |
+| `0.7` | `r003_p05_c15` | `0.5767` | `0.8436` | `0.8430` | `0.7685` | `logs/kitti_ratio0p7_attribute_r003_p05_c15_seed42_red_cloudy_gen1000_e10_gpu2_20260504_021221.log` |
+| `0.7` | `r003_p05_cinf` | `0.5767` | `0.8436` | `0.8430` | `0.7685` | `logs/kitti_ratio0p7_attribute_r003_p05_cinf_seed42_red_cloudy_gen1000_e10_gpu2_20260504_021221.log` |
+| `0.7` | `r01_p5_c15` | `0.5767` | `0.8436` | `0.8430` | `0.7685` | `logs/kitti_ratio0p7_attribute_r01_p5_c15_seed42_red_cloudy_gen1000_e10_gpu0_20260504_021221.log` |
+| `0.7` | `r08_p10_c4` | `0.5767` | `0.8436` | `0.8430` | `0.7685` | `logs/kitti_ratio0p7_attribute_r08_p10_c4_seed42_red_cloudy_gen1000_e10_gpu0_20260504_021221.log` |
+
+Report update:
+
+- `report.md` top KITTI summary now uses ratio `0.1` Best Attribute `0.5372`
+  from `attribute_r000_p0_cinf`.
+- Ratio `0.7` was not changed because the new `r000_p0_cinf` row ties the
+  existing `attribute_r000_p0_c15` exact Test mAP50-95 value (`0.5780178`) and
+  does not improve the displayed rounded value.
+- Added an `Additional extra RPC search rows from 20260504_021221` table under
+  the detailed KITTI 10-epoch section.
+
+### Entropy correction from user
+
+The user later reported that the previous KITTI entropy method had an error and
+provided corrected Test mAP50-95 values from a rerun elsewhere. Updated
+`report.md` directly:
+
+- Ratio `0.1` entropy Test mAP50-95: `0.5497 -> 0.5297`
+- Ratio `0.7` entropy Test mAP50-95: `0.5784 -> 0.5772`
+
+At that point, this changed the top KITTI best-by-mAP50-95 method labels:
+
+- Ratio `0.1`: `badge_fast` temporarily became best, Test mAP50-95 `0.5388`.
+- Ratio `0.7`: `ppal_fast` is now best, Test mAP50-95 `0.5782`.
+
+### BADGE correction from user
+
+The user then reported that KITTI ratio `0.1` BADGE was also wrong. Updated
+`report.md` directly:
+
+- Ratio `0.1` BADGE Test mAP50-95: `0.5388 -> 0.5322`
+
+After this correction, the top KITTI ratio `0.1` best-by-mAP50-95 method is
+`attribute_r000_p0_cinf` with Test mAP50-95 `0.5372`; `badge_fast` is no longer
+the best row for that ratio.
+
+### COCO entropy correction from user
+
+The user reported that COCO Brown-Rainy Pose ratio `0.1` entropy Test AP should
+be corrected. Updated `report.md` directly:
+
+- Ratio `0.1` entropy Test AP: `0.6231 -> 0.6132`
+
+After this correction, the top COCO Brown-Rainy Pose ratio `0.1` best Test AP
+is `Best Attribute` at `0.6183`.
+
+### CelebA missing-cell investigation
+
+Checked the missing cells in the top `CelebA Red-Hair Brown-Skin Sad-Emotion,
+Test ACC` table.
+
+Confirmed missing under the same ControlNet/resume setting:
+
+- Ratio `0.9` Random/Stratified/Coreset/BADGE.
+- Best Attribute for ratios `0.5`, `0.7`, and `0.9`.
+
+Evidence:
+
+- `scripts/run_celeba_resume_baselines.sh` is configured for ratios
+  `0.1 0.3 0.5 0.7`, so it never launched ratio `0.9` baseline rows.
+- `find logs_celeba` with exact same-setting patterns found no
+  `resume_lr1e-5_epoch15_{random,stratified,coreset,badge}_...ratio0.9...`
+  logs and no `attr_ratio0.5*`, `attr_ratio0.7*`, or `attr_ratio0.9*` /
+  `attr_rb_ratio0.5*`, `attr_rb_ratio0.7*`, or `attr_rb_ratio0.9*` logs.
+- Similar InstructPix2Pix and HiBug logs exist, but they use different
+  generated-image pools and should not be used for the ControlNet/resume main
+  table.
+
+Recommended run design:
+
+- Minimal main-table fill: 16 runs total.
+- Baselines: 4 runs at ratio `0.9` for Random, Stratified, Coreset, BADGE.
+- Attributes: 12 runs, 4 RPCs per ratio for ratios `0.5`, `0.7`, `0.9`:
+  `r000_p0_c15`, `r000_p0_cinf`, `r003_p05_c15`, `r003_p05_cinf`.
+- Optional refinement: add `r003_p05_c8` and `r002_p05_c15` per ratio only if
+  the first pass is competitive or noisy enough to justify extra runs.
+
+### CelebA missing-cell launch
+
+Added `scripts/run_celeba_main_missing_gpu231.sh` to fill the remaining CelebA
+main-table gaps and launched it with stamp `20260504_024733`.
+
+The launcher runs:
+
+- GPU `2`: ratio `0.5` attribute core RPCs.
+- GPU `3`: ratio `0.9` Random/Stratified/Coreset/BADGE, then ratio `0.7`
+  attribute core RPCs.
+- GPU `1`: ratio `0.9` attribute core RPCs.
+
+Core RPCs per attribute ratio:
+
+- `r000_p0_c15`
+- `r000_p0_cinf`
+- `r003_p05_c15`
+- `r003_p05_cinf`
+
+The script implements automatic refinement after each ratio's core RPCs finish:
+
+- If best attribute is within `0.002` of the current best baseline or beats it,
+  run `r003_p05_c8` and `r002_p05_c15`.
+- If best attribute is clearly below the current best baseline, run the two
+  above plus `r001_p05_c15` and `r001_p05_cinf`.
+
+Launch details:
+
+- PID manifest:
+  `logs_celeba/pids/mainfill_gpu231_20260504_024733.pids`.
+- Controllers:
+  - GPU `2`: PID `203989`, log `logs_celeba/mainfill_gpu2_20260504_024733.out`
+  - GPU `3`: PID `203990`, log `logs_celeba/mainfill_gpu3_20260504_024733.out`
+  - GPU `1`: PID `205282`, log `logs_celeba/mainfill_gpu1_20260504_024733.out`
+
+There was an earlier failed stamp `20260504_024633`; ignore those row logs.
+The failure was due to the helper passing the GPU id as an extra positional
+argument to `alpred.py`. The script was fixed before launching
+`20260504_024733`.
+
+### COCO no-resume completion
+
+The COCO brown-rainy ratio `1.0` no-resume base-epoch run on GPU `1` completed:
+
+- Log:
+  `log_pose/pose_qwen3_brown_rainy_ratio1p0_gen1000_e2_baseparams_noresume_gpu1_20260504_011553.log`
+- Best checkpoint epoch: `0`
+- Held-out val AP: `0.6321`
+- Held-out test AP: `0.6292`
+- Held-out test AP50/AP75: `0.8549` / `0.6802`
+
+Updated `report.md` to replace the pending COCO row in
+`05/04/2026 No-Resume Base-Epoch Ratio 1.0 Reruns` with the completed result.
+
+### ImageNet unified-table per-method plot
+
+Added a dedicated ImageNet ControlNet Test ACC plot for the unified main-result
+table.
+
+Files:
+
+- `scripts/build_imagenet_controlnet_methods_plot.py`
+- `figures/imagenet_controlnet_methods_test_acc.png`
+- `figures/imagenet_controlnet_methods_test_acc.csv`
+
+The plot includes all eight unified ImageNet methods:
+
+- Random
+- Stratified
+- Entropy
+- Coreset
+- BADGE
+- UHerding
+- PPAL
+- Best Attribute
+
+The x-axis is ratio `0.1`-`1.0`. The ratio `1.0` point is the shared
+representative full-data value `0.7400`, so all eight method curves converge
+there. Added the 05/04/2026 no-resume base-epoch ImageNet ratio `1.0` rerun as
+`SafeFix`: a dashed horizontal reference at Test ACC `0.7315` with a star marker
+at ratio `1.0`. Updated `report.md` to place the figure immediately after the
+ImageNet ControlNet unified table.
+
+### COCO and KITTI unified-table per-method plots
+
+Added the same per-method ratio plot format for COCO and KITTI.
+
+Files:
+
+- `scripts/build_coco_kitti_methods_plots.py`
+- `figures/coco_brown_rainy_methods_test_ap.png`
+- `figures/coco_brown_rainy_methods_test_ap.csv`
+- `figures/kitti_red_cloudy_methods_test_map5095.png`
+- `figures/kitti_red_cloudy_methods_test_map5095.csv`
+
+Both plots include the eight unified table methods over ratios `0.1`-`1.0`,
+with all methods converging to the shared representative full-data value at
+ratio `1.0`.
+
+SafeFix references:
+
+- COCO brown-rainy pose no-resume base-epoch ratio `1.0`: Test AP `0.6292`.
+- KITTI red-cloudy YOLOv8 no-resume base-epoch ratio `1.0`: Test mAP50-95
+  `0.5737`.
+
+The SafeFix rows are plotted as dashed horizontal reference lines with star
+markers at ratio `1.0` because they are single full-data controls rather than
+full ratio sweeps. Updated `report.md` to place each figure immediately after
+the corresponding unified table.
+
+### COCO PPAL correction
+
+The user corrected COCO Brown-Rainy Pose ratio `0.5` PPAL Test AP:
+
+- `0.5928 -> 0.6182`
+
+Updated:
+
+- `report.md` unified COCO table.
+- `report.md` detailed COCO per-ratio table.
+- `scripts/build_coco_kitti_methods_plots.py`.
+- Regenerated `figures/coco_brown_rainy_methods_test_ap.csv` and
+  `figures/coco_brown_rainy_methods_test_ap.png`.
+
+## Session 176: Fill KITTI top-summary baseline columns
+
+**Date**: 2026-05-04
+**Task**: update-kitti-top-summary-from-10epoch-sweep
+
+Updated `report.md` so the top `KITTI Red-Cloudy Generated-Image YOLOv8,
+Test mAP50-95` table now includes the baseline columns that were already
+available in the detailed `KITTI Generated Red-Cloudy, 10-Epoch Sweep` table.
+
+The top KITTI summary now reports Test mAP50-95 for:
+
+- `Random`
+- `Stratified`
+- `Entropy`
+- `Coreset` from `coreset_fast`
+- `BADGE` from `badge_fast`
+- `UHerding`
+- `PPAL`
+- `Best Attribute`
+
+This was a report-only synchronization. No experiment logs were re-parsed and
+no code or figures were changed.
+
+## Session 175: Report completion for KITTI baselines, CelebA attributes, and ImageNet BADGE
+
+**Date**: 2026-05-04
+**Task**: update-report-kitti-baselines-celeba-attribute-and-imagenet-badge
+
+### Follow-up: ratio=1.0 generated-image base-parameter no-resume runs
+
+After the user clarified that the KITTI and COCO `ratio=1.0` controls should
+still add 1k generated images but should not use the low-ratio
+resume-from-base fine-tuning setup, launched two new controls with stamp
+`20260504_011553`.
+
+Added launcher:
+`scripts/run_ratio1_kitti_coco_baseparams_noresume.sh`.
+
+Launched jobs:
+
+- KITTI red-cloudy, GPU `0`:
+  - Log:
+    `logs/kitti_ratio1p0_random_red_cloudy_gen1000_e30_baseparams_noresume_gpu0_20260504_011553.log`
+  - PID file:
+    `logs/kitti_ratio1p0_random_red_cloudy_gen1000_e30_baseparams_noresume_gpu0_20260504_011553.pid`
+  - Prepared root:
+    `/data/oxx220000/kitti_yolov8_ratio1p0_random_red_cloudy_gen1000_seed42_baseparams_noresume_20260504_011553`
+  - Dataset preparation used `train_yolov8_kitti_generated.py --prepare-only`
+    with `sub_ratio=1.0`, random original selection, and `num_added_img=1000`.
+    Startup log confirms `selected_original=5000`, `selected_generated=1000`,
+    and `final_train_images=6000`.
+  - Training command then used `object_detection/train_yolov8_kitti.py` with
+    the base KITTI setup: `weights/yolov8n.pt`, `pretrained=true`,
+    `epochs=30`, `batch=16`, `imgsz=640`, `workers=4`, `seed=42`,
+    `eval-test=true`. This avoids loading the earlier 30-epoch KITTI base
+    checkpoint.
+
+- COCO brown-rainy pose, GPU `1`:
+  - Log:
+    `log_pose/pose_qwen3_brown_rainy_ratio1p0_gen1000_e2_baseparams_noresume_gpu1_20260504_011553.log`
+  - PID file:
+    `log_pose/pids/pose_qwen3_brown_rainy_ratio1p0_gen1000_e2_baseparams_noresume_gpu1_20260504_011553.pid`
+  - Output dir:
+    `log_pose/pose_keypointrcnn_brown_rainy_ratio1p0_gen1000_e2_baseparams_noresume_gpu1_20260504_011553`
+  - Command uses `train_pose_estimation.py train` with `--pretrained true`,
+    `epochs=2`, `lr=0.005`, `batch-size=8`, `max-train-samples=20000`,
+    `sub-ratio=1.0`, `use-active-learning=false`, `attribute=brown_rainy`,
+    `num-added-img=1000`, and no `--resume-model`.
+  - Startup log confirms `selected_original=20000`,
+    `generated_selected=1000`, and `final_train=21000`.
+
+Startup validation:
+
+- `bash -n scripts/run_ratio1_kitti_coco_baseparams_noresume.sh`
+- `pgrep` and `nvidia-smi` showed active main Python processes:
+  - KITTI PID `171951` on GPU0, about `2420 MiB`
+  - COCO PID `171871` on GPU1, about `19724 MiB`
+- Startup error-marker scan found no `Traceback`, `CUDA out of memory`,
+  `Killed`, `RuntimeError`, `Exception`, missing-file, or not-found markers.
+
+Status:
+
+[RUNNING] **KITTI/COCO ratio=1.0 generated-image no-resume controls launched**
+
+### Follow-up: ImageNet/CelebA ratio=1.0 generated-image no-resume runs
+
+The user asked to launch the same type of `ratio=1.0` plus 1k generated-image
+no-resume controls for ImageNet and CelebA on GPUs `2` and `3`, and to record
+the existing report values first because prior completed rows already exist.
+
+Report update:
+
+- In `report.md`, the `05/01/2026 Update -- Ratio 1.0 Full-Data ControlNet
+  Results` section now explicitly notes that the existing ImageNet and CelebA
+  values are the current completed records and that new no-resume base-epoch
+  reruns are in progress for comparison.
+- Added an in-progress table with exact no-resume rerun logs for ImageNet,
+  CelebA, COCO, and KITTI.
+
+Added launcher:
+`scripts/run_ratio1_imagenet_celeba_baseparams_noresume_gpu23.sh`.
+
+Launched jobs with stamp `20260504_012302`:
+
+- ImageNet `pinkcolor_fabrictexture`, GPU `2`:
+  - Log:
+    `logs_imagenet/controlnet_pinkcolor_fabrictexture_resnet_imagenet_1000_ratio1p0_e30_baseparams_noresume_gpu2_20260504_012302.log`
+  - PID file:
+    `logs_imagenet/controlnet_pinkcolor_fabrictexture_resnet_imagenet_1000_ratio1p0_e30_baseparams_noresume_gpu2_20260504_012302.pid`
+  - Command uses `alpred.py` with ResNet random initialization,
+    `num_added_img=1000`, `sub_ratio=1.0`, `use_active_learning=False`,
+    `num_epochs=30`, `lr=1e-3`, `batch_size=64`, and no `resume_model`.
+  - Startup log confirms ImageNet `10400 -> 11400` with random full-ratio
+    sampling and reached epoch logs.
+
+- CelebA `redhair_brownskin_sademotion`, GPU `3`:
+  - Log:
+    `logs_celeba/controlnet_redhair_brownskin_sademotion_resnet_celeba_1000_ratio1p0_e20_baseparams_noresume_gpu3_20260504_012302.log`
+  - PID file:
+    `logs_celeba/controlnet_redhair_brownskin_sademotion_resnet_celeba_1000_ratio1p0_e20_baseparams_noresume_gpu3_20260504_012302.pid`
+  - Command uses `alpred.py` with ResNet random initialization,
+    `num_added_img=1000`, `sub_ratio=1.0`, `use_active_learning=False`,
+    `num_epochs=20`, `lr=1e-5`, `batch_size=64`, `skip_feasible=True`, and no
+    `resume_model`.
+  - Startup log confirms CelebA `80000 -> 81000`.
+
+Startup validation:
+
+- `bash -n scripts/run_ratio1_imagenet_celeba_baseparams_noresume_gpu23.sh`
+- `pgrep -af alpred.py` showed the two parent commands and child workers.
+- Error-marker scan over the two new logs found no `Traceback`,
+  `CUDA out of memory`, `Killed`, `RuntimeError`, `Exception`, missing-file,
+  or not-found markers.
+
+Status:
+
+[RUNNING] **ImageNet/CelebA ratio=1.0 generated-image no-resume controls launched**
+
+### Follow-up: no-resume ratio=1.0 report update after GPU0/2/3 completion
+
+The user asked to update `report.md` after the GPU0-3 ratio `1.0` no-resume
+runs. Parsed the current logs and updated the ratio `1.0` section.
+
+Report update:
+
+- `report.md`
+  - Rewrote the `05/01/2026 Update -- Ratio 1.0 Full-Data ControlNet Results`
+    text to separate previously completed resume-style controls from the new
+    no-resume base-epoch reruns.
+  - Added a `05/04/2026 No-Resume Base-Epoch Ratio 1.0 Reruns` table.
+  - Recorded completed no-resume rows:
+    - ImageNet `pinkcolor_fabrictexture`, ResNet random init, 30 epochs:
+      Test ACC `0.7315`, best Val ACC `0.7277`, loss `0.8216`,
+      log
+      `logs_imagenet/controlnet_pinkcolor_fabrictexture_resnet_imagenet_1000_ratio1p0_e30_baseparams_noresume_gpu2_20260504_012302.log`.
+    - CelebA `redhair_brownskin_sademotion`, ResNet random init, 20 epochs:
+      Test ACC `0.8701`, best Val ACC `0.8778`, loss `0.4104`,
+      log
+      `logs_celeba/controlnet_redhair_brownskin_sademotion_resnet_celeba_1000_ratio1p0_e20_baseparams_noresume_gpu3_20260504_012302.log`.
+    - KITTI `red_cloudy`, YOLOv8n, 30 epochs:
+      test mAP50-95 `0.5737`, val mAP50-95 `0.5555`, test mAP50 `0.8363`,
+      precision `0.8503`, recall `0.7499`,
+      log
+      `logs/kitti_ratio1p0_random_red_cloudy_gen1000_e30_baseparams_noresume_gpu0_20260504_011553.log`.
+  - COCO pose no-resume row is still pending final metrics. Its log had only
+    completed epoch 0 at last check:
+    epoch-0 Val AP `0.6321`, AP50 `0.8613`, AP75 `0.6856`; the final epoch
+    was still running.
+
+Validation:
+
+- Parsed final markers/metrics with `rg` and `tail`.
+- Error-marker scan over the four logs found no `Traceback`,
+  `CUDA out of memory`, `Killed`, `RuntimeError`, `Exception`, missing-file,
+  or not-found markers.
+- Process check still showed the COCO GPU1 no-resume job active, so its final
+  metric was not promoted.
+
+Status:
+
+[PARTIAL] **Report updated for completed ImageNet, CelebA, and KITTI no-resume rows; COCO final still pending**
+
+### Summary
+
+Updated the curated report with the missing main-result details requested by
+the user. KITTI now has full Random, Stratified, Entropy, Coreset, BADGE,
+UHerding, PPAL, and attribute rows in the detailed 10-epoch table. CelebA
+main-target attribute logs were checked and the best completed `attr_ratio`
+rows were added. The previously missing ImageNet ControlNet ratio `0.9` BADGE
+run completed and was promoted into the top main-result table.
+
+### What Changed
+
+- `report.md`
+  - Added `ratio=1.0` rows directly to each per-dataset table under
+    `Unified Main-Result Tables`. Because `ratio=1.0` uses the full original
+    training set, all baseline selectors are equivalent; each dataset table
+    repeats the same representative full-data value across methods:
+    - ImageNet ACC `0.7400`
+    - CelebA ACC `0.9114`
+    - COCO AP `0.6259`
+    - KITTI mAP50-95 `0.5858`
+  - Refreshed the top CelebA main-result table using the main
+    `resume_lr1e-5_epoch15_*` logs for Random, Stratified, Coreset, and BADGE
+    at ratios `0.1`, `0.3`, `0.5`, and `0.7`; ratio `0.9` remains empty for
+    those methods because no matching main resume rows were found.
+  - Added KITTI detailed rows for:
+    `random`, `stratified`, `entropy`, `coreset_fast`, and `badge_fast` at
+    ratios `0.1`, `0.3`, `0.5`, `0.7`, and `0.9`.
+  - Added CelebA main-target attribute rows:
+    - ratio `0.1`: Test ACC `0.9107`, loss `0.3599`, best val `0.9091`,
+      selection time `0.42s`,
+      `logs_celeba/attr_ratio0.1_qwen3mix_r003_p05_c15_gpu2_20260417_010718.log`
+    - ratio `0.3`: Test ACC `0.9089`, loss `0.3609`, best val `0.9090`,
+      selection time `0.51s`,
+      `logs_celeba/attr_ratio0.3_qwen3mixx333_r000_p0_cinf_gpu0_20260417_005520.log`
+  - Updated CelebA top `Best Attribute` at ratio `0.1` from `0.9099` to
+    `0.9107`.
+  - Updated ImageNet top BADGE ratio `0.9` from `n/a` to `0.7438` and changed
+    the coverage note to complete for the five-ratio main table.
+- `scripts/build_main_results_summary.py`
+  - Updated CelebA ratio `0.1` best-attribute value to `0.9107`.
+- Regenerated:
+  - `figures/main_results_random_vs_best_attribute.csv`
+  - `figures/main_results_random_vs_best_attribute.png`
+
+### Validation
+
+- Rebuilt the main random-vs-best-attribute plot with:
+  `MPLCONFIGDIR=/tmp/mpl-safefix python3 scripts/build_main_results_summary.py`
+- Checked the ImageNet BADGE log:
+  `logs_imagenet/badge_resnet_imagenet_1000_ratio0p9_gpu1_20260504_004831.log`
+  - Process `162069` had exited.
+  - Parsed completion metric:
+    `Model Test ACC: 0.7438, test loss: 0.7866`
+  - No `Traceback`, `CUDA out of memory`, `Killed`, `RuntimeError`,
+    `Exception`, missing-file, or not-found marker was found by the final scan.
+
+### Caveats
+
+- CelebA top ratio `0.3` remains `0.9091` because the `attr_rb_ratio0.3`
+  logs contain that higher value; the explicit main `attr_ratio0.3` row added
+  to the detailed table is `0.9089`.
+- Selection times for KITTI non-attribute baseline rows were left as `n/a`
+  where the archived row summaries did not record an explicit selector time.
+
+### Status
+
+[OK] **Complete**
+
+## Session 174: KITTI Baseline Status Check and RPC Queue Launch
+
+**Date**: 2026-05-04
+**Task**: check-kitti-baseline-coverage-and-launch-missing-rpc-runs
+
+### Summary
+
+Checked whether KITTI red-cloudy main-result baselines had actually run. They
+had: the 10-epoch KITTI sweep already contains completed logs for
+`random`, `stratified`, `coreset_fast`, `badge_fast`, `entropy`,
+`uherding_fast`, and `ppal_fast` at ratios `0.1`, `0.3`, `0.5`, `0.7`, and
+`0.9`. The incomplete part was not baseline execution; it was the compact
+report table and missing extra KITTI attribute RPC settings beyond the existing
+`attribute_r003_p5_c15`.
+
+### What Changed
+
+- Added launcher:
+  `scripts/run_kitti_baselines_and_rpc_gpu0123.sh`
+- Launcher behavior:
+  - GPU `0`: ratios `0.1`, then `0.3`
+  - GPU `1`: ratio `0.5`
+  - GPU `2`: ratio `0.7`
+  - GPU `3`: ratio `0.9`
+  - Checks existing KITTI logs for `End timestamp:` and skips completed rows.
+  - `RUN_BASELINES=1` by default, but existing completed baseline rows are
+    skipped by `SKIP_COMPLETED=1`.
+  - Attribute RPC queue per ratio:
+    - `attribute_r000_p0_c15`
+    - `attribute_r001_p5_c15`
+    - `attribute_r003_p5_c8`
+    - `attribute_r003_p5_c15`
+  - Existing `attribute_r003_p5_c15` rows from `20260502_015837` are skipped.
+
+### Validation Before Launch
+
+- `bash -n scripts/run_kitti_baselines_and_rpc_gpu0123.sh`
+- `DRY_RUN=1 scripts/run_kitti_baselines_and_rpc_gpu0123.sh`
+  - confirmed baseline/UHerding/PPAL/old `attribute_r003_p5_c15` rows are
+    skipped
+  - confirmed only 15 new RPC rows would run.
+
+### Launch
+
+- Launch stamp: `20260504_000311`
+- PID file:
+  `logs/kitti_baselines_rpc_gpu0123_20260504_000311.pids`
+- Controller outputs:
+  - GPU `0`: `logs/kitti_baselines_rpc_gpu0_20260504_000311.out`
+  - GPU `1`: `logs/kitti_baselines_rpc_gpu1_20260504_000311.out`
+  - GPU `2`: `logs/kitti_baselines_rpc_gpu2_20260504_000311.out`
+  - GPU `3`: `logs/kitti_baselines_rpc_gpu3_20260504_000311.out`
+- Parent PIDs at startup:
+  - GPU `0`: `145162`
+  - GPU `1`: `145163`
+  - GPU `2`: `145164`
+  - GPU `3`: `145165`
+- First row logs created:
+  - `logs/kitti_ratio0p1_attribute_r000_p0_c15_red_cloudy_gen1000_e10_gpu0_20260504_000311.log`
+  - `logs/kitti_ratio0p5_attribute_r000_p0_c15_red_cloudy_gen1000_e10_gpu1_20260504_000311.log`
+  - `logs/kitti_ratio0p7_attribute_r000_p0_c15_red_cloudy_gen1000_e10_gpu2_20260504_000311.log`
+  - `logs/kitti_ratio0p9_attribute_r000_p0_c15_red_cloudy_gen1000_e10_gpu3_20260504_000311.log`
+
+### Startup Check
+
+- Parent processes and first Python workers were visible.
+- Controller outputs showed completed rows being skipped and first missing RPC
+  rows starting normally.
+- First row logs reached dataset preparation and YOLO training setup.
+- Startup error-marker scan over controller outputs and first row logs found no
+  `Traceback`, `CUDA out of memory`, `Killed`, `RuntimeError`, `Exception`,
+  missing-file, or not-found markers.
+
+### Caveats / Next Steps
+
+- `report.md` was not updated with new KITTI RPC results because these jobs are
+  still running.
+- Next check should inspect the four controller outputs and parse rows with
+  stamp `20260504_000311` after completion.
+
+### Status
+
+[RUNNING] **KITTI missing RPC rows launched**
+
+## Session 173: Top-Level Main Results Consolidation
+
+**Date**: 2026-05-03
+**Task**: consolidate-main-results-at-top-of-report
+
+### Follow-up Correction
+
+- After the user asked about recent ImageNet ratio `0.7` attribute reruns,
+  checked the relevant report entries and logs.
+- The 2026-05-01 InternVL3 ratio `0.7` rerun rows were all below the newer best
+  non-attribute rows:
+  - best InternVL3 rerun: `r001_p5_cinf`, Test ACC `0.7446`.
+- However, the 2026-05-02 ImageNet RPC8 no-entropy sweep is also an attribute
+  sweep and has stronger ratio `0.7` results:
+  - `no_p`, Test ACC `0.7508`
+  - log:
+    `logs_imagenet/controlnet_rpc8_noentropy_no_p_resnet_imagenet_1000_ratio0p7_gpu3_20260502_023905.log`
+- Corrected the top ImageNet `Best Attribute` summary and regenerated:
+  - `figures/main_results_random_vs_best_attribute.csv`
+  - `figures/main_results_random_vs_best_attribute.png`
+- Also updated `scripts/build_main_results_summary.py` so the generated CSV and
+  plot use the best ImageNet attribute values across the completed RPC8
+  attribute sweeps, not only the InternVL3 per-ratio rows.
+- Corrected ImageNet top-table Best Attribute values to:
+  - ratio `0.1`: `0.7369`
+  - ratio `0.3`: `0.7492`
+  - ratio `0.5`: `0.7508`
+  - ratio `0.7`: `0.7508`
+  - ratio `0.9`: `0.7562`
+
+### Summary
+
+Added a top-level `Main Results Summary (ImageNet, CelebA, COCO, KITTI)` to
+`report.md`, excluding Instruct-Pix2Pix results as requested. The summary
+consolidates the current main-result datasets into compact per-ratio tables and
+keeps `Best Attribute` as the best completed attribute row per ratio rather
+than expanding RPC settings.
+
+### What Changed
+
+- Added a coverage table that states which methods are included and which
+  entries are partial or missing:
+  - ImageNet: Random, Stratified, Entropy/Uncertainty Stratified, Coreset,
+    BADGE, UHerding, PPAL, Best Attribute. Comparable BADGE is missing at
+    ratio `0.9`.
+  - CelebA: resume Random/Stratified/Coreset/BADGE/Attribute rows through
+    ratio `0.7`; entropy/UHerding/PPAL rows through ratio `0.9`.
+  - COCO: brown-rainy Random, Stratified, Coreset, BADGE, Entropy, UHerding,
+    PPAL, and Best Attribute through ratios `0.1`-`0.9`.
+  - KITTI: compact top view uses the existing 10-epoch best-baseline summary
+    plus UHerding/PPAL and explicit best attribute values where present.
+- Added unified per-dataset main-result tables near the top of `report.md`.
+- Added a new random-vs-best-attribute line plot and source CSV:
+  - `figures/main_results_random_vs_best_attribute.png`
+  - `figures/main_results_random_vs_best_attribute.csv`
+- Added helper script:
+  - `scripts/build_main_results_summary.py`
+
+### Validation
+
+- Generated the plot and CSV with:
+  `MPLCONFIGDIR=/tmp/mpl-safefix python3 scripts/build_main_results_summary.py`
+- Checked the top of `report.md` after insertion.
+
+### Caveats / Next Steps
+
+- The CelebA top table intentionally mixes the earlier resume
+  Random/Stratified/Coreset/BADGE/Attribute rows with the newer
+  entropy/UHerding/PPAL ControlNet rows because those are the current completed
+  main-result rows in `report.md`.
+- The KITTI compact table cannot show every Random/Stratified/Coreset/BADGE
+  value until the full per-method 10-epoch parsed rows are promoted from logs
+  into a table.
+
+### Status
+
+[OK] **Complete**
+
+## Session 171: Baseline Completion Check After Power Outage
+
+**Date**: 2026-05-03
+**Task**: check-yesterday-baseline-runs-after-power-outage
+
+### Summary
+
+Checked the recent baseline sweep controller outputs and row logs after the
+reported power outage. No active safefix baseline training processes from the
+known launchers are still running, and the effective UHerding and PPAL queues
+both reached normal row-level `END` markers for all intended ratios.
+
+### Checked Launches
+
+- UHerding effective rows:
+  - ImageNet and KITTI stamp `20260502_140255`
+  - CelebA and COCO relaunch stamp `20260502_1440fast`
+  - Status: all `20/20` intended rows complete.
+- PPAL effective rows:
+  - Stamp `20260502_185507`
+  - Status: all `20/20` intended rows complete.
+- Earlier already-recorded baseline sweeps from overnight remained complete as
+  recorded in `report.md`:
+  - KITTI generated-image sweep
+  - KITTI/CelebA/COCO entropy baselines
+  - ImageNet RPC8 no-entropy rerun
+  - COCO RPC8 metadata-only sweep
+
+### Caveats
+
+- The old UHerding original launch stamp `20260502_140255` for COCO/CelebA has
+  incomplete controller outputs because those workers were intentionally
+  stopped after the slow selector issue. They were superseded by the
+  `20260502_1440fast` relaunch, which completed all COCO/CelebA ratios.
+- The PPAL stamp `20260502_185417` has empty controller outputs from a
+  sandbox-killed launch and should continue to be ignored. The effective PPAL
+  launch is `20260502_185507`.
+- A broad process check found no remaining `uherding`, `ppal`, `alpred.py`,
+  `train_pose_estimation.py`, or `train_yolov8_kitti_generated.py` training
+  jobs beyond the status-check commands themselves.
+
+### Commands / Artifacts
+
+- Controller outputs checked:
+  - `logs/uherding_gpu1_imagenet_then_kitti_20260502_140255.out`
+  - `log_pose/uherding_gpu2_coco_20260502_1440fast.out`
+  - `logs_celeba/uherding_gpu3_celeba_20260502_1440fast.out`
+  - `logs/ppal_gpu3_imagenet_then_kitti_20260502_185507.out`
+  - `log_pose/ppal_gpu2_coco_20260502_185507.out`
+  - `logs_celeba/ppal_gpu1_celeba_20260502_185507.out`
+- Process checks:
+  - `ps -fp 1346727 1346728 1346729 1368085 1368086 1587597 1587598 1587599`
+  - `pgrep -af "uherding|ppal|alpred.py|train_pose_estimation.py|train_yolov8_kitti_generated.py"`
+
+### Status
+
+[OK] **Complete**
+
+## Session 172: Report Update for UHerding and PPAL Results
+
+**Date**: 2026-05-03
+**Task**: insert-completed-uherding-ppal-results-into-existing-report-tables
+
+### Summary
+
+Updated `report.md` with the completed UHerding and PPAL baseline results,
+placing rows into the existing dataset-specific comparison areas rather than
+adding an isolated append-only section.
+
+### What Changed
+
+- ImageNet:
+  - Added `UHerding` and `PPAL` rows to the existing per-ratio
+    `All-Strategy Comparison across Sub Ratios` tables.
+  - Applied the same insertion to the duplicated historical copy of that table
+    later in the report.
+- KITTI:
+  - Added completed `uherding_fast` and `ppal_fast` rows under the
+    `KITTI Generated Red-Cloudy, 10-Epoch Sweep` section, grouped by ratio.
+- CelebA:
+  - Reworked the entropy-only section into a combined per-ratio baseline table
+    and added `uherding` and `ppal` rows next to `entropy`.
+- COCO:
+  - Inserted `uherding` and `ppal` rows into the existing brown-rainy combined
+    baseline/attribute table at ratios `0.10`, `0.30`, `0.50`, `0.70`, and
+    `0.90`.
+
+### Source Logs
+
+- UHerding:
+  - ImageNet/KITTI stamp `20260502_140255`
+  - CelebA/COCO relaunch stamp `20260502_1440fast`
+- PPAL:
+  - stamp `20260502_185507`
+
+### Status
+
+[OK] **Complete**
+
 ## Session 168: PPAL Fast Strategy Implementation
 
 **Date**: 2026-05-02
@@ -575,8 +1429,8 @@ The user asked to organize the experiments from the last dozen-plus hours into
   `0.5` coreset_fast `0.8436`; `0.7` entropy `0.8472`;
   `0.9` entropy `0.8492`.
 - KITTI 10-epoch best by mAP50-95:
-  `0.1` entropy `0.5497`; `0.3` entropy `0.5636`;
-  `0.5` entropy `0.5766`; `0.7` entropy `0.5784`;
+  `0.1` attribute_r000_p0_cinf `0.5372`; `0.3` entropy `0.5636`;
+  `0.5` entropy `0.5766`; `0.7` ppal_fast `0.5782`;
   `0.9` attribute_r003_p5_c15 `0.5850`.
 - CelebA entropy best row:
   ratio `0.7`, Test ACC `0.9153`, Best Val ACC `0.9156`.
@@ -4851,6 +5705,101 @@ The user asked whether the `ratio=0.9` GPU0 queue had finished. It had not: the 
 ### Status
 
 [~] **In Progress**
+
+## Session 83: KITTI RPC completion, main-result refresh, and ratio-1.0 check
+
+**Date**: 2026-05-04
+**Task**: kitti-rpc-report-and-ratio1-full-data-check
+
+### Summary
+
+Checked the KITTI `20260504_000311` queues, parsed the completed attribute RPC
+rows, refreshed the main-result summary/table/plot, and checked ratio `1.0`
+coverage for the four main datasets. ImageNet, CelebA, and COCO ratio `1.0`
+full-data rows were already complete and recorded in `report.md`; KITTI ratio
+`1.0` red-cloudy generated YOLOv8 was missing, so a single GPU `3` run was
+launched.
+
+### Main Findings
+
+- KITTI `20260504_000311` status:
+  - parent PIDs `145162`, `145163`, `145164`, `145165` are no longer alive
+  - controller outputs show normal `END` / `SKIP` rows
+  - all `15/15` newly launched attribute RPC logs contain `End timestamp:`
+  - error-marker scan over controller outputs and row logs found no
+    `Traceback`, `CUDA out of memory`, `Killed`, `RuntimeError`, `Exception`,
+    missing-file, or not-found markers
+- Best completed KITTI attribute row by ratio, using held-out test mAP50-95:
+  - `0.1`: `attribute_r000_p0_c15`, mAP50 `0.8186`, mAP50-95 `0.5321`
+  - `0.3`: `attribute_r000_p0_c15`, mAP50 `0.8338`, mAP50-95 `0.5646`
+  - `0.5`: `attribute_r000_p0_c15`, mAP50 `0.8457`, mAP50-95 `0.5773`
+  - `0.7`: `attribute_r000_p0_c15`, mAP50 `0.8406`, mAP50-95 `0.5780`
+  - `0.9`: `attribute_r001_p5_c15` / tied rows, mAP50 `0.8437`, mAP50-95
+    `0.5850`
+- This changes the KITTI compact summary:
+  - ratio `0.3` best mAP50-95 is now `attribute_r000_p0_c15` (`0.5646`),
+    slightly above entropy (`0.5636`)
+  - ratio `0.5` best mAP50-95 is now `attribute_r000_p0_c15` (`0.5773`),
+    above entropy (`0.5766`)
+  - ratio `0.7` now stays with ppal_fast (`0.5782`), with best attribute at
+    `0.5780`
+
+### Main Changes
+
+- Updated `report.md`:
+  - top KITTI main-result coverage note
+  - top KITTI compact table with best attribute values for every ratio
+  - KITTI detailed summary rows for ratios `0.3` and `0.5`
+  - detailed table with the `15` newly completed KITTI attribute RPC rows
+- Updated `scripts/build_main_results_summary.py` so the main random-vs-best
+  attribute plot includes KITTI random and best attribute values.
+- Regenerated:
+  - `figures/main_results_random_vs_best_attribute.csv`
+  - `figures/main_results_random_vs_best_attribute.png`
+
+### Ratio 1.0 Status
+
+- Already complete and recorded in `report.md`:
+  - ImageNet:
+    `logs_imagenet/controlnet_pinkcolor_fabrictexture_resnet_imagenet_1000_ratio1p0_gpu3_20260501_150816.log`
+  - CelebA main target:
+    `logs_celeba/controlnet_redhair_brownskin_sademotion_resnet_celeba_1000_ratio1p0_gpu0_20260501_150816.log`
+  - COCO pose:
+    `log_pose/pose_qwen3_brown_rainy_full_ratio1p0_gpu3_20260501_150816.log`
+- KITTI ratio `1.0` red-cloudy generated run was missing, so it was launched
+  on GPU `3` and completed:
+  - PID: `158262`
+  - log:
+    `logs/kitti_ratio1p0_random_red_cloudy_gen1000_e10_gpu3_20260504_003555_fp.log`
+  - pid file:
+    `logs/kitti_ratio1p0_random_red_cloudy_gen1000_e10_gpu3_20260504_003555_fp.pid`
+  - prepared root:
+    `/data/oxx220000/kitti_yolov8_ratio1p0_random_red_cloudy_gen1000_seed42`
+  - command uses `/people/cs/o/oxx220000/.conda/envs/fp/bin/python` because
+    the first `ad`-environment attempt prepared data but failed before training
+    with `ModuleNotFoundError: No module named 'ultralytics'`
+  - final held-out test metrics:
+    - precision `0.8808`
+    - recall `0.7449`
+    - mAP50 `0.8505`
+    - mAP50-95 `0.5858`
+  - validation-side final metrics from the first final `results_dict`:
+    - mAP50 `0.8182`
+    - mAP50-95 `0.5608`
+  - end timestamp: `2026-05-04 00:41:28`
+  - end-to-end time: `00:04:45`
+
+### Validation
+
+- Parsed KITTI row metrics from the final `results_dict` in each completed log.
+- Ran `python3 scripts/build_main_results_summary.py`; matplotlib used a
+  temporary cache under `/tmp` because the home config path is not writable.
+- Confirmed the regenerated CSV now includes KITTI random and best attribute
+  values for all five ratios.
+
+### Status
+
+[OK] **Completed**: KITTI ratio `1.0` result has been added to `report.md`.
 
 ## Session 83 - Launch KITTI BLIP and Qwen3 val/test assignment
 

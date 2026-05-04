@@ -1,3 +1,109 @@
+## Main Results Summary (ImageNet, CelebA, COCO, KITTI)
+
+This top summary consolidates the current main-result datasets and excludes
+the Instruct-Pix2Pix sections. Metrics are dataset-specific: ImageNet and
+CelebA use held-out Test ACC, COCO uses held-out Test AP, and KITTI uses
+held-out Test mAP50-95. `Best Attribute` means the best completed attribute row
+within the same dataset and ratio; the RPC setting is intentionally not expanded
+here.
+
+### Main Result Coverage
+
+| Dataset | Target / setting | Metric | Included main methods | Missing or partial methods in the current unified table |
+| --- | --- | --- | --- | --- |
+| ImageNet | ControlNet `pinkcolor_fabrictexture` | Test ACC | Random, Stratified, Entropy/Uncertainty Stratified, Coreset, BADGE, UHerding, PPAL, Best Attribute | Complete for ratios `0.1`, `0.3`, `0.5`, `0.7`, `0.9`; ratio `0.9` BADGE was completed on 2026-05-04. |
+| CelebA | ControlNet / resume `redhair_brownskin_sademotion` | Test ACC | Random, Stratified, Coreset, BADGE, Entropy, UHerding, PPAL, Best Attribute | Random/Stratified/Coreset/BADGE resume rows are recorded for ratios up to `0.7`; Best Attribute is recorded for `0.1` and `0.3`; entropy/UHerding/PPAL rows are complete through `0.9`. |
+| COCO | Brown-rainy pose | Test AP | Random, Stratified, Coreset, BADGE, Entropy, UHerding, PPAL, Best Attribute | Complete for ratios `0.1`, `0.3`, `0.5`, `0.7`, `0.9`; ratio `0.05` exists but is omitted from the unified 5-ratio view. |
+| KITTI | Red-cloudy generated-image YOLOv8 | Test mAP50-95 | Random, Stratified, Entropy, Coreset, BADGE, UHerding, PPAL, Best Attribute | Complete for ratios `0.1`, `0.3`, `0.5`, `0.7`, `0.9`; extra attribute RPC rows completed on 2026-05-04. |
+
+### Random vs Best Attribute
+
+The line plot below follows the same format as the earlier random-vs-attribute
+summary: x-axis is `ratio`, and each panel compares `Random` with the best
+available `Attribute` result for the same dataset and ratio.
+
+![Main results random vs best attribute](figures/main_results_random_vs_best_attribute.png)
+
+Source CSV: `figures/main_results_random_vs_best_attribute.csv`.
+
+### Unified Main-Result Tables
+
+For `ratio=1.0`, subset selection is inactive because the full original
+training set is used; the repeated method values in each row are the same
+representative full-data result.
+
+#### ImageNet ControlNet, Test ACC
+
+For ImageNet, `Best Attribute` includes the completed ControlNet attribute
+tables and the later RPC8 attribute sweeps. At ratio `0.7`, the best completed
+attribute row is the 2026-05-02 RPC8 no-entropy `no_p` row, Test ACC `0.7508`;
+the 2026-05-01 InternVL3 ratio-`0.7` rerun best was `r001_p5_cinf`, Test ACC
+`0.7446`. The previously missing comparable ratio-`0.9` BADGE row completed on
+2026-05-04 with Test ACC `0.7438`.
+
+| Ratio | Random | Stratified | Entropy | Coreset | BADGE | UHerding | PPAL | Best Attribute |
+| ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| `0.1` | `0.7269` | `0.7271` | `0.7254` | `0.7269` | `0.7323` | `0.7331` | `0.7285` | **`0.7369`** |
+| `0.3` | `0.7308` | `0.7369` | `0.7292` | `0.7369` | `0.7423` | `0.7469` | `0.7392` | **`0.7492`** |
+| `0.5` | `0.7400` | `0.7446` | `0.7331` | `0.7400` | `0.7469` | `0.7423` | `0.7400` | **`0.7508`** |
+| `0.7` | `0.7423` | `0.7346` | `0.7354` | `0.7392` | `0.7477` | `0.7469` | `0.7423` | **`0.7508`** |
+| `0.9` | `0.7482` | `0.7469` | `0.7462` | `0.7346` | `0.7438` | `0.7500` | `0.7508` | **`0.7562`** |
+| `1.0` | `0.7400` | `0.7400` | `0.7400` | `0.7400` | `0.7400` | `0.7400` | `0.7400` | `0.7400` |
+
+![ImageNet ControlNet per-method Test ACC](figures/imagenet_controlnet_methods_test_acc.png)
+
+Source CSV: `figures/imagenet_controlnet_methods_test_acc.csv`. `SafeFix`
+marks the 05/04/2026 no-resume base-epoch ratio-`1.0` rerun (`0.7315`) as a
+dashed reference line because it is a single full-data control point rather
+than a per-ratio selection curve.
+
+#### CelebA Red-Hair Brown-Skin Sad-Emotion, Test ACC
+
+| Ratio | Random | Stratified | Coreset | BADGE | Entropy | UHerding | PPAL | Best Attribute |
+| ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| `0.1` | `0.9103` | `0.9080` | `0.9000` | `0.9087` | **`0.9124`** | `0.9047` | `0.9113` | `0.9107` |
+| `0.3` | `0.9114` | `0.9107` | `0.9132` | `0.9075` | **`0.9139`** | `0.9090` | `0.9095` | `0.9091` |
+| `0.5` | `0.9114` | `0.9132` | `0.9134` | `0.9084` | `0.9129` | `0.9078` | **`0.9151`** | n/a |
+| `0.7` | `0.9084` | `0.9135` | `0.9119` | `0.9133` | **`0.9153`** | `0.9105` | `0.9114` | n/a |
+| `0.9` | n/a | n/a | n/a | n/a | **`0.9135`** | `0.9100` | `0.9119` | n/a |
+| `1.0` | `0.9114` | `0.9114` | `0.9114` | `0.9114` | `0.9114` | `0.9114` | `0.9114` | `0.9114` |
+
+#### COCO Brown-Rainy Pose, Test AP
+
+| Ratio | Random | Stratified | Entropy | Coreset | BADGE | UHerding | PPAL | Best Attribute |
+| ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| `0.1` | `0.6048` | `0.6110` | `0.6132` | `0.5877` | `0.5985` | `0.6013` | `0.5950` | **`0.6183`** |
+| `0.3` | `0.6127` | `0.6243` | `0.6215` | `0.6256` | `0.6153` | `0.6079` | `0.6165` | **`0.6306`** |
+| `0.5` | `0.6219` | `0.6230` | `0.6282` | `0.6167` | `0.6206` | `0.6153` | `0.6182` | **`0.6287`** |
+| `0.7` | `0.6232` | `0.6299` | `0.6293` | `0.6275` | `0.6256` | `0.6155` | `0.6223` | **`0.6319`** |
+| `0.9` | `0.6180` | `0.6291` | `0.6170` | `0.6202` | `0.6213` | `0.6191` | `0.6301` | **`0.6355`** |
+| `1.0` | `0.6259` | `0.6259` | `0.6259` | `0.6259` | `0.6259` | `0.6259` | `0.6259` | `0.6259` |
+
+![COCO Brown-Rainy Pose per-method Test AP](figures/coco_brown_rainy_methods_test_ap.png)
+
+Source CSV: `figures/coco_brown_rainy_methods_test_ap.csv`. `SafeFix` marks
+the 05/04/2026 no-resume base-epoch ratio-`1.0` rerun (`0.6292`) as a dashed
+reference line because it is a single full-data control point rather than a
+per-ratio selection curve.
+
+#### KITTI Red-Cloudy Generated-Image YOLOv8, Test mAP50-95
+
+| Ratio | Best Method by mAP50-95 | Random | Stratified | Entropy | Coreset | BADGE | UHerding | PPAL | Best Attribute |
+| ---: | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| `0.1` | `attribute_r000_p0_cinf` (`0.5372`) | `0.5204` | `0.5308` | `0.5297` | `0.5237` | `0.5322` | `0.5222` | `0.5262` | **`0.5372`** |
+| `0.3` | `attribute_r000_p0_c15` (`0.5646`) | `0.5605` | `0.5572` | `0.5636` | `0.5612` | `0.5624` | `0.5573` | `0.5568` | **`0.5646`** |
+| `0.5` | `attribute_r000_p0_c15` (`0.5773`) | `0.5719` | `0.5680` | `0.5766` | `0.5759` | `0.5726` | `0.5675` | `0.5721` | **`0.5773`** |
+| `0.7` | `ppal_fast` (`0.5782`) | `0.5766` | `0.5760` | `0.5772` | `0.5772` | `0.5717` | `0.5768` | **`0.5782`** | `0.5780` |
+| `0.9` | `attribute_r003_p5_c15` (`0.5850`) | `0.5817` | `0.5830` | `0.5830` | `0.5781` | `0.5810` | `0.5838` | `0.5796` | **`0.5850`** |
+| `1.0` | `full_data` (`0.5858`) | `0.5858` | `0.5858` | `0.5858` | `0.5858` | `0.5858` | `0.5858` | `0.5858` | `0.5858` |
+
+![KITTI Red-Cloudy YOLOv8 per-method Test mAP50-95](figures/kitti_red_cloudy_methods_test_map5095.png)
+
+Source CSV: `figures/kitti_red_cloudy_methods_test_map5095.csv`. `SafeFix`
+marks the 05/04/2026 no-resume base-epoch ratio-`1.0` rerun (`0.5737`) as a
+dashed reference line because it is a single full-data control point rather
+than a per-ratio selection curve.
+
 ## All-Strategy Comparison across Sub Ratios (lr=1e-5, 15 epochs)
 
 All runs resume from `weights/model_imagenet_resnet_base.pth` (base test acc: **0.7162**). The Attribute strategy uses the optimized `aggro_exp_p10_c4` parameters ($R=0.8, P=10.0, C=4.0$, Entropy=True). Reference: using 100% of the data (ratio=1.0) yields Test ACC = **0.7488**. The 3/13 update adds two new LLM-based attribute generation results (`Qwen3` and `InternVL3`) to compare alongside the default BLIP-based attribute assignment.
@@ -46,31 +152,134 @@ Current GPU processes observed during the check were owned by another user
 
 | Ratio | Best by mAP50 | mAP50 | mAP50-95 | Best by mAP50-95 | mAP50 | mAP50-95 |
 | ---: | --- | ---: | ---: | --- | ---: | ---: |
-| `0.1` | `entropy` | **`0.8255`** | **`0.5497`** | `entropy` | **`0.8255`** | **`0.5497`** |
-| `0.3` | `entropy` | **`0.8357`** | **`0.5636`** | `entropy` | **`0.8357`** | **`0.5636`** |
-| `0.5` | `coreset_fast` | **`0.8436`** | `0.5759` | `entropy` | `0.8414` | **`0.5766`** |
-| `0.7` | `entropy` | **`0.8472`** | **`0.5784`** | `entropy` | **`0.8472`** | **`0.5784`** |
+| `0.1` | `entropy` | **`0.8255`** | `0.5297` | `attribute_r000_p0_cinf` | `0.8185` | **`0.5372`** |
+| `0.3` | `entropy` | **`0.8357`** | `0.5636` | `attribute_r000_p0_c15` | `0.8338` | **`0.5646`** |
+| `0.5` | `attribute_r000_p0_c15` | **`0.8457`** | **`0.5773`** | `attribute_r000_p0_c15` | **`0.8457`** | **`0.5773`** |
+| `0.7` | `entropy` | **`0.8472`** | `0.5772` | `ppal_fast` | `0.8464` | **`0.5782`** |
 | `0.9` | `entropy` | **`0.8492`** | `0.5830` | `attribute_r003_p5_c15` | `0.8437` | **`0.5850`** |
 
-All KITTI 10-epoch logs completed. Full parsed rows are under
+Additional completed KITTI rows:
+
+| Ratio | Method | Val mAP50 | Val mAP50-95 | Test Precision | Test Recall | Test mAP50 | Test mAP50-95 | Selection time (s) | Log |
+| ---: | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- |
+| `0.1` | `random` | `0.7726` | `0.4960` | `0.8075` | `0.7155` | `0.7981` | `0.5204` | n/a | `logs/kitti_ratio0p1_random_red_cloudy_gen1000_e10_gpu0_20260502_015837.log` |
+| `0.1` | `stratified` | `0.7724` | `0.5071` | `0.8224` | `0.7307` | `0.8086` | `0.5308` | n/a | `logs/kitti_ratio0p1_stratified_red_cloudy_gen1000_e10_gpu0_20260502_015837.log` |
+| `0.1` | `entropy` | `0.7928` | `0.5258` | `0.8582` | `0.7402` | `0.8255` | `0.5297` | `54.24` | `logs/kitti_ratio0p1_entropy_red_cloudy_gen1000_e10_gpu3_20260502_025110.log` |
+| `0.1` | `coreset_fast` | `0.7752` | `0.5031` | `0.8254` | `0.7298` | `0.8071` | `0.5237` | n/a | `logs/kitti_ratio0p1_coreset_fast_red_cloudy_gen1000_e10_gpu3_20260502_020651.log` |
+| `0.1` | `badge_fast` | `0.7841` | `0.5158` | `0.8497` | `0.7261` | `0.8211` | `0.5322` | n/a | `logs/kitti_ratio0p1_badge_fast_red_cloudy_gen1000_e10_gpu3_20260502_020651.log` |
+| `0.1` | `uherding_fast` | `0.7698` | `0.4992` | `0.8206` | `0.7083` | `0.8025` | `0.5222` | `75.02` | `logs/kitti_ratio0p1_uherding_fast_red_cloudy_gen1000_e10_gpu1_20260502_140255.log` |
+| `0.1` | `ppal_fast` | `0.7750` | `0.5048` | `0.8455` | `0.7114` | `0.8114` | `0.5262` | `71.28` | `logs/kitti_ratio0p1_ppal_fast_red_cloudy_gen1000_e10_gpu3_20260502_185507.log` |
+| `0.3` | `random` | `0.8006` | `0.5408` | `0.8359` | `0.7438` | `0.8279` | `0.5605` | n/a | `logs/kitti_ratio0p3_random_red_cloudy_gen1000_e10_gpu0_20260502_015837.log` |
+| `0.3` | `stratified` | `0.7993` | `0.5343` | `0.8454` | `0.7442` | `0.8342` | `0.5572` | n/a | `logs/kitti_ratio0p3_stratified_red_cloudy_gen1000_e10_gpu0_20260502_015837.log` |
+| `0.3` | `entropy` | `0.8098` | `0.5442` | `0.8676` | `0.7385` | `0.8357` | `0.5636` | `54.69` | `logs/kitti_ratio0p3_entropy_red_cloudy_gen1000_e10_gpu3_20260502_025110.log` |
+| `0.3` | `coreset_fast` | `0.7994` | `0.5384` | `0.8538` | `0.7442` | `0.8318` | `0.5612` | n/a | `logs/kitti_ratio0p3_coreset_fast_red_cloudy_gen1000_e10_gpu3_20260502_020651.log` |
+| `0.3` | `badge_fast` | `0.8083` | `0.5441` | `0.8585` | `0.7388` | `0.8313` | `0.5624` | n/a | `logs/kitti_ratio0p3_badge_fast_red_cloudy_gen1000_e10_gpu3_20260502_020651.log` |
+| `0.3` | `uherding_fast` | `0.8003` | `0.5314` | `0.8561` | `0.7296` | `0.8267` | `0.5573` | `76.44` | `logs/kitti_ratio0p3_uherding_fast_red_cloudy_gen1000_e10_gpu1_20260502_140255.log` |
+| `0.3` | `ppal_fast` | `0.7980` | `0.5368` | `0.8444` | `0.7418` | `0.8258` | `0.5568` | `72.88` | `logs/kitti_ratio0p3_ppal_fast_red_cloudy_gen1000_e10_gpu3_20260502_185507.log` |
+| `0.5` | `random` | `0.8039` | `0.5452` | `0.8581` | `0.7465` | `0.8416` | `0.5719` | n/a | `logs/kitti_ratio0p5_random_red_cloudy_gen1000_e10_gpu0_20260502_015837.log` |
+| `0.5` | `stratified` | `0.8087` | `0.5480` | `0.8328` | `0.7558` | `0.8377` | `0.5680` | n/a | `logs/kitti_ratio0p5_stratified_red_cloudy_gen1000_e10_gpu0_20260502_015837.log` |
+| `0.5` | `entropy` | `0.8125` | `0.5524` | `0.8619` | `0.7483` | `0.8414` | `0.5766` | `54.40` | `logs/kitti_ratio0p5_entropy_red_cloudy_gen1000_e10_gpu3_20260502_025110.log` |
+| `0.5` | `coreset_fast` | `0.8115` | `0.5523` | `0.8696` | `0.7427` | `0.8436` | `0.5759` | n/a | `logs/kitti_ratio0p5_coreset_fast_red_cloudy_gen1000_e10_gpu3_20260502_020651.log` |
+| `0.5` | `badge_fast` | `0.8125` | `0.5542` | `0.8473` | `0.7413` | `0.8389` | `0.5726` | n/a | `logs/kitti_ratio0p5_badge_fast_red_cloudy_gen1000_e10_gpu3_20260502_020651.log` |
+| `0.5` | `uherding_fast` | `0.8091` | `0.5445` | `0.8640` | `0.7373` | `0.8356` | `0.5675` | `72.04` | `logs/kitti_ratio0p5_uherding_fast_red_cloudy_gen1000_e10_gpu1_20260502_140255.log` |
+| `0.5` | `ppal_fast` | `0.8086` | `0.5505` | `0.8508` | `0.7513` | `0.8388` | `0.5721` | `71.04` | `logs/kitti_ratio0p5_ppal_fast_red_cloudy_gen1000_e10_gpu3_20260502_185507.log` |
+| `0.7` | `random` | `0.8126` | `0.5540` | `0.8605` | `0.7543` | `0.8447` | `0.5766` | n/a | `logs/kitti_ratio0p7_random_red_cloudy_gen1000_e10_gpu0_20260502_015837.log` |
+| `0.7` | `stratified` | `0.8125` | `0.5548` | `0.8475` | `0.7514` | `0.8416` | `0.5760` | n/a | `logs/kitti_ratio0p7_stratified_red_cloudy_gen1000_e10_gpu0_20260502_015837.log` |
+| `0.7` | `entropy` | `0.8194` | `0.5583` | `0.8634` | `0.7571` | `0.8472` | `0.5772` | `54.28` | `logs/kitti_ratio0p7_entropy_red_cloudy_gen1000_e10_gpu3_20260502_025110.log` |
+| `0.7` | `coreset_fast` | `0.8108` | `0.5546` | `0.8695` | `0.7452` | `0.8420` | `0.5772` | n/a | `logs/kitti_ratio0p7_coreset_fast_red_cloudy_gen1000_e10_gpu3_20260502_020651.log` |
+| `0.7` | `badge_fast` | `0.8143` | `0.5545` | `0.8625` | `0.7344` | `0.8338` | `0.5717` | n/a | `logs/kitti_ratio0p7_badge_fast_red_cloudy_gen1000_e10_gpu3_20260502_020651.log` |
+| `0.7` | `uherding_fast` | `0.8128` | `0.5558` | `0.8656` | `0.7542` | `0.8419` | `0.5768` | `73.09` | `logs/kitti_ratio0p7_uherding_fast_red_cloudy_gen1000_e10_gpu1_20260502_140255.log` |
+| `0.7` | `ppal_fast` | `0.8135` | `0.5557` | `0.8520` | `0.7624` | `0.8464` | `0.5782` | `81.09` | `logs/kitti_ratio0p7_ppal_fast_red_cloudy_gen1000_e10_gpu3_20260502_185507.log` |
+| `0.9` | `random` | `0.8120` | `0.5603` | `0.8551` | `0.7647` | `0.8472` | `0.5817` | n/a | `logs/kitti_ratio0p9_random_red_cloudy_gen1000_e10_gpu0_20260502_015837.log` |
+| `0.9` | `stratified` | `0.8176` | `0.5603` | `0.8548` | `0.7587` | `0.8474` | `0.5830` | n/a | `logs/kitti_ratio0p9_stratified_red_cloudy_gen1000_e10_gpu0_20260502_015837.log` |
+| `0.9` | `entropy` | `0.8204` | `0.5626` | `0.8784` | `0.7523` | `0.8492` | `0.5830` | `54.52` | `logs/kitti_ratio0p9_entropy_red_cloudy_gen1000_e10_gpu3_20260502_025110.log` |
+| `0.9` | `coreset_fast` | `0.8160` | `0.5590` | `0.8632` | `0.7525` | `0.8381` | `0.5781` | n/a | `logs/kitti_ratio0p9_coreset_fast_red_cloudy_gen1000_e10_gpu3_20260502_020651.log` |
+| `0.9` | `badge_fast` | `0.8169` | `0.5585` | `0.8664` | `0.7586` | `0.8472` | `0.5810` | n/a | `logs/kitti_ratio0p9_badge_fast_red_cloudy_gen1000_e10_gpu3_20260502_020651.log` |
+| `0.9` | `uherding_fast` | `0.8156` | `0.5592` | `0.8475` | `0.7592` | `0.8461` | `0.5838` | `83.63` | `logs/kitti_ratio0p9_uherding_fast_red_cloudy_gen1000_e10_gpu1_20260502_140255.log` |
+| `0.9` | `ppal_fast` | `0.8164` | `0.5576` | `0.8643` | `0.7549` | `0.8463` | `0.5796` | `74.25` | `logs/kitti_ratio0p9_ppal_fast_red_cloudy_gen1000_e10_gpu3_20260502_185507.log` |
+| `0.1` | `attribute_r000_p0_c15` | `0.7842` | `0.5099` | `0.8527` | `0.7157` | `0.8186` | `0.5321` | `0.00` | `logs/kitti_ratio0p1_attribute_r000_p0_c15_red_cloudy_gen1000_e10_gpu0_20260504_000311.log` |
+| `0.1` | `attribute_r001_p5_c15` | `0.7702` | `0.4730` | `0.8316` | `0.7213` | `0.8108` | `0.4963` | `0.00` | `logs/kitti_ratio0p1_attribute_r001_p5_c15_red_cloudy_gen1000_e10_gpu0_20260504_000311.log` |
+| `0.1` | `attribute_r003_p5_c8` | `0.7670` | `0.4763` | `0.8287` | `0.7096` | `0.8006` | `0.4951` | `0.00` | `logs/kitti_ratio0p1_attribute_r003_p5_c8_red_cloudy_gen1000_e10_gpu0_20260504_000311.log` |
+| `0.3` | `attribute_r000_p0_c15` | `0.8125` | `0.5463` | `0.8432` | `0.7531` | `0.8338` | `0.5646` | `0.00` | `logs/kitti_ratio0p3_attribute_r000_p0_c15_red_cloudy_gen1000_e10_gpu0_20260504_000311.log` |
+| `0.3` | `attribute_r001_p5_c15` | `0.8062` | `0.5414` | `0.8559` | `0.7411` | `0.8334` | `0.5620` | `0.00` | `logs/kitti_ratio0p3_attribute_r001_p5_c15_red_cloudy_gen1000_e10_gpu0_20260504_000311.log` |
+| `0.3` | `attribute_r003_p5_c8` | `0.8064` | `0.5447` | `0.8365` | `0.7572` | `0.8342` | `0.5630` | `0.00` | `logs/kitti_ratio0p3_attribute_r003_p5_c8_red_cloudy_gen1000_e10_gpu0_20260504_000311.log` |
+| `0.5` | `attribute_r000_p0_c15` | `0.8170` | `0.5579` | `0.8640` | `0.7524` | `0.8457` | `0.5773` | `0.00` | `logs/kitti_ratio0p5_attribute_r000_p0_c15_red_cloudy_gen1000_e10_gpu1_20260504_000311.log` |
+| `0.5` | `attribute_r001_p5_c15` | `0.8206` | `0.5578` | `0.8532` | `0.7446` | `0.8420` | `0.5733` | `0.00` | `logs/kitti_ratio0p5_attribute_r001_p5_c15_red_cloudy_gen1000_e10_gpu1_20260504_000311.log` |
+| `0.5` | `attribute_r003_p5_c8` | `0.8206` | `0.5578` | `0.8532` | `0.7446` | `0.8420` | `0.5733` | `0.00` | `logs/kitti_ratio0p5_attribute_r003_p5_c8_red_cloudy_gen1000_e10_gpu1_20260504_000311.log` |
+| `0.7` | `attribute_r000_p0_c15` | `0.8150` | `0.5566` | `0.8617` | `0.7421` | `0.8406` | `0.5780` | `0.00` | `logs/kitti_ratio0p7_attribute_r000_p0_c15_red_cloudy_gen1000_e10_gpu2_20260504_000311.log` |
+| `0.7` | `attribute_r001_p5_c15` | `0.8152` | `0.5567` | `0.8430` | `0.7685` | `0.8436` | `0.5767` | `0.00` | `logs/kitti_ratio0p7_attribute_r001_p5_c15_red_cloudy_gen1000_e10_gpu2_20260504_000311.log` |
+| `0.7` | `attribute_r003_p5_c8` | `0.8152` | `0.5567` | `0.8430` | `0.7685` | `0.8436` | `0.5767` | `0.00` | `logs/kitti_ratio0p7_attribute_r003_p5_c8_red_cloudy_gen1000_e10_gpu2_20260504_000311.log` |
+| `0.9` | `attribute_r000_p0_c15` | `0.8195` | `0.5621` | `0.8462` | `0.7679` | `0.8491` | `0.5841` | `0.00` | `logs/kitti_ratio0p9_attribute_r000_p0_c15_red_cloudy_gen1000_e10_gpu3_20260504_000311.log` |
+| `0.9` | `attribute_r001_p5_c15` | `0.8195` | `0.5624` | `0.8719` | `0.7461` | `0.8437` | `0.5850` | `0.00` | `logs/kitti_ratio0p9_attribute_r001_p5_c15_red_cloudy_gen1000_e10_gpu3_20260504_000311.log` |
+| `0.9` | `attribute_r003_p5_c8` | `0.8195` | `0.5624` | `0.8719` | `0.7461` | `0.8437` | `0.5850` | `0.00` | `logs/kitti_ratio0p9_attribute_r003_p5_c8_red_cloudy_gen1000_e10_gpu3_20260504_000311.log` |
+
+Additional extra RPC search rows from `20260504_021221`:
+
+| Ratio | Method | Val mAP50 | Val mAP50-95 | Test Precision | Test Recall | Test mAP50 | Test mAP50-95 | Selection time (s) | Log |
+| ---: | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- |
+| `0.1` | `attribute_r000_p0_cinf` | `0.7850` | `0.5125` | `0.8415` | `0.7285` | `0.8185` | **`0.5372`** | `0.00` | `logs/kitti_ratio0p1_attribute_r000_p0_cinf_seed42_red_cloudy_gen1000_e10_gpu3_20260504_021221.log` |
+| `0.1` | `attribute_r001_p5_cinf` | `0.7710` | `0.4770` | `0.8659` | `0.7014` | `0.8119` | `0.5001` | `0.00` | `logs/kitti_ratio0p1_attribute_r001_p5_cinf_seed42_red_cloudy_gen1000_e10_gpu3_20260504_021221.log` |
+| `0.1` | `attribute_r003_p05_c15` | `0.7730` | `0.4836` | `0.8327` | `0.7199` | `0.8125` | `0.5051` | `0.00` | `logs/kitti_ratio0p1_attribute_r003_p05_c15_seed42_red_cloudy_gen1000_e10_gpu3_20260504_021221.log` |
+| `0.1` | `attribute_r003_p05_cinf` | `0.7710` | `0.4770` | `0.8659` | `0.7014` | `0.8119` | `0.5001` | `0.00` | `logs/kitti_ratio0p1_attribute_r003_p05_cinf_seed42_red_cloudy_gen1000_e10_gpu3_20260504_021221.log` |
+| `0.1` | `attribute_r01_p5_c15` | `0.7729` | `0.4767` | `0.8445` | `0.7178` | `0.8092` | `0.4995` | `0.00` | `logs/kitti_ratio0p1_attribute_r01_p5_c15_seed42_red_cloudy_gen1000_e10_gpu3_20260504_021221.log` |
+| `0.1` | `attribute_r08_p10_c4` | `0.7656` | `0.4666` | `0.8255` | `0.7139` | `0.8007` | `0.4899` | `0.00` | `logs/kitti_ratio0p1_attribute_r08_p10_c4_seed42_red_cloudy_gen1000_e10_gpu3_20260504_021221.log` |
+| `0.7` | `attribute_r000_p0_cinf` | `0.8153` | `0.5567` | `0.8617` | `0.7421` | `0.8406` | `0.5780` | `0.00` | `logs/kitti_ratio0p7_attribute_r000_p0_cinf_seed42_red_cloudy_gen1000_e10_gpu2_20260504_021221.log` |
+| `0.7` | `attribute_r001_p5_cinf` | `0.8151` | `0.5566` | `0.8430` | `0.7685` | `0.8436` | `0.5767` | `0.00` | `logs/kitti_ratio0p7_attribute_r001_p5_cinf_seed42_red_cloudy_gen1000_e10_gpu0_20260504_021221.log` |
+| `0.7` | `attribute_r003_p05_c15` | `0.8151` | `0.5566` | `0.8430` | `0.7685` | `0.8436` | `0.5767` | `0.00` | `logs/kitti_ratio0p7_attribute_r003_p05_c15_seed42_red_cloudy_gen1000_e10_gpu2_20260504_021221.log` |
+| `0.7` | `attribute_r003_p05_cinf` | `0.8151` | `0.5566` | `0.8430` | `0.7685` | `0.8436` | `0.5767` | `0.00` | `logs/kitti_ratio0p7_attribute_r003_p05_cinf_seed42_red_cloudy_gen1000_e10_gpu2_20260504_021221.log` |
+| `0.7` | `attribute_r01_p5_c15` | `0.8151` | `0.5566` | `0.8430` | `0.7685` | `0.8436` | `0.5767` | `0.00` | `logs/kitti_ratio0p7_attribute_r01_p5_c15_seed42_red_cloudy_gen1000_e10_gpu0_20260504_021221.log` |
+| `0.7` | `attribute_r08_p10_c4` | `0.8151` | `0.5566` | `0.8430` | `0.7685` | `0.8436` | `0.5767` | `0.00` | `logs/kitti_ratio0p7_attribute_r08_p10_c4_seed42_red_cloudy_gen1000_e10_gpu0_20260504_021221.log` |
+
+All KITTI ratio `0.1`-`0.9` 10-epoch logs completed. Full parsed rows are under
 `logs/kitti_ratio*_red_cloudy_gen1000_e10_gpu0_20260502_015837.log`,
 `logs/kitti_ratio*_red_cloudy_gen1000_e10_gpu3_20260502_020651.log`, and
-`logs/kitti_ratio*_entropy_red_cloudy_gen1000_e10_gpu3_20260502_025110.log`.
+`logs/kitti_ratio*_entropy_red_cloudy_gen1000_e10_gpu3_20260502_025110.log`,
+with the extra attribute RPC rows under
+`logs/kitti_ratio0p*_attribute_r*_red_cloudy_gen1000_e10_gpu*_20260504_000311.log`
+and `logs/kitti_ratio0p*_attribute_r*_seed42_red_cloudy_gen1000_e10_gpu*_20260504_021221.log`.
 
-### CelebA Entropy Baseline
+### CelebA Red-Hair Brown-Skin Sad-Emotion Baselines
 
 - Generated target: `redhair_brownskin_sademotion`
 - Base checkpoint: `weights/model_celeba_resnet_base.pth`
 - Added generated images per row: `1000`
 - Training: `epochs=15`, `batch_size=64`, `lr=1e-5`
 
-| Ratio | Test ACC | Best Val ACC | Test loss | Selection time (s) | Log |
-| ---: | ---: | ---: | ---: | ---: | --- |
-| `0.1` | `0.9124` | `0.9145` | `0.2092` | `49.33` | `logs_celeba/controlnet_entropy_redhair_brownskin_sademotion_resnet_celeba_1000_ratio0p1_gpu3_20260502_025110.log` |
-| `0.3` | `0.9139` | `0.9152` | `0.2116` | `50.74` | `logs_celeba/controlnet_entropy_redhair_brownskin_sademotion_resnet_celeba_1000_ratio0p3_gpu3_20260502_025110.log` |
-| `0.5` | `0.9129` | `0.9154` | `0.2233` | `48.78` | `logs_celeba/controlnet_entropy_redhair_brownskin_sademotion_resnet_celeba_1000_ratio0p5_gpu3_20260502_025110.log` |
-| `0.7` | **`0.9153`** | **`0.9156`** | `0.2383` | `50.50` | `logs_celeba/controlnet_entropy_redhair_brownskin_sademotion_resnet_celeba_1000_ratio0p7_gpu3_20260502_025110.log` |
-| `0.9` | `0.9135` | `0.9122` | `0.3072` | `51.45` | `logs_celeba/controlnet_entropy_redhair_brownskin_sademotion_resnet_celeba_1000_ratio0p9_gpu3_20260502_025110.log` |
+| Ratio | Method | Test ACC | Best Val ACC | Test loss | Selection time (s) | Log |
+| ---: | --- | ---: | ---: | ---: | ---: | --- |
+| `0.1` | `random` | `0.9103` | `0.9115` | `0.3372` | n/a | `logs_celeba/resume_lr1e-5_epoch15_random_resnet_celeba_1000_ratio0.1.log` |
+| `0.1` | `stratified` | `0.9080` | `0.9095` | `0.3718` | n/a | `logs_celeba/resume_lr1e-5_epoch15_stratified_resnet_celeba_1000_ratio0.1.log` |
+| `0.1` | `coreset` | `0.9000` | `0.9029` | `0.4735` | n/a | `logs_celeba/resume_lr1e-5_epoch15_coreset_resnet_celeba_1000_ratio0.1.log` |
+| `0.1` | `badge` | `0.9087` | `0.9112` | `0.3789` | n/a | `logs_celeba/resume_lr1e-5_epoch15_badge_resnet_celeba_1000_ratio0.1.log` |
+| `0.1` | `attribute` | `0.9107` | `0.9091` | `0.3599` | `0.42` | `logs_celeba/attr_ratio0.1_qwen3mix_r003_p05_c15_gpu2_20260417_010718.log` |
+| `0.1` | `entropy` | **`0.9124`** | **`0.9145`** | `0.2092` | `49.33` | `logs_celeba/controlnet_entropy_redhair_brownskin_sademotion_resnet_celeba_1000_ratio0p1_gpu3_20260502_025110.log` |
+| `0.1` | `uherding` | `0.9047` | `0.9064` | `0.3807` | `98.71` | `logs_celeba/controlnet_uherding_redhair_brownskin_sademotion_resnet_celeba_1000_ratio0p1_gpu3_20260502_1440fast.log` |
+| `0.1` | `ppal` | `0.9113` | `0.9100` | `0.3111` | `46.25` | `logs_celeba/controlnet_ppal_redhair_brownskin_sademotion_resnet_celeba_1000_ratio0p1_gpu1_20260502_185507.log` |
+| `0.3` | `random` | `0.9114` | `0.9118` | `0.3418` | n/a | `logs_celeba/resume_lr1e-5_epoch15_random_resnet_celeba_1000_ratio0.3.log` |
+| `0.3` | `stratified` | `0.9107` | `0.9115` | `0.3557` | n/a | `logs_celeba/resume_lr1e-5_epoch15_stratified_resnet_celeba_1000_ratio0.3.log` |
+| `0.3` | `coreset` | `0.9132` | `0.9113` | `0.3891` | n/a | `logs_celeba/resume_lr1e-5_epoch15_coreset_resnet_celeba_1000_ratio0.3.log` |
+| `0.3` | `badge` | `0.9075` | `0.9104` | `0.3513` | n/a | `logs_celeba/resume_lr1e-5_epoch15_badge_resnet_celeba_1000_ratio0.3_gpu2_verbose_20260416_115906.log` |
+| `0.3` | `attribute` | `0.9089` | `0.9090` | `0.3609` | `0.51` | `logs_celeba/attr_ratio0.3_qwen3mixx333_r000_p0_cinf_gpu0_20260417_005520.log` |
+| `0.3` | `entropy` | **`0.9139`** | **`0.9152`** | `0.2116` | `50.74` | `logs_celeba/controlnet_entropy_redhair_brownskin_sademotion_resnet_celeba_1000_ratio0p3_gpu3_20260502_025110.log` |
+| `0.3` | `uherding` | `0.9090` | `0.9109` | `0.3649` | `65.20` | `logs_celeba/controlnet_uherding_redhair_brownskin_sademotion_resnet_celeba_1000_ratio0p3_gpu3_20260502_1440fast.log` |
+| `0.3` | `ppal` | `0.9095` | `0.9082` | `0.3614` | `50.77` | `logs_celeba/controlnet_ppal_redhair_brownskin_sademotion_resnet_celeba_1000_ratio0p3_gpu1_20260502_185507.log` |
+| `0.5` | `random` | `0.9114` | `0.9127` | `0.3418` | n/a | `logs_celeba/resume_lr1e-5_epoch15_random_resnet_celeba_1000_ratio0.5.log` |
+| `0.5` | `stratified` | `0.9132` | `0.9129` | `0.3498` | n/a | `logs_celeba/resume_lr1e-5_epoch15_stratified_resnet_celeba_1000_ratio0.5.log` |
+| `0.5` | `coreset` | `0.9134` | `0.9109` | `0.3650` | n/a | `logs_celeba/resume_lr1e-5_epoch15_coreset_resnet_celeba_1000_ratio0.5.log` |
+| `0.5` | `badge` | `0.9084` | `0.9113` | `0.3476` | n/a | `logs_celeba/resume_lr1e-5_epoch15_badge_resnet_celeba_1000_ratio0.5_gpu0_20260416_120554.log` |
+| `0.5` | `entropy` | `0.9129` | **`0.9154`** | `0.2233` | `48.78` | `logs_celeba/controlnet_entropy_redhair_brownskin_sademotion_resnet_celeba_1000_ratio0p5_gpu3_20260502_025110.log` |
+| `0.5` | `uherding` | `0.9078` | `0.9089` | `0.3664` | `60.87` | `logs_celeba/controlnet_uherding_redhair_brownskin_sademotion_resnet_celeba_1000_ratio0p5_gpu3_20260502_1440fast.log` |
+| `0.5` | `ppal` | **`0.9151`** | `0.9135` | `0.3408` | `61.20` | `logs_celeba/controlnet_ppal_redhair_brownskin_sademotion_resnet_celeba_1000_ratio0p5_gpu1_20260502_185507.log` |
+| `0.7` | `random` | `0.9084` | `0.9088` | `0.3551` | n/a | `logs_celeba/resume_lr1e-5_epoch15_random_resnet_celeba_1000_ratio0.7.log` |
+| `0.7` | `stratified` | `0.9135` | `0.9129` | `0.3527` | n/a | `logs_celeba/resume_lr1e-5_epoch15_stratified_resnet_celeba_1000_ratio0.7.log` |
+| `0.7` | `coreset` | `0.9119` | `0.9110` | `0.3571` | n/a | `logs_celeba/resume_lr1e-5_epoch15_coreset_resnet_celeba_1000_ratio0.7_gpu3_rerun_20260416_121045.log` |
+| `0.7` | `badge` | `0.9133` | `0.9131` | `0.3384` | n/a | `logs_celeba/resume_lr1e-5_epoch15_badge_resnet_celeba_1000_ratio0.7_gpu0_20260416_122047.log` |
+| `0.7` | `entropy` | **`0.9153`** | **`0.9156`** | `0.2383` | `50.50` | `logs_celeba/controlnet_entropy_redhair_brownskin_sademotion_resnet_celeba_1000_ratio0p7_gpu3_20260502_025110.log` |
+| `0.7` | `uherding` | `0.9105` | `0.9105` | `0.3574` | `70.46` | `logs_celeba/controlnet_uherding_redhair_brownskin_sademotion_resnet_celeba_1000_ratio0p7_gpu3_20260502_1440fast.log` |
+| `0.7` | `ppal` | `0.9114` | `0.9101` | `0.3503` | `64.66` | `logs_celeba/controlnet_ppal_redhair_brownskin_sademotion_resnet_celeba_1000_ratio0p7_gpu1_20260502_185507.log` |
+| `0.9` | `entropy` | **`0.9135`** | `0.9122` | `0.3072` | `51.45` | `logs_celeba/controlnet_entropy_redhair_brownskin_sademotion_resnet_celeba_1000_ratio0p9_gpu3_20260502_025110.log` |
+| `0.9` | `uherding` | `0.9100` | `0.9101` | `0.3503` | `53.60` | `logs_celeba/controlnet_uherding_redhair_brownskin_sademotion_resnet_celeba_1000_ratio0p9_gpu3_20260502_1440fast.log` |
+| `0.9` | `ppal` | `0.9119` | **`0.9131`** | `0.3452` | `55.52` | `logs_celeba/controlnet_ppal_redhair_brownskin_sademotion_resnet_celeba_1000_ratio0p9_gpu1_20260502_185507.log` |
 
 ### COCO Brown-Rainy Entropy Baseline
 
@@ -83,7 +292,7 @@ All KITTI 10-epoch logs completed. Full parsed rows are under
 
 | Ratio | Test AP | Test AP50 | Test AP75 | Val AP | Log |
 | ---: | ---: | ---: | ---: | ---: | --- |
-| `0.1` | `0.6231` | `0.8545` | `0.6807` | `0.6293` | `log_pose/pose_qwen3_brown_rainy_entropy_ratio0p1_gpu3_20260502_025110.log` |
+| `0.1` | `0.6132` | `0.8545` | `0.6807` | `0.6293` | `log_pose/pose_qwen3_brown_rainy_entropy_ratio0p1_gpu3_20260502_025110.log` |
 | `0.3` | `0.6215` | `0.8542` | `0.6744` | `0.6323` | `log_pose/pose_qwen3_brown_rainy_entropy_ratio0p3_gpu3_20260502_025110.log` |
 | `0.5` | `0.6282` | `0.8557` | `0.6834` | `0.6350` | `log_pose/pose_qwen3_brown_rainy_entropy_ratio0p5_gpu3_20260502_025110.log` |
 | `0.7` | **`0.6293`** | **`0.8599`** | **`0.6842`** | **`0.6356`** | `log_pose/pose_qwen3_brown_rainy_entropy_ratio0p7_gpu3_20260502_025110.log` |
@@ -128,6 +337,12 @@ Val AP `0.6382`.
 These runs use all original training samples (`ratio=1.0`) and append `1000`
 ControlNet generated images. No active subset selection is used.
 
+The first table records the previously completed resume-style ratio-`1.0`
+controls. On 2026-05-04, no-resume base-epoch reruns were launched to match
+the original base-training schedules more directly. Those reruns are recorded
+separately below because they answer a different control question from the
+resume-style rows.
+
 | Dataset | Generated Target | Original Samples | Final Train Size | Metric | Test | Best Val | Test Loss / AP50 / AP75 | Log |
 | --- | --- | ---: | ---: | --- | ---: | ---: | --- | --- |
 | ImageNet | `pinkcolor_fabrictexture` | `10400` | `11400` | ACC | `0.7400` | `0.7292` | loss `0.7998` | `logs_imagenet/controlnet_pinkcolor_fabrictexture_resnet_imagenet_1000_ratio1p0_gpu3_20260501_150816.log` |
@@ -135,6 +350,21 @@ ControlNet generated images. No active subset selection is used.
 | CelebA | `redhair_brownskin_unfiltered` | `80000` | `81000` | ACC | `0.9108` | `0.9136` | loss `0.3420` | `logs_celeba/controlnet_redhair_brownskin_unfiltered_resnet_celeba_1000_ratio1p0_gpu1_20260501_150816.log` |
 | CelebA | `redhair_brownskin` | `80000` | `81000` | ACC | `0.9102` | `0.9126` | loss `0.3440` | `logs_celeba/controlnet_redhair_brownskin_resnet_celeba_1000_ratio1p0_gpu2_20260501_150816.log` |
 | COCO pose | `brown_rainy` | `20000` | `21000` | AP | `0.6259` | `0.6310` | AP50 `0.8544`, AP75 `0.6812` | `log_pose/pose_qwen3_brown_rainy_full_ratio1p0_gpu3_20260501_150816.log` |
+| KITTI | `red_cloudy` | `5000` | `6000` | mAP50-95 | `0.5858` | `0.5608` | mAP50 `0.8505`, precision `0.8808`, recall `0.7449` | `logs/kitti_ratio1p0_random_red_cloudy_gen1000_e10_gpu3_20260504_003555_fp.log` |
+
+### 05/04/2026 No-Resume Base-Epoch Ratio 1.0 Reruns
+
+These controls still use all original training samples and append `1000`
+generated images, but they do not resume from the low-ratio base checkpoints.
+Instead, they follow the corresponding base-training schedule as closely as the
+current entry points allow.
+
+| Dataset | Generated Target | Original Samples | Final Train Size | Schedule | Metric | Test | Best Val / Val | Extra Test Metrics | Log |
+| --- | --- | ---: | ---: | --- | --- | ---: | ---: | --- | --- |
+| ImageNet | `pinkcolor_fabrictexture` | `10400` | `11400` | ResNet random init, `30` epochs, `lr=1e-3` | ACC | `0.7315` | `0.7277` | loss `0.8216` | `logs_imagenet/controlnet_pinkcolor_fabrictexture_resnet_imagenet_1000_ratio1p0_e30_baseparams_noresume_gpu2_20260504_012302.log` |
+| CelebA | `redhair_brownskin_sademotion` | `80000` | `81000` | ResNet random init, `20` epochs, `lr=1e-5` | ACC | `0.8701` | `0.8778` | loss `0.4104` | `logs_celeba/controlnet_redhair_brownskin_sademotion_resnet_celeba_1000_ratio1p0_e20_baseparams_noresume_gpu3_20260504_012302.log` |
+| KITTI | `red_cloudy` | `5000` | `6000` | YOLOv8n random/base pretrained weights, `30` epochs | mAP50-95 | `0.5737` | `0.5555` | test mAP50 `0.8363`, precision `0.8503`, recall `0.7499` | `logs/kitti_ratio1p0_random_red_cloudy_gen1000_e30_baseparams_noresume_gpu0_20260504_011553.log` |
+| COCO pose | `brown_rainy` | `20000` | `21000` | Keypoint R-CNN pretrained, `2` epochs, `lr=0.005` | AP | `0.6292` | `0.6321` | test AP50 `0.8549`, AP75 `0.6802`; best checkpoint epoch `0` | `log_pose/pose_qwen3_brown_rainy_ratio1p0_gen1000_e2_baseparams_noresume_gpu1_20260504_011553.log` |
 
 ## 05/01/2026 Update — RPC Component Removal Ablations
 
@@ -263,6 +493,8 @@ ImageNet result in this sweep is `only_p` at ratio `0.9` with Test ACC
 | Uncertainty Stratified | 0.7254 | 0.7185 |
 | Diversity | 0.7262 | 0.7215 |
 | Hierarchical | 0.7269 | 0.7115 |
+| UHerding | 0.7331 | 0.7131 |
+| PPAL | 0.7285 | 0.7169 |
 | Attribute (BLIP) | 0.7277 | 0.7200 |
 | Attribute (Qwen3) | 0.7331 | 0.7231 |
 | Attribute (InternVL3) | **0.7346** | 0.7285 |
@@ -276,9 +508,11 @@ ImageNet result in this sweep is `only_p` at ratio `0.9` with Test ACC
 | Uncertainty Stratified | 0.7292 | 0.7131 |
 | Diversity | 0.7362 | 0.7200 |
 | Hierarchical | 0.7346 | 0.7092 |
+| UHerding | **0.7469** | 0.7177 |
+| PPAL | 0.7392 | 0.7200 |
 | Attribute (BLIP) | 0.7369 | 0.7185 |
 | Attribute (Qwen3) | 0.7354 | 0.7077 |
-| Attribute (InternVL3) | **0.7385** | 0.7108 |
+| Attribute (InternVL3) | 0.7385 | 0.7108 |
 
 ### Ratio = 0.5
 | Strategy | Test ACC | Val ACC |
@@ -289,6 +523,8 @@ ImageNet result in this sweep is `only_p` at ratio `0.9` with Test ACC
 | Uncertainty Stratified | 0.7331 | 0.7146 |
 | Hierarchical | 0.7385 | 0.7138 |
 | Hybrid | 0.7362 | 0.7215 |
+| UHerding | 0.7423 | 0.7200 |
+| PPAL | 0.7400 | 0.7208 |
 | Attribute (BLIP) | 0.7408 | 0.7131 |
 | Attribute (Qwen3) | 0.7362 | 0.7138 |
 | Attribute (InternVL3) | **0.7495** | 0.7286 |
@@ -301,6 +537,8 @@ ImageNet result in this sweep is `only_p` at ratio `0.9` with Test ACC
 | Coreset | 0.7392 | 0.7154 |
 | Uncertainty Stratified | 0.7354 | 0.7146 |
 | Hierarchical | 0.7385 | 0.7146 |
+| UHerding | **0.7469** | 0.7231 |
+| PPAL | 0.7423 | 0.7215 |
 | Attribute (BLIP) | 0.7385 | 0.7131 |
 | Attribute (Qwen3) | 0.7415 | 0.7192 |
 | Attribute (InternVL3) | 0.7413 | 0.7100 |
@@ -319,6 +557,8 @@ ImageNet result in this sweep is `only_p` at ratio `0.9` with Test ACC
 | Diversity | 0.7415 | 0.7146 |
 | Hierarchical | 0.7362 | 0.7177 |
 | Hybrid | 0.7477 | 0.7177 |
+| UHerding | 0.7500 | 0.7231 |
+| PPAL | 0.7508 | 0.7238 |
 | Attribute (BLIP) | 0.7400 | 0.7177 |
 | Attribute (Qwen3) | 0.7492 | 0.7108 |
 | Attribute (InternVL3) | **0.7531** | 0.7346 |
@@ -348,6 +588,8 @@ ImageNet result in this sweep is `only_p` at ratio `0.9` with Test ACC
 | `0.10` | `qwen3_attr_r001_p5_c15` | `0.6152` | `0.8403` | `0.6717` | `0.6235` | `0.8485` | `0.6833` |
 | `0.10` | `qwen3_attr_r003_p5_c8` | `0.6165` | `0.8489` | `0.6690` | `0.6285` | `0.8629` | `0.6882` |
 | `0.10` | `qwen3_attr_r003_p5_c15` | **`0.6183`** | `0.8466` | `0.6782` | `0.6288` | `0.8604` | `0.6925` |
+| `0.10` | `uherding` | `0.6013` | `0.8369` | `0.6479` | `0.6153` | `0.8496` | `0.6693` |
+| `0.10` | `ppal` | `0.5950` | `0.8366` | `0.6415` | `0.6096` | `0.8492` | `0.6678` |
 | `0.30` | `random` | `0.6127` | `0.8441` | `0.6626` | `0.6192` | `0.8580` | `0.6652` |
 | `0.30` | `stratified` | `0.6243` | `0.8533` | `0.6816` | `0.6324` | `0.8635` | `0.6837` |
 | `0.30` | `coreset` | `0.6256` | `0.8511` | `0.6778` | `0.6306` | `0.8628` | `0.6910` |
@@ -356,6 +598,8 @@ ImageNet result in this sweep is `only_p` at ratio `0.9` with Test ACC
 | `0.30` | `qwen3_attr_r001_p5_c15` | **`0.6306`** | `0.8567` | `0.6849` | `0.6266` | `0.8620` | `0.6892` |
 | `0.30` | `qwen3_attr_r003_p5_c8` | `0.6110` | `0.8445` | `0.6640` | `0.6254` | `0.8578` | `0.6847` |
 | `0.30` | `qwen3_attr_r003_p5_c15` | `0.6176` | `0.8516` | `0.6663` | `0.6266` | `0.8591` | `0.6860` |
+| `0.30` | `uherding` | `0.6079` | `0.8475` | `0.6550` | `0.6089` | `0.8468` | `0.6616` |
+| `0.30` | `ppal` | `0.6165` | `0.8564` | `0.6690` | `0.6295` | `0.8624` | `0.6855` |
 | `0.50` | `random` | `0.6219` | `0.8521` | `0.6770` | `0.6251` | `0.8641` | `0.6849` |
 | `0.50` | `stratified` | `0.6230` | `0.8553` | `0.6786` | `0.6343` | `0.8650` | `0.6914` |
 | `0.50` | `coreset` | `0.6167` | `0.8546` | `0.6733` | `0.6248` | `0.8584` | `0.6823` |
@@ -364,6 +608,8 @@ ImageNet result in this sweep is `only_p` at ratio `0.9` with Test ACC
 | `0.50` | `qwen3_attr_r001_p5_c15` | **`0.6287`** | `0.8547` | `0.6774` | `0.6290` | `0.8672` | `0.6870` |
 | `0.50` | `qwen3_attr_r003_p5_c8` | `0.6162` | `0.8525` | `0.6667` | `0.6257` | `0.8602` | `0.6874` |
 | `0.50` | `qwen3_attr_r003_p5_c15` | `0.5866` | `0.8338` | `0.6357` | `0.5916` | `0.8412` | `0.6453` |
+| `0.50` | `uherding` | `0.6153` | `0.8494` | `0.6680` | `0.6253` | `0.8616` | `0.6834` |
+| `0.50` | `ppal` | `0.6182` | `0.8382` | `0.6444` | `0.6046` | `0.8463` | `0.6628` |
 | `0.70` | `random` | `0.6232` | `0.8615` | `0.6904` | `0.6334` | `0.8629` | `0.6916` |
 | `0.70` | `stratified` | `0.6299` | `0.8559` | `0.6916` | `0.6364` | `0.8639` | `0.6968` |
 | `0.70` | `coreset` | `0.6275` | `0.8576` | `0.6839` | `0.6341` | `0.8652` | `0.6973` |
@@ -374,6 +620,8 @@ ImageNet result in this sweep is `only_p` at ratio `0.9` with Test ACC
 | `0.70` | `qwen3_attr_r003_p5_c0` | `0.6247` | `0.8558` | `0.6819` | `0.6370` | `0.8615` | `0.7007` |
 | `0.70` | `qwen3_attr_r003_p5_c8` | `0.6300` | `0.8548` | `0.6852` | `0.6331` | `0.8607` | `0.6920` |
 | `0.70` | `qwen3_attr_r003_p5_c15` | **`0.6319`** | `0.8571` | `0.6884` | `0.6377` | `0.8703` | `0.6922` |
+| `0.70` | `uherding` | `0.6155` | `0.8482` | `0.6670` | `0.6211` | `0.8596` | `0.6752` |
+| `0.70` | `ppal` | `0.6223` | `0.8535` | `0.6746` | `0.6296` | `0.8642` | `0.6869` |
 | `0.90` | `random` | `0.6180` | `0.8517` | `0.6673` | `0.6155` | `0.8520` | `0.6737` |
 | `0.90` | `stratified` | `0.6291` | `0.8629` | `0.6867` | `0.6380` | `0.8641` | `0.6962` |
 | `0.90` | `coreset` | `0.6202` | `0.8570` | `0.6714` | `0.6288` | `0.8614` | `0.6876` |
@@ -382,6 +630,8 @@ ImageNet result in this sweep is `only_p` at ratio `0.9` with Test ACC
 | `0.90` | `qwen3_attr_r001_p5_c15` | `0.6255` | `0.8572` | `0.6805` | `0.6282` | `0.8606` | `0.6829` |
 | `0.90` | `qwen3_attr_r003_p5_c8` | `0.6255` | `0.8572` | `0.6805` | `0.6282` | `0.8606` | `0.6829` |
 | `0.90` | `qwen3_attr_r003_p5_c15` | **`0.6355`** | `0.8572` | `0.6805` | `0.6282` | `0.8606` | `0.6829` |
+| `0.90` | `uherding` | `0.6191` | `0.8592` | `0.6729` | `0.6279` | `0.8618` | `0.6837` |
+| `0.90` | `ppal` | `0.6301` | `0.8595` | `0.6812` | `0.6365` | `0.8665` | `0.6973` |
 | `1.00` | `full_data_controlnet` | **`0.6259`** | `0.8544` | `0.6812` | `0.6310` | `0.8594` | `0.6865` |
 
 ## 05/02/2026 Update — KITTI Generated-Image YOLOv8 Smoke Check
@@ -2594,6 +2844,8 @@ Within each ratio table, the highest `Test ACC` among all strategies is bolded.
 | Uncertainty Stratified | 0.7254 | 0.7185 |
 | Diversity | 0.7262 | 0.7215 |
 | Hierarchical | 0.7269 | 0.7115 |
+| UHerding | 0.7331 | 0.7131 |
+| PPAL | 0.7285 | 0.7169 |
 | Attribute (BLIP) | 0.7277 | 0.7200 |
 | Attribute (Qwen3) | 0.7331 | 0.7231 |
 | Attribute (InternVL3) | **0.7346** | 0.7285 |
@@ -2607,9 +2859,11 @@ Within each ratio table, the highest `Test ACC` among all strategies is bolded.
 | Uncertainty Stratified | 0.7292 | 0.7131 |
 | Diversity | 0.7362 | 0.7200 |
 | Hierarchical | 0.7346 | 0.7092 |
+| UHerding | **0.7469** | 0.7177 |
+| PPAL | 0.7392 | 0.7200 |
 | Attribute (BLIP) | 0.7369 | 0.7185 |
 | Attribute (Qwen3) | 0.7354 | 0.7077 |
-| Attribute (InternVL3) | **0.7385** | 0.7108 |
+| Attribute (InternVL3) | 0.7385 | 0.7108 |
 
 ### Ratio = 0.5
 | Strategy | Test ACC | Val ACC |
@@ -2620,6 +2874,8 @@ Within each ratio table, the highest `Test ACC` among all strategies is bolded.
 | Uncertainty Stratified | 0.7331 | 0.7146 |
 | Hierarchical | 0.7385 | 0.7138 |
 | Hybrid | 0.7362 | 0.7215 |
+| UHerding | 0.7423 | 0.7200 |
+| PPAL | 0.7400 | 0.7208 |
 | Attribute (BLIP) | 0.7408 | 0.7131 |
 | Attribute (Qwen3) | 0.7362 | 0.7138 |
 | Attribute (InternVL3) | **0.7495** | 0.7286 |
@@ -2627,11 +2883,13 @@ Within each ratio table, the highest `Test ACC` among all strategies is bolded.
 ### Ratio = 0.7
 | Strategy | Test ACC | Val ACC |
 |---|---|---|
-| Random | **0.7423** | 0.7223 |
+| Random | 0.7423 | 0.7223 |
 | Stratified | 0.7346 | 0.7138 |
 | Coreset | 0.7392 | 0.7154 |
 | Uncertainty Stratified | 0.7354 | 0.7146 |
 | Hierarchical | 0.7385 | 0.7146 |
+| UHerding | **0.7469** | 0.7231 |
+| PPAL | 0.7423 | 0.7215 |
 | Attribute (BLIP) | 0.7385 | 0.7131 |
 | Attribute (Qwen3) | 0.7415 | 0.7192 |
 | Attribute (InternVL3) | 0.7413 | 0.7100 |
@@ -2646,6 +2904,8 @@ Within each ratio table, the highest `Test ACC` among all strategies is bolded.
 | Diversity | 0.7415 | 0.7146 |
 | Hierarchical | 0.7362 | 0.7177 |
 | Hybrid | 0.7477 | 0.7177 |
+| UHerding | 0.7500 | 0.7231 |
+| PPAL | 0.7508 | 0.7238 |
 | Attribute (BLIP) | 0.7400 | 0.7177 |
 | Attribute (Qwen3) | 0.7492 | 0.7108 |
 | Attribute (InternVL3) | **0.7531** | 0.7346 |

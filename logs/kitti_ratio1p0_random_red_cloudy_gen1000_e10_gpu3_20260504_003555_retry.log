@@ -1,0 +1,69 @@
+Current time: 0504003624
+Start timestamp: 2026-05-04 00:36:24
+Total KITTI original selection time: 0.00 seconds
+Prepared KITTI YOLO generated-training dataset:
+{
+  "base_data_root": "/data/oxx220000/kitti_yolov8_first5000",
+  "generated_image_dir": "/data/oxx220000/kitti-weather-edits/generated_kitti1352_red_cloudy_icedit_upscaled",
+  "seed": 42,
+  "sub_ratio": 1.0,
+  "selection_strategy": "random",
+  "al_initial_labeled": null,
+  "al_embedding_thumbnail_size": null,
+  "al_fast_selection": null,
+  "al_ppal_temperature": null,
+  "al_ppal_uncertainty": null,
+  "al_ppal_pool_expand_ratio": null,
+  "al_ppal_class_weight_ub": null,
+  "al_ppal_class_weight_alpha": null,
+  "al_ppal_diversity_power": null,
+  "al_uherding_temperature": null,
+  "al_uherding_uncertainty": null,
+  "al_uherding_kernel_scale": null,
+  "al_entropy_conf_thres": null,
+  "al_entropy_iou": null,
+  "al_entropy_batch": null,
+  "attribute_file": null,
+  "al_attribute_focus": null,
+  "al_attribute_rarity_power": null,
+  "al_attribute_frequency_penalty": null,
+  "al_attribute_class_balance": null,
+  "al_conditional_rarity": null,
+  "al_attribute_extra_counts": null,
+  "original_candidates": 5000,
+  "selected_original": 5000,
+  "original_selection_time_seconds": 1.0251998901367188e-05,
+  "generated_candidates_with_labels": 1309,
+  "selected_generated": 1000,
+  "final_train_images": 6000,
+  "val_images": 1240,
+  "test_images": 1241,
+  "class_names": [
+    "Car",
+    "Pedestrian"
+  ],
+  "resume_model": "runs/kitti_yolov8/first5000_1240val_1241test_gpu0_bs16_e30_20260429_012232/weights/best.pt",
+  "epochs": 10,
+  "batch": 16,
+  "imgsz": 640,
+  "optimizer": "AdamW",
+  "lr0": 0.0002,
+  "lrf": 0.1,
+  "warmup_epochs": 1.0
+}
+Dataset YAML: /data/oxx220000/kitti_yolov8_ratio1p0_random_red_cloudy_gen1000_seed42/kitti_random_generated.yaml
+Traceback (most recent call last):
+  File "/people/cs/o/oxx220000/safefix/object_detection/train_yolov8_kitti_generated.py", line 1219, in train_yolov8
+    from ultralytics import YOLO
+ModuleNotFoundError: No module named 'ultralytics'
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/people/cs/o/oxx220000/safefix/object_detection/train_yolov8_kitti_generated.py", line 1315, in <module>
+    main()
+  File "/people/cs/o/oxx220000/safefix/object_detection/train_yolov8_kitti_generated.py", line 1300, in main
+    train_yolov8(args, data_yaml)
+  File "/people/cs/o/oxx220000/safefix/object_detection/train_yolov8_kitti_generated.py", line 1221, in train_yolov8
+    raise ImportError(
+ImportError: ultralytics is required. Use the KITTI fp environment described in object_detection/README.md.
