@@ -1,0 +1,1 @@
+[run] gpu=3 ratio=0.7 attribute=r001_p05_c15 log=logs_celeba/mainfill_attribute_r001_p05_c15_resnet_celeba_1000_ratio0p7_gpu3_20260504_024733.log

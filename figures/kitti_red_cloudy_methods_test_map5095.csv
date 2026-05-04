@@ -1,4 +1,4 @@
-ratio,Random,Stratified,Entropy,Coreset,BADGE,UHerding,PPAL,Best Attribute,SafeFix
+ratio,Random,Stratified,Entropy,Coreset,BADGE,UHerding,PPAL,Ours,SafeFix
 0.1,0.5204,0.5308,0.5297,0.5237,0.5322,0.5222,0.5262,0.5372,
 0.3,0.5605,0.5572,0.5636,0.5612,0.5624,0.5573,0.5568,0.5646,
 0.5,0.5719,0.568,0.5766,0.5759,0.5726,0.5675,0.5721,0.5773,

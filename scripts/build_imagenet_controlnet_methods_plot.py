@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 
 RATIOS = [0.1, 0.3, 0.5, 0.7, 0.9, 1.0]
 FULL_DATA_ACC = 0.7400
-SAFEFIX_RATIO1_NO_RESUME_ACC = 0.7315
+SAFEFIX_RATIO1_NO_RESUME_ACC = 0.7392
 
 METHODS = {
     "Random": [0.7269, 0.7308, 0.7400, 0.7423, 0.7482, FULL_DATA_ACC],
@@ -21,8 +21,34 @@ METHODS = {
     "BADGE": [0.7323, 0.7423, 0.7469, 0.7477, 0.7438, FULL_DATA_ACC],
     "UHerding": [0.7331, 0.7469, 0.7423, 0.7469, 0.7500, FULL_DATA_ACC],
     "PPAL": [0.7285, 0.7392, 0.7400, 0.7423, 0.7508, FULL_DATA_ACC],
-    "Best Attribute": [0.7369, 0.7492, 0.7508, 0.7508, 0.7562, FULL_DATA_ACC],
+    "Ours": [0.7369, 0.7492, 0.7508, 0.7515, 0.7562, FULL_DATA_ACC],
 }
+
+COLORS = {
+    "Random": "#4C72B0",
+    "Stratified": "#55A868",
+    "Entropy": "#8172B3",
+    "Coreset": "#64B5CD",
+    "BADGE": "#DD8452",
+    "UHerding": "#8C8C8C",
+    "PPAL": "#937860",
+    "Ours": "#C44E52",
+}
+
+MARKERS = {
+    "Random": "o",
+    "Stratified": "s",
+    "Entropy": "^",
+    "Coreset": "D",
+    "BADGE": "P",
+    "UHerding": "X",
+    "PPAL": "v",
+    "Ours": "*",
+}
+
+
+def display_label(method: str) -> str:
+    return r"$\bf{Ours}$" if method == "Ours" else method
 
 
 def main() -> None:
@@ -43,18 +69,17 @@ def main() -> None:
             )
 
     fig, ax = plt.subplots(figsize=(9.5, 5.2), constrained_layout=True)
-    markers = ["o", "s", "^", "D", "P", "X", "v", "*"]
-    colors = plt.get_cmap("tab10").colors
-
-    for idx, (method, values) in enumerate(METHODS.items()):
+    for method, values in METHODS.items():
+        is_ours = method == "Ours"
         ax.plot(
             RATIOS,
             values,
-            marker=markers[idx],
-            linewidth=1.9,
-            markersize=5.5,
-            label=method,
-            color=colors[idx % len(colors)],
+            marker=MARKERS[method],
+            linewidth=2.8 if is_ours else 1.75,
+            markersize=8.5 if is_ours else 5.2,
+            label=display_label(method),
+            color=COLORS[method],
+            zorder=5 if is_ours else 3,
         )
 
     ax.axhline(

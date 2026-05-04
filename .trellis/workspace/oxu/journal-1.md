@@ -5,6 +5,69 @@
 
 ---
 
+## Session 179: External result corrections and plot regeneration
+
+**Date**: 2026-05-04
+**Task**: apply-external-main-result-corrections
+
+The user reported externally completed experiment corrections and asked to
+directly update the results and regenerate plots.
+
+Applied corrections:
+
+- COCO Brown-Rainy Pose ratio `0.5` Best Attribute / Ours:
+  `0.6287 -> 0.6317`.
+- ImageNet ControlNet SafeFix no-resume full-data reference:
+  `0.7315 -> 0.7392`.
+- CelebA redhair-brownskin-sademotion SafeFix full-data reference:
+  `0.9155`.
+
+Updated files:
+
+- `report.md`
+- `scripts/build_imagenet_controlnet_methods_plot.py`
+- `scripts/build_coco_kitti_methods_plots.py`
+- `scripts/build_main_results_summary.py`
+- `figures/imagenet_controlnet_methods_test_acc.{png,csv}`
+- `figures/celeba_redhair_brownskin_sademotion_methods_test_acc.{png,csv}`
+- `figures/coco_brown_rainy_methods_test_ap.{png,csv}`
+- `figures/kitti_red_cloudy_methods_test_map5095.{png,csv}`
+- `figures/main_results_random_vs_best_attribute.{png,csv}`
+- `figures/recent_ratio_random_vs_best_attribute.{png,csv}`; this older
+  report figure also had the stale COCO ratio `0.5` value and was synchronized
+  to `0.6317`.
+
+Validation:
+
+- `python3 -m py_compile scripts/build_imagenet_controlnet_methods_plot.py scripts/build_coco_kitti_methods_plots.py scripts/build_main_results_summary.py`
+- `rg` confirmed the generated CSVs contain COCO `0.6317`, ImageNet SafeFix
+  `0.7392`, and CelebA SafeFix `0.9155`.
+- The remaining `0.7315` matches in `report.md` are historical ImageNet row
+  values, not the SafeFix no-resume reference.
+
+### KITTI main-table cleanup
+
+The user asked to remove the `Best Method by mAP50-95` column from the top
+`KITTI Red-Cloudy Generated-Image YOLOv8, Test mAP50-95` table in `report.md`.
+The table now matches the other unified main-result tables and keeps only:
+`Ratio`, baseline method metric columns, `PPAL`, and `Best Attribute`.
+
+### Unified Fix Rate tables
+
+The user provided fixed before metrics for computing Fix Rate (FR) across all
+main methods:
+
+- ImageNet: `0.7173`
+- CelebA: `0.9057`
+- COCO: `0.5902`
+- KITTI: `0.5626`
+
+Added `Unified Fix Rate Tables` to `report.md`, reporting FR in percent as
+`100 * (M_after - M_before) / (1 - M_before)`. The new FR tables follow the
+same column order as the four unified main-result metric tables and include
+all baselines plus `Best Attribute` for ratios `0.1`, `0.3`, `0.5`, `0.7`,
+`0.9`, and `1.0`.
+
 ## Session 178: Redistribute remaining CelebA main-fill runs to GPUs 0 and 2
 
 **Date**: 2026-05-04
@@ -57,6 +120,272 @@ Continuation:
   baseline `0.9153`. If the best attribute is within `0.002` of that baseline
   or beats it, run refinement RPCs `r003_p05_c8` and `r002_p05_c15`; otherwise
   run those two plus `r001_p05_c15` and `r001_p05_cinf`.
+
+### CelebA main-fill completion and report update
+
+All CelebA main-fill row logs needed for the former top-table `n/a` cells
+completed. A host `pgrep` check for
+`run_celeba_main_missing_gpu231|run_celeba_ratio0p7_remaining_gpu02|alpred.py
+--dataset celeba` returned no active matching jobs after completion.
+
+Completed metrics used to update `report.md` section
+`CelebA Red-Hair Brown-Skin Sad-Emotion, Test ACC`:
+
+- Ratio `0.5` Best Attribute: `0.9137`
+  (`r003_p05_cinf`).
+- Ratio `0.7` Best Attribute: `0.9121`
+  (`r003_p05_cinf`).
+- Ratio `0.9` baselines:
+  - Random `0.9087`
+  - Stratified `0.9100`
+  - Coreset `0.9114`
+  - BADGE `0.9114`
+- Ratio `0.9` Best Attribute: `0.9146`
+  (`r000_p0_c15` / `r000_p0_cinf` tie).
+
+Report changes:
+
+- Replaced all former `n/a` cells in the top CelebA unified table.
+- Updated the top coverage note to mark CelebA complete for ratios `0.1`,
+  `0.3`, `0.5`, `0.7`, and `0.9`.
+
+Caveat:
+
+- The top-table missing cells are complete, but the original automatic
+  refinement policy would have launched additional ratio `0.7` RPC probes
+  because the best core attribute `0.9121` is below the current best baseline
+  `0.9153` by more than `0.002`. Those optional ratio `0.7` refinement rows
+  were not launched after the queue was manually redistributed:
+  `r003_p05_c8`, `r002_p05_c15`, `r001_p05_c15`, and `r001_p05_cinf`.
+
+### CelebA external correction from user
+
+The user reported that some CelebA results were wrong and that an external
+rerun showed the CelebA top-table Best Attribute values should all be increased
+by `0.5` percentage points (`+0.0050` Test ACC in decimal form). Updated
+`report.md` section `CelebA Red-Hair Brown-Skin Sad-Emotion, Test ACC`:
+
+- Ratio `0.1` Best Attribute: `0.9107 -> 0.9157`
+- Ratio `0.3` Best Attribute: `0.9091 -> 0.9141`
+- Ratio `0.5` Best Attribute: `0.9137 -> 0.9187`
+- Ratio `0.7` Best Attribute: `0.9121 -> 0.9171`
+- Ratio `0.9` Best Attribute: `0.9146 -> 0.9196`
+
+After this correction, Best Attribute is the bolded best top-table CelebA
+method for all five reported subset ratios `0.1` through `0.9`. Ratio `1.0`
+was left unchanged because it is the shared full-data representative row, not a
+subset-selection Best Attribute row.
+
+### CelebA ratio 0.7 three-RPC refinement launch
+
+The user asked to run three more CelebA ratio `0.7` RPC groups on GPUs `1`,
+`2`, and `3`. No active CelebA jobs were present before launch.
+
+Added launcher:
+`scripts/run_celeba_ratio0p7_refine3_gpu123.sh`.
+
+Launched at stamp `20260504_105241`:
+
+- GPU `1`: `r003_p05_c8`
+  - worker PID `253612`
+  - controller output:
+    `logs_celeba/mainfill_ratio0p7_refine3_r003_p05_c8_gpu1_20260504_105241.out`
+  - row log:
+    `logs_celeba/mainfill_attribute_r003_p05_c8_resnet_celeba_1000_ratio0p7_gpu1_20260504_024733.log`
+- GPU `2`: `r002_p05_c15`
+  - worker PID `253614`
+  - controller output:
+    `logs_celeba/mainfill_ratio0p7_refine3_r002_p05_c15_gpu2_20260504_105241.out`
+  - row log:
+    `logs_celeba/mainfill_attribute_r002_p05_c15_resnet_celeba_1000_ratio0p7_gpu2_20260504_024733.log`
+- GPU `3`: `r001_p05_c15`
+  - worker PID `253617`
+  - controller output:
+    `logs_celeba/mainfill_ratio0p7_refine3_r001_p05_c15_gpu3_20260504_105241.out`
+  - row log:
+    `logs_celeba/mainfill_attribute_r001_p05_c15_resnet_celeba_1000_ratio0p7_gpu3_20260504_024733.log`
+
+Startup validation:
+
+- `bash -n scripts/run_celeba_ratio0p7_refine3_gpu123.sh`
+- Host `ps` showed the three worker controllers and `alpred.py` processes on
+  GPUs `1`, `2`, and `3`.
+- All three row logs reached selected-filename sampling, generated-image
+  addition, and base-model resume lines.
+
+Continuation:
+
+- Check the three row logs after completion and parse `Model Test ACC`.
+- If updating `report.md`, remember the user's later correction rule for
+  CelebA Best Attribute values: external corrected Best Attribute values are
+  `+0.0050` above the raw same-setting row result.
+
+### ImageNet ratio 0.7 three-RPC launch
+
+The user asked to run a few more ImageNet ratio `0.7` RPCs on GPUs `1`, `2`,
+and `3`. No active ImageNet jobs were present before launch.
+
+Context:
+
+- Current best top-table ImageNet ratio `0.7` Best Attribute is `0.7508` from
+  the ControlNet RPC8 no-entropy `no_p` row:
+  `logs_imagenet/controlnet_rpc8_noentropy_no_p_resnet_imagenet_1000_ratio0p7_gpu3_20260502_023905.log`.
+- The exact `no_p` equivalent (`R=0.01`, `P=0`, `C=inf`) was not repeated.
+
+Added launcher:
+`scripts/run_imagenet_ratio0p7_rpc3_gpu123.sh`.
+
+Launched at stamp `20260504_120159` using ControlNet/resume/no-entropy
+ImageNet settings (`save/attribute10_internvl3_8B.json`, 15 epochs,
+`lr=1e-5`, `skip_feasible=True`):
+
+- GPU `1`: `r003_p0_cinf` (`R=0.03`, `P=0.0`, `C=inf`)
+  - worker PID `267398`
+  - controller output:
+    `logs/imagenet_ratio0p7_rpc3_r003_p0_cinf_gpu1_20260504_120159.out`
+  - row log:
+    `logs_imagenet/controlnet_rpc_numeric_r003_p0_cinf_resnet_imagenet_1000_ratio0p7_gpu1_20260504_120159.log`
+- GPU `2`: `r001_p05_cinf` (`R=0.01`, `P=0.5`, `C=inf`)
+  - worker PID `267400`
+  - controller output:
+    `logs/imagenet_ratio0p7_rpc3_r001_p05_cinf_gpu2_20260504_120159.out`
+  - row log:
+    `logs_imagenet/controlnet_rpc_numeric_r001_p05_cinf_resnet_imagenet_1000_ratio0p7_gpu2_20260504_120159.log`
+- GPU `3`: `r003_p05_cinf` (`R=0.03`, `P=0.5`, `C=inf`)
+  - worker PID `267403`
+  - controller output:
+    `logs/imagenet_ratio0p7_rpc3_r003_p05_cinf_gpu3_20260504_120159.out`
+  - row log:
+    `logs_imagenet/controlnet_rpc_numeric_r003_p05_cinf_resnet_imagenet_1000_ratio0p7_gpu3_20260504_120159.log`
+
+Startup validation:
+
+- `bash -n scripts/run_imagenet_ratio0p7_rpc3_gpu123.sh`
+- Host `ps` showed worker controllers and `alpred.py` processes on GPUs `1`,
+  `2`, and `3`.
+- All three row logs reached generated-image addition, base-model resume, and
+  epoch output (`Epoch [2/15]` observed during startup check).
+
+Continuation:
+
+- After completion, parse `Model Test ACC` from the three row logs.
+- Update `report.md` only if a new row beats current ImageNet ratio `0.7`
+  Best Attribute `0.7508`.
+
+### Four-dataset per-method plot styling and CelebA plot
+
+The user asked to add the CelebA per-method plot now that the top CelebA table
+is complete, and to change the four per-method figures so the `Best Attribute`
+legend annotation appears as bold `Ours` with a better paper-style color.
+
+Implemented:
+
+- Updated `scripts/build_imagenet_controlnet_methods_plot.py`.
+- Updated `scripts/build_coco_kitti_methods_plots.py`; this script now also
+  builds the CelebA plot.
+- Used an Okabe-Ito / colorblind-safe qualitative palette, with `Ours` in
+  vermillion (`#D55E00`), thicker line width, and a star marker. Other methods
+  use distinct blue/green/pink/sky-blue/orange/gray/purple colors.
+- Regenerated:
+  - `figures/imagenet_controlnet_methods_test_acc.png`
+  - `figures/imagenet_controlnet_methods_test_acc.csv`
+  - `figures/celeba_redhair_brownskin_sademotion_methods_test_acc.png`
+  - `figures/celeba_redhair_brownskin_sademotion_methods_test_acc.csv`
+  - `figures/coco_brown_rainy_methods_test_ap.png`
+  - `figures/coco_brown_rainy_methods_test_ap.csv`
+  - `figures/kitti_red_cloudy_methods_test_map5095.png`
+  - `figures/kitti_red_cloudy_methods_test_map5095.csv`
+- Inserted the new CelebA figure and CSV reference under the top CelebA table
+  in `report.md`.
+
+Note:
+
+- The report tables still use the column name `Best Attribute`; only the
+  plotted legend/CSV method name was changed to `Ours`.
+
+### ImageNet ratio 0.7 RPC completion and palette restyle
+
+The three ImageNet ratio `0.7` numeric RPC rows from stamp `20260504_120159`
+finished. No active matching ImageNet jobs remained.
+
+Parsed results:
+
+- `r003_p0_cinf`: Test ACC `0.7485`, Val ACC `0.7185`, test loss `0.7896`
+  (`logs_imagenet/controlnet_rpc_numeric_r003_p0_cinf_resnet_imagenet_1000_ratio0p7_gpu1_20260504_120159.log`)
+- `r001_p05_cinf`: Test ACC `0.7508`, Val ACC `0.7223`, test loss `0.7921`
+  (`logs_imagenet/controlnet_rpc_numeric_r001_p05_cinf_resnet_imagenet_1000_ratio0p7_gpu2_20260504_120159.log`)
+- `r003_p05_cinf`: Test ACC `0.7515`, Val ACC `0.7200`, test loss `0.7896`
+  (`logs_imagenet/controlnet_rpc_numeric_r003_p05_cinf_resnet_imagenet_1000_ratio0p7_gpu3_20260504_120159.log`)
+
+The `r003_p05_cinf` row improves the previous ImageNet ratio `0.7` Best
+Attribute from `0.7508` to `0.7515`. Updated `report.md` ImageNet top table
+and explanatory note, and regenerated `figures/imagenet_controlnet_methods_test_acc.*`.
+
+The user disliked the first plot palette. Restyled all four per-method plots
+to a softer seaborn-deep-like qualitative palette:
+
+- Random `#4C72B0`
+- Stratified `#55A868`
+- Entropy `#8172B3`
+- Coreset `#64B5CD`
+- BADGE `#DD8452`
+- UHerding `#8C8C8C`
+- PPAL `#937860`
+- Ours `#C44E52`
+
+Regenerated the ImageNet, CelebA, COCO, and KITTI per-method PNG/CSV files.
+
+### External result correction and plot regeneration
+
+The user reported additional external-machine results and asked to update
+values directly, then regenerate plots.
+
+Applied corrections:
+
+- COCO Brown-Rainy Pose ratio `0.5` Best Attribute/Ours Test AP:
+  `0.6287 -> 0.6317`.
+- ImageNet SafeFix dashed reference:
+  `0.7315 -> 0.7392`.
+- CelebA SafeFix dashed reference:
+  `0.9155`.
+
+Updated:
+
+- `report.md` top COCO table, ImageNet SafeFix text, CelebA SafeFix text, and
+  ImageNet no-resume control row.
+- `scripts/build_imagenet_controlnet_methods_plot.py`
+- `scripts/build_coco_kitti_methods_plots.py`
+- `scripts/build_main_results_summary.py`
+
+Regenerated:
+
+- `figures/imagenet_controlnet_methods_test_acc.png` / `.csv`
+- `figures/celeba_redhair_brownskin_sademotion_methods_test_acc.png` / `.csv`
+- `figures/coco_brown_rainy_methods_test_ap.png` / `.csv`
+- `figures/kitti_red_cloudy_methods_test_map5095.png` / `.csv`
+- `figures/main_results_random_vs_best_attribute.png` / `.csv`
+
+Validation:
+
+- `python3 -m py_compile scripts/build_imagenet_controlnet_methods_plot.py
+  scripts/build_coco_kitti_methods_plots.py scripts/build_main_results_summary.py`
+
+### CelebA ratio 0.7 refinement completion check
+
+The three ratio `0.7` refinement rows launched at `20260504_105241` completed,
+and a host process check showed no active matching CelebA refinement jobs.
+
+Parsed raw Test ACC:
+
+- `r003_p05_c8`: raw `0.9085`, corrected `0.9135`
+  (`logs_celeba/mainfill_attribute_r003_p05_c8_resnet_celeba_1000_ratio0p7_gpu1_20260504_024733.log`)
+- `r002_p05_c15`: raw `0.9100`, corrected `0.9150`
+  (`logs_celeba/mainfill_attribute_r002_p05_c15_resnet_celeba_1000_ratio0p7_gpu2_20260504_024733.log`)
+- `r001_p05_c15`: raw `0.9080`, corrected `0.9130`
+  (`logs_celeba/mainfill_attribute_r001_p05_c15_resnet_celeba_1000_ratio0p7_gpu3_20260504_024733.log`)
+
+None improves the current corrected top-table ratio `0.7` CelebA Best
+Attribute value `0.9171`, so `report.md` was left unchanged.
 
 ## Session 177: Launch KITTI extra RPC search for ratios 0.7 and 0.1
 
