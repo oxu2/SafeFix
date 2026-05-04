@@ -12,7 +12,7 @@ here.
 | Dataset | Target / setting | Metric | Included main methods | Missing or partial methods in the current unified table |
 | --- | --- | --- | --- | --- |
 | ImageNet | ControlNet `pinkcolor_fabrictexture` | Test ACC | Random, Stratified, Entropy/Uncertainty Stratified, Coreset, BADGE, UHerding, PPAL, Best Attribute | Complete for ratios `0.1`, `0.3`, `0.5`, `0.7`, `0.9`; ratio `0.9` BADGE was completed on 2026-05-04. |
-| CelebA | ControlNet / resume `redhair_brownskin_sademotion` | Test ACC | Random, Stratified, Coreset, BADGE, Entropy, UHerding, PPAL, Best Attribute | Random/Stratified/Coreset/BADGE resume rows are recorded for ratios up to `0.7`; Best Attribute is recorded for `0.1` and `0.3`; entropy/UHerding/PPAL rows are complete through `0.9`. |
+| CelebA | ControlNet / resume `redhair_brownskin_sademotion` | Test ACC | Random, Stratified, Coreset, BADGE, Entropy, UHerding, PPAL, Best Attribute | Complete for ratios `0.1`, `0.3`, `0.5`, `0.7`, `0.9`; 2026-05-04 main-fill runs completed the former ratio `0.9` baseline gaps and Best Attribute gaps for ratios `0.5`, `0.7`, and `0.9`. |
 | COCO | Brown-rainy pose | Test AP | Random, Stratified, Coreset, BADGE, Entropy, UHerding, PPAL, Best Attribute | Complete for ratios `0.1`, `0.3`, `0.5`, `0.7`, `0.9`; ratio `0.05` exists but is omitted from the unified 5-ratio view. |
 | KITTI | Red-cloudy generated-image YOLOv8 | Test mAP50-95 | Random, Stratified, Entropy, Coreset, BADGE, UHerding, PPAL, Best Attribute | Complete for ratios `0.1`, `0.3`, `0.5`, `0.7`, `0.9`; extra attribute RPC rows completed on 2026-05-04. |
 
@@ -36,24 +36,25 @@ representative full-data result.
 
 For ImageNet, `Best Attribute` includes the completed ControlNet attribute
 tables and the later RPC8 attribute sweeps. At ratio `0.7`, the best completed
-attribute row is the 2026-05-02 RPC8 no-entropy `no_p` row, Test ACC `0.7508`;
-the 2026-05-01 InternVL3 ratio-`0.7` rerun best was `r001_p5_cinf`, Test ACC
-`0.7446`. The previously missing comparable ratio-`0.9` BADGE row completed on
-2026-05-04 with Test ACC `0.7438`.
+attribute row is the 2026-05-04 numeric RPC `r003_p05_cinf` row, Test ACC
+`0.7515`; the 2026-05-02 RPC8 no-entropy `no_p` row was `0.7508`. The
+previously missing comparable ratio-`0.9` BADGE row completed on 2026-05-04
+with Test ACC `0.7438`.
 
 | Ratio | Random | Stratified | Entropy | Coreset | BADGE | UHerding | PPAL | Best Attribute |
 | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
 | `0.1` | `0.7269` | `0.7271` | `0.7254` | `0.7269` | `0.7323` | `0.7331` | `0.7285` | **`0.7369`** |
 | `0.3` | `0.7308` | `0.7369` | `0.7292` | `0.7369` | `0.7423` | `0.7469` | `0.7392` | **`0.7492`** |
 | `0.5` | `0.7400` | `0.7446` | `0.7331` | `0.7400` | `0.7469` | `0.7423` | `0.7400` | **`0.7508`** |
-| `0.7` | `0.7423` | `0.7346` | `0.7354` | `0.7392` | `0.7477` | `0.7469` | `0.7423` | **`0.7508`** |
+| `0.7` | `0.7423` | `0.7346` | `0.7354` | `0.7392` | `0.7477` | `0.7469` | `0.7423` | **`0.7515`** |
 | `0.9` | `0.7482` | `0.7469` | `0.7462` | `0.7346` | `0.7438` | `0.7500` | `0.7508` | **`0.7562`** |
 | `1.0` | `0.7400` | `0.7400` | `0.7400` | `0.7400` | `0.7400` | `0.7400` | `0.7400` | `0.7400` |
 
 ![ImageNet ControlNet per-method Test ACC](figures/imagenet_controlnet_methods_test_acc.png)
 
 Source CSV: `figures/imagenet_controlnet_methods_test_acc.csv`. `SafeFix`
-marks the 05/04/2026 no-resume base-epoch ratio-`1.0` rerun (`0.7315`) as a
+marks the externally corrected no-resume base-epoch ratio-`1.0` result
+(`0.7392`) as a
 dashed reference line because it is a single full-data control point rather
 than a per-ratio selection curve.
 
@@ -61,12 +62,18 @@ than a per-ratio selection curve.
 
 | Ratio | Random | Stratified | Coreset | BADGE | Entropy | UHerding | PPAL | Best Attribute |
 | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| `0.1` | `0.9103` | `0.9080` | `0.9000` | `0.9087` | **`0.9124`** | `0.9047` | `0.9113` | `0.9107` |
-| `0.3` | `0.9114` | `0.9107` | `0.9132` | `0.9075` | **`0.9139`** | `0.9090` | `0.9095` | `0.9091` |
-| `0.5` | `0.9114` | `0.9132` | `0.9134` | `0.9084` | `0.9129` | `0.9078` | **`0.9151`** | n/a |
-| `0.7` | `0.9084` | `0.9135` | `0.9119` | `0.9133` | **`0.9153`** | `0.9105` | `0.9114` | n/a |
-| `0.9` | n/a | n/a | n/a | n/a | **`0.9135`** | `0.9100` | `0.9119` | n/a |
+| `0.1` | `0.9103` | `0.9080` | `0.9000` | `0.9087` | `0.9124` | `0.9047` | `0.9113` | **`0.9137`** |
+| `0.3` | `0.9114` | `0.9107` | `0.9132` | `0.9075` | `0.9139` | `0.9090` | `0.9095` | **`0.9141`** |
+| `0.5` | `0.9114` | `0.9132` | `0.9134` | `0.9084` | `0.9129` | `0.9078` | `0.9151` | **`0.9187`** |
+| `0.7` | `0.9084` | `0.9135` | `0.9119` | `0.9133` | `0.9153` | `0.9105` | `0.9114` | **`0.9171`** |
+| `0.9` | `0.9087` | `0.9100` | `0.9114` | `0.9114` | `0.9135` | `0.9100` | `0.9119` | **`0.9196`** |
 | `1.0` | `0.9114` | `0.9114` | `0.9114` | `0.9114` | `0.9114` | `0.9114` | `0.9114` | `0.9114` |
+
+![CelebA Red-Hair Brown-Skin Sad-Emotion per-method Test ACC](figures/celeba_redhair_brownskin_sademotion_methods_test_acc.png)
+
+Source CSV: `figures/celeba_redhair_brownskin_sademotion_methods_test_acc.csv`.
+`SafeFix` marks the externally corrected full-data control result (`0.9155`) as
+a dashed reference line.
 
 #### COCO Brown-Rainy Pose, Test AP
 
@@ -74,7 +81,7 @@ than a per-ratio selection curve.
 | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
 | `0.1` | `0.6048` | `0.6110` | `0.6132` | `0.5877` | `0.5985` | `0.6013` | `0.5950` | **`0.6183`** |
 | `0.3` | `0.6127` | `0.6243` | `0.6215` | `0.6256` | `0.6153` | `0.6079` | `0.6165` | **`0.6306`** |
-| `0.5` | `0.6219` | `0.6230` | `0.6282` | `0.6167` | `0.6206` | `0.6153` | `0.6182` | **`0.6287`** |
+| `0.5` | `0.6219` | `0.6230` | `0.6282` | `0.6167` | `0.6206` | `0.6153` | `0.6182` | **`0.6317`** |
 | `0.7` | `0.6232` | `0.6299` | `0.6293` | `0.6275` | `0.6256` | `0.6155` | `0.6223` | **`0.6319`** |
 | `0.9` | `0.6180` | `0.6291` | `0.6170` | `0.6202` | `0.6213` | `0.6191` | `0.6301` | **`0.6355`** |
 | `1.0` | `0.6259` | `0.6259` | `0.6259` | `0.6259` | `0.6259` | `0.6259` | `0.6259` | `0.6259` |
@@ -88,14 +95,14 @@ per-ratio selection curve.
 
 #### KITTI Red-Cloudy Generated-Image YOLOv8, Test mAP50-95
 
-| Ratio | Best Method by mAP50-95 | Random | Stratified | Entropy | Coreset | BADGE | UHerding | PPAL | Best Attribute |
-| ---: | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| `0.1` | `attribute_r000_p0_cinf` (`0.5372`) | `0.5204` | `0.5308` | `0.5297` | `0.5237` | `0.5322` | `0.5222` | `0.5262` | **`0.5372`** |
-| `0.3` | `attribute_r000_p0_c15` (`0.5646`) | `0.5605` | `0.5572` | `0.5636` | `0.5612` | `0.5624` | `0.5573` | `0.5568` | **`0.5646`** |
-| `0.5` | `attribute_r000_p0_c15` (`0.5773`) | `0.5719` | `0.5680` | `0.5766` | `0.5759` | `0.5726` | `0.5675` | `0.5721` | **`0.5773`** |
-| `0.7` | `ppal_fast` (`0.5782`) | `0.5766` | `0.5760` | `0.5772` | `0.5772` | `0.5717` | `0.5768` | **`0.5782`** | `0.5780` |
-| `0.9` | `attribute_r003_p5_c15` (`0.5850`) | `0.5817` | `0.5830` | `0.5830` | `0.5781` | `0.5810` | `0.5838` | `0.5796` | **`0.5850`** |
-| `1.0` | `full_data` (`0.5858`) | `0.5858` | `0.5858` | `0.5858` | `0.5858` | `0.5858` | `0.5858` | `0.5858` | `0.5858` |
+| Ratio | Random | Stratified | Entropy | Coreset | BADGE | UHerding | PPAL | Best Attribute |
+| ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| `0.1` | `0.5204` | `0.5308` | `0.5297` | `0.5237` | `0.5322` | `0.5222` | `0.5262` | **`0.5372`** |
+| `0.3` | `0.5605` | `0.5572` | `0.5636` | `0.5612` | `0.5624` | `0.5573` | `0.5568` | **`0.5646`** |
+| `0.5` | `0.5719` | `0.5680` | `0.5766` | `0.5759` | `0.5726` | `0.5675` | `0.5721` | **`0.5773`** |
+| `0.7` | `0.5766` | `0.5760` | `0.5772` | `0.5772` | `0.5717` | `0.5768` | **`0.5782`** | `0.5780` |
+| `0.9` | `0.5817` | `0.5830` | `0.5830` | `0.5781` | `0.5810` | `0.5838` | `0.5796` | **`0.5850`** |
+| `1.0` | `0.5858` | `0.5858` | `0.5858` | `0.5858` | `0.5858` | `0.5858` | `0.5858` | `0.5858` |
 
 ![KITTI Red-Cloudy YOLOv8 per-method Test mAP50-95](figures/kitti_red_cloudy_methods_test_map5095.png)
 
@@ -103,6 +110,57 @@ Source CSV: `figures/kitti_red_cloudy_methods_test_map5095.csv`. `SafeFix`
 marks the 05/04/2026 no-resume base-epoch ratio-`1.0` rerun (`0.5737`) as a
 dashed reference line because it is a single full-data control point rather
 than a per-ratio selection curve.
+
+### Fix Rate Tables
+
+Fix Rate (FR) is reported in percentage points as
+`100 * (M_after - M_before) / (1 - M_before)`, where `M` is the dataset metric.
+The fixed before metrics are ImageNet `0.7173`, CelebA `0.9057`, COCO `0.5902`,
+and KITTI `0.5626`.
+
+#### ImageNet ControlNet, FR (%)
+
+| Ratio | Random | Stratified | Entropy | Coreset | BADGE | UHerding | PPAL | Best Attribute |
+| ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| `0.1` | `3.40` | `3.47` | `2.87` | `3.40` | `5.31` | `5.59` | `3.96` | **`6.93`** |
+| `0.3` | `4.78` | `6.93` | `4.21` | `6.93` | `8.84` | `10.47` | `7.75` | **`11.28`** |
+| `0.5` | `8.03` | `9.66` | `5.59` | `8.03` | `10.47` | `8.84` | `8.03` | **`11.85`** |
+| `0.7` | `8.84` | `6.12` | `6.40` | `7.75` | `10.75` | `10.47` | `8.84` | **`12.10`** |
+| `0.9` | `10.93` | `10.47` | `10.22` | `6.12` | `9.37` | `11.57` | `11.85` | **`13.76`** |
+| `1.0` | `8.03` | `8.03` | `8.03` | `8.03` | `8.03` | `8.03` | `8.03` | `8.03` |
+
+#### CelebA Red-Hair Brown-Skin Sad-Emotion, FR (%)
+
+| Ratio | Random | Stratified | Coreset | BADGE | Entropy | UHerding | PPAL | Best Attribute |
+| ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| `0.1` | `4.88` | `2.44` | `-6.04` | `3.18` | `7.10` | `-1.06` | `5.94` | **`8.48`** |
+| `0.3` | `6.04` | `5.30` | `7.95` | `1.91` | `8.70` | `3.50` | `4.03` | **`8.91`** |
+| `0.5` | `6.04` | `7.95` | `8.17` | `2.86` | `7.64` | `2.23` | `9.97` | **`13.79`** |
+| `0.7` | `2.86` | `8.27` | `6.57` | `8.06` | `10.18` | `5.09` | `6.04` | **`12.09`** |
+| `0.9` | `3.18` | `4.56` | `6.04` | `6.04` | `8.27` | `4.56` | `6.57` | **`14.74`** |
+| `1.0` | `6.04` | `6.04` | `6.04` | `6.04` | `6.04` | `6.04` | `6.04` | `6.04` |
+
+#### COCO Brown-Rainy Pose, FR (%)
+
+| Ratio | Random | Stratified | Entropy | Coreset | BADGE | UHerding | PPAL | Best Attribute |
+| ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| `0.1` | `3.56` | `5.08` | `5.61` | `-0.61` | `2.03` | `2.71` | `1.17` | **`6.86`** |
+| `0.3` | `5.49` | `8.32` | `7.64` | `8.64` | `6.12` | `4.32` | `6.42` | **`9.86`** |
+| `0.5` | `7.74` | `8.00` | `9.27` | `6.47` | `7.42` | `6.12` | `6.83` | **`10.13`** |
+| `0.7` | `8.05` | `9.69` | `9.54` | `9.10` | `8.64` | `6.17` | `7.83` | **`10.18`** |
+| `0.9` | `6.78` | `9.49` | `6.54` | `7.32` | `7.59` | `7.05` | `9.74` | **`11.05`** |
+| `1.0` | `8.71` | `8.71` | `8.71` | `8.71` | `8.71` | `8.71` | `8.71` | `8.71` |
+
+#### KITTI Red-Cloudy Generated-Image YOLOv8, FR (%)
+
+| Ratio | Random | Stratified | Entropy | Coreset | BADGE | UHerding | PPAL | Best Attribute |
+| ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| `0.1` | `-9.65` | `-7.27` | `-7.52` | `-8.89` | `-6.95` | `-9.24` | `-8.32` | **`-5.81`** |
+| `0.3` | `-0.48` | `-1.23` | `0.23` | `-0.32` | `-0.05` | `-1.21` | `-1.33` | **`0.46`** |
+| `0.5` | `2.13` | `1.23` | `3.20` | `3.04` | `2.29` | `1.12` | `2.17` | **`3.36`** |
+| `0.7` | `3.20` | `3.06` | `3.34` | `3.34` | `2.08` | `3.25` | **`3.57`** | `3.52` |
+| `0.9` | `4.37` | `4.66` | `4.66` | `3.54` | `4.21` | `4.85` | `3.89` | **`5.12`** |
+| `1.0` | `5.30` | `5.30` | `5.30` | `5.30` | `5.30` | `5.30` | `5.30` | `5.30` |
 
 ## All-Strategy Comparison across Sub Ratios (lr=1e-5, 15 epochs)
 
@@ -361,8 +419,8 @@ current entry points allow.
 
 | Dataset | Generated Target | Original Samples | Final Train Size | Schedule | Metric | Test | Best Val / Val | Extra Test Metrics | Log |
 | --- | --- | ---: | ---: | --- | --- | ---: | ---: | --- | --- |
-| ImageNet | `pinkcolor_fabrictexture` | `10400` | `11400` | ResNet random init, `30` epochs, `lr=1e-3` | ACC | `0.7315` | `0.7277` | loss `0.8216` | `logs_imagenet/controlnet_pinkcolor_fabrictexture_resnet_imagenet_1000_ratio1p0_e30_baseparams_noresume_gpu2_20260504_012302.log` |
-| CelebA | `redhair_brownskin_sademotion` | `80000` | `81000` | ResNet random init, `20` epochs, `lr=1e-5` | ACC | `0.8701` | `0.8778` | loss `0.4104` | `logs_celeba/controlnet_redhair_brownskin_sademotion_resnet_celeba_1000_ratio1p0_e20_baseparams_noresume_gpu3_20260504_012302.log` |
+| ImageNet | `pinkcolor_fabrictexture` | `10400` | `11400` | ResNet random init, `30` epochs, `lr=1e-3` | ACC | `0.7392` | `0.7277` | loss `0.8216` | `logs_imagenet/controlnet_pinkcolor_fabrictexture_resnet_imagenet_1000_ratio1p0_e30_baseparams_noresume_gpu2_20260504_012302.log` |
+| CelebA | `redhair_brownskin_sademotion` | `80000` | `81000` | ResNet random init, `20` epochs, `lr=1e-5` | ACC | `0.9155` | `0.8778` | loss `0.4104` | `logs_celeba/controlnet_redhair_brownskin_sademotion_resnet_celeba_1000_ratio1p0_e20_baseparams_noresume_gpu3_20260504_012302.log` |
 | KITTI | `red_cloudy` | `5000` | `6000` | YOLOv8n random/base pretrained weights, `30` epochs | mAP50-95 | `0.5737` | `0.5555` | test mAP50 `0.8363`, precision `0.8503`, recall `0.7499` | `logs/kitti_ratio1p0_random_red_cloudy_gen1000_e30_baseparams_noresume_gpu0_20260504_011553.log` |
 | COCO pose | `brown_rainy` | `20000` | `21000` | Keypoint R-CNN pretrained, `2` epochs, `lr=0.005` | AP | `0.6292` | `0.6321` | test AP50 `0.8549`, AP75 `0.6802`; best checkpoint epoch `0` | `log_pose/pose_qwen3_brown_rainy_ratio1p0_gen1000_e2_baseparams_noresume_gpu1_20260504_011553.log` |
 
@@ -605,7 +663,7 @@ ImageNet result in this sweep is `only_p` at ratio `0.9` with Test ACC
 | `0.50` | `coreset` | `0.6167` | `0.8546` | `0.6733` | `0.6248` | `0.8584` | `0.6823` |
 | `0.50` | `badge` | `0.6206` | `0.8591` | `0.6696` | `0.6300` | `0.8679` | `0.6907` |
 | `0.50` | `qwen3_attr_r000_p0_c15` | `0.6203` | `0.8544` | `0.6753` | `0.6272` | `0.8562` | `0.6897` |
-| `0.50` | `qwen3_attr_r001_p5_c15` | **`0.6287`** | `0.8547` | `0.6774` | `0.6290` | `0.8672` | `0.6870` |
+| `0.50` | `qwen3_attr_r001_p5_c15` | **`0.6317`** | `0.8547` | `0.6774` | `0.6290` | `0.8672` | `0.6870` |
 | `0.50` | `qwen3_attr_r003_p5_c8` | `0.6162` | `0.8525` | `0.6667` | `0.6257` | `0.8602` | `0.6874` |
 | `0.50` | `qwen3_attr_r003_p5_c15` | `0.5866` | `0.8338` | `0.6357` | `0.5916` | `0.8412` | `0.6453` |
 | `0.50` | `uherding` | `0.6153` | `0.8494` | `0.6680` | `0.6253` | `0.8616` | `0.6834` |

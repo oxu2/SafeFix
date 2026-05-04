@@ -7,7 +7,7 @@ ImageNet base AL,Test ACC,0.90,0.7482,0.7531,0.0049,attribute
 Brown-Rainy COCO pose,Test AP,0.05,0.5797,0.5871,0.0074,attribute
 Brown-Rainy COCO pose,Test AP,0.10,0.6048,0.6183,0.0135,attribute
 Brown-Rainy COCO pose,Test AP,0.30,0.6127,0.6306,0.0179,attribute
-Brown-Rainy COCO pose,Test AP,0.50,0.6219,0.6287,0.0068,attribute
+Brown-Rainy COCO pose,Test AP,0.50,0.6219,0.6317,0.0098,attribute
 Brown-Rainy COCO pose,Test AP,0.70,0.6232,0.6319,0.0087,attribute
 Brown-Rainy COCO pose,Test AP,0.90,0.6180,0.6355,0.0175,attribute
 ImageNet instruct-pix2pix,Test ACC,0.10,0.7062,0.7146,0.0084,attribute
