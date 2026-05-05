@@ -1,0 +1,48 @@
+This is BibTeX, Version 0.99e (TeX Live 2026)
+Capacity: max_strings=200000, hash_size=200000, hash_prime=170003
+The top-level auxiliary file: main.aux
+The style file: plainnat.bst
+Database file #1: ref.bib
+Warning--empty journal in settles2009active
+You've used 16 entries,
+            2773 wiz_defined-function locations,
+            677 strings with 8308 characters,
+and the built_in function-call counts, 9277 in all, are:
+= -- 767
+> -- 727
+< -- 9
++ -- 244
+- -- 228
+* -- 757
+:= -- 1420
+add.period$ -- 51
+call.type$ -- 16
+change.case$ -- 123
+chr.to.int$ -- 16
+cite$ -- 33
+duplicate$ -- 393
+empty$ -- 658
+format.name$ -- 248
+if$ -- 1950
+int.to.chr$ -- 1
+int.to.str$ -- 1
+missing$ -- 14
+newline$ -- 89
+num.names$ -- 64
+pop$ -- 285
+preamble$ -- 1
+purify$ -- 107
+quote$ -- 0
+skip$ -- 341
+stack$ -- 0
+substring$ -- 208
+swap$ -- 73
+text.length$ -- 5
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 176
+warning$ -- 1
+while$ -- 63
+width$ -- 0
+write$ -- 208
+(There was 1 warning)

@@ -1,0 +1,23 @@
+dataset,ratio,method,gpu,start_time,end_time,wall_time_sec,worker_log
+imagenet,0.5,random,0,2026-05-05 00:36:53,2026-05-05 00:36:56,3.000,logs/selection_export_worker_gpu0_20260505_003653.out
+imagenet,0.5,badge,0,2026-05-05 00:36:56,2026-05-05 00:37:17,21.000,logs/selection_export_worker_gpu0_20260505_003653.out
+celeba,0.5,random,0,2026-05-05 00:37:17,2026-05-05 00:37:20,3.000,logs/selection_export_worker_gpu0_20260505_003653.out
+celeba,0.5,badge,0,2026-05-05 00:37:20,2026-05-05 00:38:35,75.000,logs/selection_export_worker_gpu0_20260505_003653.out
+coco,0.5,random,0,2026-05-05 00:38:35,2026-05-05 00:38:46,11.000,logs/selection_export_worker_gpu0_20260505_003653.out
+coco,0.5,badge,0,2026-05-05 00:38:46,2026-05-05 00:45:01,375.000,logs/selection_export_worker_gpu0_20260505_003653.out
+imagenet,0.5,stratified,1,2026-05-05 00:36:53,2026-05-05 00:36:56,3.000,logs/selection_export_worker_gpu1_20260505_003653.out
+imagenet,0.5,ppal,1,2026-05-05 00:36:56,2026-05-05 00:37:17,21.000,logs/selection_export_worker_gpu1_20260505_003653.out
+celeba,0.5,stratified,1,2026-05-05 00:37:17,2026-05-05 00:37:20,3.000,logs/selection_export_worker_gpu1_20260505_003653.out
+celeba,0.5,ppal,1,2026-05-05 00:37:20,2026-05-05 00:38:39,79.000,logs/selection_export_worker_gpu1_20260505_003653.out
+coco,0.5,stratified,1,2026-05-05 00:38:39,2026-05-05 00:38:49,10.000,logs/selection_export_worker_gpu1_20260505_003653.out
+coco,0.5,ppal,1,2026-05-05 00:38:49,2026-05-05 00:45:04,375.000,logs/selection_export_worker_gpu1_20260505_003653.out
+imagenet,0.5,entropy,2,2026-05-05 00:36:53,2026-05-05 00:36:56,3.000,logs/selection_export_worker_gpu2_20260505_003653.out
+imagenet,0.5,uherding,2,2026-05-05 00:36:56,2026-05-05 00:37:17,21.000,logs/selection_export_worker_gpu2_20260505_003653.out
+celeba,0.5,entropy,2,2026-05-05 00:37:17,2026-05-05 00:37:21,4.000,logs/selection_export_worker_gpu2_20260505_003653.out
+celeba,0.5,uherding,2,2026-05-05 00:37:21,2026-05-05 00:38:40,79.000,logs/selection_export_worker_gpu2_20260505_003653.out
+imagenet,0.5,coreset,3,2026-05-05 00:36:53,2026-05-05 00:37:13,20.000,logs/selection_export_worker_gpu3_20260505_003653.out
+imagenet,0.5,ours,3,2026-05-05 00:37:13,2026-05-05 00:37:17,4.000,logs/selection_export_worker_gpu3_20260505_003653.out
+celeba,0.5,coreset,3,2026-05-05 00:37:17,2026-05-05 00:38:29,72.000,logs/selection_export_worker_gpu3_20260505_003653.out
+celeba,0.5,ours,3,2026-05-05 00:38:29,2026-05-05 00:38:36,7.000,logs/selection_export_worker_gpu3_20260505_003653.out
+coco,0.5,coreset,3,2026-05-05 00:38:36,2026-05-05 00:44:43,367.000,logs/selection_export_worker_gpu3_20260505_003653.out
+coco,0.5,ours,3,2026-05-05 00:44:43,2026-05-05 00:44:59,16.000,logs/selection_export_worker_gpu3_20260505_003653.out

@@ -5,6 +5,191 @@
 
 ---
 
+## Session 182: Selection t-SNE appendix insertion
+
+**Date**: 2026-05-05
+**Task**: add-selection-tsne-to-nips26-appendix
+
+The user asked to place the t-SNE figure into the `nips26/main.tex` appendix,
+copy the image into the `nips26/` paper folder, update any paper references
+that still pointed to working figure folders, and compile. A follow-up
+clarified that the other three ratio-`0.1` dataset t-SNE plots should be
+included too, not only KITTI. A later follow-up asked to use ordinary
+single-image figure blocks instead of a 2x2 panel, add available ratio-`0.05`
+t-SNE figures, and include the ratio-`0.05` and ratio-`0.1` overlay figures.
+The user then asked to put the t-SNE discussion before the overlap diagnostic
+and include the available t-SNE analysis in the appendix. A final follow-up
+asked what can be interpreted from the t-SNE and overlay plots, especially
+whether \model intentionally selects more biased regions because the score
+prefers rare attributes while still balancing classes.
+
+Updated:
+
+- `nips26/main.tex`
+- `nips26/figures/ratio0p05_selection_tsne/`
+- `nips26/figures/ratio0p1_selection_tsne/`
+- `nips26/figures/ratio0p1_selection_overlap/`
+- `nips26/figures/ratio0p3_selection_overlap/`
+- `nips26/figures/ratio0p5_selection_overlap/`
+
+Change:
+
+- Added a new Appendix section `Selection t-SNE Visualizations` before
+  `Selection Overlap as an Attribute-Information Diagnostic`.
+- Added text explaining that the t-SNE plots are qualitative, use lightweight
+  image proxy embeddings, and are separate from the Jaccard overlap metric.
+- Added analysis tying the visible t-SNE/overlay behavior to the Method
+  formula: the rarity term `R` can concentrate selections on rare
+  repair-relevant regions, the penalty term `P` discourages repeating
+  generated-data-heavy attribute values, and the class-deficit correction `C`
+  prevents collapse into one class or local region.
+- The appendix now phrases the expected visual signature as controlled
+  non-uniformity: \model can put more mass on unusual regions than random,
+  uncertainty, or pure coverage baselines while still retaining cross-class
+  coverage through the balance term.
+- Ratio `0.1` full t-SNE figures are included for ImageNet, CelebA, COCO, and
+  KITTI.
+- Ratio `0.05` full t-SNE figures are included for the available datasets:
+  ImageNet and KITTI. The section explicitly notes that CelebA and COCO are
+  omitted at ratio `0.05` because complete ratio-`0.05` selected-id exports
+  were not available.
+- KITTI overlay figures are included for ratio `0.1` and ratio `0.05`.
+- Added `\clearpage` after the t-SNE figure group so the PDF places the t-SNE
+  visualizations before the overlap diagnostic section.
+- Copied the existing overlap heatmap PNGs into `nips26/figures/...` and
+  changed their `\includegraphics` paths from `../figures/...` to local
+  `figures/...` paths so the paper folder is self-contained for these appendix
+  images.
+
+Validation:
+
+- Ran `pdflatex -interaction=nonstopmode main.tex` from `nips26/`.
+- A stale/partial aux pass initially returned nonzero while rewriting
+  references, then a clean rerun completed successfully.
+- Final `nips26/main.pdf` has `20` pages. No unresolved figure/table
+  references or citation warnings remain in `nips26/main.log`.
+
+---
+
+## Session 181: ImageNet RPC component ablation table
+
+**Date**: 2026-05-05
+**Task**: add-imagenet-rpc8-ablation-to-report-top
+
+The user clarified that the `05/02/2026 Update - ImageNet RPC 8-Combination
+Ratio Sweep` should be treated as an ablation and asked to put a new table at
+the top of the comparison report combining those component-combination rows
+with the current ImageNet ControlNet `Best Attribute` results.
+
+Updated:
+
+- `report.md`
+
+Change:
+
+- Added `ImageNet ControlNet RPC Component Ablation` near the top of
+  `report.md`, before `Main Result Coverage`.
+- The table reports Test ACC across ratios `0.1`, `0.3`, `0.5`, `0.7`, and
+  `0.9` for the entropy-enabled 05/02 RPC8 combinations: `none`, `R`, `P`,
+  `C`, `P+C`, `R+C`, `R+P`, and `R+P+C`.
+- Added a final `Best Attribute` column using the current top ImageNet
+  ControlNet table values, including later no-entropy and numeric RPC
+  refinements where they superseded the 05/02 entropy-enabled grid.
+
+Caveats:
+
+- This was a report/documentation edit only. No experiment rerun or plot
+  regeneration was needed.
+- `.handoff.md` was not updated because the active baton-pass state did not
+  change.
+
+Follow-up:
+
+- The user asked to replace the `R+P+C` column values with the current
+  `Best Attribute` values. Updated the ablation table in `report.md`
+  accordingly.
+- A later user correction changed two ImageNet cells; see the final follow-up
+  note below for the corrected leave-one-out interpretation.
+- The user then asked to summarize ablations across other datasets. Added a
+  `Cross-Dataset Ablation Summary` near the top of `report.md`.
+  - ImageNet and COCO are the only datasets with comparable completed RPC
+    component ablation grids in the report.
+  - COCO Brown-Rainy RPC8 parsed best settings by Test AP are: ratio `0.1`
+    `R+P+C` `0.6165`, ratio `0.3` `C` `0.6316`, ratio `0.5` `P+C`
+    `0.6295`, ratio `0.7` `R+P+C` `0.6327`, and ratio `0.9` `P+C`
+    `0.6276`. Leave-one-out from actual `R+P+C` suggests `C` is the most
+    useful COCO component by average drop (`0.00730` AP).
+  - CelebA and KITTI are documented as RPC parameter searches rather than
+    complete component ablations.
+- Follow-up: the user confirmed they meant RPC ablations and asked to list the
+  COCO table data. Added `COCO Brown-Rainy RPC Component Ablation` near the
+  top of `report.md`, listing held-out Test AP for the COCO Brown-Rainy
+  metadata-only RPC8 sweep across ratios `0.1`, `0.3`, `0.5`, `0.7`, and
+  `0.9`.
+- Follow-up correction: the user corrected two ImageNet RPC cells. Updated
+  `report.md` ImageNet RPC table:
+  - ratio `0.9`, `P`: `0.7562 -> 0.7526`
+  - ratio `0.1`, `P+C`: `0.7369 -> 0.7359`
+  The older detailed `05/02/2026 Update - ImageNet RPC 8-Combination Ratio
+  Sweep` table and its nearby best-overall sentence were synchronized to the
+  same corrected values.
+  Added an ImageNet ablation interpretation paragraph. With corrected values,
+  leave-one-out average drops from full `R+P+C` are effectively tied:
+  remove `R` `0.00942`, remove `P` `0.00940`, remove `C` `0.00940`.
+  The conclusion is complementarity rather than one clearly dominant
+  component.
+- Follow-up: the user asked to align the COCO Brown-Rainy RPC table's
+  `R+P+C` values with the main `COCO Brown-Rainy Pose, Test AP` table's
+  `Best Attribute` column. Updated the top COCO RPC table in `report.md`:
+  `R+P+C` is now `0.6183`, `0.6306`, `0.6317`, `0.6319`, and `0.6355` for
+  ratios `0.1`, `0.3`, `0.5`, `0.7`, and `0.9`. Updated the cross-dataset
+  summary accordingly; COCO still points most clearly to `C` as the strongest
+  component by leave-one-out average drop (`0.01444` AP).
+- Follow-up correction: user corrected COCO ratio `0.7` `R+P+C` from
+  `0.6319` to `0.6311`. Updated the COCO table and cross-dataset summary.
+  Corrected COCO leave-one-out average drops are now remove `R` `0.00752`,
+  remove `P` `0.00708`, and remove `C` `0.01428`, so the qualitative
+  conclusion that `C` is the clearest component remains unchanged.
+- Follow-up: user asked whether the phrase "all three components are
+  complementary; the full combination is consistently strongest, while P and C
+  show the largest marginal contribution" is supported. For corrected
+  ImageNet values, the first part is supported but the `P and C` marginal
+  contribution claim is not: leave-one-out drops are essentially tied
+  (`R` is numerically but negligibly largest by `0.00002`). Added a sentence
+  to `report.md` making that limitation explicit.
+- Follow-up: user pointed out the ImageNet `R+P+C` and `Best Attribute`
+  columns were duplicates. Removed the duplicate `Best Attribute` column from
+  the top ImageNet RPC table and clarified that `R+P+C` is aligned with the
+  current `Best Attribute` value.
+- Follow-up: user asked whether corresponding FR and plotting artifacts were
+  synchronized after recent ImageNet ControlNet and COCO Brown-Rainy main/FR/RPC
+  table edits. Checked the report and plotting scripts, then synchronized:
+  - `scripts/build_main_results_summary.py` now matches the current unified
+    main tables for ImageNet, CelebA, COCO, and KITTI.
+  - `scripts/build_imagenet_controlnet_methods_plot.py` now uses ImageNet
+    ratio `0.9` Random `0.7462`.
+  - `scripts/build_coco_kitti_methods_plots.py` now uses the corrected COCO
+    Random values: `0.6040`, `0.6209`, `0.6151`, and `0.6091` at ratios
+    `0.3`, `0.5`, `0.7`, and `0.9`.
+  - Regenerated `figures/main_results_random_vs_best_attribute.{csv,png}`,
+    `figures/imagenet_controlnet_methods_test_acc.{csv,png}`, and
+    `figures/coco_brown_rainy_methods_test_ap.{csv,png}`.
+  - `report.md` FR values were already numerically consistent after
+    recalculation from fixed before metrics, except two Markdown quote typos;
+    fixed ImageNet ratio `0.3` PPAL FR `7.75` and COCO ratio `0.3` PPAL FR
+    `6.42`.
+  - Clarified that the COCO RPC component table's `R+P+C` column is the full
+    combination row, not necessarily the main-table `Best Attribute`; ratio
+    `0.7` remains `C=0.6319` as the main best attribute while full `R+P+C` is
+    `0.6311`.
+  - Also fixed two nearby report formatting issues in the detailed ImageNet
+    RPC8 section: a stray quote after `0.7169` and a duplicate standalone
+    `0.7526` line.
+  - Validation: `python3 -m py_compile` for the three plot scripts and reran
+    all three plot builders with `MPLCONFIGDIR=/tmp/matplotlib-safefix`.
+
+---
+
 ## Session 180: KITTI ratio-0.1 selection t-SNE prototype
 
 **Date**: 2026-05-05
@@ -6222,6 +6407,42 @@ The user asked whether the `ratio=0.9` GPU0 queue had finished. It had not: the 
   - ImageNet: `Random`, `Stratified`, `Ours`
   - KITTI: all eight methods
 
+### Follow-up Ratio 0.5 Full-Method Refresh
+
+- User pointed out that ratio `0.5` t-SNE existed but CSV membership was
+  incomplete for ImageNet/CelebA/COCO.
+- Added ratio `0.5` support to `scripts/export_selection_ids.py`.
+- Launched selection-only export for ImageNet/CelebA/COCO ratio `0.5`:
+  - launcher:
+    `RATIOS_OVERRIDE=0.5 GPUS_OVERRIDE="0 1 2 3" bash scripts/run_selection_exports_ratio0p1_0p3_gpu0123.sh`
+  - stamp: `20260505_003653`
+- The original queue completed `22/24`. User then reported GPUs `0`, `1`, and
+  `3` were free, so the remaining GPU `2` queue was stopped and the final two
+  COCO methods were relaunched manually:
+  - COCO `entropy` on GPU `0`:
+    `logs/selection_export_coco_ratio0p5_entropy_gpu0_20260505_005220.log`
+  - COCO `uherding` on GPU `1`:
+    `logs/selection_export_coco_ratio0p5_uherding_gpu1_20260505_005220.log`
+- Final ratio `0.5` selection id coverage:
+  - `24/24` files under `selection_exports/ratio0p5/`
+  - ImageNet: `5200` ids per method
+  - CelebA: `40000` ids per method
+  - COCO: `10000` ids per method
+- Refreshed ratio `0.5` t-SNE CSV/PNG using existing caches:
+  - `figures/ratio0p5_selection_tsne/`
+- Regenerated ratio `0.5` Jaccard overlap heatmaps/CSVs:
+  - `figures/ratio0p5_selection_overlap/`
+- Validation:
+  - all four ratio `0.5` t-SNE CSV headers now contain all eight
+    `selected_*` columns
+  - all four ratio `0.5` overlap CSV headers now contain all eight methods
+  - refreshed t-SNE PNGs are `3190 x 1496`
+  - refreshed overlap PNGs are `1584 x 1364`
+- Caveat:
+  - `selection_exports/ratio0p5_selection_times_20260505_003653.csv` has
+    `22` rows because it parses only the original worker logs. The two manual
+    COCO reruns are documented by their individual logs above.
+
 ## 2026-05-05 KITTI Ratio 0.05 Overlay Plot
 
 ### What Changed
@@ -6247,6 +6468,102 @@ The user asked whether the `ratio=0.9` GPU0 queue had finished. It had not: the 
 - Verified the PNG exists and is readable:
   - size: `1803 x 1452`
   - file size: about `311K`
+
+## 2026-05-05 NeurIPS Appendix Overlap Theory Update
+
+### What Changed
+
+- Updated `nips26/main.tex` Appendix with a new section:
+  - `Selection Overlap as an Attribute-Information Diagnostic`
+- Added a formal interpretation of the overlap plots:
+  - generic AL selectors are treated as functions of non-attribute information
+    such as logits, losses, uncertainty, features, gradient embeddings, and
+    image distances
+  - the proposed selector additionally uses focused attribute metadata
+  - near-random Jaccard overlap therefore supports the claim that the attribute
+    selector is using a semantic information direction that generic AL does not
+    explicitly encode
+- Added two propositions:
+  - `Random-overlap scale for attribute-agnostic selectors`
+  - `Non-redundant repair utility`
+- Added an appendix table summarizing overlap diagnostics.
+- Follow-up correction:
+  - The user noticed Random and Entropy were identical in CelebA overlap
+    plots. The root cause was that ImageNet/CelebA entropy selected-id exports
+    for ratios `0.1`, `0.3`, and `0.5` had fallen back to random. The log
+    message was:
+    `Attempting to deserialize object on CUDA device ... but torch.cuda.device_count() is 1`.
+  - Fixed `scripts/export_selection_ids.py` by removing its internal
+    `CUDA_VISIBLE_DEVICES` assignment. The launcher already assigns physical
+    GPUs; masking inside the script made `cuda:{physical_id}` invalid in a
+    one-visible-device process.
+  - Reran entropy selected-id exports:
+    - `logs/selection_export_imagenet_ratio0p1_entropy_gpu0_20260505_fix.log`
+    - `logs/selection_export_imagenet_ratio0p3_entropy_gpu1_20260505_fix.log`
+    - `logs/selection_export_imagenet_ratio0p5_entropy_gpu2_20260505_fix.log`
+    - `logs/selection_export_celeba_ratio0p1_entropy_gpu3_20260505_fix.log`
+    - `logs/selection_export_celeba_ratio0p3_entropy_gpu0_20260505_fix.log`
+    - `logs/selection_export_celeba_ratio0p5_entropy_gpu1_20260505_fix.log`
+  - Validation after rerun:
+    - ImageNet Random--Entropy Jaccard: ratio `0.1` `0.0484`, ratio `0.3`
+      `0.1794`, ratio `0.5` `0.3340`
+    - CelebA Random--Entropy Jaccard: ratio `0.1` `0.0551`, ratio `0.3`
+      `0.1779`, ratio `0.5` `0.3344`
+  - Updated `scripts/build_selection_overlap_plots.py` so it uses full
+    `selection_exports/<ratio>/<dataset>/<method>/selected_original_ids.txt`
+    when available. This avoids computing CelebA/COCO overlap only on the
+    t-SNE plotted subset.
+  - Refreshed ImageNet and CelebA t-SNE CSV/PNG artifacts for ratios `0.1`,
+    `0.3`, and `0.5`.
+  - Regenerated Jaccard overlap heatmaps/CSVs for ratios `0.1`, `0.3`, and
+    `0.5`.
+  - Removed ratio `0.05` from the Appendix overlap table and figures.
+  - Current Appendix table values:
+    - ratio `0.10`: `J_rand=0.0526`, Ours-baseline `0.0533`,
+      baseline-baseline `0.0554`
+    - ratio `0.30`: `J_rand=0.1765`, Ours-baseline `0.1766`,
+      baseline-baseline `0.1828`
+    - ratio `0.50`: `J_rand=0.3333`, Ours-baseline `0.3323`,
+      baseline-baseline `0.3416`
+- Follow-up theory review update:
+  - The user provided an external critique of the overlap propositions and
+    asked for an independent judgment.
+  - Accepted the strictness critique for `Non-redundant repair utility`:
+    changed the proposition text from "before exhausting the target slice" to
+    the mathematically correct condition that some class has
+    `0<|T_c|<N_c` and `0<B_c<N_c`.
+  - Partially accepted the Cauchy--Schwarz suggestion:
+    added the inequality after the random-overlap proposition, but stated it
+    only for the case where two exchangeable selectors share the same group
+    allocation `B_g`. The text now says methods with different group
+    allocations should use the full grouped formula from the proposition.
+  - No `pdflatex` run was performed for this follow-up because
+    `nips26/AGENTS.md` says not to compile unless the user asks; the user
+    checks compilation in Overleaf.
+- The included PNGs now come from:
+  - `figures/ratio0p1_selection_overlap/`
+  - `figures/ratio0p3_selection_overlap/`
+  - `figures/ratio0p5_selection_overlap/`
+
+### Validation
+
+- Ran:
+  - `pdflatex -interaction=nonstopmode -halt-on-error main.tex`
+    from `nips26/`
+- Result:
+  - compile succeeded and produced `nips26/main.pdf`
+  - remaining warning: existing undefined citation `detectron2modelzoo`
+- After inserting the heatmap figures, reran `pdflatex` twice from `nips26/`.
+  The final `nips26/main.log` has no unresolved figure/table references; the
+  only remaining warning is still the existing undefined citation
+  `detectron2modelzoo`.
+- After the entropy and full selected-id overlap fixes, reran:
+  - `python3 -m py_compile scripts/build_selection_overlap_plots.py scripts/export_selection_ids.py`
+  - overlap builders for ratio `0.1`, `0.3`, and `0.5`
+  - `pdflatex -interaction=nonstopmode -halt-on-error main.tex` twice from
+    `nips26/`
+  Final status: `nips26/main.pdf` compiles; no unresolved figure/table
+  references; only `detectron2modelzoo` citation warning remains.
 
 ## Session 181 - Ratio 0.5 Selection t-SNE Snapshots
 

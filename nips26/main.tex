@@ -1,0 +1,788 @@
+\documentclass{article}
+
+% if you need to pass options to natbib, use, e.g.:
+%     \PassOptionsToPackage{numbers, compress}{natbib}
+% before loading neurips_2026
+\PassOptionsToPackage{numbers, compress}{natbib}
+
+% The authors should use one of these tracks.
+% Before accepting by the NeurIPS conference, select one of the options below.
+% 0. "default" for submission
+\usepackage{neurips_2026}
+% the "default" option is equal to the "main" option, which is used for the Main Track with double-blind reviewing.
+% 1. "main" option is used for the Main Track
+%  \usepackage[main]{neurips_2026}
+% 2. "position" option is used for the Position Paper Track
+%  \usepackage[position]{neurips_2026}
+% 3. "eandd" option is used for the Evaluations & Datasets Track
+ % \usepackage[eandd]{neurips_2026}
+ % if you want to opt-in for a de-anomymized submission (not recommended, but OK):
+ %\usepackage[eandd, nonanonymous]{neurips_2026}
+% 4. "creativeai" option is used for the Creative AI Track
+%  \usepackage[creativeai]{neurips_2026}
+% 5. "sglblindworkshop" option is used for the Workshop with single-blind reviewing
+ % \usepackage[sglblindworkshop]{neurips_2026}
+% 6. "dblblindworkshop" option is used for the Workshop with double-blind reviewing
+%  \usepackage[dblblindworkshop]{neurips_2026}
+
+% After being accepted, the authors should add "final" behind the track to compile a camera-ready version.
+% 1. Main Track
+ % \usepackage[main, final]{neurips_2026}
+% 2. Position Paper Track
+%  \usepackage[position, final]{neurips_2026}
+% 3. Evaluations & Datasets Track
+ % \usepackage[eandd, final]{neurips_2026}
+% 4. Creative AI Track
+%  \usepackage[creativeai, final]{neurips_2026}
+% 5. Workshop with single-blind reviewing
+%  \usepackage[sglblindworkshop, final]{neurips_2026}
+% 6. Workshop with double-blind reviewing
+%  \usepackage[dblblindworkshop, final]{neurips_2026}
+% Note. For the workshop paper template, both \title{} and \workshoptitle{} are required, with the former indicating the paper title shown in the title and the latter indicating the workshop title displayed in the footnote.
+% For workshops (5., 6.), the authors should add the name of the workshop, "\workshoptitle" command is used to set the workshop title.
+% \workshoptitle{WORKSHOP TITLE}
+
+% "preprint" option is used for arXiv or other preprint submissions
+ % \usepackage[preprint]{neurips_2026}
+
+% to avoid loading the natbib package, add option nonatbib:
+%    \usepackage[nonatbib]{neurips_2026}
+
+\usepackage[utf8]{inputenc} % allow utf-8 input
+\usepackage[T1]{fontenc}    % use 8-bit T1 fonts
+\usepackage{hyperref}       % hyperlinks
+\usepackage{url}            % simple URL typesetting
+\usepackage{booktabs}       % professional-quality tables
+\usepackage{amsfonts}       % blackboard math symbols
+\usepackage{amsmath}        % text and math blocks
+\usepackage{nicefrac}       % compact symbols for 1/2, etc.
+\usepackage{microtype}      % microtypography
+\usepackage{xcolor}         % colors
+\usepackage{graphicx}       % graphics scaling
+\usepackage{xspace}
+\usepackage{subcaption}
+\usepackage{wrapfig}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{float}
+\usepackage{tikz}
+\usetikzlibrary{positioning}
+\usepackage{newfloat}
+\usepackage{listings}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{enumitem}
+\usepackage{caption}
+\newcolumntype{C}[1]{>{\centering\arraybackslash}p{#1}}
+\input{math_commands.tex}
+
+\newcommand{\model}{MODEL\xspace}
+\newcommand{\safefix}{SafeFix\xspace}
+\newcommand{\hibug}{HiBug\xspace}
+\newcommand{\controlnet}{ControlNet\xspace}
+\newcommand{\llava}{LLaVA-v1.5\xspace}
+\newcommand{\dataset}{\mathcal{D}}
+\newcommand{\attrs}{\mathcal{A}}
+\newcommand{\vals}{\mathcal{V}}
+\newcommand{\inputspace}{\mathcal{X}}
+\newcommand{\labelspace}{\mathcal{Y}}
+\newcommand{\fix}{\marginpar{FIX}}
+\newcommand{\new}{\marginpar{NEW}}
+\newtheorem{proposition}{Proposition}
+\newtheorem{assumption}{Assumption}
+
+% Note. For the workshop paper template, both \title{} and \workshoptitle{} are required, with the former indicating the paper title shown in the title and the latter indicating the workshop title displayed in the footnote. 
+\title{\model: Attribute-Driven Data-Centric Bug Discovery and Repair}
+
+\author{%
+  Anonymous Authors \\
+  Paper under Double-Blind Review for NeurIPS 2026 %
+}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+Modern vision models often fail on semantically coherent slices that are not defined by the class label alone. In realistic repair settings, practitioners typically face two constraints: they can generate or collect only a limited amount of targeted data, and they cannot afford to repeatedly retrain on the full dataset after each discovered bug. Standard active learning methods are useful for generic subset selection, but they do not explicitly reason about the fine-grained attributes within an image or the distribution shift introduced by targeted synthetic data. We present \model, a data-centric framework for localized bug discovery and repair. \model uses large vision-language models to annotate images with structured attributes, diagnose failure slices, synthesize targeted repair data, and select a compact retraining subset with an attribute-driven scoring rule. The selector combines attribute rarity with a penalty for over-represented attribute values, together with optional class-aware balancing. We study this setting across three downstream tasks, image classification, pose estimation, and object detection, and show that explicit attribute metadata yields a practical and controllable repair pipeline for semantically targeted model fixing.
+\end{abstract}
+
+\section{Introduction}
+
+Despite high aggregate performance on standard benchmarks, computer vision models can still break on rare semantic subpopulations~\citep{barbu2019objectnet,chen2023hibug}. A model may perform well on the class `person' overall, but still fail on people wearing brown clothes and photographed in rainy weather. These failures are often rooted in dataset bias: particular attribute combinations (e.g., brown clothes, rainy weather) are rarely represented in the training data~\citep{buolamwini2018gender,eyuboglu2022domino}. Detecting and repairing such bug slices is therefore a key step toward reliable deployment in safety-critical AI systems.
+
+Recent work has made progress on finding these failures through interpretable debugging pipelines~\citep{gao2023adaptive,chen2023hibug,singla2024data}. For example, 3DB~\citep{leclerc20213db} complements these efforts by constructing structured attribute spaces over failure modes, allowing discovery of underrepresented attributes through unsupervised analysis of visual model errors. \hibug~\citep{chen2023hibug} uses vision--language models to identify failure slices that share human-interpretable visual attributes. Yet once a slice is discovered, repairing it remains a bottleneck. Existing repair strategies are typically either retrieval-based~\citep{gao2023adaptive,singla2024data,chen2025hibug2}, which collect additional examples from external data sources, or generation-based~\citep{chen2023hibug,zhang2024distributionally,xu2025safefix}, which synthesize examples for the failing slice. Among these, \hibug~\citep{chen2023hibug} was an early attempt to use generation to repair models after discovering failure cases, but its repair stage remains limited in generation control and validation. \safefix~\citep{xu2025safefix} improves generation-based repair by anchoring controlled image generation on real training instances and filtering outputs with a vision language model so that the edited images preserve labels and unrelated attributes.
+
+Both families of repair methods still impose substantial practical costs. Retrieval-based repair often requires access to large external datasets or image search engines, while generation-based repair has become an increasingly promising direction because it can synthesize targeted examples for discovered failure slices. However, existing generation-based repair pipelines still lack efficient mechanisms for incorporating these generated images with the original source data and retraining the model through a complete repair pipeline. For example, training Keypoint R-CNN~\citep{mask-rcnn-2017} for COCO person keypoint estimation~\citep{lin2014microsoft} takes on the order of eight GPU-days~\citep{detectron2modelzoo}. This process can remain resource-intensive and time-consuming when the source dataset is large or when many bug slices must be repaired.
+
+To accelerate this repair process, a natural strategy is to retrain on a carefully selected subset of the available data rather than the full source dataset. Active learning (AL) offers one principled way to perform this subset selection under a budget. Classical AL includes uncertainty-based strategies that prioritize samples on which the model is least certain, often using scores such as predictive entropy~\citep{settles2009active}, while more recent methods such as CoreSet~\citep{sener2018active} and BADGE~\citep{ash2020deep} emphasize geometric coverage and gradient-space diversity. However, standard AL operates at the image level and does not explicitly reason about attribute-level semantics or the attribute-distribution shift introduced by targeted synthetic repair data.
+
+We therefore present \model, 
+% TODO
+% an end-to-end framework for bug discovery and localized repair. \model first extracts structured attributes for each image with an LVLM, then diagnoses failure slices from model predictions and validation behavior, synthesizes targeted repair data with controllable generative models such as \controlnet \citep{zhang2023adding}, and finally selects a compact retraining subset with an attribute-driven AL policy. Instead of treating each image as only a point in feature space, our selector reasons over explicit attribute values. It scores candidates by combining semantic rarity, optional predictive uncertainty, failure-specific weights from diagnostic logs, and a penalty for over-represented values so that synthetic floods do not dominate the repair set. This makes it possible to fix a model with a small, intentionally chosen dataset rather than repeatedly redesigning the pipeline or fine-tuning on a large undifferentiated pool.
+
+Our contributions are:
+\begin{enumerate}
+  % TODO
+    \item We 
+    % formulate targeted model repair as a repair-time data selection problem: given a source dataset and targeted synthetic repair data, select a compact retraining subset that preserves useful coverage while emphasizing repair-relevant attributes.
+    % \item We propose an attribute-driven selection strategy that scores source examples using explicit semantic metadata, attribute rarity, and a synthetic-data-aware frequency penalty, with optional class-aware balancing.
+    % \item We provide an empirical study on CelebA and ImageNet showing that attribute-aware subset selection differs from generic AL baselines in both behavior and efficiency for localized bug fixing.
+\end{enumerate}
+
+
+\section{Related Work}
+
+
+
+\paragraph{Attribute-Based Debugging and Repair}
+Attribute-based debugging methods aim to expose model failures as human-interpretable semantic slices. AdaVision~\citep{gao2023adaptive} and DCD~\citep{singla2024data} identify underperforming subpopulations and rely on retrieval-style interventions, which can require external data sources and manual validation. \hibug~\citep{chen2023hibug} uses vision--language models to discover failure slices through shared visual attributes, and HiBug2~\citep{chen2025hibug2} further improves the efficiency and coverage of this debugging process. SafeFix~\citep{xu2025safefix} shifts from retrieval to controlled generation by editing real training instances and filtering generated images with an LVLM to preserve labels and unrelated attributes. These works focus primarily on finding bug slices or constructing repair examples. In contrast, our work studies the complementary problem of repair-time data selection: given original source data and targeted generated data, we select a compact retraining subset that preserves useful coverage while emphasizing repair-relevant attributes.
+
+\paragraph{Active Learning}
+Active learning reduces annotation or retraining cost by selecting informative subsets under a budget. Representative approaches include uncertainty sampling~\citep{settles2009active}, coreset selection~\citep{sener2018active}, and hybrid gradient-embedding methods such as BADGE~\citep{ash2020deep}. Our setting differs from standard AL because the goal is not generic sample efficiency, but selecting source data that complements a targeted repair set and corrects an attribute-defined failure slice.
+
+\section{Background}
+
+\paragraph{Attribute-Based Failure Slices}
+Let $f_\theta : \inputspace \rightarrow \labelspace$ denote a vision model, and let $\dataset_{\mathrm{train}}$, $\dataset_{\mathrm{val}}$, and $\dataset_{\mathrm{test}}$ be the training, validation, and test splits. In attribute-aware debugging pipelines such as HiBug \citep{chen2023hibug}, each image $x \in \inputspace$ is associated with a collection of semantic attributes $\attrs = \{a_1, \ldots, a_m\}$, where each attribute function $a_j : \inputspace \rightarrow \vals_j$ maps an image to a discrete value in a vocabulary $\vals_j$. A failure slice is then described by a conjunction of attribute-value assignments,
+\begin{equation}
+S = \{x \mid a_{j_1}(x) = v_{j_1}, \ldots, a_{j_k}(x) = v_{j_k}\}.
+\end{equation}
+Such slices are useful because they turn model failures into human-readable semantic descriptions. We are primarily interested in slices that are both underrepresented in $\dataset_{\mathrm{train}}$ and underperforming on $\dataset_{\mathrm{val}}$, i.e., slices whose support is below a rarity threshold $\rho$ and whose validation accuracy is substantially below the overall validation accuracy.
+
+\paragraph{Source Data and Generated Repair Data}
+Once a bug slice has been identified, the repair stage operates on two kinds of data. The first is a \emph{source pool} $\dataset_{\mathrm{src}} \subseteq \dataset_{\mathrm{train}}$ of original training images that remain available for retraining. The second is a \emph{generated pool} $\dataset_{\mathrm{gen}}$ of synthetic images produced to satisfy target slices first exposed by attribute-aware debugging pipelines such as HiBug and SafeFix \citep{chen2023hibug,xu2025safefix}, while preserving the original class label. The resulting repair candidate set may therefore contain both original and generated examples:
+\begin{equation}
+\dataset_{\mathrm{cand}} = \dataset_{\mathrm{src}} \cup \dataset_{\mathrm{gen}}.
+\end{equation}
+This distinction matters because the two pools play different roles. Source data preserves the original training distribution and class coverage, while generated data injects targeted attribute configurations that were previously missing or rare.
+
+\paragraph{Data Selection for Repair}
+Repair is thus a budgeted data-curation problem rather than a pure generation problem. A naive solution is to retrain on a very large fraction of $\dataset_{\mathrm{src}}$ together with $\dataset_{\mathrm{gen}}$, or to restart training from scratch after augmentation. Both choices are expensive. Instead, we seek a compact retraining set
+\begin{equation}
+\dataset_{\mathrm{repair}} = \dataset_{\mathrm{sel}}^{\mathrm{src}} \cup \dataset_{\mathrm{sel}}^{\mathrm{gen}},
+\end{equation}
+where $\dataset_{\mathrm{sel}}^{\mathrm{src}} \subseteq \dataset_{\mathrm{src}}$ and $\dataset_{\mathrm{sel}}^{\mathrm{gen}} \subseteq \dataset_{\mathrm{gen}}$ are chosen under a fixed budget. In the common setting studied here, all generated images are retained and the main question is which source images should accompany them. A useful selection policy should preserve broad class coverage, complement the targeted synthetic images, and avoid over-amplifying the attribute values that are already abundant in $\dataset_{\mathrm{gen}}$.
+
+\section{Methodology}
+
+\subsection{\model Framework}
+
+% TODO
+% The \model pipeline consists of three core phases:
+% 1. \textbf{Bug Discovery}: LVLMs analyze misclassified instances to identify semantic correlation patterns and isolate the failing attributes.
+% 2. \textbf{Targeted Augmentation}: Based on the discovered failing prompt, generative models synthesize new images featuring the missing attributes.
+% 3. \textbf{Strategic Curation}: An AL policy selects the optimal subset of original data and synthetic injections for retraining.
+
+\subsection{Attribute-Driven Active Learning}
+
+Given a source pool $\dataset_{\mathrm{src}}$ and a generated pool $\dataset_{\mathrm{gen}}$ for a discovered bug slice, our goal is to build a compact repair set without resorting to expensive retraining on the full source dataset. To accelerate this repair process, a natural strategy is to retrain on a carefully selected subset of the available data rather than the full source dataset. Active learning (AL) offers one principled way to perform this subset selection under a budget. Classical AL includes uncertainty-based strategies that prioritize samples on which the model is least certain, often using scores such as predictive entropy~\citep{settles2009active}, while more recent methods such as CoreSet~\citep{sener2018active} and BADGE~\citep{ash2020deep} emphasize geometric coverage and gradient-space diversity. However, standard AL operates at the image level and does not explicitly reason about attribute-level semantics or the attribute-distribution shift introduced by targeted synthetic repair data.
+
+This creates two challenges for targeted repair. First, an AL subset can be representative of $\dataset_{\mathrm{src}}$ in class labels or feature geometry while still containing very few examples from the diagnosed failure slice. If the failure slice is rare, distribution-matching or coverage-based selection allocates only a small fraction of the budget to it; uncertainty sampling can also miss the slice when the model is more uncertain on other images. We formalize this issue in Proposition~\ref{prop:al-target-alignment}. Second, targeted generation can distort the attribute distribution of the repair pool. For example, if a discovered ImageNet repair attribute is ``cloth'' or ``fabric,'' a purely attribute-greedy selector may concentrate on classes where that attribute is visually common, such as backpacks or related products, while selecting few examples from classes where the same attribute is rarer, such as guitars with straps or fabric cases. Retraining on such a subset can bias the repaired model toward the classes and contexts that happen to expose the attribute most often, rather than learning a robust attribute-level correction.
+
+Our score is therefore designed for repair rather than generic data summarization. It has three roles: increase the share of source images with rare repair-relevant attributes, reduce the priority of attribute values already over-supplied by generated data, and keep the selected source subset from collapsing onto a small number of classes or pose-complexity bins. Without these components, the repair set can either omit the failure cases, duplicate the synthetic attribute distribution, or overfit to a narrow set of classes.
+
+For each source sample $x_i \in \dataset_{\mathrm{src}}$ with class label $y_i$, let $v_{i,a}$ denote the value of attribute $a$ on that image. We restrict attention to a chosen attribute set $\attrs_{\mathrm{focus}}$ and compute a base score
+\begin{equation}
+\bar{S}_i = \sum_{a \in \attrs_{\mathrm{focus}}} \Big( R_{i,a} + P_{i,a} \Big),
+\end{equation}
+where
+\begin{equation}
+R_{i,a} = \left(\frac{1}{n_a(v_{i,a}\mid y_i)+\varepsilon}\right)^{\alpha}
+\end{equation}
+is a class-conditional rarity term and
+\begin{equation}
+P_{i,a} = -\lambda \cdot \frac{\hat{n}_a(v_{i,a})}{\sum_{v \in \vals_a} \hat{n}_a(v)}
+\end{equation}
+is a frequency penalty. Here $n_a(v_{i,a}\mid y_i)$ is the number of source examples in class $y_i$ whose attribute $a$ takes value $v_{i,a}$, $\varepsilon > 0$ is a numerical stability constant, $\alpha \geq 0$ controls how strongly the selector prefers rare attribute values, and $\lambda \geq 0$ controls how strongly the selector penalizes already over-represented attribute values. The quantity $\hat{n}_a(v)$ denotes the effective count of value $v$ in the repair candidate pool after accounting for both source and generated data. In the current implementation, we write
+\begin{equation}
+\hat{n}_a(v) = n_a^{\mathrm{src}}(v) + \tilde{n}_a^{\mathrm{gen}}(v),
+\end{equation}
+where $n_a^{\mathrm{src}}(v)$ counts source examples with value $v$, and $\tilde{n}_a^{\mathrm{gen}}(v)$ denotes the generated-data count used by the selector after any optional scaling of the injected repair data.
+
+
+Removing any of these terms changes the failure mode of the selector. With $\alpha=0$, the rarity term becomes nearly constant and the selector no longer prefers rare semantic configurations within a class, so existing source failure cases may receive no special priority. With $\lambda=0$, the source subset can repeat attribute values that were already injected through $\dataset_{\mathrm{gen}}$, reducing the complementarity between original and generated data and making the repair update more susceptible to synthetic overfitting. With no class-aware re-ranking, the top-scoring images can be concentrated in the classes whose images happen to carry more high-scoring attributes, producing a biased repair subset even when the selected attributes are relevant. The score is therefore not meant to be a neutral representative-sampling score; it is a controlled bias toward repair-relevant semantic coverage.
+
+\paragraph{Soft Class Stratification}
+Attribute scoring alone can over-select classes whose images contain more diverse or more heavily weighted attributes. To counter this effect, we apply a deficit-based class re-ranking step after computing $\bar{S}_i$. Let $n_{\text{select}}$ be the source-data budget and let $N_{\text{cls}}$ be the number of classes, so that the per-class target is $t = n_{\text{select}} / N_{\text{cls}}$. During greedy selection step $k$, a candidate from class $c$ receives the adjusted score
+\begin{equation}
+\tilde{S}_i^{(k)} = \bar{S}_i + C_c^{(k)}, \qquad
+C_c^{(k)} = w \cdot \frac{t - n_c^{(k)}}{t},
+\end{equation}
+where $C_c^{(k)}$ is a class-deficit correction, $n_c^{(k)}$ is the number of already selected source samples from class $c$, and $w \geq 0$ controls the strength of class balancing. The correction is positive for classes below their target allocation and negative for classes that have already exceeded it. Larger $w$ pushes the selector closer to stratified sampling; the limiting case $w = \infty$ corresponds to round-robin class quotas. In this way, the method preserves the attribute ranking within each class while still preventing a small set of classes from dominating the final repair set.
+
+\begin{proposition}[Hard-balance limit]
+When $w=\infty$ and every active class has enough candidates, the round-robin limit selects class counts that differ by at most one. Within each class, candidates are still ordered by the attribute score $\bar{S}_i$.
+\end{proposition}
+
+\begin{proof}
+The round-robin rule visits one active class at a time and removes the highest-scoring remaining candidate from that class. After each visit, the class is moved to the back of the queue. Thus no class can receive a second additional sample before every other non-empty class has received one. The selected counts across non-empty classes therefore differ by at most one, except when a class runs out of candidates. Since each class queue is sorted by $\bar{S}_i$, the within-class attribute order is preserved.
+\end{proof}
+
+\begin{proposition}[Finite-weight balance pressure]
+Assume $0<w<\infty$. At greedy step $k$, let $A_c^{(k)}$ be the highest remaining base score in class $c$, and assume all active class-head scores lie in an interval of width
+\begin{equation}
+\Delta = \max_c A_c^{(k)} - \min_c A_c^{(k)}.
+\end{equation}
+If class $d$ is selected at step $k$ while another class $c$ is also active, then
+\begin{equation}
+n_d^{(k)} - n_c^{(k)} \leq \frac{t\Delta}{w}.
+\end{equation}
+Equivalently, if an active class $c$ trails class $d$ by more than $t\Delta/w$, then class $d$ cannot be selected before class $c$ at that step.
+\end{proposition}
+
+\begin{proof}
+Since class $d$ is selected, its adjusted score is at least the adjusted score of class $c$:
+\begin{equation}
+A_d^{(k)} + w\frac{t-n_d^{(k)}}{t}
+\geq
+A_c^{(k)} + w\frac{t-n_c^{(k)}}{t}.
+\end{equation}
+Rearranging gives
+\begin{equation}
+\frac{w}{t}\big(n_d^{(k)}-n_c^{(k)}\big)
+\leq A_d^{(k)}-A_c^{(k)}.
+\end{equation}
+Because both class-head scores lie in an interval of width $\Delta$, we have $A_d^{(k)}-A_c^{(k)}\leq\Delta$. Therefore $n_d^{(k)}-n_c^{(k)}\leq t\Delta/w$.
+\end{proof}
+
+This finite-weight result gives the exact sense in which $w$ controls soft balance. When $w=0$, the bound disappears and the selector reduces to pure attribute ranking. When $0<w<\infty$, a class with a large deficit receives enough bonus to overcome any bounded attribute-score advantage from an over-selected class. Increasing $w$ tightens the admissible count gap by the factor $1/w$. In the limiting case $w\rightarrow\infty$, the admissible gap goes to zero, matching the round-robin behavior in the hard-balance proposition. Thus finite $w$ does not guarantee exact class quotas, but it guarantees that class imbalance can persist only when the over-selected class has a sufficiently larger attribute score at the current step.
+
+\subsection{Theoretical Analysis of Slice Enrichment}
+\label{subsec:slice-enrichment}
+
+The objective of the attribute selector is not to construct a globally representative coreset of the source data. In targeted repair, a subset is useful only if it contains the rare, underperforming semantic configurations that complement the generated data. We analyze this property as \emph{slice enrichment}. Let $N=|\dataset_{\mathrm{src}}|$ be the source-pool size and let the source-selection budget be $m=\lfloor rN\rfloor$ for $0<r<1$. Let $T\subseteq\dataset_{\mathrm{src}}$ denote the target failure slice, and write $T_c=T\cap\{x_i:y_i=c\}$ and $N_c=|\{x_i:y_i=c\}|$ for its class-conditional support.
+
+\begin{proposition}[Attribute-agnostic AL requires target alignment]
+\label{prop:al-target-alignment}
+Consider any AL selector that, within class $c$, chooses $B_c$ source examples using only non-attribute information $h_i$, such as model uncertainty, logits, feature embeddings, gradient embeddings, losses, or image-level distances, and does not use the focused attribute values $\{v_{i,a}:a\in\attrs_{\mathrm{focus}}\}$. If the target-slice indicator $\mathbf{1}[x_i\in T_c]$ is conditionally independent of the selector information $h_i$ given class $c$, with ties and any internal randomness independent of the target indicator, then
+\begin{equation}
+\mathbb{E}\big[|S_{\mathrm{AL}}\cap T_c|\big]
+=
+B_c\frac{|T_c|}{N_c}.
+\end{equation}
+Thus an attribute-agnostic AL method can enrich the target slice only when its non-attribute signal is additionally aligned with that slice.
+
+As a concrete coverage-based instance, let $z_i$ be the representation used by a diversity or coverage selector, such as cluster-based Diversity, CoreSet in feature space, or BADGE in gradient-embedding space. CoreSet-style $k$-center selection minimizes
+\begin{equation}
+\max_i \min_{j\in S} d(z_i,z_j),
+\end{equation}
+so achieving objective value at most $\epsilon$ is equivalent to constructing an $\epsilon$-cover of the source representations. For a finite set $A$ in this representation space, define the empirical covering number
+\begin{equation}
+\mathcal{N}^{\mathrm{emp}}_{\epsilon}(A)
+=
+\min\big\{|C|: C\subseteq A,\; A\subseteq \cup_{z\in C}B(z,\epsilon)\big\}.
+\end{equation}
+If the target slice in class $c$ has empirical covering number
+\begin{equation}
+q_c=\mathcal{N}^{\mathrm{emp}}_{\epsilon}\big(\{z_i:x_i\in T_c\}\big),
+\end{equation}
+then an $\epsilon$-cover objective can cover the entire target region using only $q_c$ selected target representatives. Consequently, when the non-target region still contains uncovered $\epsilon$-scale cells, a coverage-based selector has an optimal solution with at most $q_c$ selected target examples, even if $|T_c|\gg q_c$.
+\end{proposition}
+
+\begin{proof}
+For the first claim, conditional independence makes the target indicators exchangeable with respect to any ranking, batch construction, or randomized choice computed from $h_i$ inside class $c$. The $B_c$ selected positions therefore contain, in expectation, the same target-slice fraction as the class pool itself, namely $|T_c|/N_c$. This argument does not depend on the particular AL heuristic: uncertainty sampling, margin sampling, loss-based selection, diversity sampling, CoreSet, and BADGE all fall under the claim whenever their selection variables omit the current attribute metadata and are not otherwise aligned with the target slice.
+
+For the coverage-based instance, take $h_i=z_i$.
+By definition of the empirical covering number, there exists a subset $C_T\subseteq \{z_i:x_i\in T_c\}$ with $|C_T|=q_c$ such that every target-slice representation is within distance $\epsilon$ of some point in $C_T$. Selecting the corresponding $q_c$ target examples therefore makes the whole target slice $\epsilon$-covered. Any additional target example only refines coverage inside an already covered target region. If non-target $\epsilon$-scale cells remain uncovered, a coverage or diversity objective can spend the remaining representatives outside $T_c$ without increasing its maximum covering radius. Thus feature-space coverage does not force more than $q_c$ target selections.
+
+The same conclusion follows from the usual volumetric intuition. If a class region has effective dimension $d$, volume $V$, and the target subregion has volume $V_T$, then away from boundary effects an $\epsilon$-cover requires on the order of $V/(v_d\epsilon^d)$ cells for the full class region but only $V_T/(v_d\epsilon^d)$ cells for the target region, where $v_d$ is the volume of the unit $d$-ball. When the bug slice is semantically important but geometrically compact, $V_T\ll V$, so the number of representatives allocated by a geometry-only objective can be small. The objective allocates capacity to representation volume, not to semantic repair importance.
+\end{proof}
+
+\begin{proposition}[Uncertainty can miss an attribute slice]
+Consider uncertainty-based selection within each class, with uncertainty score $Q_i$ and class allocation $B_c$. If the $B_c$ largest uncertainty scores among non-target examples in class $c$ are all larger than every uncertainty score in $T_c$, then uncertainty selection chooses zero examples from $T_c$.
+\end{proposition}
+
+\begin{proof}
+The claim is deterministic. If at least $B_c$ non-target examples have uncertainty larger than every target example, the top-$B_c$ uncertainty set contains only non-target examples.
+\end{proof}
+
+We now show why the attribute score assigns strict priority to a rare target slice under explicit data conditions. For any target example $x_i\in T_c$ and non-target example $x_j\notin T_c$ from the same class $c$, define the focused attributes on which they differ as
+\begin{equation}
+\mathcal{D}_{ij}=\{a\in\attrs_{\mathrm{focus}}: v_{i,a}\neq v_{j,a}\}.
+\end{equation}
+Let
+\begin{equation}
+A_{ij}
+=
+\sum_{a\in\mathcal{D}_{ij}}
+\left[
+\left(\frac{1}{n_a(v_{i,a}\mid c)+\varepsilon}\right)^\alpha
+-
+\left(\frac{1}{n_a(v_{j,a}\mid c)+\varepsilon}\right)^\alpha
+\right]
+\end{equation}
+be the rarity advantage of the target example, and let
+\begin{equation}
+F_{ij}
+=
+\sum_{a\in\mathcal{D}_{ij}}
+\left[
+\frac{\hat{n}_a(v_{i,a})}{\sum_{v\in\vals_a}\hat{n}_a(v)}
+-
+\frac{\hat{n}_a(v_{j,a})}{\sum_{v\in\vals_a}\hat{n}_a(v)}
+\right]
+\end{equation}
+be the frequency-penalty disadvantage introduced by source and generated counts. If generated data has flooded the target value, then $F_{ij}$ can be positive; if not, the penalty does not hurt the target example relative to $x_j$.
+
+\begin{proposition}[Rarity-dominates-penalty margin]
+\label{prop:rarity-margin}
+Assume $\alpha>0$ and $A_{ij}>0$ for every target/non-target pair $(x_i,x_j)$ within class $c$. Define
+\begin{equation}
+\lambda_c^\star
+=
+\min_{x_i\in T_c,\;x_j\notin T_c,\;F_{ij}>0}
+\frac{A_{ij}}{F_{ij}},
+\end{equation}
+with $\lambda_c^\star=\infty$ if no pair has $F_{ij}>0$. For any $0\leq\lambda<\lambda_c^\star$, every target example in $T_c$ has larger base score $\bar{S}_i$ than every non-target example from the same class. In particular, when each target attribute value is rarer than the competing non-target value, i.e., $n_a(v_{i,a}\mid c)<n_a(v_{j,a}\mid c)$ for all $a\in\mathcal{D}_{ij}$, the condition $A_{ij}>0$ holds automatically.
+\end{proposition}
+
+\begin{proof}
+For a target/non-target pair $(x_i,x_j)$ in class $c$, attributes outside $\mathcal{D}_{ij}$ contribute the same score to both examples and cancel. The remaining base-score gap is
+\begin{equation}
+\bar{S}_i-\bar{S}_j
+=
+A_{ij}-\lambda F_{ij}.
+\end{equation}
+If $F_{ij}\leq 0$, then $\bar{S}_i-\bar{S}_j\geq A_{ij}>0$ for any $\lambda\geq 0$, so the frequency penalty does not overturn the rarity advantage. If $F_{ij}>0$, then $\bar{S}_i-\bar{S}_j>0$ whenever $\lambda<A_{ij}/F_{ij}$. Taking the minimum over all target/non-target pairs with $F_{ij}>0$ gives the interval $0\leq\lambda<\lambda_c^\star$, under which every pair has a strictly positive score gap. Finally, if $n_a(v_{i,a}\mid c)<n_a(v_{j,a}\mid c)$ and $\alpha>0$, then each rarity term in $A_{ij}$ is positive, so their sum is positive.
+\end{proof}
+
+This proposition is the main data-dependent guarantee. It says that if the LVLM annotations correctly identify a genuinely rare target slice, then there is a nonempty range of $\lambda$ values for which rarity dominates the synthetic-data frequency penalty. Even when generated examples make the target value more frequent in the repair candidate pool, the target examples remain ranked above non-target examples as long as $\lambda$ is below the explicit threshold $\lambda_c^\star$. Conversely, if target and non-target samples are indistinguishable under $\attrs_{\mathrm{focus}}$, then no attribute-only selector can separate them without additional information.
+
+\begin{proposition}[Deterministic rare-slice enrichment]
+\label{prop:deterministic-enrichment}
+Assume the rarity-dominates-penalty condition in Proposition~\ref{prop:rarity-margin} holds for class $c$ and the $\lambda$ used by the selector. If the class-aware re-ranking step allocates $B_c$ source samples to class $c$, then the attribute selector includes at least
+\begin{equation}
+\min\{B_c,|T_c|\}
+\end{equation}
+target-slice examples from that class. A random or stratified selector with the same class allocation selects
+\begin{equation}
+\mathbb{E}\big[|S_{\mathrm{rand}}\cap T_c|\big]
+=
+B_c\frac{|T_c|}{N_c}
+\end{equation}
+target examples in expectation.
+\end{proposition}
+
+\begin{proof}
+At a fixed greedy step, the class-aware term adds the same bonus $C_c^{(k)}$ to every remaining candidate from class $c$. Therefore it can change how many samples are selected from each class, but it cannot reverse the within-class ordering induced by the base attribute score $\bar{S}_i$. By Proposition~\ref{prop:rarity-margin}, all target-slice examples in class $c$ appear before all non-target examples in the class queue. Selecting $B_c$ samples from that queue must therefore include all target examples when $|T_c|\leq B_c$, and $B_c$ target examples when $|T_c|>B_c$. This proves the deterministic bound. For random or stratified sampling under the same class allocation, each selected class-$c$ source example has probability $|T_c|/N_c$ of belonging to the target slice, giving the expectation by linearity.
+\end{proof}
+
+The enrichment gap is strict whenever $0<|T_c|<N_c$ and $B_c>0$, because
+\begin{equation}
+\min\{B_c,|T_c|\}\geq B_c\frac{|T_c|}{N_c}.
+\end{equation}
+Thus the attribute selector provides a semantic coverage guarantee for the repair surrogate, while random, stratified, uncertainty, Diversity, CoreSet, and BADGE require additional alignment between their selection signal and the target slice.
+
+Finally, suppose the repair utility of a selected source subset is
+\begin{equation}
+U(S)=u_0 |S| + (u_T-u_0)|S\cap T|,
+\qquad u_T>u_0,
+\end{equation}
+meaning target-slice samples have larger marginal value for the discovered repair problem. Then the rare-slice enrichment bound directly implies expected utility at least as large as random or stratified selection under the same class allocation, with a strict gap whenever the enrichment gap is strict. This is not a universal proof that the final trained model must dominate every baseline for every ratio; it is a conditional guarantee that the selector spends a fixed budget on more repair-relevant examples when the LVLM metadata and count conditions correctly identify the failing slice.
+
+\section{Experiments}
+
+% \subsection{Experimental Setup}
+% We conduct experiments on ImageNet-10 (multi-class) and CelebA (binary, targeting the `redhair\_brownskin' subgroup correlation). We employ a standard ResNet-18 architecture, initiating with pretrained weights and utilizing the AdamW optimizer. 
+
+% \subsection{\model vs. Long-Tail Learning Baselines}
+
+% We isolate the effect of \model against four standard LTL algorithms: Focal Loss \citep{lin2017focal}, Class-Balanced Loss, Oversampling (via WeightedRandomSampler), and LDAM Loss \citep{cao2019learning}. To ensure a fair comparison, the LTL baselines were trained exclusively on the original datasets without access to the targeted synthetic augmentation provided by \model.
+
+% \begin{table}[h]
+% \caption{Performance comparison of \model vs. LTL baselines on ResNet-18. \model leverages synthetic subgroups, effectively rescuing bugs where standard reweighting methods fail.}
+% \centering
+% \begin{tabular}{l cc cc}
+% \toprule
+% \textbf{Method} & \textbf{CelebA Test ACC} & \textbf{Fix Bugs} & \textbf{ImageNet Test ACC} & \textbf{Fix Bugs} \\
+% \midrule
+% Base Model & 90.57\% & - & 71.73\% & - \\
+% Focal Loss & 91.40\% & 8/13 & 68.80\% & 11/17 \\
+% Class-Balanced Loss & 91.20\% & 8/13 & 72.70\% & 13/17 \\
+% Oversampling & 91.00\% & 8/13 & 72.90\% & 14/17 \\
+% LDAM & 91.40\% & 8/13 & 71.20\% & 12/17 \\
+% \midrule
+% \textbf{/model (Ours)} & \textbf{91.92\%} & - & \textbf{74.88\%} & - \\
+% \bottomrule
+% \end{tabular}
+% \end{table}
+
+% The results demonstrate that while algorithmic reweighting techniques provide marginal improvements over the base model, they are fundamentally insufficient for repairing unannotated, intersectional attribute failures compared to SafeFix's target-augmented methodology.
+
+% \subsection{Active Learning Strategy Ablations}
+
+% To validate the efficiency of our Attribute-Driven strategy in curating augmented datasets, we compare it against standard Active Learning regimes across various integration sub-ratios ($0.1$ through $0.9$). The models were trained learning rate of $1e-5$ for 15 epochs. 
+
+% \begin{table}[h]
+% \caption{Comparison of Top-Performing Selection Strategies on ImageNet (ResNet-18) at various subset sampling ratios. Our Attribute strategy utilizes generated captions from LLMs (BLIP, Qwen3, InternVL3).}
+% \centering
+% \resizebox{\columnwidth}{!}{
+% \begin{tabular}{l ccc c}
+% \toprule
+% \textbf{Strategy} & \textbf{Ratio=0.1} Test/Val & \textbf{Ratio=0.3} Test/Val & \textbf{Ratio=0.5} Test/Val & \textbf{Ratio=0.9} Test/Val \\
+% \midrule
+% Random & 0.7269 / 0.7069 & 0.7308 / 0.7208 & 0.7400 / 0.7162 & 0.7482 / 0.7154 \\
+% Stratified & 0.7271 / 0.7154 & 0.7369 / 0.7162 & 0.7446 / 0.7200 & 0.7469 / 0.7146 \\
+% Coreset & 0.7269 / 0.7115 & 0.7369 / 0.7162 & 0.7400 / 0.7185 & 0.7346 / 0.7169 \\
+% Uncertainty Stratified & 0.7254 / 0.7185 & 0.7292 / 0.7131 & 0.7331 / 0.7146 & 0.7462 / 0.7100 \\
+% Hierarchical & 0.7269 / 0.7115 & 0.7346 / 0.7092 & 0.7385 / 0.7138 & 0.7362 / 0.7177 \\
+% \midrule
+% Attribute (BLIP) & 0.7277 / 0.7200 & 0.7369 / 0.7185 & 0.7408 / 0.7131 & 0.7400 / 0.7177 \\
+% Attribute (Qwen3) & 0.7331 / 0.7231 & 0.7354 / 0.7077 & 0.7362 / 0.7138 & 0.7492 / 0.7108 \\
+% \textbf{Attribute (InternVL3)} & \textbf{0.7346 / 0.7285} & \textbf{0.7385 / 0.7108} & \textbf{0.7495 / 0.7286} & \textbf{0.7531 / 0.7346} \\
+% \bottomrule
+% \end{tabular}
+% }
+% \end{table}
+
+% The Attribute-Driven strategy continuously outperforms traditional geometry-based (Coreset) and balanced (Stratified) methodologies at almost every data budget. Further utilizing advanced Vision-Language Models like InternVL3 to source the attribute metadata yields compounding performance benefits.
+
+
+% \subsection{Parameter Scaling Analysis}
+
+% By adjusting the weights of $R$, $P$, and $C$, we explored the behavioral boundaries of our strategy (sub-ratio $0.3$). 
+
+% \begin{itemize}
+%     \item \textbf{Pure Greedy ($R=1.0, P=10.0, C=0.0$)}: Test ACC 0.7215. Without class-level Stratification quotas, throwing out all logic except Frequency Penalty and Rarity leads to performance drops in fine-tuning, emphasizing the value of our soft $C$ score.
+%     \item \textbf{Aggressive Exploration ($R=0.8, P=10.0, C=4.0$)}: Test ACC \textbf{0.7415}. By loosening the absolute restriction on stratification and vastly scaling up Rarity tracking, the model dynamically locates critical edge cases. The extreme Frequency Penalty ($P=10$) adequately prevents the network from collapsing entirely onto the synthetic injection vectors.
+% \end{itemize}
+
+\section{Conclusion}
+
+We presented \model, an end-to-end bug discovery and repair framework capable of resolving hard attribute-level failures missed by standard Long-Tail Learning paradigms. At the center of our pipeline is a lightweight, metadata-reliant Attribute-Driven AL algorithm that actively synergizes conditional rarity with global distribution penalties to weave aggressively synthetically augmented datasets back into balanced domain updates. Our implementation exceeds generic AL frameworks and delivers targeted, systematic bug fixes with high efficiency.
+
+\begin{ack}
+All acknowledgments go at the end of the paper before the list of references.
+\end{ack}
+
+\bibliography{ref}
+\bibliographystyle{plainnat}
+
+\appendix
+
+\section{No-Generation Corner Case}
+
+This section discusses the corner case in which no generated repair images are available, i.e., $\dataset_{\mathrm{gen}}=\emptyset$. This setting removes the main mechanism for adding missing semantic support, but the attribute selector still has a useful source-selection interpretation. Since $\tilde{n}_a^{\mathrm{gen}}(v)=0$, the effective count becomes
+\begin{equation}
+\hat{n}_a(v)=n_a^{\mathrm{src}}(v),
+\end{equation}
+and the base score reduces to
+\begin{equation}
+\bar{S}_i
+=
+\sum_{a \in \attrs_{\mathrm{focus}}}
+\left[
+\left(\frac{1}{n_a(v_{i,a}\mid y_i)+\varepsilon}\right)^\alpha
+-
+\lambda
+\frac{n_a^{\mathrm{src}}(v_{i,a})}{\sum_{v\in\vals_a} n_a^{\mathrm{src}}(v)}
+\right].
+\end{equation}
+Thus, when $\dataset_{\mathrm{gen}}=\emptyset$, the frequency penalty is no longer correcting a synthetic flood. It becomes a source-distribution head-value penalty: values that are already common in the source pool receive lower priority. The rarity term still prefers values that are rare within a class, and the class-balance term still controls label-level collapse.
+
+\begin{proposition}[Source-only rare-slice enrichment]
+Let $\dataset_{\mathrm{gen}}=\emptyset$ and let $T\subseteq\dataset_{\mathrm{src}}$ be a target failure slice with nonzero source support. Suppose the rarity-dominates-penalty condition in Proposition~\ref{prop:rarity-margin} holds for $T$ under the source-only score above, with $\hat{n}_a(v)=n_a^{\mathrm{src}}(v)$. If the class-aware re-ranking step selects $B_c$ samples from class $c$, then the attribute selector returns at least
+\begin{equation}
+\sum_c \min\{B_c, |T_c|\}
+\end{equation}
+source examples from $T$. A random selector with the same per-class allocation selects
+\begin{equation}
+\mathbb{E}\big[|S_{\mathrm{rand}}\cap T|\big]
+=
+\sum_c B_c\frac{|T_c|}{N_c}
+\end{equation}
+target-slice examples in expectation.
+\end{proposition}
+
+\begin{proof}
+The proof is identical to the rare-slice enrichment proof in the main text, because that argument uses only the within-class ordering induced by $\bar{S}_i$. When $\dataset_{\mathrm{gen}}=\emptyset$, the score changes only through the replacement $\hat{n}_a(v)=n_a^{\mathrm{src}}(v)$. If the source-only score satisfies the rarity-dominates-penalty condition, then all target-slice samples appear before non-target samples in each class queue. Selecting $B_c$ examples from class $c$ therefore includes $\min\{B_c,|T_c|\}$ target examples. The random expectation follows by linearity under sampling from each class with allocation $B_c$.
+\end{proof}
+
+This proposition shows that generation is not required for the selector to improve target-slice coverage when the source pool already contains target examples. In this regime, the method becomes semantic active subset selection over the source pool. It can increase the number of existing rare failure cases in the retraining subset, but it cannot create support for a target slice that is absent from the source pool.
+
+\begin{proposition}[Impossibility for absent source slices]
+Let $\dataset_{\mathrm{gen}}=\emptyset$ and suppose $T\cap\dataset_{\mathrm{src}}=\emptyset$. Then every source-only selector $S\subseteq\dataset_{\mathrm{src}}$ satisfies
+\begin{equation}
+|S\cap T|=0.
+\end{equation}
+Consequently, no active-selection rule over $\dataset_{\mathrm{src}}$ alone can provide target-slice training support.
+\end{proposition}
+
+\begin{proof}
+Since $S\subseteq\dataset_{\mathrm{src}}$ and $T\cap\dataset_{\mathrm{src}}=\emptyset$, we have $S\cap T\subseteq\dataset_{\mathrm{src}}\cap T=\emptyset$. Hence $|S\cap T|=0$ for every possible selector.
+\end{proof}
+
+The no-generation case therefore separates two roles of \model. If $T$ already appears in the source pool, attribute selection can enrich those existing target examples under the same rarity-dominates-penalty condition as the main result. If $T$ is absent from the source pool, selection alone is insufficient; repair requires either new data collection or generated images that add target-slice support. This also clarifies the role of $\lambda$: with no generated images, a large frequency penalty may suppress globally common values even when they are rare within a specific class. In source-only repair, $\lambda$ should therefore be interpreted as a head-value suppression weight and may need to be smaller than in settings with heavy generated-data injection.
+
+\section{Selection t-SNE Visualizations}
+\label{app:selection-tsne}
+
+Before measuring selected-set overlap directly, we first visualize the selected subsets in a shared low-dimensional embedding space. These plots are qualitative: the t-SNE coordinates are computed from lightweight image proxy embeddings and are used only for visualization, not for the selection-overlap metric below. Gray points denote source candidates, and colored points denote the subset selected by each method.
+
+The ratio-$0.10$ plots in Figures~\ref{fig:tsne-r01-imagenet}--\ref{fig:tsne-r01-kitti} cover all four evaluated datasets. At this low selection ratio, each method selects a relatively small subset, so differences in coverage are visually readable. The available ratio-$0.05$ plots in Figures~\ref{fig:tsne-r005-imagenet} and~\ref{fig:tsne-r005-kitti} provide a more stringent small-budget view for the datasets with complete ratio-$0.05$ selected-id exports. CelebA and COCO are omitted at ratio $0.05$ because complete ratio-$0.05$ selected-id exports were not available for those datasets. Figures~\ref{fig:tsne-overlay-r01-kitti} and~\ref{fig:tsne-overlay-r005-kitti} show compact KITTI overlays for a subset of methods, making the separation between \model and representative active-learning baselines easier to inspect.
+
+The visual pattern should be interpreted in light of the selection score in Section~\ref{subsec:slice-enrichment}. \model is not designed to be a uniformly spread coreset in the t-SNE plane. The rarity term $R_{i,a}$ intentionally gives higher priority to source examples whose focused attribute values are rare within their class, so the selected points can concentrate in regions that contain rare repair-relevant appearances. The penalty term $P_{i,a}$ reduces the priority of attribute values already supplied by the generated pool, so the selected source points are encouraged to complement the synthetic repair data instead of repeating it. Finally, the class-deficit correction $C_c^{(k)}$ pulls the greedy selection away from a single high-scoring class or local region. Thus the expected signature is controlled non-uniformity: \model may put more mass on visually or semantically unusual regions than random, uncertainty, or pure coverage baselines, while still retaining cross-class coverage through the balance term.
+
+The overlay plots illustrate this qualitative behavior on KITTI. The \model points do not simply trace the same support as the representative active-learning baselines; they are shifted toward a different subset of the proxy embedding space. This is consistent with the score's purpose: select source images that are representative enough to support retraining, but biased toward rare and repair-relevant attribute configurations. Because t-SNE is only a two-dimensional proxy visualization, this observation is not a standalone performance claim. It motivates the direct selected-set overlap analysis in Section~\ref{app:overlap-diagnostic}, where the same conclusion is tested through Jaccard overlap on selected IDs.
+
+These visualizations should not be interpreted as proof that low overlap improves downstream repair. They instead provide a sanity check that the attribute selector is not visibly collapsing onto the same region as the standard active-learning selectors. The quantitative version of this diagnostic is the Jaccard analysis in Section~\ref{app:overlap-diagnostic}.
+
+\begin{figure}[p]
+\centering
+\includegraphics[width=\linewidth]{figures/ratio0p1_selection_tsne/imagenet_controlnet_ratio0p1_selection_tsne.png}
+\caption{ImageNet ratio-$0.10$ selected subsets visualized on a shared source-image t-SNE embedding. Gray points show source candidates; colored points show the subset selected by each method.}
+\label{fig:tsne-r01-imagenet}
+\end{figure}
+
+\begin{figure}[p]
+\centering
+\includegraphics[width=\linewidth]{figures/ratio0p1_selection_tsne/celeba_redhair_brownskin_sademotion_ratio0p1_selection_tsne.png}
+\caption{CelebA ratio-$0.10$ selected subsets visualized on a shared source-image t-SNE embedding.}
+\label{fig:tsne-r01-celeba}
+\end{figure}
+
+\begin{figure}[p]
+\centering
+\includegraphics[width=\linewidth]{figures/ratio0p1_selection_tsne/coco_brown_rainy_ratio0p1_selection_tsne.png}
+\caption{COCO Brown-Rainy ratio-$0.10$ selected subsets visualized on a shared source-image t-SNE embedding.}
+\label{fig:tsne-r01-coco}
+\end{figure}
+
+\begin{figure}[p]
+\centering
+\includegraphics[width=\linewidth]{figures/ratio0p1_selection_tsne/kitti_red_cloudy_ratio0p1_selection_tsne.png}
+\caption{KITTI Red-Cloudy ratio-$0.10$ selected subsets visualized on a shared source-image t-SNE embedding.}
+\label{fig:tsne-r01-kitti}
+\end{figure}
+
+\begin{figure}[p]
+\centering
+\includegraphics[width=0.86\linewidth]{figures/ratio0p1_selection_tsne/kitti_red_cloudy_ratio0p1_selection_tsne_overlay.png}
+\caption{KITTI Red-Cloudy ratio-$0.10$ overlay view for selected active-learning baselines and \model.}
+\label{fig:tsne-overlay-r01-kitti}
+\end{figure}
+
+\begin{figure}[p]
+\centering
+\includegraphics[width=\linewidth]{figures/ratio0p05_selection_tsne/imagenet_controlnet_ratio0p05_selection_tsne.png}
+\caption{ImageNet ratio-$0.05$ selected subsets visualized on a shared source-image t-SNE embedding.}
+\label{fig:tsne-r005-imagenet}
+\end{figure}
+
+\begin{figure}[p]
+\centering
+\includegraphics[width=\linewidth]{figures/ratio0p05_selection_tsne/kitti_red_cloudy_ratio0p05_selection_tsne.png}
+\caption{KITTI Red-Cloudy ratio-$0.05$ selected subsets visualized on a shared source-image t-SNE embedding.}
+\label{fig:tsne-r005-kitti}
+\end{figure}
+
+\begin{figure}[p]
+\centering
+\includegraphics[width=0.86\linewidth]{figures/ratio0p05_selection_tsne/kitti_red_cloudy_ratio0p05_selection_tsne_overlay.png}
+\caption{KITTI Red-Cloudy ratio-$0.05$ overlay view for selected active-learning baselines and \model.}
+\label{fig:tsne-overlay-r005-kitti}
+\end{figure}
+
+\clearpage
+
+\section{Selection Overlap as an Attribute-Information Diagnostic}
+\label{app:overlap-diagnostic}
+
+This section formalizes what the selection-overlap plots test. Standard active learning selectors rank or cover examples using information such as logits, losses, uncertainty scores, feature embeddings, gradient embeddings, image distances, and sometimes class labels. Let $H_i$ denote all such non-attribute information for source example $x_i$. Our selector additionally observes structured attribute metadata
+\begin{equation}
+A_i=\big(a(x_i):a\in\attrs_{\mathrm{focus}}\big).
+\end{equation}
+Thus the comparison is not only between two scoring formulas. It is a comparison between selectors that are measurable with respect to different information fields: generic AL is attribute-agnostic when it is a function of $H_i$, while the proposed selector is a function of both $H_i$ and $A_i$ through rarity, generated-data frequency, and class-aware re-ranking.
+
+The overlap plots therefore answer a specific question: is the attribute selector merely reproducing the same subset chosen by uncertainty, CoreSet, BADGE, PPAL, or random selection? Low overlap by itself is not a performance guarantee. However, when low overlap is paired with the slice-enrichment result in Proposition~\ref{prop:rarity-margin} and with improved downstream repair, it supports a stronger interpretation: the gain comes from a semantic selection direction that is not already captured by generic AL signals.
+
+\begin{proposition}[Random-overlap scale for attribute-agnostic selectors]
+\label{prop:random-overlap-scale}
+Let the source pool be partitioned into groups $\mathcal{G}_1,\ldots,\mathcal{G}_K$, such as classes or class-balance bins, with $N_g=|\mathcal{G}_g|$. Let $S_A$ be an attribute-driven selected set and let $S_H$ be an attribute-agnostic selected set. Suppose $S_A$ selects $m_{A,g}$ examples from group $g$ and $S_H$ selects $m_{H,g}$ examples from group $g$. If, conditional on the group counts and on $S_A$, the attribute-agnostic selector is exchangeable with respect to membership in $S_A$ inside each group, then
+\begin{equation}
+\mathbb{E}\big[|S_A\cap S_H|\mid S_A\big]
+=
+\sum_{g=1}^K \frac{m_{A,g}m_{H,g}}{N_g}.
+\end{equation}
+In the ungrouped case, if both selectors choose $m=rN$ examples from a pool of size $N$, then
+\begin{equation}
+\mathbb{E}\big[|S_A\cap S_H|\mid S_A\big]=r^2N.
+\end{equation}
+Moreover, as $N\rightarrow\infty$ with fixed ratio $r$, the Jaccard overlap
+\begin{equation}
+J(S_A,S_H)=\frac{|S_A\cap S_H|}{|S_A\cup S_H|}
+\end{equation}
+converges in probability to the random-subset scale
+\begin{equation}
+J_{\mathrm{rand}}(r)=\frac{r}{2-r}.
+\end{equation}
+\end{proposition}
+
+\begin{proof}
+Fix a group $\mathcal{G}_g$ and condition on $S_A$. Since $S_H$ is exchangeable with respect to membership in $S_A$ within the group, selecting $m_{H,g}$ examples from $\mathcal{G}_g$ gives a hypergeometric intersection with mean
+\begin{equation}
+m_{H,g}\frac{m_{A,g}}{N_g}.
+\end{equation}
+Summing over groups gives the first claim. In the ungrouped case this reduces to $m^2/N=r^2N$. Hypergeometric concentration gives $|S_A\cap S_H|/N\rightarrow r^2$ in probability. Since $|S_A\cup S_H|=2rN-|S_A\cap S_H|$, the continuous mapping theorem gives
+\begin{equation}
+\frac{|S_A\cap S_H|}{|S_A\cup S_H|}
+\rightarrow
+\frac{r^2}{2r-r^2}
+=
+\frac{r}{2-r}.
+\end{equation}
+\end{proof}
+
+Proposition~\ref{prop:random-overlap-scale} gives a useful diagnostic. If an attribute-aware selector and an attribute-agnostic AL selector have Jaccard overlap close to $J_{\mathrm{rand}}(r)$, then the two selected sets are no more similar than two independent budget-matched subsets at that ratio. This is exactly what one expects when the focused attributes carry selection information not present in the AL variables $H_i$. Conversely, if a conventional AL method were already aligned with the discovered attribute slice, its overlap with the attribute selector would tend to rise above this random-overlap scale.
+
+The ungrouped value $J_{\mathrm{rand}}(r)$ is a useful lower reference for selectors that share a group allocation over imbalanced groups. Suppose two exchangeable selectors both choose $B_g$ examples from group $g$, with $\sum_g B_g=rN$ and $\sum_g N_g=N$. Proposition~\ref{prop:random-overlap-scale} gives expected intersection $\sum_g B_g^2/N_g$, and Cauchy--Schwarz gives
+\begin{equation}
+\sum_g \frac{B_g^2}{N_g}
+\geq
+\frac{\left(\sum_g B_g\right)^2}{\sum_g N_g}
+=
+r^2N,
+\end{equation}
+with equality only when $B_g/N_g$ is constant across groups. For fixed total budget, the large-pool Jaccard reference is an increasing function of the intersection size, so class-balanced allocations on imbalanced datasets can have a random-overlap scale slightly above the ungrouped limit. This helps explain why the baseline--baseline averages in Table~\ref{tab:selection-overlap-summary} are consistently above $J_{\mathrm{rand}}(r)$ when the baselines share similar class-balancing effects. When two methods use different group allocations, the full grouped expression in Proposition~\ref{prop:random-overlap-scale} is the appropriate reference.
+
+\begin{proposition}[Non-redundant repair utility]
+\label{prop:nonredundant-utility}
+Assume the utility model from the main text,
+\begin{equation}
+U(S)=u_0|S|+(u_T-u_0)|S\cap T|,\qquad u_T>u_0,
+\end{equation}
+where $T$ is the target failure slice. Suppose the attribute selector satisfies the deterministic rare-slice enrichment condition in Proposition~\ref{prop:deterministic-enrichment}, while an attribute-agnostic selector satisfies the conditional-independence condition in Proposition~\ref{prop:al-target-alignment}, under the same per-class allocations $B_c$. Then the expected utility advantage of the attribute selector over the attribute-agnostic selector is at least
+\begin{equation}
+(u_T-u_0)
+\sum_c
+\left[
+\min\{B_c,|T_c|\}
+-
+B_c\frac{|T_c|}{N_c}
+\right].
+\end{equation}
+This lower bound is strict whenever at least one class has $0<|T_c|<N_c$ and receives a positive budget that does not occupy the whole class, i.e., $0<B_c<N_c$. If, in addition, the empirical Jaccard overlap between the two selected sets is close to $J_{\mathrm{rand}}(r)$, then this utility advantage cannot be explained by selecting the same source examples as the attribute-agnostic baseline.
+\end{proposition}
+
+\begin{proof}
+The main-text enrichment result gives at least $\min\{B_c,|T_c|\}$ target examples for the attribute selector in class $c$. Proposition~\ref{prop:al-target-alignment} gives $B_c|T_c|/N_c$ target examples in expectation for an attribute-agnostic selector under the same class allocation. Since both selectors use the same total budget, the $u_0|S|$ term cancels. Multiplying the difference in target-slice support by the marginal utility gap $u_T-u_0$ gives the stated bound. The strictness condition follows because $\min\{B_c,|T_c|\}>B_c|T_c|/N_c$ whenever a nontrivial target slice receives budget without occupying the whole class. The final statement follows from Proposition~\ref{prop:random-overlap-scale}: near-random Jaccard overlap means the two selectors are not choosing substantially the same subset beyond what the sampling ratio itself forces.
+\end{proof}
+
+Table~\ref{tab:selection-overlap-summary} summarizes the observed Jaccard overlaps computed from selected-id membership. The t-SNE coordinates are not used in the calculation; the metric is computed only from selected-set membership. Across ratios, the average overlap between \model and the baselines is close to the random-subset scale $J_{\mathrm{rand}}(r)$ and lower than the average pairwise overlap among baselines. This supports the interpretation that the attribute selector operates along a different semantic information direction rather than imitating a conventional AL heuristic.
+
+\begin{table}[h]
+\centering
+\caption{Selection-overlap diagnostic. ``Ours--baseline'' is the mean Jaccard overlap between the attribute selector and the non-attribute baselines. ``Baseline--baseline'' is the mean pairwise Jaccard overlap among non-attribute baselines. Each row averages over ImageNet, CelebA, COCO, and KITTI.}
+\label{tab:selection-overlap-summary}
+\begin{tabular}{c c c c c}
+\toprule
+Selection ratio & $J_{\mathrm{rand}}(r)$ & Datasets & Ours--baseline & Baseline--baseline \\
+\midrule
+$0.10$ & $0.0526$ & $4$ & $0.0533$ & $0.0554$ \\
+$0.30$ & $0.1765$ & $4$ & $0.1766$ & $0.1828$ \\
+$0.50$ & $0.3333$ & $4$ & $0.3323$ & $0.3416$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The corresponding heatmaps are shown in Figures~\ref{fig:selection-overlap-r01}, \ref{fig:selection-overlap-r03}, and~\ref{fig:selection-overlap-r05}. The diagonal entries are one by definition; off-diagonal entries measure pairwise Jaccard overlap between selected source subsets.
+
+\begin{figure}[p]
+\centering
+\begin{subfigure}{0.48\linewidth}
+\centering
+\includegraphics[width=\linewidth]{figures/ratio0p1_selection_overlap/imagenet_controlnet_ratio0p1_selection_overlap_jaccard.png}
+\caption{ImageNet}
+\end{subfigure}
+\hfill
+\begin{subfigure}{0.48\linewidth}
+\centering
+\includegraphics[width=\linewidth]{figures/ratio0p1_selection_overlap/celeba_redhair_brownskin_sademotion_ratio0p1_selection_overlap_jaccard.png}
+\caption{CelebA}
+\end{subfigure}
+
+\vspace{0.6em}
+\begin{subfigure}{0.48\linewidth}
+\centering
+\includegraphics[width=\linewidth]{figures/ratio0p1_selection_overlap/coco_brown_rainy_ratio0p1_selection_overlap_jaccard.png}
+\caption{COCO}
+\end{subfigure}
+\hfill
+\begin{subfigure}{0.48\linewidth}
+\centering
+\includegraphics[width=\linewidth]{figures/ratio0p1_selection_overlap/kitti_red_cloudy_ratio0p1_selection_overlap_jaccard.png}
+\caption{KITTI}
+\end{subfigure}
+\caption{Pairwise Jaccard overlap among ratio $0.10$ selected subsets.}
+\label{fig:selection-overlap-r01}
+\end{figure}
+
+\begin{figure}[p]
+\centering
+\begin{subfigure}{0.48\linewidth}
+\centering
+\includegraphics[width=\linewidth]{figures/ratio0p3_selection_overlap/imagenet_controlnet_ratio0p3_selection_overlap_jaccard.png}
+\caption{ImageNet}
+\end{subfigure}
+\hfill
+\begin{subfigure}{0.48\linewidth}
+\centering
+\includegraphics[width=\linewidth]{figures/ratio0p3_selection_overlap/celeba_redhair_brownskin_sademotion_ratio0p3_selection_overlap_jaccard.png}
+\caption{CelebA}
+\end{subfigure}
+
+\vspace{0.6em}
+\begin{subfigure}{0.48\linewidth}
+\centering
+\includegraphics[width=\linewidth]{figures/ratio0p3_selection_overlap/coco_brown_rainy_ratio0p3_selection_overlap_jaccard.png}
+\caption{COCO}
+\end{subfigure}
+\hfill
+\begin{subfigure}{0.48\linewidth}
+\centering
+\includegraphics[width=\linewidth]{figures/ratio0p3_selection_overlap/kitti_red_cloudy_ratio0p3_selection_overlap_jaccard.png}
+\caption{KITTI}
+\end{subfigure}
+\caption{Pairwise Jaccard overlap among ratio $0.30$ selected subsets.}
+\label{fig:selection-overlap-r03}
+\end{figure}
+
+\begin{figure}[p]
+\centering
+\begin{subfigure}{0.48\linewidth}
+\centering
+\includegraphics[width=\linewidth]{figures/ratio0p5_selection_overlap/imagenet_controlnet_ratio0p5_selection_overlap_jaccard.png}
+\caption{ImageNet}
+\end{subfigure}
+\hfill
+\begin{subfigure}{0.48\linewidth}
+\centering
+\includegraphics[width=\linewidth]{figures/ratio0p5_selection_overlap/celeba_redhair_brownskin_sademotion_ratio0p5_selection_overlap_jaccard.png}
+\caption{CelebA}
+\end{subfigure}
+
+\vspace{0.6em}
+\begin{subfigure}{0.48\linewidth}
+\centering
+\includegraphics[width=\linewidth]{figures/ratio0p5_selection_overlap/coco_brown_rainy_ratio0p5_selection_overlap_jaccard.png}
+\caption{COCO}
+\end{subfigure}
+\hfill
+\begin{subfigure}{0.48\linewidth}
+\centering
+\includegraphics[width=\linewidth]{figures/ratio0p5_selection_overlap/kitti_red_cloudy_ratio0p5_selection_overlap_jaccard.png}
+\caption{KITTI}
+\end{subfigure}
+\caption{Pairwise Jaccard overlap among ratio $0.50$ selected subsets.}
+\label{fig:selection-overlap-r05}
+\end{figure}
+
+These numbers and figures should be read together with the propositions above. They do not prove that lower overlap alone improves a model. Rather, they show that the attribute selector is not redundant with uncertainty, diversity, geometry, or gradient-embedding selectors. The improvement mechanism is therefore consistent with the theory: the selector spends budget on an attribute-defined repair signal that the generic AL variables do not explicitly encode.
+
+\section{Hyperparameter Details}
+Full hyperparameter grid searches and LVLM prompt formats will be included in the supplementary material.
+
+\end{document}

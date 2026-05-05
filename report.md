@@ -7,6 +7,65 @@ held-out Test mAP50-95. `Best Attribute` means the best completed attribute row
 within the same dataset and ratio; the RPC setting is intentionally not expanded
 here.
 
+### ImageNet ControlNet RPC Component Ablation
+
+This ablation summarizes the entropy-enabled 05/02/2026 ImageNet RPC
+8-combination ratio sweep. `R`, `P`, and `C` denote the enabled RPC components
+in each attribute-selection setting. The `R+P+C` column is aligned with the
+current ImageNet ControlNet `Best Attribute` value for the same ratio,
+including later completed no-entropy and numeric RPC refinements where they
+improved the 05/02 grid.
+
+| Ratio | none | R | P | C | P+C | R+C | R+P | R+P+C |
+| ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| `0.1` | `0.7269` | `0.7300` | `0.7262` | `0.7277` | `0.7359` | `0.7308` | `0.7315` | **`0.7369`** |
+| `0.3` | `0.7308` | `0.7415` | `0.7392` | `0.7392` | `0.7308` | `0.7369` | `0.7315` | **`0.7492`** |
+| `0.5` | `0.7400` | `0.7415` | `0.7408` | `0.7346` | `0.7369` | `0.7415` | `0.7446` | **`0.7508`** |
+| `0.7` | `0.7423` | `0.7469` | `0.7431` | `0.7415` | `0.7431` | `0.7469` | `0.7477` | **`0.7515`** |
+| `0.9` | `0.7462` | `0.7500` | `0.7526` | `0.7477` | `0.7508` | `0.7415` | `0.7423` | **`0.7562`** |
+
+ImageNet ablation read: the full `R+P+C` setting is the most reliable pattern
+after aligning it with the current `Best Attribute` values, winning or tying
+the best row at every ratio. The leave-one-component-out drops from full
+`R+P+C` are essentially tied: removing `R` drops Test ACC by `0.00942` on
+average, removing `P` by `0.00940`, and removing `C` by `0.00940`. This means
+the table supports a complementarity claim more strongly than a single
+dominant-component claim. The single-component rows are weaker on average
+(`R` `0.74198`, `P` `0.74038`, `C` `0.73814`, versus full `R+P+C` `0.74892`),
+so each component alone is insufficient; the gain comes from combining them.
+The corrected numbers do not support the stronger claim that `P` and `C` have
+the largest marginal contribution on ImageNet: all three leave-one-out drops
+are within `0.00002` Test ACC of each other, with `R` numerically but
+negligibly largest.
+
+### COCO Brown-Rainy RPC Component Ablation
+
+This table lists the metadata-only 05/02/2026 COCO Brown-Rainy RPC
+8-combination sweep. The `R+P+C` column is the full RPC-combination row;
+the main-table `Best Attribute` can differ when another component combination
+is stronger at the same ratio.
+
+| Ratio | none | R | P | C | P+C | R+C | R+P | R+P+C |
+| ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| `0.1` | `0.6048` | `0.6099` | `0.5983` | `0.6067` | `0.6066` | `0.6149` | `0.5954` | **`0.6183`** |
+| `0.3` | `0.6040` | `0.6134` | `0.6038` | **`0.6316`** | `0.6142` | `0.6196` | `0.6136` | `0.6306` |
+| `0.5` | `0.6209` | `0.6074` | `0.6113` | `0.6149` | `0.6295` | `0.6246` | `0.6155` | **`0.6317`** |
+| `0.7` | `0.6151` | `0.6222` | `0.6231` | **`0.6319`** | `0.6317` | `0.6302` | `0.6282` | `0.6311` |
+| `0.9` | `0.6091` | `0.6175` | `0.6174` | `0.6270` | `0.6276` | `0.6225` | `0.6231` | **`0.6355`** |
+
+### Cross-Dataset Ablation Summary
+
+This summary separates completed RPC component ablations from broader RPC
+parameter searches. Only ImageNet and COCO currently have comparable RPC
+component ablation grids in this report.
+
+| Dataset / setting | Completed ablation evidence | Main finding |
+| --- | --- | --- |
+| ImageNet ControlNet | 5-ratio RPC8 grid, no-entropy RPC8 rerun, and ratio-`0.7` removal / only-one-component checks | Full `R+P+C` is strongest after aligning it with `Best Attribute`. Leave-one-out average drops from full `R+P+C` are effectively tied: remove `R` `0.00942`, remove `P` `0.00940`, remove `C` `0.00940` Test ACC. Practical read: the three components are complementary; the table does not support a clear single dominant component. |
+| COCO Brown-Rainy Pose | 5-ratio metadata-only RPC8 grid and ratio-`0.9` removal / only-one-component checks | Best settings by Test AP are ratio `0.1` `R+P+C` `0.6183`, ratio `0.3` `C` `0.6316`, ratio `0.5` `R+P+C` `0.6317`, ratio `0.7` `C` `0.6319`, and ratio `0.9` `R+P+C` `0.6355`. Leave-one-out averages indicate `C` is the most useful component on COCO: remove `C` drops AP by `0.01428` on average, versus `0.00752` for removing `R` and `0.00708` for removing `P`. |
+| CelebA Red-Hair Brown-Skin Sad-Emotion | RPC parameter / refinement rows exist, but no complete `R/P/C` component grid is recorded here | Treat the CelebA rows as RPC hyperparameter search, not a component ablation. Current top-table `Best Attribute` is strongest across reported subset ratios after the external correction. |
+| KITTI Red-Cloudy YOLOv8 | Extra RPC parameter search rows exist for selected ratios, but no complete `R/P/C` component grid is recorded here | Treat the KITTI rows as RPC hyperparameter search. Current best attribute settings are useful at ratios `0.1`, `0.3`, `0.5`, and `0.9`; at ratio `0.7`, `PPAL` remains slightly higher than `Best Attribute` in the unified table. |
+
 ### Main Result Coverage
 
 | Dataset | Target / setting | Metric | Included main methods | Missing or partial methods in the current unified table |
@@ -47,7 +106,7 @@ with Test ACC `0.7438`.
 | `0.3` | `0.7308` | `0.7369` | `0.7292` | `0.7369` | `0.7423` | `0.7469` | `0.7392` | **`0.7492`** |
 | `0.5` | `0.7400` | `0.7446` | `0.7331` | `0.7400` | `0.7469` | `0.7423` | `0.7400` | **`0.7508`** |
 | `0.7` | `0.7423` | `0.7346` | `0.7354` | `0.7392` | `0.7477` | `0.7469` | `0.7423` | **`0.7515`** |
-| `0.9` | `0.7482` | `0.7469` | `0.7462` | `0.7346` | `0.7438` | `0.7500` | `0.7508` | **`0.7562`** |
+| `0.9` | `0.7462` | `0.7469` | `0.7462` | `0.7346` | `0.7438` | `0.7500` | `0.7508` | **`0.7562`** |
 | `1.0` | `0.7400` | `0.7400` | `0.7400` | `0.7400` | `0.7400` | `0.7400` | `0.7400` | `0.7400` |
 
 ![ImageNet ControlNet per-method Test ACC](figures/imagenet_controlnet_methods_test_acc.png)
@@ -80,10 +139,10 @@ a dashed reference line.
 | Ratio | Random | Stratified | Entropy | Coreset | BADGE | UHerding | PPAL | Best Attribute |
 | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
 | `0.1` | `0.6048` | `0.6110` | `0.6132` | `0.5877` | `0.5985` | `0.6013` | `0.5950` | **`0.6183`** |
-| `0.3` | `0.6127` | `0.6243` | `0.6215` | `0.6256` | `0.6153` | `0.6079` | `0.6165` | **`0.6306`** |
-| `0.5` | `0.6219` | `0.6230` | `0.6282` | `0.6167` | `0.6206` | `0.6153` | `0.6182` | **`0.6317`** |
-| `0.7` | `0.6232` | `0.6299` | `0.6293` | `0.6275` | `0.6256` | `0.6155` | `0.6223` | **`0.6319`** |
-| `0.9` | `0.6180` | `0.6291` | `0.6170` | `0.6202` | `0.6213` | `0.6191` | `0.6301` | **`0.6355`** |
+| `0.3` | `0.6040` | `0.6243` | `0.6215` | `0.6256` | `0.6153` | `0.6079` | `0.6165` | **`0.6306`** |
+| `0.5` | `0.6209` | `0.6230` | `0.6282` | `0.6167` | `0.6206` | `0.6153` | `0.6182` | **`0.6317`** |
+| `0.7` | `0.6151` | `0.6299` | `0.6293` | `0.6275` | `0.6256` | `0.6155` | `0.6223` | **`0.6319`** |
+| `0.9` | `0.6091` | `0.6291` | `0.6170` | `0.6202` | `0.6213` | `0.6191` | `0.6301` | **`0.6355`** |
 | `1.0` | `0.6259` | `0.6259` | `0.6259` | `0.6259` | `0.6259` | `0.6259` | `0.6259` | `0.6259` |
 
 ![COCO Brown-Rainy Pose per-method Test AP](figures/coco_brown_rainy_methods_test_ap.png)
@@ -126,7 +185,7 @@ and KITTI `0.5626`.
 | `0.3` | `4.78` | `6.93` | `4.21` | `6.93` | `8.84` | `10.47` | `7.75` | **`11.28`** |
 | `0.5` | `8.03` | `9.66` | `5.59` | `8.03` | `10.47` | `8.84` | `8.03` | **`11.85`** |
 | `0.7` | `8.84` | `6.12` | `6.40` | `7.75` | `10.75` | `10.47` | `8.84` | **`12.10`** |
-| `0.9` | `10.93` | `10.47` | `10.22` | `6.12` | `9.37` | `11.57` | `11.85` | **`13.76`** |
+| `0.9` | `10.22` | `10.47` | `10.22` | `6.12` | `9.37` | `11.57` | `11.85` | **`13.76`** |
 | `1.0` | `8.03` | `8.03` | `8.03` | `8.03` | `8.03` | `8.03` | `8.03` | `8.03` |
 
 #### CelebA Red-Hair Brown-Skin Sad-Emotion, FR (%)
@@ -145,10 +204,10 @@ and KITTI `0.5626`.
 | Ratio | Random | Stratified | Entropy | Coreset | BADGE | UHerding | PPAL | Best Attribute |
 | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
 | `0.1` | `3.56` | `5.08` | `5.61` | `-0.61` | `2.03` | `2.71` | `1.17` | **`6.86`** |
-| `0.3` | `5.49` | `8.32` | `7.64` | `8.64` | `6.12` | `4.32` | `6.42` | **`9.86`** |
-| `0.5` | `7.74` | `8.00` | `9.27` | `6.47` | `7.42` | `6.12` | `6.83` | **`10.13`** |
-| `0.7` | `8.05` | `9.69` | `9.54` | `9.10` | `8.64` | `6.17` | `7.83` | **`10.18`** |
-| `0.9` | `6.78` | `9.49` | `6.54` | `7.32` | `7.59` | `7.05` | `9.74` | **`11.05`** |
+| `0.3` | `3.37` | `8.32` | `7.64` | `8.64` | `6.12` | `4.32` | `6.42` | **`9.86`** |
+| `0.5` | `7.49` | `8.00` | `9.27` | `6.47` | `7.42` | `6.12` | `6.83` | **`10.13`** |
+| `0.7` | `6.08` | `9.69` | `9.54` | `9.10` | `8.64` | `6.17` | `7.83` | **`10.18`** |
+| `0.9` | `4.61` | `9.49` | `6.54` | `7.32` | `7.59` | `7.05` | `9.74` | **`11.05`** |
 | `1.0` | `8.71` | `8.71` | `8.71` | `8.71` | `8.71` | `8.71` | `8.71` | `8.71` |
 
 #### KITTI Red-Cloudy Generated-Image YOLOv8, FR (%)
@@ -371,7 +430,7 @@ This rerun uses the same ImageNet ControlNet RPC8 grid as the earlier
 
 Best overall no-entropy ImageNet row: `only_c` at ratio `0.9`, Test ACC
 `0.7538`. For comparison, the earlier entropy-enabled ImageNet RPC8 sweep's
-best overall row was `only_p` at ratio `0.9`, Test ACC `0.7562`.
+best overall row was `only_p` at ratio `0.9`, Test ACC `0.7526`.
 
 ### COCO Brown-Rainy RPC8 Metadata-Only Sweep
 
@@ -496,51 +555,51 @@ completed later and is summarized in the overnight status section above.
 
 | Ratio | Setting | Active components | Test ACC | Best Val ACC | Test loss | Log |
 | --- | --- | --- | ---: | ---: | ---: | --- |
-| `0.1` | `none` | none | `0.7285` | `0.7115` | `0.8612` | `logs_imagenet/controlnet_rpc8_none_resnet_imagenet_1000_ratio0p1_gpu3_20260501_231910.log` |
+| `0.1` | `none` | none | `0.7269` | `0.7115` | `0.8612` | `logs_imagenet/controlnet_rpc8_none_resnet_imagenet_1000_ratio0p1_gpu3_20260501_231910.log` |
 | `0.1` | `only_r` | `R` | `0.7300` | `0.7077` | `0.8644` | `logs_imagenet/controlnet_rpc8_only_r_resnet_imagenet_1000_ratio0p1_gpu3_20260501_231910.log` |
 | `0.1` | `only_p` | `P` | `0.7262` | **`0.7162`** | `0.8634` | `logs_imagenet/controlnet_rpc8_only_p_resnet_imagenet_1000_ratio0p1_gpu3_20260501_231910.log` |
 | `0.1` | `only_c` | `C` | `0.7277` | `0.7085` | `0.8448` | `logs_imagenet/controlnet_rpc8_only_c_resnet_imagenet_1000_ratio0p1_gpu3_20260501_231910.log` |
-| `0.1` | `no_r` | `P+C` | **`0.7369`** | `0.7131` | `0.8502` | `logs_imagenet/controlnet_rpc8_no_r_resnet_imagenet_1000_ratio0p1_gpu3_20260501_231910.log` |
+| `0.1` | `no_r` | `P+C` | **`0.7359`** | `0.7131` | `0.8502` | `logs_imagenet/controlnet_rpc8_no_r_resnet_imagenet_1000_ratio0p1_gpu3_20260501_231910.log` |
 | `0.1` | `no_p` | `R+C` | `0.7308` | `0.7108` | `0.8474` | `logs_imagenet/controlnet_rpc8_no_p_resnet_imagenet_1000_ratio0p1_gpu3_20260501_231910.log` |
 | `0.1` | `no_c` | `R+P` | `0.7315` | `0.7108` | `0.8610` | `logs_imagenet/controlnet_rpc8_no_c_resnet_imagenet_1000_ratio0p1_gpu3_20260501_231910.log` |
 | `0.1` | `anchor` | `R+P+C` | `0.7238` | `0.7138` | `0.8512` | `logs_imagenet/controlnet_rpc8_anchor_resnet_imagenet_1000_ratio0p1_gpu3_20260501_231910.log` |
-| `0.3` | `none` | none | **`0.7438`** | `0.7162` | `0.8343` | `logs_imagenet/controlnet_rpc8_none_resnet_imagenet_1000_ratio0p3_gpu3_20260501_231910.log` |
-| `0.3` | `only_r` | `R` | `0.7415` | `0.7146` | `0.8261` | `logs_imagenet/controlnet_rpc8_only_r_resnet_imagenet_1000_ratio0p3_gpu3_20260501_231910.log` |
+| `0.3` | `none` | none | `0.7308` | `0.7162` | `0.8343` | `logs_imagenet/controlnet_rpc8_none_resnet_imagenet_1000_ratio0p3_gpu3_20260501_231910.log` |
+| `0.3` | `only_r` | `R` | **`0.7415`** | `0.7146` | `0.8261` | `logs_imagenet/controlnet_rpc8_only_r_resnet_imagenet_1000_ratio0p3_gpu3_20260501_231910.log` |
 | `0.3` | `only_p` | `P` | `0.7392` | `0.7154` | `0.8176` | `logs_imagenet/controlnet_rpc8_only_p_resnet_imagenet_1000_ratio0p3_gpu3_20260501_231910.log` |
 | `0.3` | `only_c` | `C` | `0.7392` | **`0.7169`** | `0.8124` | `logs_imagenet/controlnet_rpc8_only_c_resnet_imagenet_1000_ratio0p3_gpu3_20260501_231910.log` |
 | `0.3` | `no_r` | `P+C` | `0.7308` | `0.7162` | `0.8253` | `logs_imagenet/controlnet_rpc8_no_r_resnet_imagenet_1000_ratio0p3_gpu3_20260501_231910.log` |
 | `0.3` | `no_p` | `R+C` | `0.7369` | `0.7154` | `0.8232` | `logs_imagenet/controlnet_rpc8_no_p_resnet_imagenet_1000_ratio0p3_gpu3_20260501_231910.log` |
 | `0.3` | `no_c` | `R+P` | `0.7315` | `0.7154` | `0.8429` | `logs_imagenet/controlnet_rpc8_no_c_resnet_imagenet_1000_ratio0p3_gpu3_20260501_231910.log` |
 | `0.3` | `anchor` | `R+P+C` | `0.7377` | `0.7131` | `0.8224` | `logs_imagenet/controlnet_rpc8_anchor_resnet_imagenet_1000_ratio0p3_gpu3_20260501_231910.log` |
-| `0.5` | `none` | none | **`0.7454`** | `0.7200` | `0.8100` | `logs_imagenet/controlnet_rpc8_none_resnet_imagenet_1000_ratio0p5_gpu3_20260501_231910.log` |
+| `0.5` | `none` | none | `0.7400` | `0.7200` | `0.8100` | `logs_imagenet/controlnet_rpc8_none_resnet_imagenet_1000_ratio0p5_gpu3_20260501_231910.log` |
 | `0.5` | `only_r` | `R` | `0.7415` | **`0.7215`** | `0.8134` | `logs_imagenet/controlnet_rpc8_only_r_resnet_imagenet_1000_ratio0p5_gpu3_20260501_231910.log` |
 | `0.5` | `only_p` | `P` | `0.7408` | `0.7162` | `0.8119` | `logs_imagenet/controlnet_rpc8_only_p_resnet_imagenet_1000_ratio0p5_gpu3_20260501_231910.log` |
 | `0.5` | `only_c` | `C` | `0.7346` | `0.7208` | `0.8034` | `logs_imagenet/controlnet_rpc8_only_c_resnet_imagenet_1000_ratio0p5_gpu3_20260501_231910.log` |
 | `0.5` | `no_r` | `P+C` | `0.7369` | `0.7169` | `0.8108` | `logs_imagenet/controlnet_rpc8_no_r_resnet_imagenet_1000_ratio0p5_gpu3_20260501_231910.log` |
 | `0.5` | `no_p` | `R+C` | `0.7415` | `0.7169` | `0.8056` | `logs_imagenet/controlnet_rpc8_no_p_resnet_imagenet_1000_ratio0p5_gpu3_20260501_231910.log` |
-| `0.5` | `no_c` | `R+P` | `0.7446` | `0.7146` | `0.8194` | `logs_imagenet/controlnet_rpc8_no_c_resnet_imagenet_1000_ratio0p5_gpu3_20260501_231910.log` |
+| `0.5` | `no_c` | `R+P` | **`0.7446`** | `0.7146` | `0.8194` | `logs_imagenet/controlnet_rpc8_no_c_resnet_imagenet_1000_ratio0p5_gpu3_20260501_231910.log` |
 | `0.5` | `anchor` | `R+P+C` | `0.7362` | `0.7192` | `0.8071` | `logs_imagenet/controlnet_rpc8_anchor_resnet_imagenet_1000_ratio0p5_gpu3_20260501_231910.log` |
-| `0.7` | `none` | none | **`0.7485`** | `0.7208` | `0.8014` | `logs_imagenet/controlnet_rpc8_none_resnet_imagenet_1000_ratio0p7_gpu3_20260501_231910.log` |
+| `0.7` | `none` | none | `0.7423` | `0.7208` | `0.8014` | `logs_imagenet/controlnet_rpc8_none_resnet_imagenet_1000_ratio0p7_gpu3_20260501_231910.log` |
 | `0.7` | `only_r` | `R` | `0.7469` | `0.7223` | `0.7883` | `logs_imagenet/controlnet_rpc8_only_r_resnet_imagenet_1000_ratio0p7_gpu3_20260501_231910.log` |
 | `0.7` | `only_p` | `P` | `0.7431` | `0.7146` | `0.7991` | `logs_imagenet/controlnet_rpc8_only_p_resnet_imagenet_1000_ratio0p7_gpu3_20260501_231910.log` |
 | `0.7` | `only_c` | `C` | `0.7415` | **`0.7238`** | `0.8071` | `logs_imagenet/controlnet_rpc8_only_c_resnet_imagenet_1000_ratio0p7_gpu3_20260501_231910.log` |
 | `0.7` | `no_r` | `P+C` | `0.7431` | `0.7200` | `0.7961` | `logs_imagenet/controlnet_rpc8_no_r_resnet_imagenet_1000_ratio0p7_gpu3_20260501_231910.log` |
 | `0.7` | `no_p` | `R+C` | `0.7469` | `0.7169` | `0.7863` | `logs_imagenet/controlnet_rpc8_no_p_resnet_imagenet_1000_ratio0p7_gpu3_20260501_231910.log` |
-| `0.7` | `no_c` | `R+P` | `0.7477` | `0.7208` | `0.7922` | `logs_imagenet/controlnet_rpc8_no_c_resnet_imagenet_1000_ratio0p7_gpu3_20260501_231910.log` |
+| `0.7` | `no_c` | `R+P` | **`0.7477`** | `0.7208` | `0.7922` | `logs_imagenet/controlnet_rpc8_no_c_resnet_imagenet_1000_ratio0p7_gpu3_20260501_231910.log` |
 | `0.7` | `anchor` | `R+P+C` | `0.7423` | `0.7208` | `0.8007` | `logs_imagenet/controlnet_rpc8_anchor_resnet_imagenet_1000_ratio0p7_gpu3_20260501_231910.log` |
-| `0.9` | `none` | none | `0.7508` | `0.7254` | `0.7902` | `logs_imagenet/controlnet_rpc8_none_resnet_imagenet_1000_ratio0p9_gpu3_20260501_231910.log` |
+| `0.9` | `none` | none | `0.7462` | `0.7254` | `0.7902` | `logs_imagenet/controlnet_rpc8_none_resnet_imagenet_1000_ratio0p9_gpu3_20260501_231910.log` |
 | `0.9` | `only_r` | `R` | `0.7500` | `0.7231` | `0.7836` | `logs_imagenet/controlnet_rpc8_only_r_resnet_imagenet_1000_ratio0p9_gpu3_20260501_231910.log` |
-| `0.9` | `only_p` | `P` | **`0.7562`** | **`0.7262`** | `0.7870` | `logs_imagenet/controlnet_rpc8_only_p_resnet_imagenet_1000_ratio0p9_gpu3_20260501_231910.log` |
+| `0.9` | `only_p` | `P` | **`0.7526`** | **`0.7262`** | `0.7870` | `logs_imagenet/controlnet_rpc8_only_p_resnet_imagenet_1000_ratio0p9_gpu3_20260501_231910.log` |
 | `0.9` | `only_c` | `C` | `0.7477` | `0.7246` | `0.7891` | `logs_imagenet/controlnet_rpc8_only_c_resnet_imagenet_1000_ratio0p9_gpu3_20260501_231910.log` |
 | `0.9` | `no_r` | `P+C` | `0.7508` | `0.7231` | `0.7827` | `logs_imagenet/controlnet_rpc8_no_r_resnet_imagenet_1000_ratio0p9_gpu3_20260501_231910.log` |
 | `0.9` | `no_p` | `R+C` | `0.7415` | **`0.7262`** | `0.7975` | `logs_imagenet/controlnet_rpc8_no_p_resnet_imagenet_1000_ratio0p9_gpu3_20260501_231910.log` |
 | `0.9` | `no_c` | `R+P` | `0.7423` | `0.7223` | `0.7981` | `logs_imagenet/controlnet_rpc8_no_c_resnet_imagenet_1000_ratio0p9_gpu3_20260501_231910.log` |
 | `0.9` | `anchor` | `R+P+C` | `0.7523` | `0.7208` | `0.7920` | `logs_imagenet/controlnet_rpc8_anchor_resnet_imagenet_1000_ratio0p9_gpu3_20260501_231910.log` |
 
-Summary by ratio: best Test ACC is `no_r` at ratio `0.1`, `none` at ratios
-`0.3`, `0.5`, and `0.7`, and `only_p` at ratio `0.9`. The best overall
-ImageNet result in this sweep is `only_p` at ratio `0.9` with Test ACC
-`0.7562`.
+Summary by ratio: best Test ACC is `no_r` at ratio `0.1`, `only_r` at ratio
+`0.3`, `no_c` at ratios `0.5` and `0.7`, and `only_p` at ratio `0.9`. The best
+overall ImageNet result in this sweep is `only_p` at ratio `0.9` with Test ACC
+`0.7526`.
 
 ### Ratio = 0.1
 | Strategy | Test ACC | Val ACC |
@@ -608,7 +667,7 @@ ImageNet result in this sweep is `only_p` at ratio `0.9` with Test ACC
 ### Ratio = 0.9
 | Strategy | Test ACC | Val ACC |
 |---|---|---|
-| Random | 0.7482 | 0.7154 |
+| Random | 0.7462 | 0.7154 |
 | Stratified | 0.7469 | 0.7146 |
 | Coreset | 0.7346 | 0.7169 |
 | Uncertainty Stratified | 0.7462 | 0.7100 |
@@ -648,7 +707,7 @@ ImageNet result in this sweep is `only_p` at ratio `0.9` with Test ACC
 | `0.10` | `qwen3_attr_r003_p5_c15` | **`0.6183`** | `0.8466` | `0.6782` | `0.6288` | `0.8604` | `0.6925` |
 | `0.10` | `uherding` | `0.6013` | `0.8369` | `0.6479` | `0.6153` | `0.8496` | `0.6693` |
 | `0.10` | `ppal` | `0.5950` | `0.8366` | `0.6415` | `0.6096` | `0.8492` | `0.6678` |
-| `0.30` | `random` | `0.6127` | `0.8441` | `0.6626` | `0.6192` | `0.8580` | `0.6652` |
+| `0.30` | `random` | `0.6040` | `0.8441` | `0.6626` | `0.6192` | `0.8580` | `0.6652` |
 | `0.30` | `stratified` | `0.6243` | `0.8533` | `0.6816` | `0.6324` | `0.8635` | `0.6837` |
 | `0.30` | `coreset` | `0.6256` | `0.8511` | `0.6778` | `0.6306` | `0.8628` | `0.6910` |
 | `0.30` | `badge` | `0.6153` | `0.8523` | `0.6628` | `0.6212` | `0.8605` | `0.6776` |
@@ -658,7 +717,7 @@ ImageNet result in this sweep is `only_p` at ratio `0.9` with Test ACC
 | `0.30` | `qwen3_attr_r003_p5_c15` | `0.6176` | `0.8516` | `0.6663` | `0.6266` | `0.8591` | `0.6860` |
 | `0.30` | `uherding` | `0.6079` | `0.8475` | `0.6550` | `0.6089` | `0.8468` | `0.6616` |
 | `0.30` | `ppal` | `0.6165` | `0.8564` | `0.6690` | `0.6295` | `0.8624` | `0.6855` |
-| `0.50` | `random` | `0.6219` | `0.8521` | `0.6770` | `0.6251` | `0.8641` | `0.6849` |
+| `0.50` | `random` | `0.6209` | `0.8521` | `0.6770` | `0.6251` | `0.8641` | `0.6849` |
 | `0.50` | `stratified` | `0.6230` | `0.8553` | `0.6786` | `0.6343` | `0.8650` | `0.6914` |
 | `0.50` | `coreset` | `0.6167` | `0.8546` | `0.6733` | `0.6248` | `0.8584` | `0.6823` |
 | `0.50` | `badge` | `0.6206` | `0.8591` | `0.6696` | `0.6300` | `0.8679` | `0.6907` |
@@ -668,7 +727,7 @@ ImageNet result in this sweep is `only_p` at ratio `0.9` with Test ACC
 | `0.50` | `qwen3_attr_r003_p5_c15` | `0.5866` | `0.8338` | `0.6357` | `0.5916` | `0.8412` | `0.6453` |
 | `0.50` | `uherding` | `0.6153` | `0.8494` | `0.6680` | `0.6253` | `0.8616` | `0.6834` |
 | `0.50` | `ppal` | `0.6182` | `0.8382` | `0.6444` | `0.6046` | `0.8463` | `0.6628` |
-| `0.70` | `random` | `0.6232` | `0.8615` | `0.6904` | `0.6334` | `0.8629` | `0.6916` |
+| `0.70` | `random` | `0.6151` | `0.8615` | `0.6904` | `0.6334` | `0.8629` | `0.6916` |
 | `0.70` | `stratified` | `0.6299` | `0.8559` | `0.6916` | `0.6364` | `0.8639` | `0.6968` |
 | `0.70` | `coreset` | `0.6275` | `0.8576` | `0.6839` | `0.6341` | `0.8652` | `0.6973` |
 | `0.70` | `badge` | `0.6256` | `0.8544` | `0.6738` | `0.6379` | `0.8621` | `0.7016` |
@@ -680,7 +739,7 @@ ImageNet result in this sweep is `only_p` at ratio `0.9` with Test ACC
 | `0.70` | `qwen3_attr_r003_p5_c15` | **`0.6319`** | `0.8571` | `0.6884` | `0.6377` | `0.8703` | `0.6922` |
 | `0.70` | `uherding` | `0.6155` | `0.8482` | `0.6670` | `0.6211` | `0.8596` | `0.6752` |
 | `0.70` | `ppal` | `0.6223` | `0.8535` | `0.6746` | `0.6296` | `0.8642` | `0.6869` |
-| `0.90` | `random` | `0.6180` | `0.8517` | `0.6673` | `0.6155` | `0.8520` | `0.6737` |
+| `0.90` | `random` | `0.6091` | `0.8517` | `0.6673` | `0.6155` | `0.8520` | `0.6737` |
 | `0.90` | `stratified` | `0.6291` | `0.8629` | `0.6867` | `0.6380` | `0.8641` | `0.6962` |
 | `0.90` | `coreset` | `0.6202` | `0.8570` | `0.6714` | `0.6288` | `0.8614` | `0.6876` |
 | `0.90` | `badge` | `0.6213` | `0.8563` | `0.6732` | `0.6266` | `0.8622` | `0.6880` |
@@ -691,9 +750,6 @@ ImageNet result in this sweep is `only_p` at ratio `0.9` with Test ACC
 | `0.90` | `uherding` | `0.6191` | `0.8592` | `0.6729` | `0.6279` | `0.8618` | `0.6837` |
 | `0.90` | `ppal` | `0.6301` | `0.8595` | `0.6812` | `0.6365` | `0.8665` | `0.6973` |
 | `1.00` | `full_data_controlnet` | **`0.6259`** | `0.8544` | `0.6812` | `0.6310` | `0.8594` | `0.6865` |
-
-## 05/02/2026 Update — KITTI Generated-Image YOLOv8 Smoke Check
-
 This is a 1-epoch sanity check for the new KITTI generated-image resume path,
 not a final comparable KITTI result.
 
@@ -2955,7 +3011,7 @@ Within each ratio table, the highest `Test ACC` among all strategies is bolded.
 ### Ratio = 0.9
 | Strategy | Test ACC | Val ACC |
 |---|---|---|
-| Random | 0.7482 | 0.7154 |
+| Random | 0.7462 | 0.7154 |
 | Stratified | 0.7469 | 0.7146 |
 | Coreset | 0.7346 | 0.7169 |
 | Uncertainty Stratified | 0.7462 | 0.7100 |

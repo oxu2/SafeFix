@@ -76,5 +76,5 @@ logs_celeba/pids/
 !save/*.csv
 !save/*.json
 
-nips26/
+# nips26/
 !figures/*.png
