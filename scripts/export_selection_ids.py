@@ -280,7 +280,7 @@ def export_coco(args: argparse.Namespace) -> None:
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
     parser.add_argument("--dataset", choices=["imagenet", "celeba", "coco"], required=True)
-    parser.add_argument("--ratio", type=float, choices=[0.05, 0.1, 0.3], required=True)
+    parser.add_argument("--ratio", type=float, choices=[0.05, 0.1, 0.3, 0.5], required=True)
     parser.add_argument("--method", choices=METHODS, required=True)
     parser.add_argument("--gpu", type=int, required=True)
     parser.add_argument("--seed", type=int, default=42)

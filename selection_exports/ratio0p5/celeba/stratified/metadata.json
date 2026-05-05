@@ -1,0 +1,11 @@
+{
+  "candidate_count": 80000,
+  "dataset": "celeba",
+  "gpu": 1,
+  "method": "stratified",
+  "ratio": 0.5,
+  "selected_count": 40000,
+  "selection_only": true,
+  "selection_time_sec": 0.7403604984283447,
+  "timestamp": "2026-05-05 00:37:20"
+}

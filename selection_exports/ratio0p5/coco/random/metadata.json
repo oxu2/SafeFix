@@ -1,0 +1,15 @@
+{
+  "candidate_count": 20000,
+  "dataset": "coco",
+  "gpu": 0,
+  "method": "random",
+  "ratio": 0.5,
+  "selected_count": 10000,
+  "selection_info": {
+    "selection_time_sec": 0.0037724971771240234,
+    "strategy": "random"
+  },
+  "selection_only": true,
+  "selection_time_sec": 6.29517674446106,
+  "timestamp": "2026-05-05 00:38:45"
+}

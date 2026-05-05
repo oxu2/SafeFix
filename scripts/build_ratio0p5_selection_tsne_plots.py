@@ -176,6 +176,16 @@ def attribute_indices(
 
 def load_imagenet(ratio: float) -> DatasetSpec:
     metrics = {
+        0.05: {
+            "Random": np.nan,
+            "Stratified": np.nan,
+            "Entropy": np.nan,
+            "Coreset": np.nan,
+            "BADGE": np.nan,
+            "PPAL": np.nan,
+            "UHerding": np.nan,
+            "Ours": np.nan,
+        },
         0.1: {
             "Random": 0.7269,
             "Stratified": 0.7271,
@@ -185,6 +195,16 @@ def load_imagenet(ratio: float) -> DatasetSpec:
             "PPAL": 0.7285,
             "UHerding": 0.7331,
             "Ours": 0.7369,
+        },
+        0.3: {
+            "Random": np.nan,
+            "Stratified": np.nan,
+            "Entropy": np.nan,
+            "Coreset": np.nan,
+            "BADGE": np.nan,
+            "PPAL": np.nan,
+            "UHerding": np.nan,
+            "Ours": np.nan,
         },
         0.5: {
             "Random": 0.7400,
@@ -253,6 +273,16 @@ def load_celeba(ratio: float) -> DatasetSpec:
             "PPAL": 0.9113,
             "UHerding": 0.9047,
             "Ours": 0.9137,
+        },
+        0.3: {
+            "Random": np.nan,
+            "Stratified": np.nan,
+            "Entropy": np.nan,
+            "Coreset": np.nan,
+            "BADGE": np.nan,
+            "PPAL": np.nan,
+            "UHerding": np.nan,
+            "Ours": np.nan,
         },
         0.5: {
             "Random": 0.9114,
@@ -335,6 +365,16 @@ def load_coco(ratio: float) -> DatasetSpec:
             "UHerding": 0.6013,
             "Ours": 0.6183,
         },
+        0.3: {
+            "Random": np.nan,
+            "Stratified": np.nan,
+            "Entropy": np.nan,
+            "Coreset": np.nan,
+            "BADGE": np.nan,
+            "PPAL": np.nan,
+            "UHerding": np.nan,
+            "Ours": np.nan,
+        },
         0.5: {
             "Random": 0.6219,
             "Stratified": 0.6230,
@@ -403,6 +443,16 @@ def load_kitti(ratio: float) -> DatasetSpec:
     ids = [path.stem for path in image_paths]
     id_to_idx = {image_id: idx for idx, image_id in enumerate(ids)}
     roots_by_ratio = {
+        0.05: {
+            "Random": (Path("/data/oxx220000/kitti_yolov8_ratio0p05_random_red_cloudy_gen1000_seed42"), np.nan),
+            "Stratified": (Path("/data/oxx220000/kitti_yolov8_ratio0p05_stratified_red_cloudy_gen1000_seed42"), np.nan),
+            "Entropy": (Path("/data/oxx220000/kitti_yolov8_ratio0p05_entropy_red_cloudy_gen1000_seed42"), np.nan),
+            "Coreset": (Path("/data/oxx220000/kitti_yolov8_ratio0p05_coreset_fast_red_cloudy_gen1000_seed42"), np.nan),
+            "BADGE": (Path("/data/oxx220000/kitti_yolov8_ratio0p05_badge_fast_red_cloudy_gen1000_seed42"), np.nan),
+            "PPAL": (Path("/data/oxx220000/kitti_yolov8_ratio0p05_ppal_fast_red_cloudy_gen1000_seed42_20260505_000927"), np.nan),
+            "UHerding": (Path("/data/oxx220000/kitti_yolov8_ratio0p05_uherding_fast_red_cloudy_gen1000_seed42_20260505_000927"), np.nan),
+            "Ours": (Path("/data/oxx220000/kitti_yolov8_ratio0p05_attribute_r003_p5_c15_red_cloudy_gen1000_seed42"), np.nan),
+        },
         0.1: {
             "Random": (Path("/data/oxx220000/kitti_yolov8_ratio0p1_random_red_cloudy_gen1000_seed42"), 0.5204),
             "Stratified": (Path("/data/oxx220000/kitti_yolov8_ratio0p1_stratified_red_cloudy_gen1000_seed42"), 0.5308),
@@ -412,6 +462,16 @@ def load_kitti(ratio: float) -> DatasetSpec:
             "PPAL": (Path("/data/oxx220000/kitti_yolov8_ratio0p1_ppal_fast_red_cloudy_gen1000_seed42_20260502_185507"), 0.5262),
             "UHerding": (Path("/data/oxx220000/kitti_yolov8_ratio0p1_uherding_fast_red_cloudy_gen1000_seed42_20260502_140255"), 0.5222),
             "Ours": (Path("/data/oxx220000/kitti_yolov8_ratio0p1_attribute_r000_p0_cinf_seed42_red_cloudy_gen1000"), 0.5372),
+        },
+        0.3: {
+            "Random": (Path("/data/oxx220000/kitti_yolov8_ratio0p3_random_red_cloudy_gen1000_seed42"), np.nan),
+            "Stratified": (Path("/data/oxx220000/kitti_yolov8_ratio0p3_stratified_red_cloudy_gen1000_seed42"), np.nan),
+            "Entropy": (Path("/data/oxx220000/kitti_yolov8_ratio0p3_entropy_red_cloudy_gen1000_seed42"), np.nan),
+            "Coreset": (Path("/data/oxx220000/kitti_yolov8_ratio0p3_coreset_fast_red_cloudy_gen1000_seed42"), np.nan),
+            "BADGE": (Path("/data/oxx220000/kitti_yolov8_ratio0p3_badge_fast_red_cloudy_gen1000_seed42"), np.nan),
+            "PPAL": (Path("/data/oxx220000/kitti_yolov8_ratio0p3_ppal_fast_red_cloudy_gen1000_seed42_20260502_185507"), np.nan),
+            "UHerding": (Path("/data/oxx220000/kitti_yolov8_ratio0p3_uherding_fast_red_cloudy_gen1000_seed42_20260502_140255"), np.nan),
+            "Ours": (Path("/data/oxx220000/kitti_yolov8_ratio0p3_attribute_r000_p0_c15_red_cloudy_gen1000_seed42"), np.nan),
         },
         0.5: {
             "Random": (Path("/data/oxx220000/kitti_yolov8_ratio0p5_random_red_cloudy_gen1000_seed42"), 0.5719),
@@ -555,7 +615,7 @@ def build_one(spec: DatasetSpec, args: argparse.Namespace) -> None:
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
     parser.add_argument("--datasets", nargs="+", default=["imagenet", "celeba", "coco", "kitti"])
-    parser.add_argument("--ratio", type=float, default=0.5, choices=[0.1, 0.5])
+    parser.add_argument("--ratio", type=float, default=0.5, choices=[0.05, 0.1, 0.3, 0.5])
     parser.add_argument("--out-dir", type=Path, default=OUT_DIR)
     parser.add_argument("--thumbnail-size", type=int, default=8)
     parser.add_argument("--pca-dim", type=int, default=50)

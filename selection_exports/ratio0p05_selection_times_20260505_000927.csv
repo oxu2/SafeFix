@@ -1,0 +1,11 @@
+dataset,ratio,method,gpu,selected_count,selection_time_sec,artifact
+imagenet,0.05,badge,2,520,50.537,selection_exports/ratio0p05/imagenet/badge/selected_original_ids.txt
+imagenet,0.05,coreset,3,520,59.947,selection_exports/ratio0p05/imagenet/coreset/selected_original_ids.txt
+imagenet,0.05,entropy,2,520,0.221,selection_exports/ratio0p05/imagenet/entropy/selected_original_ids.txt
+imagenet,0.05,ours,3,520,0.094,selection_exports/ratio0p05/imagenet/ours/selected_original_ids.txt
+imagenet,0.05,ppal,3,520,47.884,selection_exports/ratio0p05/imagenet/ppal/selected_original_ids.txt
+imagenet,0.05,random,2,520,0.070,selection_exports/ratio0p05/imagenet/random/selected_original_ids.txt
+imagenet,0.05,stratified,3,520,0.074,selection_exports/ratio0p05/imagenet/stratified/selected_original_ids.txt
+imagenet,0.05,uherding,2,520,46.587,selection_exports/ratio0p05/imagenet/uherding/selected_original_ids.txt
+kitti,0.05,ppal,1,250,56.687,/data/oxx220000/kitti_yolov8_ratio0p05_ppal_fast_red_cloudy_gen1000_seed42_20260505_000927/selected_original_ids.txt
+kitti,0.05,uherding,0,250,56.767,/data/oxx220000/kitti_yolov8_ratio0p05_uherding_fast_red_cloudy_gen1000_seed42_20260505_000927/selected_original_ids.txt
