@@ -1,3 +1,227 @@
+## Main-Result RPC Parameter Lookup
+
+This section records the actual RPC hyperparameter tuples behind the current
+main-result `Best Attribute` rows, where each tuple is
+`(alpha, lambda, w)`. This is different from the component-ablation tables:
+here the question is which numeric RPC tuple produced the selected main-result
+attribute row. `R off` means the rarity term was removed rather than setting a
+numeric `alpha`.
+
+High-level read:
+
+- ImageNet main-result attribute rows come from a mixed RPC search. Component
+  and numeric refinements both matter: the best rows include `P+C`, `C`,
+  `none`, numeric `(0.03, 0.5, inf)`, and `P`.
+- COCO main-result attribute rows are usually selected from the mild
+  rarity/frequency-penalty region: `(0.03, 0.5, 15)` is best at ratios `0.1`,
+  `0.7`, and `0.9`, while `(0.01, 0.5, 15)` is best at ratios `0.3` and
+  `0.5`.
+- KITTI main-result attribute rows are mostly conservative: `(0, 0, 15)` is
+  best at ratios `0.3`, `0.5`, and `0.7`, with `(0, 0, inf)` best at ratio
+  `0.1` and `(0.01, 5, 15)` / `(0.03, 5, 8)` tied at ratio `0.9`.
+- For a paper claim that several RPC settings give close downstream metrics,
+  KITTI is the cleanest example. At ratio `0.7`, many tuples produce test
+  mAP50-95 between `0.5767` and `0.5780`.
+
+### ImageNet ControlNet RPC Tuples Behind Main Results
+
+Metric: ImageNet10 test accuracy. Bold marks the best attribute tuple for that
+ratio in the current main-result table.
+
+| Ratio | RPC setting | `(alpha, lambda, w)` | Test ACC | Best Val ACC | Test loss |
+| ---: | --- | ---: | ---: | ---: | ---: |
+| `0.10` | `P+C` | `(R off, 5, inf)` | **`0.7369`** | `0.7131` | `0.8502` |
+| `0.30` | `C` | `(R off, 0, inf)` | **`0.7492`** | `0.7231` | `0.7987` |
+| `0.50` | `none` | `(R off, 0, 0)` | **`0.7508`** | `0.7262` | `0.7806` |
+| `0.70` | numeric RPC | `(0.03, 0.5, inf)` | **`0.7515`** | `0.7292` | `0.7896` |
+| `0.90` | `P` | `(R off, 5, 0)` | **`0.7562`** | `0.7262` | `0.7870` |
+
+### COCO Brown-Rainy RPC Tuples Behind Main Results
+
+Metric: COCO keypoint test AP. Bold marks the best attribute tuple for that
+ratio in the current main-result table.
+
+| Ratio | `(alpha, lambda, w)` | Test AP | Test AP50 | Test AP75 | Val AP |
+| ---: | ---: | ---: | ---: | ---: | ---: |
+| `0.10` | `(0.00, 0.0, 15)` | `0.6042` | `0.8390` | `0.6546` | `0.6159` |
+| `0.10` | `(0.01, 0.5, 15)` | `0.6152` | `0.8403` | `0.6717` | `0.6235` |
+| `0.10` | `(0.03, 0.5, 8)` | `0.6165` | `0.8489` | `0.6690` | `0.6285` |
+| `0.10` | `(0.03, 0.5, 15)` | **`0.6183`** | `0.8466` | `0.6782` | `0.6288` |
+| `0.30` | `(0.00, 0.0, 15)` | `0.6288` | `0.8572` | `0.6926` | `0.6309` |
+| `0.30` | `(0.01, 0.5, 15)` | **`0.6306`** | `0.8567` | `0.6849` | `0.6266` |
+| `0.30` | `(0.03, 0.5, 8)` | `0.6110` | `0.8445` | `0.6640` | `0.6254` |
+| `0.30` | `(0.03, 0.5, 15)` | `0.6176` | `0.8516` | `0.6663` | `0.6266` |
+| `0.50` | `(0.00, 0.0, 15)` | `0.6203` | `0.8544` | `0.6753` | `0.6272` |
+| `0.50` | `(0.01, 0.5, 15)` | **`0.6317`** | `0.8547` | `0.6774` | `0.6290` |
+| `0.50` | `(0.03, 0.5, 8)` | `0.6162` | `0.8525` | `0.6667` | `0.6257` |
+| `0.50` | `(0.03, 0.5, 15)` | `0.5866` | `0.8338` | `0.6357` | `0.5916` |
+| `0.70` | `(0.00, 0.0, 15)` | `0.6313` | `0.8583` | `0.6932` | `0.6364` |
+| `0.70` | `(0.01, 0.5, 0)` | `0.6247` | `0.8558` | `0.6819` | `0.6370` |
+| `0.70` | `(0.01, 0.5, 15)` | `0.6290` | `0.8572` | `0.6815` | `0.6394` |
+| `0.70` | `(0.03, 0.5, 0)` | `0.6247` | `0.8558` | `0.6819` | `0.6370` |
+| `0.70` | `(0.03, 0.5, 8)` | `0.6300` | `0.8548` | `0.6852` | `0.6331` |
+| `0.70` | `(0.03, 0.5, 15)` | **`0.6319`** | `0.8571` | `0.6884` | `0.6377` |
+| `0.90` | `(0.00, 0.0, 15)` | `0.6268` | `0.8579` | `0.6836` | `0.6339` |
+| `0.90` | `(0.01, 0.5, 15)` | `0.6255` | `0.8572` | `0.6805` | `0.6282` |
+| `0.90` | `(0.03, 0.5, 8)` | `0.6255` | `0.8572` | `0.6805` | `0.6282` |
+| `0.90` | `(0.03, 0.5, 15)` | **`0.6355`** | `0.8572` | `0.6805` | `0.6282` |
+
+### KITTI Red-Cloudy RPC Tuple Results
+
+Metric: test mAP50-95. Bold marks the best attribute tuple for that ratio.
+
+| Ratio | `(alpha, lambda, w)` | Test mAP50 | Test mAP50-95 | Val mAP50-95 |
+| ---: | ---: | ---: | ---: | ---: |
+| `0.10` | `(0.00, 0, 15)` | `0.8186` | `0.5321` | `0.5099` |
+| `0.10` | `(0.01, 5, 15)` | `0.8108` | `0.4963` | `0.4730` |
+| `0.10` | `(0.03, 5, 8)` | `0.8006` | `0.4951` | `0.4763` |
+| `0.10` | `(0.00, 0, inf)` | `0.8185` | **`0.5372`** | `0.5125` |
+| `0.10` | `(0.01, 5, inf)` | `0.8119` | `0.5001` | `0.4770` |
+| `0.10` | `(0.03, 0.5, 15)` | `0.8125` | `0.5051` | `0.4836` |
+| `0.10` | `(0.03, 0.5, inf)` | `0.8119` | `0.5001` | `0.4770` |
+| `0.10` | `(0.10, 5, 15)` | `0.8092` | `0.4995` | `0.4767` |
+| `0.10` | `(0.80, 10, 4)` | `0.8007` | `0.4899` | `0.4666` |
+| `0.30` | `(0.00, 0, 15)` | `0.8338` | **`0.5646`** | `0.5463` |
+| `0.30` | `(0.01, 5, 15)` | `0.8334` | `0.5620` | `0.5414` |
+| `0.30` | `(0.03, 5, 8)` | `0.8342` | `0.5630` | `0.5447` |
+| `0.50` | `(0.00, 0, 15)` | `0.8457` | **`0.5773`** | `0.5579` |
+| `0.50` | `(0.01, 5, 15)` | `0.8420` | `0.5733` | `0.5578` |
+| `0.50` | `(0.03, 5, 8)` | `0.8420` | `0.5733` | `0.5578` |
+| `0.70` | `(0.00, 0, 15)` | `0.8406` | **`0.5780`** | `0.5566` |
+| `0.70` | `(0.01, 5, 15)` | `0.8436` | `0.5767` | `0.5567` |
+| `0.70` | `(0.03, 5, 8)` | `0.8436` | `0.5767` | `0.5567` |
+| `0.70` | `(0.00, 0, inf)` | `0.8406` | **`0.5780`** | `0.5567` |
+| `0.70` | `(0.01, 5, inf)` | `0.8436` | `0.5767` | `0.5566` |
+| `0.70` | `(0.03, 0.5, 15)` | `0.8436` | `0.5767` | `0.5566` |
+| `0.70` | `(0.03, 0.5, inf)` | `0.8436` | `0.5767` | `0.5566` |
+| `0.70` | `(0.10, 5, 15)` | `0.8436` | `0.5767` | `0.5566` |
+| `0.70` | `(0.80, 10, 4)` | `0.8436` | `0.5767` | `0.5566` |
+| `0.90` | `(0.00, 0, 15)` | `0.8491` | `0.5841` | `0.5621` |
+| `0.90` | `(0.01, 5, 15)` | `0.8437` | **`0.5850`** | `0.5624` |
+| `0.90` | `(0.03, 5, 8)` | `0.8437` | **`0.5850`** | `0.5624` |
+
+## Recovered ControlNet Non-Ablation RPC Search Logs
+
+This section records ControlNet RPC-style attribute searches that were not part
+of the formal `controlnet_rpc8*` or `controlnet_rpc_ablation*` component
+tables. Other older InternVL, HiBug, and InstructPix2Pix grids are intentionally
+excluded here.
+
+### ImageNet ControlNet Numeric RPC Refinement
+
+Completed log family:
+
+- `logs_imagenet/controlnet_rpc_numeric_r*_p*_c*_resnet_imagenet_1000_ratio0p7_*.log`: `3/3` completed.
+
+| Ratio | RPC setting | Test ACC | Best Val ACC | Test loss | Selection time (s) | Log |
+| ---: | --- | ---: | ---: | ---: | ---: | --- |
+| `0.70` | `r001_p05_cinf` | `0.7508` | `0.7231` | `0.7921` | `0.07` | `logs_imagenet/controlnet_rpc_numeric_r001_p05_cinf_resnet_imagenet_1000_ratio0p7_gpu2_20260504_120159.log` |
+| `0.70` | `r003_p05_cinf` | **`0.7515`** | `0.7292` | `0.7896` | `0.07` | `logs_imagenet/controlnet_rpc_numeric_r003_p05_cinf_resnet_imagenet_1000_ratio0p7_gpu3_20260504_120159.log` |
+| `0.70` | `r003_p0_cinf` | `0.7485` | **`0.7308`** | `0.7896` | `0.06` | `logs_imagenet/controlnet_rpc_numeric_r003_p0_cinf_resnet_imagenet_1000_ratio0p7_gpu1_20260504_120159.log` |
+
+### CelebA ControlNet Main-Fill RPC Search
+
+Completed log family:
+
+- `logs_celeba/mainfill_attribute_r*_p*_c*_resnet_celeba_1000_ratio0p*_*.log`: `19/20` completed.
+
+| Ratio | RPC setting | Test ACC | Best Val ACC | Test loss | Selection time (s) | Log |
+| ---: | --- | ---: | ---: | ---: | ---: | --- |
+| `0.50` | `r000_p0_c15` | `0.9125` | **`0.9120`** | `0.3582` | `0.61` | `logs_celeba/mainfill_attribute_r000_p0_c15_resnet_celeba_1000_ratio0p5_gpu2_20260504_024733.log` |
+| `0.50` | `r000_p0_cinf` | `0.9127` | `0.9118` | `0.3580` | `1.85` | `logs_celeba/mainfill_attribute_r000_p0_cinf_resnet_celeba_1000_ratio0p5_gpu2_20260504_024733.log` |
+| `0.50` | `r002_p05_c15` | `0.9101` | `0.9119` | `0.3547` | `2.13` | `logs_celeba/mainfill_attribute_r002_p05_c15_resnet_celeba_1000_ratio0p5_gpu2_20260504_024733.log` |
+| `0.50` | `r003_p05_c15` | `0.9096` | `0.9109` | **`0.3542`** | `1.98` | `logs_celeba/mainfill_attribute_r003_p05_c15_resnet_celeba_1000_ratio0p5_gpu2_20260504_024733.log` |
+| `0.50` | `r003_p05_c8` | `0.9115` | `0.9107` | `0.3564` | `1.98` | `logs_celeba/mainfill_attribute_r003_p05_c8_resnet_celeba_1000_ratio0p5_gpu2_20260504_024733.log` |
+| `0.50` | `r003_p05_cinf` | **`0.9137`** | **`0.9120`** | `0.3547` | `1.94` | `logs_celeba/mainfill_attribute_r003_p05_cinf_resnet_celeba_1000_ratio0p5_gpu2_20260504_024733.log` |
+| `0.70` | `r000_p0_c15` | `0.9118` | `0.9117` | `0.3710` | `1.34` | `logs_celeba/mainfill_attribute_r000_p0_c15_resnet_celeba_1000_ratio0p7_gpu3_20260504_024733.log` |
+| `0.70` | `r000_p0_cinf` | `0.9116` | **`0.9118`** | `0.3710` | `1.65` | `logs_celeba/mainfill_attribute_r000_p0_cinf_resnet_celeba_1000_ratio0p7_gpu3_20260504_024733.log` |
+| `0.70` | `r001_p05_c15` | `0.9080` | `0.9078` | `0.3688` | `0.72` | `logs_celeba/mainfill_attribute_r001_p05_c15_resnet_celeba_1000_ratio0p7_gpu3_20260504_024733.log` |
+| `0.70` | `r002_p05_c15` | `0.9100` | `0.9082` | `0.3771` | `0.88` | `logs_celeba/mainfill_attribute_r002_p05_c15_resnet_celeba_1000_ratio0p7_gpu2_20260504_024733.log` |
+| `0.70` | `r003_p05_c15` | `0.9113` | `0.9106` | **`0.3548`** | `2.34` | `logs_celeba/mainfill_attribute_r003_p05_c15_resnet_celeba_1000_ratio0p7_gpu0_20260504_024733.log` |
+| `0.70` | `r003_p05_c8` | `0.9085` | `0.9091` | `0.3710` | `0.73` | `logs_celeba/mainfill_attribute_r003_p05_c8_resnet_celeba_1000_ratio0p7_gpu1_20260504_024733.log` |
+| `0.70` | `r003_p05_cinf` | **`0.9121`** | `0.9112` | `0.3572` | `2.40` | `logs_celeba/mainfill_attribute_r003_p05_cinf_resnet_celeba_1000_ratio0p7_gpu2_20260504_024733.log` |
+| `0.90` | `r000_p0_c15` | **`0.9146`** | `0.9118` | **`0.3495`** | `0.77` | `logs_celeba/mainfill_attribute_r000_p0_c15_resnet_celeba_1000_ratio0p9_gpu1_20260504_024733.log` |
+| `0.90` | `r000_p0_cinf` | **`0.9146`** | **`0.9120`** | `0.3496` | `2.15` | `logs_celeba/mainfill_attribute_r000_p0_cinf_resnet_celeba_1000_ratio0p9_gpu1_20260504_024733.log` |
+| `0.90` | `r002_p05_c15` | `0.9099` | `0.9100` | `0.3653` | `1.57` | `logs_celeba/mainfill_attribute_r002_p05_c15_resnet_celeba_1000_ratio0p9_gpu1_20260504_024733.log` |
+| `0.90` | `r003_p05_c15` | `0.9112` | `0.9104` | `0.3539` | `1.89` | `logs_celeba/mainfill_attribute_r003_p05_c15_resnet_celeba_1000_ratio0p9_gpu1_20260504_024733.log` |
+| `0.90` | `r003_p05_c8` | `0.9102` | `0.9092` | `0.3715` | `2.38` | `logs_celeba/mainfill_attribute_r003_p05_c8_resnet_celeba_1000_ratio0p9_gpu1_20260504_024733.log` |
+| `0.90` | `r003_p05_cinf` | `0.9112` | `0.9099` | `0.3634` | `1.89` | `logs_celeba/mainfill_attribute_r003_p05_cinf_resnet_celeba_1000_ratio0p9_gpu1_20260504_024733.log` |
+
+## Data Selection Time Summary
+
+Selection time is reported in seconds unless a cell explicitly uses minutes or
+hours. The method order is fixed as Random, Stratified, Entropy, Coreset,
+BADGE, PPAL, UHerding, and Ours. CelebA entries come from the corresponding
+training logs where available; for Ours at ratios with multiple matching logs,
+the table reports their average selection time. For COCO pose, Entropy, PPAL,
+UHerding, and Ours come from the
+brown-rainy training logs; Coreset and BADGE use the earlier COCO pose training
+logs because the completed brown-rainy baseline table does not preserve
+selection time. Random and Stratified are reported as `0` because their
+algorithmic selection cost is negligible after excluding file I/O and export
+overhead.
+
+### CelebA Red-Hair Brown-Skin Sad-Emotion Selection Time
+
+| Ratio | Random | Stratified | Entropy | Coreset | BADGE | PPAL | UHerding | Ours |
+| ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| `0.1` | `0 s` | `0 s` | `49 s` | `45 min` | `2 h` | `46 s` | `63 s` | `0.42 s` |
+| `0.3` | `0 s` | `0 s` | `51 s` | `3 h` | `5 h` | `51 s` | `65 s` | `0.51 s` |
+| `0.5` | `0 s` | `0 s` | `49 s` | `5 h` | `9 h` | `61 s` | `61 s` | `1.37 s` |
+| `0.7` | `0 s` | `0 s` | `51 s` | `57 s` | `74 s` | `65 s` | `70 s` | `1.56 s` |
+| `0.9` | n/a | n/a | `51 s` | n/a | n/a | `56 s` | `54 s` | `1.58 s` |
+
+CelebA Coreset and BADGE caveat: the high-ratio Coreset/BADGE rows after
+`ratio=0.1` used faster approximate implementations, so their logged times are
+not directly comparable to the slow exact selector used for the expensive
+baseline. Keeping the slow-path Coreset measurements gives `45 min` at
+`ratio=0.1`, `3 h` at `ratio=0.3`, and `5 h` at
+`ratio=0.5`; extrapolating this trend to `ratio=0.7` gives roughly
+`7 h`. For BADGE, the slow exact `ratio=0.1` run took about `2 h`.
+A simple selected-sample linear extrapolation gives approximate slow-path
+times of about `5 h` at `ratio=0.3`, `9 h` at `ratio=0.5`, and `13 h` at
+`ratio=0.7`; the logged `117 s`, `125 s`, and `74 s` rows therefore reflect
+the fast implementation rather than the original exact runtime.
+
+PPAL and UHerding caveat: the logged PPAL/UHerding rows also use the fast
+paths. In the shared implementation, exact PPAL and exact UHerding are only
+used when `n_select <= 512`; all main-result ratios exceed this threshold.
+The logged UHerding `ratio=0.1` rows are slower than later ratios, consistent
+with first-run cold-start/setup overhead in the fast path. The table therefore
+overwrites those two `ratio=0.1` UHerding entries with the median of the later
+same-dataset UHerding runs: `63 s` for CelebA and `86 s` for COCO.
+Exact PPAL would run greedy category-aware diversity over the uncertainty pool
+(`4 * n_select`, capped by the candidate pool). For COCO, this makes the exact
+diversity step roughly `5x`, `15x`, `25x`, `35x`, and `45x` larger than the
+fast diversity step at ratios `0.1`, `0.3`, `0.5`, `0.7`, and `0.9`,
+respectively, before counting embedding extraction. Exact UHerding is much
+less practical: it builds a full pairwise kernel over labeled plus unlabeled
+embeddings and scans that kernel once per selected sample. On COCO
+(`20000` source candidates), even `ratio=0.1` requires several GB of kernel
+storage and over `8e11` kernel-entry updates; higher ratios scale linearly in
+`n_select`. On CelebA (`80000` source candidates), the exact UHerding kernel
+alone would exceed `50 GB` per matrix, so exact UHerding should be treated as
+infeasible for the reported ratios.
+
+### COCO Brown-Rainy Pose Selection Time
+
+| Ratio | Random | Stratified | Entropy | Coreset | BADGE | PPAL | UHerding | Ours |
+| ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| `0.1` | `0 s` | `0 s` | `863 s` | `5 min` | `21 min` | `67 s` | `86 s` | `0.29 s` |
+| `0.3` | `0 s` | `0 s` | `865 s` | `15 min` | `1 h` | `85 s` | `93 s` | `0.30 s` |
+| `0.5` | `0 s` | `0 s` | `865 s` | `25 min` | `2 h` | `90 s` | `94 s` | `0.32 s` |
+| `0.7` | n/a | n/a | `865 s` | n/a | n/a | `82 s` | `80 s` | `0.36 s` |
+| `0.9` | n/a | n/a | `865 s` | n/a | n/a | `62 s` | `64 s` | `0.36 s` |
+
+COCO Coreset/BADGE caveat: the Coreset and BADGE timing rows are taken from
+earlier COCO pose training logs rather than the later brown-rainy summary,
+because the completed brown-rainy baseline table records metrics but not
+selection time. The `ratio=0.1` Coreset and BADGE entries are logged slow-path
+times. The `ratio=0.3` and `ratio=0.5` Coreset/BADGE entries overwrite the
+later fast/approximate logs with simple selected-sample linear estimates from
+the `ratio=0.1` slow-path run: Coreset is estimated as `15 min` and `25 min`,
+and BADGE is estimated as `1 h` and `2 h`.
+
 ## Main Results Summary (ImageNet, CelebA, COCO, KITTI)
 
 This top summary consolidates the current main-result datasets and excludes
