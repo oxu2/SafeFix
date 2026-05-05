@@ -5,6 +5,57 @@
 
 ---
 
+## Session 180: KITTI ratio-0.1 selection t-SNE prototype
+
+**Date**: 2026-05-05
+**Task**: prototype-kitti-tsne-selection-comparison
+
+The user asked how to find a KITTI t-SNE figure comparing attribute selection
+with other methods, and to try making one.
+
+Investigation:
+
+- No existing KITTI t-SNE artifact was found in the repo.
+- The KITTI generated YOLO training script already saves per-run selected
+  original IDs to each prepared dataset:
+  `/data/oxx220000/kitti_yolov8_ratio*/selected_original_ids.txt`.
+- The same script computes lightweight thumbnail proxy embeddings for the
+  KITTI AL baselines. I reused that embedding family so the visualization is
+  tied to the selection code rather than to an unrelated feature space.
+
+Added:
+
+- `scripts/build_kitti_tsne_selection_plot.py`
+
+Generated exploratory artifacts:
+
+- `figures/kitti_red_cloudy_ratio0p1_selection_tsne.png`
+  - 2x4 facet plot for Random, Stratified, Entropy, Coreset, BADGE, UHerding,
+    PPAL, and Ours/Attribute.
+- `figures/kitti_red_cloudy_ratio0p1_selection_tsne_overlay.png`
+  - compact overlay for Random, Entropy, BADGE, PPAL, and Ours/Attribute.
+- `figures/kitti_red_cloudy_ratio0p1_selection_tsne.csv`
+  - 5000 train candidates with t-SNE coordinates and method membership flags.
+- `figures/kitti_red_cloudy_ratio0p1_proxy_tsne_cache.npz`
+  - cached t-SNE coordinates keyed by image ID for faster reruns.
+
+Commands:
+
+- `python3 -m py_compile scripts/build_kitti_tsne_selection_plot.py`
+- `source /usr/local/anaconda3/etc/profile.d/conda.sh && conda activate fp && MPLCONFIGDIR=/tmp/matplotlib-safefix python scripts/build_kitti_tsne_selection_plot.py`
+
+Caveats:
+
+- This first plot uses ratio `0.1`, because each method selects 500 of 5000
+  original candidates and the subset coverage is readable. Higher ratios cover
+  most of the t-SNE space and may need a density or unselected-gap view.
+- The embedding is the lightweight RGB thumbnail proxy embedding used by the
+  KITTI AL code, not YOLO/CLIP semantic features. It is appropriate for
+  visualizing how the implemented selectors spread over that proxy space, but
+  not for claiming semantic clustering.
+- `report.md` was not updated because this is an exploratory visualization,
+  not yet a polished paper-facing result.
+
 ## Session 179: External result corrections and plot regeneration
 
 **Date**: 2026-05-04
@@ -6034,6 +6085,168 @@ The user asked whether the `ratio=0.9` GPU0 queue had finished. It had not: the 
 ### Status
 
 [~] **In Progress**
+
+## 2026-05-05 Selection Export / T-SNE Continuation
+
+### What Changed
+
+- Completed the ratio `0.3` ImageNet/CelebA/COCO selection-only export queue that had been launched on GPUs `0`, `1`, and `3`.
+- Wrote the ratio `0.3` selection-time summary:
+  - `selection_exports/ratio0p3_selection_times_20260504_233005.csv`
+  - row count: `24`
+- Checked for pre-existing ratio `0.05` selection id artifacts.
+
+### Findings
+
+- `selection_exports/` currently has exported ids for ratio `0.1` and ratio `0.3`, but no `ratio0p05` export directory.
+- Existing ratio `0.05` selected original ids were found only for KITTI red-cloudy YOLOv8 prepared roots under `/data/oxx220000`:
+  - `/data/oxx220000/kitti_yolov8_ratio0p05_attribute_r003_p5_c15_red_cloudy_gen1000_seed42/selected_original_ids.txt`
+  - `/data/oxx220000/kitti_yolov8_ratio0p05_badge_fast_red_cloudy_gen1000_seed42/selected_original_ids.txt`
+  - `/data/oxx220000/kitti_yolov8_ratio0p05_coreset_fast_red_cloudy_gen1000_seed42/selected_original_ids.txt`
+  - `/data/oxx220000/kitti_yolov8_ratio0p05_entropy_red_cloudy_gen1000_seed42/selected_original_ids.txt`
+  - `/data/oxx220000/kitti_yolov8_ratio0p05_random_red_cloudy_gen1000_seed42/selected_original_ids.txt`
+  - `/data/oxx220000/kitti_yolov8_ratio0p05_stratified_red_cloudy_gen1000_seed42/selected_original_ids.txt`
+- Each KITTI ratio `0.05` file has `250` rows.
+- No matching ratio `0.05` selected-id files were found for ImageNet, CelebA, or COCO in either `selection_exports/` or `/data/oxx220000` during this check.
+- Older ratio `0.05` training logs do exist for ImageNet and COCO/Pose, but this check did not find persisted selected-id files for those runs.
+
+### Validation Commands
+
+- `find selection_exports -maxdepth 4 \( -name selected_original_ids.txt -o -name selected_indices.txt \) | sort`
+- `find /data/oxx220000 -maxdepth 4 -path '*ratio0p05*' \( -name selected_original_ids.txt -o -name selected_indices.txt \) 2>/dev/null | sort`
+- `wc -l /data/oxx220000/kitti_yolov8_ratio0p05_*_red_cloudy_gen1000_seed42/selected_original_ids.txt`
+- `python3 scripts/summarize_selection_export_times.py --stamp 20260504_233005 --out selection_exports/ratio0p3_selection_times_20260504_233005.csv`
+
+### Next Step
+
+- If ratio `0.05` t-SNE is needed for ImageNet/CelebA/COCO, rerun the selection-only export step with `sub_ratio=0.05`; training is not needed.
+
+## Session 181 - Ratio 0.5 Selection t-SNE Snapshots
+
+### What Changed
+
+- Added a reusable ratio-`0.5` selection visualization script:
+  - `scripts/build_ratio0p5_selection_tsne_plots.py`
+- Generated proxy t-SNE selection plots and plotted-point CSVs for the four
+  main datasets:
+  - `figures/imagenet_controlnet_ratio0p5_selection_tsne.png`
+  - `figures/imagenet_controlnet_ratio0p5_selection_tsne.csv`
+  - `figures/celeba_redhair_brownskin_sademotion_ratio0p5_selection_tsne.png`
+  - `figures/celeba_redhair_brownskin_sademotion_ratio0p5_selection_tsne.csv`
+  - `figures/coco_brown_rainy_ratio0p5_selection_tsne.png`
+  - `figures/coco_brown_rainy_ratio0p5_selection_tsne.csv`
+  - `figures/kitti_red_cloudy_ratio0p5_selection_tsne.png`
+  - `figures/kitti_red_cloudy_ratio0p5_selection_tsne.csv`
+- Generated cache files so the plots can be regenerated without recomputing
+  t-SNE when the plotted IDs are unchanged:
+  - `figures/imagenet_controlnet_ratio0p5_proxy_tsne_cache.npz`
+  - `figures/celeba_redhair_brownskin_sademotion_ratio0p5_proxy_tsne_cache.npz`
+  - `figures/coco_brown_rainy_ratio0p5_proxy_tsne_cache.npz`
+  - `figures/kitti_red_cloudy_ratio0p5_proxy_tsne_cache.npz`
+
+### Commands
+
+- `source /usr/local/anaconda3/etc/profile.d/conda.sh && conda activate fp && MPLCONFIGDIR=/tmp/matplotlib-safefix python scripts/build_ratio0p5_selection_tsne_plots.py --datasets kitti --n-iter 750`
+- `source /usr/local/anaconda3/etc/profile.d/conda.sh && conda activate fp && MPLCONFIGDIR=/tmp/matplotlib-safefix python scripts/build_ratio0p5_selection_tsne_plots.py --datasets imagenet --n-iter 750`
+- `source /usr/local/anaconda3/etc/profile.d/conda.sh && conda activate fp && MPLCONFIGDIR=/tmp/matplotlib-safefix python scripts/build_ratio0p5_selection_tsne_plots.py --datasets celeba --n-iter 750`
+- `source /usr/local/anaconda3/etc/profile.d/conda.sh && conda activate fp && MPLCONFIGDIR=/tmp/matplotlib-safefix python scripts/build_ratio0p5_selection_tsne_plots.py --datasets coco --n-iter 750`
+
+### Caveats
+
+- KITTI uses exact persisted `selected_original_ids.txt` files for all eight
+  methods in the unified table.
+- ImageNet/CelebA/COCO main runs did not persist selected IDs for most
+  methods. The script therefore uses deterministic reconstructed snapshots for
+  random/attribute selections and marks each selection source in the CSV.
+  It does not fabricate unavailable active-learning baseline memberships.
+- The t-SNE input is a lightweight thumbnail proxy embedding. Use these figures
+  as visual coverage diagnostics, not as semantic feature-space evidence.
+- CelebA and COCO use a fixed 12k plotted-point background sample for runtime;
+  ImageNet and KITTI are plotted at full original-candidate count.
+
+### Validation
+
+- Verified output PNGs exist and are readable with PIL:
+  - ImageNet/CelebA/COCO: `3190 x 814`
+  - KITTI: `3190 x 1496`
+- Verified plotted CSVs were written under `figures/`.
+
+## Session 182 - Ratio 0.1 Selection Exports and Complete t-SNE Plots
+
+### What Changed
+
+- Added selection-only export tooling:
+  - `scripts/export_selection_ids.py`
+  - `scripts/run_selection_exports_ratio0p1_0p3_gpu0123.sh`
+  - `scripts/summarize_selection_export_times.py`
+- Moved the earlier ratio-`0.5` artifacts into:
+  - `figures/ratio0p5_selection_tsne/`
+- Moved/replaced ratio-`0.1` t-SNE artifacts under:
+  - `figures/ratio0p1_selection_tsne/`
+- Generated exact/reconstructed selected-id exports for ratio `0.1` for
+  ImageNet, CelebA, and COCO across all eight methods:
+  `random`, `stratified`, `entropy`, `coreset`, `badge`, `ppal`, `uherding`,
+  and `ours`.
+  - Export root: `selection_exports/ratio0p1/<dataset>/<method>/`
+  - Each method directory contains:
+    `selected_indices.txt`, `selected_original_ids.txt`, and `metadata.json`.
+- Regenerated the ratio-`0.1` t-SNE plots using complete 8-method selected IDs:
+  - `figures/ratio0p1_selection_tsne/imagenet_controlnet_ratio0p1_selection_tsne.png`
+  - `figures/ratio0p1_selection_tsne/celeba_redhair_brownskin_sademotion_ratio0p1_selection_tsne.png`
+  - `figures/ratio0p1_selection_tsne/coco_brown_rainy_ratio0p1_selection_tsne.png`
+  - `figures/ratio0p1_selection_tsne/kitti_red_cloudy_ratio0p1_selection_tsne.png`
+  - Matching CSVs are in the same directory.
+- Regenerated ratio-`0.1` selection wall-clock summary:
+  - `selection_exports/ratio0p1_selection_times_20260504_231546.csv`
+  - This summary has 24 rows, one per dataset/method export.
+
+### Commands
+
+- Initial ratio-`0.1` selection queue:
+  - `bash scripts/run_selection_exports_ratio0p1_0p3_gpu0123.sh`
+  - Stamp: `20260504_231546`
+  - PID file:
+    `logs/selection_export_ratio0p1_0p3_gpu0123_20260504_231546.pids`
+- Ratio-`0.3` selection queue started after GPU `0/1/3` became free:
+  - `RATIOS_OVERRIDE=0.3 GPUS_OVERRIDE="0 1 3" bash scripts/run_selection_exports_ratio0p1_0p3_gpu0123.sh`
+  - Stamp: `20260504_233005`
+  - PID file:
+    `logs/selection_export_ratio0p1_0p3_gpu0123_20260504_233005.pids`
+- Extra manual ratio-`0.1` COCO UHerding backup launch was started on GPU `3`
+  while the original GPU `2` queue was waiting behind COCO entropy. The
+  original GPU `2` queue completed COCO UHerding and wrote the final export.
+- Ratio-`0.1` t-SNE generation:
+  - `source /usr/local/anaconda3/etc/profile.d/conda.sh && conda activate fp && MPLCONFIGDIR=/tmp/matplotlib-safefix python scripts/build_ratio0p5_selection_tsne_plots.py --ratio 0.1 --datasets imagenet celeba coco kitti --out-dir figures/ratio0p1_selection_tsne --n-iter 750 --recompute`
+
+### Current Background Status
+
+- Ratio `0.1` selection export is complete: `24/24` selected-id files.
+- Ratio `0.3` selection export is still running in the background on the
+  `20260504_233005` queue.
+  - At the last check, `22/24` selected-id files were present.
+  - Remaining active process was COCO entropy on GPU `0`.
+  - Check with:
+    `pgrep -af "export_selection_ids.py|run_selection_exports_ratio0p1_0p3_gpu0123.sh --worker"`
+  - Re-run the timing summary after completion:
+    `python3 scripts/summarize_selection_export_times.py --stamp 20260504_233005 --out selection_exports/ratio0p3_selection_times_20260504_233005.csv`
+
+### Notes
+
+- Existing completed exports before the `selection_time_sec` patch do not have
+  direct duration in `metadata.json`; wall-clock duration is available from the
+  worker logs and the generated `selection_exports/*_selection_times_*.csv`
+  files.
+- New exports after the patch include `selection_time_sec` in metadata.
+- The t-SNE plots still use lightweight thumbnail proxy embeddings; they are
+  selection coverage diagnostics, not semantic model-feature evidence.
+
+### Validation
+
+- Verified ratio-`0.1` selected-id export count:
+  - `find selection_exports/ratio0p1 -maxdepth 3 -name selected_original_ids.txt | wc -l`
+  - Output: `24`
+- Verified ratio-`0.1` t-SNE PNGs are readable:
+  - all four output PNGs are `3190 x 1496`.
 
 ## Session 83: KITTI RPC completion, main-result refresh, and ratio-1.0 check
 

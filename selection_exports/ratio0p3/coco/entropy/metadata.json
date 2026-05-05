@@ -1,0 +1,14 @@
+{
+  "candidate_count": 20000,
+  "dataset": "coco",
+  "gpu": 0,
+  "method": "entropy",
+  "ratio": 0.3,
+  "selected_count": 6000,
+  "selection_info": {
+    "selection_time_sec": 1288.9135975837708,
+    "strategy": "entropy"
+  },
+  "selection_only": true,
+  "timestamp": "2026-05-05 00:01:40"
+}
