@@ -1,10 +1,11 @@
 {
   "candidate_count": 80000,
   "dataset": "celeba",
-  "gpu": 1,
+  "gpu": 0,
   "method": "entropy",
   "ratio": 0.3,
   "selected_count": 24000,
   "selection_only": true,
-  "timestamp": "2026-05-04 23:30:58"
+  "selection_time_sec": 55.69495701789856,
+  "timestamp": "2026-05-05 02:06:04"
 }

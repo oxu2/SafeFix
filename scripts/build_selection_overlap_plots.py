@@ -43,6 +43,53 @@ def read_selection_columns(path: Path) -> dict[str, set[str]]:
     return selections
 
 
+def ratio_tag_from_name(path: Path) -> str | None:
+    for part in path.stem.split("_"):
+        if part.startswith("ratio0p"):
+            return part
+    return None
+
+
+def dataset_from_name(path: Path) -> str | None:
+    name = path.name
+    if name.startswith("imagenet_"):
+        return "imagenet"
+    if name.startswith("celeba_"):
+        return "celeba"
+    if name.startswith("coco_"):
+        return "coco"
+    return None
+
+
+def read_selection_exports(path: Path) -> dict[str, set[str]] | None:
+    dataset = dataset_from_name(path)
+    ratio_tag = ratio_tag_from_name(path)
+    if dataset is None or ratio_tag is None:
+        return None
+
+    root = Path("selection_exports") / ratio_tag / dataset
+    if not root.exists():
+        return None
+
+    selections: dict[str, set[str]] = {}
+    for method in METHODS:
+        ids_path = root / method / "selected_original_ids.txt"
+        if ids_path.exists():
+            selections[method] = {
+                line.strip()
+                for line in ids_path.read_text(encoding="utf-8").splitlines()
+                if line.strip()
+            }
+    return selections or None
+
+
+def read_selections(path: Path) -> tuple[dict[str, set[str]], str]:
+    exported = read_selection_exports(path)
+    if exported is not None:
+        return exported, "selection_exports"
+    return read_selection_columns(path), "t-SNE CSV"
+
+
 def compute_overlap(selections: dict[str, set[str]], mode: str) -> np.ndarray:
     methods = list(selections)
     matrix = np.zeros((len(methods), len(methods)), dtype=float)
@@ -97,7 +144,7 @@ def plot_heatmap(path: Path, methods: list[str], matrix: np.ndarray, title: str,
 
 
 def build_one(csv_path: Path, out_dir: Path, mode: str) -> None:
-    selections = read_selection_columns(csv_path)
+    selections, source = read_selections(csv_path)
     methods = list(selections)
     matrix = compute_overlap(selections, mode)
     stem = csv_path.stem.replace("_selection_tsne", f"_selection_overlap_{mode}")
@@ -106,8 +153,8 @@ def build_one(csv_path: Path, out_dir: Path, mode: str) -> None:
     write_matrix_csv(out_csv, methods, matrix)
     title = csv_path.stem.replace("_selection_tsne", "").replace("_", " ")
     plot_heatmap(out_png, methods, matrix, f"{title} Selection Overlap", mode)
-    print(f"Wrote {out_png}")
-    print(f"Wrote {out_csv}")
+    print(f"Wrote {out_png} ({source})")
+    print(f"Wrote {out_csv} ({source})")
 
 
 def parse_args() -> argparse.Namespace:

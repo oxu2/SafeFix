@@ -10,7 +10,6 @@ from __future__ import annotations
 
 import argparse
 import json
-import os
 import random
 import sys
 import time
@@ -296,7 +295,6 @@ def parse_args() -> argparse.Namespace:
 def main() -> None:
     args = parse_args()
     set_reproducible_seed(args.seed)
-    os.environ["CUDA_VISIBLE_DEVICES"] = str(args.gpu)
     if args.dataset in {"imagenet", "celeba"}:
         export_image_dataset(args)
     else:
