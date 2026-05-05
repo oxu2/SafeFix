@@ -6121,6 +6121,133 @@ The user asked whether the `ratio=0.9` GPU0 queue had finished. It had not: the 
 
 - If ratio `0.05` t-SNE is needed for ImageNet/CelebA/COCO, rerun the selection-only export step with `sub_ratio=0.05`; training is not needed.
 
+### Follow-up Ratio 0.05 Selection Run
+
+- Added `0.05` to the allowed ratios in `scripts/export_selection_ids.py`.
+- Added launcher:
+  - `scripts/run_ratio0p05_kitti_imagenet_selection_gpu0123.sh`
+- Launched ratio `0.05` selection-only work at stamp `20260505_000927`:
+  - GPU `0`: KITTI `uherding`, prepare-only, no YOLO training
+  - GPU `1`: KITTI `ppal`, prepare-only, no YOLO training
+  - GPU `2`: ImageNet `random`, `entropy`, `badge`, `uherding`
+  - GPU `3`: ImageNet `stratified`, `coreset`, `ppal`, `ours`
+- The first ImageNet launch attempt used an outer `CUDA_VISIBLE_DEVICES`
+  mask while also passing physical GPU ids to `export_selection_ids.py`, which
+  caused `invalid device ordinal` for GPU-bound methods. The launcher was
+  fixed to leave ImageNet unmasked and skip existing outputs, then GPU `2` and
+  GPU `3` ImageNet workers were relaunched at stamp `20260505_001145`.
+- Final artifacts:
+  - ImageNet: `8/8` methods under `selection_exports/ratio0p05/imagenet/`,
+    each with `520` selected ids.
+  - KITTI newly filled missing methods:
+    - `/data/oxx220000/kitti_yolov8_ratio0p05_uherding_fast_red_cloudy_gen1000_seed42_20260505_000927/selected_original_ids.txt`
+    - `/data/oxx220000/kitti_yolov8_ratio0p05_ppal_fast_red_cloudy_gen1000_seed42_20260505_000927/selected_original_ids.txt`
+    - each has `250` selected ids.
+  - Selection-time CSV:
+    - `selection_exports/ratio0p05_selection_times_20260505_000927.csv`
+    - rows: `10` (`8` ImageNet methods plus `2` new KITTI methods)
+
+### Validation Commands
+
+- `wc -l selection_exports/ratio0p05/imagenet/*/selected_original_ids.txt`
+- `wc -l /data/oxx220000/kitti_yolov8_ratio0p05_uherding_fast_red_cloudy_gen1000_seed42_20260505_000927/selected_original_ids.txt /data/oxx220000/kitti_yolov8_ratio0p05_ppal_fast_red_cloudy_gen1000_seed42_20260505_000927/selected_original_ids.txt`
+- `pgrep -af 'export_selection_ids.py|train_yolov8_kitti_generated.py|run_ratio0p05_kitti_imagenet_selection_gpu0123.sh --worker'`
+
+## 2026-05-05 Ratio 0.05 Selection T-SNE and Overlap Plots
+
+### What Changed
+
+- Extended `scripts/build_ratio0p5_selection_tsne_plots.py` so it accepts
+  `--ratio 0.05` for ImageNet and KITTI exact selected-id artifacts.
+- Added:
+  - `scripts/build_selection_overlap_plots.py`
+- Generated ratio `0.05` basic selection t-SNE plots and CSVs:
+  - `figures/ratio0p05_selection_tsne/imagenet_controlnet_ratio0p05_selection_tsne.png`
+  - `figures/ratio0p05_selection_tsne/imagenet_controlnet_ratio0p05_selection_tsne.csv`
+  - `figures/ratio0p05_selection_tsne/kitti_red_cloudy_ratio0p05_selection_tsne.png`
+  - `figures/ratio0p05_selection_tsne/kitti_red_cloudy_ratio0p05_selection_tsne.csv`
+- Generated ratio `0.05` method-overlap heatmaps and CSVs using Jaccard overlap:
+  - `figures/ratio0p05_selection_overlap/imagenet_controlnet_ratio0p05_selection_overlap_jaccard.png`
+  - `figures/ratio0p05_selection_overlap/imagenet_controlnet_ratio0p05_selection_overlap_jaccard.csv`
+  - `figures/ratio0p05_selection_overlap/kitti_red_cloudy_ratio0p05_selection_overlap_jaccard.png`
+  - `figures/ratio0p05_selection_overlap/kitti_red_cloudy_ratio0p05_selection_overlap_jaccard.csv`
+
+### Commands
+
+- `source /usr/local/anaconda3/etc/profile.d/conda.sh && conda activate fp && MPLCONFIGDIR=/tmp/matplotlib-safefix python scripts/build_ratio0p5_selection_tsne_plots.py --ratio 0.05 --datasets imagenet kitti --out-dir figures/ratio0p05_selection_tsne --n-iter 750 --recompute`
+- `MPLCONFIGDIR=/tmp/matplotlib-safefix python3 scripts/build_selection_overlap_plots.py figures/ratio0p05_selection_tsne/imagenet_controlnet_ratio0p05_selection_tsne.csv figures/ratio0p05_selection_tsne/kitti_red_cloudy_ratio0p05_selection_tsne.csv --out-dir figures/ratio0p05_selection_overlap --mode jaccard`
+
+### Validation
+
+- Verified the generated PNG dimensions:
+  - t-SNE PNGs: `3190 x 1496`
+  - overlap PNGs: `1584 x 1364`
+- The ratio `0.05` t-SNE was generated only for ImageNet and KITTI because
+  those are the datasets with complete exact ratio `0.05` selection ids at
+  this point.
+
+## 2026-05-05 Ratio 0.3 T-SNE and Remaining Overlap Plots
+
+### What Changed
+
+- Extended `scripts/build_ratio0p5_selection_tsne_plots.py` for ratio `0.3`
+  across ImageNet, CelebA, COCO, and KITTI.
+- Updated `scripts/build_selection_overlap_plots.py` so each heatmap uses the
+  actual `selected_*` columns present in the input CSV. This avoids showing
+  missing ratio `0.5` methods as zero-overlap rows.
+- Generated ratio `0.3` selection t-SNE plots and CSVs:
+  - `figures/ratio0p3_selection_tsne/imagenet_controlnet_ratio0p3_selection_tsne.png`
+  - `figures/ratio0p3_selection_tsne/celeba_redhair_brownskin_sademotion_ratio0p3_selection_tsne.png`
+  - `figures/ratio0p3_selection_tsne/coco_brown_rainy_ratio0p3_selection_tsne.png`
+  - `figures/ratio0p3_selection_tsne/kitti_red_cloudy_ratio0p3_selection_tsne.png`
+- Generated Jaccard overlap heatmaps and CSVs for:
+  - ratio `0.1`: `figures/ratio0p1_selection_overlap/`
+  - ratio `0.3`: `figures/ratio0p3_selection_overlap/`
+  - ratio `0.5`: `figures/ratio0p5_selection_overlap/`
+
+### Commands
+
+- `source /usr/local/anaconda3/etc/profile.d/conda.sh && conda activate fp && MPLCONFIGDIR=/tmp/matplotlib-safefix python scripts/build_ratio0p5_selection_tsne_plots.py --ratio 0.3 --datasets imagenet celeba coco kitti --out-dir figures/ratio0p3_selection_tsne --n-iter 750 --recompute`
+- `MPLCONFIGDIR=/tmp/matplotlib-safefix python3 scripts/build_selection_overlap_plots.py figures/ratio0p1_selection_tsne/*_selection_tsne.csv --out-dir figures/ratio0p1_selection_overlap --mode jaccard`
+- `MPLCONFIGDIR=/tmp/matplotlib-safefix python3 scripts/build_selection_overlap_plots.py figures/ratio0p3_selection_tsne/*_selection_tsne.csv --out-dir figures/ratio0p3_selection_overlap --mode jaccard`
+- `MPLCONFIGDIR=/tmp/matplotlib-safefix python3 scripts/build_selection_overlap_plots.py figures/ratio0p5_selection_tsne/*_selection_tsne.csv --out-dir figures/ratio0p5_selection_overlap --mode jaccard`
+
+### Validation
+
+- Verified ratio `0.3` t-SNE PNG dimensions: `3190 x 1496`.
+- Verified ratio `0.1`, `0.3`, and `0.5` overlap PNG dimensions:
+  `1584 x 1364`.
+- Ratio `0.5` overlap method coverage follows available CSV columns:
+  - CelebA and COCO: `Random`, `Ours`
+  - ImageNet: `Random`, `Stratified`, `Ours`
+  - KITTI: all eight methods
+
+## 2026-05-05 KITTI Ratio 0.05 Overlay Plot
+
+### What Changed
+
+- Added:
+  - `scripts/build_selection_tsne_overlay.py`
+- Generated the ratio `0.05` KITTI overlay plot matching the earlier ratio
+  `0.1` overlay style and method subset:
+  - `Random`
+  - `Entropy`
+  - `BADGE`
+  - `PPAL`
+  - `Ours`
+- Output:
+  - `figures/ratio0p05_selection_tsne/kitti_red_cloudy_ratio0p05_selection_tsne_overlay.png`
+
+### Command
+
+- `MPLCONFIGDIR=/tmp/matplotlib-safefix python3 scripts/build_selection_tsne_overlay.py --csv figures/ratio0p05_selection_tsne/kitti_red_cloudy_ratio0p05_selection_tsne.csv --out figures/ratio0p05_selection_tsne/kitti_red_cloudy_ratio0p05_selection_tsne_overlay.png --title 'KITTI Ratio 0.05 Selected Subsets on Shared t-SNE' --methods Random Entropy BADGE PPAL Ours`
+
+### Validation
+
+- Verified the PNG exists and is readable:
+  - size: `1803 x 1452`
+  - file size: about `311K`
+
 ## Session 181 - Ratio 0.5 Selection t-SNE Snapshots
 
 ### What Changed

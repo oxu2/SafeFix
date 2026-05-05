@@ -1,0 +1,15 @@
+{
+  "candidate_count": 20000,
+  "dataset": "coco",
+  "gpu": 1,
+  "method": "stratified",
+  "ratio": 0.5,
+  "selected_count": 10000,
+  "selection_info": {
+    "selection_time_sec": 0.2671048641204834,
+    "strategy": "stratified"
+  },
+  "selection_only": true,
+  "selection_time_sec": 6.515940189361572,
+  "timestamp": "2026-05-05 00:38:48"
+}
