@@ -1,0 +1,14 @@
+{
+  "candidate_count": 20000,
+  "dataset": "coco",
+  "gpu": 2,
+  "method": "uherding",
+  "ratio": 0.1,
+  "selected_count": 2000,
+  "selection_info": {
+    "selection_time_sec": 673.442284822464,
+    "strategy": "uherding"
+  },
+  "selection_only": true,
+  "timestamp": "2026-05-04 23:48:13"
+}

@@ -1,0 +1,15 @@
+{
+  "candidate_count": 20000,
+  "dataset": "coco",
+  "gpu": 0,
+  "method": "ppal",
+  "ratio": 0.3,
+  "selected_count": 6000,
+  "selection_info": {
+    "selection_time_sec": 200.35521459579468,
+    "strategy": "ppal"
+  },
+  "selection_only": true,
+  "selection_time_sec": 209.71278500556946,
+  "timestamp": "2026-05-05 00:05:16"
+}

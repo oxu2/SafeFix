@@ -1,0 +1,103 @@
+Log file: logs/kitti_ratio0p05_ppal_fast_red_cloudy_gen1000_prepareonly_gpu1_20260505_000927.log
+Current time: 0505000927
+Start timestamp: 2026-05-05 00:09:27
+KITTI ppal selection: extracting lightweight image embeddings for 5000 train candidates.
+  Extracted proxy embeddings for 1000/5000 images...
+  Extracted proxy embeddings for 2000/5000 images...
+  Extracted proxy embeddings for 3000/5000 images...
+  Extracted proxy embeddings for 4000/5000 images...
+KITTI ppal selection: extracting validation proxy embeddings from 1240 images.
+  Extracted proxy embeddings for 1000/1240 images...
+KITTI PPAL proxy stats:
+{
+  "n_proxy_classes": 3,
+  "uncertainty": "binary_entropy",
+  "pool_expand_ratio": 4.0,
+  "class_weight_ub": 0.2,
+  "class_weight_alpha": 0.3,
+  "uncertainty_min": 0.9183102378367948,
+  "uncertainty_mean": 0.9319257454324754,
+  "uncertainty_max": 0.9548241053380742,
+  "score_min": 1.0793687838333719,
+  "score_mean": 1.0957914651577991,
+  "score_max": 1.1221571096165246,
+  "predicted_class_hist": {
+    "0": 2275,
+    "1": 1717,
+    "2": 1008
+  },
+  "class_quality": {
+    "0": 0.34150099754333496,
+    "1": 0.34279316663742065,
+    "2": 0.35050997138023376
+  },
+  "class_weight": {
+    "0": 1.1760323633352585,
+    "1": 1.1759207845130335,
+    "2": 1.1752500835944049
+  },
+  "uncertainty_pool_size": 1000,
+  "selection_mode": "fast_ppal_weighted_uncertainty_diversity",
+  "diversity_min": 0.00771865202113986,
+  "diversity_mean": 0.16826291382312775,
+  "diversity_max": 0.42418378591537476,
+  "weighted_score_min": 0.0078091868636064885,
+  "weighted_score_mean": 0.19234167125481377,
+  "weighted_score_max": 0.5590817075283538
+}
+KITTI ppal selection completed: selected 250 images using proxy label signatures {'0': 0, '0+1': 1, '1': 2}.
+Total KITTI original selection time: 56.69 seconds
+Prepared KITTI YOLO generated-training dataset:
+{
+  "base_data_root": "/data/oxx220000/kitti_yolov8_first5000",
+  "generated_image_dir": "/data/oxx220000/kitti-weather-edits/generated_kitti1352_red_cloudy_icedit_upscaled",
+  "seed": 42,
+  "sub_ratio": 0.05,
+  "selection_strategy": "ppal",
+  "al_initial_labeled": 400,
+  "al_embedding_thumbnail_size": 8,
+  "al_fast_selection": true,
+  "al_ppal_temperature": 1.0,
+  "al_ppal_uncertainty": "binary_entropy",
+  "al_ppal_pool_expand_ratio": 4.0,
+  "al_ppal_class_weight_ub": 0.2,
+  "al_ppal_class_weight_alpha": 0.3,
+  "al_ppal_diversity_power": 1.0,
+  "al_uherding_temperature": null,
+  "al_uherding_uncertainty": null,
+  "al_uherding_kernel_scale": null,
+  "al_entropy_conf_thres": null,
+  "al_entropy_iou": null,
+  "al_entropy_batch": null,
+  "attribute_file": null,
+  "al_attribute_focus": null,
+  "al_attribute_rarity_power": null,
+  "al_attribute_frequency_penalty": null,
+  "al_attribute_class_balance": null,
+  "al_conditional_rarity": null,
+  "al_attribute_extra_counts": null,
+  "original_candidates": 5000,
+  "selected_original": 250,
+  "original_selection_time_seconds": 56.68657636642456,
+  "generated_candidates_with_labels": 1309,
+  "selected_generated": 1000,
+  "final_train_images": 1250,
+  "val_images": 1240,
+  "test_images": 1241,
+  "class_names": [
+    "Car",
+    "Pedestrian"
+  ],
+  "resume_model": "runs/kitti_yolov8/first5000_1240val_1241test_gpu0_bs16_e30_20260429_012232/weights/best.pt",
+  "epochs": 1,
+  "batch": 16,
+  "imgsz": 640,
+  "optimizer": "AdamW",
+  "lr0": 0.0002,
+  "lrf": 0.1,
+  "warmup_epochs": 1.0
+}
+Dataset YAML: /data/oxx220000/kitti_yolov8_ratio0p05_ppal_fast_red_cloudy_gen1000_seed42_20260505_000927/kitti_random_generated.yaml
+prepare-only mode enabled; skipping training.
+End timestamp: 2026-05-05 00:10:24
+End-to-end elapsed (HH:MM:SS): 00:00:57
