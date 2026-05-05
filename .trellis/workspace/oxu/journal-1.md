@@ -5,6 +5,368 @@
 
 ---
 
+## Session 185: Move RPC parameter lookup to report front
+
+**Date**: 2026-05-05
+**Task**: move-rpc-parameter-lookup-and-add-imagenet
+
+The user asked to move `Main-Result RPC Parameter Lookup` to the very top of
+`report.md` and add the ImageNet and COCO lookup tables. COCO and KITTI lookup
+tables were already present in the report body, so this update made the lookup
+the first section and added ImageNet beside the existing COCO/KITTI tables.
+
+Updated:
+
+- `report.md`
+
+Change:
+
+- Moved `Main-Result RPC Parameter Lookup` above `Data Selection Time Summary`
+  so it is the first section in `report.md`.
+- Added an `ImageNet ControlNet RPC Tuples Behind Main Results` table with
+  ratios `0.10`, `0.30`, `0.50`, `0.70`, and `0.90`, including the main-result
+  RPC setting, `(alpha, lambda, w)`, Test ACC, Best Val ACC, and Test loss.
+- Preserved the COCO Brown-Rainy and KITTI Red-Cloudy RPC tuple lookup tables
+  in the moved top section.
+- Removed the old duplicate lookup block from its former location under the
+  cross-dataset ablation summary.
+- Follow-up: searched for older ImageNet/CelebA RPC-style logs outside the
+  formal ablation sections. After the user clarified to keep only ControlNet
+  runs, added a `Recovered ControlNet Non-Ablation RPC Search Logs` section to
+  `report.md` covering:
+  - ImageNet `controlnet_rpc_numeric_*` ratio-`0.7` numeric refinement logs
+    (`3/3` completed).
+  - CelebA `mainfill_attribute_*` ControlNet main-fill logs at ratios `0.5`,
+    `0.7`, and `0.9` (`19/20` completed).
+  Excluded older InternVL, HiBug, and InstructPix2Pix grids from that recovered
+  section per the clarification.
+
+Validation:
+
+- Verified with `rg` that `report.md` now has a single
+  `Main-Result RPC Parameter Lookup` occurrence at line 1 and that the
+  ImageNet, COCO, and KITTI lookup subsections are present.
+- Verified that the recovered ControlNet section contains only the
+  `controlnet_rpc_numeric_*` and `mainfill_attribute_*` log families.
+- Did not compile the manuscript; this was a report-only documentation edit.
+
+---
+
+## Session 184: Report data-selection timing summary
+
+**Date**: 2026-05-05
+**Task**: add-data-selection-time-tables-to-report
+
+The user asked to merge the available CelebA and COCO data-selection timing
+values into tables ordered as Random, Stratified, Entropy, Coreset, BADGE,
+PPAL, UHerding, and Ours, and place them at the top of `report.md`.
+
+Updated:
+
+- `report.md`
+
+Change:
+
+- Added a new top-level `Data Selection Time Summary` section before the main
+  results summary.
+- Added a CelebA Red-Hair Brown-Skin Sad-Emotion selection-time table. Values
+  combine timing from the current CelebA logs and older resume logs. For Ours
+  at ratios `0.5`--`0.9`, the report records the observed range across
+  matching main-fill attribute logs because the externally corrected
+  `Best Attribute` rows are not tied to one unique log in the available
+  artifacts.
+- Added a COCO Brown-Rainy Pose selection-time table. Entropy, PPAL, UHerding,
+  and Ours come from brown-rainy training logs; Random, Stratified, Coreset,
+  and BADGE at ratios `0.1`--`0.5` come from selection-export timing CSVs
+  because newer brown-rainy training logs for those methods were not found.
+- Follow-up: the user asked to keep CelebA Coreset slow-path values as
+  `44.9 min`, `2 h 40.7 min`, and `5 h 5.5 min`, keep BADGE `ratio=0.1` as
+  `1 h 52 min`, and explain that higher-ratio Coreset/BADGE rows used fast
+  implementations. Updated the top report section to use those human-readable
+  units and added a caveat with rough slow-path estimates: Coreset
+  `ratio=0.7` about `7.3--7.5 h`; BADGE extrapolated from `ratio=0.1` to
+  about `5 h 36 min`, `9 h 20 min`, and `13 h 4 min` for ratios `0.3`, `0.5`,
+  and `0.7`.
+- Follow-up: the user reran COCO Brown-Rainy Entropy at ratio `0.1` and
+  provided the corrected selection time `863.16 s`. Replaced the previous
+  outlier `1607.08` in the top report timing table with `863.16`.
+- Follow-up: inspected the shared PPAL/UHerding implementation and updated
+  the top report section with a PPAL/UHerding fast-path caveat. The logs use
+  `fast_ppal_weighted_uncertainty_diversity` and
+  `fast_weighted_uncertainty_coverage`; exact PPAL/UHerding only trigger when
+  `n_select <= 512`, so all main ratios use fast paths. The report now notes
+  that exact PPAL would scale the COCO diversity step by roughly `5x`, `15x`,
+  `25x`, `35x`, and `45x` across ratios `0.1`--`0.9`, while exact UHerding
+  would require a full pairwise kernel and is not practical at the reported
+  COCO/CelebA sizes.
+- Follow-up: reformatted the top timing tables for paper-facing readability:
+  non-Ours second values are now rounded to integer seconds, Coreset slow-path
+  minute/hour values are rounded to whole minutes, and CelebA BADGE
+  `ratio=0.3`/`0.5` now use coarse slow-path estimates `5 h` and `9 h` in the
+  table instead of the logged fast seconds.
+- Follow-up: changed the COCO timing table's Random/Stratified entries to `0`
+  to represent negligible algorithmic selection cost after excluding file I/O
+  and export overhead. Also replaced COCO Coreset/BADGE values that had come
+  from selection-export CSVs with earlier COCO pose training-log times:
+  Coreset `298`, `1157`, `69` seconds and BADGE `1286`, `60`, `60` seconds
+  for ratios `0.1`, `0.3`, and `0.5`. Added a report caveat that these are
+  not monotone scaling curves because Coreset/BADGE switched fast/approximate
+  code paths during these runs.
+- Follow-up: the user asked to overwrite COCO Coreset/BADGE `ratio=0.3` and
+  `ratio=0.5` with estimated slow-path times. Updated `report.md` to keep the
+  logged `ratio=0.1` slow-path values, estimate Coreset as `15 min` and
+  `25 min`, and estimate BADGE as `1 h 4 min` and `1 h 47 min`, using simple
+  selected-sample linear scaling from the `ratio=0.1` slow-path run.
+- Follow-up: rounded mixed hour/minute values in the top timing section to
+  whole hours for paper readability, for example CelebA Coreset `2 h 41 min`
+  to `3 h`, CelebA BADGE `1 h 52 min` to `2 h`, and COCO BADGE estimates
+  `1 h 4 min`/`1 h 47 min` to `1 h`/`2 h`. Rechecked UHerding timing
+  provenance: the CelebA top-table UHerding values come from the
+  `logs_celeba/controlnet_uherding_*_20260502_1440fast.log` files, and the
+  COCO values come from the `log_pose/pose_qwen3_brown_rainy_uherding_*`
+  fast-path logs, so no UHerding replacement was needed.
+- Follow-up: the user noted UHerding `ratio=0.1` was slower than later ratios
+  and asked to overwrite it with an estimated true selection cost. Updated
+  `report.md` to treat the logged `ratio=0.1` UHerding times as cold-start /
+  setup inflated and replace them with medians from the later same-dataset
+  UHerding logs: CelebA `63 s` and COCO `86 s`. Other UHerding entries remain
+  rounded logged values.
+- Follow-up: converted the top timing tables to explicit units in each cell
+  (`s`, `min`, or `h`), changed COCO Coreset `298 s` to `5 min` and BADGE
+  `1286 s` to `21 min`, and replaced Ours ranges with two-decimal averages:
+  CelebA `1.37 s`, `1.56 s`, `1.58 s` for ratios `0.5`, `0.7`, `0.9`; COCO
+  `0.29 s`, `0.30 s`, `0.32 s`, `0.36 s`, `0.36 s` for ratios `0.1`--`0.9`.
+
+Validation:
+
+- Reviewed the inserted top-of-file section and `git diff -- report.md`.
+- No code or experiment commands were run.
+
+---
+
+## Session 183: NIPS26 background/methodology wording trim
+
+**Date**: 2026-05-05
+**Task**: shorten-source-generated-data-and-methodology-wording
+
+The user asked to focus on the `nips26/` paper draft and simplify the
+Background / Methodology text starting around `Source Data and Generated
+Repair Data`, because the source-selection idea is intuitive and the draft was
+becoming too long.
+
+Updated:
+
+- `nips26/main.tex`
+
+Change:
+
+- Shortened `Source Data and Generated Repair Data` to define
+  `D_src`, `D_gen`, and `D_cand` directly, with one sentence about the roles
+  of source and generated data.
+- Shortened `Data Selection for Repair` by removing the extended motivation
+  about expensive full retraining and keeping the compact repair-set
+  formulation.
+- Replaced the long opening of `Attribute-Driven Active Learning` with two
+  concise paragraphs: one contrasting standard AL with attribute-aware repair
+  selection, and one summarizing the three score roles.
+- Left nearby TODO comments and unfinished framework placeholders untouched,
+  following `nips26/AGENTS.md`.
+
+Validation:
+
+- Reviewed the local diff and the edited section around lines 146--230.
+- Did not compile because `nips26/AGENTS.md` says not to compile unless the
+  user asks; Overleaf is the intended compile check.
+- `.handoff.md` and `report.md` were not updated because this was a narrow
+  manuscript wording edit and did not change experiment state or baton-pass
+  context.
+
+Follow-up:
+
+- The user clarified that the active-learning motivation paragraph in
+  `Attribute-Driven Active Learning` should be retained. Restored that content
+  with notation aligned to the Background definitions:
+  `\dataset_{\mathrm{src}}` and `\dataset_{\mathrm{gen}}` are used directly,
+  and "full source dataset" was changed to "full source pool" / all of
+  `\dataset_{\mathrm{src}}`.
+- The user also asked to keep the point that generated images come from target
+  slices exposed by attribute-aware debugging pipelines such as HiBug and
+  SafeFix while preserving the original class label. Reintroduced this in the
+  generated-pool definition with a shorter two-sentence phrasing.
+- The user asked to make the generated-budget assumption explicit. Updated
+  `Data Selection for Repair` to state that the repair runs studied here fix
+  the generated repair budget at 1k images and mainly vary which source images
+  accompany it.
+- Follow-up: the user asked to make the three score roles explicit and align
+  them with the subsequent method components. Reorganized
+  `Attribute-Driven Active Learning` so it first lists the three roles, then
+  defines the rarity term `R`, the generated-data frequency penalty `P`, the
+  summed base score `\bar{S}`, and finally the class-deficit correction.
+  Added equation labels to all displayed equations in the Methodology section
+  through `Theoretical Analysis of Slice Enrichment`; checked with `awk` that
+  the Methodology section has `22` equation environments and `0` unlabeled.
+- Follow-up: the user clarified that paper-facing text should not expose
+  internal data/artifact provenance beyond authorized manuscript results, such
+  as JSON/CSV files or selected-id exports. Updated `nips26/AGENTS.md` with a
+  manuscript rule to avoid internal artifacts, file paths, logs, scripts,
+  selected-id exports, and private data/image sources in paper-facing text.
+  In `nips26/main.tex`, replaced rendered appendix wording about
+  ratio-`0.05` selected-id exports and selected IDs with paper-level language
+  about selected subsets and auxiliary diagnostics. A focused scan found no
+  rendered `json` or `csv` mentions in `nips26/main.tex`; remaining matches
+  are comments or the new `AGENTS.md` rule.
+- Follow-up: the user asked to make the three listed score roles visibly map
+  to the RPC terminology. Updated the `It has three roles` list so the bullets
+  explicitly name rarity component `R`, frequency-penalty component `P`, and
+  class-deficit component `C`, and added a bridge sentence that these form the
+  RPC selector used in ablations.
+- Follow-up: the user asked to avoid `\eqref` and compile. Replaced the only
+  `\eqref` in `nips26/main.tex` with `\ref` (`Eq.~\ref{...}`). Ran
+  `pdflatex -interaction=nonstopmode main.tex` from `nips26/`. The first pass
+  returned nonzero because it read a stale malformed `main.aux`; the generated
+  aux was valid, and a second `pdflatex` pass completed successfully. Final
+  `nips26/main.pdf` has `20` pages. A focused log scan found no LaTeX warnings,
+  undefined references, runaway-argument errors, or citation warnings after the
+  successful pass. Also verified no remaining `\eqref` occurrences in
+  `nips26/main.tex`.
+- Follow-up: the user noted that "Together, these form the RPC selector used in
+  our ablations" sounded too experiment-facing for a NeurIPS Method section.
+  Replaced it with the neutral notation sentence: "We refer to these three
+  components as `R`, `P`, and `C` throughout the method."
+- Follow-up: clarified notation for the focused attributes by changing the
+  Method text to define `\attrs_{\mathrm{focus}}\subseteq\attrs` as a
+  repair-relevant subset of the full attribute set.
+- Follow-up: the user asked whether the code uses the full attribute set or a
+  focused subset, referencing KITTI corpus / Qwen3 assignment artifacts, and
+  then asked to modify the paper. Checked code paths:
+  `AttributeFocusedStrategy` filters metadata by `focus_attributes` when
+  provided; KITTI launchers pass Qwen3 attribute assignments with focus
+  `color,weather`; ImageNet uses `color,background,texture`; CelebA uses
+  `hair color,skin,emotion`; COCO uses `clothes_color,weather`. Added an
+  `Experiments` implementation-details paragraph explaining, at paper level,
+  that an instruction-following model proposes the broad attribute vocabulary
+  `\attrs`, Qwen3-VL assigns values, and the selector uses the
+  repair-relevant subset `\attrs_{\mathrm{focus}}\subseteq\attrs`. Used KITTI
+  as the example and stated that red-cloudy KITTI uses color/weather. Added a
+  GPT-5 citation entry `openai2025gpt5` to `nips26/ref.bib`; reused existing
+  `bai2025qwen3vl`. Did not mention JSON/CSV/path provenance in paper text.
+- Follow-up: the user clarified that GPT-5 is also used with visual input, so
+  the paper should use VLM rather than LLM/LVLM. Replaced rendered `LVLM`
+  terminology in `nips26/main.tex` with VLM / vision-language model wording,
+  including the implementation-details paragraph. Then updated the remaining
+  commented `LVLM` occurrences because the user asked for full-document
+  replacement. Verified `rg "LVLM|LVLMs" nips26/main.tex` returns no matches.
+- Follow-up: the user asked to reorder the main propositions and account for
+  the newly added PPAL / Uncertainty Herding baselines without writing a
+  baseline-specific proof. Updated `nips26/main.tex` so the main theory order
+  is now: attribute-agnostic AL requires target alignment, rarity-dominates-
+  penalty margin, deterministic rare-slice enrichment, then the uncertainty
+  special case and class-balance behavior. Moved the hard-balance and
+  finite-weight balance propositions out of the early method text and placed
+  them after the main enrichment result as supporting results for the `C`
+  component. Expanded the generic AL proposition to cover selector information
+  such as detector-side difficulty scores, proxy class-quality weights,
+  coverage gains, PPAL-style uncertainty-then-diversity selection, and
+  Uncertainty-Herding-style uncertainty coverage. Added `yang2024ppal` and
+  `bae2025uncertainty` citations in Related Work / Method text and updated the
+  overlap appendix wording to include Uncertainty Herding. Verified no
+  remaining `\eqref` occurrences; did not compile because `nips26/AGENTS.md`
+  says not to compile unless requested.
+- Follow-up: the user asked to start the Experiments section with
+  `Experimental Setup`, without writing the actual setup content yet, and to
+  compile once. Added a live empty `\subsection{Experimental Setup}` before
+  `Implementation Details` in `nips26/main.tex` and removed only the old
+  commented duplicate heading. Ran one `pdflatex -interaction=nonstopmode
+  main.tex` pass from `nips26/`; it exited successfully and wrote
+  `nips26/main.pdf` with `21` pages. The single pass reported unresolved
+  citations for `yang2024ppal` and `bae2025uncertainty` because `main.bbl` is
+  stale despite both keys existing in `nips26/ref.bib`, plus an undefined
+  reference to `prop:hard-balance-limit` even though the label exists in
+  `main.tex`; these should be resolved by a normal BibTeX/LaTeX rerun cycle.
+  `.handoff.md` and `report.md` were not updated because the baton-pass state
+  and stable experiment results did not change.
+- Follow-up: the user drafted desired `Experimental Setup` content and asked
+  to complete it from prior code/work context. Added three paper-facing setup
+  paragraphs under `\subsection{Experimental Setup}` in `nips26/main.tex`.
+  The text now states that the evaluation covers image classification, pose
+  estimation, and object detection; defines ImageNet10 as 10 ImageNet classes
+  with 1,300 images per class and an 8:1:1 split; describes CelebA
+  lipstick-wearing classification with 80k/10k/10k train/val/test splits;
+  names the classification models as ResNet-18 / ResNet-18-based binary
+  classifier according to `alpred.py`; describes the current COCO pose repair
+  protocol as HiBug2-style COCO person keypoints with Keypoint R-CNN
+  ResNet-50-FPN on a 20k source subset; and describes KITTI Car/Pedestrian
+  detection with 5,000/1,240/1,241 splits and YOLOv8n. Chose Keypoint R-CNN
+  rather than RTMPose for the main setup because the completed repair rows in
+  `report.md` and `train_pose_estimation.py` use Keypoint R-CNN, while RTMPose
+  is documented as a separate/non-comparable probe. Did not compile because
+  this follow-up did not explicitly request compilation and `nips26/AGENTS.md`
+  says to compile only when asked.
+- Follow-up: the user asked to shorten the ImageNet10 setup by removing the
+  explicit 10,400/1,300/1,300 sentence, fold the ResNet-18 classifier
+  description into the preceding sentence, do the same for CelebA, and clarify
+  COCO pose validation/test sizes. Updated `nips26/main.tex` accordingly:
+  ImageNet10 is now described as ResNet-18 on 10 classes with 1,300 images per
+  class and an 8:1:1 split; CelebA is described as a ResNet-18-based binary
+  classifier with 80k/10k/10k train/val/test images; COCO pose now states that
+  the held-out validation and test splits each contain 1,173 images. Did not
+  compile because compilation was not requested.
+- Follow-up: the user asked to save a few more words in the same
+  `Experimental Setup` paragraph. Compressed the ImageNet, CelebA, COCO pose,
+  and KITTI setup into a shorter single paragraph while preserving the same
+  protocols, models, split sizes, and citations. Did not compile because
+  compilation was not requested.
+- Follow-up: the user asked to add a baselines description before
+  `Implementation Details` and asked whether the current eight methods are
+  enough. Added `\subsection{Baselines}` to `nips26/main.tex`, describing seven
+  generic source-selection baselines (`Random`, `Stratified`, `Entropy`,
+  `CoreSet`, `BADGE`, `PPAL`, and `UHerding`) plus `Attribute` as the RPC
+  attribute-aware selector. Also fixed the immediately preceding unfinished
+  setup sentence from "improve the model perfor." to "improves repair
+  performance." Did not compile because compilation was not requested.
+- Follow-up: the user asked to avoid separate experiment subsections and add a
+  dataset/task heading before the setup text. Converted `Experimental Setup`,
+  `Baselines`, and `Implementation Details` from subsections into compact
+  `\paragraph{Datasets and Tasks}`, `\paragraph{Baselines}`, and
+  `\paragraph{Implementation Details}` labels in `nips26/main.tex`. Did not
+  compile because compilation was not requested.
+- Follow-up: the user asked to add a `Metrics` paragraph. Inserted
+  `\paragraph{Metrics}` after `Datasets and Tasks` in `nips26/main.tex`,
+  defining the task metric `M` as test accuracy for classification, COCO
+  keypoint AP for pose estimation, and mAP50--95 for object detection. Added
+  the Fix Rate formula from `report.md`,
+  `100*(M_after-M_before)/(1-M_before)`, with `M_before` and `M_after`
+  defined as test metrics before and after repair, and cited the existing Lai
+  2023 / SafeFix entries. Did not compile because compilation was not
+  requested.
+- Follow-up: the user asked to add the next subsection, `Main Results`, using
+  the four unified main-result tables from `report.md`, but renaming the
+  `Best Attribute` column to `Ours`. Added `\subsection{Main Results}` after
+  the implementation-details paragraph in `nips26/main.tex`, with separate
+  tables for ImageNet10 ControlNet test accuracy, CelebA lipstick test
+  accuracy, COCO brown-rainy keypoint AP, and KITTI red-cloudy mAP50--95. The
+  final column header is `\textbf{Ours}`, the method order is consistent across
+  tables, and the boldface marks the best entry in each row; KITTI ratio `0.7`
+  keeps PPAL bold because it is slightly above Ours in the source results. Did
+  not compile because compilation was not requested.
+- Follow-up: the user noted that the table font looked odd and asked to use
+  the `report.md` Fix Rate tables in the main text, moving the existing four
+  task-metric tables to the appendix. Updated `nips26/main.tex` so `Main
+  Results` now reports four FR tables for ImageNet10, CelebA, COCO, and KITTI,
+  with the final column named `\textbf{Ours}`. Moved the previous test
+  accuracy/AP/mAP tables into a new appendix section,
+  `Main-Result Metric Tables`, and added a main-text pointer to that appendix.
+  Also changed these tables from math-mode numbers inside `\resizebox` to text
+  numbers with `\small` and reduced column spacing, because math-mode digits
+  and whole-table scaling were the cause of the visual font mismatch. Did not
+  compile because compilation was not requested.
+- Follow-up: the user asked whether the Fix Rate formula should explicitly
+  show percent units. Updated the Metrics paragraph formula to
+  `\mathrm{FR}(\%)=100...` and clarified that FR is reported in percent.
+  Did not compile because compilation was not requested.
+
+---
+
 ## Session 182: Selection t-SNE appendix insertion
 
 **Date**: 2026-05-05
@@ -6270,6 +6632,43 @@ The user asked whether the `ratio=0.9` GPU0 queue had finished. It had not: the 
 ### Status
 
 [~] **In Progress**
+
+## 2026-05-05 — Paper Report RPC Lookup Cleanup
+
+### Context
+
+- User asked to remove the newly drafted RPC-parameter subsection from
+  `nips26/main.tex` and keep the RPC parameter analysis in `report.md` first.
+- User specifically wanted COCO and KITTI tables showing each RPC tuple and its
+  corresponding result.
+
+### Changes
+
+- Removed the `RPC Parameter Choices` subsection from `nips26/main.tex`.
+- Added `Main-Result RPC Parameter Lookup` to `report.md`.
+- Added compact COCO Brown-Rainy RPC tuple table:
+  - tuple format `(alpha, lambda, w)`
+  - metrics: Test AP, Test AP50, Test AP75, Val AP
+  - bolded the best attribute tuple per ratio according to the current
+    main-result table.
+- Added compact KITTI Red-Cloudy RPC tuple table:
+  - tuple format `(alpha, lambda, w)`
+  - metrics: Test mAP50, Test mAP50-95, Val mAP50-95
+  - bolded the best attribute tuple per ratio.
+
+### Interpretation
+
+- COCO main-result attribute rows mostly favor mild rarity/frequency steering:
+  `(0.03, 0.5, 15)` at ratios `0.1`, `0.7`, and `0.9`, and
+  `(0.01, 0.5, 15)` at ratios `0.3` and `0.5`.
+- KITTI is the cleanest dataset for a low-sensitivity claim because many
+  ratio-`0.7` RPC tuples cluster between test mAP50-95 `0.5767` and `0.5780`.
+
+### Validation
+
+- Did not compile LaTeX; `nips26/AGENTS.md` says not to compile unless asked.
+- Verified `nips26/main.tex` no longer contains `RPC Parameter Choices` or
+  `tab:rpc-main-parameters`.
 
 ## 2026-05-05 Selection Export / T-SNE Continuation
 

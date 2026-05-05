@@ -4,45 +4,45 @@ The top-level auxiliary file: main.aux
 The style file: plainnat.bst
 Database file #1: ref.bib
 Warning--empty journal in settles2009active
-You've used 16 entries,
+You've used 25 entries,
             2773 wiz_defined-function locations,
-            677 strings with 8308 characters,
-and the built_in function-call counts, 9277 in all, are:
-= -- 767
-> -- 727
-< -- 9
-+ -- 244
-- -- 228
-* -- 757
-:= -- 1420
-add.period$ -- 51
-call.type$ -- 16
-change.case$ -- 123
-chr.to.int$ -- 16
-cite$ -- 33
-duplicate$ -- 393
-empty$ -- 658
-format.name$ -- 248
-if$ -- 1950
+            722 strings with 9940 characters,
+and the built_in function-call counts, 13694 in all, are:
+= -- 1148
+> -- 999
+< -- 14
++ -- 337
+- -- 312
+* -- 1092
+:= -- 2075
+add.period$ -- 81
+call.type$ -- 25
+change.case$ -- 177
+chr.to.int$ -- 25
+cite$ -- 51
+duplicate$ -- 601
+empty$ -- 1032
+format.name$ -- 341
+if$ -- 2900
 int.to.chr$ -- 1
 int.to.str$ -- 1
-missing$ -- 14
-newline$ -- 89
-num.names$ -- 64
-pop$ -- 285
+missing$ -- 20
+newline$ -- 136
+num.names$ -- 100
+pop$ -- 420
 preamble$ -- 1
-purify$ -- 107
+purify$ -- 152
 quote$ -- 0
-skip$ -- 341
+skip$ -- 507
 stack$ -- 0
-substring$ -- 208
-swap$ -- 73
-text.length$ -- 5
+substring$ -- 331
+swap$ -- 110
+text.length$ -- 7
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 176
+type$ -- 275
 warning$ -- 1
-while$ -- 63
+while$ -- 98
 width$ -- 0
-write$ -- 208
+write$ -- 324
 (There was 1 warning)
