@@ -81,7 +81,7 @@ save/*
 outputs/save/
 logs_celeba/pids/
 
-
+figures/teaser_imagenet_selection
 
 !save/*.csv
 !save/*.json
