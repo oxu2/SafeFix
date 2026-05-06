@@ -119,51 +119,54 @@ These pipelines address two parts of the repair workflow: identifying the failin
 
 Selecting a compact subset of source data is a natural strategy for reducing the cost of iterative repair, making the problem closely related to active learning (AL). Classical AL methods such as entropy-based uncertainty sampling~\citep{settles2009active}, CoreSet~\citep{sener2018active}, and BADGE~\citep{ash2020deep} select compact training subsets using model uncertainty, feature-space coverage, or gradient embeddings. However, targeted repair introduces challenges beyond standard AL settings. The selector must preserve useful source coverage while allocating sufficient budget to the diagnosed attribute slice, and it must account for the distribution shift introduced by generated repair images. As a result, a generic uncertainty- or coverage-based score may select informative images while still omitting rare repair-relevant attribute values, whereas an attribute-greedy policy may over-select values already supplied by the generated data.
 
-% TODO: Revisit this paragraph after finalizing the exact contribution boundary and targeted-slice evidence.
-To address the limitations of existing active learning methods in the repair setting, we present \model, the first source-data selection method designed specifically for repair-time adaptation after failure-slice discovery and targeted repair-data generation. Rather than representing source images solely through feature embeddings or gradient statistics, \model treats each image as a structured attribute record. It selects source examples using three complementary signals: the class-conditional rarity of repair-relevant attributes, a generated-data frequency penalty that discourages redundancy with synthetic repair images, and a soft class-balance term that prevents label collapse. Our approach focuses specifically on data selection: it does not replace the upstream debugging or repair-data generation pipeline, but instead determines which original training examples should accompany the generated repair data during retraining.
+We study this remaining step as a repair-time source-selection problem. The input is not an unlabeled pool awaiting annotation, but a diagnosed failure slice, a generated repair set for that slice, and an annotated source pool from which only a compact subset can be retained. This changes the selection objective: the subset should preserve useful source coverage, include real examples with rare repair-relevant attributes, and avoid spending budget on attribute values already supplied by the generated images. We propose \model for this setting. Rather than representing source images only through feature embeddings or gradient statistics, \model treats each image as a structured attribute record and scores it using class-conditional rarity, generated-data frequency control, and soft class balancing. The method is therefore a focused selection component for existing repair pipelines: it does not replace failure-slice discovery or repair-image generation, but decides which original training examples should accompany the generated data during retraining.
 
 Our contributions are:
 \begin{enumerate}
-    % TODO: Finalize contribution wording after the main targeted-repair metrics and appendix diagnostics are fixed.
-    \item We formulate targeted vision repair as a repair-time source-selection problem: given a diagnosed failure slice, generated repair data, and an annotated source pool, select a compact source subset for retraining.
-    \item We propose an attribute-driven selector with three separable components: class-conditional rarity, generated-data frequency control, and soft class balancing. This decomposition makes the repair bias explicit and supports direct ablations.
-    \item We provide a slice-enrichment analysis showing when an attribute-aware score allocates more source budget to rare target slices than attribute-agnostic selectors whose uncertainty or coverage signals are not aligned with the diagnosed slice.
-    \item We evaluate the selector across image classification, pose estimation, and object detection, comparing against uncertainty, coverage, gradient-embedding, detector-oriented, and random or stratified baselines under matched repair budgets.
-\end{enumerate}
+\item We formulate targeted vision repair as a repair-time source-selection problem: given a diagnosed failure slice, generated repair data, and an annotated source pool, the goal is to select a compact source subset for retraining.
 
+\item We propose \model, an attribute-driven source selector that combines class-conditional rarity, generated-data frequency control, and soft class balancing to prioritize repair-relevant source examples while avoiding redundancy and class collapse.
+
+\item We provide a theoretical analysis of repair-slice enrichment, showing when attribute-aware selection preferentially allocates source budget to rare target slices, in contrast to attribute-agnostic selectors whose uncertainty or coverage signals are weakly aligned with the diagnosed failure slice.
+
+\item We evaluate \model across image classification, pose estimation, and object detection, comparing against uncertainty-based, coverage-based, gradient-embedding, detector-oriented, and random or stratified baselines under matched repair budgets.
+
+\end{enumerate}
 
 \section{Related Work}
 
 
 
-\paragraph{Attribute-Based Debugging and Repair}
-Attribute-based debugging methods aim to expose model failures as human-interpretable semantic slices. AdaVision~\citep{gao2023adaptive} and DCD~\citep{singla2024data} identify underperforming subpopulations and rely on retrieval-style interventions, which can require external data sources and manual validation. \hibug~\citep{chen2023hibug} uses vision--language models to discover failure slices through shared visual attributes, and HiBug2~\citep{chen2025hibug2} further improves the efficiency and coverage of this debugging process. SafeFix~\citep{xu2025safefix} shifts from retrieval to controlled generation by editing real training instances and filtering generated images with a vision-language model (VLM) to preserve labels and unrelated attributes. These works focus primarily on finding bug slices or constructing repair examples. We use this line of work as the upstream repair setting and study the remaining selection problem: given original source data and targeted generated data, select a compact retraining subset that preserves useful coverage while emphasizing repair-relevant attributes.
+\noindent\textbf{Attribute-Based Debugging and Repair.} Attribute-based debugging methods aim to expose model failures as human-interpretable semantic slices. AdaVision~\citep{gao2023adaptive} and DCD~\citep{singla2024data} identify underperforming subpopulations and rely on retrieval-style interventions, which can require external data sources and manual validation. \hibug~\citep{chen2023hibug} uses vision--language models to discover failure slices through shared visual attributes, and HiBug2~\citep{chen2025hibug2} further improves the efficiency and coverage of this debugging process. SafeFix~\citep{xu2025safefix} shifts from retrieval to controlled generation by editing real training instances and filtering generated images with a vision-language model (VLM) to preserve labels and unrelated attributes. These works focus primarily on finding bug slices or constructing repair examples. We use this line of work as the upstream repair setting and study the remaining selection problem: given original source data and targeted generated data, select a compact retraining subset that preserves useful coverage while emphasizing repair-relevant attributes.
 
-\paragraph{Active Learning}
-Active learning reduces annotation or retraining cost by selecting informative subsets under a budget. Representative approaches include entropy-based uncertainty sampling~\citep{settles2009active}, coreset selection~\citep{sener2018active}, and hybrid gradient-embedding methods such as BADGE~\citep{ash2020deep}. Recent object-detection and label-budget-robust variants combine these signals, for example PPAL for plug-and-play object detection~\citep{yang2024ppal} and Uncertainty Herding for uncertainty-weighted coverage across label budgets~\citep{bae2025uncertainty}. Our setting differs from standard AL because the goal is not generic sample efficiency, but selecting source data that complements a targeted repair set and corrects an attribute-defined failure slice.
+\noindent\textbf{Active Learning.} Active learning reduces annotation or retraining cost by selecting informative subsets under a budget. Representative approaches include entropy-based uncertainty sampling~\citep{settles2009active}, coreset selection~\citep{sener2018active}, and hybrid gradient-embedding methods such as BADGE~\citep{ash2020deep}. Recent object-detection and label-budget-robust variants combine these signals, for example PPAL for plug-and-play object detection~\citep{yang2024ppal} and Uncertainty Herding for uncertainty-weighted coverage across label budgets~\citep{bae2025uncertainty}. Our setting differs from standard AL because the goal is not generic sample efficiency, but selecting source data that complements a targeted repair set and corrects an attribute-defined failure slice.
 
 \section{Background}
 
-\paragraph{Attribute-Based Failure Slices}
-A failure slice is a group of examples that share a semantic description and have poor model performance. For instance, a pose model may fail on people with brown clothing in rainy scenes, even if its average performance is high. Attribute-based debugging methods make this description explicit by attaching semantic attributes to each image.
+\noindent\textbf{Attribute-Based Failure Slices.} A failure slice is a group of examples that share a semantic description and have poor model performance. For instance, a pose model may fail on people with brown clothing in rainy scenes, even if its average performance is high. Attribute-based debugging methods make this description explicit by attaching semantic attributes to each image.
 
 Formally, let $f_\theta : \inputspace \rightarrow \labelspace$ be the vision model and let each image $x\in\inputspace$ have attributes $\attrs=\{a_1,\ldots,a_m\}$. Each attribute $a_j:\inputspace\rightarrow\vals_j$ maps an image to a discrete value, such as a color, weather condition, texture, or viewpoint. A slice defined by several attribute values is $T = \{x \mid a_{j_1}(x) = v_{j_1}, \ldots, a_{j_k}(x) = v_{j_k}\}$.
 We focus on slices that are both rare in the training set $\dataset_{\mathrm{train}}$ and weak on the validation set $\dataset_{\mathrm{val}}$. In other words, the slice has low support and its validation accuracy is substantially below the overall validation accuracy.
 
-\paragraph{Source Data and Generated Repair Data}
-After a slice has been diagnosed, repair uses two kinds of images. The first is the original source pool, denoted $\dataset_{\mathrm{src}}\subseteq\dataset_{\mathrm{train}}$. These images preserve the broad class and context coverage learned by the model. The second is a generated repair pool, denoted $\dataset_{\mathrm{gen}}$. These images are produced for the diagnosed slice by pipelines such as HiBug and SafeFix~\citep{chen2023hibug,xu2025safefix}; they are intended to satisfy the target attributes while preserving the original label.
+\noindent\textbf{Source Data and Generated Repair Data.} After a slice has been diagnosed, repair uses two kinds of images. The first is the original source pool, denoted $\dataset_{\mathrm{src}}\subseteq\dataset_{\mathrm{train}}$. These images preserve the broad class and context coverage learned by the model. The second is a generated repair pool, denoted $\dataset_{\mathrm{gen}}$. These images are produced for the diagnosed slice by pipelines such as HiBug and SafeFix~\citep{chen2023hibug,xu2025safefix}; they are intended to satisfy the target attributes while preserving the original label.
 
-\paragraph{Data Selection for Repair}
-The repair question is which source images should be kept when retraining with the generated images. Keeping all of $\dataset_{\mathrm{src}}$ is expensive, but keeping an arbitrary small subset can remove useful coverage. We write the retraining set as $\dataset_{\mathrm{repair}} = \dataset_{\mathrm{sel}}^{\mathrm{src}} \cup \dataset_{\mathrm{sel}}^{\mathrm{gen}}$, where $\dataset_{\mathrm{sel}}^{\mathrm{src}}\subseteq\dataset_{\mathrm{src}}$ is the selected source subset and $\dataset_{\mathrm{sel}}^{\mathrm{gen}}\subseteq\dataset_{\mathrm{gen}}$ is the generated subset used for repair. In our experiments, $\dataset_{\mathrm{sel}}^{\mathrm{gen}}$ is fixed to 1,000 generated images, so the main decision is the choice of $\dataset_{\mathrm{sel}}^{\mathrm{src}}$. A useful selector should keep class coverage, add real examples that complement the generated data, and avoid spending source budget on attribute values already abundant in $\dataset_{\mathrm{gen}}$.
+\noindent\textbf{Data Selection for Repair.} The repair question is which source images should be kept when retraining with the generated images. Keeping all of $\dataset_{\mathrm{src}}$ is expensive, but keeping an arbitrary small subset can remove useful coverage. We write the retraining set as $\dataset_{\mathrm{repair}} = \dataset_{\mathrm{sel}}^{\mathrm{src}} \cup \dataset_{\mathrm{sel}}^{\mathrm{gen}}$, where $\dataset_{\mathrm{sel}}^{\mathrm{src}}\subseteq\dataset_{\mathrm{src}}$ is the selected source subset and $\dataset_{\mathrm{sel}}^{\mathrm{gen}}\subseteq\dataset_{\mathrm{gen}}$ is the generated subset used for repair. In our experiments, $\dataset_{\mathrm{sel}}^{\mathrm{gen}}$ is fixed to 1,000 generated images, so the main decision is the choice of $\dataset_{\mathrm{sel}}^{\mathrm{src}}$. A useful selector should keep class coverage, add real examples that complement the generated data, and avoid spending source budget on attribute values already abundant in $\dataset_{\mathrm{gen}}$.
 
 \section{Methodology}
 
 \subsection{\model Framework}
 
 % TODO: Decide whether this subsection should stay text-only or point to a compact workflow figure.
-\model operates after bug discovery and targeted image generation. It takes three inputs: the failure slice to repair, the original source images annotated with VLM-assigned attributes, and the generated repair images for that slice. These inputs can be provided by existing pipelines such as HiBug and SafeFix; \model does not depend on a specific failure-discovery method or image generator. Its output is a compact source subset $\dataset_{\mathrm{sel}}^{\mathrm{src}}$, which is retrained together with the generated repair data.
+\model is designed as the selection step inside an existing targeted repair pipeline. The upstream workflow can follow prior model-repair systems such as HiBug and SafeFix~\citep{chen2023hibug,xu2025safefix}. Using the SafeFix-style ImageNet10 classification setting as a running example, a vision-language model (VLM) first proposes a task-level attribute set $\attrs$ and assigns an attribute value $v_{i,a}$ to each training or validation image. A ResNet classifier is then trained to a checkpoint $\theta_t$, after which the repair pipeline analyzes the validation behavior of $f_{\theta_t}$. An attribute slice $T_{\mathrm{bug}}$ is marked as a rare failure case if it is underrepresented in training and underperforms on validation:
+\begin{equation}
+\label{eq:rare-failure-slice}
+|T_{\mathrm{bug}}\cap\dataset_{\mathrm{train}}| < \rho |\dataset_{\mathrm{train}}|,
+\qquad
+\mathrm{Acc}(T_{\mathrm{bug}}) < \mathrm{Acc}(\dataset_{\mathrm{val}}),
+\end{equation}
+where $\rho$ is a user-specified rarity threshold. For example, the ImageNet10 pipeline may diagnose a slice whose attribute is \emph{texture} and whose value is \emph{fabric}. A conditional diffusion model, such as ControlNet~\citep{zhang2023adding}, then generates repair images of objects with fabric texture while preserving the class label and other attributes.
 
-This design boundary distinguishes \model from standard active learning. Conventional selectors typically rank images using model-centric signals such as uncertainty, loss, feature embeddings, or gradient embeddings. In contrast, \model ranks source images according to how their semantic attributes relate to both the diagnosed repair slice and the generated repair images already available for that slice.
+\model starts after this upstream diagnosis and generation stage. It takes as input the diagnosed slice, the original source pool with VLM-assigned attributes, and the generated repair images for that slice. The output is a compact source subset $\dataset_{\mathrm{sel}}^{\mathrm{src}}$, which is combined with the generated images and used to continue training or fine-tune the checkpoint $\theta_t$. Thus \model does not replace VLM-based attribute proposal, failure-slice discovery, or conditional image generation. It decides which original training examples should accompany the generated repair data so that retraining preserves source coverage while allocating more budget to real examples that complement the diagnosed repair slice.
 
 \subsection{Attribute-Driven Active Learning}
 
@@ -191,7 +194,7 @@ P_{i,a} = -\lambda \cdot \frac{\hat{n}_a(v_{i,a})}{\sum_{v \in \vals_a} \hat{n}_
 \end{equation}
 where $\lambda \geq 0$ controls how strongly the selector penalizes already over-represented attribute values.
 
-We then define the base source score $\bar{s}_i$ by summing the rarity and generated-data frequency terms over the repair attributes:
+We then define the \textbf{base source score} $\bar{s}_i$ by summing the rarity and generated-data frequency terms over the repair attributes:
 \begin{equation} \label{eq:base-attribute-score} \bar{s}_i = \sum_{a \in \attrs} \Big( R_{i,a} + P_{i,a} \Big). \end{equation}
 
 Each component addresses a different failure mode in repair-time selection. Setting $\alpha=0$ removes the preference for rare semantic configurations within a class, reducing the selector to a frequency-driven policy. Setting $\lambda=0$ removes the redundancy penalty, allowing the selected subset to repeatedly choose attribute values already well represented in $\dataset_{\mathrm{gen}}$. Without class-aware re-ranking, high-scoring examples may further concentrate within a small subset of classes. As a result, the score is not intended to produce a neutral representative subset; instead, it explicitly allocates source budget toward semantic coverage that is most useful for the diagnosed repair problem.
@@ -204,7 +207,7 @@ C_c^{(k)} = w \cdot \frac{t - n_c^{(k)}}{t},
 \end{equation}
 where $n_c^{(k)}$ is the number of already selected source samples from class $c$, and $w \geq 0$ controls the strength of class balancing. Classes below their target allocation receive a positive correction, while classes above their target receive a negative one. As $w$ increases, the selector behaves more like stratified sampling, with the limiting case $w=\infty$ corresponding to round-robin class quotas. This mechanism preserves the attribute-based ranking from Eq.~\ref{eq:base-attribute-score} within each class while preventing a small subset of classes from dominating the repair set.
 
-\textcolor{red}{Add one paragraph discussing how the scores are used to select source samples.}
+Selection is performed greedily. We first compute the base score $\bar{s}_i$ for every source candidate and initialize both the selected set and the per-class counts to zero. At each iteration, every remaining candidate receives the adjusted score $\tilde{s}_i^{(k)}$ from Eq.~\ref{eq:class-balance-score}. The highest-scoring candidate is then added to $\dataset_{\mathrm{sel}}^{\mathrm{src}}$, its class count is updated, and the class-balance corrections are recomputed. The process repeats until $n_{\text{select}}$ source examples have been selected. The generated repair set remains fixed throughout this procedure and influences selection only through the frequency counts in Eq.~\ref{eq:frequency-penalty}. As a result, all methods are evaluated under the same generated-data budget.
 
 \subsection{Theoretical Analysis}
 \label{subsec:slice-enrichment}
@@ -223,7 +226,7 @@ B_c\frac{|T_c|}{N_c}.
 Thus an attribute-agnostic AL method can enrich the target slice only when its non-attribute signal is additionally aligned with that slice.
 \end{proposition}
 
-The expectation in Eq.~\ref{eq:al-target-expectation} reflects a base-rate limitation. For instance, if the target slice constitutes only $2\%$ of class $c$ and an AL method selects $100$ examples from that class, the expected number of target-slice examples is just $2$. This highlights the key advantage of \model in the repair setting: \model directly observes the semantic attributes defining the diagnosed slice, allowing selection to explicitly prioritize rare repair-relevant values rather than depending on uncertainty, difficulty, or coverage signals to correlate with them indirectly. The generated-data penalty and class-balance term further ensure that this preference does not degenerate into repeatedly selecting synthetic-like attributes or collapsing onto a small subset of classes.
+The expectation in Eq.~\ref{eq:al-target-expectation} reflects a base-rate limitation. For instance, if the target slice constitutes only $2\%$ of class $c$ and an AL method selects $100$ examples from that class, the expected number of target-slice examples is just $2$. This highlights the key advantage of \model in the repair setting: \model directly observes the semantic attributes defining the diagnosed slice, allowing selection to explicitly prioritize rare repair-relevant values rather than depending on uncertainty, difficulty, or coverage signals to correlate with them indirectly. The generated-data penalty and class-balance term further ensure that this preference does not degenerate into repeatedly selecting synthetic-like attributes or collapsing onto a small subset of classes. Coverage-based selectors face a related problem even when the target examples are present in the source pool. Suppose there are a few fabric-texture images, but their feature embeddings occupy a compact region. Traditional active learning methods may judge one or two representatives sufficient to cover that region. For generic active learning, this can be a reasonable allocation. For repair, however, the compact region is exactly the semantic slice where the model fails, so the retraining set may need many more fabric-texture examples than feature-space coverage alone would select.
 
 Proposition~\ref{prop:al-target-alignment} is formulated at the level of selector information rather than for a specific baseline method. Stronger baselines such as PPAL and Uncertainty Herding improve upon plain uncertainty sampling or coreset selection, but they still rely on uncertainty, difficulty, or coverage signals being aligned with the discovered attribute slice. When the failure slice is defined by rare semantic attributes that are weakly reflected in these signals, the expected allocation of selected samples to the target slice remains proportional to the slice prevalence. Appendix~\ref{app:theory-analysis} provides the proof, a coverage-based instance, and the corresponding guarantees for the \model score. In particular, under explicit conditions on attribute rarity and generated-data frequency, \model ranks rare target-slice examples above non-target examples within the same class, enriches the selected repair subset with repair-relevant attributes, and controls class imbalance through the soft class-balance term.
 
@@ -244,16 +247,17 @@ where $M_{\mathrm{before}}$ and $M_{\mathrm{after}}$ are the test metrics before
 \paragraph{Baselines}
 We compare \model with seven generic source-selection baselines. \textsc{Random} samples source images uniformly at random. \textsc{Stratified} preserves class-level proportions during sampling~\citep{neyman1934two}. \textsc{Entropy} is the entropy-based uncertainty baseline; it selects examples with the largest predictive entropy or task-specific confidence-entropy proxy~\citep{settles2009active}. \textsc{CoreSet} uses greedy coverage in embedding space~\citep{sener2018active}. \textsc{BADGE} selects gradient-embedding batches that combine uncertainty and diversity~\citep{ash2020deep}. \textsc{PPAL} is a plug-and-play active-learning baseline for object detection~\citep{yang2024ppal}. \textsc{UHerding} denotes Uncertainty Herding, which combines uncertainty with coverage across label budgets~\citep{bae2025uncertainty}. 
 
-\paragraph{Implementation Details}
-We use vision-language models (VLMs) in two separate roles. First, a VLM proposes the semantic attribute vocabulary $\attrs$ for a task. For example, in KITTI object detection, GPT-5~\citep{openai2025gpt5} is used to define candidate visual attributes such as color, weather, scale, viewpoint, occlusion, truncation, and motion state. Second, a VLM assigns attribute values to the source images. In our KITTI implementation, we use Qwen3-VL~\citep{bai2025qwen3vl} for this assignment step. For the red-cloudy KITTI repair, color and weather are the attribute fields tied to the discovered repair slice.
-
 \subsection{Main Results}
 
 Tables~\ref{tab:main-fr-imagenet}--\ref{tab:main-fr-kitti} compare \model with generic source-selection baselines using Fix Rate. The ratio $1.0$ rows use the full original source set, so subset selection is inactive and the repeated entries are the corresponding full-data reference. The original task metrics are reported in Appendix~\ref{app:main-metric-tables}.
 
+\model gives the best FR in $19$ of the $20$ active source-selection settings, excluding the ratio-$1.0$ full-data references where all selectors are identical. The improvement is clear at small budgets, where the selected source subset is highly constrained, and it generally remains at larger budgets. KITTI is the only near-exception: PPAL is slightly higher at ratio $0.7$ by $0.05$ FR points, while \model remains best at the other four KITTI ratios.
+
+Subset selection can also outperform the full-data setting, especially on ImageNet10, CelebA, and COCO. This suggests that the full candidate pool contains noisy, redundant, or target-irrelevant samples, and that selection improves the effective training distribution. In this sense, \model is not only a way to save data or training cost; it also improves data quality and target-slice alignment during repair.
+
 \begin{table}[t]
 \centering
-\caption{ImageNet10 ControlNet repair results. Metric: FR (\%).}
+\caption{ImageNet10 image-classification repair results. Metric: FR (\%).}
 \label{tab:main-fr-imagenet}
 \small
 \setlength{\tabcolsep}{3pt}
@@ -273,7 +277,7 @@ Ratio & Random & Stratified & Entropy & CoreSet & BADGE & UHerding & PPAL & \tex
 
 \begin{table}[t]
 \centering
-\caption{CelebA lipstick-wearing classification repair results. Metric: FR (\%).}
+\caption{CelebA image-classification repair results. Metric: FR (\%).}
 \label{tab:main-fr-celeba}
 \small
 \setlength{\tabcolsep}{3pt}
@@ -293,7 +297,7 @@ Ratio & Random & Stratified & Entropy & CoreSet & BADGE & UHerding & PPAL & \tex
 
 \begin{table}[t]
 \centering
-\caption{COCO brown-rainy pose repair results. Metric: FR (\%).}
+\caption{COCO pose-estimation repair results. Metric: FR (\%).}
 \label{tab:main-fr-coco}
 \small
 \setlength{\tabcolsep}{3pt}
@@ -313,7 +317,7 @@ Ratio & Random & Stratified & Entropy & CoreSet & BADGE & UHerding & PPAL & \tex
 
 \begin{table}[t]
 \centering
-\caption{KITTI red-cloudy object-detection repair results. Metric: FR (\%).}
+\caption{KITTI object-detection repair results. Metric: FR (\%).}
 \label{tab:main-fr-kitti}
 \small
 \setlength{\tabcolsep}{3pt}
@@ -339,7 +343,7 @@ sorting candidates, while uncertainty, coverage, and gradient-embedding
 baselines require model scoring, embedding comparisons, or iterative diversity
 updates. Table~\ref{tab:selection-efficiency} reports source-subset selection
 time on COCO and CelebA for the three ratios used in the main small-to-medium
-budget comparison. The source pools contain 5,000 COCO training images and
+budget comparison. The source pools contain 20,000 COCO training images and
 80,000 CelebA training images. Random and stratified sampling have negligible
 algorithmic selection cost after excluding data loading and export overhead;
 we keep them in the table as zero-cost references.
@@ -382,20 +386,16 @@ faster on COCO.
 \label{fig:imagenet-ratio05-attribute-delta}
 \end{figure}
 
-Figure~\ref{fig:imagenet-ratio05-attribute-delta} uses ImageNet10
-accuracy deltas as a slice-level example of what the source selector changes.
-The generated repair data targets images with pink color and fabric texture;
-all methods use the same generated pool and differ only in which ratio-$0.5$
-source subset is retained for retraining. The attribute-aware source subset
-selected by \model yields substantially larger gains than the active-learning
-baselines on the targeted attribute groups. The exact repair values, pink and
-fabric, receive the largest improvements. Non-targeted attributes show smaller
-and less uniform changes, with occasional decreases, but \model still tends to
-give slightly larger gains across these rows because the class-balance and
-frequency terms preserve broader source coverage while prioritizing the repair
-attributes. For readability, this main-text analysis shows three ImageNet10
-attribute groups: color, background, and texture. A larger version with all
-annotated COCO pose-estimation attribute groups is provided in
+Figure~\ref{fig:imagenet-ratio05-attribute-delta} reports attribute-slice
+accuracy deltas, defined as the accuracy of the retrained model minus the
+accuracy of the original ResNet checkpoint $\theta_t$ on the same slice. All
+methods use the same generated repair images and differ only in the selected
+ratio-$0.5$ source subset. The generated data targets pink color and fabric
+texture. \model gives the largest gains on the targeted attribute families,
+especially the exact repair values pink and fabric, indicating that the
+selected source subset improves target-slice alignment rather than only
+changing overall accuracy. A COCO pose-estimation version with the full
+annotated attribute vocabulary is provided in
 Appendix~\ref{app:attribute-slice-heatmaps}.
 
 \subsection{Ablation Study}
@@ -501,6 +501,11 @@ All acknowledgments go at the end of the paper before the list of references.
 \appendix
 
 \section*{Appendix}
+
+\section{Implementation Details}
+\label{app:implementation-details}
+
+We use vision-language models (VLMs) in two separate roles. First, a VLM proposes the semantic attribute vocabulary $\attrs$ for a task. For example, in KITTI object detection, GPT-5~\citep{openai2025gpt5} is used to define candidate visual attributes such as color, weather, scale, viewpoint, occlusion, truncation, and motion state. Second, a VLM assigns attribute values to the source images. In our KITTI implementation, we use Qwen3-VL~\citep{bai2025qwen3vl} for this assignment step. For the red-cloudy KITTI repair, color and weather are the attribute fields tied to the discovered repair slice.
 
 \section{Additional Theory Analysis}
 \label{app:theory-analysis}

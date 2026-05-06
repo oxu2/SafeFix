@@ -1,4 +1,4 @@
-\begin{thebibliography}{25}
+\begin{thebibliography}{26}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
@@ -132,5 +132,10 @@ Ouyang Xu, Baoming Zhang, Ruiyu Mao, and Yunhui Guo.
 Fengda Zhang, Qianpei He, Kun Kuang, Jiashuo Liu, Long Chen, Chao Wu, Jun Xiao, and Hanwang Zhang.
 \newblock Distributionally generative augmentation for fair facial attribute classification.
 \newblock In \emph{Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)}, 2024.
+
+\bibitem[Zhang et~al.(2023)Zhang, Wu, Zhang, He, Zhang, Xu, Yang, Shih, Wang, Zhang, et~al.]{zhang2023adding}
+Lvmin Zhang, Maneesh Wu, Chengyue Zhang, Yijun He, Siwei Zhang, Xiaolong Xu, Jingwan Yang, Kevin Shih, Xintao Wang, Yingying Zhang, et~al.
+\newblock Adding conditional control to text-to-image diffusion models.
+\newblock \emph{arXiv preprint arXiv:2302.05543}, 2023.
 
 \end{thebibliography}
