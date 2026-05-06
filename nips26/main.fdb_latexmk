@@ -1,14 +1,14 @@
 # Fdb version 4
-["bibtex main"] 1778053544.35722 "main.aux" "main.bbl" "main" 1778053551.12233 0
+["bibtex main"] 1778059479.66815 "main.aux" "main.bbl" "main" 1778059582.20192 0
   "./ref.bib" 1777968956.98276 492125 05686173bf1fe58b22226a5d54660492 ""
   "/people/cs/o/oxx220000/texlive/2026/texmf-dist/bibtex/bst/natbib/plainnat.bst" 1233624470 26816 ffe5423d2019860bad9f54bc402fac15 ""
-  "main.aux" 1778053550.9421 22295 75783839c4683e355f6d03e27327f26e "pdflatex"
+  "main.aux" 1778059582.01635 23007 77f77a46d335fbd81fc20ee4e8e2df1f "pdflatex"
   (generated)
   "main.bbl"
   "main.blg"
   (rewritten before read)
-["pdflatex"] 1778053544.42173 "/people/cs/o/oxx220000/safefix/nips26/main.tex" "main.pdf" "main" 1778053551.12269 0
-  "/people/cs/o/oxx220000/safefix/nips26/main.tex" 1778053537.34978 90719 98a09c2248ff8cb01d9ba4406036dfe2 ""
+["pdflatex"] 1778059575.44939 "/people/cs/o/oxx220000/safefix/nips26/main.tex" "main.pdf" "main" 1778059582.2023 0
+  "/people/cs/o/oxx220000/safefix/nips26/main.tex" 1778059575.21221 91188 0b5db189eb073fe9c710d623edb4da8a ""
   "/people/cs/o/oxx220000/texlive/2026/texmf-dist/fonts/enc/dvips/base/8r.enc" 1165713224 4850 80dc9bab7f31fb78a000ccfed0e27cab ""
   "/people/cs/o/oxx220000/texlive/2026/texmf-dist/fonts/enc/dvips/cm-super/cm-super-t1.enc" 1136849721 2971 def0b6c1f0b107b3b936def894055589 ""
   "/people/cs/o/oxx220000/texlive/2026/texmf-dist/fonts/map/fontname/texfonts.map" 1577235249 3524 cb3e574dea2d1052e39280babc910dc8 ""
@@ -251,10 +251,10 @@
   "figures/ratio0p5_selection_overlap/kitti_red_cloudy_ratio0p5_selection_overlap_jaccard.png" 1777966013.22986 155857 c0a97637a0a202568e61237a327fd7bc ""
   "figures/show/coco_ratio0p5_show_heatmap.pdf" 1778053174.99295 93545 0c76f6a811f6872a041bb404eb357ca5 ""
   "figures/show/imagenet_ratio0p5_show_heatmap.pdf" 1778052890.94276 53663 854fc329ac1051b0a5b221cbaed2b637 ""
-  "main.aux" 1778053550.9421 22295 75783839c4683e355f6d03e27327f26e "pdflatex"
-  "main.bbl" 1778053544.40995 7782 b69bd63039df0c83c9d5b901b84ce356 "bibtex main"
-  "main.out" 1778053550.9421 3322 1fab2794ebde563918dffdd5f3c41f89 "pdflatex"
-  "main.tex" 1778053537.34978 90719 98a09c2248ff8cb01d9ba4406036dfe2 ""
+  "main.aux" 1778059582.01635 23007 77f77a46d335fbd81fc20ee4e8e2df1f "pdflatex"
+  "main.bbl" 1778059479.71823 7782 b69bd63039df0c83c9d5b901b84ce356 "bibtex main"
+  "main.out" 1778059582.01635 3517 f3ca5b906194212ebb9416afa2e10477 "pdflatex"
+  "main.tex" 1778059575.21221 91188 0b5db189eb073fe9c710d623edb4da8a ""
   "math_commands.tex" 1776305533.44055 12284 a71653715108dc62b66e3a0bde0307d8 ""
   "neurips_2026.sty" 1776305533.44055 13462 818d80447f57703e59b8270885421e82 ""
   (generated)

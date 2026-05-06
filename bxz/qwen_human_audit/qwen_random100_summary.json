@@ -1,0 +1,15 @@
+{
+  "coco_qwen_csv": "/people/cs/o/oxx220000/safefix/save/attribute_coco_pose_gemini_train20k_qwen3_8B.csv",
+  "coco_rows": 100,
+  "copy_images": true,
+  "kitti_qwen_csv": "/people/cs/o/oxx220000/safefix/save/attribute_kitti_qwen3_8B.csv",
+  "kitti_rows": 100,
+  "n_per_dataset": 100,
+  "outputs": [
+    "/people/cs/o/oxx220000/safefix/bxz/qwen_human_audit/coco_qwen_random100_assignments.csv",
+    "/people/cs/o/oxx220000/safefix/bxz/qwen_human_audit/coco_qwen_random100_image_ids.txt",
+    "/people/cs/o/oxx220000/safefix/bxz/qwen_human_audit/kitti_qwen_random100_assignments.csv",
+    "/people/cs/o/oxx220000/safefix/bxz/qwen_human_audit/kitti_qwen_random100_image_ids.txt"
+  ],
+  "seed": 20260506
+}
