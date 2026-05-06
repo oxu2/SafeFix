@@ -4,6 +4,15 @@ This repository contains an active NeurIPS-style paper draft. The user is iterat
 
 Editing rules:
 
+- When editing `.tex` files in this folder, use the installed Codex skills
+  `ml-paper-writing` and `humanizer` by default. Apply `ml-paper-writing` for
+  NeurIPS-style argument structure, claims, citations, captions, and LaTeX
+  paper conventions; apply `humanizer` as a final pass to remove formulaic
+  AI-generated wording while preserving the paper's technical meaning and
+  formal academic tone.
+- When creating or revising paper figures from this folder, also use the
+  installed `academic-plotting` skill, and prefer the existing
+  `scientific-figure-making` style when producing matplotlib figures.
 - Do not edit TODOs, rough placeholders, comments, or unfinished passages unless the user explicitly asks you to modify that exact text.
 - Treat provisional text as the user's working notes, not as cleanup targets.
 - Keep edits narrowly scoped to the user's current request.

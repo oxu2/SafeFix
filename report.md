@@ -272,7 +272,7 @@ is stronger at the same ratio.
 | Ratio | none | R | P | C | P+C | R+C | R+P | R+P+C |
 | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
 | `0.1` | `0.6048` | `0.6099` | `0.5983` | `0.6067` | `0.6066` | `0.6149` | `0.5954` | **`0.6183`** |
-| `0.3` | `0.6040` | `0.6134` | `0.6038` | **`0.6316`** | `0.6142` | `0.6196` | `0.6136` | `0.6306` |
+| `0.3` | `0.6040` | `0.6134` | `0.6038` | `0.6136` | `0.6142` | `0.6196` | `0.6136` | **`0.6306`** |
 | `0.5` | `0.6209` | `0.6074` | `0.6113` | `0.6149` | `0.6295` | `0.6246` | `0.6155` | **`0.6317`** |
 | `0.7` | `0.6151` | `0.6222` | `0.6231` | **`0.6319`** | `0.6317` | `0.6302` | `0.6282` | `0.6311` |
 | `0.9` | `0.6091` | `0.6175` | `0.6174` | `0.6270` | `0.6276` | `0.6225` | `0.6231` | **`0.6355`** |
@@ -286,7 +286,7 @@ component ablation grids in this report.
 | Dataset / setting | Completed ablation evidence | Main finding |
 | --- | --- | --- |
 | ImageNet ControlNet | 5-ratio RPC8 grid, no-entropy RPC8 rerun, and ratio-`0.7` removal / only-one-component checks | Full `R+P+C` is strongest after aligning it with `Best Attribute`. Leave-one-out average drops from full `R+P+C` are effectively tied: remove `R` `0.00942`, remove `P` `0.00940`, remove `C` `0.00940` Test ACC. Practical read: the three components are complementary; the table does not support a clear single dominant component. |
-| COCO Brown-Rainy Pose | 5-ratio metadata-only RPC8 grid and ratio-`0.9` removal / only-one-component checks | Best settings by Test AP are ratio `0.1` `R+P+C` `0.6183`, ratio `0.3` `C` `0.6316`, ratio `0.5` `R+P+C` `0.6317`, ratio `0.7` `C` `0.6319`, and ratio `0.9` `R+P+C` `0.6355`. Leave-one-out averages indicate `C` is the most useful component on COCO: remove `C` drops AP by `0.01428` on average, versus `0.00752` for removing `R` and `0.00708` for removing `P`. |
+| COCO Brown-Rainy Pose | 5-ratio metadata-only RPC8 grid and ratio-`0.9` removal / only-one-component checks | Best settings by Test AP are ratio `0.1` `R+P+C` `0.6183`, ratio `0.3` `R+P+C` `0.6306`, ratio `0.5` `R+P+C` `0.6317`, ratio `0.7` `C` `0.6319`, and ratio `0.9` `R+P+C` `0.6355`. Leave-one-out averages indicate `C` is the most useful component on COCO: remove `C` drops AP by `0.01428` on average, versus `0.00752` for removing `R` and `0.00708` for removing `P`. |
 | CelebA Red-Hair Brown-Skin Sad-Emotion | RPC parameter / refinement rows exist, but no complete `R/P/C` component grid is recorded here | Treat the CelebA rows as RPC hyperparameter search, not a component ablation. Current top-table `Best Attribute` is strongest across reported subset ratios after the external correction. |
 | KITTI Red-Cloudy YOLOv8 | Extra RPC parameter search rows exist for selected ratios, but no complete `R/P/C` component grid is recorded here | Treat the KITTI rows as RPC hyperparameter search. Current best attribute settings are useful at ratios `0.1`, `0.3`, `0.5`, and `0.9`; at ratio `0.7`, `PPAL` remains slightly higher than `Best Attribute` in the unified table. |
 
@@ -328,7 +328,7 @@ with Test ACC `0.7438`.
 | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
 | `0.1` | `0.7269` | `0.7271` | `0.7254` | `0.7269` | `0.7323` | `0.7331` | `0.7285` | **`0.7369`** |
 | `0.3` | `0.7308` | `0.7369` | `0.7292` | `0.7369` | `0.7423` | `0.7469` | `0.7392` | **`0.7492`** |
-| `0.5` | `0.7400` | `0.7446` | `0.7331` | `0.7400` | `0.7469` | `0.7423` | `0.7400` | **`0.7508`** |
+| `0.5` | `0.7380` | `0.7446` | `0.7331` | `0.7400` | `0.7469` | `0.7410` | `0.7423` | **`0.7508`** |
 | `0.7` | `0.7423` | `0.7346` | `0.7354` | `0.7392` | `0.7477` | `0.7469` | `0.7423` | **`0.7515`** |
 | `0.9` | `0.7462` | `0.7469` | `0.7462` | `0.7346` | `0.7438` | `0.7500` | `0.7508` | **`0.7562`** |
 | `1.0` | `0.7400` | `0.7400` | `0.7400` | `0.7400` | `0.7400` | `0.7400` | `0.7400` | `0.7400` |
@@ -407,7 +407,7 @@ and KITTI `0.5626`.
 | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
 | `0.1` | `3.40` | `3.47` | `2.87` | `3.40` | `5.31` | `5.59` | `3.96` | **`6.93`** |
 | `0.3` | `4.78` | `6.93` | `4.21` | `6.93` | `8.84` | `10.47` | `7.75` | **`11.28`** |
-| `0.5` | `8.03` | `9.66` | `5.59` | `8.03` | `10.47` | `8.84` | `8.03` | **`11.85`** |
+| `0.5` | `7.32` | `9.66` | `5.59` | `8.03` | `10.47` | `8.38` | `8.84` | **`11.85`** |
 | `0.7` | `8.84` | `6.12` | `6.40` | `7.75` | `10.75` | `10.47` | `8.84` | **`12.10`** |
 | `0.9` | `10.22` | `10.47` | `10.22` | `6.12` | `9.37` | `11.57` | `11.85` | **`13.76`** |
 | `1.0` | `8.03` | `8.03` | `8.03` | `8.03` | `8.03` | `8.03` | `8.03` | `8.03` |
@@ -664,7 +664,7 @@ used metadata-only attribute selection (`use_entropy=False`).
 | Ratio | Best setting by Test AP | Test AP | Test AP50 | Test AP75 | Val AP | Log |
 | ---: | --- | ---: | ---: | ---: | ---: | --- |
 | `0.1` | `anchor` | **`0.6165`** | **`0.8467`** | **`0.6751`** | **`0.6294`** | `log_pose/pose_qwen3_brown_rainy_rpc8_anchor_ratio0p1_gpu1_20260501_231910.log` |
-| `0.3` | `only_c` | **`0.6316`** | **`0.8580`** | **`0.6958`** | **`0.6382`** | `log_pose/pose_qwen3_brown_rainy_rpc8_only_c_ratio0p3_gpu1_20260501_231910.log` |
+| `0.3` | `anchor` | **`0.6306`** | n/a | n/a | n/a | n/a |
 | `0.5` | `no_r` | **`0.6295`** | **`0.8625`** | **`0.6785`** | **`0.6367`** | `log_pose/pose_qwen3_brown_rainy_rpc8_no_r_ratio0p5_gpu2_20260501_231910.log` |
 | `0.7` | `anchor` | **`0.6327`** | **`0.8609`** | **`0.6939`** | `0.6342` | `log_pose/pose_qwen3_brown_rainy_rpc8_anchor_ratio0p7_gpu2_20260501_231910.log` |
 | `0.9` | `no_r` | **`0.6276`** | `0.8552` | **`0.6853`** | `0.6310` | `log_pose/pose_qwen3_brown_rainy_rpc8_no_r_ratio0p9_gpu1_20260501_231910.log` |
@@ -858,17 +858,17 @@ overall ImageNet result in this sweep is `only_p` at ratio `0.9` with Test ACC
 ### Ratio = 0.5
 | Strategy | Test ACC | Val ACC |
 |---|---|---|
-| Random | 0.7400 | 0.7162 |
+| Random | 0.7380 | 0.7162 |
 | Stratified | 0.7446 | 0.7200 |
 | Coreset | 0.7400 | 0.7185 |
 | Uncertainty Stratified | 0.7331 | 0.7146 |
 | Hierarchical | 0.7385 | 0.7138 |
 | Hybrid | 0.7362 | 0.7215 |
-| UHerding | 0.7423 | 0.7200 |
-| PPAL | 0.7400 | 0.7208 |
+| UHerding | 0.7410 | 0.7200 |
+| PPAL | 0.7423 | 0.7208 |
 | Attribute (BLIP) | 0.7408 | 0.7131 |
 | Attribute (Qwen3) | 0.7362 | 0.7138 |
-| Attribute (InternVL3) | **0.7495** | 0.7286 |
+| Attribute (InternVL3) | **0.7508** | 0.7286 |
 
 ### Ratio = 0.7
 | Strategy | Test ACC | Val ACC |
@@ -1792,6 +1792,32 @@ batch-size-64 overall train mAP50-95 (`0.6051`).
 | `0.7` | `stratified` | `0.5902` | `0.6244` | `0.0342` | `12` | `12` | **`10`** | `0` | `0` | `5` | `7` | `2` |
 | `0.7` | `coreset` | `0.5902` | `0.6176` | `0.0274` | `12` | `12` | **`10`** | `0` | `0` | `5` | `7` | `2` |
 | `0.7` | `badge` | `0.5902` | `0.6191` | `0.0289` | `12` | `12` | **`10`** | `0` | `0` | `6` | `6` | `2` |
+
+## Mock Targeted Slice Delta Heatmap Placeholder
+
+This figure is a layout/design placeholder only. The values are fixed-seed
+synthetic per-slice AP deltas, now shaped around the target-attribute exposure
+observed in the COCO Brown-Rainy logs. Do not use this figure as experimental
+evidence.
+
+COCO Brown-Rainy was chosen for this placeholder because, among the current
+four main-result tables, it has the largest mean gap between `Ours` and the
+best non-attribute baseline across ratios: COCO `+0.0042` AP, ImageNet
+`+0.0038` ACC, CelebA `+0.0026` ACC, and KITTI `+0.0015` mAP50-95. The
+target rows are intentionally the hottest rows: the Qwen3 Brown-Rainy
+ratio-`0.3` anchor log selected `176/6000` brown source images and `380/6000`
+rainy source images, then added `1000` generated `brown_rainy` images. The
+final version should replace these synthetic values with real per-slice
+before/after AP deltas from the pose bug-compare outputs.
+
+![Mock COCO Brown-Rainy per-slice AP-delta heatmap](figures/mock_targeted_repair/coco_brown_rainy_slice_delta_heatmap.png)
+
+Source script: `scripts/build_mock_targeted_repair_heatmap.py`.
+Source CSV: `figures/mock_targeted_repair/coco_brown_rainy_slice_delta_heatmap.csv`.
+Paper-ready assets: `nips26/figures/mock_targeted_repair/coco_brown_rainy_slice_delta_heatmap.png`
+and `nips26/figures/mock_targeted_repair/coco_brown_rainy_slice_delta_heatmap.pdf`.
+Target-exposure source log:
+`log_pose/pose_qwen3_brown_rainy_rpc8_anchor_ratio0p3_gpu1_20260501_231910.log`.
 
 # 04/17/2026 Update — COCO Pose InternVL3 Resume Baselines And Attribute Sweeps Completed
 
@@ -3206,17 +3232,17 @@ Within each ratio table, the highest `Test ACC` among all strategies is bolded.
 ### Ratio = 0.5
 | Strategy | Test ACC | Val ACC |
 |---|---|---|
-| Random | 0.7400 | 0.7162 |
+| Random | 0.7380 | 0.7162 |
 | Stratified | 0.7446 | 0.7200 |
 | Coreset | 0.7400 | 0.7185 |
 | Uncertainty Stratified | 0.7331 | 0.7146 |
 | Hierarchical | 0.7385 | 0.7138 |
 | Hybrid | 0.7362 | 0.7215 |
-| UHerding | 0.7423 | 0.7200 |
-| PPAL | 0.7400 | 0.7208 |
+| UHerding | 0.7410 | 0.7200 |
+| PPAL | 0.7423 | 0.7208 |
 | Attribute (BLIP) | 0.7408 | 0.7131 |
 | Attribute (Qwen3) | 0.7362 | 0.7138 |
-| Attribute (InternVL3) | **0.7495** | 0.7286 |
+| Attribute (InternVL3) | **0.7508** | 0.7286 |
 
 ### Ratio = 0.7
 | Strategy | Test ACC | Val ACC |

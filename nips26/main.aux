@@ -4,12 +4,13 @@
 \providecommand\HyField@AuxAddToCoFields[2]{}
 \citation{barbu2019objectnet,chen2023hibug}
 \citation{buolamwini2018gender,eyuboglu2022domino}
-\citation{gao2023adaptive,chen2023hibug,singla2024data}
 \citation{leclerc20213db}
 \citation{chen2023hibug}
-\citation{gao2023adaptive,singla2024data,chen2025hibug2}
-\citation{chen2023hibug,zhang2024distributionally,xu2025safefix}
+\citation{gao2023adaptive}
+\citation{singla2024data}
+\citation{chen2025hibug2}
 \citation{chen2023hibug}
+\citation{zhang2024distributionally,xu2025safefix}
 \citation{xu2025safefix}
 \citation{mask-rcnn-2017}
 \citation{lin2014microsoft}
@@ -29,20 +30,20 @@
 \citation{ash2020deep}
 \citation{yang2024ppal}
 \citation{bae2025uncertainty}
-\citation{chen2023hibug}
-\citation{chen2023hibug,xu2025safefix}
 \def\@LN@column{1}
 \@writefile{toc}{\contentsline {section}{\numberline {2}Related Work}{2}{section.2}\protected@file@percent }
 \@writefile{toc}{\contentsline {paragraph}{Attribute-Based Debugging and Repair}{2}{section*.2}\protected@file@percent }
 \@writefile{toc}{\contentsline {paragraph}{Active Learning}{2}{section*.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {3}Background}{2}{section.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Attribute-Based Failure Slices}{2}{section*.4}\protected@file@percent }
+\citation{chen2023hibug}
+\citation{chen2023hibug,xu2025safefix}
 \citation{settles2009active}
 \citation{sener2018active}
 \citation{ash2020deep}
 \citation{yang2024ppal}
 \citation{bae2025uncertainty}
 \def\@LN@column{1}
+\@writefile{toc}{\contentsline {section}{\numberline {3}Background}{3}{section.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Attribute-Based Failure Slices}{3}{section*.4}\protected@file@percent }
 \@writefile{toc}{\contentsline {paragraph}{Source Data and Generated Repair Data}{3}{section*.5}\protected@file@percent }
 \@writefile{toc}{\contentsline {paragraph}{Data Selection for Repair}{3}{section*.6}\protected@file@percent }
 \@writefile{toc}{\contentsline {section}{\numberline {4}Methodology}{3}{section.4}\protected@file@percent }
@@ -53,33 +54,29 @@
 \newlabel{eq:effective-generated-count}{{5}{4}{Attribute-Driven Active Learning}{equation.5}{}}
 \newlabel{eq:frequency-penalty}{{6}{4}{Attribute-Driven Active Learning}{equation.6}{}}
 \newlabel{eq:base-attribute-score}{{7}{4}{Attribute-Driven Active Learning}{equation.7}{}}
-\@writefile{toc}{\contentsline {paragraph}{Soft Class Stratification}{4}{section*.7}\protected@file@percent }
-\newlabel{eq:class-deficit-score}{{8}{4}{Soft Class Stratification}{equation.8}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.3}Theoretical Analysis of Slice Enrichment}{4}{subsection.4.3}\protected@file@percent }
-\newlabel{subsec:slice-enrichment}{{4.3}{4}{Theoretical Analysis of Slice Enrichment}{subsection.4.3}{}}
 \def\@LN@column{1}
+\@writefile{toc}{\contentsline {paragraph}{Soft Class Stratification}{5}{section*.7}\protected@file@percent }
+\newlabel{eq:class-deficit-score}{{8}{5}{Soft Class Stratification}{equation.8}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.3}Theoretical Analysis}{5}{subsection.4.3}\protected@file@percent }
+\newlabel{subsec:slice-enrichment}{{4.3}{5}{Theoretical Analysis}{subsection.4.3}{}}
 \newlabel{prop:al-target-alignment}{{1}{5}{Attribute-agnostic AL requires target alignment}{proposition.1}{}}
 \newlabel{eq:al-target-expectation}{{9}{5}{Attribute-agnostic AL requires target alignment}{equation.9}{}}
 \newlabel{eq:k-center-objective}{{10}{5}{Attribute-agnostic AL requires target alignment}{equation.10}{}}
 \newlabel{eq:empirical-covering-number}{{11}{5}{Attribute-agnostic AL requires target alignment}{equation.11}{}}
 \newlabel{eq:target-covering-number}{{12}{5}{Attribute-agnostic AL requires target alignment}{equation.12}{}}
 \def\@LN@column{1}
-\newlabel{eq:target-difference-attributes}{{13}{6}{Theoretical Analysis of Slice Enrichment}{equation.13}{}}
-\newlabel{eq:rarity-advantage}{{14}{6}{Theoretical Analysis of Slice Enrichment}{equation.14}{}}
-\newlabel{eq:frequency-disadvantage}{{15}{6}{Theoretical Analysis of Slice Enrichment}{equation.15}{}}
+\newlabel{eq:target-difference-attributes}{{13}{6}{Theoretical Analysis}{equation.13}{}}
+\newlabel{eq:rarity-advantage}{{14}{6}{Theoretical Analysis}{equation.14}{}}
+\newlabel{eq:frequency-disadvantage}{{15}{6}{Theoretical Analysis}{equation.15}{}}
 \newlabel{prop:rarity-margin}{{2}{6}{Rarity-dominates-penalty margin}{proposition.2}{}}
 \newlabel{eq:lambda-star}{{16}{6}{Rarity-dominates-penalty margin}{equation.16}{}}
-\newlabel{eq:base-score-gap}{{17}{6}{Theoretical Analysis of Slice Enrichment}{equation.17}{}}
-\newlabel{prop:deterministic-enrichment}{{3}{6}{Deterministic rare-slice enrichment}{proposition.3}{}}
-\newlabel{eq:deterministic-enrichment-bound}{{18}{6}{Deterministic rare-slice enrichment}{equation.18}{}}
-\newlabel{eq:random-target-expectation}{{19}{6}{Deterministic rare-slice enrichment}{equation.19}{}}
+\newlabel{eq:base-score-gap}{{17}{6}{Theoretical Analysis}{equation.17}{}}
 \def\@LN@column{1}
-\newlabel{eq:enrichment-gap}{{20}{7}{Theoretical Analysis of Slice Enrichment}{equation.20}{}}
-\newlabel{eq:repair-utility}{{21}{7}{Theoretical Analysis of Slice Enrichment}{equation.21}{}}
-\@writefile{toc}{\contentsline {paragraph}{Class-Balance Behavior}{7}{section*.8}\protected@file@percent }
-\newlabel{prop:hard-balance-limit}{{5}{7}{Hard-balance limit}{proposition.5}{}}
-\newlabel{prop:finite-weight-balance}{{6}{7}{Finite-weight balance pressure}{proposition.6}{}}
-\newlabel{eq:class-head-width}{{22}{7}{Finite-weight balance pressure}{equation.22}{}}
+\newlabel{prop:deterministic-enrichment}{{3}{7}{Deterministic rare-slice enrichment}{proposition.3}{}}
+\newlabel{eq:deterministic-enrichment-bound}{{18}{7}{Deterministic rare-slice enrichment}{equation.18}{}}
+\newlabel{eq:random-target-expectation}{{19}{7}{Deterministic rare-slice enrichment}{equation.19}{}}
+\newlabel{eq:enrichment-gap}{{20}{7}{Theoretical Analysis}{equation.20}{}}
+\newlabel{eq:repair-utility}{{21}{7}{Theoretical Analysis}{equation.21}{}}
 \citation{xu2025safefix}
 \citation{deng2009imagenet}
 \citation{liu2015deep}
@@ -88,6 +85,16 @@
 \citation{mask-rcnn-2017}
 \citation{geiger2012we}
 \citation{lai2023improvingpredictionbackwardcompatiblilitynlp,xu2025safefix}
+\def\@LN@column{1}
+\@writefile{toc}{\contentsline {paragraph}{Class-Balance Behavior}{8}{section*.8}\protected@file@percent }
+\newlabel{prop:hard-balance-limit}{{5}{8}{Hard-balance limit}{proposition.5}{}}
+\newlabel{prop:finite-weight-balance}{{6}{8}{Finite-weight balance pressure}{proposition.6}{}}
+\newlabel{eq:class-head-width}{{22}{8}{Finite-weight balance pressure}{equation.22}{}}
+\newlabel{eq:finite-balance-gap}{{23}{8}{Finite-weight balance pressure}{equation.23}{}}
+\newlabel{eq:finite-balance-proof-start}{{24}{8}{Class-Balance Behavior}{equation.24}{}}
+\newlabel{eq:finite-balance-proof-rearranged}{{25}{8}{Class-Balance Behavior}{equation.25}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {5}Experiments}{8}{section.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Datasets and Tasks}{8}{section*.9}\protected@file@percent }
 \citation{neyman1934two}
 \citation{settles2009active}
 \citation{sener2018active}
@@ -97,24 +104,30 @@
 \citation{openai2025gpt5}
 \citation{bai2025qwen3vl}
 \def\@LN@column{1}
-\newlabel{eq:finite-balance-gap}{{23}{8}{Finite-weight balance pressure}{equation.23}{}}
-\newlabel{eq:finite-balance-proof-start}{{24}{8}{Class-Balance Behavior}{equation.24}{}}
-\newlabel{eq:finite-balance-proof-rearranged}{{25}{8}{Class-Balance Behavior}{equation.25}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {5}Experiments}{8}{section.5}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Datasets and Tasks}{8}{section*.9}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Metrics}{8}{section*.10}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Baselines}{8}{section*.11}\protected@file@percent }
-\def\@LN@column{1}
 \@writefile{lot}{\contentsline {table}{\numberline {1}{\ignorespaces ImageNet10 ControlNet repair results. Metric: FR (\%).}}{9}{table.caption.13}\protected@file@percent }
 \providecommand*\caption@xref[2]{\@setref\relax\@undefined{#1}}
 \newlabel{tab:main-fr-imagenet}{{1}{9}{ImageNet10 ControlNet repair results. Metric: FR (\%)}{table.caption.13}{}}
 \@writefile{lot}{\contentsline {table}{\numberline {2}{\ignorespaces CelebA lipstick-wearing classification repair results. Metric: FR (\%).}}{9}{table.caption.14}\protected@file@percent }
 \newlabel{tab:main-fr-celeba}{{2}{9}{CelebA lipstick-wearing classification repair results. Metric: FR (\%)}{table.caption.14}{}}
+\@writefile{toc}{\contentsline {paragraph}{Metrics}{9}{section*.10}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Baselines}{9}{section*.11}\protected@file@percent }
 \@writefile{toc}{\contentsline {paragraph}{Implementation Details}{9}{section*.12}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsection}{\numberline {5.1}Main Results}{9}{subsection.5.1}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsection}{\numberline {5.2}Computational Efficiency}{9}{subsection.5.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.3}Ablation Study}{9}{subsection.5.3}\protected@file@percent }
+\def\@LN@column{1}
+\@writefile{lot}{\contentsline {table}{\numberline {3}{\ignorespaces COCO brown-rainy pose repair results. Metric: FR (\%).}}{10}{table.caption.15}\protected@file@percent }
+\newlabel{tab:main-fr-coco}{{3}{10}{COCO brown-rainy pose repair results. Metric: FR (\%)}{table.caption.15}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {4}{\ignorespaces KITTI red-cloudy object-detection repair results. Metric: FR (\%).}}{10}{table.caption.16}\protected@file@percent }
+\newlabel{tab:main-fr-kitti}{{4}{10}{KITTI red-cloudy object-detection repair results. Metric: FR (\%)}{table.caption.16}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.3}Attribute-Slice Accuracy Deltas}{10}{subsection.5.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.4}Ablation Study}{10}{subsection.5.4}\protected@file@percent }
 \bibdata{ref}
+\def\@LN@column{1}
+\@writefile{lot}{\contentsline {table}{\numberline {5}{\ignorespaces Selection-stage wall-clock time. Units are seconds (s), minutes (m), and hours (h). Speedup is measured against the fastest non-attribute active-learning baseline in the same row.}}{11}{table.caption.17}\protected@file@percent }
+\newlabel{tab:selection-efficiency}{{5}{11}{Selection-stage wall-clock time. Units are seconds (s), minutes (m), and hours (h). Speedup is measured against the fastest non-attribute active-learning baseline in the same row}{table.caption.17}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces ImageNet10 ratio-$0.5$ attribute-slice accuracy deltas. The upstream repair pipeline generates examples targeting pink color and fabric texture, and each method retrains with the same generated data plus a ratio-$0.5$ selected source subset. AttriSelect\xspace  gives larger gains on the targeted attribute families, with the strongest gains on the exact repair values.}}{11}{figure.caption.18}\protected@file@percent }
+\newlabel{fig:imagenet-ratio05-attribute-delta}{{1}{11}{ImageNet10 ratio-$0.5$ attribute-slice accuracy deltas. The upstream repair pipeline generates examples targeting pink color and fabric texture, and each method retrains with the same generated data plus a ratio-$0.5$ selected source subset. \model gives larger gains on the targeted attribute families, with the strongest gains on the exact repair values}{figure.caption.18}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {6}Conclusion}{11}{section.6}\protected@file@percent }
 \bibcite{ash2020deep}{{1}{2020}{{Ash et~al.}}{{Ash, Zhang, Krishnamurthy, Langford, and Agarwal}}}
 \bibcite{bae2025uncertainty}{{2}{2025}{{Bae et~al.}}{{Bae, Sutherland, and Oliveira}}}
 \bibcite{bai2025qwen3vl}{{3}{2025}{{Bai et~al.}}{{Bai, Cai, Chen, Chen, et~al.}}}
@@ -122,12 +135,6 @@
 \bibcite{buolamwini2018gender}{{5}{2018}{{Buolamwini and Gebru}}{{}}}
 \bibcite{chen2023hibug}{{6}{2023}{{Chen et~al.}}{{Chen, Li, and Xu}}}
 \bibcite{chen2025hibug2}{{7}{2025}{{Chen et~al.}}{{Chen, Zhao, and Xu}}}
-\def\@LN@column{1}
-\@writefile{lot}{\contentsline {table}{\numberline {3}{\ignorespaces COCO brown-rainy pose repair results. Metric: FR (\%).}}{10}{table.caption.15}\protected@file@percent }
-\newlabel{tab:main-fr-coco}{{3}{10}{COCO brown-rainy pose repair results. Metric: FR (\%)}{table.caption.15}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {4}{\ignorespaces KITTI red-cloudy object-detection repair results. Metric: FR (\%).}}{10}{table.caption.16}\protected@file@percent }
-\newlabel{tab:main-fr-kitti}{{4}{10}{KITTI red-cloudy object-detection repair results. Metric: FR (\%)}{table.caption.16}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {6}Conclusion}{10}{section.6}\protected@file@percent }
 \bibcite{deng2009imagenet}{{8}{2009}{{Deng et~al.}}{{Deng, Dong, Socher, Li, Li, and Fei-Fei}}}
 \bibcite{eyuboglu2022domino}{{9}{2022}{{Eyuboglu et~al.}}{{Eyuboglu, Varma, Saab, Delbrouck, Lee-Messer, Dunnmon, Zou, and R{\'e}}}}
 \bibcite{detectron2modelzoo}{{10}{2024}{{Facebook AI Research}}{{}}}
@@ -137,13 +144,11 @@
 \bibcite{lai2023improvingpredictionbackwardcompatiblilitynlp}{{14}{2023}{{Lai et~al.}}{{Lai, Mansimov, Xie, and Zhang}}}
 \bibcite{leclerc20213db}{{15}{2021}{{Leclerc et~al.}}{{Leclerc, Salman, Ilyas, Vemprala, Engstrom, Vineet, Xiao, Zhang, Santurkar, Yang, et~al.}}}
 \bibcite{lin2014microsoft}{{16}{2014}{{Lin et~al.}}{{Lin, Maire, Belongie, Hays, Perona, Ramanan, Doll{\'a}r, and Zitnick}}}
+\def\@LN@column{1}
+\@writefile{lot}{\contentsline {table}{\numberline {6}{\ignorespaces ImageNet10 ControlNet attribute-score component ablation. Metric: test accuracy.}}{12}{table.caption.19}\protected@file@percent }
+\newlabel{tab:imagenet-rpc-ablation}{{6}{12}{ImageNet10 ControlNet attribute-score component ablation. Metric: test accuracy}{table.caption.19}{}}
 \bibcite{liu2015deep}{{17}{2015}{{Liu et~al.}}{{Liu, Luo, Wang, and Tang}}}
 \bibcite{neyman1934two}{{18}{1934}{{Neyman}}{{}}}
-\def\@LN@column{1}
-\@writefile{lot}{\contentsline {table}{\numberline {5}{\ignorespaces Selection-stage wall-clock time. Units are seconds (s), minutes (m), and hours (h). Speedup is measured against the fastest non-attribute active-learning baseline in the same row.}}{11}{table.caption.17}\protected@file@percent }
-\newlabel{tab:selection-efficiency}{{5}{11}{Selection-stage wall-clock time. Units are seconds (s), minutes (m), and hours (h). Speedup is measured against the fastest non-attribute active-learning baseline in the same row}{table.caption.17}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {6}{\ignorespaces ImageNet10 ControlNet attribute-score component ablation. Metric: test accuracy.}}{11}{table.caption.18}\protected@file@percent }
-\newlabel{tab:imagenet-rpc-ablation}{{6}{11}{ImageNet10 ControlNet attribute-score component ablation. Metric: test accuracy}{table.caption.18}{}}
 \bibcite{openai2025gpt5}{{19}{2025}{{OpenAI}}{{}}}
 \bibcite{sener2018active}{{20}{2018}{{Sener and Savarese}}{{}}}
 \bibcite{settles2009active}{{21}{2009}{{Settles}}{{}}}
@@ -153,63 +158,67 @@
 \bibcite{zhang2024distributionally}{{25}{2024}{{Zhang et~al.}}{{Zhang, He, Kuang, Liu, Chen, Wu, Xiao, and Zhang}}}
 \bibstyle{plainnat}
 \def\@LN@column{1}
-\@writefile{toc}{\contentsline {section}{\numberline {A}Main-Result Metric Tables}{12}{appendix.A}\protected@file@percent }
-\newlabel{app:main-metric-tables}{{A}{12}{Main-Result Metric Tables}{appendix.A}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {7}{\ignorespaces ImageNet10 ControlNet repair results. Metric: test accuracy.}}{12}{table.caption.21}\protected@file@percent }
-\newlabel{tab:app-main-imagenet}{{7}{12}{ImageNet10 ControlNet repair results. Metric: test accuracy}{table.caption.21}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {8}{\ignorespaces CelebA lipstick-wearing classification repair results. Metric: test accuracy.}}{12}{table.caption.22}\protected@file@percent }
-\newlabel{tab:app-main-celeba}{{8}{12}{CelebA lipstick-wearing classification repair results. Metric: test accuracy}{table.caption.22}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {A}Main-Result Metric Tables}{13}{appendix.A}\protected@file@percent }
+\newlabel{app:main-metric-tables}{{A}{13}{Main-Result Metric Tables}{appendix.A}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {7}{\ignorespaces ImageNet10 ControlNet repair results. Metric: test accuracy.}}{13}{table.caption.22}\protected@file@percent }
+\newlabel{tab:app-main-imagenet}{{7}{13}{ImageNet10 ControlNet repair results. Metric: test accuracy}{table.caption.22}{}}
 \def\@LN@column{1}
-\@writefile{lot}{\contentsline {table}{\numberline {9}{\ignorespaces COCO brown-rainy pose repair results. Metric: COCO keypoint AP.}}{13}{table.caption.23}\protected@file@percent }
-\newlabel{tab:app-main-coco}{{9}{13}{COCO brown-rainy pose repair results. Metric: COCO keypoint AP}{table.caption.23}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {10}{\ignorespaces KITTI red-cloudy object-detection repair results. Metric: test mAP50--95.}}{13}{table.caption.24}\protected@file@percent }
-\newlabel{tab:app-main-kitti}{{10}{13}{KITTI red-cloudy object-detection repair results. Metric: test mAP50--95}{table.caption.24}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {B}Hyperparameter Details}{13}{appendix.B}\protected@file@percent }
-\@writefile{lot}{\contentsline {table}{\numberline {11}{\ignorespaces Attribute-selector hyperparameters used in the main experiments.}}{13}{table.caption.25}\protected@file@percent }
-\newlabel{tab:rpc-hyperparameters}{{11}{13}{Attribute-selector hyperparameters used in the main experiments}{table.caption.25}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {C}COCO Brown-Rainy Attribute-Score Component Ablation}{13}{appendix.C}\protected@file@percent }
-\newlabel{app:coco-rpc-ablation}{{C}{13}{COCO Brown-Rainy Attribute-Score Component Ablation}{appendix.C}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {8}{\ignorespaces CelebA lipstick-wearing classification repair results. Metric: test accuracy.}}{14}{table.caption.23}\protected@file@percent }
+\newlabel{tab:app-main-celeba}{{8}{14}{CelebA lipstick-wearing classification repair results. Metric: test accuracy}{table.caption.23}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {9}{\ignorespaces COCO brown-rainy pose repair results. Metric: COCO keypoint AP.}}{14}{table.caption.24}\protected@file@percent }
+\newlabel{tab:app-main-coco}{{9}{14}{COCO brown-rainy pose repair results. Metric: COCO keypoint AP}{table.caption.24}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {B}Attribute-Slice Heatmaps}{14}{appendix.B}\protected@file@percent }
+\newlabel{app:attribute-slice-heatmaps}{{B}{14}{Attribute-Slice Heatmaps}{appendix.B}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {C}Hyperparameter Details}{14}{appendix.C}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {D}COCO Brown-Rainy Attribute-Score Component Ablation}{14}{appendix.D}\protected@file@percent }
+\newlabel{app:coco-rpc-ablation}{{D}{14}{COCO Brown-Rainy Attribute-Score Component Ablation}{appendix.D}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces COCO brown-rainy ratio-$0.5$ attribute-slice AP deltas. The figure expands the slice-level analysis to all annotated COCO pose-estimation attribute groups. The targeted repair values are clothes color brown and rainy weather.}}{15}{figure.caption.26}\protected@file@percent }
+\newlabel{fig:coco-ratio05-attribute-delta}{{2}{15}{COCO brown-rainy ratio-$0.5$ attribute-slice AP deltas. The figure expands the slice-level analysis to all annotated COCO pose-estimation attribute groups. The targeted repair values are clothes color brown and rainy weather}{figure.caption.26}{}}
 \def\@LN@column{1}
-\@writefile{lot}{\contentsline {table}{\numberline {12}{\ignorespaces KITTI attribute-selector sensitivity. Metric: test mAP50--95.}}{14}{table.caption.26}\protected@file@percent }
-\newlabel{tab:kitti-rpc-sensitivity}{{12}{14}{KITTI attribute-selector sensitivity. Metric: test mAP50--95}{table.caption.26}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {13}{\ignorespaces COCO attribute-selector sensitivity. Metric: COCO keypoint AP.}}{14}{table.caption.27}\protected@file@percent }
-\newlabel{tab:coco-rpc-sensitivity}{{13}{14}{COCO attribute-selector sensitivity. Metric: COCO keypoint AP}{table.caption.27}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {14}{\ignorespaces COCO Brown-Rainy attribute-score component ablation. Metric: COCO keypoint AP.}}{15}{table.caption.28}\protected@file@percent }
-\newlabel{tab:coco-rpc-ablation}{{14}{15}{COCO Brown-Rainy attribute-score component ablation. Metric: COCO keypoint AP}{table.caption.28}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {10}{\ignorespaces KITTI red-cloudy object-detection repair results. Metric: test mAP50--95.}}{16}{table.caption.25}\protected@file@percent }
+\newlabel{tab:app-main-kitti}{{10}{16}{KITTI red-cloudy object-detection repair results. Metric: test mAP50--95}{table.caption.25}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {11}{\ignorespaces AttriSelect\xspace  hyperparameters used in the main experiments.}}{16}{table.caption.27}\protected@file@percent }
+\newlabel{tab:rpc-hyperparameters}{{11}{16}{\model hyperparameters used in the main experiments}{table.caption.27}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {12}{\ignorespaces KITTI AttriSelect\xspace  sensitivity. Metric: test mAP50--95.}}{17}{table.caption.28}\protected@file@percent }
+\newlabel{tab:kitti-rpc-sensitivity}{{12}{17}{KITTI \model sensitivity. Metric: test mAP50--95}{table.caption.28}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {13}{\ignorespaces COCO AttriSelect\xspace  sensitivity. Metric: COCO keypoint AP.}}{17}{table.caption.29}\protected@file@percent }
+\newlabel{tab:coco-rpc-sensitivity}{{13}{17}{COCO \model sensitivity. Metric: COCO keypoint AP}{table.caption.29}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {14}{\ignorespaces COCO Brown-Rainy attribute-score component ablation. Metric: COCO keypoint AP.}}{17}{table.caption.30}\protected@file@percent }
+\newlabel{tab:coco-rpc-ablation}{{14}{17}{COCO Brown-Rainy attribute-score component ablation. Metric: COCO keypoint AP}{table.caption.30}{}}
 \def\@LN@column{1}
-\@writefile{toc}{\contentsline {section}{\numberline {D}No-Generation Corner Case}{16}{appendix.D}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {E}No-Generation Corner Case}{18}{appendix.E}\protected@file@percent }
 \def\@LN@column{1}
-\@writefile{toc}{\contentsline {section}{\numberline {E}Selection t-SNE Visualizations}{17}{appendix.E}\protected@file@percent }
-\newlabel{app:selection-tsne}{{E}{17}{Selection t-SNE Visualizations}{appendix.E}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces ImageNet ratio-$0.10$ selected subsets visualized on a shared source-image t-SNE embedding. Gray points show source candidates; colored points show the subset selected by each method.}}{18}{figure.caption.29}\protected@file@percent }
-\newlabel{fig:tsne-r01-imagenet}{{1}{18}{ImageNet ratio-$0.10$ selected subsets visualized on a shared source-image t-SNE embedding. Gray points show source candidates; colored points show the subset selected by each method}{figure.caption.29}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces CelebA ratio-$0.10$ selected subsets visualized on a shared source-image t-SNE embedding.}}{18}{figure.caption.30}\protected@file@percent }
-\newlabel{fig:tsne-r01-celeba}{{2}{18}{CelebA ratio-$0.10$ selected subsets visualized on a shared source-image t-SNE embedding}{figure.caption.30}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces COCO Brown-Rainy ratio-$0.10$ selected subsets visualized on a shared source-image t-SNE embedding.}}{19}{figure.caption.31}\protected@file@percent }
-\newlabel{fig:tsne-r01-coco}{{3}{19}{COCO Brown-Rainy ratio-$0.10$ selected subsets visualized on a shared source-image t-SNE embedding}{figure.caption.31}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces KITTI Red-Cloudy ratio-$0.10$ selected subsets visualized on a shared source-image t-SNE embedding.}}{19}{figure.caption.32}\protected@file@percent }
-\newlabel{fig:tsne-r01-kitti}{{4}{19}{KITTI Red-Cloudy ratio-$0.10$ selected subsets visualized on a shared source-image t-SNE embedding}{figure.caption.32}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces KITTI Red-Cloudy ratio-$0.10$ overlay view for selected active-learning baselines and AttriSelect\xspace  .}}{20}{figure.caption.33}\protected@file@percent }
-\newlabel{fig:tsne-overlay-r01-kitti}{{5}{20}{KITTI Red-Cloudy ratio-$0.10$ overlay view for selected active-learning baselines and \model }{figure.caption.33}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {6}{\ignorespaces ImageNet ratio-$0.05$ selected subsets visualized on a shared source-image t-SNE embedding.}}{20}{figure.caption.34}\protected@file@percent }
-\newlabel{fig:tsne-r005-imagenet}{{6}{20}{ImageNet ratio-$0.05$ selected subsets visualized on a shared source-image t-SNE embedding}{figure.caption.34}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {7}{\ignorespaces KITTI Red-Cloudy ratio-$0.05$ selected subsets visualized on a shared source-image t-SNE embedding.}}{21}{figure.caption.35}\protected@file@percent }
-\newlabel{fig:tsne-r005-kitti}{{7}{21}{KITTI Red-Cloudy ratio-$0.05$ selected subsets visualized on a shared source-image t-SNE embedding}{figure.caption.35}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {8}{\ignorespaces KITTI Red-Cloudy ratio-$0.05$ overlay view for selected active-learning baselines and AttriSelect\xspace  .}}{21}{figure.caption.36}\protected@file@percent }
-\newlabel{fig:tsne-overlay-r005-kitti}{{8}{21}{KITTI Red-Cloudy ratio-$0.05$ overlay view for selected active-learning baselines and \model }{figure.caption.36}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {F}Selection t-SNE Visualizations}{19}{appendix.F}\protected@file@percent }
+\newlabel{app:selection-tsne}{{F}{19}{Selection t-SNE Visualizations}{appendix.F}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces ImageNet ratio-$0.10$ selected subsets visualized on a shared source-image t-SNE embedding. Gray points show source candidates; colored points show the subset selected by each method.}}{20}{figure.caption.31}\protected@file@percent }
+\newlabel{fig:tsne-r01-imagenet}{{3}{20}{ImageNet ratio-$0.10$ selected subsets visualized on a shared source-image t-SNE embedding. Gray points show source candidates; colored points show the subset selected by each method}{figure.caption.31}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces CelebA ratio-$0.10$ selected subsets visualized on a shared source-image t-SNE embedding.}}{20}{figure.caption.32}\protected@file@percent }
+\newlabel{fig:tsne-r01-celeba}{{4}{20}{CelebA ratio-$0.10$ selected subsets visualized on a shared source-image t-SNE embedding}{figure.caption.32}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces COCO Brown-Rainy ratio-$0.10$ selected subsets visualized on a shared source-image t-SNE embedding.}}{21}{figure.caption.33}\protected@file@percent }
+\newlabel{fig:tsne-r01-coco}{{5}{21}{COCO Brown-Rainy ratio-$0.10$ selected subsets visualized on a shared source-image t-SNE embedding}{figure.caption.33}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {6}{\ignorespaces KITTI Red-Cloudy ratio-$0.10$ selected subsets visualized on a shared source-image t-SNE embedding.}}{21}{figure.caption.34}\protected@file@percent }
+\newlabel{fig:tsne-r01-kitti}{{6}{21}{KITTI Red-Cloudy ratio-$0.10$ selected subsets visualized on a shared source-image t-SNE embedding}{figure.caption.34}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {7}{\ignorespaces KITTI Red-Cloudy ratio-$0.10$ overlay view for selected active-learning baselines and AttriSelect\xspace  .}}{22}{figure.caption.35}\protected@file@percent }
+\newlabel{fig:tsne-overlay-r01-kitti}{{7}{22}{KITTI Red-Cloudy ratio-$0.10$ overlay view for selected active-learning baselines and \model }{figure.caption.35}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {8}{\ignorespaces ImageNet ratio-$0.05$ selected subsets visualized on a shared source-image t-SNE embedding.}}{22}{figure.caption.36}\protected@file@percent }
+\newlabel{fig:tsne-r005-imagenet}{{8}{22}{ImageNet ratio-$0.05$ selected subsets visualized on a shared source-image t-SNE embedding}{figure.caption.36}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {9}{\ignorespaces KITTI Red-Cloudy ratio-$0.05$ selected subsets visualized on a shared source-image t-SNE embedding.}}{23}{figure.caption.37}\protected@file@percent }
+\newlabel{fig:tsne-r005-kitti}{{9}{23}{KITTI Red-Cloudy ratio-$0.05$ selected subsets visualized on a shared source-image t-SNE embedding}{figure.caption.37}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {10}{\ignorespaces KITTI Red-Cloudy ratio-$0.05$ overlay view for selected active-learning baselines and AttriSelect\xspace  .}}{23}{figure.caption.38}\protected@file@percent }
+\newlabel{fig:tsne-overlay-r005-kitti}{{10}{23}{KITTI Red-Cloudy ratio-$0.05$ overlay view for selected active-learning baselines and \model }{figure.caption.38}{}}
 \def\@LN@column{1}
-\@writefile{toc}{\contentsline {section}{\numberline {F}Selection Overlap as an Attribute-Information Diagnostic}{22}{appendix.F}\protected@file@percent }
-\newlabel{app:overlap-diagnostic}{{F}{22}{Selection Overlap as an Attribute-Information Diagnostic}{appendix.F}{}}
-\newlabel{prop:random-overlap-scale}{{9}{22}{Random-overlap scale for attribute-agnostic selectors}{proposition.9}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {G}Selection Overlap as an Attribute-Information Diagnostic}{24}{appendix.G}\protected@file@percent }
+\newlabel{app:overlap-diagnostic}{{G}{24}{Selection Overlap as an Attribute-Information Diagnostic}{appendix.G}{}}
+\newlabel{prop:random-overlap-scale}{{9}{24}{Random-overlap scale for attribute-agnostic selectors}{proposition.9}{}}
 \def\@LN@column{1}
-\newlabel{prop:nonredundant-utility}{{10}{23}{Non-redundant repair utility}{proposition.10}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {15}{\ignorespaces Selection-overlap diagnostic. ``Ours--baseline'' is the mean Jaccard overlap between the attribute selector and the non-attribute baselines. ``Baseline--baseline'' is the mean pairwise Jaccard overlap among non-attribute baselines. Each row averages over ImageNet, CelebA, COCO, and KITTI.}}{23}{table.caption.37}\protected@file@percent }
-\newlabel{tab:selection-overlap-summary}{{15}{23}{Selection-overlap diagnostic. ``Ours--baseline'' is the mean Jaccard overlap between the attribute selector and the non-attribute baselines. ``Baseline--baseline'' is the mean pairwise Jaccard overlap among non-attribute baselines. Each row averages over ImageNet, CelebA, COCO, and KITTI}{table.caption.37}{}}
+\newlabel{prop:nonredundant-utility}{{10}{25}{Non-redundant repair utility}{proposition.10}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {15}{\ignorespaces Selection-overlap diagnostic. ``Ours--baseline'' is the mean Jaccard overlap between AttriSelect\xspace  and the non-attribute baselines. ``Baseline--baseline'' is the mean pairwise Jaccard overlap among non-attribute baselines. Each row averages over ImageNet, CelebA, COCO, and KITTI.}}{25}{table.caption.39}\protected@file@percent }
+\newlabel{tab:selection-overlap-summary}{{15}{25}{Selection-overlap diagnostic. ``Ours--baseline'' is the mean Jaccard overlap between \model and the non-attribute baselines. ``Baseline--baseline'' is the mean pairwise Jaccard overlap among non-attribute baselines. Each row averages over ImageNet, CelebA, COCO, and KITTI}{table.caption.39}{}}
 \def\@LN@column{1}
-\@writefile{lof}{\contentsline {figure}{\numberline {9}{\ignorespaces Pairwise Jaccard overlap among ratio $0.10$ selected subsets.}}{25}{figure.caption.38}\protected@file@percent }
-\newlabel{fig:selection-overlap-r01}{{9}{25}{Pairwise Jaccard overlap among ratio $0.10$ selected subsets}{figure.caption.38}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {10}{\ignorespaces Pairwise Jaccard overlap among ratio $0.30$ selected subsets.}}{26}{figure.caption.39}\protected@file@percent }
-\newlabel{fig:selection-overlap-r03}{{10}{26}{Pairwise Jaccard overlap among ratio $0.30$ selected subsets}{figure.caption.39}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {11}{\ignorespaces Pairwise Jaccard overlap among ratio $0.50$ selected subsets.}}{27}{figure.caption.40}\protected@file@percent }
-\newlabel{fig:selection-overlap-r05}{{11}{27}{Pairwise Jaccard overlap among ratio $0.50$ selected subsets}{figure.caption.40}{}}
-\gdef \@abspage@last{27}
+\@writefile{lof}{\contentsline {figure}{\numberline {11}{\ignorespaces Pairwise Jaccard overlap among ratio $0.10$ selected subsets.}}{27}{figure.caption.40}\protected@file@percent }
+\newlabel{fig:selection-overlap-r01}{{11}{27}{Pairwise Jaccard overlap among ratio $0.10$ selected subsets}{figure.caption.40}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {12}{\ignorespaces Pairwise Jaccard overlap among ratio $0.30$ selected subsets.}}{28}{figure.caption.41}\protected@file@percent }
+\newlabel{fig:selection-overlap-r03}{{12}{28}{Pairwise Jaccard overlap among ratio $0.30$ selected subsets}{figure.caption.41}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {13}{\ignorespaces Pairwise Jaccard overlap among ratio $0.50$ selected subsets.}}{29}{figure.caption.42}\protected@file@percent }
+\newlabel{fig:selection-overlap-r05}{{13}{29}{Pairwise Jaccard overlap among ratio $0.50$ selected subsets}{figure.caption.42}{}}
+\gdef \@abspage@last{29}

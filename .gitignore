@@ -24,6 +24,14 @@ redhair_sademotion*
 redhair_brownskin_sademotion
 pinkcolor_fabrictexture_instruct_pix2pix
 imagenet*
+!figures/imagenet_attribute_slice_heatmaps/
+!figures/imagenet_attribute_slice_heatmaps/**
+!figures/show/
+!figures/show/**
+!nips26/figures/imagenet_attribute_slice_heatmaps/
+!nips26/figures/imagenet_attribute_slice_heatmaps/**
+!nips26/figures/show/
+!nips26/figures/show/**
 !data/celebA/*.txt
 !data/celebA/non_yellowhair_sademotion_indices.txt
 
@@ -78,3 +86,4 @@ logs_celeba/pids/
 
 # nips26/
 !figures/*.png
+.trellis/workspace/oxu/journal-1.md
