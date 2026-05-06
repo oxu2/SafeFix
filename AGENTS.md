@@ -48,3 +48,7 @@ After any meaningful implementation, modification, or completed investigation th
 ## Repo-Specific GPU Assignment Rule
 
 When the user explicitly tells the agent to run a job on a specific GPU, do not spend time checking whether that GPU is available first. Assume the user has already verified that the named GPU is ready, and launch directly on the requested GPU unless the user asks for a check.
+
+## Repo-Specific Figure-Making Rule
+
+When creating or revising publication-style figures in this repo, use the installed Codex skill `scientific-figure-making` by default. This applies to matplotlib charts, heatmaps, grouped bars, trend plots, multi-panel figures, and paper/report figure exports. For figures inside `nips26/`, also follow `nips26/AGENTS.md`.

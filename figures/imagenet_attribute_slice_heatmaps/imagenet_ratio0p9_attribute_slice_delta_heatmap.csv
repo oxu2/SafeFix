@@ -1,0 +1,31 @@
+dataset,ImageNet ControlNet / pinkcolor_fabrictexture
+ratio,0.9
+metric,attribute-specific accuracy delta (after - before)
+
+method,test_acc,source_log
+Random,0.749231,logs/logs_imagenet/resume_lr5_epoch15_random_resnet_imagenet_1000_ratio0.9.log
+Stratified,0.746923,logs/logs_imagenet/resume_lr5_epoch15_stratified_resnet_imagenet_1000_ratio0.9.log
+Entropy,0.746154,logs/logs_imagenet/resume_lr5_epoch15_uncertainty_stratified_resnet_imagenet_1000_ratio0.9.log
+CoreSet,0.734615,logs/logs_imagenet/resume_lr5_epoch15_coreset_resnet_imagenet_1000_ratio0.9.log
+BADGE,0.743800,logs_imagenet/badge_resnet_imagenet_1000_ratio0p9_gpu1_20260504_004831.log
+PPAL,0.750800,logs_imagenet/ppal_resnet_imagenet_1000_ratio0p9_gpu3_20260502_185507.log
+UHerding,0.750000,logs_imagenet/uherding_resnet_imagenet_1000_ratio0p9_gpu1_20260502_140255.log
+Ours,0.756200,logs_imagenet/controlnet_rpc8_only_p_resnet_imagenet_1000_ratio0p9_gpu3_20260501_231910.log
+
+slice,Random,Stratified,Entropy,CoreSet,BADGE,PPAL,UHerding,Ours
+color=green,0.075581,0.075581,0.075581,0.059956,0.075581,0.075581,0.091206,0.099166
+color=pink,0.022282,0.071463,0.104250,0.087856,0.055069,0.071463,0.104250,0.115786
+color=tan,0.050000,0.050000,0.050000,0.050000,0.050000,0.050000,-0.075000,-0.077049
+color=orange,0.109091,0.109091,0.109091,0.109091,0.086869,0.109091,0.086869,-0.024242
+color=yellow,0.061111,0.061111,0.043254,0.007540,0.043254,0.078968,0.025397,0.129293
+color=purple,0.093567,0.093567,0.093567,0.204678,0.093567,0.204678,0.204678,-0.017544
+color=black,0.069810,0.069810,0.056565,0.036698,0.056565,0.063188,0.056565,0.081190
+background=sky,0.028643,0.028643,0.028643,0.028643,0.028643,0.028643,-0.001660,-0.006322
+background=inside a house,0.027484,0.034913,0.030456,0.028970,0.034913,0.037885,0.042343,-0.358351
+background=buildings,-0.135888,0.006969,-0.135888,-0.207317,-0.207317,-0.135888,-0.135888,0.066877
+background=rocks,0.020909,0.020909,0.020909,0.020909,0.020909,-0.019091,0.020909,0.055195
+background=street,0.246929,0.201474,0.156020,0.156020,0.201474,0.201474,0.156020,0.159267
+texture=metallic,0.023529,0.123529,0.123529,0.023529,0.073529,0.123529,0.123529,-0.009804
+texture=wooden,0.025831,0.027073,0.029557,0.028315,0.025831,0.028315,0.023346,0.025221
+texture=leather,0.268908,0.268908,0.268908,0.197479,0.197479,0.268908,0.197479,0.245098
+texture=fabric,0.045167,0.045167,0.026648,0.008130,0.008130,0.045167,0.082204,0.087226
