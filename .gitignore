@@ -32,6 +32,8 @@ imagenet*
 !nips26/figures/imagenet_attribute_slice_heatmaps/**
 !nips26/figures/show/
 !nips26/figures/show/**
+!bxz/qwen_human_audit/
+!bxz/qwen_human_audit/**
 !data/celebA/*.txt
 !data/celebA/non_yellowhair_sademotion_indices.txt
 

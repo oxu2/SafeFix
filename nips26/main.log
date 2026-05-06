@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.29 (TeX Live 2026) (preloaded format=pdflatex 2026.3.30)  6 MAY 2026 02:45
+This is pdfTeX, Version 3.141592653-2.6-1.40.29 (TeX Live 2026) (preloaded format=pdflatex 2026.3.30)  6 MAY 2026 04:26
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -845,174 +845,156 @@ Package microtype Info: Loading generic protrusion settings for font family
  [1
 
 
-{/people/cs/o/oxx220000/texlive/2026/texmf-var/fonts/map/pdftex/updmap/pdftex.map}{/people/cs/o/oxx220000/texlive/2026/texmf-dist/fonts/enc/dvips/base/8r.enc}{/people/cs/o/oxx220000/texlive/2026/texmf-dist/fonts/enc/dvips/cm-super/cm-super-t1.enc}] [2] [3] [4] [5] [6] [7] [8] [9]
-<figures/show/imagenet_ratio0p5_show_heatmap.pdf, id=285, 528.59029pt x 347.81087pt>
+{/people/cs/o/oxx220000/texlive/2026/texmf-var/fonts/map/pdftex/updmap/pdftex.map}{/people/cs/o/oxx220000/texlive/2026/texmf-dist/fonts/enc/dvips/base/8r.enc}{/people/cs/o/oxx220000/texlive/2026/texmf-dist/fonts/enc/dvips/cm-super/cm-super-t1.enc}] [2] [3] [4] [5] [6]
+<figures/show/imagenet_ratio0p5_show_heatmap.pdf, id=247, 528.59029pt x 347.81087pt>
 File: figures/show/imagenet_ratio0p5_show_heatmap.pdf Graphic file (type pdf)
 <use figures/show/imagenet_ratio0p5_show_heatmap.pdf>
-Package pdftex.def Info: figures/show/imagenet_ratio0p5_show_heatmap.pdf  used on input line 572.
+Package pdftex.def Info: figures/show/imagenet_ratio0p5_show_heatmap.pdf  used on input line 385.
 (pdftex.def)             Requested size: 397.48499pt x 261.55273pt.
- [10] (./main.bbl
-Underfull \vbox (badness 1609) has occurred while \output is active []
-
-
-Underfull \vbox (badness 1609) has occurred while \output is active []
-
- [11 <./figures/show/imagenet_ratio0p5_show_heatmap.pdf>] [12])
+ [7] [8 <./figures/show/imagenet_ratio0p5_show_heatmap.pdf>] (./main.bbl [9]) [10] [11] [12] [13] [14]
 
 LaTeX Warning: `h' float specifier changed to `ht'.
 
-
-LaTeX Warning: `h' float specifier changed to `ht'.
-
-
-LaTeX Warning: `h' float specifier changed to `ht'.
-
-[13]
-<figures/show/coco_ratio0p5_show_heatmap.pdf, id=348, 551.94206pt x 792.10701pt>
+<figures/show/coco_ratio0p5_show_heatmap.pdf, id=364, 551.94206pt x 792.10701pt>
 File: figures/show/coco_ratio0p5_show_heatmap.pdf Graphic file (type pdf)
 <use figures/show/coco_ratio0p5_show_heatmap.pdf>
-Package pdftex.def Info: figures/show/coco_ratio0p5_show_heatmap.pdf  used on input line 793.
+Package pdftex.def Info: figures/show/coco_ratio0p5_show_heatmap.pdf  used on input line 840.
 (pdftex.def)             Requested size: 397.48499pt x 570.43747pt.
 
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+[15] [16 <./figures/show/coco_ratio0p5_show_heatmap.pdf>]
 
 LaTeX Warning: `h' float specifier changed to `ht'.
 
 
 LaTeX Warning: `h' float specifier changed to `ht'.
 
-
-LaTeX Warning: `h' float specifier changed to `ht'.
-
-
-LaTeX Warning: `h' float specifier changed to `ht'.
-
-[14] [15 <./figures/show/coco_ratio0p5_show_heatmap.pdf>] [16] [17] [18
-
-]
-<figures/ratio0p1_selection_tsne/imagenet_controlnet_ratio0p1_selection_tsne.png, id=419, 1047.915pt x 491.436pt>
+[17]
+<figures/ratio0p1_selection_tsne/imagenet_controlnet_ratio0p1_selection_tsne.png, id=422, 1047.915pt x 491.436pt>
 File: figures/ratio0p1_selection_tsne/imagenet_controlnet_ratio0p1_selection_tsne.png Graphic file (type png)
 <use figures/ratio0p1_selection_tsne/imagenet_controlnet_ratio0p1_selection_tsne.png>
-Package pdftex.def Info: figures/ratio0p1_selection_tsne/imagenet_controlnet_ratio0p1_selection_tsne.png  used on input line 960.
+Package pdftex.def Info: figures/ratio0p1_selection_tsne/imagenet_controlnet_ratio0p1_selection_tsne.png  used on input line 951.
 (pdftex.def)             Requested size: 397.48499pt x 186.40268pt.
-<figures/ratio0p1_selection_tsne/celeba_redhair_brownskin_sademotion_ratio0p1_selection_tsne.png, id=421, 1047.915pt x 491.436pt>
+<figures/ratio0p1_selection_tsne/celeba_redhair_brownskin_sademotion_ratio0p1_selection_tsne.png, id=424, 1047.915pt x 491.436pt>
 File: figures/ratio0p1_selection_tsne/celeba_redhair_brownskin_sademotion_ratio0p1_selection_tsne.png Graphic file (type png)
 <use figures/ratio0p1_selection_tsne/celeba_redhair_brownskin_sademotion_ratio0p1_selection_tsne.png>
-Package pdftex.def Info: figures/ratio0p1_selection_tsne/celeba_redhair_brownskin_sademotion_ratio0p1_selection_tsne.png  used on input line 967.
+Package pdftex.def Info: figures/ratio0p1_selection_tsne/celeba_redhair_brownskin_sademotion_ratio0p1_selection_tsne.png  used on input line 958.
 (pdftex.def)             Requested size: 397.48499pt x 186.40268pt.
-<figures/ratio0p1_selection_tsne/coco_brown_rainy_ratio0p1_selection_tsne.png, id=422, 1047.915pt x 491.436pt>
+<figures/ratio0p1_selection_tsne/coco_brown_rainy_ratio0p1_selection_tsne.png, id=425, 1047.915pt x 491.436pt>
 File: figures/ratio0p1_selection_tsne/coco_brown_rainy_ratio0p1_selection_tsne.png Graphic file (type png)
 <use figures/ratio0p1_selection_tsne/coco_brown_rainy_ratio0p1_selection_tsne.png>
-Package pdftex.def Info: figures/ratio0p1_selection_tsne/coco_brown_rainy_ratio0p1_selection_tsne.png  used on input line 974.
+Package pdftex.def Info: figures/ratio0p1_selection_tsne/coco_brown_rainy_ratio0p1_selection_tsne.png  used on input line 965.
 (pdftex.def)             Requested size: 397.48499pt x 186.40268pt.
-<figures/ratio0p1_selection_tsne/kitti_red_cloudy_ratio0p1_selection_tsne.png, id=423, 1047.915pt x 491.436pt>
+<figures/ratio0p1_selection_tsne/kitti_red_cloudy_ratio0p1_selection_tsne.png, id=426, 1047.915pt x 491.436pt>
 File: figures/ratio0p1_selection_tsne/kitti_red_cloudy_ratio0p1_selection_tsne.png Graphic file (type png)
 <use figures/ratio0p1_selection_tsne/kitti_red_cloudy_ratio0p1_selection_tsne.png>
-Package pdftex.def Info: figures/ratio0p1_selection_tsne/kitti_red_cloudy_ratio0p1_selection_tsne.png  used on input line 981.
+Package pdftex.def Info: figures/ratio0p1_selection_tsne/kitti_red_cloudy_ratio0p1_selection_tsne.png  used on input line 972.
 (pdftex.def)             Requested size: 397.48499pt x 186.40268pt.
-<figures/ratio0p1_selection_tsne/kitti_red_cloudy_ratio0p1_selection_tsne_overlay.png, id=424, 592.2855pt x 476.982pt>
+<figures/ratio0p1_selection_tsne/kitti_red_cloudy_ratio0p1_selection_tsne_overlay.png, id=427, 592.2855pt x 476.982pt>
 File: figures/ratio0p1_selection_tsne/kitti_red_cloudy_ratio0p1_selection_tsne_overlay.png Graphic file (type png)
 <use figures/ratio0p1_selection_tsne/kitti_red_cloudy_ratio0p1_selection_tsne_overlay.png>
-Package pdftex.def Info: figures/ratio0p1_selection_tsne/kitti_red_cloudy_ratio0p1_selection_tsne_overlay.png  used on input line 988.
+Package pdftex.def Info: figures/ratio0p1_selection_tsne/kitti_red_cloudy_ratio0p1_selection_tsne_overlay.png  used on input line 979.
 (pdftex.def)             Requested size: 341.83733pt x 275.28873pt.
-<figures/ratio0p05_selection_tsne/imagenet_controlnet_ratio0p05_selection_tsne.png, id=425, 1047.915pt x 491.436pt>
+<figures/ratio0p05_selection_tsne/imagenet_controlnet_ratio0p05_selection_tsne.png, id=428, 1047.915pt x 491.436pt>
 File: figures/ratio0p05_selection_tsne/imagenet_controlnet_ratio0p05_selection_tsne.png Graphic file (type png)
 <use figures/ratio0p05_selection_tsne/imagenet_controlnet_ratio0p05_selection_tsne.png>
-Package pdftex.def Info: figures/ratio0p05_selection_tsne/imagenet_controlnet_ratio0p05_selection_tsne.png  used on input line 995.
+Package pdftex.def Info: figures/ratio0p05_selection_tsne/imagenet_controlnet_ratio0p05_selection_tsne.png  used on input line 986.
 (pdftex.def)             Requested size: 397.48499pt x 186.40268pt.
-<figures/ratio0p05_selection_tsne/kitti_red_cloudy_ratio0p05_selection_tsne.png, id=426, 1047.915pt x 491.436pt>
+<figures/ratio0p05_selection_tsne/kitti_red_cloudy_ratio0p05_selection_tsne.png, id=429, 1047.915pt x 491.436pt>
 File: figures/ratio0p05_selection_tsne/kitti_red_cloudy_ratio0p05_selection_tsne.png Graphic file (type png)
 <use figures/ratio0p05_selection_tsne/kitti_red_cloudy_ratio0p05_selection_tsne.png>
-Package pdftex.def Info: figures/ratio0p05_selection_tsne/kitti_red_cloudy_ratio0p05_selection_tsne.png  used on input line 1002.
+Package pdftex.def Info: figures/ratio0p05_selection_tsne/kitti_red_cloudy_ratio0p05_selection_tsne.png  used on input line 993.
 (pdftex.def)             Requested size: 397.48499pt x 186.40268pt.
-<figures/ratio0p05_selection_tsne/kitti_red_cloudy_ratio0p05_selection_tsne_overlay.png, id=427, 592.2855pt x 476.982pt>
+<figures/ratio0p05_selection_tsne/kitti_red_cloudy_ratio0p05_selection_tsne_overlay.png, id=430, 592.2855pt x 476.982pt>
 File: figures/ratio0p05_selection_tsne/kitti_red_cloudy_ratio0p05_selection_tsne_overlay.png Graphic file (type png)
 <use figures/ratio0p05_selection_tsne/kitti_red_cloudy_ratio0p05_selection_tsne_overlay.png>
-Package pdftex.def Info: figures/ratio0p05_selection_tsne/kitti_red_cloudy_ratio0p05_selection_tsne_overlay.png  used on input line 1009.
+Package pdftex.def Info: figures/ratio0p05_selection_tsne/kitti_red_cloudy_ratio0p05_selection_tsne_overlay.png  used on input line 1000.
 (pdftex.def)             Requested size: 341.83733pt x 275.28873pt.
- [19] [20 <./figures/ratio0p1_selection_tsne/imagenet_controlnet_ratio0p1_selection_tsne.png> <./figures/ratio0p1_selection_tsne/celeba_redhair_brownskin_sademotion_ratio0p1_selection_tsne.png>] [21 <./figures/ratio0p1_selection_tsne/coco_brown_rainy_ratio0p1_selection_tsne.png> <./figures/ratio0p1_selection_tsne/kitti_red_cloudy_ratio0p1_selection_tsne.png>] [22 <./figures/ratio0p1_selection_tsne/kitti_red_cloudy_ratio0p1_selection_tsne_overlay.png> <./figures/ratio0p05_selection_tsne/imagenet_controlnet_ratio0p05_selection_tsne.png>] [23 <./figures/ratio0p05_selection_tsne/kitti_red_cloudy_ratio0p05_selection_tsne.png> <./figures/ratio0p05_selection_tsne/kitti_red_cloudy_ratio0p05_selection_tsne_overlay.png>] [24
+ [18] [19 <./figures/ratio0p1_selection_tsne/imagenet_controlnet_ratio0p1_selection_tsne.png> <./figures/ratio0p1_selection_tsne/celeba_redhair_brownskin_sademotion_ratio0p1_selection_tsne.png>] [20 <./figures/ratio0p1_selection_tsne/coco_brown_rainy_ratio0p1_selection_tsne.png> <./figures/ratio0p1_selection_tsne/kitti_red_cloudy_ratio0p1_selection_tsne.png>] [21 <./figures/ratio0p1_selection_tsne/kitti_red_cloudy_ratio0p1_selection_tsne_overlay.png> <./figures/ratio0p05_selection_tsne/imagenet_controlnet_ratio0p05_selection_tsne.png>] [22 <./figures/ratio0p05_selection_tsne/kitti_red_cloudy_ratio0p05_selection_tsne.png> <./figures/ratio0p05_selection_tsne/kitti_red_cloudy_ratio0p05_selection_tsne_overlay.png>] [23
 
 ]
-<figures/ratio0p1_selection_overlap/imagenet_controlnet_ratio0p1_selection_overlap_jaccard.png, id=490, 520.344pt x 448.074pt>
+<figures/ratio0p1_selection_overlap/imagenet_controlnet_ratio0p1_selection_overlap_jaccard.png, id=493, 520.344pt x 448.074pt>
 File: figures/ratio0p1_selection_overlap/imagenet_controlnet_ratio0p1_selection_overlap_jaccard.png Graphic file (type png)
 <use figures/ratio0p1_selection_overlap/imagenet_controlnet_ratio0p1_selection_overlap_jaccard.png>
-Package pdftex.def Info: figures/ratio0p1_selection_overlap/imagenet_controlnet_ratio0p1_selection_overlap_jaccard.png  used on input line 1122.
+Package pdftex.def Info: figures/ratio0p1_selection_overlap/imagenet_controlnet_ratio0p1_selection_overlap_jaccard.png  used on input line 1113.
 (pdftex.def)             Requested size: 190.79109pt x 164.2943pt.
-<figures/ratio0p1_selection_overlap/celeba_redhair_brownskin_sademotion_ratio0p1_selection_overlap_jaccard.png, id=491, 520.344pt x 448.074pt>
+<figures/ratio0p1_selection_overlap/celeba_redhair_brownskin_sademotion_ratio0p1_selection_overlap_jaccard.png, id=494, 520.344pt x 448.074pt>
 File: figures/ratio0p1_selection_overlap/celeba_redhair_brownskin_sademotion_ratio0p1_selection_overlap_jaccard.png Graphic file (type png)
 <use figures/ratio0p1_selection_overlap/celeba_redhair_brownskin_sademotion_ratio0p1_selection_overlap_jaccard.png>
-Package pdftex.def Info: figures/ratio0p1_selection_overlap/celeba_redhair_brownskin_sademotion_ratio0p1_selection_overlap_jaccard.png  used on input line 1128.
+Package pdftex.def Info: figures/ratio0p1_selection_overlap/celeba_redhair_brownskin_sademotion_ratio0p1_selection_overlap_jaccard.png  used on input line 1119.
 (pdftex.def)             Requested size: 190.79109pt x 164.2943pt.
-<figures/ratio0p1_selection_overlap/coco_brown_rainy_ratio0p1_selection_overlap_jaccard.png, id=492, 520.344pt x 448.074pt>
+<figures/ratio0p1_selection_overlap/coco_brown_rainy_ratio0p1_selection_overlap_jaccard.png, id=495, 520.344pt x 448.074pt>
 File: figures/ratio0p1_selection_overlap/coco_brown_rainy_ratio0p1_selection_overlap_jaccard.png Graphic file (type png)
 <use figures/ratio0p1_selection_overlap/coco_brown_rainy_ratio0p1_selection_overlap_jaccard.png>
-Package pdftex.def Info: figures/ratio0p1_selection_overlap/coco_brown_rainy_ratio0p1_selection_overlap_jaccard.png  used on input line 1135.
+Package pdftex.def Info: figures/ratio0p1_selection_overlap/coco_brown_rainy_ratio0p1_selection_overlap_jaccard.png  used on input line 1126.
 (pdftex.def)             Requested size: 190.79109pt x 164.2943pt.
-<figures/ratio0p1_selection_overlap/kitti_red_cloudy_ratio0p1_selection_overlap_jaccard.png, id=493, 520.344pt x 448.074pt>
+<figures/ratio0p1_selection_overlap/kitti_red_cloudy_ratio0p1_selection_overlap_jaccard.png, id=496, 520.344pt x 448.074pt>
 File: figures/ratio0p1_selection_overlap/kitti_red_cloudy_ratio0p1_selection_overlap_jaccard.png Graphic file (type png)
 <use figures/ratio0p1_selection_overlap/kitti_red_cloudy_ratio0p1_selection_overlap_jaccard.png>
-Package pdftex.def Info: figures/ratio0p1_selection_overlap/kitti_red_cloudy_ratio0p1_selection_overlap_jaccard.png  used on input line 1141.
+Package pdftex.def Info: figures/ratio0p1_selection_overlap/kitti_red_cloudy_ratio0p1_selection_overlap_jaccard.png  used on input line 1132.
 (pdftex.def)             Requested size: 190.79109pt x 164.2943pt.
-<figures/ratio0p3_selection_overlap/imagenet_controlnet_ratio0p3_selection_overlap_jaccard.png, id=494, 520.344pt x 448.074pt>
+<figures/ratio0p3_selection_overlap/imagenet_controlnet_ratio0p3_selection_overlap_jaccard.png, id=497, 520.344pt x 448.074pt>
 File: figures/ratio0p3_selection_overlap/imagenet_controlnet_ratio0p3_selection_overlap_jaccard.png Graphic file (type png)
 <use figures/ratio0p3_selection_overlap/imagenet_controlnet_ratio0p3_selection_overlap_jaccard.png>
-Package pdftex.def Info: figures/ratio0p3_selection_overlap/imagenet_controlnet_ratio0p3_selection_overlap_jaccard.png  used on input line 1152.
+Package pdftex.def Info: figures/ratio0p3_selection_overlap/imagenet_controlnet_ratio0p3_selection_overlap_jaccard.png  used on input line 1143.
 (pdftex.def)             Requested size: 190.79109pt x 164.2943pt.
-<figures/ratio0p3_selection_overlap/celeba_redhair_brownskin_sademotion_ratio0p3_selection_overlap_jaccard.png, id=495, 520.344pt x 448.074pt>
+<figures/ratio0p3_selection_overlap/celeba_redhair_brownskin_sademotion_ratio0p3_selection_overlap_jaccard.png, id=498, 520.344pt x 448.074pt>
 File: figures/ratio0p3_selection_overlap/celeba_redhair_brownskin_sademotion_ratio0p3_selection_overlap_jaccard.png Graphic file (type png)
 <use figures/ratio0p3_selection_overlap/celeba_redhair_brownskin_sademotion_ratio0p3_selection_overlap_jaccard.png>
-Package pdftex.def Info: figures/ratio0p3_selection_overlap/celeba_redhair_brownskin_sademotion_ratio0p3_selection_overlap_jaccard.png  used on input line 1158.
+Package pdftex.def Info: figures/ratio0p3_selection_overlap/celeba_redhair_brownskin_sademotion_ratio0p3_selection_overlap_jaccard.png  used on input line 1149.
 (pdftex.def)             Requested size: 190.79109pt x 164.2943pt.
-<figures/ratio0p3_selection_overlap/coco_brown_rainy_ratio0p3_selection_overlap_jaccard.png, id=496, 520.344pt x 448.074pt>
+<figures/ratio0p3_selection_overlap/coco_brown_rainy_ratio0p3_selection_overlap_jaccard.png, id=499, 520.344pt x 448.074pt>
 File: figures/ratio0p3_selection_overlap/coco_brown_rainy_ratio0p3_selection_overlap_jaccard.png Graphic file (type png)
 <use figures/ratio0p3_selection_overlap/coco_brown_rainy_ratio0p3_selection_overlap_jaccard.png>
-Package pdftex.def Info: figures/ratio0p3_selection_overlap/coco_brown_rainy_ratio0p3_selection_overlap_jaccard.png  used on input line 1165.
+Package pdftex.def Info: figures/ratio0p3_selection_overlap/coco_brown_rainy_ratio0p3_selection_overlap_jaccard.png  used on input line 1156.
 (pdftex.def)             Requested size: 190.79109pt x 164.2943pt.
-<figures/ratio0p3_selection_overlap/kitti_red_cloudy_ratio0p3_selection_overlap_jaccard.png, id=497, 520.344pt x 448.074pt>
+<figures/ratio0p3_selection_overlap/kitti_red_cloudy_ratio0p3_selection_overlap_jaccard.png, id=500, 520.344pt x 448.074pt>
 File: figures/ratio0p3_selection_overlap/kitti_red_cloudy_ratio0p3_selection_overlap_jaccard.png Graphic file (type png)
 <use figures/ratio0p3_selection_overlap/kitti_red_cloudy_ratio0p3_selection_overlap_jaccard.png>
-Package pdftex.def Info: figures/ratio0p3_selection_overlap/kitti_red_cloudy_ratio0p3_selection_overlap_jaccard.png  used on input line 1171.
+Package pdftex.def Info: figures/ratio0p3_selection_overlap/kitti_red_cloudy_ratio0p3_selection_overlap_jaccard.png  used on input line 1162.
 (pdftex.def)             Requested size: 190.79109pt x 164.2943pt.
-<figures/ratio0p5_selection_overlap/imagenet_controlnet_ratio0p5_selection_overlap_jaccard.png, id=498, 520.344pt x 448.074pt>
+<figures/ratio0p5_selection_overlap/imagenet_controlnet_ratio0p5_selection_overlap_jaccard.png, id=501, 520.344pt x 448.074pt>
 File: figures/ratio0p5_selection_overlap/imagenet_controlnet_ratio0p5_selection_overlap_jaccard.png Graphic file (type png)
 <use figures/ratio0p5_selection_overlap/imagenet_controlnet_ratio0p5_selection_overlap_jaccard.png>
-Package pdftex.def Info: figures/ratio0p5_selection_overlap/imagenet_controlnet_ratio0p5_selection_overlap_jaccard.png  used on input line 1182.
+Package pdftex.def Info: figures/ratio0p5_selection_overlap/imagenet_controlnet_ratio0p5_selection_overlap_jaccard.png  used on input line 1173.
 (pdftex.def)             Requested size: 190.79109pt x 164.2943pt.
-<figures/ratio0p5_selection_overlap/celeba_redhair_brownskin_sademotion_ratio0p5_selection_overlap_jaccard.png, id=499, 520.344pt x 448.074pt>
+<figures/ratio0p5_selection_overlap/celeba_redhair_brownskin_sademotion_ratio0p5_selection_overlap_jaccard.png, id=502, 520.344pt x 448.074pt>
 File: figures/ratio0p5_selection_overlap/celeba_redhair_brownskin_sademotion_ratio0p5_selection_overlap_jaccard.png Graphic file (type png)
 <use figures/ratio0p5_selection_overlap/celeba_redhair_brownskin_sademotion_ratio0p5_selection_overlap_jaccard.png>
-Package pdftex.def Info: figures/ratio0p5_selection_overlap/celeba_redhair_brownskin_sademotion_ratio0p5_selection_overlap_jaccard.png  used on input line 1188.
+Package pdftex.def Info: figures/ratio0p5_selection_overlap/celeba_redhair_brownskin_sademotion_ratio0p5_selection_overlap_jaccard.png  used on input line 1179.
 (pdftex.def)             Requested size: 190.79109pt x 164.2943pt.
-<figures/ratio0p5_selection_overlap/coco_brown_rainy_ratio0p5_selection_overlap_jaccard.png, id=500, 520.344pt x 448.074pt>
+<figures/ratio0p5_selection_overlap/coco_brown_rainy_ratio0p5_selection_overlap_jaccard.png, id=503, 520.344pt x 448.074pt>
 File: figures/ratio0p5_selection_overlap/coco_brown_rainy_ratio0p5_selection_overlap_jaccard.png Graphic file (type png)
 <use figures/ratio0p5_selection_overlap/coco_brown_rainy_ratio0p5_selection_overlap_jaccard.png>
-Package pdftex.def Info: figures/ratio0p5_selection_overlap/coco_brown_rainy_ratio0p5_selection_overlap_jaccard.png  used on input line 1195.
+Package pdftex.def Info: figures/ratio0p5_selection_overlap/coco_brown_rainy_ratio0p5_selection_overlap_jaccard.png  used on input line 1186.
 (pdftex.def)             Requested size: 190.79109pt x 164.2943pt.
-<figures/ratio0p5_selection_overlap/kitti_red_cloudy_ratio0p5_selection_overlap_jaccard.png, id=501, 520.344pt x 448.074pt>
+<figures/ratio0p5_selection_overlap/kitti_red_cloudy_ratio0p5_selection_overlap_jaccard.png, id=504, 520.344pt x 448.074pt>
 File: figures/ratio0p5_selection_overlap/kitti_red_cloudy_ratio0p5_selection_overlap_jaccard.png Graphic file (type png)
 <use figures/ratio0p5_selection_overlap/kitti_red_cloudy_ratio0p5_selection_overlap_jaccard.png>
-Package pdftex.def Info: figures/ratio0p5_selection_overlap/kitti_red_cloudy_ratio0p5_selection_overlap_jaccard.png  used on input line 1201.
+Package pdftex.def Info: figures/ratio0p5_selection_overlap/kitti_red_cloudy_ratio0p5_selection_overlap_jaccard.png  used on input line 1192.
 (pdftex.def)             Requested size: 190.79109pt x 164.2943pt.
- [25] [26] [27 <./figures/ratio0p1_selection_overlap/imagenet_controlnet_ratio0p1_selection_overlap_jaccard.png> <./figures/ratio0p1_selection_overlap/celeba_redhair_brownskin_sademotion_ratio0p1_selection_overlap_jaccard.png> <./figures/ratio0p1_selection_overlap/coco_brown_rainy_ratio0p1_selection_overlap_jaccard.png> <./figures/ratio0p1_selection_overlap/kitti_red_cloudy_ratio0p1_selection_overlap_jaccard.png>] [28 <./figures/ratio0p3_selection_overlap/imagenet_controlnet_ratio0p3_selection_overlap_jaccard.png> <./figures/ratio0p3_selection_overlap/celeba_redhair_brownskin_sademotion_ratio0p3_selection_overlap_jaccard.png> <./figures/ratio0p3_selection_overlap/coco_brown_rainy_ratio0p3_selection_overlap_jaccard.png> <./figures/ratio0p3_selection_overlap/kitti_red_cloudy_ratio0p3_selection_overlap_jaccard.png>] [29 <./figures/ratio0p5_selection_overlap/imagenet_controlnet_ratio0p5_selection_overlap_jaccard.png> <./figures/ratio0p5_selection_overlap/celeba_redhair_brownskin_sademotion_ratio0p5_selection_overlap_jaccard.png> <./figures/ratio0p5_selection_overlap/coco_brown_rainy_ratio0p5_selection_overlap_jaccard.png> <./figures/ratio0p5_selection_overlap/kitti_red_cloudy_ratio0p5_selection_overlap_jaccard.png>] (./main.aux)
+ [24] [25] [26 <./figures/ratio0p1_selection_overlap/imagenet_controlnet_ratio0p1_selection_overlap_jaccard.png> <./figures/ratio0p1_selection_overlap/celeba_redhair_brownskin_sademotion_ratio0p1_selection_overlap_jaccard.png> <./figures/ratio0p1_selection_overlap/coco_brown_rainy_ratio0p1_selection_overlap_jaccard.png> <./figures/ratio0p1_selection_overlap/kitti_red_cloudy_ratio0p1_selection_overlap_jaccard.png>] [27 <./figures/ratio0p3_selection_overlap/imagenet_controlnet_ratio0p3_selection_overlap_jaccard.png> <./figures/ratio0p3_selection_overlap/celeba_redhair_brownskin_sademotion_ratio0p3_selection_overlap_jaccard.png> <./figures/ratio0p3_selection_overlap/coco_brown_rainy_ratio0p3_selection_overlap_jaccard.png> <./figures/ratio0p3_selection_overlap/kitti_red_cloudy_ratio0p3_selection_overlap_jaccard.png>] [28 <./figures/ratio0p5_selection_overlap/imagenet_controlnet_ratio0p5_selection_overlap_jaccard.png> <./figures/ratio0p5_selection_overlap/celeba_redhair_brownskin_sademotion_ratio0p5_selection_overlap_jaccard.png> <./figures/ratio0p5_selection_overlap/coco_brown_rainy_ratio0p5_selection_overlap_jaccard.png> <./figures/ratio0p5_selection_overlap/kitti_red_cloudy_ratio0p5_selection_overlap_jaccard.png>] (./main.aux)
  ***********
 LaTeX2e <2025-11-01>
 L3 programming layer <2026-01-19>
  ***********
 Package rerunfilecheck Info: File `main.out' has not changed.
-(rerunfilecheck)             Checksum: 1FAB2794EBDE563918DFFDD5F3C41F89;3322.
+(rerunfilecheck)             Checksum: F3CA5B906194212EBB9416AFA2E10477;3517.
  ) 
 Here is how much of TeX's memory you used:
- 29427 strings out of 467525
- 536533 string characters out of 5412664
- 963709 words of memory out of 5000000
- 57361 multiletter control sequences out of 15000+600000
- 691147 words of font info for 301 fonts, out of 8000000 for 9000
+ 29436 strings out of 467525
+ 536599 string characters out of 5412664
+ 958759 words of memory out of 5000000
+ 57360 multiletter control sequences out of 15000+600000
+ 691851 words of font info for 309 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 84i,11n,94p,1647b,622s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 84i,11n,94p,1602b,620s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </people/cs/o/oxx220000/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></people/cs/o/oxx220000/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></people/cs/o/oxx220000/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></people/cs/o/oxx220000/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi5.pfb></people/cs/o/oxx220000/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb></people/cs/o/oxx220000/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi9.pfb></people/cs/o/oxx220000/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></people/cs/o/oxx220000/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmr5.pfb></people/cs/o/oxx220000/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb></people/cs/o/oxx220000/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmr9.pfb></people/cs/o/oxx220000/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></people/cs/o/oxx220000/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy7.pfb></people/cs/o/oxx220000/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy9.pfb></people/cs/o/oxx220000/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb></people/cs/o/oxx220000/texlive/2026/texmf-dist/fonts/type1/public/cm-super/sftt1000.pfb></people/cs/o/oxx220000/texlive/2026/texmf-dist/fonts/type1/urw/helvetic/uhvr8a.pfb></people/cs/o/oxx220000/texlive/2026/texmf-dist/fonts/type1/urw/times/utmb8a.pfb></people/cs/o/oxx220000/texlive/2026/texmf-dist/fonts/type1/urw/times/utmr8a.pfb></people/cs/o/oxx220000/texlive/2026/texmf-dist/fonts/type1/urw/times/utmri8a.pfb>
-Output written on main.pdf (29 pages, 10639243 bytes).
+Output written on main.pdf (28 pages, 10638787 bytes).
 PDF statistics:
- 664 PDF objects out of 1000 (max. 8388607)
- 531 compressed objects within 6 object streams
- 175 named destinations out of 1000 (max. 500000)
- 57115 words of extra memory for PDF output out of 61914 (max. 10000000)
+ 666 PDF objects out of 1000 (max. 8388607)
+ 534 compressed objects within 6 object streams
+ 173 named destinations out of 1000 (max. 500000)
+ 57123 words of extra memory for PDF output out of 61914 (max. 10000000)
 
