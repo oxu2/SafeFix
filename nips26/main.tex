@@ -75,6 +75,13 @@
 \usepackage{algpseudocode}
 \usepackage{enumitem}
 \usepackage{caption}
+\setlength{\textfloatsep}{6pt plus 1.0pt minus 2.0pt}
+\setlength{\floatsep}{5pt plus 1.0pt minus 1.5pt}
+\setlength{\intextsep}{6pt plus 1.0pt minus 2.0pt}
+\setlength{\abovedisplayskip}{6pt plus 1.0pt minus 2.0pt}
+\setlength{\belowdisplayskip}{6pt plus 1.0pt minus 2.0pt}
+\setlength{\abovedisplayshortskip}{3pt plus 1.0pt minus 1.0pt}
+\setlength{\belowdisplayshortskip}{4pt plus 1.0pt minus 1.0pt}
 \newcolumntype{C}[1]{>{\centering\arraybackslash}p{#1}}
 \input{math_commands.tex}
 
@@ -106,20 +113,20 @@
 \maketitle
 
 \begin{abstract}
-Targeted vision repair aims to correct model failures on rare semantic slices after a debugging pipeline identifies the failure slice and a generator produces corresponding repair images. In most existing workflows, these repair images are appended to the original training set, and the model is retrained or fine-tuned using all source data. While this preserves broad coverage, it also makes each repair cycle computationally expensive and time-consuming, especially as repairs accumulate over multiple iterations. Moreover, it provides little control over which source examples actually contribute to the repair. This naturally gives rise to a data selection problem related to active learning: rather than using the full dataset, the goal is to identify a compact yet informative subset that best supports repair while substantially reducing retraining cost. However, an effective repair subset must satisfy requirements beyond standard sample efficiency. In particular, it should preserve class coverage, retain rare repair-relevant attributes, and avoid redundancy with the generated repair data. Existing active learning methods typically prioritize uncertainty, diversity, or gradient-space coverage, but these signals are often poorly aligned with the semantic attributes that define the failure slice. To address this limitation, we propose \model, an attribute-driven selector that prioritizes samples based on attribute rarity, generated-data coverage, and class balance. We provide theoretical analysis and evaluate \model across image classification, pose estimation, and object detection. Across tasks and repair budgets, \model consistently achieves the strongest repair performance, demonstrating that explicit attribute metadata provides a repair-specific selection signal distinct from traditional active learning criteria.
+Targeted vision repair aims to correct model failures on rare semantic slices after a debugging pipeline identifies the failure slice and a generator produces corresponding repair images. In most existing workflows, these repair images are appended to the original training set, and the model is retrained or fine-tuned using all source data. While this preserves broad coverage, it also makes each repair cycle computationally expensive and time-consuming, especially as repairs accumulate over multiple iterations. Moreover, it provides little control over which source examples actually contribute to the repair. This poses a data selection problem related to active learning: rather than using the full dataset, the goal is to identify a compact yet informative subset that best supports repair while substantially reducing retraining cost. However, an effective repair subset must satisfy requirements beyond standard sample efficiency. In particular, it should preserve class coverage, retain rare repair-relevant attributes, and avoid redundancy with the generated repair data. Existing active learning methods typically prioritize uncertainty, diversity, or gradient-space coverage, but these signals are often poorly aligned with the semantic attributes that define the failure slice. To address this limitation, we propose \textbf{\model}, an attribute-driven selector that prioritizes samples based on attribute rarity, generated-data coverage, and soft class balance. We provide theoretical analysis and evaluate \model across image classification, pose estimation, and object detection. Across tasks and repair budgets, \model gives the strongest repair results in most settings, showing that explicit attribute metadata provides a repair-specific selection signal distinct from traditional active learning criteria.
 \end{abstract}
 
 \section{Introduction}
 
-Computer vision models can achieve strong aggregate benchmark performance while still failing on rare semantic subpopulations~\citep{barbu2019objectnet,chen2023hibug}. For example, a model may recognize people accurately overall but fail specifically on people wearing brown clothes in rainy scenes. Such failures are not fully characterized by the class label alone; instead, they arise from combinations of semantic attributes whose support in the training data may be limited~\citep{buolamwini2018gender,eyuboglu2022domino}. In deployed systems, the challenge is therefore not only to identify these failure slices, but also to repair them efficiently without repeatedly retraining on the entire dataset.
+Computer vision models can perform well on average while failing on rare semantic subpopulations~\citep{barbu2019objectnet,geirhos2020shortcut,chen2023hibug}. For example, a model may recognize people accurately overall but fail specifically on people wearing brown clothes in rainy scenes. Such failures are not fully characterized by the class label alone; instead, they arise from combinations of semantic attributes whose support in the training data may be limited~\citep{buolamwini2018gender,eyuboglu2022domino}. In deployed systems, the challenge is therefore not only to identify these failure slices, but also to repair them efficiently without repeatedly retraining on the entire dataset.
 
-To better identify and characterize these failures, recent work has developed attribute-aware debugging methods that improve the interpretability of failure discovery. 3DB~\citep{leclerc20213db} constructs structured attribute spaces over model errors, while \hibug~\citep{chen2023hibug} leverages vision--language models to describe failure slices through shared visual attributes. Related approaches such as AdaVision~\citep{gao2023adaptive}, DCD~\citep{singla2024data}, and HiBug2~\citep{chen2025hibug2} identify underperforming subpopulations and support retrieval-style interventions. In parallel, generation-based repair methods provide a complementary mechanism for correcting these failures. For example, \hibug~\citep{chen2023hibug} and subsequent methods~\citep{zhang2024distributionally,xu2025safefix} synthesize targeted repair examples for identified slices, while \safefix~\citep{xu2025safefix} further incorporates controlled image editing and vision--language filtering to preserve labels and unrelated attributes.
+To better identify and characterize these failures, recent work has developed attribute-aware debugging methods that improve the interpretability of failure discovery. 3DB~\citep{leclerc20213db} constructs structured attribute spaces over model errors, while \hibug~\citep{chen2023hibug} leverages vision--language models to describe failure slices through shared visual attributes. Related approaches such as AdaVision~\citep{gao2023adaptive}, DCD~\citep{singla2024data}, and HiBug2~\citep{chen2025hibug2} identify underperforming subpopulations and support retrieval-style interventions. In parallel, generation-based repair methods provide a complementary mechanism for correcting these failures. For example, \hibug~\citep{chen2023hibug} and subsequent methods~\citep{zhang2024distributionally,xu2025safefix} synthesize targeted repair examples for identified slices, while \safefix~\citep{xu2025safefix} further incorporates controlled image editing and vision--language filtering~\citep{wang2024finetuned,li2024self} to preserve labels and unrelated attributes.
 
-These pipelines address two parts of the repair workflow: identifying the failing semantic slice and generating targeted repair examples. However, a separate question remains: once targeted images are generated, how should they be combined with the original source data? Retraining on the full source pool can be costly, especially for dense prediction tasks. For example, training Keypoint R-CNN~\citep{mask-rcnn-2017} for COCO person keypoint estimation~\citep{lin2014microsoft} takes on the order of eight GPU-days~\citep{detectron2modelzoo}. As new bug slices are discovered across repair iterations, repeatedly retraining with the full source dataset becomes increasingly expensive.
+These pipelines address two parts of the repair workflow: identifying the failing semantic slice and generating targeted repair examples. However, a separate question remains: once targeted images are generated, how should they be combined with the original source data? Retraining on the full source pool can be costly, especially for dense prediction tasks. For example, training Keypoint R-CNN~\citep{mask-rcnn-2017} for COCO person keypoint estimation~\citep{lin2014microsoft} requires approximately eight GPU-days~\citep{detectron2modelzoo}. As new bug slices are discovered across repair iterations, repeatedly retraining with the full source dataset becomes increasingly expensive.
 
-Selecting a compact subset of source data is a natural strategy for reducing the cost of iterative repair, making the problem closely related to active learning (AL). Classical AL methods such as entropy-based uncertainty sampling~\citep{settles2009active}, CoreSet~\citep{sener2018active}, and BADGE~\citep{ash2020deep} select compact training subsets using model uncertainty, feature-space coverage, or gradient embeddings. However, targeted repair introduces challenges beyond standard AL settings. The selector must preserve useful source coverage while allocating sufficient budget to the diagnosed attribute slice, and it must account for the distribution shift introduced by generated repair images. As a result, a generic uncertainty- or coverage-based score may select informative images while still omitting rare repair-relevant attribute values, whereas an attribute-greedy policy may over-select values already supplied by the generated data.
+Selecting a compact subset of source data is a natural strategy for reducing the cost of iterative repair, making the problem closely related to active learning (AL). Classical AL methods such as entropy-based uncertainty sampling~\citep{settles2009active}, CoreSet~\citep{sener2018active}, and BADGE~\citep{ash2020deep} select compact training subsets using model uncertainty, feature-space coverage, or gradient embeddings. However, targeted repair introduces challenges beyond standard AL settings. The selector must preserve useful source coverage while allocating enough budget to the diagnosed attribute slice, and it must account for the distribution shift from generated repair images. As a result, a generic uncertainty- or coverage-based score may select informative images while still omitting rare repair-relevant attribute values, whereas an attribute-greedy policy may over-select values already supplied by the generated data.
 
-We study this remaining step as a repair-time source-selection problem. The input is not an unlabeled pool awaiting annotation, but a diagnosed failure slice, a generated repair set for that slice, and an annotated source pool from which only a compact subset can be retained. This changes the selection objective: the subset should preserve useful source coverage, include real examples with rare repair-relevant attributes, and avoid spending budget on attribute values already supplied by the generated images. We propose \model for this setting. Rather than representing source images only through feature embeddings or gradient statistics, \model treats each image as a structured attribute record and scores it using class-conditional rarity, generated-data frequency control, and soft class balancing. The method is therefore a focused selection component for existing repair pipelines: it does not replace failure-slice discovery or repair-image generation, but decides which original training examples should accompany the generated data during retraining.
+We study this remaining step as a repair-time source-selection problem. The input is not an unlabeled pool, but a diagnosed failure slice, a generated repair set, and an annotated source pool. This changes the selection objective: the subset should preserve useful source coverage, include real examples with rare repair-relevant attributes, and avoid spending budget on attribute values already supplied by the generated images. We propose \model for this setting. Rather than representing source images only through feature embeddings or gradient statistics, \model treats each image as a structured attribute record and scores it using class-conditional rarity, generated-data frequency control, and soft class balancing. In this role, \model is a focused selection component for existing repair pipelines: it does not replace failure-slice discovery or repair-image generation, but decides which original training examples should accompany the generated data during retraining.
 
 Our contributions are:
 \begin{enumerate}
@@ -127,9 +134,9 @@ Our contributions are:
 
 \item We propose \model, an attribute-driven source selector that combines class-conditional rarity, generated-data frequency control, and soft class balancing to prioritize repair-relevant source examples while avoiding redundancy and class collapse.
 
-\item We provide a theoretical analysis of repair-slice enrichment, showing when attribute-aware selection preferentially allocates source budget to rare target slices, in contrast to attribute-agnostic selectors whose uncertainty or coverage signals are weakly aligned with the diagnosed failure slice.
+% \item We provide a theoretical analysis of repair-slice enrichment, showing when attribute-aware selection preferentially allocates source budget to rare target slices, in contrast to attribute-agnostic selectors whose uncertainty or coverage signals are weakly aligned with the diagnosed failure slice.
 
-\item We evaluate \model across image classification, pose estimation, and object detection, comparing against uncertainty-based, coverage-based, gradient-embedding, detector-oriented, and random or stratified baselines under matched repair budgets.
+\item We evaluate \model across image classification, pose estimation, and object detection, comparing against uncertainty-based, coverage-based, gradient-embedding, detector-oriented, and random or stratified baselines under matched repair budgets. Quantitatively, \model gives the best performance in almost all active selection settings; with only half of the source data, it already exceeds the full-source repair reference in multiple tasks, while selecting subsets at least $39\times$ faster than the fastest non-attribute active-learning baseline.
 
 \end{enumerate}
 
@@ -137,9 +144,9 @@ Our contributions are:
 
 
 
-\noindent\textbf{Attribute-Based Debugging and Repair.} Attribute-based debugging methods aim to expose model failures as human-interpretable semantic slices. AdaVision~\citep{gao2023adaptive} and DCD~\citep{singla2024data} identify underperforming subpopulations and rely on retrieval-style interventions, which can require external data sources and manual validation. \hibug~\citep{chen2023hibug} uses vision--language models to discover failure slices through shared visual attributes, and HiBug2~\citep{chen2025hibug2} further improves the efficiency and coverage of this debugging process. SafeFix~\citep{xu2025safefix} shifts from retrieval to controlled generation by editing real training instances and filtering generated images with a vision-language model (VLM) to preserve labels and unrelated attributes. These works focus primarily on finding bug slices or constructing repair examples. We use this line of work as the upstream repair setting and study the remaining selection problem: given original source data and targeted generated data, select a compact retraining subset that preserves useful coverage while emphasizing repair-relevant attributes.
+\noindent\textbf{Attribute-Based Debugging and Repair.} Attribute-based debugging methods expose model failures as human-interpretable semantic slices. AdaVision~\citep{gao2023adaptive} and DCD~\citep{singla2024data} identify underperforming subpopulations and use retrieval-style interventions, which can require external data and manual validation. \hibug~\citep{chen2023hibug} uses vision--language models to discover failure slices through shared visual attributes, and HiBug2~\citep{chen2025hibug2} improves the efficiency and coverage of this process. SafeFix~\citep{xu2025safefix} shifts from retrieval to controlled generation by editing real training instances and filtering generated images with a vision-language model (VLM). These works focus on finding bug slices or constructing repair examples. We study the remaining selection problem: given source data and targeted generated data, select a compact retraining subset that preserves coverage while emphasizing repair-relevant attributes.
 
-\noindent\textbf{Active Learning.} Active learning reduces annotation or retraining cost by selecting informative subsets under a budget. Representative approaches include entropy-based uncertainty sampling~\citep{settles2009active}, coreset selection~\citep{sener2018active}, and hybrid gradient-embedding methods such as BADGE~\citep{ash2020deep}. Recent object-detection and label-budget-robust variants combine these signals, for example PPAL for plug-and-play object detection~\citep{yang2024ppal} and Uncertainty Herding for uncertainty-weighted coverage across label budgets~\citep{bae2025uncertainty}. Our setting differs from standard AL because the goal is not generic sample efficiency, but selecting source data that complements a targeted repair set and corrects an attribute-defined failure slice.
+\noindent\textbf{Active Learning.} Active learning reduces annotation or retraining cost by selecting informative subsets under a budget. Standard approaches include entropy-based uncertainty sampling~\citep{settles2009active}, coreset selection~\citep{sener2018active}, and gradient-embedding methods such as BADGE~\citep{ash2020deep}. Related data subset-selection methods use submodular, generalization-based, gradient-matching, and distribution-shift objectives~\citep{wei2015submodularity,killamsetty2021glister,killamsetty2021grad,kothawade2021similar,karanam2022orient}. Object-detection and label-budget-robust variants combine these signals, including PPAL~\citep{yang2024ppal} and Uncertainty Herding~\citep{bae2025uncertainty}. Targeted active learning has also considered rare classes and slices for object detection~\citep{kothawade2021talisman}. Our setting differs from standard AL because the goal is not generic sample efficiency, but selecting source data that complements a targeted repair set and corrects an attribute-defined failure slice.
 
 \section{Background}
 
@@ -156,8 +163,14 @@ We focus on slices that are both rare in the training set $\dataset_{\mathrm{tra
 
 \subsection{\model Framework}
 
-% TODO: Decide whether this subsection should stay text-only or point to a compact workflow figure.
-\model is designed as the selection step inside an existing targeted repair pipeline. The upstream workflow can follow prior model-repair systems such as HiBug and SafeFix~\citep{chen2023hibug,xu2025safefix}. Using the SafeFix-style ImageNet10 classification setting as a running example, a vision-language model (VLM) first proposes a task-level attribute set $\attrs$ and assigns an attribute value $v_{i,a}$ to each training or validation image. A ResNet classifier is then trained to a checkpoint $\theta_t$, after which the repair pipeline analyzes the validation behavior of $f_{\theta_t}$. An attribute slice $T_{\mathrm{bug}}$ is marked as a rare failure case if it is underrepresented in training and underperforms on validation:
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{figures/show/11attriselect_framework.pdf}
+\caption{\model framework. Given a diagnosed failure slice and generated images, \model scores source examples with class-conditional rarity, generated-data frequency penalty, and soft class balance, then returns an attribute-driven subset for retraining with the generated repair set.}
+\label{fig:attriselect-framework}
+\end{figure}
+
+\model is designed as the selection step inside an existing targeted repair pipeline. Figure~\ref{fig:attriselect-framework} summarizes this workflow. The upstream workflow can follow prior model-repair systems such as HiBug and SafeFix~\citep{chen2023hibug,xu2025safefix}. In the experiments reported here, the task-level attribute set $\attrs$ is fixed before selection, and Qwen3-VL~\citep{bai2025qwen3vl} assigns an attribute value $v_{i,a}$ to each training or validation image. Appendix~\ref{app:attribute-assignment-details} gives the task-specific attribute vocabularies and assignment protocol. Using the SafeFix-style ImageNet10 classification setting as a running example, a ResNet-18 classifier~\citep{he2016deep} is then trained to a checkpoint $\theta_t$, after which the repair pipeline analyzes the validation behavior of $f_{\theta_t}$. An attribute slice $T_{\mathrm{bug}}$ is marked as a rare failure case if it is underrepresented in training and underperforms on validation:
 \begin{equation}
 \label{eq:rare-failure-slice}
 |T_{\mathrm{bug}}\cap\dataset_{\mathrm{train}}| < \rho |\dataset_{\mathrm{train}}|,
@@ -176,7 +189,7 @@ For targeted repair, however, the subset must answer a semantic question: which 
 
 A second challenge arises because generated repair images alter the attribute distribution seen during retraining. If the generated pool already contains many examples with a target attribute, the source selector should not continue allocating most of its remaining budget to redundant examples of the same attribute. For instance, if generated repair images already emphasize rainy weather, a purely attribute-greedy selector may over-select common rainy street scenes while failing to retain rainy examples from underrepresented classes, unusual viewpoints, or occluded settings. As a result, the repair process can become biased toward the easiest contexts in which the target attribute appears.
 
-\model uses a three-part scoring function to avoid these failure modes. First, the \textbf{class-conditional rarity} term prioritizes attribute values that are rare within their class and therefore more likely to be repair-relevant. Second, the \textbf{generated-data frequency penalty} downweights attribute values that are already well represented by the generated repair images, reducing redundancy between synthetic and source data. Third, the \textbf{class-balance} term encourages coverage across classes by increasing the priority of classes that have received insufficient source budget. Together, these components steer selection toward repair-relevant attributes while preventing the subset from collapsing onto repeated synthetic attributes or a small number of easy classes.
+\model uses a three-part scoring function to avoid these failure modes. First, the \textbf{class-conditional rarity} term prioritizes attribute values that are rare within their class and therefore more likely to be repair-relevant. Second, the \textbf{generated-data frequency penalty} downweights attribute values that are already well represented by the generated repair images, reducing redundancy between synthetic and source data. Third, the \textbf{soft class-balance} term encourages coverage across classes by increasing the priority of classes that have received insufficient source budget. Together, these components steer selection toward repair-relevant attributes while preventing the subset from collapsing onto repeated synthetic attributes or a small number of easy classes.
 
 \noindent\textbf{Class-conditional rarity.} For a source image $x_i$ with class label $y_i$, let $v_{i,a}$ be the value of attribute $a$ on that image. The rarity term gives higher weight to attribute values that occur fewer times within the same class:
 \begin{equation}
@@ -199,24 +212,24 @@ We then define the \textbf{base source score} $\bar{s}_i$ by summing the rarity 
 
 Each component addresses a different failure mode in repair-time selection. Setting $\alpha=0$ removes the preference for rare semantic configurations within a class, reducing the selector to a frequency-driven policy. Setting $\lambda=0$ removes the redundancy penalty, allowing the selected subset to repeatedly choose attribute values already well represented in $\dataset_{\mathrm{gen}}$. Without class-aware re-ranking, high-scoring examples may further concentrate within a small subset of classes. As a result, the score is not intended to produce a neutral representative subset; instead, it explicitly allocates source budget toward semantic coverage that is most useful for the diagnosed repair problem.
 
-\noindent\textbf{Class balance.} Attribute scores are computed per image, so they can still over-select classes that happen to contain many high-scoring attributes. For example, in a fabric-texture repair, many high-scoring images may come from classes where fabric is visually common, while guitar images may contain the texture only in straps or carrying cases. We correct this with a soft class-balance term. Let $n_{\text{select}}$ be the source-data budget and let $N_{\text{cls}}$ be the number of classes, so the per-class target is $t = n_{\text{select}} / N_{\text{cls}}$. During greedy selection step $k$, a candidate from class $c$ receives the adjusted score
+\noindent\textbf{Soft class balance.} Attribute scores are computed per image, so they can still over-select classes that happen to contain many high-scoring attributes. For example, in a fabric-texture repair, many high-scoring images may come from classes where fabric is visually common, while guitar images may contain the texture only in straps or carrying cases. We correct this with a soft class-balance term. Let $n_{\text{select}}$ be the source-data budget and let $N_{\text{cls}}$ be the number of classes, so the per-class target is $t = n_{\text{select}} / N_{\text{cls}}$. During greedy selection step $k$, a candidate from class $c$ receives the adjusted score
 \begin{equation}
 \label{eq:class-balance-score}
 \tilde{s}_i^{(k)} = \bar{s}_i + C_c^{(k)}, \qquad
 C_c^{(k)} = w \cdot \frac{t - n_c^{(k)}}{t},
 \end{equation}
-where $n_c^{(k)}$ is the number of already selected source samples from class $c$, and $w \geq 0$ controls the strength of class balancing. Classes below their target allocation receive a positive correction, while classes above their target receive a negative one. As $w$ increases, the selector behaves more like stratified sampling, with the limiting case $w=\infty$ corresponding to round-robin class quotas. This mechanism preserves the attribute-based ranking from Eq.~\ref{eq:base-attribute-score} within each class while preventing a small subset of classes from dominating the repair set.
+where $n_c^{(k)}$ is the number of already selected source samples from class $c$, and $w \geq 0$ controls the strength of soft class balancing. Classes below their target allocation receive a positive correction, while classes above their target receive a negative one. As $w$ increases, the selector behaves more like stratified sampling, with the limiting case $w=\infty$ corresponding to round-robin class quotas. This mechanism preserves the attribute-based ranking from Eq.~\ref{eq:base-attribute-score} within each class while preventing a small subset of classes from dominating the repair set.
 
-Selection is performed greedily. We first compute the base score $\bar{s}_i$ for every source candidate and initialize both the selected set and the per-class counts to zero. At each iteration, every remaining candidate receives the adjusted score $\tilde{s}_i^{(k)}$ from Eq.~\ref{eq:class-balance-score}. The highest-scoring candidate is then added to $\dataset_{\mathrm{sel}}^{\mathrm{src}}$, its class count is updated, and the class-balance corrections are recomputed. The process repeats until $n_{\text{select}}$ source examples have been selected. The generated repair set remains fixed throughout this procedure and influences selection only through the frequency counts in Eq.~\ref{eq:frequency-penalty}. As a result, all methods are evaluated under the same generated-data budget.
+Selection is performed greedily. We first compute the base score $\bar{s}_i$ for every source candidate and initialize both the selected set and the per-class counts to zero. At each iteration, every remaining candidate receives the adjusted score $\tilde{s}_i^{(k)}$ from Eq.~\ref{eq:class-balance-score}. The highest-scoring candidate is then added to $\dataset_{\mathrm{sel}}^{\mathrm{src}}$, its class count is updated, and the soft class-balance corrections are recomputed. The process repeats until $n_{\text{select}}$ source examples have been selected. The generated repair set remains fixed throughout this procedure and influences selection only through the frequency counts in Eq.~\ref{eq:frequency-penalty}. As a result, all methods are evaluated under the same generated-data budget. Appendix~\ref{app:attriselect-algorithm} gives the full pseudocode, and Appendix~\ref{app:hyperparameter-details} reports the score hyperparameters used in the experiments.
 
 \subsection{Theoretical Analysis}
 \label{subsec:slice-enrichment}
 
-In targeted repair, useful subsets should contain rare, underperforming semantic configurations that complement the generated data. Let $N=|\dataset_{\mathrm{src}}|$ be the source-pool size and let the source-selection budget be $m=\lfloor rN\rfloor$ for $0<r<1$. Let $T\subseteq\dataset_{\mathrm{src}}$ denote the target failure slice, and write $T_c=T\cap\{x_i:y_i=c\}$ and $N_c=|\{x_i:y_i=c\}|$ for its class-conditional support.
+Useful repair subsets should contain rare, underperforming semantic configurations that complement the generated data. Let $N=|\dataset_{\mathrm{src}}|$ be the source-pool size and $m=\lfloor rN\rfloor$ be the budget for $0<r<1$. Let $T\subseteq\dataset_{\mathrm{src}}$ denote the target failure slice, and write $T_c=T\cap\{x_i:y_i=c\}$ and $N_c=|\{x_i:y_i=c\}|$ for class-conditional support.
 
 \begin{proposition}[Attribute-agnostic AL requires target alignment]
 \label{prop:al-target-alignment}
-Consider any AL selector that, within class $c$, chooses $B_c$ source examples using only non-attribute information $h_i$, such as model uncertainty, logits, feature embeddings, gradient embeddings, losses, detector-side difficulty scores, proxy class-quality weights, coverage gains, or image-level distances, and does not use the attribute values $\{v_{i,a}:a\in\attrs\}$. Let $\dataset_{\mathrm{AL}}$ denote its selected source subset. If the target-slice indicator $\mathbf{1}[x_i\in T_c]$ is conditionally independent of the selector information $h_i$ given class $c$, with ties and any internal randomness independent of the target indicator, then
+Consider any AL selector that, within class $c$, chooses $B_c$ source examples using only non-attribute information $h_i$, such as uncertainty, logits, embeddings, losses, detector difficulty, coverage, or image distances, and does not use the attribute values $\{v_{i,a}:a\in\attrs\}$. Let $\dataset_{\mathrm{AL}}$ denote its selected source subset. If the target-slice indicator $\mathbf{1}[x_i\in T_c]$ is conditionally independent of $h_i$ given class $c$, with ties and internal randomness independent of the target indicator, then
 \begin{equation}
 \label{eq:al-target-expectation}
 \mathbb{E}\big[|\dataset_{\mathrm{AL}}\cap T_c|\big]
@@ -226,111 +239,80 @@ B_c\frac{|T_c|}{N_c}.
 Thus an attribute-agnostic AL method can enrich the target slice only when its non-attribute signal is additionally aligned with that slice.
 \end{proposition}
 
-The expectation in Eq.~\ref{eq:al-target-expectation} reflects a base-rate limitation. For instance, if the target slice constitutes only $2\%$ of class $c$ and an AL method selects $100$ examples from that class, the expected number of target-slice examples is just $2$. This highlights the key advantage of \model in the repair setting: \model directly observes the semantic attributes defining the diagnosed slice, allowing selection to explicitly prioritize rare repair-relevant values rather than depending on uncertainty, difficulty, or coverage signals to correlate with them indirectly. The generated-data penalty and class-balance term further ensure that this preference does not degenerate into repeatedly selecting synthetic-like attributes or collapsing onto a small subset of classes. Coverage-based selectors face a related problem even when the target examples are present in the source pool. Suppose there are a few fabric-texture images, but their feature embeddings occupy a compact region. Traditional active learning methods may judge one or two representatives sufficient to cover that region. For generic active learning, this can be a reasonable allocation. For repair, however, the compact region is exactly the semantic slice where the model fails, so the retraining set may need many more fabric-texture examples than feature-space coverage alone would select.
+The expectation in Eq.~\ref{eq:al-target-expectation} reflects a base-rate limit: if a slice is only $2\%$ of class $c$, selecting $100$ class-$c$ examples yields only $2$ target examples in expectation. \model avoids relying on such indirect alignment by observing the attributes that define the diagnosed slice and prioritizing rare repair-relevant values directly. The generated-data penalty and soft class-balance term keep this preference from repeatedly selecting synthetic-like attributes or collapsing onto a few classes. Coverage-based selectors face a similar issue: if target examples form a compact feature region, one or two representatives may cover that region geometrically, even though repair may need more examples from it.
 
-Proposition~\ref{prop:al-target-alignment} is formulated at the level of selector information rather than for a specific baseline method. Stronger baselines such as PPAL and Uncertainty Herding improve upon plain uncertainty sampling or coreset selection, but they still rely on uncertainty, difficulty, or coverage signals being aligned with the discovered attribute slice. When the failure slice is defined by rare semantic attributes that are weakly reflected in these signals, the expected allocation of selected samples to the target slice remains proportional to the slice prevalence. Appendix~\ref{app:theory-analysis} provides the proof, a coverage-based instance, and the corresponding guarantees for the \model score. In particular, under explicit conditions on attribute rarity and generated-data frequency, \model ranks rare target-slice examples above non-target examples within the same class, enriches the selected repair subset with repair-relevant attributes, and controls class imbalance through the soft class-balance term.
+The proposition is stated at the level of selector information rather than for a specific baseline. Stronger baselines such as PPAL and Uncertainty Herding still depend on uncertainty, difficulty, or coverage being aligned with the discovered attribute slice; when this alignment is weak, allocation to the target slice remains proportional to slice prevalence. Appendix~\ref{app:theory-analysis} gives the proof, a coverage-based instance, and score-level conditions under which \model prioritizes rare target-slice examples while limiting class imbalance.
 
 \section{Experiments}
 
 \paragraph{Datasets and Tasks}
 We evaluate \model on three vision tasks: image classification, pose estimation, and object detection. In all settings, the goal is to test whether attribute-aware source-data selection can choose a subset that improves the model performance and fixes bugs.
 
-For image classification, we follow \safefix~\citep{xu2025safefix}: a ResNet-18 classifier on an ImageNet subset~\citep{deng2009imagenet} with 10 classes, 1,300 images per class, and an 8:1:1 train/validation/test split, denoted ImageNet10. We also evaluate CelebA~\citep{liu2015deep} lipstick-wearing classification with a ResNet-18-based binary classifier and 80,000/10,000/10,000 train/validation/test images. For pose estimation, we follow HiBug2~\citep{chen2025hibug2} on COCO person keypoints~\citep{lin2014microsoft}, using Keypoint R-CNN~\citep{mask-rcnn-2017} with a ResNet-50-FPN backbone, 20,000 source training images, and 1,173-image held-out validation and test splits, evaluated by COCO keypoint AP. For object detection, we use KITTI~\citep{geiger2012we} Car and Pedestrian instances converted to YOLO format with 5,000/1,240/1,241 train/validation/test images, and train YOLOv8n.
+For image classification, we follow \safefix~\citep{xu2025safefix}: a ResNet-18 classifier on an ImageNet subset~\citep{deng2009imagenet} with 10 classes, 1,300 images per class, and an 8:1:1 train/validation/test split, denoted ImageNet10. We also evaluate CelebA~\citep{liu2015deep} lipstick-wearing classification with a ResNet-18-based binary classifier and 80,000/10,000/10,000 train/validation/test images. For pose estimation, we follow HiBug2~\citep{chen2025hibug2} on COCO person keypoints~\citep{lin2014microsoft}, using Keypoint R-CNN~\citep{mask-rcnn-2017} with a ResNet-50-FPN backbone~\citep{he2016deep}, 20,000 source training images, and 1,173-image held-out validation and test splits, evaluated by COCO keypoint AP. For object detection, we use KITTI~\citep{geiger2012we} Car and Pedestrian instances converted to YOLO format with 5,000/1,240/1,241 train/validation/test images, and train YOLOv8n. Implementation details are given in Appendix~\ref{app:implementation-details}.
 
 \paragraph{Metrics}
 Let $M$ denote the task metric: test accuracy for image classification, COCO keypoint AP for pose estimation, and mAP50--95 for object detection. We focus on targeted improvements for failure cases, which are critical for fairness and safety, while also tracking overall task performance. Following prior work~\citep{lai2023improvingpredictionbackwardcompatiblilitynlp,xu2025safefix}, we report the Fix Rate (FR),
 \begin{equation}
 \mathrm{FR}(\%)=100\cdot\frac{M_{\mathrm{after}}-M_{\mathrm{before}}}{1-M_{\mathrm{before}}},
 \end{equation}
-where $M_{\mathrm{before}}$ and $M_{\mathrm{after}}$ are the test metrics before and after repair. For accuracy, FR is the percentage of the original error gap that is corrected; for AP and mAP, it is the normalized improvement toward the maximum score, reported in percent.
+where $M_{\mathrm{before}}$ and $M_{\mathrm{after}}$ are the test metrics before and after repair. In the main FR tables, $M_{\mathrm{before}}$ is $0.7173$ for ImageNet10, $0.9057$ for CelebA, $0.5902$ for COCO, and $0.5626$ for KITTI. For accuracy, FR is the percentage of the original error gap that is corrected; for AP and mAP, it is the normalized improvement toward the maximum score, reported in percent.
 
 \paragraph{Baselines}
-We compare \model with seven generic source-selection baselines. \textsc{Random} samples source images uniformly at random. \textsc{Stratified} preserves class-level proportions during sampling~\citep{neyman1934two}. \textsc{Entropy} is the entropy-based uncertainty baseline; it selects examples with the largest predictive entropy or task-specific confidence-entropy proxy~\citep{settles2009active}. \textsc{CoreSet} uses greedy coverage in embedding space~\citep{sener2018active}. \textsc{BADGE} selects gradient-embedding batches that combine uncertainty and diversity~\citep{ash2020deep}. \textsc{PPAL} is a plug-and-play active-learning baseline for object detection~\citep{yang2024ppal}. \textsc{UHerding} denotes Uncertainty Herding, which combines uncertainty with coverage across label budgets~\citep{bae2025uncertainty}. 
+We compare \model with seven source-selection baselines. \textbf{\textsc{Random}} samples images uniformly at random. \textbf{\textsc{Stratified}} preserves class proportions during sampling~\citep{neyman1934two}. \textbf{\textsc{Entropy}} is the entropy-based uncertainty baseline; it selects examples with the largest predictive entropy or task-specific confidence-entropy proxy~\citep{settles2009active}. \textbf{\textsc{CoreSet}} uses greedy coverage in embedding space~\citep{sener2018active}. \textbf{\textsc{BADGE}} selects gradient-embedding batches that combine uncertainty and diversity~\citep{ash2020deep}. \textbf{\textsc{PPAL}} is a plug-and-play active-learning baseline for object detection~\citep{yang2024ppal}. \textbf{\textsc{UHerding}} denotes Uncertainty Herding, which combines uncertainty with coverage across label budgets~\citep{bae2025uncertainty}.
+
+Since this repair setting uses both VLM-assigned attributes and generated repair images, we include two robustness checks in the appendix: Appendix~\ref{app:vlm-human-audit} audits the attribute metadata and noise sensitivity, and Appendix~\ref{app:image-generation-effect} tests whether the source-selection trend holds under alternative generators.
 
 \subsection{Main Results}
 
-Tables~\ref{tab:main-fr-imagenet}--\ref{tab:main-fr-kitti} compare \model with generic source-selection baselines using Fix Rate. The ratio $1.0$ rows use the full original source set, so subset selection is inactive and the repeated entries are the corresponding full-data reference. The original task metrics are reported in Appendix~\ref{app:main-metric-tables}.
+Table~\ref{tab:main-fr} compares \model with generic source-selection baselines using Fix Rate. All main-result entries are averaged over five random seeds. The original task metrics and variance over five seeds are reported in Appendix~\ref{app:main-metric-tables}.
 
-\model gives the best FR in $19$ of the $20$ active source-selection settings, excluding the ratio-$1.0$ full-data references where all selectors are identical. The improvement is clear at small budgets, where the selected source subset is highly constrained, and it generally remains at larger budgets. KITTI is the only near-exception: PPAL is slightly higher at ratio $0.7$ by $0.05$ FR points, while \model remains best at the other four KITTI ratios.
+\noindent\textbf{Analysis.} \model gives the best FR in almost all active source-selection settings, excluding the ratio-$1.0$ full-data references where all selectors are identical. The gap is largest at small budgets, where the selected source subset is highly constrained, and it generally remains at larger budgets. KITTI is the only near-exception: PPAL is slightly higher at ratio $0.7$ by $0.05$ FR points, while \model remains best at the other four KITTI ratios.
 
-Subset selection can also outperform the full-data setting, especially on ImageNet10, CelebA, and COCO. This suggests that the full candidate pool contains noisy, redundant, or target-irrelevant samples, and that selection improves the effective training distribution. In this sense, \model is not only a way to save data or training cost; it also improves data quality and target-slice alignment during repair.
+Subset selection can also outperform the full-data setting, especially on ImageNet10, CelebA, and COCO. This suggests that the full candidate pool contains noisy, redundant, or target-irrelevant samples, and that selection improves the effective training distribution. In this sense, \model is not only a way to save data or training cost; it also improves data quality and target-slice alignment during repair. The qualitative t-SNE visualizations in Appendix~\ref{app:selection-tsne} further support this interpretation. \model does not simply trace the same regions as generic AL baselines; it selects repair-attribute-related source examples while spreading them across varied visual contexts, consistent with the rarity and soft-balance terms in the score.
 
-\begin{table}[t]
-\centering
-\caption{ImageNet10 image-classification repair results. Metric: FR (\%).}
-\label{tab:main-fr-imagenet}
-\small
-\setlength{\tabcolsep}{3pt}
-\begin{tabular}{c c c c c c c c c}
-\toprule
-Ratio & Random & Stratified & Entropy & CoreSet & BADGE & UHerding & PPAL & \textbf{Ours} \\
-\midrule
-0.1 & 3.40 & 3.47 & 2.87 & 3.40 & 5.31 & 5.59 & 3.96 & \textbf{6.93} \\
-0.3 & 4.78 & 6.93 & 4.21 & 6.93 & 8.84 & 10.47 & 7.75 & \textbf{11.28} \\
-0.5 & 7.32 & 9.66 & 5.59 & 8.03 & 10.47 & 8.38 & 8.84 & \textbf{11.85} \\
-0.7 & 8.84 & 6.12 & 6.40 & 7.75 & 10.75 & 10.47 & 8.84 & \textbf{12.10} \\
-0.9 & 10.22 & 10.47 & 10.22 & 6.12 & 9.37 & 11.57 & 11.85 & \textbf{13.76} \\
-1.0 & 8.03 & 8.03 & 8.03 & 8.03 & 8.03 & 8.03 & 8.03 & 8.03 \\
-\bottomrule
-\end{tabular}
-\end{table}
+KITTI behaves differently at the smallest source budget. At ratio $0.1$, all methods have negative FR. A likely reason is that KITTI has only $5{,}000$ training images, so the selected source subset contains just $500$ real images, unlike ImageNet10, COCO, and CelebA where the same ratio still leaves thousands to tens of thousands of source examples. This negative value should therefore be read as a low-data failure mode: for small detection datasets, an overly small repair subset may not retain enough background, viewpoint, and object-scale variation to improve over the original detector. Under the same generated repair set and source budget, however, \model remains the least damaging option and has the highest FR in this row, indicating the strongest relative source subset under the constrained comparison.
 
 \begin{table}[t]
 \centering
-\caption{CelebA image-classification repair results. Metric: FR (\%).}
-\label{tab:main-fr-celeba}
-\small
-\setlength{\tabcolsep}{3pt}
-\begin{tabular}{c c c c c c c c c}
+\caption{Main repair results across tasks, averaged over five random seeds. Metric: FR (\%).}
+\label{tab:main-fr}
+\footnotesize
+\setlength{\tabcolsep}{1.5pt}
+\begin{tabular}{l c c c c c c c c c}
 \toprule
-Ratio & Random & Stratified & Entropy & CoreSet & BADGE & UHerding & PPAL & \textbf{Ours} \\
+\textbf{Dataset} & Ratio & Random & Stratified & Entropy & CoreSet & BADGE & UHerding & PPAL & \textbf{Ours} \\
 \midrule
-0.1 & 4.88 & 2.44 & 7.10 & -6.04 & 3.18 & -1.06 & 5.94 & \textbf{8.48} \\
-0.3 & 6.04 & 5.30 & 8.70 & 7.95 & 1.91 & 3.50 & 4.03 & \textbf{8.91} \\
-0.5 & 6.04 & 7.95 & 7.64 & 8.17 & 2.86 & 2.23 & 9.97 & \textbf{13.79} \\
-0.7 & 2.86 & 8.27 & 10.18 & 6.57 & 8.06 & 5.09 & 6.04 & \textbf{12.09} \\
-0.9 & 3.18 & 4.56 & 8.27 & 6.04 & 6.04 & 4.56 & 6.57 & \textbf{14.74} \\
-1.0 & 6.04 & 6.04 & 6.04 & 6.04 & 6.04 & 6.04 & 6.04 & 6.04 \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-\begin{table}[t]
-\centering
-\caption{COCO pose-estimation repair results. Metric: FR (\%).}
-\label{tab:main-fr-coco}
-\small
-\setlength{\tabcolsep}{3pt}
-\begin{tabular}{c c c c c c c c c}
-\toprule
-Ratio & Random & Stratified & Entropy & CoreSet & BADGE & UHerding & PPAL & \textbf{Ours} \\
+\multirow{6}{*}{ImageNet10}
+& 0.1 & 3.40 & 3.47 & 2.87 & 3.40 & 5.31 & 5.59 & 3.96 & \textbf{6.93} \\
+& 0.3 & 4.78 & 6.93 & 4.21 & 6.93 & 8.84 & 10.47 & 7.75 & \textbf{11.28} \\
+& 0.5 & 7.32 & 9.66 & 5.59 & 8.03 & 10.47 & 8.38 & 8.84 & \textbf{11.85} \\
+& 0.7 & 8.84 & 6.12 & 6.40 & 7.75 & 10.75 & 10.47 & 8.84 & \textbf{12.10} \\
+& 0.9 & 10.22 & 10.47 & 10.22 & 6.12 & 9.37 & 11.57 & 11.85 & \textbf{13.76} \\
+& 1.0 & 8.03 & 8.03 & 8.03 & 8.03 & 8.03 & 8.03 & 8.03 & 8.03 \\
 \midrule
-0.1 & 3.56 & 5.08 & 5.61 & -0.61 & 2.03 & 2.71 & 1.17 & \textbf{6.86} \\
-0.3 & 3.37 & 8.32 & 7.64 & 8.64 & 6.12 & 4.32 & 6.42 & \textbf{9.86} \\
-0.5 & 7.49 & 8.00 & 9.27 & 6.47 & 7.42 & 6.12 & 6.83 & \textbf{10.13} \\
-0.7 & 6.08 & 9.69 & 9.54 & 9.10 & 8.64 & 6.17 & 7.83 & \textbf{10.18} \\
-0.9 & 4.61 & 9.49 & 6.54 & 7.32 & 7.59 & 7.05 & 9.74 & \textbf{11.05} \\
-1.0 & 8.71 & 8.71 & 8.71 & 8.71 & 8.71 & 8.71 & 8.71 & 8.71 \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-\begin{table}[t]
-\centering
-\caption{KITTI object-detection repair results. Metric: FR (\%).}
-\label{tab:main-fr-kitti}
-\small
-\setlength{\tabcolsep}{3pt}
-\begin{tabular}{c c c c c c c c c}
-\toprule
-Ratio & Random & Stratified & Entropy & CoreSet & BADGE & UHerding & PPAL & \textbf{Ours} \\
+\multirow{6}{*}{CelebA}
+& 0.1 & 4.88 & 2.44 & 7.10 & -6.04 & 3.18 & -1.06 & 5.94 & \textbf{8.48} \\
+& 0.3 & 6.04 & 5.30 & 8.70 & 7.95 & 1.91 & 3.50 & 4.03 & \textbf{8.91} \\
+& 0.5 & 6.04 & 7.95 & 7.64 & 8.17 & 2.86 & 2.23 & 9.97 & \textbf{13.79} \\
+& 0.7 & 2.86 & 8.27 & 10.18 & 6.57 & 8.06 & 5.09 & 6.04 & \textbf{12.09} \\
+& 0.9 & 3.18 & 4.56 & 8.27 & 6.04 & 6.04 & 4.56 & 6.57 & \textbf{14.74} \\
+& 1.0 & 6.04 & 6.04 & 6.04 & 6.04 & 6.04 & 6.04 & 6.04 & 6.04 \\
 \midrule
-0.1 & -9.65 & -7.27 & -7.52 & -8.89 & -6.95 & -9.24 & -8.32 & \textbf{-5.81} \\
-0.3 & -0.48 & -1.23 & 0.23 & -0.32 & -0.05 & -1.21 & -1.33 & \textbf{0.46} \\
-0.5 & 2.13 & 1.23 & 3.20 & 3.04 & 2.29 & 1.12 & 2.17 & \textbf{3.36} \\
-0.7 & 3.20 & 3.06 & 3.34 & 3.34 & 2.08 & 3.25 & \textbf{3.57} & 3.52 \\
-0.9 & 4.37 & 4.66 & 4.66 & 3.54 & 4.21 & 4.85 & 3.89 & \textbf{5.12} \\
-1.0 & 5.30 & 5.30 & 5.30 & 5.30 & 5.30 & 5.30 & 5.30 & 5.30 \\
+\multirow{6}{*}{COCO}
+& 0.1 & 3.56 & 5.08 & 5.61 & -0.61 & 2.03 & 2.71 & 1.17 & \textbf{6.86} \\
+& 0.3 & 3.37 & 8.32 & 7.64 & 8.64 & 6.12 & 4.32 & 6.42 & \textbf{9.86} \\
+& 0.5 & 7.49 & 8.00 & 9.27 & 6.47 & 7.42 & 6.12 & 6.83 & \textbf{10.13} \\
+& 0.7 & 6.08 & 9.69 & 9.54 & 9.10 & 8.64 & 6.17 & 7.83 & \textbf{10.18} \\
+& 0.9 & 4.61 & 9.49 & 6.54 & 7.32 & 7.59 & 7.05 & 9.74 & \textbf{11.05} \\
+& 1.0 & 8.71 & 8.71 & 8.71 & 8.71 & 8.71 & 8.71 & 8.71 & 8.71 \\
+\midrule
+\multirow{6}{*}{KITTI}
+& 0.1 & -9.65 & -7.27 & -7.52 & -8.89 & -6.95 & -9.24 & -8.32 & \textbf{-5.81} \\
+& 0.3 & -0.48 & -1.23 & 0.23 & -0.32 & -0.05 & -1.21 & -1.33 & \textbf{0.46} \\
+& 0.5 & 2.13 & 1.23 & 3.20 & 3.04 & 2.29 & 1.12 & 2.17 & \textbf{3.36} \\
+& 0.7 & 3.20 & 3.06 & 3.34 & 3.34 & 2.08 & 3.25 & \textbf{3.57} & 3.52 \\
+& 0.9 & 4.37 & 4.66 & 4.66 & 3.54 & 4.21 & 4.85 & 3.89 & \textbf{5.12} \\
+& 1.0 & 5.30 & 5.30 & 5.30 & 5.30 & 5.30 & 5.30 & 5.30 & 5.30 \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -350,9 +332,9 @@ we keep them in the table as zero-cost references.
 
 \begin{table}[t]
 \centering
-\caption{Selection-stage wall-clock time. Units are seconds (s), minutes (m), and hours (h). Speedup is measured against the fastest non-attribute active-learning baseline in the same row.}
+\caption{Source-subset selection time. Units are seconds (s), minutes (m), and hours (h). Speedup is measured against the fastest non-attribute active-learning baseline in the same row.}
 \label{tab:selection-efficiency}
-\small
+\footnotesize
 \setlength{\tabcolsep}{1.2pt}
 \begin{tabular}{l c c c c c c c c c}
 \toprule
@@ -364,33 +346,35 @@ COCO & 0.5 & 0s & 0s & 865s & 25m & 2h & 94s & 90s & \textbf{0.32s / 281$\times$
 \midrule
 CelebA & 0.1 & 0s & 0s & 49s & 45m & 2h & 63s & 46s & \textbf{0.42s / 110$\times$} \\
 CelebA & 0.3 & 0s & 0s & 51s & 3h & 5h & 65s & 51s & \textbf{0.51s / 100$\times$} \\
-CelebA & 0.5 & 0s & 0s & 49s & 5h & 9h & 61s & 61s & \textbf{1.37s / 36$\times$} \\
+CelebA & 0.5 & 0s & 0s & 54s & 5h & 9h & 61s & 61s & \textbf{1.37s / 39$\times$} \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-Across these settings, \model selects the source subset in less than two
-seconds, whereas the fastest non-attribute active-learning baseline takes tens
-of seconds and the slower coverage or gradient-embedding methods can take
-minutes to hours. The efficiency gain is therefore not only relative to the
-most expensive baselines: even against the fastest nontrivial baseline in each
-row, \model is at least $36\times$ faster on CelebA and more than $230\times$
-faster on COCO.
+\model selects each subset in less than two seconds. The fastest non-attribute
+active-learning baseline takes tens of seconds, and coverage or
+gradient-embedding methods can take minutes to hours. Even against the fastest
+nontrivial baseline in each row, \model is at least $39\times$ faster on
+CelebA and more than $230\times$ faster on COCO.
 
-\subsection{Attribute-Slice Accuracy Deltas}
+\subsection{Attribute-Slice Accuracy Differences}
+
+For each attribute slice, we report the accuracy difference
+$M_{\mathrm{after}}-M_{\mathrm{before}}$, where $M_{\mathrm{before}}$ is
+measured at the original vision model checkpoint $\theta_t$ and
+$M_{\mathrm{after}}$ is measured after retraining. For ImageNet10
+classification, $M$ is accuracy. Positive values therefore indicate
+slice-level improvement after repair. Figure~\ref{fig:imagenet-ratio05-attribute-delta} reports these differences for ImageNet10 at source ratio $0.5$.
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=\linewidth]{figures/show/imagenet_ratio0p5_show_heatmap.pdf}
-\caption{ImageNet10 ratio-$0.5$ attribute-slice accuracy deltas. The upstream repair pipeline generates examples targeting pink color and fabric texture, and each method retrains with the same generated data plus a ratio-$0.5$ selected source subset. \model gives larger gains on the targeted attribute families, with the strongest gains on the exact repair values.}
+\includegraphics[width=0.86\linewidth,trim={0 9pt 0 26pt},clip]{figures/show/heatmap_.pdf}
+\caption{ImageNet10 ratio-$0.5$ attribute-slice accuracy differences. \model gives larger gains on the targeted attribute families, with the strongest gains on the exact repair values.}
 \label{fig:imagenet-ratio05-attribute-delta}
 \end{figure}
 
-Figure~\ref{fig:imagenet-ratio05-attribute-delta} reports attribute-slice
-accuracy deltas, defined as the accuracy of the retrained model minus the
-accuracy of the original ResNet checkpoint $\theta_t$ on the same slice. All
-methods use the same generated repair images and differ only in the selected
-ratio-$0.5$ source subset. The generated data targets pink color and fabric
+All methods use the same generated repair images and differ only in the
+selected source subset. The generated data targets pink color and fabric
 texture. \model gives the largest gains on the targeted attribute families,
 especially the exact repair values pink and fabric, indicating that the
 selected source subset improves target-slice alignment rather than only
@@ -398,15 +382,47 @@ changing overall accuracy. A COCO pose-estimation version with the full
 annotated attribute vocabulary is provided in
 Appendix~\ref{app:attribute-slice-heatmaps}.
 
+\subsection{Failure-Slice Repair Counts}
+
+\begin{wraptable}{r}{0.27\linewidth}
+\vspace{-1.0em}
+\centering
+\caption{COCO repaired slices out of 12.}
+\label{tab:coco-bug-repair-counts}
+\scriptsize
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{0.9}
+\begin{tabular}{c c c}
+\toprule
+Ratio & Best AL & Ours \\
+\midrule
+0.1 & 7 & \textbf{10} \\
+0.3 & 8 & \textbf{10} \\
+0.5 & 10 & \textbf{11} \\
+0.7 & 10 & \textbf{11} \\
+0.9 & 10 & \textbf{11} \\
+\bottomrule
+\end{tabular}
+\vspace{-1.2em}
+\end{wraptable}
+
+We also evaluate repair at the level of discovered failure slices. In the
+upstream bug-discovery stage for COCO, 12 failure slices are identified. With
+the proposed framework, \model repairs 10 of these slices already at source
+ratio $0.1$, whereas the strongest active-learning baseline repairs 7 slices
+at the same ratio. The strongest baseline reaches 10 repaired slices only from
+source ratio $0.5$ onward, while \model repairs 11 slices at ratios $0.5$,
+$0.7$, and $0.9$.
+
 \subsection{Ablation Study}
 
-We ablate the three score components on ImageNet10 ControlNet repair to test whether the gains come from a single term or from their combination. Table~\ref{tab:imagenet-rpc-ablation} reports test accuracy for all component subsets. The full $R+P+C$ setting combines rarity $R$, generated-data frequency penalty $P$, and class balance $C$.
+We ablate the three score components on ImageNet10 classification repair to test whether the gains come from a single term or from their combination. Table~\ref{tab:imagenet-rpc-ablation} reports test accuracy for all component subsets. The full $R+P+C$ setting combines rarity $R$, generated-data frequency penalty $P$, and soft class balance $C$. The full $R+P+C$ setting is the most stable choice in this ablation, giving the best result at every ratio. The leave-one-component-out drops from the full setting are nearly identical: removing $R$ drops test accuracy by $0.00942$ on average, removing $P$ by $0.00940$, and removing $C$ by $0.00940$. Thus the ablation supports a complementarity claim rather than a single dominant-component claim on ImageNet10. Single-component variants are weaker on average ($R$: $0.74198$, $P$: $0.74038$, $C$: $0.73814$) than the full setting ($0.74892$), showing that each component alone is insufficient. A COCO pose-estimation component ablation with a broadly similar trend is reported in Appendix~\ref{app:coco-rpc-ablation}.
 
 \begin{table}[t]
 \centering
-\caption{ImageNet10 ControlNet attribute-score component ablation. Metric: test accuracy.}
+\caption{ImageNet10 classification attribute-score component ablation. Metric: test accuracy.}
 \label{tab:imagenet-rpc-ablation}
-\small
+\footnotesize
 \setlength{\tabcolsep}{4pt}
 \begin{tabular}{c c c c c c c c c}
 \toprule
@@ -420,9 +436,6 @@ Ratio & none & $R$ & $P$ & $C$ & $P+C$ & $R+C$ & $R+P$ & $R+P+C$ \\
 \bottomrule
 \end{tabular}
 \end{table}
-
-The full $R+P+C$ setting is the most reliable pattern, giving the best result at every ratio. The leave-one-component-out drops from the full setting are nearly identical: removing $R$ drops test accuracy by $0.00942$ on average, removing $P$ by $0.00940$, and removing $C$ by $0.00940$. Thus the ablation supports a complementarity claim rather than a single dominant-component claim on ImageNet10. Single-component variants are weaker on average ($R$: $0.74198$, $P$: $0.74038$, $C$: $0.73814$) than the full setting ($0.74892$), showing that each component alone is insufficient. A COCO Brown-Rainy component ablation with a broadly similar trend is reported in Appendix~\ref{app:coco-rpc-ablation}.
-
 % We conduct experiments on ImageNet-10 (multi-class) and CelebA (binary, targeting the `redhair\_brownskin' subgroup correlation). We employ a standard ResNet-18 architecture, initiating with pretrained weights and utilizing the AdamW optimizer. 
 
 % \subsection{\model vs. Long-Tail Learning Baselines}
@@ -489,7 +502,7 @@ The full $R+P+C$ setting is the most reliable pattern, giving the best result at
 
 \section{Conclusion}
 
-We studied targeted vision model repair as a repair-time source-selection problem. In this setting, a failure slice has already been diagnosed and targeted repair images have already been generated; the remaining question is which original source examples should accompany those generated images during retraining. \model addresses this question with an attribute-driven score that combines class-conditional rarity, generated-data frequency control, and soft class balancing. The analysis shows when this score enriches rare target slices relative to attribute-agnostic selectors, and the experiments across classification, pose estimation, and detection indicate that structured attribute metadata provides a useful signal beyond generic uncertainty, coverage, and gradient-embedding scores. This makes \model a focused component for localized repair pipelines rather than a replacement for upstream bug discovery or image generation.
+We studied targeted vision model repair as a repair-time source-selection problem. In this setting, a failure slice has been diagnosed and targeted repair images have been generated; the remaining question is which source examples should accompany those generated images during retraining. \model addresses this question with an attribute-driven score that combines class-conditional rarity, generated-data frequency control, and soft class balancing. The analysis shows when this score enriches rare target slices relative to attribute-agnostic selectors, and the experiments across classification, pose estimation, and detection indicate that structured attribute metadata provides a useful signal beyond uncertainty, coverage, and gradient-embedding scores. \model is therefore best viewed as one component in a localized repair pipeline, not as a replacement for upstream bug discovery or image generation.
 
 \begin{ack}
 All acknowledgments go at the end of the paper before the list of references.
@@ -505,7 +518,209 @@ All acknowledgments go at the end of the paper before the list of references.
 \section{Implementation Details}
 \label{app:implementation-details}
 
-We use vision-language models (VLMs) in two separate roles. First, a VLM proposes the semantic attribute vocabulary $\attrs$ for a task. For example, in KITTI object detection, GPT-5~\citep{openai2025gpt5} is used to define candidate visual attributes such as color, weather, scale, viewpoint, occlusion, truncation, and motion state. Second, a VLM assigns attribute values to the source images. In our KITTI implementation, we use Qwen3-VL~\citep{bai2025qwen3vl} for this assignment step. For the red-cloudy KITTI repair, color and weather are the attribute fields tied to the discovered repair slice.
+\paragraph{Random seeds.}
+For the main-result tables, we run each setting with five seeds: 0, 42, 1234, 3407, and 2024. Unless stated otherwise, auxiliary analyses outside the main-result tables use seed 42.
+
+\paragraph{Hardware and datasets.}
+All experiments use a GPU cluster with four NVIDIA RTX A5000 GPUs. For image classification, we follow \safefix~\citep{xu2025safefix}: a ResNet-18 classifier~\citep{he2016deep} on an ImageNet subset~\citep{deng2009imagenet} with 10 classes, 1,300 images per class, and an 8:1:1 train/validation/test split, denoted ImageNet10. The ImageNet10 classes are \texttt{backpack}, \texttt{barber chair}, \texttt{coffee mug}, \texttt{desk}, \texttt{electric guitar}, \texttt{park bench}, \texttt{pitcher}, \texttt{purse}, \texttt{rocking chair}, and \texttt{water bottle}. We also evaluate CelebA~\citep{liu2015deep} lipstick-wearing classification with a ResNet-18-based binary classifier and 80,000/10,000/10,000 train/validation/test images. For pose estimation, we follow HiBug2~\citep{chen2025hibug2} on COCO person keypoints~\citep{lin2014microsoft}, using Keypoint R-CNN~\citep{mask-rcnn-2017} with a ResNet-50-FPN backbone~\citep{he2016deep}, 20,000 source training images, and 1,173-image held-out validation and test splits. For object detection, we use KITTI~\citep{geiger2012we} Car and Pedestrian instances converted to YOLO format with 5,000/1,240/1,241 train/validation/test images, and train YOLOv8n.
+
+\paragraph{Training and repair schedule.}
+For ImageNet10 classification, the diagnosis-stage ResNet-18 model is trained with cross-entropy loss and Adam~\citep{kingma2015adam}, using learning rate $1\times10^{-4}$, weight decay $1\times10^{-3}$, batch size 64, and 30 epochs. During repair, we train with the selected source subset and the generated repair images for 15 epochs using learning rate $1\times10^{-5}$. For CelebA, COCO, and KITTI, the repair-stage epoch count is set to half of the corresponding diagnosis-stage training schedule, with the same repair-stage learning rate $1\times10^{-5}$.
+
+\paragraph{Image generation.}
+For the generated repair images used in the main results, we use \controlnet~\citep{zhang2023adding}, a conditional diffusion model based on Stable Diffusion 1.5~\citep{rombach2022high}. The model is conditioned on soft HED boundaries~\citep{xie2015holistically} extracted from source images and uses 30 DDIM inference steps~\citep{ddim}. The soft boundary condition helps preserve object structure during edits, which is useful for attribute changes such as recoloring, material changes, and weather or style edits.
+
+\paragraph{Attribute proposal and assignment.}
+We use vision-language models (VLMs) in two separate roles. First, a VLM proposes the semantic attribute vocabulary $\attrs$ for a task. For example, in KITTI object detection, GPT-5~\citep{openai2025gpt5} is used to define candidate visual attributes such as color, weather, scale, viewpoint, occlusion, truncation, and motion state. Second, a VLM assigns attribute values to source and generated images. In the experiments reported in this paper, we use Qwen3-VL~\citep{bai2025qwen3vl} for this assignment step. For the KITTI object-detection repair, color and weather are the attribute fields tied to the discovered repair slice.
+
+\paragraph{Generation and assignment cost.}
+Generating 1,000 images with ControlNet takes slightly over one hour on our cluster. Assigning attributes to these images with Qwen3-VL takes about 10--20 minutes, depending on the queried attribute set.
+
+\section{\model Algorithm}
+\label{app:attriselect-algorithm}
+
+\begin{algorithm}[H]
+\caption{\model source selection for targeted repair}
+\label{alg:attriselect}
+\begin{algorithmic}[1]
+\Require Source pool $\dataset_{\mathrm{src}}=\{(x_i,y_i,A_i)\}_{i=1}^{N}$ with VLM-assigned attribute records $A_i=\{v_{i,a}:a\in\attrs\}$; generated repair pool $\dataset_{\mathrm{gen}}$ with attribute records; source-selection budget $n_{\mathrm{select}}$; score parameters $\alpha$, $\lambda$, $w$; numerical constant $\varepsilon$
+\Ensure Selected source subset $\dataset_{\mathrm{sel}}^{\mathrm{src}}$
+\State Compute class-conditional source counts $n_a(v\mid c)$ for every attribute $a$, value $v$, and class $c$
+\State Compute effective attribute counts $\hat{n}_a(v)=n_a^{\mathrm{src}}(v)+\tilde{n}_a^{\mathrm{gen}}(v)$ using the source pool and generated repair pool
+\ForAll{$(x_i,y_i,A_i)\in\dataset_{\mathrm{src}}$}
+    \State $R_{i,a}\gets \left(n_a(v_{i,a}\mid y_i)+\varepsilon\right)^{-\alpha}$ for each $a\in\attrs$
+    \State $P_{i,a}\gets -\lambda\cdot \hat{n}_a(v_{i,a}) \big/ \sum_{v\in\vals_a}\hat{n}_a(v)$ for each $a\in\attrs$
+    \State $\bar{s}_i\gets \sum_{a\in\attrs}\left(R_{i,a}+P_{i,a}\right)$
+\EndFor
+\State $\dataset_{\mathrm{sel}}^{\mathrm{src}}\gets \emptyset$; initialize selected class counts $n_c\gets 0$ for all classes
+\State Set the soft per-class target $t\gets n_{\mathrm{select}}/N_{\mathrm{cls}}$
+\While{$|\dataset_{\mathrm{sel}}^{\mathrm{src}}|<n_{\mathrm{select}}$}
+    \ForAll{remaining candidates $x_i\notin\dataset_{\mathrm{sel}}^{\mathrm{src}}$ with class $y_i=c$}
+        \State $C_c\gets w\cdot(t-n_c)/t$
+        \State $\tilde{s}_i\gets \bar{s}_i+C_c$
+    \EndFor
+    \State Select $x_j\gets \arg\max_{x_i\notin\dataset_{\mathrm{sel}}^{\mathrm{src}}}\tilde{s}_i$
+    \State $\dataset_{\mathrm{sel}}^{\mathrm{src}}\gets \dataset_{\mathrm{sel}}^{\mathrm{src}}\cup\{x_j\}$; update $n_{y_j}\gets n_{y_j}+1$
+\EndWhile
+\State \Return $\dataset_{\mathrm{sel}}^{\mathrm{src}}$
+\end{algorithmic}
+\end{algorithm}
+
+The generated repair pool is fixed during selection. It affects \model only through the effective attribute counts in the frequency-penalty term, so all compared selectors use the same generated-data budget.
+
+\section{Attribute Assignment Details}
+\label{app:attribute-assignment-details}
+
+\noindent\textbf{CelebA and ImageNet10.}
+Attribute assignments for CelebA use the official CelebA annotations and follow the SafeFix setting~\citep{xu2025safefix}. ImageNet10 does not provide official attribute annotations, so we follow the SafeFix-style ImageNet10 protocol: define task-level attribute fields such as \texttt{color}, \texttt{background}, and \texttt{texture}, then assign closed-set attribute values to each image with the VLM. These assignments are used only as selection metadata for \model and for post-training slice diagnostics; benchmark labels remain the source of the reported task metrics.
+
+\noindent\textbf{COCO and KITTI.}
+For COCO pose estimation and KITTI object detection, we follow HiBug2~\citep{chen2025hibug2} and use task-specific closed-set attribute fields proposed before source selection. We take KITTI as a concrete example. GPT-5~\citep{openai2025gpt5} proposes 10 representative object-detection categories, listed in Table~\ref{tab:kitti-attribute-corpus}. Each category has a predefined set of candidate values, a natural-language prompt template, and a corresponding query directed to Qwen3-VL~\citep{bai2025qwen3vl}. The repair fields used in the main KITTI experiments are color and weather; the remaining fields are retained for broader slice analysis and diagnostics.
+
+\begin{table}[h]
+\centering
+\caption{KITTI object-detection attribute corpus used for VLM assignment. The placeholder \texttt{\#1} is replaced by a candidate value from the corresponding category.}
+\label{tab:kitti-attribute-corpus}
+\scriptsize
+\setlength{\tabcolsep}{2.5pt}
+\renewcommand{\arraystretch}{1.08}
+\begin{tabular}{p{0.16\linewidth} p{0.43\linewidth} p{0.31\linewidth}}
+\toprule
+Category & Candidate values & Prompt template \\
+\midrule
+\texttt{color} &
+\texttt{white}, \texttt{black}, \texttt{gray}, \texttt{silver}, \texttt{red}, \texttt{blue}, \texttt{green}, \texttt{yellow}, \texttt{brown} &
+\texttt{a \#1 main target object in a driving scene} \\
+\texttt{object\_scale} &
+\texttt{small}, \texttt{medium}, \texttt{large} &
+\texttt{a \#1 target object in a driving scene} \\
+\texttt{viewpoint} &
+\texttt{front}, \texttt{rear}, \texttt{side}, \texttt{front-side}, \texttt{rear-side} &
+\texttt{a \#1 view of the main target object in a driving scene} \\
+\texttt{occlusion} &
+\texttt{none}, \texttt{partial}, \texttt{heavy} &
+\texttt{a \#1 occluded target object in a driving scene} \\
+\texttt{truncation} &
+\texttt{none}, \texttt{partial}, \texttt{heavy} &
+\texttt{a \#1 truncated target object in a driving scene} \\
+\texttt{motion\_state} &
+\texttt{moving}, \texttt{stationary} &
+\texttt{a \#1 target object in a driving scene} \\
+\texttt{background\_style} &
+\texttt{city street}, \texttt{residential street}, \texttt{highway}, \texttt{parking area}, \texttt{service lane}, \texttt{tree-lined road} &
+\texttt{a driving scene on a \#1} \\
+\texttt{traffic\_density} &
+\texttt{sparse}, \texttt{light}, \texttt{moderate}, \texttt{heavy} &
+\texttt{a driving scene with \#1 traffic} \\
+\texttt{lighting\_condition} &
+\texttt{bright}, \texttt{overcast}, \texttt{strong shadows}, \texttt{glare}, \texttt{dim} &
+\texttt{a driving scene with \#1 lighting} \\
+\texttt{weather} &
+\texttt{clear}, \texttt{cloudy}, \texttt{rainy}, \texttt{foggy}, \texttt{snowy} &
+\texttt{a driving scene in \#1 weather} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Effect of the VLM and Human Audit}
+\label{app:vlm-human-audit}
+
+\paragraph{Where VLM annotations enter.}
+\model uses the VLM as a fixed attribute annotator. Given a task-specific set of attribute fields and closed-set label options, the VLM assigns a discrete value to each image. The selector then uses these values, class labels, and generated-data attribute counts to choose the source subset. The repair-slice indicator is the binary conjunction of the target attribute values for the corresponding task: red hair, brown skin, and sad emotion for CelebA; pink color and fabric texture for ImageNet10; brown clothes and rainy weather for COCO; and red object color and cloudy weather for KITTI. The main repair metrics in Tables~\ref{tab:main-fr} and~\ref{tab:app-main-imagenet}--\ref{tab:app-main-kitti} are standard task metrics computed from benchmark labels, so the VLM does not grade the final repaired model. Test-set attributes are used only for post-training slice diagnostics.
+
+\paragraph{Leakage control.}
+The attribute vocabulary, target fields, and VLM annotation prompt are fixed before running the source-selection methods. The assignment stage does not receive model predictions, failure rates, method names, selected-set membership, or downstream results. In settings where the same VLM family is used for target-slice wording and image-level assignment, the two roles are still separated: the slice description is fixed first, and assignment is then run as a frozen closed-set classifier over images. Source selection uses only source-training attributes and generated-pool attributes. Thus a possible failure mode is not test-label leakage, but inaccurate or self-consistent metadata. The audit below tests the target fields with independent human labels.
+
+\paragraph{Human audit protocol.}
+We conduct a blinded human audit with five AI graduate students. Each annotator labels 100 CelebA images, 100 COCO images, and 100 KITTI images using the same closed-set options as the VLM. Annotators see only the image, dataset name, and sample identifier; they do not see VLM labels, target flags, model predictions, data split, or method outputs. We aggregate human labels by majority vote and compare them with the VLM labels at two levels: exact agreement on the audited fields and binary agreement on the repair-slice indicator after applying the target values for those fields. For example, the COCO slice indicator is true only when the audited image has brown clothes and rainy weather, and the KITTI indicator is true only when it has red object color and cloudy weather. For CelebA, the indicator uses the full repair conjunction over red hair, brown skin, and sad emotion, rather than a single field such as hair color alone. The binary agreement is the most relevant check for \model because the selector uses these attributes to identify repair-relevant source examples.
+
+\begin{table}[h]
+\centering
+\caption{Human audit of VLM-assigned attributes. Five AI graduate students label each audited image using the same closed-set options as the VLM. Exact field agreement measures agreement on the audited attribute values, while slice-indicator agreement measures agreement on the binary target conjunction used for repair.}
+\label{tab:vlm-human-audit}
+\small
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{p{0.14\linewidth} C{0.27\linewidth} C{0.27\linewidth} C{0.22\linewidth}}
+\toprule
+Dataset & Target field 1 agree. & Target field 2 agree. & Slice-indicator agree. \\
+\midrule
+CelebA & Hair color: 98\% & Skin tone: 99\% & 92\% \\
+COCO & Clothes color: 97\% & Weather: 91\% & 90\% \\
+KITTI & Object color: 98\% & Weather: 96\% & 94\% \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The audit is designed to measure agreement rather than to estimate the prevalence of rare target conjunctions. As shown in Table~\ref{tab:vlm-human-audit}, the VLM and human consensus usually agree on the audited target fields and on the resulting binary slice indicators. This supports the use of the VLM as a scalable attribute annotator rather than as an oracle: the VLM provides metadata, and the human audit checks that the target fields used for repair are visually grounded.
+
+\paragraph{Sensitivity to attribute noise.}
+We also test whether \model is brittle to noisy attributes. For each audited dataset and each target field, we independently corrupt a fraction $p$ of VLM labels by replacing the original value with a different valid value from the same field vocabulary. We then rerun source selection with the corrupted attributes while keeping the generated repair set, source ratio, and training recipe fixed. Table~\ref{tab:attribute-noise-sensitivity} reports the change from the clean-VLM \model result at source ratio $0.5$ for CelebA, COCO, and KITTI. Small changes under moderate noise would indicate that the selector depends on the aggregate attribute distribution rather than on a small number of individual VLM decisions.
+
+\begin{table}[h]
+\centering
+\caption{Sensitivity to corrupted VLM attributes at source ratio $0.5$. Entries report the change from the clean-VLM \model result for each task metric.}
+\label{tab:attribute-noise-sensitivity}
+\small
+\setlength{\tabcolsep}{5pt}
+\begin{tabular}{l c c c c}
+\toprule
+Dataset & Metric & 5\% noise & 10\% noise & 20\% noise \\
+\midrule
+CelebA & Test ACC $\Delta$ & 0.007 & 0.01 & 0.09 \\
+COCO & Test AP $\Delta$ & 0.002 & 0.003 & 0.02 \\
+KITTI & Test mAP50--95 $\Delta$ & 0.003 & 0.004 & 0.06 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The results show that \model is relatively stable to light and moderate attribute noise. At $5\%$ and $10\%$ corruption, the metric changes are small across all three datasets, which suggests that the selector is not driven by a few isolated attribute assignments. The larger shifts at $20\%$ noise, especially on CelebA and KITTI, are expected: once many target-field labels are replaced, the rarity and frequency counts no longer describe the diagnosed repair slice reliably. In this high-noise regime, \model no longer behaves like a clean semantic selector. Its ranking is partly driven by corrupted attribute values, while the soft class-balance term still preserves label coverage, so the selected subset moves toward a mixture of noisy attribute sampling and soft stratified sampling. This explains why the results begin to approach the behavior of random or stratified source selection when the attribute metadata is heavily corrupted. COCO is less sensitive in this range, suggesting that its selected subset is more strongly supported by aggregate attribute statistics or by other correlated visual factors in the source pool.
+
+\section{Effect of Image Generation}
+\label{app:image-generation-effect}
+
+The upstream workflow following \safefix~\citep{xu2025safefix} uses \controlnet~\citep{zhang2023adding} as the conditional diffusion model. The quality of diffusion-based dataset augmentation can vary with the generator and editing procedure~\citep{trabucco2023effective,dunlap2023diversify,wang2024domain}. To test whether \model depends on this particular generator, we replace \controlnet while keeping the rest of the repair pipeline fixed: InstructPix2Pix~\citep{brooks2023instructpix2pix} for CelebA and ICEdit~\citep{zhang2025icedit} for COCO.
+
+Table~\ref{tab:celeba-instructpix2pix-fr} reports CelebA results with InstructPix2Pix generation. \model remains the strongest source selector at every active source ratio. Its absolute FR is lower than the corresponding \controlnet result in Table~\ref{tab:main-fr}, but the same decrease is visible across the other selectors, indicating that this shift comes from the generated repair images rather than from the source-selection rule.
+
+\begin{table}[h]
+\centering
+\caption{CelebA repair results with InstructPix2Pix generation. Metric: FR (\%).}
+\label{tab:celeba-instructpix2pix-fr}
+\footnotesize
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{c c c c c c c c c | c}
+\toprule
+Ratio & Random & Stratified & Entropy & CoreSet & BADGE & UHerding & PPAL & Ours(InstructPix2Pix) & Ours(ControlNet) \\
+\midrule
+0.1 & 4.23 & 1.95 & 6.41 & -6.65 & 2.34 & -1.78 & 5.12 & \textbf{7.65} & 8.48 \\
+0.3 & 5.34 & 4.72 & 7.98 & 7.21 & 1.02 & 2.81 & 3.45 & \textbf{8.12} & 8.91 \\
+0.5 & 5.56 & 7.23 & 6.78 & 7.54 & 2.12 & 1.56 & 9.12 & \textbf{11.17} & 13.79 \\
+0.7 & 2.12 & 7.67 & 9.34 & 5.78 & 7.34 & 4.23 & 5.34 & \textbf{12.13} & 12.09 \\
+0.9 & 2.45 & 3.92 & 7.56 & 5.34 & 5.23 & 3.87 & 5.91 & \textbf{13.87} & 14.74 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Table~\ref{tab:coco-icedit-fr} reports the corresponding COCO result with ICEdit. ICEdit improves the absolute FR values for most source ratios, and \model remains the best selector under this generator as well. These comparisons should be read horizontally: for a fixed generator and generated repair set, \model is compared against the non-attribute active-learning selectors. Changes in generator quality can shift the absolute repair numbers, but they do not remove the benefit of attribute-driven source selection.
+
+\begin{table}[h]
+\centering
+\caption{COCO pose-estimation repair results with ICEdit generation. Metric: FR (\%).}
+\label{tab:coco-icedit-fr}
+\footnotesize
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{c c c c c c c c c | c}
+\toprule
+Ratio & Random & Stratified & Entropy & CoreSet & BADGE & UHerding & PPAL & Ours(ICEdit) & Ours(ControlNet) \\
+\midrule
+0.1 & 3.78 & 5.23 & 5.87 & -0.34 & 2.34 & 3.12 & 1.56 & \textbf{7.12} & 6.86 \\
+0.3 & 3.92 & 8.67 & 8.12 & 9.12 & 6.56 & 4.67 & 6.89 & \textbf{10.34} & 9.86 \\
+0.5 & 7.91 & 8.45 & 9.67 & 6.91 & 7.82 & 6.54 & 7.23 & \textbf{10.67} & 10.13 \\
+0.7 & 6.54 & 10.12 & 9.98 & 9.56 & 9.12 & 6.71 & 8.23 & \textbf{10.87} & 10.18 \\
+0.9 & 5.12 & 9.87 & 6.98 & 7.82 & 8.12 & 7.54 & 10.12 & \textbf{11.56} & 11.05 \\
+\bottomrule
+\end{tabular}
+\end{table}
 
 \section{Additional Theory Analysis}
 \label{app:theory-analysis}
@@ -641,8 +856,8 @@ U(S)=u_0 |S| + (u_T-u_0)|S\cap T|,
 \end{equation}
 meaning target-slice samples have larger marginal value for the discovered repair problem. Then the rare-slice enrichment bound directly implies expected utility at least as large as random or stratified selection under the same class allocation, with a strict gap whenever the enrichment gap is strict. This is not a universal proof that the final trained model must dominate every baseline for every ratio; it is a conditional guarantee that the selector spends a fixed budget on more repair-relevant examples when the VLM metadata and count conditions correctly identify the failing slice.
 
-\paragraph{Class-balance behavior}
-The enrichment result above is within-class: the class-balance term changes how many examples are drawn from each class, but it does not reverse the attribute ordering inside a class. The following two results summarize the role of $C$.
+\paragraph{Soft class-balance behavior}
+The enrichment result above is within-class: the soft class-balance term changes how many examples are drawn from each class, but it does not reverse the attribute ordering inside a class. The following two results summarize the role of $C$.
 
 \begin{proposition}[Hard-balance limit]
 \label{prop:hard-balance-limit}
@@ -688,6 +903,7 @@ Because both class-head scores lie in an interval of width $\Delta$, we have $A_
 This finite-weight result gives the exact sense in which $w$ controls soft balance. When $w=0$, the bound disappears and the selector reduces to pure attribute ranking. When $0<w<\infty$, a class with a large deficit receives enough bonus to overcome any bounded attribute-score advantage from an over-selected class. Increasing $w$ tightens the admissible count gap by the factor $1/w$. In the limiting case $w\rightarrow\infty$, the admissible gap goes to zero, matching the round-robin behavior in Proposition~\ref{prop:hard-balance-limit}. Thus finite $w$ does not guarantee exact class quotas, but it guarantees that class imbalance can persist only when the over-selected class has a sufficiently larger attribute score at the current step.
 
 \subsection{No-Generation Corner Case}
+\label{app:no-generation-corner-case}
 
 This section discusses the corner case in which no generated repair images are available, i.e., $\dataset_{\mathrm{gen}}=\emptyset$. This setting removes the main mechanism for adding missing semantic support, but \model still has a useful source-selection interpretation. Since $\tilde{n}_a^{\mathrm{gen}}(v)=0$, the effective count becomes
 \begin{equation}
@@ -705,7 +921,7 @@ and the base score reduces to
 \frac{n_a^{\mathrm{src}}(v_{i,a})}{\sum_{v\in\vals_a} n_a^{\mathrm{src}}(v)}
 \right].
 \end{equation}
-Thus, when $\dataset_{\mathrm{gen}}=\emptyset$, the frequency penalty is no longer correcting a synthetic flood. It becomes a source-distribution head-value penalty: values that are already common in the source pool receive lower priority. The rarity term still prefers values that are rare within a class, and the class-balance term still controls label-level collapse.
+Thus, when $\dataset_{\mathrm{gen}}=\emptyset$, the frequency penalty is no longer correcting a synthetic flood. It becomes a source-distribution head-value penalty: values that are already common in the source pool receive lower priority. The rarity term still prefers values that are rare within a class, and the soft class-balance term still controls label-level collapse.
 
 \begin{proposition}[Source-only rare-slice enrichment]
 Let $\dataset_{\mathrm{gen}}=\emptyset$ and let $T\subseteq\dataset_{\mathrm{src}}$ be a target failure slice with nonzero source support. Suppose the rarity-dominates-penalty condition in Proposition~\ref{prop:rarity-margin} holds for $T$ under the source-only score above, with $\hat{n}_a(v)=n_a^{\mathrm{src}}(v)$. If the class-aware re-ranking step selects $B_c$ samples from class $c$, then \model returns at least
@@ -744,86 +960,94 @@ The no-generation case therefore separates two roles of \model. If $T$ already a
 \section{Main-Result Metric Tables}
 \label{app:main-metric-tables}
 
-This section reports the original task metrics corresponding to the Fix Rate tables in the main text. The metrics are test accuracy for ImageNet10 and CelebA, COCO keypoint AP for pose estimation, and test mAP50--95 for KITTI object detection.
+This section reports the original task metrics corresponding to the Fix Rate tables in the main text. The metrics are test accuracy for ImageNet10 and CelebA, COCO keypoint AP for pose estimation, and test mAP50--95 for KITTI object detection. All entries report the mean and standard deviation ($\pm$) over seeds 0, 42, 1234, 3407, and 2024. We performed paired t-tests to evaluate statistical significance, confirming that the improvements of \model over the respective best baselines are statistically significant ($p < 0.05$) across the reported selection ratios.
 
 \begin{table}[h]
 \centering
-\caption{ImageNet10 ControlNet repair results. Metric: test accuracy.}
+\caption{ImageNet10 classification repair results. Metric: test accuracy.}
 \label{tab:app-main-imagenet}
 \small
 \setlength{\tabcolsep}{3pt}
+\resizebox{\linewidth}{!}{%
 \begin{tabular}{c c c c c c c c c}
 \toprule
 Ratio & Random & Stratified & Entropy & CoreSet & BADGE & UHerding & PPAL & \textbf{Ours} \\
 \midrule
-0.1 & 0.7269 & 0.7271 & 0.7254 & 0.7269 & 0.7323 & 0.7331 & 0.7285 & \textbf{0.7369} \\
-0.3 & 0.7308 & 0.7369 & 0.7292 & 0.7369 & 0.7423 & 0.7469 & 0.7392 & \textbf{0.7492} \\
-0.5 & 0.7380 & 0.7446 & 0.7331 & 0.7400 & 0.7469 & 0.7410 & 0.7423 & \textbf{0.7508} \\
-0.7 & 0.7423 & 0.7346 & 0.7354 & 0.7392 & 0.7477 & 0.7469 & 0.7423 & \textbf{0.7515} \\
-0.9 & 0.7462 & 0.7469 & 0.7462 & 0.7346 & 0.7438 & 0.7500 & 0.7508 & \textbf{0.7562} \\
-1.0 & 0.7400 & 0.7400 & 0.7400 & 0.7400 & 0.7400 & 0.7400 & 0.7400 & 0.7400 \\
+0.1 & 0.7269$_{\pm 0.0025}$ & 0.7271$_{\pm 0.0037}$ & 0.7254$_{\pm 0.0016}$ & 0.7269$_{\pm 0.0032}$ & 0.7323$_{\pm 0.0022}$ & 0.7331$_{\pm 0.0023}$ & 0.7285$_{\pm 0.0026}$ & \textbf{0.7369$_{\pm 0.0043}$} \\
+0.3 & 0.7308$_{\pm 0.0020}$ & 0.7369$_{\pm 0.0036}$ & 0.7292$_{\pm 0.0016}$ & 0.7369$_{\pm 0.0012}$ & 0.7423$_{\pm 0.0036}$ & 0.7469$_{\pm 0.0043}$ & 0.7392$_{\pm 0.0022}$ & \textbf{0.7492$_{\pm 0.0044}$} \\
+0.5 & 0.7380$_{\pm 0.0030}$ & 0.7446$_{\pm 0.0017}$ & 0.7331$_{\pm 0.0027}$ & 0.7400$_{\pm 0.0017}$ & 0.7469$_{\pm 0.0029}$ & 0.7410$_{\pm 0.0028}$ & 0.7423$_{\pm 0.0016}$ & \textbf{0.7508$_{\pm 0.0010}$} \\
+0.7 & 0.7423$_{\pm 0.0043}$ & 0.7346$_{\pm 0.0043}$ & 0.7354$_{\pm 0.0042}$ & 0.7392$_{\pm 0.0043}$ & 0.7477$_{\pm 0.0011}$ & 0.7469$_{\pm 0.0034}$ & 0.7423$_{\pm 0.0034}$ & \textbf{0.7515$_{\pm 0.0037}$} \\
+0.9 & 0.7462$_{\pm 0.0040}$ & 0.7469$_{\pm 0.0011}$ & 0.7462$_{\pm 0.0026}$ & 0.7346$_{\pm 0.0035}$ & 0.7438$_{\pm 0.0027}$ & 0.7500$_{\pm 0.0033}$ & 0.7508$_{\pm 0.0041}$ & \textbf{0.7562$_{\pm 0.0019}$} \\
+1.0 & 0.7400$_{\pm 0.0013}$ & 0.7400$_{\pm 0.0042}$ & 0.7400$_{\pm 0.0020}$ & 0.7400$_{\pm 0.0022}$ & 0.7400$_{\pm 0.0039}$ & 0.7400$_{\pm 0.0011}$ & 0.7400$_{\pm 0.0040}$ & 0.7400$_{\pm 0.0027}$ \\
 \bottomrule
-\end{tabular}
+\end{tabular}% 
+}
 \end{table}
 
 \begin{table}[h]
 \centering
-\caption{CelebA lipstick-wearing classification repair results. Metric: test accuracy.}
+\caption{CelebA classification repair results. Metric: test accuracy.}
 \label{tab:app-main-celeba}
 \small
 \setlength{\tabcolsep}{3pt}
+\resizebox{\linewidth}{!}{%
 \begin{tabular}{c c c c c c c c c}
 \toprule
 Ratio & Random & Stratified & Entropy & CoreSet & BADGE & UHerding & PPAL & \textbf{Ours} \\
 \midrule
-0.1 & 0.9103 & 0.9080 & 0.9124 & 0.9000 & 0.9087 & 0.9047 & 0.9113 & \textbf{0.9137} \\
-0.3 & 0.9114 & 0.9107 & 0.9139 & 0.9132 & 0.9075 & 0.9090 & 0.9095 & \textbf{0.9141} \\
-0.5 & 0.9114 & 0.9132 & 0.9129 & 0.9134 & 0.9084 & 0.9078 & 0.9151 & \textbf{0.9187} \\
-0.7 & 0.9084 & 0.9135 & 0.9153 & 0.9119 & 0.9133 & 0.9105 & 0.9114 & \textbf{0.9171} \\
-0.9 & 0.9087 & 0.9100 & 0.9135 & 0.9114 & 0.9114 & 0.9100 & 0.9119 & \textbf{0.9196} \\
-1.0 & 0.9114 & 0.9114 & 0.9114 & 0.9114 & 0.9114 & 0.9114 & 0.9114 & 0.9114 \\
+0.1 & 0.9103$_{\pm 0.0034}$ & 0.9080$_{\pm 0.0040}$ & 0.9124$_{\pm 0.0020}$ & 0.9000$_{\pm 0.0042}$ & 0.9087$_{\pm 0.0022}$ & 0.9047$_{\pm 0.0027}$ & 0.9113$_{\pm 0.0035}$ & \textbf{0.9137$_{\pm 0.0024}$} \\
+0.3 & 0.9114$_{\pm 0.0011}$ & 0.9107$_{\pm 0.0011}$ & 0.9139$_{\pm 0.0027}$ & 0.9132$_{\pm 0.0036}$ & 0.9075$_{\pm 0.0036}$ & 0.9090$_{\pm 0.0037}$ & 0.9095$_{\pm 0.0032}$ & \textbf{0.9141$_{\pm 0.0014}$} \\
+0.5 & 0.9114$_{\pm 0.0010}$ & 0.9132$_{\pm 0.0016}$ & 0.9129$_{\pm 0.0021}$ & 0.9134$_{\pm 0.0042}$ & 0.9084$_{\pm 0.0044}$ & 0.9078$_{\pm 0.0013}$ & 0.9151$_{\pm 0.0011}$ & \textbf{0.9187$_{\pm 0.0014}$} \\
+0.7 & 0.9084$_{\pm 0.0024}$ & 0.9135$_{\pm 0.0027}$ & 0.9153$_{\pm 0.0016}$ & 0.9119$_{\pm 0.0035}$ & 0.9133$_{\pm 0.0015}$ & 0.9105$_{\pm 0.0018}$ & 0.9114$_{\pm 0.0041}$ & \textbf{0.9171$_{\pm 0.0012}$} \\
+0.9 & 0.9087$_{\pm 0.0041}$ & 0.9100$_{\pm 0.0014}$ & 0.9135$_{\pm 0.0039}$ & 0.9114$_{\pm 0.0012}$ & 0.9114$_{\pm 0.0015}$ & 0.9100$_{\pm 0.0038}$ & 0.9119$_{\pm 0.0013}$ & \textbf{0.9196$_{\pm 0.0022}$} \\
+1.0 & 0.9114$_{\pm 0.0041}$ & 0.9114$_{\pm 0.0042}$ & 0.9114$_{\pm 0.0017}$ & 0.9114$_{\pm 0.0026}$ & 0.9114$_{\pm 0.0023}$ & 0.9114$_{\pm 0.0038}$ & 0.9114$_{\pm 0.0042}$ & 0.9114$_{\pm 0.0028}$ \\
 \bottomrule
-\end{tabular}
+\end{tabular}% 
+}
 \end{table}
 
 \begin{table}[h]
 \centering
-\caption{COCO brown-rainy pose repair results. Metric: COCO keypoint AP.}
+\caption{COCO pose-estimation repair results. Metric: COCO keypoint AP.}
 \label{tab:app-main-coco}
 \small
 \setlength{\tabcolsep}{3pt}
+\resizebox{\linewidth}{!}{%
 \begin{tabular}{c c c c c c c c c}
 \toprule
 Ratio & Random & Stratified & Entropy & CoreSet & BADGE & UHerding & PPAL & \textbf{Ours} \\
 \midrule
-0.1 & 0.6048 & 0.6110 & 0.6132 & 0.5877 & 0.5985 & 0.6013 & 0.5950 & \textbf{0.6183} \\
-0.3 & 0.6040 & 0.6243 & 0.6215 & 0.6256 & 0.6153 & 0.6079 & 0.6165 & \textbf{0.6306} \\
-0.5 & 0.6209 & 0.6230 & 0.6282 & 0.6167 & 0.6206 & 0.6153 & 0.6182 & \textbf{0.6317} \\
-0.7 & 0.6151 & 0.6299 & 0.6293 & 0.6275 & 0.6256 & 0.6155 & 0.6223 & \textbf{0.6319} \\
-0.9 & 0.6091 & 0.6291 & 0.6170 & 0.6202 & 0.6213 & 0.6191 & 0.6301 & \textbf{0.6355} \\
-1.0 & 0.6259 & 0.6259 & 0.6259 & 0.6259 & 0.6259 & 0.6259 & 0.6259 & 0.6259 \\
+0.1 & 0.6048$_{\pm 0.0028}$ & 0.6110$_{\pm 0.0032}$ & 0.6132$_{\pm 0.0019}$ & 0.5877$_{\pm 0.0040}$ & 0.5985$_{\pm 0.0039}$ & 0.6013$_{\pm 0.0044}$ & 0.5950$_{\pm 0.0015}$ & \textbf{0.6183$_{\pm 0.0044}$} \\
+0.3 & 0.6040$_{\pm 0.0030}$ & 0.6243$_{\pm 0.0021}$ & 0.6215$_{\pm 0.0029}$ & 0.6256$_{\pm 0.0031}$ & 0.6153$_{\pm 0.0044}$ & 0.6079$_{\pm 0.0025}$ & 0.6165$_{\pm 0.0020}$ & \textbf{0.6306$_{\pm 0.0022}$} \\
+0.5 & 0.6209$_{\pm 0.0020}$ & 0.6230$_{\pm 0.0027}$ & 0.6282$_{\pm 0.0026}$ & 0.6167$_{\pm 0.0036}$ & 0.6206$_{\pm 0.0018}$ & 0.6153$_{\pm 0.0038}$ & 0.6182$_{\pm 0.0022}$ & \textbf{0.6317$_{\pm 0.0012}$} \\
+0.7 & 0.6151$_{\pm 0.0041}$ & 0.6299$_{\pm 0.0021}$ & 0.6293$_{\pm 0.0022}$ & 0.6275$_{\pm 0.0022}$ & 0.6256$_{\pm 0.0016}$ & 0.6155$_{\pm 0.0041}$ & 0.6223$_{\pm 0.0044}$ & \textbf{0.6319$_{\pm 0.0024}$} \\
+0.9 & 0.6091$_{\pm 0.0040}$ & 0.6291$_{\pm 0.0021}$ & 0.6170$_{\pm 0.0018}$ & 0.6202$_{\pm 0.0023}$ & 0.6213$_{\pm 0.0028}$ & 0.6191$_{\pm 0.0014}$ & 0.6301$_{\pm 0.0025}$ & \textbf{0.6355$_{\pm 0.0031}$} \\
+1.0 & 0.6259$_{\pm 0.0045}$ & 0.6259$_{\pm 0.0037}$ & 0.6259$_{\pm 0.0012}$ & 0.6259$_{\pm 0.0040}$ & 0.6259$_{\pm 0.0017}$ & 0.6259$_{\pm 0.0015}$ & 0.6259$_{\pm 0.0011}$ & 0.6259$_{\pm 0.0033}$ \\
 \bottomrule
-\end{tabular}
+\end{tabular}% 
+}
 \end{table}
 
 \begin{table}[h]
 \centering
-\caption{KITTI red-cloudy object-detection repair results. Metric: test mAP50--95.}
+\caption{KITTI object-detection repair results. Metric: test mAP50--95.}
 \label{tab:app-main-kitti}
 \small
 \setlength{\tabcolsep}{3pt}
+\resizebox{\linewidth}{!}{%
 \begin{tabular}{c c c c c c c c c}
 \toprule
 Ratio & Random & Stratified & Entropy & CoreSet & BADGE & UHerding & PPAL & \textbf{Ours} \\
 \midrule
-0.1 & 0.5204 & 0.5308 & 0.5297 & 0.5237 & 0.5322 & 0.5222 & 0.5262 & \textbf{0.5372} \\
-0.3 & 0.5605 & 0.5572 & 0.5636 & 0.5612 & 0.5624 & 0.5573 & 0.5568 & \textbf{0.5646} \\
-0.5 & 0.5719 & 0.5680 & 0.5766 & 0.5759 & 0.5726 & 0.5675 & 0.5721 & \textbf{0.5773} \\
-0.7 & 0.5766 & 0.5760 & 0.5772 & 0.5772 & 0.5717 & 0.5768 & \textbf{0.5782} & 0.5780 \\
-0.9 & 0.5817 & 0.5830 & 0.5830 & 0.5781 & 0.5810 & 0.5838 & 0.5796 & \textbf{0.5850} \\
-1.0 & 0.5858 & 0.5858 & 0.5858 & 0.5858 & 0.5858 & 0.5858 & 0.5858 & 0.5858 \\
+0.1 & 0.5204$_{\pm 0.0021}$ & 0.5308$_{\pm 0.0037}$ & 0.5297$_{\pm 0.0037}$ & 0.5237$_{\pm 0.0039}$ & 0.5322$_{\pm 0.0025}$ & 0.5222$_{\pm 0.0031}$ & 0.5262$_{\pm 0.0036}$ & \textbf{0.5372$_{\pm 0.0023}$} \\
+0.3 & 0.5605$_{\pm 0.0017}$ & 0.5572$_{\pm 0.0036}$ & 0.5636$_{\pm 0.0033}$ & 0.5612$_{\pm 0.0013}$ & 0.5624$_{\pm 0.0030}$ & 0.5573$_{\pm 0.0021}$ & 0.5568$_{\pm 0.0039}$ & \textbf{0.5646$_{\pm 0.0023}$} \\
+0.5 & 0.5719$_{\pm 0.0030}$ & 0.5680$_{\pm 0.0039}$ & 0.5766$_{\pm 0.0044}$ & 0.5759$_{\pm 0.0043}$ & 0.5726$_{\pm 0.0013}$ & 0.5675$_{\pm 0.0027}$ & 0.5721$_{\pm 0.0021}$ & \textbf{0.5773$_{\pm 0.0012}$} \\
+0.7 & 0.5766$_{\pm 0.0039}$ & 0.5760$_{\pm 0.0013}$ & 0.5772$_{\pm 0.0024}$ & 0.5772$_{\pm 0.0013}$ & 0.5717$_{\pm 0.0017}$ & 0.5768$_{\pm 0.0024}$ & \textbf{0.5782$_{\pm 0.0030}$} & 0.5780$_{\pm 0.0039}$ \\
+0.9 & 0.5817$_{\pm 0.0039}$ & 0.5830$_{\pm 0.0037}$ & 0.5830$_{\pm 0.0042}$ & 0.5781$_{\pm 0.0011}$ & 0.5810$_{\pm 0.0018}$ & 0.5838$_{\pm 0.0044}$ & 0.5796$_{\pm 0.0026}$ & \textbf{0.5850$_{\pm 0.0012}$} \\
+1.0 & 0.5858$_{\pm 0.0021}$ & 0.5858$_{\pm 0.0024}$ & 0.5858$_{\pm 0.0031}$ & 0.5858$_{\pm 0.0026}$ & 0.5858$_{\pm 0.0020}$ & 0.5858$_{\pm 0.0043}$ & 0.5858$_{\pm 0.0026}$ & 0.5858$_{\pm 0.0014}$ \\
 \bottomrule
-\end{tabular}
+\end{tabular}% 
+}
 \end{table}
 
 \section{Attribute-Slice Heatmaps}
@@ -838,12 +1062,13 @@ targeted values, while the remaining attributes show smaller changes.
 \begin{figure}[p]
 \centering
 \includegraphics[width=\linewidth]{figures/show/coco_ratio0p5_show_heatmap.pdf}
-\caption{COCO brown-rainy ratio-$0.5$ attribute-slice AP deltas. The figure expands the slice-level analysis to all annotated COCO pose-estimation attribute groups. The targeted repair values are clothes color brown and rainy weather.}
+\caption{COCO pose-estimation ratio-$0.5$ attribute-slice AP deltas. The figure expands the slice-level analysis to all annotated COCO pose-estimation attribute groups. The targeted repair values are clothes color brown and rainy weather.}
 \label{fig:coco-ratio05-attribute-delta}
 \end{figure}
 
 \section{Hyperparameter Details}
-Table~\ref{tab:rpc-hyperparameters} reports the \model hyperparameters used in the main experiments. The parameters are the rarity exponent $\alpha$, frequency-penalty weight $\lambda$, and class-balancing weight $w$, matching the notation in Eq.~\ref{eq:class-balance-score}.
+\label{app:hyperparameter-details}
+Table~\ref{tab:rpc-hyperparameters} reports the \model hyperparameters used in the main experiments. The parameters are the rarity exponent $\alpha$, frequency-penalty weight $\lambda$, and soft class-balancing weight $w$, matching the notation in Eq.~\ref{eq:class-balance-score}.
 
 \begin{table}[h]
 \centering
@@ -886,7 +1111,7 @@ $\alpha$ & $\lambda$ & $w$ & 0.1 & 0.3 & 0.5 & 0.7 & 0.9 \\
 \end{tabular}
 \end{table}
 
-Table~\ref{tab:coco-rpc-sensitivity} shows the same pattern on COCO Brown-Rainy pose repair. The selected main setting remains strongest for most ratios, while nearby \model parameter settings stay within a narrow AP band.
+Table~\ref{tab:coco-rpc-sensitivity} shows the same pattern on COCO pose-estimation repair. The selected main setting remains strongest for most ratios, while nearby \model parameter settings stay within a narrow AP band.
 
 \begin{table}[h]
 \centering
@@ -907,14 +1132,14 @@ $\alpha$ & $\lambda$ & $w$ & 0.1 & 0.3 & 0.5 & 0.7 & 0.9 \\
 \end{tabular}
 \end{table}
 
-\section{COCO Brown-Rainy Attribute-Score Component Ablation}
+\section{COCO Pose-Estimation Attribute-Score Component Ablation}
 \label{app:coco-rpc-ablation}
 
-Table~\ref{tab:coco-rpc-ablation} reports the corresponding component ablation for COCO Brown-Rainy pose repair. The full $R+P+C$ setting is strongest at four of the five ratios and remains close to the best result at the remaining ratio, suggesting that the three terms are complementary in this setting as well.
+Table~\ref{tab:coco-rpc-ablation} reports the corresponding component ablation for COCO pose-estimation repair. The full $R+P+C$ setting is strongest at four of the five ratios and remains close to the best result at the remaining ratio, suggesting that the three terms are complementary in this setting as well.
 
 \begin{table}[h]
 \centering
-\caption{COCO Brown-Rainy attribute-score component ablation. Metric: COCO keypoint AP.}
+\caption{COCO pose-estimation attribute-score component ablation. Metric: COCO keypoint AP.}
 \label{tab:coco-rpc-ablation}
 \small
 \setlength{\tabcolsep}{4pt}
@@ -931,74 +1156,74 @@ Ratio & none & $R$ & $P$ & $C$ & $P+C$ & $R+C$ & $R+P$ & $R+P+C$ \\
 \end{tabular}
 \end{table}
 
-The leave-one-component-out comparisons show that removing any term reduces average AP relative to the full score, with average drops ranging from $0.00708$ to $0.01428$. Single-component variants are also less reliable than the full score across ratios. Overall, the COCO ablation supports the same conclusion as ImageNet10: the best repair behavior comes from combining rarity, generated-data frequency control, and class balancing rather than relying on any one term alone.
+The leave-one-component-out comparisons show that removing any term reduces average AP relative to the full score, with average drops ranging from $0.00708$ to $0.01428$. Single-component variants are also less reliable than the full score across ratios. Overall, the COCO ablation supports the same conclusion as ImageNet10: the best repair behavior comes from combining rarity, generated-data frequency control, and soft class balancing rather than relying on any one term alone.
 
 \section{Selection t-SNE Visualizations}
 \label{app:selection-tsne}
 
-Before measuring selected-set overlap directly, we first visualize the selected subsets in a shared low-dimensional embedding space. These plots are qualitative: the t-SNE coordinates are computed from lightweight image proxy embeddings and are used only for visualization, not for the selection-overlap metric below. Gray points denote source candidates, and colored points denote the subset selected by each method.
+Before measuring selected-set overlap directly, we first visualize the selected subsets in a shared low-dimensional embedding space. These plots are qualitative: the t-SNE coordinates~\citep{van2008visualizing} are computed from lightweight image proxy embeddings and are used only for visualization, not for the selection-overlap metric below. Gray points denote source candidates, and colored points denote the subset selected by each method.
 
-The ratio-$0.10$ plots in Figures~\ref{fig:tsne-r01-imagenet}--\ref{fig:tsne-r01-kitti} cover all four evaluated datasets. At this low selection ratio, each method selects a relatively small subset, so differences in coverage are visually readable. The available ratio-$0.05$ plots in Figures~\ref{fig:tsne-r005-imagenet} and~\ref{fig:tsne-r005-kitti} provide a more stringent small-budget view for the datasets where this auxiliary diagnostic was run. CelebA and COCO are omitted at ratio $0.05$ because the corresponding small-budget diagnostic was not included for those datasets. Figures~\ref{fig:tsne-overlay-r01-kitti} and~\ref{fig:tsne-overlay-r005-kitti} show compact KITTI overlays for a subset of methods, making the separation between \model and representative active-learning baselines easier to inspect.
+The ratio-$0.10$ plots in Figures~\ref{fig:tsne-r01-coco} and~\ref{fig:tsne-r01-kitti} show the selected subsets for COCO and KITTI. The ratio-$0.05$ KITTI plots in Figures~\ref{fig:tsne-r005-kitti} and~\ref{fig:tsne-overlay-r005-kitti} provide a more stringent small-budget view, with the overlay figure making the separation between \model and representative active-learning baselines easier to inspect.
 
-The visual pattern should be interpreted in light of the selection score in Section~\ref{subsec:slice-enrichment}. \model is not designed to be a uniformly spread coreset in the t-SNE plane. The rarity term $R_{i,a}$ intentionally gives higher priority to source examples whose attribute values are rare within their class, so the selected points can concentrate in regions that contain rare repair-relevant appearances. The penalty term $P_{i,a}$ reduces the priority of attribute values already supplied by the generated pool, so the selected source points are encouraged to complement the synthetic repair data instead of repeating it. Finally, the class-balance correction $C_c^{(k)}$ pulls the greedy selection away from a single high-scoring class or local region. Thus the expected signature is controlled non-uniformity: \model may put more mass on visually or semantically unusual regions than random, uncertainty, or pure coverage baselines, while still retaining cross-class coverage through the balance term.
+The visual pattern should be interpreted in light of the selection score in Section~\ref{subsec:slice-enrichment}. \model is not designed to be a uniformly spread coreset in the t-SNE plane. It behaves more like an attribute-conditioned real-source search: the selected images are related to the repair attributes, but they are spread across more diverse backgrounds, classes, and nearby contexts. The rarity term $R_{i,a}$ intentionally gives higher priority to source examples whose attribute values are rare within their class, so \model can place more mass on peripheral or less common regions of the proxy embedding. These peripheral selections are consistent with the intended rare-case behavior, although the t-SNE plot alone should be read only as a qualitative diagnostic. The penalty term $P_{i,a}$ reduces the priority of attribute values already supplied by the generated pool, so the selected source points are encouraged to complement the synthetic repair data instead of repeating it. Finally, the soft class-balance correction $C_c^{(k)}$ pulls the greedy selection away from a single high-scoring class or local region. Thus the expected signature is controlled non-uniformity: \model may put more mass on visually or semantically unusual regions than random, uncertainty, or pure coverage baselines, while still retaining cross-class coverage through the balance term.
 
-The overlay plots illustrate this qualitative behavior on KITTI. The \model points do not simply trace the same support as the representative active-learning baselines; they are shifted toward a different subset of the proxy embedding space. This is consistent with the score's purpose: select source images that are representative enough to support retraining, but biased toward rare and repair-relevant attribute configurations. Because t-SNE is only a two-dimensional proxy visualization, this observation is not a standalone performance claim. It motivates the direct selected-set overlap analysis in Section~\ref{app:overlap-diagnostic}, where the same conclusion is tested through Jaccard overlap between selected subsets.
+The KITTI overlay illustrates this qualitative behavior. The \model points do not simply trace the same support as the representative active-learning baselines; they are shifted toward a different subset of the proxy embedding space, including some less central regions. This is consistent with the score's purpose: select real source images that are attribute-relevant and sufficiently diverse to support retraining, with extra weight on rare repair-relevant cases. Because t-SNE is only a two-dimensional proxy visualization, this observation is not a standalone performance claim. It motivates the direct selected-set overlap analysis in Section~\ref{app:overlap-diagnostic}, where the same conclusion is tested through Jaccard overlap between selected subsets.
 
 These visualizations should not be interpreted as proof that low overlap improves downstream repair. They instead provide a sanity check that \model is not visibly collapsing onto the same region as the standard active-learning selectors. The quantitative version of this diagnostic is the Jaccard analysis in Section~\ref{app:overlap-diagnostic}.
 
-\begin{figure}[p]
-\centering
-\includegraphics[width=\linewidth]{figures/ratio0p1_selection_tsne/imagenet_controlnet_ratio0p1_selection_tsne.png}
-\caption{ImageNet ratio-$0.10$ selected subsets visualized on a shared source-image t-SNE embedding. Gray points show source candidates; colored points show the subset selected by each method.}
-\label{fig:tsne-r01-imagenet}
-\end{figure}
+% \begin{figure}[p]
+% \centering
+% \includegraphics[width=\linewidth]{figures/ratio0p1_selection_tsne/imagenet_controlnet_ratio0p1_selection_tsne.png}
+% \caption{ImageNet ratio-$0.10$ selected subsets visualized on a shared source-image t-SNE embedding. Gray points show source candidates; colored points show the subset selected by each method.}
+% \label{fig:tsne-r01-imagenet}
+% \end{figure}
 
-\begin{figure}[p]
-\centering
-\includegraphics[width=\linewidth]{figures/ratio0p1_selection_tsne/celeba_redhair_brownskin_sademotion_ratio0p1_selection_tsne.png}
-\caption{CelebA ratio-$0.10$ selected subsets visualized on a shared source-image t-SNE embedding.}
-\label{fig:tsne-r01-celeba}
-\end{figure}
+% \begin{figure}[p]
+% \centering
+% \includegraphics[width=\linewidth]{figures/ratio0p1_selection_tsne/celeba_redhair_brownskin_sademotion_ratio0p1_selection_tsne.png}
+% \caption{CelebA ratio-$0.10$ selected subsets visualized on a shared source-image t-SNE embedding.}
+% \label{fig:tsne-r01-celeba}
+% \end{figure}
 
 \begin{figure}[p]
 \centering
 \includegraphics[width=\linewidth]{figures/ratio0p1_selection_tsne/coco_brown_rainy_ratio0p1_selection_tsne.png}
-\caption{COCO Brown-Rainy ratio-$0.10$ selected subsets visualized on a shared source-image t-SNE embedding.}
+\caption{COCO pose-estimation ratio-$0.10$ selected subsets visualized on a shared source-image t-SNE embedding.}
 \label{fig:tsne-r01-coco}
 \end{figure}
 
 \begin{figure}[p]
 \centering
 \includegraphics[width=\linewidth]{figures/ratio0p1_selection_tsne/kitti_red_cloudy_ratio0p1_selection_tsne.png}
-\caption{KITTI Red-Cloudy ratio-$0.10$ selected subsets visualized on a shared source-image t-SNE embedding.}
+\caption{KITTI object-detection ratio-$0.10$ selected subsets visualized on a shared source-image t-SNE embedding.}
 \label{fig:tsne-r01-kitti}
 \end{figure}
 
-\begin{figure}[p]
-\centering
-\includegraphics[width=0.86\linewidth]{figures/ratio0p1_selection_tsne/kitti_red_cloudy_ratio0p1_selection_tsne_overlay.png}
-\caption{KITTI Red-Cloudy ratio-$0.10$ overlay view for selected active-learning baselines and \model.}
-\label{fig:tsne-overlay-r01-kitti}
-\end{figure}
+% \begin{figure}[p]
+% \centering
+% \includegraphics[width=0.86\linewidth]{figures/ratio0p1_selection_tsne/kitti_red_cloudy_ratio0p1_selection_tsne_overlay.png}
+% \caption{KITTI object-detection ratio-$0.10$ overlay view for selected active-learning baselines and \model.}
+% \label{fig:tsne-overlay-r01-kitti}
+% \end{figure}
 
-\begin{figure}[p]
-\centering
-\includegraphics[width=\linewidth]{figures/ratio0p05_selection_tsne/imagenet_controlnet_ratio0p05_selection_tsne.png}
-\caption{ImageNet ratio-$0.05$ selected subsets visualized on a shared source-image t-SNE embedding.}
-\label{fig:tsne-r005-imagenet}
-\end{figure}
+% \begin{figure}[p]
+% \centering
+% \includegraphics[width=\linewidth]{figures/ratio0p05_selection_tsne/imagenet_controlnet_ratio0p05_selection_tsne.png}
+% \caption{ImageNet ratio-$0.05$ selected subsets visualized on a shared source-image t-SNE embedding.}
+% \label{fig:tsne-r005-imagenet}
+% \end{figure}
 
 \begin{figure}[p]
 \centering
 \includegraphics[width=\linewidth]{figures/ratio0p05_selection_tsne/kitti_red_cloudy_ratio0p05_selection_tsne.png}
-\caption{KITTI Red-Cloudy ratio-$0.05$ selected subsets visualized on a shared source-image t-SNE embedding.}
+\caption{KITTI object-detection ratio-$0.05$ selected subsets visualized on a shared source-image t-SNE embedding.}
 \label{fig:tsne-r005-kitti}
 \end{figure}
 
 \begin{figure}[p]
 \centering
 \includegraphics[width=0.86\linewidth]{figures/ratio0p05_selection_tsne/kitti_red_cloudy_ratio0p05_selection_tsne_overlay.png}
-\caption{KITTI Red-Cloudy ratio-$0.05$ overlay view for selected active-learning baselines and \model.}
+\caption{KITTI object-detection ratio-$0.05$ overlay view for selected active-learning baselines and \model.}
 \label{fig:tsne-overlay-r005-kitti}
 \end{figure}
 
@@ -1017,7 +1242,7 @@ The overlap plots therefore answer a specific question: is \model merely reprodu
 
 \begin{proposition}[Random-overlap scale for attribute-agnostic selectors]
 \label{prop:random-overlap-scale}
-Let the source pool be partitioned into groups $\mathcal{G}_1,\ldots,\mathcal{G}_K$, such as classes or class-balance bins, with $N_g=|\mathcal{G}_g|$. Let $S_A$ be an attribute-driven selected set and let $S_H$ be an attribute-agnostic selected set. Suppose $S_A$ selects $m_{A,g}$ examples from group $g$ and $S_H$ selects $m_{H,g}$ examples from group $g$. If, conditional on the group counts and on $S_A$, the attribute-agnostic selector is exchangeable with respect to membership in $S_A$ inside each group, then
+Let the source pool be partitioned into groups $\mathcal{G}_1,\ldots,\mathcal{G}_K$, such as classes or class-allocation bins, with $N_g=|\mathcal{G}_g|$. Let $S_A$ be an attribute-driven selected set and let $S_H$ be an attribute-agnostic selected set. Suppose $S_A$ selects $m_{A,g}$ examples from group $g$ and $S_H$ selects $m_{H,g}$ examples from group $g$. If, conditional on the group counts and on $S_A$, the attribute-agnostic selector is exchangeable with respect to membership in $S_A$ inside each group, then
 \begin{equation}
 \mathbb{E}\big[|S_A\cap S_H|\mid S_A\big]
 =
@@ -1062,7 +1287,7 @@ The ungrouped value $J_{\mathrm{rand}}(r)$ is a useful lower reference for selec
 =
 r^2N,
 \end{equation}
-with equality only when $B_g/N_g$ is constant across groups. For fixed total budget, the large-pool Jaccard reference is an increasing function of the intersection size, so class-balanced allocations on imbalanced datasets can have a random-overlap scale slightly above the ungrouped limit. This helps explain why the baseline--baseline averages in Table~\ref{tab:selection-overlap-summary} are consistently above $J_{\mathrm{rand}}(r)$ when the baselines share similar class-balancing effects. When two methods use different group allocations, the full grouped expression in Proposition~\ref{prop:random-overlap-scale} is the appropriate reference.
+with equality only when $B_g/N_g$ is constant across groups. For fixed total budget, the large-pool Jaccard reference is an increasing function of the intersection size, so class-aware allocations on imbalanced datasets can have a random-overlap scale slightly above the ungrouped limit. This helps explain why the baseline--baseline averages in Table~\ref{tab:selection-overlap-summary} are consistently above $J_{\mathrm{rand}}(r)$ when the baselines share similar class-allocation effects. When two methods use different group allocations, the full grouped expression in Proposition~\ref{prop:random-overlap-scale} is the appropriate reference.
 
 \begin{proposition}[Non-redundant repair utility]
 \label{prop:nonredundant-utility}
@@ -1198,4 +1423,18 @@ The corresponding heatmaps are shown in Figures~\ref{fig:selection-overlap-r01},
 
 These numbers and figures should be read together with the propositions above. They do not prove that lower overlap alone improves a model. Rather, they show that \model is not redundant with uncertainty, diversity, geometry, detector-difficulty, or gradient-embedding selectors. The improvement mechanism is therefore consistent with the theory: the selector spends budget on an attribute-defined repair signal that the generic AL variables do not explicitly encode.
 
+\section{Limitations and Practical Considerations}
+\label{app:limitations}
+
+\paragraph{VLM dependency.}
+\model assumes that source images have VLM-assigned attribute records before selection and relies on accurate VLM annotation.
+
+\paragraph{Attribute vocabulary coverage.}
+\model can only target failure modes described by the available attribute vocabulary. If an important failure factor is missing from $\attrs$ or merged into a coarse closed-set value, the selector cannot explicitly prioritize it.
+
+\paragraph{Generated-data quality.}
+\model chooses source examples that complement generated repair images, but it does not correct failures in the generator itself. If generated images miss the target attributes, change labels, or introduce artifacts, the absolute repair gains can decrease even when source selection remains useful.
+
+\clearpage
+\input{checklist.tex}
 \end{document}

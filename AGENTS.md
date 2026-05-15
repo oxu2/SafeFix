@@ -44,6 +44,7 @@ After any meaningful implementation, modification, or completed investigation th
 3. Update `report.md` only for stable, human-facing results worth preserving.
 4. Do not leave meaningful code, workflow, experiment, or configuration changes undocumented if they matter for continuation by another agent.
 5. If no documentation file needs updating, be prepared to state why.
+6. Draw.io-only edits do not need to be recorded in `.trellis/workspace/oxu/journal-1.md`. This includes changes to `.drawio`, `.drawio.xml`, and generated Draw.io exports such as `.png`, `.svg`, or `.pdf`, unless the user explicitly asks for journal documentation or the edit changes non-figure project context.
 
 ## Repo-Specific GPU Assignment Rule
 

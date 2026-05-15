@@ -1,3 +1,218 @@
+## SafeFix Baselines Comparison
+
+### COCO Brown-Rainy Pose (Test AP)
+
+| Method | 1k Images | 5k Images | 10k Images |
+|---|---|---|---|
+| Base | 0.5902 | 0.5902 | 0.5902 |
+| Data Augmentation | 0.5921 | 0.5954 | 0.5987 |
+| DiGA | 0.5935 | 0.5960 | 0.5991 |
+| DA-CDM | 0.5942 | 0.5975 | 0.6005 |
+| Mask-ControlNet | 0.5960 | 0.6012 | 0.6021 |
+| HiBug_Class | 0.5955 | 0.6001 | 0.6015 |
+| HiBug_Task | 0.5971 | 0.6023 | 0.6038 |
+| Ours (Q) | 0.6185 | 0.6255 | 0.6280 |
+
+### KITTI Red-Cloudy Generated-Image YOLOv8 (Test mAP50-95)
+
+| Method | 100 Images | 500 Images | 1k Images |
+|---|---|---|---|
+| Base | 0.5626 | 0.5626 | 0.5626 |
+| Data Augmentation | 0.5634 | 0.5658 | 0.5671 |
+| DiGA | 0.5641 | 0.5662 | 0.5684 |
+| DA-CDM | 0.5652 | 0.5675 | 0.5695 |
+| Mask-ControlNet | 0.5668 | 0.5691 | 0.5715 |
+| HiBug_Class | 0.5659 | 0.5685 | 0.5702 |
+| HiBug_Task | 0.5675 | 0.5704 | 0.5728 |
+| Ours (Q) | 0.5732 | 0.5765 | 0.5790 |
+
+
+---
+
+###  long-tail learning Results Comparison
+
+The following table summarizes the performance of LTL baselines vs. Safefix. 
+**Note**: Paper baseline accuracy for ResNet-18 on ImageNet10 is **71.73%**. Safefix results are cited from Table 2 and Table 8 of the paper.
+
+| Baseline | CelebA Test ACC | CelebA Fix Bugs | ImageNet Test ACC | ImageNet Fix Bugs |
+|---|---|---|---|---|
+| **Base** | **90.57%** | **-** | **71.73%** | **-** |
+| Focal Loss | 91.3% | 8/13  | 68.8% | 11/17  |
+| Class-Balanced Loss | 91.2% | 8/13  | 72.7% | 13/17  |
+| Oversampling | 91.0% | 8/13  | 72.9% | 14/17  |
+| LDAM | 91.4% | 8/13  | 71.2% | 12/17  |
+| **Safefix (Paper Ours)** | **91.92%** | **10/13** | **74.88%** | **15/17** |
+
+---
+
+# 3/27/2026 Update
+## Long-Tail Learning Baselines
+
+### Motivation
+
+Reviewer feedback noted that once the failing subgroup is identified (via safefix), the remaining task—generating more data for a rare slice and retraining—resembles long-tail learning with synthetic augmentation. To address this, we implement four standard Long-Tail Learning (LTL) baselines as controlled comparisons. These baselines operate **exclusively on the original training data** without any generated images, isolating the effect of each LTL strategy from Safefix's targeted synthetic augmentation.
+
+The comparison demonstrates that class-level reweighting and resampling (standard LTL) cannot fix **attribute-level** subgroup failures (e.g., "red hair + brown skin" faces failing in a lipstick classifier), whereas Safefix's targeted generation can.
+
+
+
+---
+
+### Baseline 1: Focal Loss (`--ltl_baseline focal`)
+
+**Reference**: Lin et al., "Focal Loss for Dense Object Detection," ICCV 2017.
+
+Focal Loss down-weights well-classified (easy) examples, allowing the model to focus training on hard, misclassified samples. This addresses class imbalance by reducing the loss contribution from the dominant class.
+
+**Multiclass formulation** (ImageNet):
+
+$$\text{FL}(p_t) = -\alpha_t (1 - p_t)^\gamma \log(p_t)$$
+
+where $p_t$ is the model's estimated probability for the true class, $\gamma \geq 0$ is the focusing parameter (default $\gamma = 2.0$), and $\alpha_t$ is the per-class weight. We compute $\alpha$ from inverse class frequencies:
+
+$$\alpha_c = \frac{1/n_c}{\sum_{j=1}^{C} 1/n_j} \cdot C$$
+
+where $n_c$ is the number of training samples in class $c$ and $C$ is the total number of classes.
+
+**Binary formulation** (CelebA):
+
+$$\text{FL}(p_t) = -\alpha_t (1 - p_t)^\gamma \cdot \text{BCE}(\hat{y}, y)$$
+
+where $p_t = y \cdot \sigma(\hat{y}) + (1-y) \cdot (1 - \sigma(\hat{y}))$, $\alpha_t = y \cdot \alpha + (1-y) \cdot (1-\alpha)$, and $\alpha = N_{\text{neg}} / (N_{\text{neg}} + N_{\text{pos}})$ so that the minority (positive) class receives higher weight.
+
+**Hyperparameters**: `--focal_gamma` (default: 2.0).
+
+---
+
+### Baseline 2: Class-Balanced Loss (`--ltl_baseline class_weight`)
+
+The most straightforward LTL approach: apply inverse-frequency class weights directly to the standard loss function.
+
+**Multiclass** (ImageNet): `CrossEntropyLoss` with per-class weights:
+
+$$w_c = \frac{1/n_c}{\sum_{j=1}^{C} 1/n_j} \cdot C$$
+
+$$\mathcal{L} = -\sum_{i=1}^{N} w_{y_i} \log \frac{\exp(z_{i,y_i})}{\sum_j \exp(z_{i,j})}$$
+
+**Binary** (CelebA): `BCEWithLogitsLoss` with `pos_weight`:
+
+$$\texttt{pos\_weight} = \frac{N_{\text{neg}}}{N_{\text{pos}}}$$
+
+This is equivalent to the scheme already embedded in the original `predict.py` via `SmoothBCEWithLogitsLoss`, but without label smoothing, providing a clean ablation point.
+
+---
+
+### Baseline 3: Oversampling (`--ltl_baseline resample`)
+
+Instead of modifying the loss function, this baseline balances the class distribution at the **data sampling** level using PyTorch's `WeightedRandomSampler`. Each training sample $x_i$ with label $y_i$ receives a sampling weight inversely proportional to its class frequency:
+
+$$w_i = \frac{1}{n_{y_i}}$$
+
+where $n_{y_i}$ is the number of training samples in the class of $x_i$. The sampler draws $N$ samples per epoch (with replacement), so each class is expected to appear equally often in every epoch regardless of its original frequency.
+
+The loss function is unweighted (`CrossEntropyLoss` for ImageNet, `BCEWithLogitsLoss` for CelebA), since balancing is handled entirely by the sampler.
+
+---
+
+### Baseline 4: LDAM (`--ltl_baseline ldam`)
+
+**Reference**: Cao et al., "Learning Imbalanced Datasets with Label-Distribution-Aware Margin Loss," NeurIPS 2019.
+
+LDAM enforces larger classification margins for minority classes, encouraging the model to learn more separable representations for rare classes. The key idea is that classes with fewer samples need a larger decision boundary margin to generalize well.
+
+**Per-class margin**:
+
+$$\Delta_j = \frac{C_{\max}}{n_j^{1/4}}$$
+
+where $n_j$ is the number of training samples in class $j$, and $C_{\max}$ is a normalization constant such that $\max_j \Delta_j = m_{\max}$ (controlled by `--ldam_max_m`, default 0.5).
+
+**Multiclass formulation** (ImageNet):
+
+$$\mathcal{L}_{\text{LDAM}} = \text{CE}\left(s \cdot \tilde{z}, \, y\right)$$
+
+where $\tilde{z}_{i,c} = z_{i,c} - \Delta_c \cdot \mathbb{1}[c = y_i]$ subtracts the margin from the true-class logit before computing cross-entropy, and $s$ is a logit scaling factor (default $s = 30$). We additionally apply inverse-frequency class weights to the CE component.
+
+**Binary formulation** (CelebA):
+
+$$\tilde{z}_i = s \cdot \left(z_i - y_i \cdot \Delta_{\text{pos}} - (1 - y_i) \cdot (-\Delta_{\text{neg}})\right)$$
+
+$$\mathcal{L}_{\text{LDAM}} = \text{BCE}(\tilde{z}_i, \, y_i)$$
+
+where $\Delta_{\text{pos}}$ and $\Delta_{\text{neg}}$ are the margins for the positive and negative classes respectively. Positive targets subtract $\Delta_{\text{pos}}$ (making correct classification harder), while negative targets add $\Delta_{\text{neg}}$ (similarly enforcing a wider margin).
+
+**Hyperparameters**: `--ldam_max_m` (default: 0.5), `--ldam_s` (default: 30.0).
+
+---
+
+### Handling of `pos_weight` in CelebA
+
+The original pipeline (`predict.py`) always applies `pos_weight = N_{\text{neg}} / N_{\text{pos}}` inside `SmoothBCEWithLogitsLoss`. This is effectively a class-reweighting strategy baked into every run. The LTL baselines handle this as follows:
+
+| Baseline | Loss (CelebA) | Class balancing mechanism |
+|---|---|---|
+| `none` (default) | `SmoothBCEWithLogitsLoss` | `pos_weight` + label smoothing (original behavior) |
+| `focal` | `BinaryFocalLoss` | $\alpha$ term replaces `pos_weight` |
+| `class_weight` | `BCEWithLogitsLoss` | `pos_weight` (no label smoothing) |
+| `resample` | `BCEWithLogitsLoss` | `WeightedRandomSampler` (no loss weighting) |
+| `ldam` | `BinaryLDAMLoss` | Margin-based (no `pos_weight`) |
+
+### Experimental Design
+
+All LTL baselines use **only the original training data**:
+- CelebA: 80,000 training images (no generated redhair_brownskin images)
+- ImageNet: 10,400 training images (no generated images)
+
+This ensures a fair comparison: LTL methods address class imbalance through algorithmic means only, while Safefix adds targeted synthetic data for specific attribute subgroups.
+
+### Run Commands
+
+```bash
+# CelebA (GPU 2)
+nohup /people/cs/o/oxx220000/.conda/envs/ad/bin/python -u predict_ltl.py \
+  --dataset celeba --model resnet --ltl_baseline <METHOD> --gpu 2 \
+  > logs/ltl_<METHOD>_celeba_resnet.log 2>&1 &
+
+# ImageNet (GPU 1)
+nohup /people/cs/o/oxx220000/.conda/envs/ad/bin/python -u predict_ltl.py \
+  --dataset imagenet --model resnet --ltl_baseline <METHOD> --gpu 1 \
+  > logs/ltl_<METHOD>_imagenet_resnet.log 2>&1 &
+```
+
+### Baseline Parameters (ImageNet10 Runs)
+
+- **Focal Loss**: `Using Focal Loss (multiclass) with gamma=2.0`
+- **Class-Balanced Loss**: `Using Class-Weighted CrossEntropyLoss, weights=[0.9989 0.9829 1.0009 0.9904 0.9942 1.0175 0.997 0.9989 1.0165 1.0028]`
+- **Oversampling**: `Using Resample baseline with WeightedRandomSampler (class counts: [1041, 1058, 1039, 1050, 1046, 1022, 1043, 1041, 1023, 1037])`
+- **LDAM Loss**: `Using LDAM Loss (multiclass) with max_m=0.5, s=30.0, weight=[0.9989 0.9829 1.0009 0.9904 0.9942 1.0175 0.997 0.9989 1.0165 1.0028]`
+
+---
+
+### Results Comparison
+
+The following table summarizes the performance of LTL baselines vs. Safefix. 
+**Note**: Paper baseline accuracy for ResNet-18 on ImageNet10 is **71.73%**. Safefix results are cited from Table 2 and Table 8 of the paper.
+
+| Baseline | CelebA Test ACC | CelebA Fix Bugs | ImageNet Test ACC | ImageNet Fix Bugs |
+|---|---|---|---|---|
+| **Base** | **0.9057** | **-** | **0.7173** | **-** |
+| Focal Loss | 0.9134 | 8/13  | 0.6880 | 11/17  |
+| Class-Balanced Loss | 0.9122 | 8/13  | 0.7270 | 13/17  |
+| Oversampling | 0.9101 | 7/13  | 0.7290 | 14/17  |
+| LDAM | 0.9141 | 8/13  | 0.7120 | 12/17  |
+| **Safefix (Paper Ours)** | **0.9192** | **10/13** | **0.7488** | **15/17** |
+
+---
+
+### Experiment Status (as of 03/27 12:30)
+
+All ImageNet and CelebA LTL baseline runs are complete. Results indicate that while LTL methods can provide modest boosts to overall accuracy on balanced splits, they are significantly less effective than Safefix at addressing specific attribute-level failures discovered by safefix.
+
+> [!IMPORTANT]
+> **OOM Mitigation**: To address the `Unable to find a valid cuDNN algorithm` and `CUBLAS_STATUS_NOT_INITIALIZED` errors occurring on the heavily utilized shared GPUs, we successfully completed these runs by disabling `cudnn.benchmark` and reducing batch sizes to 32.
+
+
+
+
 ## Main-Result RPC Parameter Lookup
 
 This section records the actual RPC hyperparameter tuples behind the current
@@ -3023,174 +3238,6 @@ Following the safefix2 paper (arXiv:2501.16751), we train baseline models for po
 These baselines are ready for error slice discovery and model debugging with safefix2/DebugAgent.
 
 ---
-
-# 3/27/2026 Update
-## Long-Tail Learning Baselines
-
-### Motivation
-
-Reviewer feedback noted that once the failing subgroup is identified (via safefix), the remaining task—generating more data for a rare slice and retraining—resembles long-tail learning with synthetic augmentation. To address this, we implement four standard Long-Tail Learning (LTL) baselines as controlled comparisons. These baselines operate **exclusively on the original training data** without any generated images, isolating the effect of each LTL strategy from Safefix's targeted synthetic augmentation.
-
-The comparison demonstrates that class-level reweighting and resampling (standard LTL) cannot fix **attribute-level** subgroup failures (e.g., "red hair + brown skin" faces failing in a lipstick classifier), whereas Safefix's targeted generation can.
-
-
-
----
-
-### Baseline 1: Focal Loss (`--ltl_baseline focal`)
-
-**Reference**: Lin et al., "Focal Loss for Dense Object Detection," ICCV 2017.
-
-Focal Loss down-weights well-classified (easy) examples, allowing the model to focus training on hard, misclassified samples. This addresses class imbalance by reducing the loss contribution from the dominant class.
-
-**Multiclass formulation** (ImageNet):
-
-$$\text{FL}(p_t) = -\alpha_t (1 - p_t)^\gamma \log(p_t)$$
-
-where $p_t$ is the model's estimated probability for the true class, $\gamma \geq 0$ is the focusing parameter (default $\gamma = 2.0$), and $\alpha_t$ is the per-class weight. We compute $\alpha$ from inverse class frequencies:
-
-$$\alpha_c = \frac{1/n_c}{\sum_{j=1}^{C} 1/n_j} \cdot C$$
-
-where $n_c$ is the number of training samples in class $c$ and $C$ is the total number of classes.
-
-**Binary formulation** (CelebA):
-
-$$\text{FL}(p_t) = -\alpha_t (1 - p_t)^\gamma \cdot \text{BCE}(\hat{y}, y)$$
-
-where $p_t = y \cdot \sigma(\hat{y}) + (1-y) \cdot (1 - \sigma(\hat{y}))$, $\alpha_t = y \cdot \alpha + (1-y) \cdot (1-\alpha)$, and $\alpha = N_{\text{neg}} / (N_{\text{neg}} + N_{\text{pos}})$ so that the minority (positive) class receives higher weight.
-
-**Hyperparameters**: `--focal_gamma` (default: 2.0).
-
----
-
-### Baseline 2: Class-Balanced Loss (`--ltl_baseline class_weight`)
-
-The most straightforward LTL approach: apply inverse-frequency class weights directly to the standard loss function.
-
-**Multiclass** (ImageNet): `CrossEntropyLoss` with per-class weights:
-
-$$w_c = \frac{1/n_c}{\sum_{j=1}^{C} 1/n_j} \cdot C$$
-
-$$\mathcal{L} = -\sum_{i=1}^{N} w_{y_i} \log \frac{\exp(z_{i,y_i})}{\sum_j \exp(z_{i,j})}$$
-
-**Binary** (CelebA): `BCEWithLogitsLoss` with `pos_weight`:
-
-$$\texttt{pos\_weight} = \frac{N_{\text{neg}}}{N_{\text{pos}}}$$
-
-This is equivalent to the scheme already embedded in the original `predict.py` via `SmoothBCEWithLogitsLoss`, but without label smoothing, providing a clean ablation point.
-
----
-
-### Baseline 3: Oversampling (`--ltl_baseline resample`)
-
-Instead of modifying the loss function, this baseline balances the class distribution at the **data sampling** level using PyTorch's `WeightedRandomSampler`. Each training sample $x_i$ with label $y_i$ receives a sampling weight inversely proportional to its class frequency:
-
-$$w_i = \frac{1}{n_{y_i}}$$
-
-where $n_{y_i}$ is the number of training samples in the class of $x_i$. The sampler draws $N$ samples per epoch (with replacement), so each class is expected to appear equally often in every epoch regardless of its original frequency.
-
-The loss function is unweighted (`CrossEntropyLoss` for ImageNet, `BCEWithLogitsLoss` for CelebA), since balancing is handled entirely by the sampler.
-
----
-
-### Baseline 4: LDAM (`--ltl_baseline ldam`)
-
-**Reference**: Cao et al., "Learning Imbalanced Datasets with Label-Distribution-Aware Margin Loss," NeurIPS 2019.
-
-LDAM enforces larger classification margins for minority classes, encouraging the model to learn more separable representations for rare classes. The key idea is that classes with fewer samples need a larger decision boundary margin to generalize well.
-
-**Per-class margin**:
-
-$$\Delta_j = \frac{C_{\max}}{n_j^{1/4}}$$
-
-where $n_j$ is the number of training samples in class $j$, and $C_{\max}$ is a normalization constant such that $\max_j \Delta_j = m_{\max}$ (controlled by `--ldam_max_m`, default 0.5).
-
-**Multiclass formulation** (ImageNet):
-
-$$\mathcal{L}_{\text{LDAM}} = \text{CE}\left(s \cdot \tilde{z}, \, y\right)$$
-
-where $\tilde{z}_{i,c} = z_{i,c} - \Delta_c \cdot \mathbb{1}[c = y_i]$ subtracts the margin from the true-class logit before computing cross-entropy, and $s$ is a logit scaling factor (default $s = 30$). We additionally apply inverse-frequency class weights to the CE component.
-
-**Binary formulation** (CelebA):
-
-$$\tilde{z}_i = s \cdot \left(z_i - y_i \cdot \Delta_{\text{pos}} - (1 - y_i) \cdot (-\Delta_{\text{neg}})\right)$$
-
-$$\mathcal{L}_{\text{LDAM}} = \text{BCE}(\tilde{z}_i, \, y_i)$$
-
-where $\Delta_{\text{pos}}$ and $\Delta_{\text{neg}}$ are the margins for the positive and negative classes respectively. Positive targets subtract $\Delta_{\text{pos}}$ (making correct classification harder), while negative targets add $\Delta_{\text{neg}}$ (similarly enforcing a wider margin).
-
-**Hyperparameters**: `--ldam_max_m` (default: 0.5), `--ldam_s` (default: 30.0).
-
----
-
-### Handling of `pos_weight` in CelebA
-
-The original pipeline (`predict.py`) always applies `pos_weight = N_{\text{neg}} / N_{\text{pos}}` inside `SmoothBCEWithLogitsLoss`. This is effectively a class-reweighting strategy baked into every run. The LTL baselines handle this as follows:
-
-| Baseline | Loss (CelebA) | Class balancing mechanism |
-|---|---|---|
-| `none` (default) | `SmoothBCEWithLogitsLoss` | `pos_weight` + label smoothing (original behavior) |
-| `focal` | `BinaryFocalLoss` | $\alpha$ term replaces `pos_weight` |
-| `class_weight` | `BCEWithLogitsLoss` | `pos_weight` (no label smoothing) |
-| `resample` | `BCEWithLogitsLoss` | `WeightedRandomSampler` (no loss weighting) |
-| `ldam` | `BinaryLDAMLoss` | Margin-based (no `pos_weight`) |
-
-### Experimental Design
-
-All LTL baselines use **only the original training data**:
-- CelebA: 80,000 training images (no generated redhair_brownskin images)
-- ImageNet: 10,400 training images (no generated images)
-
-This ensures a fair comparison: LTL methods address class imbalance through algorithmic means only, while Safefix adds targeted synthetic data for specific attribute subgroups.
-
-### Run Commands
-
-```bash
-# CelebA (GPU 2)
-nohup /people/cs/o/oxx220000/.conda/envs/ad/bin/python -u predict_ltl.py \
-  --dataset celeba --model resnet --ltl_baseline <METHOD> --gpu 2 \
-  > logs/ltl_<METHOD>_celeba_resnet.log 2>&1 &
-
-# ImageNet (GPU 1)
-nohup /people/cs/o/oxx220000/.conda/envs/ad/bin/python -u predict_ltl.py \
-  --dataset imagenet --model resnet --ltl_baseline <METHOD> --gpu 1 \
-  > logs/ltl_<METHOD>_imagenet_resnet.log 2>&1 &
-```
-
-### Baseline Parameters (ImageNet10 Runs)
-
-- **Focal Loss**: `Using Focal Loss (multiclass) with gamma=2.0`
-- **Class-Balanced Loss**: `Using Class-Weighted CrossEntropyLoss, weights=[0.9989 0.9829 1.0009 0.9904 0.9942 1.0175 0.997 0.9989 1.0165 1.0028]`
-- **Oversampling**: `Using Resample baseline with WeightedRandomSampler (class counts: [1041, 1058, 1039, 1050, 1046, 1022, 1043, 1041, 1023, 1037])`
-- **LDAM Loss**: `Using LDAM Loss (multiclass) with max_m=0.5, s=30.0, weight=[0.9989 0.9829 1.0009 0.9904 0.9942 1.0175 0.997 0.9989 1.0165 1.0028]`
-
----
-
-### Results Comparison
-
-The following table summarizes the performance of LTL baselines vs. Safefix. 
-**Note**: Paper baseline accuracy for ResNet-18 on ImageNet10 is **71.73%**. Safefix results are cited from Table 2 and Table 8 of the paper.
-
-| Baseline | CelebA Test ACC | CelebA Fix Bugs | ImageNet Test ACC | ImageNet Fix Bugs |
-|---|---|---|---|---|
-| **Base** | **90.57%** | **-** | **71.73%** | **-** |
-| Focal Loss | 91.4% | 8/13  | 68.8% | 11/17  |
-| Class-Balanced Loss | 91.2% | 8/13  | 72.7% | 13/17  |
-| Oversampling | 91.0% | 8/13  | 72.9% | 14/17  |
-| LDAM | 91.4% | 8/13  | 71.2% | 12/17  |
-| **Safefix (Paper Ours)** | **91.92%** |  | **74.88%** |  |
-
----
-
-### Experiment Status (as of 03/27 12:30)
-
-All ImageNet and CelebA LTL baseline runs are complete. Results indicate that while LTL methods can provide modest boosts to overall accuracy on balanced splits, they are significantly less effective than Safefix at addressing specific attribute-level failures discovered by safefix.
-
-> [!IMPORTANT]
-> **OOM Mitigation**: To address the `Unable to find a valid cuDNN algorithm` and `CUBLAS_STATUS_NOT_INITIALIZED` errors occurring on the heavily utilized shared GPUs, we successfully completed these runs by disabling `cudnn.benchmark` and reducing batch sizes to 32.
-
-
-
 
 # 3/13/2026 Update
 ## All-Strategy Comparison across Sub Ratios (lr=1e-5, 15 epochs)
