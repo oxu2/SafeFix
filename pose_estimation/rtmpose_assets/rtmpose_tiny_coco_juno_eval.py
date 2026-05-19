@@ -31,6 +31,6 @@ test_dataloader = val_dataloader
 val_evaluator = dict(
     type='CocoMetric',
     ann_file=data_root + 'annotations/person_keypoints_val2017.json',
-    outfile_prefix='log_pose/rtmpose_tiny_coco_val/rtmpose_tiny_coco_val',
+    outfile_prefix='logs/pose/rtmpose_tiny_coco_val/rtmpose_tiny_coco_val',
 )
 test_evaluator = val_evaluator

@@ -4,7 +4,7 @@ Slice-level statistics for COCO pose-estimation results.
 
 This script evaluates COCO-format keypoint predictions on attribute-defined image
 subsets. It is intended for outputs such as:
-  - train_pose_estimation.py eval/test result JSONs
+  - pose_estimation/train_pose_estimation.py eval/test result JSONs
   - attribute JSON/CSV files produced by utils/assign_attribute.py or utils/blip.py
 
 Notes:
@@ -169,13 +169,13 @@ def parse_args() -> argparse.Namespace:
         "--output-json",
         type=Path,
         default=None,
-        help="Optional JSON output path. Defaults under log_pose/pose_slice_stats/.",
+        help="Optional JSON output path. Defaults under logs/pose/pose_slice_stats/.",
     )
     parser.add_argument(
         "--output-csv",
         type=Path,
         default=None,
-        help="Optional CSV output path. Defaults under log_pose/pose_slice_stats/.",
+        help="Optional CSV output path. Defaults under logs/pose/pose_slice_stats/.",
     )
     parser.add_argument(
         "--seed",
@@ -221,7 +221,7 @@ def parse_attribute_names(raw: Optional[str]) -> Optional[List[str]]:
 
 
 def default_output_paths(predictions_json: Path, attribute_file: Path) -> Tuple[Path, Path]:
-    base_dir = Path("log_pose/pose_slice_stats")
+    base_dir = Path("logs/pose/pose_slice_stats")
     stem = f"{predictions_json.stem}__{attribute_file.stem}"
     return base_dir / f"{stem}.json", base_dir / f"{stem}.csv"
 

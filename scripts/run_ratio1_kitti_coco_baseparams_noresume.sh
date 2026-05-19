@@ -7,7 +7,7 @@ KITTI_GPU="${KITTI_GPU:-0}"
 COCO_GPU="${COCO_GPU:-1}"
 
 cd "${ROOT}"
-mkdir -p logs log_pose/pids
+mkdir -p logs logs/pose/pids
 
 launch_kitti() {
   local prepared_root="/data/oxx220000/kitti_yolov8_ratio1p0_random_red_cloudy_gen1000_seed42_baseparams_noresume_${STAMP}"
@@ -38,14 +38,14 @@ launch_kitti() {
     python -u object_detection/train_yolov8_kitti.py \
       --data-yaml '${prepared_root}/kitti_random_generated.yaml' \
       --pretrained true \
-      --weights weights/yolov8n.pt \
+      --weights save/weights/yolov8n.pt \
       --epochs 30 \
       --batch 16 \
       --imgsz 640 \
       --device '${KITTI_GPU}' \
       --workers 4 \
       --plots false \
-      --project '${ROOT}/runs/kitti_yolov8' \
+      --project '${ROOT}/save/runs/kitti_yolov8' \
       --name '${run_name}' \
       --seed 42 \
       --eval-test true
@@ -59,9 +59,9 @@ launch_kitti() {
 }
 
 launch_coco() {
-  local out_dir="log_pose/pose_keypointrcnn_brown_rainy_ratio1p0_gen1000_e2_baseparams_noresume_gpu${COCO_GPU}_${STAMP}"
-  local log="log_pose/pose_qwen3_brown_rainy_ratio1p0_gen1000_e2_baseparams_noresume_gpu${COCO_GPU}_${STAMP}.log"
-  local pidfile="log_pose/pids/pose_qwen3_brown_rainy_ratio1p0_gen1000_e2_baseparams_noresume_gpu${COCO_GPU}_${STAMP}.pid"
+  local out_dir="logs/pose/pose_keypointrcnn_brown_rainy_ratio1p0_gen1000_e2_baseparams_noresume_gpu${COCO_GPU}_${STAMP}"
+  local log="logs/pose/pose_qwen3_brown_rainy_ratio1p0_gen1000_e2_baseparams_noresume_gpu${COCO_GPU}_${STAMP}.log"
+  local pidfile="logs/pose/pids/pose_qwen3_brown_rainy_ratio1p0_gen1000_e2_baseparams_noresume_gpu${COCO_GPU}_${STAMP}.pid"
 
   setsid nohup bash -lc "
     set -euo pipefail
@@ -70,7 +70,7 @@ launch_coco() {
     conda activate ad
     export MPLCONFIGDIR=/tmp/matplotlib-safefix
     export CUDA_VISIBLE_DEVICES='${COCO_GPU}'
-    python -u train_pose_estimation.py train \
+    python -u pose_estimation/train_pose_estimation.py train \
       --data-root /data/oxx220000/coco \
       --pretrained true \
       --device cuda \

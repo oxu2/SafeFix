@@ -20,7 +20,7 @@ run_slice() {
     --al_attribute_log_acc_scale 0 \
     --al_attribute_balance_strength 0 \
     --al_attribute_class_balance INF \
-    > "logs_imagenet/AL_resnet_attr_imagenet_${ratio}_R0_L0_B0_class_INF_1000.log" 2>&1 < /dev/null &
+    > "logs/imagenet/AL_resnet_attr_imagenet_${ratio}_R0_L0_B0_class_INF_1000.log" 2>&1 < /dev/null &
 
   CUDA_VISIBLE_DEVICES=1 nohup python -u alpred.py \
     --dataset imagenet --model resnet --num_added_img 1000 \
@@ -32,7 +32,7 @@ run_slice() {
     --al_attribute_log_acc_scale 0 \
     --al_attribute_balance_strength 0 \
     --al_attribute_class_balance INF \
-    > "logs_imagenet/AL_resnet_attr_imagenet_${ratio}_R1_L0_B0_class_INF_1000.log" 2>&1 < /dev/null &
+    > "logs/imagenet/AL_resnet_attr_imagenet_${ratio}_R1_L0_B0_class_INF_1000.log" 2>&1 < /dev/null &
 
   CUDA_VISIBLE_DEVICES=2 nohup python -u alpred.py \
     --dataset imagenet --model resnet --num_added_img 1000 \
@@ -44,7 +44,7 @@ run_slice() {
     --al_attribute_log_acc_scale 1 \
     --al_attribute_balance_strength 0 \
     --al_attribute_class_balance INF \
-    > "logs_imagenet/AL_resnet_attr_imagenet_${ratio}_R0_L1_B0_class_INF_1000.log" 2>&1 < /dev/null &
+    > "logs/imagenet/AL_resnet_attr_imagenet_${ratio}_R0_L1_B0_class_INF_1000.log" 2>&1 < /dev/null &
 
   CUDA_VISIBLE_DEVICES=3 nohup python -u alpred.py \
     --dataset imagenet --model resnet --num_added_img 1000 \
@@ -56,7 +56,7 @@ run_slice() {
     --al_attribute_log_acc_scale 0 \
     --al_attribute_balance_strength 5 \
     --al_attribute_class_balance INF \
-    > "logs_imagenet/AL_resnet_attr_imagenet_${ratio}_R0_L0_B5_class_INF_1000.log" 2>&1 < /dev/null &
+    > "logs/imagenet/AL_resnet_attr_imagenet_${ratio}_R0_L0_B5_class_INF_1000.log" 2>&1 < /dev/null &
 
   wait
 }

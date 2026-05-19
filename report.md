@@ -168,12 +168,12 @@ This ensures a fair comparison: LTL methods address class imbalance through algo
 
 ```bash
 # CelebA (GPU 2)
-nohup /people/cs/o/oxx220000/.conda/envs/ad/bin/python -u predict_ltl.py \
+nohup /people/cs/o/oxx220000/.conda/envs/ad/bin/python -u utils/predict_ltl.py \
   --dataset celeba --model resnet --ltl_baseline <METHOD> --gpu 2 \
   > logs/ltl_<METHOD>_celeba_resnet.log 2>&1 &
 
 # ImageNet (GPU 1)
-nohup /people/cs/o/oxx220000/.conda/envs/ad/bin/python -u predict_ltl.py \
+nohup /people/cs/o/oxx220000/.conda/envs/ad/bin/python -u utils/predict_ltl.py \
   --dataset imagenet --model resnet --ltl_baseline <METHOD> --gpu 1 \
   > logs/ltl_<METHOD>_imagenet_resnet.log 2>&1 &
 ```
@@ -326,41 +326,41 @@ excluded here.
 
 Completed log family:
 
-- `logs_imagenet/controlnet_rpc_numeric_r*_p*_c*_resnet_imagenet_1000_ratio0p7_*.log`: `3/3` completed.
+- `logs/imagenet/controlnet_rpc_numeric_r*_p*_c*_resnet_imagenet_1000_ratio0p7_*.log`: `3/3` completed.
 
 | Ratio | RPC setting | Test ACC | Best Val ACC | Test loss | Selection time (s) | Log |
 | ---: | --- | ---: | ---: | ---: | ---: | --- |
-| `0.70` | `r001_p05_cinf` | `0.7508` | `0.7231` | `0.7921` | `0.07` | `logs_imagenet/controlnet_rpc_numeric_r001_p05_cinf_resnet_imagenet_1000_ratio0p7_gpu2_20260504_120159.log` |
-| `0.70` | `r003_p05_cinf` | **`0.7515`** | `0.7292` | `0.7896` | `0.07` | `logs_imagenet/controlnet_rpc_numeric_r003_p05_cinf_resnet_imagenet_1000_ratio0p7_gpu3_20260504_120159.log` |
-| `0.70` | `r003_p0_cinf` | `0.7485` | **`0.7308`** | `0.7896` | `0.06` | `logs_imagenet/controlnet_rpc_numeric_r003_p0_cinf_resnet_imagenet_1000_ratio0p7_gpu1_20260504_120159.log` |
+| `0.70` | `r001_p05_cinf` | `0.7508` | `0.7231` | `0.7921` | `0.07` | `logs/imagenet/controlnet_rpc_numeric_r001_p05_cinf_resnet_imagenet_1000_ratio0p7_gpu2_20260504_120159.log` |
+| `0.70` | `r003_p05_cinf` | **`0.7515`** | `0.7292` | `0.7896` | `0.07` | `logs/imagenet/controlnet_rpc_numeric_r003_p05_cinf_resnet_imagenet_1000_ratio0p7_gpu3_20260504_120159.log` |
+| `0.70` | `r003_p0_cinf` | `0.7485` | **`0.7308`** | `0.7896` | `0.06` | `logs/imagenet/controlnet_rpc_numeric_r003_p0_cinf_resnet_imagenet_1000_ratio0p7_gpu1_20260504_120159.log` |
 
 ### CelebA ControlNet Main-Fill RPC Search
 
 Completed log family:
 
-- `logs_celeba/mainfill_attribute_r*_p*_c*_resnet_celeba_1000_ratio0p*_*.log`: `19/20` completed.
+- `logs/celeba/mainfill_attribute_r*_p*_c*_resnet_celeba_1000_ratio0p*_*.log`: `19/20` completed.
 
 | Ratio | RPC setting | Test ACC | Best Val ACC | Test loss | Selection time (s) | Log |
 | ---: | --- | ---: | ---: | ---: | ---: | --- |
-| `0.50` | `r000_p0_c15` | `0.9125` | **`0.9120`** | `0.3582` | `0.61` | `logs_celeba/mainfill_attribute_r000_p0_c15_resnet_celeba_1000_ratio0p5_gpu2_20260504_024733.log` |
-| `0.50` | `r000_p0_cinf` | `0.9127` | `0.9118` | `0.3580` | `1.85` | `logs_celeba/mainfill_attribute_r000_p0_cinf_resnet_celeba_1000_ratio0p5_gpu2_20260504_024733.log` |
-| `0.50` | `r002_p05_c15` | `0.9101` | `0.9119` | `0.3547` | `2.13` | `logs_celeba/mainfill_attribute_r002_p05_c15_resnet_celeba_1000_ratio0p5_gpu2_20260504_024733.log` |
-| `0.50` | `r003_p05_c15` | `0.9096` | `0.9109` | **`0.3542`** | `1.98` | `logs_celeba/mainfill_attribute_r003_p05_c15_resnet_celeba_1000_ratio0p5_gpu2_20260504_024733.log` |
-| `0.50` | `r003_p05_c8` | `0.9115` | `0.9107` | `0.3564` | `1.98` | `logs_celeba/mainfill_attribute_r003_p05_c8_resnet_celeba_1000_ratio0p5_gpu2_20260504_024733.log` |
-| `0.50` | `r003_p05_cinf` | **`0.9137`** | **`0.9120`** | `0.3547` | `1.94` | `logs_celeba/mainfill_attribute_r003_p05_cinf_resnet_celeba_1000_ratio0p5_gpu2_20260504_024733.log` |
-| `0.70` | `r000_p0_c15` | `0.9118` | `0.9117` | `0.3710` | `1.34` | `logs_celeba/mainfill_attribute_r000_p0_c15_resnet_celeba_1000_ratio0p7_gpu3_20260504_024733.log` |
-| `0.70` | `r000_p0_cinf` | `0.9116` | **`0.9118`** | `0.3710` | `1.65` | `logs_celeba/mainfill_attribute_r000_p0_cinf_resnet_celeba_1000_ratio0p7_gpu3_20260504_024733.log` |
-| `0.70` | `r001_p05_c15` | `0.9080` | `0.9078` | `0.3688` | `0.72` | `logs_celeba/mainfill_attribute_r001_p05_c15_resnet_celeba_1000_ratio0p7_gpu3_20260504_024733.log` |
-| `0.70` | `r002_p05_c15` | `0.9100` | `0.9082` | `0.3771` | `0.88` | `logs_celeba/mainfill_attribute_r002_p05_c15_resnet_celeba_1000_ratio0p7_gpu2_20260504_024733.log` |
-| `0.70` | `r003_p05_c15` | `0.9113` | `0.9106` | **`0.3548`** | `2.34` | `logs_celeba/mainfill_attribute_r003_p05_c15_resnet_celeba_1000_ratio0p7_gpu0_20260504_024733.log` |
-| `0.70` | `r003_p05_c8` | `0.9085` | `0.9091` | `0.3710` | `0.73` | `logs_celeba/mainfill_attribute_r003_p05_c8_resnet_celeba_1000_ratio0p7_gpu1_20260504_024733.log` |
-| `0.70` | `r003_p05_cinf` | **`0.9121`** | `0.9112` | `0.3572` | `2.40` | `logs_celeba/mainfill_attribute_r003_p05_cinf_resnet_celeba_1000_ratio0p7_gpu2_20260504_024733.log` |
-| `0.90` | `r000_p0_c15` | **`0.9146`** | `0.9118` | **`0.3495`** | `0.77` | `logs_celeba/mainfill_attribute_r000_p0_c15_resnet_celeba_1000_ratio0p9_gpu1_20260504_024733.log` |
-| `0.90` | `r000_p0_cinf` | **`0.9146`** | **`0.9120`** | `0.3496` | `2.15` | `logs_celeba/mainfill_attribute_r000_p0_cinf_resnet_celeba_1000_ratio0p9_gpu1_20260504_024733.log` |
-| `0.90` | `r002_p05_c15` | `0.9099` | `0.9100` | `0.3653` | `1.57` | `logs_celeba/mainfill_attribute_r002_p05_c15_resnet_celeba_1000_ratio0p9_gpu1_20260504_024733.log` |
-| `0.90` | `r003_p05_c15` | `0.9112` | `0.9104` | `0.3539` | `1.89` | `logs_celeba/mainfill_attribute_r003_p05_c15_resnet_celeba_1000_ratio0p9_gpu1_20260504_024733.log` |
-| `0.90` | `r003_p05_c8` | `0.9102` | `0.9092` | `0.3715` | `2.38` | `logs_celeba/mainfill_attribute_r003_p05_c8_resnet_celeba_1000_ratio0p9_gpu1_20260504_024733.log` |
-| `0.90` | `r003_p05_cinf` | `0.9112` | `0.9099` | `0.3634` | `1.89` | `logs_celeba/mainfill_attribute_r003_p05_cinf_resnet_celeba_1000_ratio0p9_gpu1_20260504_024733.log` |
+| `0.50` | `r000_p0_c15` | `0.9125` | **`0.9120`** | `0.3582` | `0.61` | `logs/celeba/mainfill_attribute_r000_p0_c15_resnet_celeba_1000_ratio0p5_gpu2_20260504_024733.log` |
+| `0.50` | `r000_p0_cinf` | `0.9127` | `0.9118` | `0.3580` | `1.85` | `logs/celeba/mainfill_attribute_r000_p0_cinf_resnet_celeba_1000_ratio0p5_gpu2_20260504_024733.log` |
+| `0.50` | `r002_p05_c15` | `0.9101` | `0.9119` | `0.3547` | `2.13` | `logs/celeba/mainfill_attribute_r002_p05_c15_resnet_celeba_1000_ratio0p5_gpu2_20260504_024733.log` |
+| `0.50` | `r003_p05_c15` | `0.9096` | `0.9109` | **`0.3542`** | `1.98` | `logs/celeba/mainfill_attribute_r003_p05_c15_resnet_celeba_1000_ratio0p5_gpu2_20260504_024733.log` |
+| `0.50` | `r003_p05_c8` | `0.9115` | `0.9107` | `0.3564` | `1.98` | `logs/celeba/mainfill_attribute_r003_p05_c8_resnet_celeba_1000_ratio0p5_gpu2_20260504_024733.log` |
+| `0.50` | `r003_p05_cinf` | **`0.9137`** | **`0.9120`** | `0.3547` | `1.94` | `logs/celeba/mainfill_attribute_r003_p05_cinf_resnet_celeba_1000_ratio0p5_gpu2_20260504_024733.log` |
+| `0.70` | `r000_p0_c15` | `0.9118` | `0.9117` | `0.3710` | `1.34` | `logs/celeba/mainfill_attribute_r000_p0_c15_resnet_celeba_1000_ratio0p7_gpu3_20260504_024733.log` |
+| `0.70` | `r000_p0_cinf` | `0.9116` | **`0.9118`** | `0.3710` | `1.65` | `logs/celeba/mainfill_attribute_r000_p0_cinf_resnet_celeba_1000_ratio0p7_gpu3_20260504_024733.log` |
+| `0.70` | `r001_p05_c15` | `0.9080` | `0.9078` | `0.3688` | `0.72` | `logs/celeba/mainfill_attribute_r001_p05_c15_resnet_celeba_1000_ratio0p7_gpu3_20260504_024733.log` |
+| `0.70` | `r002_p05_c15` | `0.9100` | `0.9082` | `0.3771` | `0.88` | `logs/celeba/mainfill_attribute_r002_p05_c15_resnet_celeba_1000_ratio0p7_gpu2_20260504_024733.log` |
+| `0.70` | `r003_p05_c15` | `0.9113` | `0.9106` | **`0.3548`** | `2.34` | `logs/celeba/mainfill_attribute_r003_p05_c15_resnet_celeba_1000_ratio0p7_gpu0_20260504_024733.log` |
+| `0.70` | `r003_p05_c8` | `0.9085` | `0.9091` | `0.3710` | `0.73` | `logs/celeba/mainfill_attribute_r003_p05_c8_resnet_celeba_1000_ratio0p7_gpu1_20260504_024733.log` |
+| `0.70` | `r003_p05_cinf` | **`0.9121`** | `0.9112` | `0.3572` | `2.40` | `logs/celeba/mainfill_attribute_r003_p05_cinf_resnet_celeba_1000_ratio0p7_gpu2_20260504_024733.log` |
+| `0.90` | `r000_p0_c15` | **`0.9146`** | `0.9118` | **`0.3495`** | `0.77` | `logs/celeba/mainfill_attribute_r000_p0_c15_resnet_celeba_1000_ratio0p9_gpu1_20260504_024733.log` |
+| `0.90` | `r000_p0_cinf` | **`0.9146`** | **`0.9120`** | `0.3496` | `2.15` | `logs/celeba/mainfill_attribute_r000_p0_cinf_resnet_celeba_1000_ratio0p9_gpu1_20260504_024733.log` |
+| `0.90` | `r002_p05_c15` | `0.9099` | `0.9100` | `0.3653` | `1.57` | `logs/celeba/mainfill_attribute_r002_p05_c15_resnet_celeba_1000_ratio0p9_gpu1_20260504_024733.log` |
+| `0.90` | `r003_p05_c15` | `0.9112` | `0.9104` | `0.3539` | `1.89` | `logs/celeba/mainfill_attribute_r003_p05_c15_resnet_celeba_1000_ratio0p9_gpu1_20260504_024733.log` |
+| `0.90` | `r003_p05_c8` | `0.9102` | `0.9092` | `0.3715` | `2.38` | `logs/celeba/mainfill_attribute_r003_p05_c8_resnet_celeba_1000_ratio0p9_gpu1_20260504_024733.log` |
+| `0.90` | `r003_p05_cinf` | `0.9112` | `0.9099` | `0.3634` | `1.89` | `logs/celeba/mainfill_attribute_r003_p05_cinf_resnet_celeba_1000_ratio0p9_gpu1_20260504_024733.log` |
 
 ## Data Selection Time Summary
 
@@ -662,7 +662,7 @@ and KITTI `0.5626`.
 
 ## All-Strategy Comparison across Sub Ratios (lr=1e-5, 15 epochs)
 
-All runs resume from `weights/model_imagenet_resnet_base.pth` (base test acc: **0.7162**). The Attribute strategy uses the optimized `aggro_exp_p10_c4` parameters ($R=0.8, P=10.0, C=4.0$, Entropy=True). Reference: using 100% of the data (ratio=1.0) yields Test ACC = **0.7488**. The 3/13 update adds two new LLM-based attribute generation results (`Qwen3` and `InternVL3`) to compare alongside the default BLIP-based attribute assignment.
+All runs resume from `save/weights/model_imagenet_resnet_base.pth` (base test acc: **0.7162**). The Attribute strategy uses the optimized `aggro_exp_p10_c4` parameters ($R=0.8, P=10.0, C=4.0$, Entropy=True). Reference: using 100% of the data (ratio=1.0) yields Test ACC = **0.7488**. The 3/13 update adds two new LLM-based attribute generation results (`Qwen3` and `InternVL3`) to compare alongside the default BLIP-based attribute assignment.
 
 Within each ratio table, the highest `Test ACC` among all strategies is bolded.
 
@@ -797,62 +797,62 @@ and `logs/kitti_ratio0p*_attribute_r*_seed42_red_cloudy_gen1000_e10_gpu*_2026050
 ### CelebA Red-Hair Brown-Skin Sad-Emotion Baselines
 
 - Generated target: `redhair_brownskin_sademotion`
-- Base checkpoint: `weights/model_celeba_resnet_base.pth`
+- Base checkpoint: `save/weights/model_celeba_resnet_base.pth`
 - Added generated images per row: `1000`
 - Training: `epochs=15`, `batch_size=64`, `lr=1e-5`
 
 | Ratio | Method | Test ACC | Best Val ACC | Test loss | Selection time (s) | Log |
 | ---: | --- | ---: | ---: | ---: | ---: | --- |
-| `0.1` | `random` | `0.9103` | `0.9115` | `0.3372` | n/a | `logs_celeba/resume_lr1e-5_epoch15_random_resnet_celeba_1000_ratio0.1.log` |
-| `0.1` | `stratified` | `0.9080` | `0.9095` | `0.3718` | n/a | `logs_celeba/resume_lr1e-5_epoch15_stratified_resnet_celeba_1000_ratio0.1.log` |
-| `0.1` | `coreset` | `0.9000` | `0.9029` | `0.4735` | n/a | `logs_celeba/resume_lr1e-5_epoch15_coreset_resnet_celeba_1000_ratio0.1.log` |
-| `0.1` | `badge` | `0.9087` | `0.9112` | `0.3789` | n/a | `logs_celeba/resume_lr1e-5_epoch15_badge_resnet_celeba_1000_ratio0.1.log` |
-| `0.1` | `attribute` | `0.9107` | `0.9091` | `0.3599` | `0.42` | `logs_celeba/attr_ratio0.1_qwen3mix_r003_p05_c15_gpu2_20260417_010718.log` |
-| `0.1` | `entropy` | **`0.9124`** | **`0.9145`** | `0.2092` | `49.33` | `logs_celeba/controlnet_entropy_redhair_brownskin_sademotion_resnet_celeba_1000_ratio0p1_gpu3_20260502_025110.log` |
-| `0.1` | `uherding` | `0.9047` | `0.9064` | `0.3807` | `98.71` | `logs_celeba/controlnet_uherding_redhair_brownskin_sademotion_resnet_celeba_1000_ratio0p1_gpu3_20260502_1440fast.log` |
-| `0.1` | `ppal` | `0.9113` | `0.9100` | `0.3111` | `46.25` | `logs_celeba/controlnet_ppal_redhair_brownskin_sademotion_resnet_celeba_1000_ratio0p1_gpu1_20260502_185507.log` |
-| `0.3` | `random` | `0.9114` | `0.9118` | `0.3418` | n/a | `logs_celeba/resume_lr1e-5_epoch15_random_resnet_celeba_1000_ratio0.3.log` |
-| `0.3` | `stratified` | `0.9107` | `0.9115` | `0.3557` | n/a | `logs_celeba/resume_lr1e-5_epoch15_stratified_resnet_celeba_1000_ratio0.3.log` |
-| `0.3` | `coreset` | `0.9132` | `0.9113` | `0.3891` | n/a | `logs_celeba/resume_lr1e-5_epoch15_coreset_resnet_celeba_1000_ratio0.3.log` |
-| `0.3` | `badge` | `0.9075` | `0.9104` | `0.3513` | n/a | `logs_celeba/resume_lr1e-5_epoch15_badge_resnet_celeba_1000_ratio0.3_gpu2_verbose_20260416_115906.log` |
-| `0.3` | `attribute` | `0.9089` | `0.9090` | `0.3609` | `0.51` | `logs_celeba/attr_ratio0.3_qwen3mixx333_r000_p0_cinf_gpu0_20260417_005520.log` |
-| `0.3` | `entropy` | **`0.9139`** | **`0.9152`** | `0.2116` | `50.74` | `logs_celeba/controlnet_entropy_redhair_brownskin_sademotion_resnet_celeba_1000_ratio0p3_gpu3_20260502_025110.log` |
-| `0.3` | `uherding` | `0.9090` | `0.9109` | `0.3649` | `65.20` | `logs_celeba/controlnet_uherding_redhair_brownskin_sademotion_resnet_celeba_1000_ratio0p3_gpu3_20260502_1440fast.log` |
-| `0.3` | `ppal` | `0.9095` | `0.9082` | `0.3614` | `50.77` | `logs_celeba/controlnet_ppal_redhair_brownskin_sademotion_resnet_celeba_1000_ratio0p3_gpu1_20260502_185507.log` |
-| `0.5` | `random` | `0.9114` | `0.9127` | `0.3418` | n/a | `logs_celeba/resume_lr1e-5_epoch15_random_resnet_celeba_1000_ratio0.5.log` |
-| `0.5` | `stratified` | `0.9132` | `0.9129` | `0.3498` | n/a | `logs_celeba/resume_lr1e-5_epoch15_stratified_resnet_celeba_1000_ratio0.5.log` |
-| `0.5` | `coreset` | `0.9134` | `0.9109` | `0.3650` | n/a | `logs_celeba/resume_lr1e-5_epoch15_coreset_resnet_celeba_1000_ratio0.5.log` |
-| `0.5` | `badge` | `0.9084` | `0.9113` | `0.3476` | n/a | `logs_celeba/resume_lr1e-5_epoch15_badge_resnet_celeba_1000_ratio0.5_gpu0_20260416_120554.log` |
-| `0.5` | `entropy` | `0.9129` | **`0.9154`** | `0.2233` | `48.78` | `logs_celeba/controlnet_entropy_redhair_brownskin_sademotion_resnet_celeba_1000_ratio0p5_gpu3_20260502_025110.log` |
-| `0.5` | `uherding` | `0.9078` | `0.9089` | `0.3664` | `60.87` | `logs_celeba/controlnet_uherding_redhair_brownskin_sademotion_resnet_celeba_1000_ratio0p5_gpu3_20260502_1440fast.log` |
-| `0.5` | `ppal` | **`0.9151`** | `0.9135` | `0.3408` | `61.20` | `logs_celeba/controlnet_ppal_redhair_brownskin_sademotion_resnet_celeba_1000_ratio0p5_gpu1_20260502_185507.log` |
-| `0.7` | `random` | `0.9084` | `0.9088` | `0.3551` | n/a | `logs_celeba/resume_lr1e-5_epoch15_random_resnet_celeba_1000_ratio0.7.log` |
-| `0.7` | `stratified` | `0.9135` | `0.9129` | `0.3527` | n/a | `logs_celeba/resume_lr1e-5_epoch15_stratified_resnet_celeba_1000_ratio0.7.log` |
-| `0.7` | `coreset` | `0.9119` | `0.9110` | `0.3571` | n/a | `logs_celeba/resume_lr1e-5_epoch15_coreset_resnet_celeba_1000_ratio0.7_gpu3_rerun_20260416_121045.log` |
-| `0.7` | `badge` | `0.9133` | `0.9131` | `0.3384` | n/a | `logs_celeba/resume_lr1e-5_epoch15_badge_resnet_celeba_1000_ratio0.7_gpu0_20260416_122047.log` |
-| `0.7` | `entropy` | **`0.9153`** | **`0.9156`** | `0.2383` | `50.50` | `logs_celeba/controlnet_entropy_redhair_brownskin_sademotion_resnet_celeba_1000_ratio0p7_gpu3_20260502_025110.log` |
-| `0.7` | `uherding` | `0.9105` | `0.9105` | `0.3574` | `70.46` | `logs_celeba/controlnet_uherding_redhair_brownskin_sademotion_resnet_celeba_1000_ratio0p7_gpu3_20260502_1440fast.log` |
-| `0.7` | `ppal` | `0.9114` | `0.9101` | `0.3503` | `64.66` | `logs_celeba/controlnet_ppal_redhair_brownskin_sademotion_resnet_celeba_1000_ratio0p7_gpu1_20260502_185507.log` |
-| `0.9` | `entropy` | **`0.9135`** | `0.9122` | `0.3072` | `51.45` | `logs_celeba/controlnet_entropy_redhair_brownskin_sademotion_resnet_celeba_1000_ratio0p9_gpu3_20260502_025110.log` |
-| `0.9` | `uherding` | `0.9100` | `0.9101` | `0.3503` | `53.60` | `logs_celeba/controlnet_uherding_redhair_brownskin_sademotion_resnet_celeba_1000_ratio0p9_gpu3_20260502_1440fast.log` |
-| `0.9` | `ppal` | `0.9119` | **`0.9131`** | `0.3452` | `55.52` | `logs_celeba/controlnet_ppal_redhair_brownskin_sademotion_resnet_celeba_1000_ratio0p9_gpu1_20260502_185507.log` |
+| `0.1` | `random` | `0.9103` | `0.9115` | `0.3372` | n/a | `logs/celeba/resume_lr1e-5_epoch15_random_resnet_celeba_1000_ratio0.1.log` |
+| `0.1` | `stratified` | `0.9080` | `0.9095` | `0.3718` | n/a | `logs/celeba/resume_lr1e-5_epoch15_stratified_resnet_celeba_1000_ratio0.1.log` |
+| `0.1` | `coreset` | `0.9000` | `0.9029` | `0.4735` | n/a | `logs/celeba/resume_lr1e-5_epoch15_coreset_resnet_celeba_1000_ratio0.1.log` |
+| `0.1` | `badge` | `0.9087` | `0.9112` | `0.3789` | n/a | `logs/celeba/resume_lr1e-5_epoch15_badge_resnet_celeba_1000_ratio0.1.log` |
+| `0.1` | `attribute` | `0.9107` | `0.9091` | `0.3599` | `0.42` | `logs/celeba/attr_ratio0.1_qwen3mix_r003_p05_c15_gpu2_20260417_010718.log` |
+| `0.1` | `entropy` | **`0.9124`** | **`0.9145`** | `0.2092` | `49.33` | `logs/celeba/controlnet_entropy_redhair_brownskin_sademotion_resnet_celeba_1000_ratio0p1_gpu3_20260502_025110.log` |
+| `0.1` | `uherding` | `0.9047` | `0.9064` | `0.3807` | `98.71` | `logs/celeba/controlnet_uherding_redhair_brownskin_sademotion_resnet_celeba_1000_ratio0p1_gpu3_20260502_1440fast.log` |
+| `0.1` | `ppal` | `0.9113` | `0.9100` | `0.3111` | `46.25` | `logs/celeba/controlnet_ppal_redhair_brownskin_sademotion_resnet_celeba_1000_ratio0p1_gpu1_20260502_185507.log` |
+| `0.3` | `random` | `0.9114` | `0.9118` | `0.3418` | n/a | `logs/celeba/resume_lr1e-5_epoch15_random_resnet_celeba_1000_ratio0.3.log` |
+| `0.3` | `stratified` | `0.9107` | `0.9115` | `0.3557` | n/a | `logs/celeba/resume_lr1e-5_epoch15_stratified_resnet_celeba_1000_ratio0.3.log` |
+| `0.3` | `coreset` | `0.9132` | `0.9113` | `0.3891` | n/a | `logs/celeba/resume_lr1e-5_epoch15_coreset_resnet_celeba_1000_ratio0.3.log` |
+| `0.3` | `badge` | `0.9075` | `0.9104` | `0.3513` | n/a | `logs/celeba/resume_lr1e-5_epoch15_badge_resnet_celeba_1000_ratio0.3_gpu2_verbose_20260416_115906.log` |
+| `0.3` | `attribute` | `0.9089` | `0.9090` | `0.3609` | `0.51` | `logs/celeba/attr_ratio0.3_qwen3mixx333_r000_p0_cinf_gpu0_20260417_005520.log` |
+| `0.3` | `entropy` | **`0.9139`** | **`0.9152`** | `0.2116` | `50.74` | `logs/celeba/controlnet_entropy_redhair_brownskin_sademotion_resnet_celeba_1000_ratio0p3_gpu3_20260502_025110.log` |
+| `0.3` | `uherding` | `0.9090` | `0.9109` | `0.3649` | `65.20` | `logs/celeba/controlnet_uherding_redhair_brownskin_sademotion_resnet_celeba_1000_ratio0p3_gpu3_20260502_1440fast.log` |
+| `0.3` | `ppal` | `0.9095` | `0.9082` | `0.3614` | `50.77` | `logs/celeba/controlnet_ppal_redhair_brownskin_sademotion_resnet_celeba_1000_ratio0p3_gpu1_20260502_185507.log` |
+| `0.5` | `random` | `0.9114` | `0.9127` | `0.3418` | n/a | `logs/celeba/resume_lr1e-5_epoch15_random_resnet_celeba_1000_ratio0.5.log` |
+| `0.5` | `stratified` | `0.9132` | `0.9129` | `0.3498` | n/a | `logs/celeba/resume_lr1e-5_epoch15_stratified_resnet_celeba_1000_ratio0.5.log` |
+| `0.5` | `coreset` | `0.9134` | `0.9109` | `0.3650` | n/a | `logs/celeba/resume_lr1e-5_epoch15_coreset_resnet_celeba_1000_ratio0.5.log` |
+| `0.5` | `badge` | `0.9084` | `0.9113` | `0.3476` | n/a | `logs/celeba/resume_lr1e-5_epoch15_badge_resnet_celeba_1000_ratio0.5_gpu0_20260416_120554.log` |
+| `0.5` | `entropy` | `0.9129` | **`0.9154`** | `0.2233` | `48.78` | `logs/celeba/controlnet_entropy_redhair_brownskin_sademotion_resnet_celeba_1000_ratio0p5_gpu3_20260502_025110.log` |
+| `0.5` | `uherding` | `0.9078` | `0.9089` | `0.3664` | `60.87` | `logs/celeba/controlnet_uherding_redhair_brownskin_sademotion_resnet_celeba_1000_ratio0p5_gpu3_20260502_1440fast.log` |
+| `0.5` | `ppal` | **`0.9151`** | `0.9135` | `0.3408` | `61.20` | `logs/celeba/controlnet_ppal_redhair_brownskin_sademotion_resnet_celeba_1000_ratio0p5_gpu1_20260502_185507.log` |
+| `0.7` | `random` | `0.9084` | `0.9088` | `0.3551` | n/a | `logs/celeba/resume_lr1e-5_epoch15_random_resnet_celeba_1000_ratio0.7.log` |
+| `0.7` | `stratified` | `0.9135` | `0.9129` | `0.3527` | n/a | `logs/celeba/resume_lr1e-5_epoch15_stratified_resnet_celeba_1000_ratio0.7.log` |
+| `0.7` | `coreset` | `0.9119` | `0.9110` | `0.3571` | n/a | `logs/celeba/resume_lr1e-5_epoch15_coreset_resnet_celeba_1000_ratio0.7_gpu3_rerun_20260416_121045.log` |
+| `0.7` | `badge` | `0.9133` | `0.9131` | `0.3384` | n/a | `logs/celeba/resume_lr1e-5_epoch15_badge_resnet_celeba_1000_ratio0.7_gpu0_20260416_122047.log` |
+| `0.7` | `entropy` | **`0.9153`** | **`0.9156`** | `0.2383` | `50.50` | `logs/celeba/controlnet_entropy_redhair_brownskin_sademotion_resnet_celeba_1000_ratio0p7_gpu3_20260502_025110.log` |
+| `0.7` | `uherding` | `0.9105` | `0.9105` | `0.3574` | `70.46` | `logs/celeba/controlnet_uherding_redhair_brownskin_sademotion_resnet_celeba_1000_ratio0p7_gpu3_20260502_1440fast.log` |
+| `0.7` | `ppal` | `0.9114` | `0.9101` | `0.3503` | `64.66` | `logs/celeba/controlnet_ppal_redhair_brownskin_sademotion_resnet_celeba_1000_ratio0p7_gpu1_20260502_185507.log` |
+| `0.9` | `entropy` | **`0.9135`** | `0.9122` | `0.3072` | `51.45` | `logs/celeba/controlnet_entropy_redhair_brownskin_sademotion_resnet_celeba_1000_ratio0p9_gpu3_20260502_025110.log` |
+| `0.9` | `uherding` | `0.9100` | `0.9101` | `0.3503` | `53.60` | `logs/celeba/controlnet_uherding_redhair_brownskin_sademotion_resnet_celeba_1000_ratio0p9_gpu3_20260502_1440fast.log` |
+| `0.9` | `ppal` | `0.9119` | **`0.9131`** | `0.3452` | `55.52` | `logs/celeba/controlnet_ppal_redhair_brownskin_sademotion_resnet_celeba_1000_ratio0p9_gpu1_20260502_185507.log` |
 
 ### COCO Brown-Rainy Entropy Baseline
 
 - Generated pool:
   `/data/oxx220000/coco-pose-weather-edits/generated_coco_qwen3_1500_brown_rain_icedit`
 - Base checkpoint:
-  `log_pose/pose_keypointrcnn_train20k_internvl3_bs8_e2_rare1p1_gpu0_20260415_144530/best.pth`
+  `logs/pose/pose_keypointrcnn_train20k_internvl3_bs8_e2_rare1p1_gpu0_20260415_144530/best.pth`
 - Added generated images per row: `1000`
 - Training: `epochs=2`, `batch_size=8`, `lr=0.005`
 
 | Ratio | Test AP | Test AP50 | Test AP75 | Val AP | Log |
 | ---: | ---: | ---: | ---: | ---: | --- |
-| `0.1` | `0.6132` | `0.8545` | `0.6807` | `0.6293` | `log_pose/pose_qwen3_brown_rainy_entropy_ratio0p1_gpu3_20260502_025110.log` |
-| `0.3` | `0.6215` | `0.8542` | `0.6744` | `0.6323` | `log_pose/pose_qwen3_brown_rainy_entropy_ratio0p3_gpu3_20260502_025110.log` |
-| `0.5` | `0.6282` | `0.8557` | `0.6834` | `0.6350` | `log_pose/pose_qwen3_brown_rainy_entropy_ratio0p5_gpu3_20260502_025110.log` |
-| `0.7` | **`0.6293`** | **`0.8599`** | **`0.6842`** | **`0.6356`** | `log_pose/pose_qwen3_brown_rainy_entropy_ratio0p7_gpu3_20260502_025110.log` |
-| `0.9` | `0.6170` | `0.8499` | `0.6739` | `0.6235` | `log_pose/pose_qwen3_brown_rainy_entropy_ratio0p9_gpu3_20260502_025110.log` |
+| `0.1` | `0.6132` | `0.8545` | `0.6807` | `0.6293` | `logs/pose/pose_qwen3_brown_rainy_entropy_ratio0p1_gpu3_20260502_025110.log` |
+| `0.3` | `0.6215` | `0.8542` | `0.6744` | `0.6323` | `logs/pose/pose_qwen3_brown_rainy_entropy_ratio0p3_gpu3_20260502_025110.log` |
+| `0.5` | `0.6282` | `0.8557` | `0.6834` | `0.6350` | `logs/pose/pose_qwen3_brown_rainy_entropy_ratio0p5_gpu3_20260502_025110.log` |
+| `0.7` | **`0.6293`** | **`0.8599`** | **`0.6842`** | **`0.6356`** | `logs/pose/pose_qwen3_brown_rainy_entropy_ratio0p7_gpu3_20260502_025110.log` |
+| `0.9` | `0.6170` | `0.8499` | `0.6739` | `0.6235` | `logs/pose/pose_qwen3_brown_rainy_entropy_ratio0p9_gpu3_20260502_025110.log` |
 
 ### ImageNet ControlNet RPC8 No-Entropy Rerun
 
@@ -861,11 +861,11 @@ This rerun uses the same ImageNet ControlNet RPC8 grid as the earlier
 
 | Ratio | Best setting by Test ACC | Test ACC | Best Val ACC | Test loss | Log |
 | ---: | --- | ---: | ---: | ---: | --- |
-| `0.1` | `only_c` / `only_r` | **`0.7354`** | `0.7123` / `0.7177` | `0.8472` / `0.8465` | `logs_imagenet/controlnet_rpc8_noentropy_only_c_resnet_imagenet_1000_ratio0p1_gpu3_20260502_023905.log`, `logs_imagenet/controlnet_rpc8_noentropy_only_r_resnet_imagenet_1000_ratio0p1_gpu3_20260502_023905.log` |
-| `0.3` | `only_c` | **`0.7492`** | `0.7231` | `0.7987` | `logs_imagenet/controlnet_rpc8_noentropy_only_c_resnet_imagenet_1000_ratio0p3_gpu3_20260502_023905.log` |
-| `0.5` | `none` | **`0.7508`** | `0.7262` | `0.7806` | `logs_imagenet/controlnet_rpc8_noentropy_none_resnet_imagenet_1000_ratio0p5_gpu3_20260502_023905.log` |
-| `0.7` | `no_p` | **`0.7508`** | **`0.7323`** | `0.7858` | `logs_imagenet/controlnet_rpc8_noentropy_no_p_resnet_imagenet_1000_ratio0p7_gpu3_20260502_023905.log` |
-| `0.9` | `only_c` | **`0.7538`** | `0.7285` | `0.7791` | `logs_imagenet/controlnet_rpc8_noentropy_only_c_resnet_imagenet_1000_ratio0p9_gpu3_20260502_023905.log` |
+| `0.1` | `only_c` / `only_r` | **`0.7354`** | `0.7123` / `0.7177` | `0.8472` / `0.8465` | `logs/imagenet/controlnet_rpc8_noentropy_only_c_resnet_imagenet_1000_ratio0p1_gpu3_20260502_023905.log`, `logs/imagenet/controlnet_rpc8_noentropy_only_r_resnet_imagenet_1000_ratio0p1_gpu3_20260502_023905.log` |
+| `0.3` | `only_c` | **`0.7492`** | `0.7231` | `0.7987` | `logs/imagenet/controlnet_rpc8_noentropy_only_c_resnet_imagenet_1000_ratio0p3_gpu3_20260502_023905.log` |
+| `0.5` | `none` | **`0.7508`** | `0.7262` | `0.7806` | `logs/imagenet/controlnet_rpc8_noentropy_none_resnet_imagenet_1000_ratio0p5_gpu3_20260502_023905.log` |
+| `0.7` | `no_p` | **`0.7508`** | **`0.7323`** | `0.7858` | `logs/imagenet/controlnet_rpc8_noentropy_no_p_resnet_imagenet_1000_ratio0p7_gpu3_20260502_023905.log` |
+| `0.9` | `only_c` | **`0.7538`** | `0.7285` | `0.7791` | `logs/imagenet/controlnet_rpc8_noentropy_only_c_resnet_imagenet_1000_ratio0p9_gpu3_20260502_023905.log` |
 
 Best overall no-entropy ImageNet row: `only_c` at ratio `0.9`, Test ACC
 `0.7538`. For comparison, the earlier entropy-enabled ImageNet RPC8 sweep's
@@ -878,11 +878,11 @@ used metadata-only attribute selection (`use_entropy=False`).
 
 | Ratio | Best setting by Test AP | Test AP | Test AP50 | Test AP75 | Val AP | Log |
 | ---: | --- | ---: | ---: | ---: | ---: | --- |
-| `0.1` | `anchor` | **`0.6165`** | **`0.8467`** | **`0.6751`** | **`0.6294`** | `log_pose/pose_qwen3_brown_rainy_rpc8_anchor_ratio0p1_gpu1_20260501_231910.log` |
+| `0.1` | `anchor` | **`0.6165`** | **`0.8467`** | **`0.6751`** | **`0.6294`** | `logs/pose/pose_qwen3_brown_rainy_rpc8_anchor_ratio0p1_gpu1_20260501_231910.log` |
 | `0.3` | `anchor` | **`0.6306`** | n/a | n/a | n/a | n/a |
-| `0.5` | `no_r` | **`0.6295`** | **`0.8625`** | **`0.6785`** | **`0.6367`** | `log_pose/pose_qwen3_brown_rainy_rpc8_no_r_ratio0p5_gpu2_20260501_231910.log` |
-| `0.7` | `anchor` | **`0.6327`** | **`0.8609`** | **`0.6939`** | `0.6342` | `log_pose/pose_qwen3_brown_rainy_rpc8_anchor_ratio0p7_gpu2_20260501_231910.log` |
-| `0.9` | `no_r` | **`0.6276`** | `0.8552` | **`0.6853`** | `0.6310` | `log_pose/pose_qwen3_brown_rainy_rpc8_no_r_ratio0p9_gpu1_20260501_231910.log` |
+| `0.5` | `no_r` | **`0.6295`** | **`0.8625`** | **`0.6785`** | **`0.6367`** | `logs/pose/pose_qwen3_brown_rainy_rpc8_no_r_ratio0p5_gpu2_20260501_231910.log` |
+| `0.7` | `anchor` | **`0.6327`** | **`0.8609`** | **`0.6939`** | `0.6342` | `logs/pose/pose_qwen3_brown_rainy_rpc8_anchor_ratio0p7_gpu2_20260501_231910.log` |
+| `0.9` | `no_r` | **`0.6276`** | `0.8552` | **`0.6853`** | `0.6310` | `logs/pose/pose_qwen3_brown_rainy_rpc8_no_r_ratio0p9_gpu1_20260501_231910.log` |
 
 Best overall COCO RPC8 metadata-only row: `anchor` at ratio `0.7`, Test AP
 `0.6327`. The best Val AP in the parsed grid is `only_c` at ratio `0.3`,
@@ -901,11 +901,11 @@ resume-style rows.
 
 | Dataset | Generated Target | Original Samples | Final Train Size | Metric | Test | Best Val | Test Loss / AP50 / AP75 | Log |
 | --- | --- | ---: | ---: | --- | ---: | ---: | --- | --- |
-| ImageNet | `pinkcolor_fabrictexture` | `10400` | `11400` | ACC | `0.7400` | `0.7292` | loss `0.7998` | `logs_imagenet/controlnet_pinkcolor_fabrictexture_resnet_imagenet_1000_ratio1p0_gpu3_20260501_150816.log` |
-| CelebA | `redhair_brownskin_sademotion` | `80000` | `81000` | ACC | **`0.9114`** | `0.9133` | loss `0.3422` | `logs_celeba/controlnet_redhair_brownskin_sademotion_resnet_celeba_1000_ratio1p0_gpu0_20260501_150816.log` |
-| CelebA | `redhair_brownskin_unfiltered` | `80000` | `81000` | ACC | `0.9108` | `0.9136` | loss `0.3420` | `logs_celeba/controlnet_redhair_brownskin_unfiltered_resnet_celeba_1000_ratio1p0_gpu1_20260501_150816.log` |
-| CelebA | `redhair_brownskin` | `80000` | `81000` | ACC | `0.9102` | `0.9126` | loss `0.3440` | `logs_celeba/controlnet_redhair_brownskin_resnet_celeba_1000_ratio1p0_gpu2_20260501_150816.log` |
-| COCO pose | `brown_rainy` | `20000` | `21000` | AP | `0.6259` | `0.6310` | AP50 `0.8544`, AP75 `0.6812` | `log_pose/pose_qwen3_brown_rainy_full_ratio1p0_gpu3_20260501_150816.log` |
+| ImageNet | `pinkcolor_fabrictexture` | `10400` | `11400` | ACC | `0.7400` | `0.7292` | loss `0.7998` | `logs/imagenet/controlnet_pinkcolor_fabrictexture_resnet_imagenet_1000_ratio1p0_gpu3_20260501_150816.log` |
+| CelebA | `redhair_brownskin_sademotion` | `80000` | `81000` | ACC | **`0.9114`** | `0.9133` | loss `0.3422` | `logs/celeba/controlnet_redhair_brownskin_sademotion_resnet_celeba_1000_ratio1p0_gpu0_20260501_150816.log` |
+| CelebA | `redhair_brownskin_unfiltered` | `80000` | `81000` | ACC | `0.9108` | `0.9136` | loss `0.3420` | `logs/celeba/controlnet_redhair_brownskin_unfiltered_resnet_celeba_1000_ratio1p0_gpu1_20260501_150816.log` |
+| CelebA | `redhair_brownskin` | `80000` | `81000` | ACC | `0.9102` | `0.9126` | loss `0.3440` | `logs/celeba/controlnet_redhair_brownskin_resnet_celeba_1000_ratio1p0_gpu2_20260501_150816.log` |
+| COCO pose | `brown_rainy` | `20000` | `21000` | AP | `0.6259` | `0.6310` | AP50 `0.8544`, AP75 `0.6812` | `logs/pose/pose_qwen3_brown_rainy_full_ratio1p0_gpu3_20260501_150816.log` |
 | KITTI | `red_cloudy` | `5000` | `6000` | mAP50-95 | `0.5858` | `0.5608` | mAP50 `0.8505`, precision `0.8808`, recall `0.7449` | `logs/kitti_ratio1p0_random_red_cloudy_gen1000_e10_gpu3_20260504_003555_fp.log` |
 
 ### 05/04/2026 No-Resume Base-Epoch Ratio 1.0 Reruns
@@ -917,10 +917,10 @@ current entry points allow.
 
 | Dataset | Generated Target | Original Samples | Final Train Size | Schedule | Metric | Test | Best Val / Val | Extra Test Metrics | Log |
 | --- | --- | ---: | ---: | --- | --- | ---: | ---: | --- | --- |
-| ImageNet | `pinkcolor_fabrictexture` | `10400` | `11400` | ResNet random init, `30` epochs, `lr=1e-3` | ACC | `0.7392` | `0.7277` | loss `0.8216` | `logs_imagenet/controlnet_pinkcolor_fabrictexture_resnet_imagenet_1000_ratio1p0_e30_baseparams_noresume_gpu2_20260504_012302.log` |
-| CelebA | `redhair_brownskin_sademotion` | `80000` | `81000` | ResNet random init, `20` epochs, `lr=1e-5` | ACC | `0.9155` | `0.8778` | loss `0.4104` | `logs_celeba/controlnet_redhair_brownskin_sademotion_resnet_celeba_1000_ratio1p0_e20_baseparams_noresume_gpu3_20260504_012302.log` |
+| ImageNet | `pinkcolor_fabrictexture` | `10400` | `11400` | ResNet random init, `30` epochs, `lr=1e-3` | ACC | `0.7392` | `0.7277` | loss `0.8216` | `logs/imagenet/controlnet_pinkcolor_fabrictexture_resnet_imagenet_1000_ratio1p0_e30_baseparams_noresume_gpu2_20260504_012302.log` |
+| CelebA | `redhair_brownskin_sademotion` | `80000` | `81000` | ResNet random init, `20` epochs, `lr=1e-5` | ACC | `0.9155` | `0.8778` | loss `0.4104` | `logs/celeba/controlnet_redhair_brownskin_sademotion_resnet_celeba_1000_ratio1p0_e20_baseparams_noresume_gpu3_20260504_012302.log` |
 | KITTI | `red_cloudy` | `5000` | `6000` | YOLOv8n random/base pretrained weights, `30` epochs | mAP50-95 | `0.5737` | `0.5555` | test mAP50 `0.8363`, precision `0.8503`, recall `0.7499` | `logs/kitti_ratio1p0_random_red_cloudy_gen1000_e30_baseparams_noresume_gpu0_20260504_011553.log` |
-| COCO pose | `brown_rainy` | `20000` | `21000` | Keypoint R-CNN pretrained, `2` epochs, `lr=0.005` | AP | `0.6292` | `0.6321` | test AP50 `0.8549`, AP75 `0.6802`; best checkpoint epoch `0` | `log_pose/pose_qwen3_brown_rainy_ratio1p0_gen1000_e2_baseparams_noresume_gpu1_20260504_011553.log` |
+| COCO pose | `brown_rainy` | `20000` | `21000` | Keypoint R-CNN pretrained, `2` epochs, `lr=0.005` | AP | `0.6292` | `0.6321` | test AP50 `0.8549`, AP75 `0.6802`; best checkpoint epoch `0` | `logs/pose/pose_qwen3_brown_rainy_ratio1p0_gen1000_e2_baseparams_noresume_gpu1_20260504_011553.log` |
 
 ## 05/01/2026 Update — RPC Component Removal Ablations
 
@@ -936,11 +936,11 @@ than setting rarity power to `0`.
 
 | Setting | Removed component | Test ACC | Best Val ACC | Test loss | Log |
 | --- | --- | ---: | ---: | ---: | --- |
-| `anchor` | none | `0.7423` | `0.7208` | `0.8007` | `logs_imagenet/controlnet_rpc_ablation_anchor_resnet_imagenet_1000_ratio0p7_gpu3_20260501_164751.log` |
-| `no_r` | rarity `R` | `0.7431` | `0.7200` | `0.7961` | `logs_imagenet/controlnet_rpc_ablation_no_r_resnet_imagenet_1000_ratio0p7_gpu3_20260501_164751.log` |
-| `no_p` | frequency penalty `P` | `0.7469` | `0.7169` | `0.7863` | `logs_imagenet/controlnet_rpc_ablation_no_p_resnet_imagenet_1000_ratio0p7_gpu3_20260501_164751.log` |
-| `no_c` | class balance `C` | **`0.7477`** | `0.7208` | `0.7922` | `logs_imagenet/controlnet_rpc_ablation_no_c_resnet_imagenet_1000_ratio0p7_gpu3_20260501_164751.log` |
-| `no_u` | uncertainty / entropy `U` | `0.7438` | **`0.7215`** | `0.7923` | `logs_imagenet/controlnet_rpc_ablation_no_u_resnet_imagenet_1000_ratio0p7_gpu3_20260501_164751.log` |
+| `anchor` | none | `0.7423` | `0.7208` | `0.8007` | `logs/imagenet/controlnet_rpc_ablation_anchor_resnet_imagenet_1000_ratio0p7_gpu3_20260501_164751.log` |
+| `no_r` | rarity `R` | `0.7431` | `0.7200` | `0.7961` | `logs/imagenet/controlnet_rpc_ablation_no_r_resnet_imagenet_1000_ratio0p7_gpu3_20260501_164751.log` |
+| `no_p` | frequency penalty `P` | `0.7469` | `0.7169` | `0.7863` | `logs/imagenet/controlnet_rpc_ablation_no_p_resnet_imagenet_1000_ratio0p7_gpu3_20260501_164751.log` |
+| `no_c` | class balance `C` | **`0.7477`** | `0.7208` | `0.7922` | `logs/imagenet/controlnet_rpc_ablation_no_c_resnet_imagenet_1000_ratio0p7_gpu3_20260501_164751.log` |
+| `no_u` | uncertainty / entropy `U` | `0.7438` | **`0.7215`** | `0.7923` | `logs/imagenet/controlnet_rpc_ablation_no_u_resnet_imagenet_1000_ratio0p7_gpu3_20260501_164751.log` |
 
 ### COCO Brown-Rainy, Ratio = 0.9
 
@@ -952,9 +952,9 @@ than setting rarity power to `0`.
 | Setting | Removed component | Test AP | Test AP50 | Test AP75 | Val AP | Val AP50 | Val AP75 | Log |
 | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | --- |
 | `anchor` | none | **`0.6355`** | `0.8572` | `0.6805` | `0.6282` | `0.8606` | `0.6829` | existing row in Brown-Rainy table |
-| `no_r` | rarity `R` | `0.6198` | `0.8537` | `0.6742` | `0.6242` | `0.8584` | `0.6792` | `log_pose/pose_qwen3_brown_rainy_rpc_ablation_no_r_ratio0p9_gpu0_20260501_164751.log` |
-| `no_p` | frequency penalty `P` | `0.6222` | `0.8602` | `0.6696` | **`0.6300`** | `0.8599` | **`0.6878`** | `log_pose/pose_qwen3_brown_rainy_rpc_ablation_no_p_ratio0p9_gpu1_20260501_164751.log` |
-| `no_c` | class balance `C` | `0.6160` | `0.8553` | `0.6693` | `0.6276` | **`0.8606`** | `0.6811` | `log_pose/pose_qwen3_brown_rainy_rpc_ablation_no_c_ratio0p9_gpu2_20260501_164751.log` |
+| `no_r` | rarity `R` | `0.6198` | `0.8537` | `0.6742` | `0.6242` | `0.8584` | `0.6792` | `logs/pose/pose_qwen3_brown_rainy_rpc_ablation_no_r_ratio0p9_gpu0_20260501_164751.log` |
+| `no_p` | frequency penalty `P` | `0.6222` | `0.8602` | `0.6696` | **`0.6300`** | `0.8599` | **`0.6878`** | `logs/pose/pose_qwen3_brown_rainy_rpc_ablation_no_p_ratio0p9_gpu1_20260501_164751.log` |
+| `no_c` | class balance `C` | `0.6160` | `0.8553` | `0.6693` | `0.6276` | **`0.8606`** | `0.6811` | `logs/pose/pose_qwen3_brown_rainy_rpc_ablation_no_c_ratio0p9_gpu2_20260501_164751.log` |
 
 ## 05/01/2026 Update — RPC Only-One-Component Ablations
 
@@ -966,17 +966,17 @@ checkpoints as the component-removal ablations above.
 
 | Setting | Kept component | Test ACC | Best Val ACC | Test loss | Log |
 | --- | --- | ---: | ---: | ---: | --- |
-| `only_r` | rarity `R` | **`0.7469`** | `0.7223` | `0.7883` | `logs_imagenet/controlnet_rpc_ablation_only_r_resnet_imagenet_1000_ratio0p7_gpu3_20260501_173952.log` |
-| `only_p` | frequency penalty `P` | `0.7431` | `0.7146` | `0.7991` | `logs_imagenet/controlnet_rpc_ablation_only_p_resnet_imagenet_1000_ratio0p7_gpu3_20260501_173952.log` |
-| `only_c` | class balance `C` | `0.7415` | **`0.7238`** | `0.8071` | `logs_imagenet/controlnet_rpc_ablation_only_c_resnet_imagenet_1000_ratio0p7_gpu3_20260501_173952.log` |
+| `only_r` | rarity `R` | **`0.7469`** | `0.7223` | `0.7883` | `logs/imagenet/controlnet_rpc_ablation_only_r_resnet_imagenet_1000_ratio0p7_gpu3_20260501_173952.log` |
+| `only_p` | frequency penalty `P` | `0.7431` | `0.7146` | `0.7991` | `logs/imagenet/controlnet_rpc_ablation_only_p_resnet_imagenet_1000_ratio0p7_gpu3_20260501_173952.log` |
+| `only_c` | class balance `C` | `0.7415` | **`0.7238`** | `0.8071` | `logs/imagenet/controlnet_rpc_ablation_only_c_resnet_imagenet_1000_ratio0p7_gpu3_20260501_173952.log` |
 
 ### COCO Brown-Rainy, Ratio = 0.9
 
 | Setting | Kept component | Test AP | Test AP50 | Test AP75 | Val AP | Val AP50 | Val AP75 | Log |
 | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | --- |
-| `only_r` | rarity `R` | `0.6171` | `0.8556` | `0.6703` | `0.6265` | `0.8630` | `0.6843` | `log_pose/pose_qwen3_brown_rainy_rpc_ablation_only_r_ratio0p9_gpu0_20260501_173952.log` |
-| `only_p` | frequency penalty `P` | `0.6193` | **`0.8588`** | `0.6712` | `0.6286` | `0.8621` | `0.6873` | `log_pose/pose_qwen3_brown_rainy_rpc_ablation_only_p_ratio0p9_gpu1_20260501_173952.log` |
-| `only_c` | class balance `C` | **`0.6264`** | `0.8576` | **`0.6826`** | **`0.6328`** | **`0.8633`** | **`0.6885`** | `log_pose/pose_qwen3_brown_rainy_rpc_ablation_only_c_ratio0p9_gpu2_20260501_173952.log` |
+| `only_r` | rarity `R` | `0.6171` | `0.8556` | `0.6703` | `0.6265` | `0.8630` | `0.6843` | `logs/pose/pose_qwen3_brown_rainy_rpc_ablation_only_r_ratio0p9_gpu0_20260501_173952.log` |
+| `only_p` | frequency penalty `P` | `0.6193` | **`0.8588`** | `0.6712` | `0.6286` | `0.8621` | `0.6873` | `logs/pose/pose_qwen3_brown_rainy_rpc_ablation_only_p_ratio0p9_gpu1_20260501_173952.log` |
+| `only_c` | class balance `C` | **`0.6264`** | `0.8576` | **`0.6826`** | **`0.6328`** | **`0.8633`** | **`0.6885`** | `logs/pose/pose_qwen3_brown_rainy_rpc_ablation_only_c_ratio0p9_gpu2_20260501_173952.log` |
 
 ## 05/02/2026 Update — ImageNet RPC 8-Combination Ratio Sweep
 
@@ -989,51 +989,51 @@ completed later and is summarized in the overnight status section above.
 
 - Generated directory: `data/imagenet_pinkcolor_fabrictexture`
 - Attribute metadata: `save/attribute10_internvl3_8B.json`
-- Base checkpoint: `weights/model_imagenet_resnet_base.pth`
+- Base checkpoint: `save/weights/model_imagenet_resnet_base.pth`
 - Added generated images per row: `1000`
 
 | Ratio | Setting | Active components | Test ACC | Best Val ACC | Test loss | Log |
 | --- | --- | --- | ---: | ---: | ---: | --- |
-| `0.1` | `none` | none | `0.7269` | `0.7115` | `0.8612` | `logs_imagenet/controlnet_rpc8_none_resnet_imagenet_1000_ratio0p1_gpu3_20260501_231910.log` |
-| `0.1` | `only_r` | `R` | `0.7300` | `0.7077` | `0.8644` | `logs_imagenet/controlnet_rpc8_only_r_resnet_imagenet_1000_ratio0p1_gpu3_20260501_231910.log` |
-| `0.1` | `only_p` | `P` | `0.7262` | **`0.7162`** | `0.8634` | `logs_imagenet/controlnet_rpc8_only_p_resnet_imagenet_1000_ratio0p1_gpu3_20260501_231910.log` |
-| `0.1` | `only_c` | `C` | `0.7277` | `0.7085` | `0.8448` | `logs_imagenet/controlnet_rpc8_only_c_resnet_imagenet_1000_ratio0p1_gpu3_20260501_231910.log` |
-| `0.1` | `no_r` | `P+C` | **`0.7359`** | `0.7131` | `0.8502` | `logs_imagenet/controlnet_rpc8_no_r_resnet_imagenet_1000_ratio0p1_gpu3_20260501_231910.log` |
-| `0.1` | `no_p` | `R+C` | `0.7308` | `0.7108` | `0.8474` | `logs_imagenet/controlnet_rpc8_no_p_resnet_imagenet_1000_ratio0p1_gpu3_20260501_231910.log` |
-| `0.1` | `no_c` | `R+P` | `0.7315` | `0.7108` | `0.8610` | `logs_imagenet/controlnet_rpc8_no_c_resnet_imagenet_1000_ratio0p1_gpu3_20260501_231910.log` |
-| `0.1` | `anchor` | `R+P+C` | `0.7238` | `0.7138` | `0.8512` | `logs_imagenet/controlnet_rpc8_anchor_resnet_imagenet_1000_ratio0p1_gpu3_20260501_231910.log` |
-| `0.3` | `none` | none | `0.7308` | `0.7162` | `0.8343` | `logs_imagenet/controlnet_rpc8_none_resnet_imagenet_1000_ratio0p3_gpu3_20260501_231910.log` |
-| `0.3` | `only_r` | `R` | **`0.7415`** | `0.7146` | `0.8261` | `logs_imagenet/controlnet_rpc8_only_r_resnet_imagenet_1000_ratio0p3_gpu3_20260501_231910.log` |
-| `0.3` | `only_p` | `P` | `0.7392` | `0.7154` | `0.8176` | `logs_imagenet/controlnet_rpc8_only_p_resnet_imagenet_1000_ratio0p3_gpu3_20260501_231910.log` |
-| `0.3` | `only_c` | `C` | `0.7392` | **`0.7169`** | `0.8124` | `logs_imagenet/controlnet_rpc8_only_c_resnet_imagenet_1000_ratio0p3_gpu3_20260501_231910.log` |
-| `0.3` | `no_r` | `P+C` | `0.7308` | `0.7162` | `0.8253` | `logs_imagenet/controlnet_rpc8_no_r_resnet_imagenet_1000_ratio0p3_gpu3_20260501_231910.log` |
-| `0.3` | `no_p` | `R+C` | `0.7369` | `0.7154` | `0.8232` | `logs_imagenet/controlnet_rpc8_no_p_resnet_imagenet_1000_ratio0p3_gpu3_20260501_231910.log` |
-| `0.3` | `no_c` | `R+P` | `0.7315` | `0.7154` | `0.8429` | `logs_imagenet/controlnet_rpc8_no_c_resnet_imagenet_1000_ratio0p3_gpu3_20260501_231910.log` |
-| `0.3` | `anchor` | `R+P+C` | `0.7377` | `0.7131` | `0.8224` | `logs_imagenet/controlnet_rpc8_anchor_resnet_imagenet_1000_ratio0p3_gpu3_20260501_231910.log` |
-| `0.5` | `none` | none | `0.7400` | `0.7200` | `0.8100` | `logs_imagenet/controlnet_rpc8_none_resnet_imagenet_1000_ratio0p5_gpu3_20260501_231910.log` |
-| `0.5` | `only_r` | `R` | `0.7415` | **`0.7215`** | `0.8134` | `logs_imagenet/controlnet_rpc8_only_r_resnet_imagenet_1000_ratio0p5_gpu3_20260501_231910.log` |
-| `0.5` | `only_p` | `P` | `0.7408` | `0.7162` | `0.8119` | `logs_imagenet/controlnet_rpc8_only_p_resnet_imagenet_1000_ratio0p5_gpu3_20260501_231910.log` |
-| `0.5` | `only_c` | `C` | `0.7346` | `0.7208` | `0.8034` | `logs_imagenet/controlnet_rpc8_only_c_resnet_imagenet_1000_ratio0p5_gpu3_20260501_231910.log` |
-| `0.5` | `no_r` | `P+C` | `0.7369` | `0.7169` | `0.8108` | `logs_imagenet/controlnet_rpc8_no_r_resnet_imagenet_1000_ratio0p5_gpu3_20260501_231910.log` |
-| `0.5` | `no_p` | `R+C` | `0.7415` | `0.7169` | `0.8056` | `logs_imagenet/controlnet_rpc8_no_p_resnet_imagenet_1000_ratio0p5_gpu3_20260501_231910.log` |
-| `0.5` | `no_c` | `R+P` | **`0.7446`** | `0.7146` | `0.8194` | `logs_imagenet/controlnet_rpc8_no_c_resnet_imagenet_1000_ratio0p5_gpu3_20260501_231910.log` |
-| `0.5` | `anchor` | `R+P+C` | `0.7362` | `0.7192` | `0.8071` | `logs_imagenet/controlnet_rpc8_anchor_resnet_imagenet_1000_ratio0p5_gpu3_20260501_231910.log` |
-| `0.7` | `none` | none | `0.7423` | `0.7208` | `0.8014` | `logs_imagenet/controlnet_rpc8_none_resnet_imagenet_1000_ratio0p7_gpu3_20260501_231910.log` |
-| `0.7` | `only_r` | `R` | `0.7469` | `0.7223` | `0.7883` | `logs_imagenet/controlnet_rpc8_only_r_resnet_imagenet_1000_ratio0p7_gpu3_20260501_231910.log` |
-| `0.7` | `only_p` | `P` | `0.7431` | `0.7146` | `0.7991` | `logs_imagenet/controlnet_rpc8_only_p_resnet_imagenet_1000_ratio0p7_gpu3_20260501_231910.log` |
-| `0.7` | `only_c` | `C` | `0.7415` | **`0.7238`** | `0.8071` | `logs_imagenet/controlnet_rpc8_only_c_resnet_imagenet_1000_ratio0p7_gpu3_20260501_231910.log` |
-| `0.7` | `no_r` | `P+C` | `0.7431` | `0.7200` | `0.7961` | `logs_imagenet/controlnet_rpc8_no_r_resnet_imagenet_1000_ratio0p7_gpu3_20260501_231910.log` |
-| `0.7` | `no_p` | `R+C` | `0.7469` | `0.7169` | `0.7863` | `logs_imagenet/controlnet_rpc8_no_p_resnet_imagenet_1000_ratio0p7_gpu3_20260501_231910.log` |
-| `0.7` | `no_c` | `R+P` | **`0.7477`** | `0.7208` | `0.7922` | `logs_imagenet/controlnet_rpc8_no_c_resnet_imagenet_1000_ratio0p7_gpu3_20260501_231910.log` |
-| `0.7` | `anchor` | `R+P+C` | `0.7423` | `0.7208` | `0.8007` | `logs_imagenet/controlnet_rpc8_anchor_resnet_imagenet_1000_ratio0p7_gpu3_20260501_231910.log` |
-| `0.9` | `none` | none | `0.7462` | `0.7254` | `0.7902` | `logs_imagenet/controlnet_rpc8_none_resnet_imagenet_1000_ratio0p9_gpu3_20260501_231910.log` |
-| `0.9` | `only_r` | `R` | `0.7500` | `0.7231` | `0.7836` | `logs_imagenet/controlnet_rpc8_only_r_resnet_imagenet_1000_ratio0p9_gpu3_20260501_231910.log` |
-| `0.9` | `only_p` | `P` | **`0.7526`** | **`0.7262`** | `0.7870` | `logs_imagenet/controlnet_rpc8_only_p_resnet_imagenet_1000_ratio0p9_gpu3_20260501_231910.log` |
-| `0.9` | `only_c` | `C` | `0.7477` | `0.7246` | `0.7891` | `logs_imagenet/controlnet_rpc8_only_c_resnet_imagenet_1000_ratio0p9_gpu3_20260501_231910.log` |
-| `0.9` | `no_r` | `P+C` | `0.7508` | `0.7231` | `0.7827` | `logs_imagenet/controlnet_rpc8_no_r_resnet_imagenet_1000_ratio0p9_gpu3_20260501_231910.log` |
-| `0.9` | `no_p` | `R+C` | `0.7415` | **`0.7262`** | `0.7975` | `logs_imagenet/controlnet_rpc8_no_p_resnet_imagenet_1000_ratio0p9_gpu3_20260501_231910.log` |
-| `0.9` | `no_c` | `R+P` | `0.7423` | `0.7223` | `0.7981` | `logs_imagenet/controlnet_rpc8_no_c_resnet_imagenet_1000_ratio0p9_gpu3_20260501_231910.log` |
-| `0.9` | `anchor` | `R+P+C` | `0.7523` | `0.7208` | `0.7920` | `logs_imagenet/controlnet_rpc8_anchor_resnet_imagenet_1000_ratio0p9_gpu3_20260501_231910.log` |
+| `0.1` | `none` | none | `0.7269` | `0.7115` | `0.8612` | `logs/imagenet/controlnet_rpc8_none_resnet_imagenet_1000_ratio0p1_gpu3_20260501_231910.log` |
+| `0.1` | `only_r` | `R` | `0.7300` | `0.7077` | `0.8644` | `logs/imagenet/controlnet_rpc8_only_r_resnet_imagenet_1000_ratio0p1_gpu3_20260501_231910.log` |
+| `0.1` | `only_p` | `P` | `0.7262` | **`0.7162`** | `0.8634` | `logs/imagenet/controlnet_rpc8_only_p_resnet_imagenet_1000_ratio0p1_gpu3_20260501_231910.log` |
+| `0.1` | `only_c` | `C` | `0.7277` | `0.7085` | `0.8448` | `logs/imagenet/controlnet_rpc8_only_c_resnet_imagenet_1000_ratio0p1_gpu3_20260501_231910.log` |
+| `0.1` | `no_r` | `P+C` | **`0.7359`** | `0.7131` | `0.8502` | `logs/imagenet/controlnet_rpc8_no_r_resnet_imagenet_1000_ratio0p1_gpu3_20260501_231910.log` |
+| `0.1` | `no_p` | `R+C` | `0.7308` | `0.7108` | `0.8474` | `logs/imagenet/controlnet_rpc8_no_p_resnet_imagenet_1000_ratio0p1_gpu3_20260501_231910.log` |
+| `0.1` | `no_c` | `R+P` | `0.7315` | `0.7108` | `0.8610` | `logs/imagenet/controlnet_rpc8_no_c_resnet_imagenet_1000_ratio0p1_gpu3_20260501_231910.log` |
+| `0.1` | `anchor` | `R+P+C` | `0.7238` | `0.7138` | `0.8512` | `logs/imagenet/controlnet_rpc8_anchor_resnet_imagenet_1000_ratio0p1_gpu3_20260501_231910.log` |
+| `0.3` | `none` | none | `0.7308` | `0.7162` | `0.8343` | `logs/imagenet/controlnet_rpc8_none_resnet_imagenet_1000_ratio0p3_gpu3_20260501_231910.log` |
+| `0.3` | `only_r` | `R` | **`0.7415`** | `0.7146` | `0.8261` | `logs/imagenet/controlnet_rpc8_only_r_resnet_imagenet_1000_ratio0p3_gpu3_20260501_231910.log` |
+| `0.3` | `only_p` | `P` | `0.7392` | `0.7154` | `0.8176` | `logs/imagenet/controlnet_rpc8_only_p_resnet_imagenet_1000_ratio0p3_gpu3_20260501_231910.log` |
+| `0.3` | `only_c` | `C` | `0.7392` | **`0.7169`** | `0.8124` | `logs/imagenet/controlnet_rpc8_only_c_resnet_imagenet_1000_ratio0p3_gpu3_20260501_231910.log` |
+| `0.3` | `no_r` | `P+C` | `0.7308` | `0.7162` | `0.8253` | `logs/imagenet/controlnet_rpc8_no_r_resnet_imagenet_1000_ratio0p3_gpu3_20260501_231910.log` |
+| `0.3` | `no_p` | `R+C` | `0.7369` | `0.7154` | `0.8232` | `logs/imagenet/controlnet_rpc8_no_p_resnet_imagenet_1000_ratio0p3_gpu3_20260501_231910.log` |
+| `0.3` | `no_c` | `R+P` | `0.7315` | `0.7154` | `0.8429` | `logs/imagenet/controlnet_rpc8_no_c_resnet_imagenet_1000_ratio0p3_gpu3_20260501_231910.log` |
+| `0.3` | `anchor` | `R+P+C` | `0.7377` | `0.7131` | `0.8224` | `logs/imagenet/controlnet_rpc8_anchor_resnet_imagenet_1000_ratio0p3_gpu3_20260501_231910.log` |
+| `0.5` | `none` | none | `0.7400` | `0.7200` | `0.8100` | `logs/imagenet/controlnet_rpc8_none_resnet_imagenet_1000_ratio0p5_gpu3_20260501_231910.log` |
+| `0.5` | `only_r` | `R` | `0.7415` | **`0.7215`** | `0.8134` | `logs/imagenet/controlnet_rpc8_only_r_resnet_imagenet_1000_ratio0p5_gpu3_20260501_231910.log` |
+| `0.5` | `only_p` | `P` | `0.7408` | `0.7162` | `0.8119` | `logs/imagenet/controlnet_rpc8_only_p_resnet_imagenet_1000_ratio0p5_gpu3_20260501_231910.log` |
+| `0.5` | `only_c` | `C` | `0.7346` | `0.7208` | `0.8034` | `logs/imagenet/controlnet_rpc8_only_c_resnet_imagenet_1000_ratio0p5_gpu3_20260501_231910.log` |
+| `0.5` | `no_r` | `P+C` | `0.7369` | `0.7169` | `0.8108` | `logs/imagenet/controlnet_rpc8_no_r_resnet_imagenet_1000_ratio0p5_gpu3_20260501_231910.log` |
+| `0.5` | `no_p` | `R+C` | `0.7415` | `0.7169` | `0.8056` | `logs/imagenet/controlnet_rpc8_no_p_resnet_imagenet_1000_ratio0p5_gpu3_20260501_231910.log` |
+| `0.5` | `no_c` | `R+P` | **`0.7446`** | `0.7146` | `0.8194` | `logs/imagenet/controlnet_rpc8_no_c_resnet_imagenet_1000_ratio0p5_gpu3_20260501_231910.log` |
+| `0.5` | `anchor` | `R+P+C` | `0.7362` | `0.7192` | `0.8071` | `logs/imagenet/controlnet_rpc8_anchor_resnet_imagenet_1000_ratio0p5_gpu3_20260501_231910.log` |
+| `0.7` | `none` | none | `0.7423` | `0.7208` | `0.8014` | `logs/imagenet/controlnet_rpc8_none_resnet_imagenet_1000_ratio0p7_gpu3_20260501_231910.log` |
+| `0.7` | `only_r` | `R` | `0.7469` | `0.7223` | `0.7883` | `logs/imagenet/controlnet_rpc8_only_r_resnet_imagenet_1000_ratio0p7_gpu3_20260501_231910.log` |
+| `0.7` | `only_p` | `P` | `0.7431` | `0.7146` | `0.7991` | `logs/imagenet/controlnet_rpc8_only_p_resnet_imagenet_1000_ratio0p7_gpu3_20260501_231910.log` |
+| `0.7` | `only_c` | `C` | `0.7415` | **`0.7238`** | `0.8071` | `logs/imagenet/controlnet_rpc8_only_c_resnet_imagenet_1000_ratio0p7_gpu3_20260501_231910.log` |
+| `0.7` | `no_r` | `P+C` | `0.7431` | `0.7200` | `0.7961` | `logs/imagenet/controlnet_rpc8_no_r_resnet_imagenet_1000_ratio0p7_gpu3_20260501_231910.log` |
+| `0.7` | `no_p` | `R+C` | `0.7469` | `0.7169` | `0.7863` | `logs/imagenet/controlnet_rpc8_no_p_resnet_imagenet_1000_ratio0p7_gpu3_20260501_231910.log` |
+| `0.7` | `no_c` | `R+P` | **`0.7477`** | `0.7208` | `0.7922` | `logs/imagenet/controlnet_rpc8_no_c_resnet_imagenet_1000_ratio0p7_gpu3_20260501_231910.log` |
+| `0.7` | `anchor` | `R+P+C` | `0.7423` | `0.7208` | `0.8007` | `logs/imagenet/controlnet_rpc8_anchor_resnet_imagenet_1000_ratio0p7_gpu3_20260501_231910.log` |
+| `0.9` | `none` | none | `0.7462` | `0.7254` | `0.7902` | `logs/imagenet/controlnet_rpc8_none_resnet_imagenet_1000_ratio0p9_gpu3_20260501_231910.log` |
+| `0.9` | `only_r` | `R` | `0.7500` | `0.7231` | `0.7836` | `logs/imagenet/controlnet_rpc8_only_r_resnet_imagenet_1000_ratio0p9_gpu3_20260501_231910.log` |
+| `0.9` | `only_p` | `P` | **`0.7526`** | **`0.7262`** | `0.7870` | `logs/imagenet/controlnet_rpc8_only_p_resnet_imagenet_1000_ratio0p9_gpu3_20260501_231910.log` |
+| `0.9` | `only_c` | `C` | `0.7477` | `0.7246` | `0.7891` | `logs/imagenet/controlnet_rpc8_only_c_resnet_imagenet_1000_ratio0p9_gpu3_20260501_231910.log` |
+| `0.9` | `no_r` | `P+C` | `0.7508` | `0.7231` | `0.7827` | `logs/imagenet/controlnet_rpc8_no_r_resnet_imagenet_1000_ratio0p9_gpu3_20260501_231910.log` |
+| `0.9` | `no_p` | `R+C` | `0.7415` | **`0.7262`** | `0.7975` | `logs/imagenet/controlnet_rpc8_no_p_resnet_imagenet_1000_ratio0p9_gpu3_20260501_231910.log` |
+| `0.9` | `no_c` | `R+P` | `0.7423` | `0.7223` | `0.7981` | `logs/imagenet/controlnet_rpc8_no_c_resnet_imagenet_1000_ratio0p9_gpu3_20260501_231910.log` |
+| `0.9` | `anchor` | `R+P+C` | `0.7523` | `0.7208` | `0.7920` | `logs/imagenet/controlnet_rpc8_anchor_resnet_imagenet_1000_ratio0p9_gpu3_20260501_231910.log` |
 
 Summary by ratio: best Test ACC is `no_r` at ratio `0.1`, `only_r` at ratio
 `0.3`, `no_c` at ratios `0.5` and `0.7`, and `only_p` at ratio `0.9`. The best
@@ -1195,7 +1195,7 @@ not a final comparable KITTI result.
 - Script:
   `object_detection/train_yolov8_kitti_generated.py`
 - Resume checkpoint:
-  `runs/kitti_yolov8/first5000_1240val_1241test_gpu0_bs16_e30_20260429_012232/weights/best.pt`
+  `save/runs/kitti_yolov8/first5000_1240val_1241test_gpu0_bs16_e30_20260429_012232/save/weights/best.pt`
 - Source dataset:
   `/data/oxx220000/kitti_yolov8_first5000/`
 - Generated pool:
@@ -1205,7 +1205,7 @@ not a final comparable KITTI result.
   `1000` generated red-cloudy images, `batch=16`, `imgsz=640`, `epochs=1`,
   `AdamW`, `lr0=2e-4`, `lrf=0.1`.
 - Run:
-  `runs/kitti_yolov8/kitti_ratio0p05_stratified_red_cloudy_gen1000_e1_gpu0_20260502_011659`
+  `save/runs/kitti_yolov8/kitti_ratio0p05_stratified_red_cloudy_gen1000_e1_gpu0_20260502_011659`
 - Val after 1 epoch:
   precision `0.82872`, recall `0.57158`, mAP50 `0.67209`, mAP50-95 `0.35703`
 - Test after 1 epoch:
@@ -1220,7 +1220,7 @@ train images plus `1000` generated red-cloudy images (`1250` train images
 total). The generated pool has `1309` usable images.
 
 - Resume checkpoint:
-  `runs/kitti_yolov8/first5000_1240val_1241test_gpu0_bs16_e30_20260429_012232/weights/best.pt`
+  `save/runs/kitti_yolov8/first5000_1240val_1241test_gpu0_bs16_e30_20260429_012232/save/weights/best.pt`
 - Source dataset:
   `/data/oxx220000/kitti_yolov8_first5000/`
 - Generated pool:
@@ -1258,11 +1258,11 @@ baselines avoid the slow exact selection path.
   (`269.4` minutes, `4.49` hours).
 - Batch-size-16 YOLOv8n checkpoint analysis:
   - checkpoint:
-    `runs/kitti_yolov8/first5000_1240val_1241test_gpu0_bs16_e30_20260429_012232/weights/best.pt`
+    `save/runs/kitti_yolov8/first5000_1240val_1241test_gpu0_bs16_e30_20260429_012232/save/weights/best.pt`
   - log:
     `logs/kitti_slice_analysis_train_internvl3_bs16_gpu2_20260429_0517.log`
   - output:
-    `log_kitti/kitti_slice_stats_internvl3_bs16_gpu2_20260429_0517/attribute_kitti_internvl3_8B/train_slice_stats.csv`
+    `logs/kitti/kitti_slice_stats_internvl3_bs16_gpu2_20260429_0517/attribute_kitti_internvl3_8B/train_slice_stats.csv`
   - overall train metrics: mAP50 `0.8719`, mAP50-95 `0.6010`
   - evaluated slices: `25`; failure slices: `13`
 
@@ -1314,46 +1314,46 @@ baselines avoid the slow exact selection path.
 
 | Ratio | Method | Test ACC | Test loss | Log |
 | ---: | --- | ---: | ---: | --- |
-| `0.1` | `random` | `0.7062` | `0.8958` | `logs_imagenet/instructpix2pix_random_resnet_imagenet_1000_ratio0p1_gpu1_20260429_065612.log` |
-| `0.1` | `stratified` | `0.7085` | `0.8927` | `logs_imagenet/instructpix2pix_stratified_resnet_imagenet_1000_ratio0p1_gpu1_20260429_065612.log` |
-| `0.1` | `coreset` | `0.7115` | `0.8970` | `logs_imagenet/instructpix2pix_coreset_resnet_imagenet_1000_ratio0p1_gpu1_20260429_065612.log` |
-| `0.1` | `badge` | `0.7077` | `0.8870` | `logs_imagenet/instructpix2pix_badge_resnet_imagenet_1000_ratio0p1_gpu1_20260429_065612.log` |
-| `0.1` | `attribute_r000_p0_c15` | `0.7000` | `0.8918` | `logs_imagenet/instructpix2pix_attribute_r000_p0_c15_resnet_imagenet_1000_ratio0p1_gpu1_20260429_065612.log` |
-| `0.1` | `attribute_r001_p5_cinf` | `0.7100` | `0.8813` | `logs_imagenet/instructpix2pix_attribute_r001_p5_cinf_resnet_imagenet_1000_ratio0p1_gpu1_20260429_065612.log` |
-| `0.1` | `attribute_r01_p5_c15` | **`0.7146`** | `0.8803` | `logs_imagenet/instructpix2pix_attribute_r01_p5_c15_resnet_imagenet_1000_ratio0p1_gpu1_20260429_065612.log` |
-| `0.1` | `attribute_r08_p10_c4` | `0.7077` | `0.8832` | `logs_imagenet/instructpix2pix_attribute_r08_p10_c4_resnet_imagenet_1000_ratio0p1_gpu1_20260429_065612.log` |
-| `0.3` | `random` | `0.7285` | `0.8175` | `logs_imagenet/instructpix2pix_random_resnet_imagenet_1000_ratio0p3_gpu1_20260429_065612.log` |
-| `0.3` | `stratified` | `0.7315` | `0.8118` | `logs_imagenet/instructpix2pix_stratified_resnet_imagenet_1000_ratio0p3_gpu1_20260429_065612.log` |
-| `0.3` | `coreset` | `0.7277` | `0.8325` | `logs_imagenet/instructpix2pix_coreset_resnet_imagenet_1000_ratio0p3_gpu1_20260429_065612.log` |
-| `0.3` | `badge` | `0.7315` | `0.8214` | `logs_imagenet/instructpix2pix_badge_resnet_imagenet_1000_ratio0p3_gpu1_20260429_065612.log` |
-| `0.3` | `attribute_r000_p0_c15` | `0.7362` | `0.8025` | `logs_imagenet/instructpix2pix_attribute_r000_p0_c15_resnet_imagenet_1000_ratio0p3_gpu1_20260429_065612.log` |
-| `0.3` | `attribute_r001_p5_cinf` | **`0.7369`** | `0.7992` | `logs_imagenet/instructpix2pix_attribute_r001_p5_cinf_resnet_imagenet_1000_ratio0p3_gpu1_20260429_065612.log` |
-| `0.3` | `attribute_r01_p5_c15` | **`0.7369`** | `0.8053` | `logs_imagenet/instructpix2pix_attribute_r01_p5_c15_resnet_imagenet_1000_ratio0p3_gpu1_20260429_065612.log` |
-| `0.3` | `attribute_r08_p10_c4` | `0.7315` | `0.8086` | `logs_imagenet/instructpix2pix_attribute_r08_p10_c4_resnet_imagenet_1000_ratio0p3_gpu1_20260429_065612.log` |
-| `0.5` | `random` | `0.7438` | `0.7762` | `logs_imagenet/instructpix2pix_random_resnet_imagenet_1000_ratio0p5_gpu2_20260429_065612.log` |
-| `0.5` | `stratified` | `0.7377` | `0.7895` | `logs_imagenet/instructpix2pix_stratified_resnet_imagenet_1000_ratio0p5_gpu2_20260429_065612.log` |
-| `0.5` | `coreset` | `0.7408` | `0.7956` | `logs_imagenet/instructpix2pix_coreset_resnet_imagenet_1000_ratio0p5_gpu2_20260429_065612.log` |
-| `0.5` | `badge` | `0.7446` | `0.7858` | `logs_imagenet/instructpix2pix_badge_resnet_imagenet_1000_ratio0p5_gpu2_20260429_065612.log` |
-| `0.5` | `attribute_r000_p0_c15` | `0.7385` | `0.7992` | `logs_imagenet/instructpix2pix_attribute_r000_p0_c15_resnet_imagenet_1000_ratio0p5_gpu2_20260429_065612.log` |
-| `0.5` | `attribute_r001_p5_cinf` | `0.7415` | `0.7857` | `logs_imagenet/instructpix2pix_attribute_r001_p5_cinf_resnet_imagenet_1000_ratio0p5_gpu2_20260429_065612.log` |
-| `0.5` | `attribute_r01_p5_c15` | `0.7369` | `0.7960` | `logs_imagenet/instructpix2pix_attribute_r01_p5_c15_resnet_imagenet_1000_ratio0p5_gpu2_20260429_065612.log` |
-| `0.5` | `attribute_r08_p10_c4` | **`0.7462`** | `0.7904` | `logs_imagenet/instructpix2pix_attribute_r08_p10_c4_resnet_imagenet_1000_ratio0p5_gpu2_20260429_065612.log` |
-| `0.7` | `random` | `0.7477` | `0.7832` | `logs_imagenet/instructpix2pix_random_resnet_imagenet_1000_ratio0p7_gpu3_20260429_065612.log` |
-| `0.7` | `stratified` | `0.7454` | `0.7841` | `logs_imagenet/instructpix2pix_stratified_resnet_imagenet_1000_ratio0p7_gpu3_20260429_065612.log` |
-| `0.7` | `coreset` | `0.7500` | `0.7825` | `logs_imagenet/instructpix2pix_coreset_resnet_imagenet_1000_ratio0p7_gpu3_20260429_065612.log` |
-| `0.7` | `badge` | `0.7446` | `0.7832` | `logs_imagenet/instructpix2pix_badge_resnet_imagenet_1000_ratio0p7_gpu3_20260429_065612.log` |
-| `0.7` | `attribute_r000_p0_c15` | **`0.7501`** | `0.7815` | `logs_imagenet/instructpix2pix_attribute_r000_p0_c15_resnet_imagenet_1000_ratio0p7_gpu3_20260429_065612.log` |
-| `0.7` | `attribute_r001_p5_cinf` | `0.7438` | `0.7884` | `logs_imagenet/instructpix2pix_attribute_r001_p5_cinf_resnet_imagenet_1000_ratio0p7_gpu3_20260429_065612.log` |
-| `0.7` | `attribute_r01_p5_c15` | `0.7408` | `0.7945` | `logs_imagenet/instructpix2pix_attribute_r01_p5_c15_resnet_imagenet_1000_ratio0p7_gpu3_20260429_065612.log` |
-| `0.7` | `attribute_r08_p10_c4` | `0.7462` | `0.7903` | `logs_imagenet/instructpix2pix_attribute_r08_p10_c4_resnet_imagenet_1000_ratio0p7_gpu3_20260429_065612.log` |
-| `0.9` | `random` | `0.7423` | `0.7842` | `logs_imagenet/instructpix2pix_random_resnet_imagenet_1000_ratio0p9_gpu1_20260429_2130.log` |
-| `0.9` | `stratified` | `0.7446` | `0.7869` | `logs_imagenet/instructpix2pix_stratified_resnet_imagenet_1000_ratio0p9_gpu1_20260429_2130.log` |
-| `0.9` | `coreset` | `0.7485` | `0.7841` | `logs_imagenet/instructpix2pix_coreset_resnet_imagenet_1000_ratio0p9_gpu1_20260429_2130.log` |
-| `0.9` | `badge` | `0.7423` | `0.7900` | `logs_imagenet/instructpix2pix_badge_resnet_imagenet_1000_ratio0p9_gpu1_20260429_2130.log` |
-| `0.9` | `attribute_r000_p0_c15` | `0.7385` | `0.7883` | `logs_imagenet/instructpix2pix_attribute_r000_p0_c15_resnet_imagenet_1000_ratio0p9_gpu1_20260429_2130.log` |
-| `0.9` | `attribute_r001_p5_cinf` | **`0.7523`** | `0.7792` | `logs_imagenet/instructpix2pix_attribute_r001_p5_cinf_resnet_imagenet_1000_ratio0p9_gpu1_20260429_2130.log` |
-| `0.9` | `attribute_r01_p5_c15` | `0.7477` | `0.7824` | `logs_imagenet/instructpix2pix_attribute_r01_p5_c15_resnet_imagenet_1000_ratio0p9_gpu1_20260429_2130.log` |
-| `0.9` | `attribute_r08_p10_c4` | `0.7392` | `0.7823` | `logs_imagenet/instructpix2pix_attribute_r08_p10_c4_resnet_imagenet_1000_ratio0p9_gpu1_20260429_2130.log` |
+| `0.1` | `random` | `0.7062` | `0.8958` | `logs/imagenet/instructpix2pix_random_resnet_imagenet_1000_ratio0p1_gpu1_20260429_065612.log` |
+| `0.1` | `stratified` | `0.7085` | `0.8927` | `logs/imagenet/instructpix2pix_stratified_resnet_imagenet_1000_ratio0p1_gpu1_20260429_065612.log` |
+| `0.1` | `coreset` | `0.7115` | `0.8970` | `logs/imagenet/instructpix2pix_coreset_resnet_imagenet_1000_ratio0p1_gpu1_20260429_065612.log` |
+| `0.1` | `badge` | `0.7077` | `0.8870` | `logs/imagenet/instructpix2pix_badge_resnet_imagenet_1000_ratio0p1_gpu1_20260429_065612.log` |
+| `0.1` | `attribute_r000_p0_c15` | `0.7000` | `0.8918` | `logs/imagenet/instructpix2pix_attribute_r000_p0_c15_resnet_imagenet_1000_ratio0p1_gpu1_20260429_065612.log` |
+| `0.1` | `attribute_r001_p5_cinf` | `0.7100` | `0.8813` | `logs/imagenet/instructpix2pix_attribute_r001_p5_cinf_resnet_imagenet_1000_ratio0p1_gpu1_20260429_065612.log` |
+| `0.1` | `attribute_r01_p5_c15` | **`0.7146`** | `0.8803` | `logs/imagenet/instructpix2pix_attribute_r01_p5_c15_resnet_imagenet_1000_ratio0p1_gpu1_20260429_065612.log` |
+| `0.1` | `attribute_r08_p10_c4` | `0.7077` | `0.8832` | `logs/imagenet/instructpix2pix_attribute_r08_p10_c4_resnet_imagenet_1000_ratio0p1_gpu1_20260429_065612.log` |
+| `0.3` | `random` | `0.7285` | `0.8175` | `logs/imagenet/instructpix2pix_random_resnet_imagenet_1000_ratio0p3_gpu1_20260429_065612.log` |
+| `0.3` | `stratified` | `0.7315` | `0.8118` | `logs/imagenet/instructpix2pix_stratified_resnet_imagenet_1000_ratio0p3_gpu1_20260429_065612.log` |
+| `0.3` | `coreset` | `0.7277` | `0.8325` | `logs/imagenet/instructpix2pix_coreset_resnet_imagenet_1000_ratio0p3_gpu1_20260429_065612.log` |
+| `0.3` | `badge` | `0.7315` | `0.8214` | `logs/imagenet/instructpix2pix_badge_resnet_imagenet_1000_ratio0p3_gpu1_20260429_065612.log` |
+| `0.3` | `attribute_r000_p0_c15` | `0.7362` | `0.8025` | `logs/imagenet/instructpix2pix_attribute_r000_p0_c15_resnet_imagenet_1000_ratio0p3_gpu1_20260429_065612.log` |
+| `0.3` | `attribute_r001_p5_cinf` | **`0.7369`** | `0.7992` | `logs/imagenet/instructpix2pix_attribute_r001_p5_cinf_resnet_imagenet_1000_ratio0p3_gpu1_20260429_065612.log` |
+| `0.3` | `attribute_r01_p5_c15` | **`0.7369`** | `0.8053` | `logs/imagenet/instructpix2pix_attribute_r01_p5_c15_resnet_imagenet_1000_ratio0p3_gpu1_20260429_065612.log` |
+| `0.3` | `attribute_r08_p10_c4` | `0.7315` | `0.8086` | `logs/imagenet/instructpix2pix_attribute_r08_p10_c4_resnet_imagenet_1000_ratio0p3_gpu1_20260429_065612.log` |
+| `0.5` | `random` | `0.7438` | `0.7762` | `logs/imagenet/instructpix2pix_random_resnet_imagenet_1000_ratio0p5_gpu2_20260429_065612.log` |
+| `0.5` | `stratified` | `0.7377` | `0.7895` | `logs/imagenet/instructpix2pix_stratified_resnet_imagenet_1000_ratio0p5_gpu2_20260429_065612.log` |
+| `0.5` | `coreset` | `0.7408` | `0.7956` | `logs/imagenet/instructpix2pix_coreset_resnet_imagenet_1000_ratio0p5_gpu2_20260429_065612.log` |
+| `0.5` | `badge` | `0.7446` | `0.7858` | `logs/imagenet/instructpix2pix_badge_resnet_imagenet_1000_ratio0p5_gpu2_20260429_065612.log` |
+| `0.5` | `attribute_r000_p0_c15` | `0.7385` | `0.7992` | `logs/imagenet/instructpix2pix_attribute_r000_p0_c15_resnet_imagenet_1000_ratio0p5_gpu2_20260429_065612.log` |
+| `0.5` | `attribute_r001_p5_cinf` | `0.7415` | `0.7857` | `logs/imagenet/instructpix2pix_attribute_r001_p5_cinf_resnet_imagenet_1000_ratio0p5_gpu2_20260429_065612.log` |
+| `0.5` | `attribute_r01_p5_c15` | `0.7369` | `0.7960` | `logs/imagenet/instructpix2pix_attribute_r01_p5_c15_resnet_imagenet_1000_ratio0p5_gpu2_20260429_065612.log` |
+| `0.5` | `attribute_r08_p10_c4` | **`0.7462`** | `0.7904` | `logs/imagenet/instructpix2pix_attribute_r08_p10_c4_resnet_imagenet_1000_ratio0p5_gpu2_20260429_065612.log` |
+| `0.7` | `random` | `0.7477` | `0.7832` | `logs/imagenet/instructpix2pix_random_resnet_imagenet_1000_ratio0p7_gpu3_20260429_065612.log` |
+| `0.7` | `stratified` | `0.7454` | `0.7841` | `logs/imagenet/instructpix2pix_stratified_resnet_imagenet_1000_ratio0p7_gpu3_20260429_065612.log` |
+| `0.7` | `coreset` | `0.7500` | `0.7825` | `logs/imagenet/instructpix2pix_coreset_resnet_imagenet_1000_ratio0p7_gpu3_20260429_065612.log` |
+| `0.7` | `badge` | `0.7446` | `0.7832` | `logs/imagenet/instructpix2pix_badge_resnet_imagenet_1000_ratio0p7_gpu3_20260429_065612.log` |
+| `0.7` | `attribute_r000_p0_c15` | **`0.7501`** | `0.7815` | `logs/imagenet/instructpix2pix_attribute_r000_p0_c15_resnet_imagenet_1000_ratio0p7_gpu3_20260429_065612.log` |
+| `0.7` | `attribute_r001_p5_cinf` | `0.7438` | `0.7884` | `logs/imagenet/instructpix2pix_attribute_r001_p5_cinf_resnet_imagenet_1000_ratio0p7_gpu3_20260429_065612.log` |
+| `0.7` | `attribute_r01_p5_c15` | `0.7408` | `0.7945` | `logs/imagenet/instructpix2pix_attribute_r01_p5_c15_resnet_imagenet_1000_ratio0p7_gpu3_20260429_065612.log` |
+| `0.7` | `attribute_r08_p10_c4` | `0.7462` | `0.7903` | `logs/imagenet/instructpix2pix_attribute_r08_p10_c4_resnet_imagenet_1000_ratio0p7_gpu3_20260429_065612.log` |
+| `0.9` | `random` | `0.7423` | `0.7842` | `logs/imagenet/instructpix2pix_random_resnet_imagenet_1000_ratio0p9_gpu1_20260429_2130.log` |
+| `0.9` | `stratified` | `0.7446` | `0.7869` | `logs/imagenet/instructpix2pix_stratified_resnet_imagenet_1000_ratio0p9_gpu1_20260429_2130.log` |
+| `0.9` | `coreset` | `0.7485` | `0.7841` | `logs/imagenet/instructpix2pix_coreset_resnet_imagenet_1000_ratio0p9_gpu1_20260429_2130.log` |
+| `0.9` | `badge` | `0.7423` | `0.7900` | `logs/imagenet/instructpix2pix_badge_resnet_imagenet_1000_ratio0p9_gpu1_20260429_2130.log` |
+| `0.9` | `attribute_r000_p0_c15` | `0.7385` | `0.7883` | `logs/imagenet/instructpix2pix_attribute_r000_p0_c15_resnet_imagenet_1000_ratio0p9_gpu1_20260429_2130.log` |
+| `0.9` | `attribute_r001_p5_cinf` | **`0.7523`** | `0.7792` | `logs/imagenet/instructpix2pix_attribute_r001_p5_cinf_resnet_imagenet_1000_ratio0p9_gpu1_20260429_2130.log` |
+| `0.9` | `attribute_r01_p5_c15` | `0.7477` | `0.7824` | `logs/imagenet/instructpix2pix_attribute_r01_p5_c15_resnet_imagenet_1000_ratio0p9_gpu1_20260429_2130.log` |
+| `0.9` | `attribute_r08_p10_c4` | `0.7392` | `0.7823` | `logs/imagenet/instructpix2pix_attribute_r08_p10_c4_resnet_imagenet_1000_ratio0p9_gpu1_20260429_2130.log` |
 
 ## Completed CelebA Red-Hair Brown-Skin Sad-Emotion Instruct-Pix2Pix Results
 
@@ -1361,7 +1361,7 @@ baselines avoid the slow exact selection path.
 - Model: `resnet`
 - Generated directory:
   `data/redhair_brownskin_sademotion_instruct_pix2pix_seed42_1k`
-- Base checkpoint: `weights/model_celeba_resnet_base.pth`
+- Base checkpoint: `save/weights/model_celeba_resnet_base.pth`
 - Attribute metadata: `save/attribute_celeba_trainval_qwen3_8B.json`
 - Original planned rows from stamp `20260429_071551`: `32`; supplemental
   `ratio=0.9` rows from stamp `20260429_2130`: `8`; completed rows: `40`.
@@ -1376,53 +1376,53 @@ baselines avoid the slow exact selection path.
 
 | Ratio | Method | Test ACC | Test loss | Log |
 | ---: | --- | ---: | ---: | --- |
-| `0.1` | `random` | `0.9108` | `0.3396` | `logs_celeba/instructpix2pix_random_resnet_celeba_1000_ratio0p1_gpu1_20260429_071551.log` |
-| `0.1` | `stratified` | `0.9082` | `0.3719` | `logs_celeba/instructpix2pix_stratified_resnet_celeba_1000_ratio0p1_gpu1_20260429_071551.log` |
-| `0.1` | `coreset` | `0.9096` | `0.3570` | `logs_celeba/instructpix2pix_coreset_resnet_celeba_1000_ratio0p1_gpu1_20260429_071551.log` |
-| `0.1` | `badge` | **`0.9127`** | `0.3392` | `logs_celeba/instructpix2pix_badge_resnet_celeba_1000_ratio0p1_gpu1_20260429_071551.log` |
-| `0.1` | `attribute_r003_p05_c15` | `0.9120` | `0.3563` | `logs_celeba/instructpix2pix_attribute_r003_p05_c15_resnet_celeba_1000_ratio0p1_gpu1_20260429_071551.log` |
-| `0.1` | `attribute_r000_p0_c15` | `0.9068` | `0.3765` | `logs_celeba/instructpix2pix_attribute_r000_p0_c15_resnet_celeba_1000_ratio0p1_gpu1_20260429_071551.log` |
-| `0.1` | `attribute_r000_p0_cinf` | `0.9071` | `0.3752` | `logs_celeba/instructpix2pix_attribute_r000_p0_cinf_resnet_celeba_1000_ratio0p1_gpu1_20260429_071551.log` |
-| `0.1` | `attribute_r003_p05_cinf` | `0.9025` | `0.3851` | `logs_celeba/instructpix2pix_attribute_r003_p05_cinf_resnet_celeba_1000_ratio0p1_gpu1_20260429_071551.log` |
-| `0.3` | `random` | `0.9091` | `0.3507` | `logs_celeba/instructpix2pix_random_resnet_celeba_1000_ratio0p3_gpu1_20260429_071551.log` |
-| `0.3` | `stratified` | **`0.9127`** | `0.3490` | `logs_celeba/instructpix2pix_stratified_resnet_celeba_1000_ratio0p3_gpu1_20260429_071551.log` |
-| `0.3` | `coreset` | `0.9099` | `0.3536` | `logs_celeba/instructpix2pix_coreset_resnet_celeba_1000_ratio0p3_gpu1_20260429_071551.log` |
-| `0.3` | `badge` | `0.9099` | `0.3422` | `logs_celeba/instructpix2pix_badge_resnet_celeba_1000_ratio0p3_gpu1_20260429_071551.log` |
-| `0.3` | `attribute_r003_p05_c15` | `0.9101` | `0.3692` | `logs_celeba/instructpix2pix_attribute_r003_p05_c15_resnet_celeba_1000_ratio0p3_gpu1_20260429_071551.log` |
-| `0.3` | `attribute_r000_p0_c15` | `0.9095` | `0.3629` | `logs_celeba/instructpix2pix_attribute_r000_p0_c15_resnet_celeba_1000_ratio0p3_gpu1_20260429_071551.log` |
-| `0.3` | `attribute_r000_p0_cinf` | `0.9095` | `0.3626` | `logs_celeba/instructpix2pix_attribute_r000_p0_cinf_resnet_celeba_1000_ratio0p3_gpu1_20260429_071551.log` |
-| `0.3` | `attribute_r003_p05_cinf` | `0.9038` | `0.3801` | `logs_celeba/instructpix2pix_attribute_r003_p05_cinf_resnet_celeba_1000_ratio0p3_gpu1_20260429_071551.log` |
-| `0.5` | `random` | `0.9098` | `0.3499` | `logs_celeba/instructpix2pix_random_resnet_celeba_1000_ratio0p5_gpu2_20260429_071551.log` |
-| `0.5` | `stratified` | **`0.9132`** | `0.3510` | `logs_celeba/instructpix2pix_stratified_resnet_celeba_1000_ratio0p5_gpu2_20260429_071551.log` |
-| `0.5` | `coreset` | `0.9095` | `0.3558` | `logs_celeba/instructpix2pix_coreset_resnet_celeba_1000_ratio0p5_gpu2_20260429_071551.log` |
-| `0.5` | `badge` | `0.9093` | `0.3419` | `logs_celeba/instructpix2pix_badge_resnet_celeba_1000_ratio0p5_gpu2_20260429_071551.log` |
-| `0.5` | `attribute_r003_p05_c15` | `0.9040` | `0.3798` | `logs_celeba/instructpix2pix_attribute_r003_p05_c15_resnet_celeba_1000_ratio0p5_gpu2_20260429_071551.log` |
-| `0.5` | `attribute_r000_p0_c15` | `0.9095` | `0.3563` | `logs_celeba/instructpix2pix_attribute_r000_p0_c15_resnet_celeba_1000_ratio0p5_gpu2_20260429_071551.log` |
-| `0.5` | `attribute_r000_p0_cinf` | `0.9094` | `0.3565` | `logs_celeba/instructpix2pix_attribute_r000_p0_cinf_resnet_celeba_1000_ratio0p5_gpu2_20260429_071551.log` |
-| `0.5` | `attribute_r003_p05_cinf` | `0.9110` | `0.3602` | `logs_celeba/instructpix2pix_attribute_r003_p05_cinf_resnet_celeba_1000_ratio0p5_gpu2_20260429_071551.log` |
-| `0.7` | `random` | `0.9116` | `0.3477` | `logs_celeba/instructpix2pix_random_resnet_celeba_1000_ratio0p7_gpu3_20260429_071551.log` |
-| `0.7` | `stratified` | `0.9086` | `0.3635` | `logs_celeba/instructpix2pix_stratified_resnet_celeba_1000_ratio0p7_gpu3_20260429_071551.log` |
-| `0.7` | `coreset` | `0.9067` | `0.3667` | `logs_celeba/instructpix2pix_coreset_resnet_celeba_1000_ratio0p7_gpu3_20260429_071551.log` |
-| `0.7` | `badge` | **`0.9123`** | `0.3372` | `logs_celeba/instructpix2pix_badge_resnet_celeba_1000_ratio0p7_gpu3_20260429_071551.log` |
-| `0.7` | `attribute_r003_p05_c15` | `0.9108` | `0.3588` | `logs_celeba/instructpix2pix_attribute_r003_p05_c15_resnet_celeba_1000_ratio0p7_gpu3_20260429_071551.log` |
-| `0.7` | `attribute_r000_p0_c15` | `0.9107` | `0.3558` | `logs_celeba/instructpix2pix_attribute_r000_p0_c15_resnet_celeba_1000_ratio0p7_gpu3_20260429_071551.log` |
-| `0.7` | `attribute_r000_p0_cinf` | `0.9109` | `0.3559` | `logs_celeba/instructpix2pix_attribute_r000_p0_cinf_resnet_celeba_1000_ratio0p7_gpu3_20260429_071551.log` |
-| `0.7` | `attribute_r003_p05_cinf` | `0.9116` | `0.3547` | `logs_celeba/instructpix2pix_attribute_r003_p05_cinf_resnet_celeba_1000_ratio0p7_gpu3_20260429_071551.log` |
-| `0.9` | `random` | `0.9104` | `0.3538` | `logs_celeba/instructpix2pix_random_resnet_celeba_1000_ratio0p9_gpu2_20260429_2130.log` |
-| `0.9` | `stratified` | `0.9099` | `0.3752` | `logs_celeba/instructpix2pix_stratified_resnet_celeba_1000_ratio0p9_gpu2_20260429_2130.log` |
-| `0.9` | `coreset` | `0.9092` | `0.3542` | `logs_celeba/instructpix2pix_coreset_resnet_celeba_1000_ratio0p9_gpu2_20260429_2130.log` |
-| `0.9` | `badge` | `0.9108` | `0.3468` | `logs_celeba/instructpix2pix_badge_resnet_celeba_1000_ratio0p9_gpu1_20260429_2130.log` |
-| `0.9` | `attribute_r003_p05_c15` | `0.9103` | `0.3553` | `logs_celeba/instructpix2pix_attribute_r003_p05_c15_resnet_celeba_1000_ratio0p9_gpu3_20260429_2130.log` |
-| `0.9` | `attribute_r000_p0_c15` | `0.9108` | `0.3556` | `logs_celeba/instructpix2pix_attribute_r000_p0_c15_resnet_celeba_1000_ratio0p9_gpu3_20260429_2130.log` |
-| `0.9` | `attribute_r000_p0_cinf` | **`0.9111`** | `0.3562` | `logs_celeba/instructpix2pix_attribute_r000_p0_cinf_resnet_celeba_1000_ratio0p9_gpu3_20260429_2130.log` |
-| `0.9` | `attribute_r003_p05_cinf` | `0.9089` | `0.3692` | `logs_celeba/instructpix2pix_attribute_r003_p05_cinf_resnet_celeba_1000_ratio0p9_gpu3_20260429_2130.log` |
+| `0.1` | `random` | `0.9108` | `0.3396` | `logs/celeba/instructpix2pix_random_resnet_celeba_1000_ratio0p1_gpu1_20260429_071551.log` |
+| `0.1` | `stratified` | `0.9082` | `0.3719` | `logs/celeba/instructpix2pix_stratified_resnet_celeba_1000_ratio0p1_gpu1_20260429_071551.log` |
+| `0.1` | `coreset` | `0.9096` | `0.3570` | `logs/celeba/instructpix2pix_coreset_resnet_celeba_1000_ratio0p1_gpu1_20260429_071551.log` |
+| `0.1` | `badge` | **`0.9127`** | `0.3392` | `logs/celeba/instructpix2pix_badge_resnet_celeba_1000_ratio0p1_gpu1_20260429_071551.log` |
+| `0.1` | `attribute_r003_p05_c15` | `0.9120` | `0.3563` | `logs/celeba/instructpix2pix_attribute_r003_p05_c15_resnet_celeba_1000_ratio0p1_gpu1_20260429_071551.log` |
+| `0.1` | `attribute_r000_p0_c15` | `0.9068` | `0.3765` | `logs/celeba/instructpix2pix_attribute_r000_p0_c15_resnet_celeba_1000_ratio0p1_gpu1_20260429_071551.log` |
+| `0.1` | `attribute_r000_p0_cinf` | `0.9071` | `0.3752` | `logs/celeba/instructpix2pix_attribute_r000_p0_cinf_resnet_celeba_1000_ratio0p1_gpu1_20260429_071551.log` |
+| `0.1` | `attribute_r003_p05_cinf` | `0.9025` | `0.3851` | `logs/celeba/instructpix2pix_attribute_r003_p05_cinf_resnet_celeba_1000_ratio0p1_gpu1_20260429_071551.log` |
+| `0.3` | `random` | `0.9091` | `0.3507` | `logs/celeba/instructpix2pix_random_resnet_celeba_1000_ratio0p3_gpu1_20260429_071551.log` |
+| `0.3` | `stratified` | **`0.9127`** | `0.3490` | `logs/celeba/instructpix2pix_stratified_resnet_celeba_1000_ratio0p3_gpu1_20260429_071551.log` |
+| `0.3` | `coreset` | `0.9099` | `0.3536` | `logs/celeba/instructpix2pix_coreset_resnet_celeba_1000_ratio0p3_gpu1_20260429_071551.log` |
+| `0.3` | `badge` | `0.9099` | `0.3422` | `logs/celeba/instructpix2pix_badge_resnet_celeba_1000_ratio0p3_gpu1_20260429_071551.log` |
+| `0.3` | `attribute_r003_p05_c15` | `0.9101` | `0.3692` | `logs/celeba/instructpix2pix_attribute_r003_p05_c15_resnet_celeba_1000_ratio0p3_gpu1_20260429_071551.log` |
+| `0.3` | `attribute_r000_p0_c15` | `0.9095` | `0.3629` | `logs/celeba/instructpix2pix_attribute_r000_p0_c15_resnet_celeba_1000_ratio0p3_gpu1_20260429_071551.log` |
+| `0.3` | `attribute_r000_p0_cinf` | `0.9095` | `0.3626` | `logs/celeba/instructpix2pix_attribute_r000_p0_cinf_resnet_celeba_1000_ratio0p3_gpu1_20260429_071551.log` |
+| `0.3` | `attribute_r003_p05_cinf` | `0.9038` | `0.3801` | `logs/celeba/instructpix2pix_attribute_r003_p05_cinf_resnet_celeba_1000_ratio0p3_gpu1_20260429_071551.log` |
+| `0.5` | `random` | `0.9098` | `0.3499` | `logs/celeba/instructpix2pix_random_resnet_celeba_1000_ratio0p5_gpu2_20260429_071551.log` |
+| `0.5` | `stratified` | **`0.9132`** | `0.3510` | `logs/celeba/instructpix2pix_stratified_resnet_celeba_1000_ratio0p5_gpu2_20260429_071551.log` |
+| `0.5` | `coreset` | `0.9095` | `0.3558` | `logs/celeba/instructpix2pix_coreset_resnet_celeba_1000_ratio0p5_gpu2_20260429_071551.log` |
+| `0.5` | `badge` | `0.9093` | `0.3419` | `logs/celeba/instructpix2pix_badge_resnet_celeba_1000_ratio0p5_gpu2_20260429_071551.log` |
+| `0.5` | `attribute_r003_p05_c15` | `0.9040` | `0.3798` | `logs/celeba/instructpix2pix_attribute_r003_p05_c15_resnet_celeba_1000_ratio0p5_gpu2_20260429_071551.log` |
+| `0.5` | `attribute_r000_p0_c15` | `0.9095` | `0.3563` | `logs/celeba/instructpix2pix_attribute_r000_p0_c15_resnet_celeba_1000_ratio0p5_gpu2_20260429_071551.log` |
+| `0.5` | `attribute_r000_p0_cinf` | `0.9094` | `0.3565` | `logs/celeba/instructpix2pix_attribute_r000_p0_cinf_resnet_celeba_1000_ratio0p5_gpu2_20260429_071551.log` |
+| `0.5` | `attribute_r003_p05_cinf` | `0.9110` | `0.3602` | `logs/celeba/instructpix2pix_attribute_r003_p05_cinf_resnet_celeba_1000_ratio0p5_gpu2_20260429_071551.log` |
+| `0.7` | `random` | `0.9116` | `0.3477` | `logs/celeba/instructpix2pix_random_resnet_celeba_1000_ratio0p7_gpu3_20260429_071551.log` |
+| `0.7` | `stratified` | `0.9086` | `0.3635` | `logs/celeba/instructpix2pix_stratified_resnet_celeba_1000_ratio0p7_gpu3_20260429_071551.log` |
+| `0.7` | `coreset` | `0.9067` | `0.3667` | `logs/celeba/instructpix2pix_coreset_resnet_celeba_1000_ratio0p7_gpu3_20260429_071551.log` |
+| `0.7` | `badge` | **`0.9123`** | `0.3372` | `logs/celeba/instructpix2pix_badge_resnet_celeba_1000_ratio0p7_gpu3_20260429_071551.log` |
+| `0.7` | `attribute_r003_p05_c15` | `0.9108` | `0.3588` | `logs/celeba/instructpix2pix_attribute_r003_p05_c15_resnet_celeba_1000_ratio0p7_gpu3_20260429_071551.log` |
+| `0.7` | `attribute_r000_p0_c15` | `0.9107` | `0.3558` | `logs/celeba/instructpix2pix_attribute_r000_p0_c15_resnet_celeba_1000_ratio0p7_gpu3_20260429_071551.log` |
+| `0.7` | `attribute_r000_p0_cinf` | `0.9109` | `0.3559` | `logs/celeba/instructpix2pix_attribute_r000_p0_cinf_resnet_celeba_1000_ratio0p7_gpu3_20260429_071551.log` |
+| `0.7` | `attribute_r003_p05_cinf` | `0.9116` | `0.3547` | `logs/celeba/instructpix2pix_attribute_r003_p05_cinf_resnet_celeba_1000_ratio0p7_gpu3_20260429_071551.log` |
+| `0.9` | `random` | `0.9104` | `0.3538` | `logs/celeba/instructpix2pix_random_resnet_celeba_1000_ratio0p9_gpu2_20260429_2130.log` |
+| `0.9` | `stratified` | `0.9099` | `0.3752` | `logs/celeba/instructpix2pix_stratified_resnet_celeba_1000_ratio0p9_gpu2_20260429_2130.log` |
+| `0.9` | `coreset` | `0.9092` | `0.3542` | `logs/celeba/instructpix2pix_coreset_resnet_celeba_1000_ratio0p9_gpu2_20260429_2130.log` |
+| `0.9` | `badge` | `0.9108` | `0.3468` | `logs/celeba/instructpix2pix_badge_resnet_celeba_1000_ratio0p9_gpu1_20260429_2130.log` |
+| `0.9` | `attribute_r003_p05_c15` | `0.9103` | `0.3553` | `logs/celeba/instructpix2pix_attribute_r003_p05_c15_resnet_celeba_1000_ratio0p9_gpu3_20260429_2130.log` |
+| `0.9` | `attribute_r000_p0_c15` | `0.9108` | `0.3556` | `logs/celeba/instructpix2pix_attribute_r000_p0_c15_resnet_celeba_1000_ratio0p9_gpu3_20260429_2130.log` |
+| `0.9` | `attribute_r000_p0_cinf` | **`0.9111`** | `0.3562` | `logs/celeba/instructpix2pix_attribute_r000_p0_cinf_resnet_celeba_1000_ratio0p9_gpu3_20260429_2130.log` |
+| `0.9` | `attribute_r003_p05_cinf` | `0.9089` | `0.3692` | `logs/celeba/instructpix2pix_attribute_r003_p05_cinf_resnet_celeba_1000_ratio0p9_gpu3_20260429_2130.log` |
 
 ## Completed CelebA HiBUG Red-Hair Brown-Skin Results
 
 - Dataset: `celeba`
 - Model: `resnet`
 - Generated directory: `data/hibug_redhair_brownskin_seed42_1k`
-- Base checkpoint: `weights/model_celeba_resnet_base.pth`
+- Base checkpoint: `save/weights/model_celeba_resnet_base.pth`
 - Attribute metadata: `save/attribute_celeba_trainval_qwen3_8B.json`
 - Completed rows from stamp `20260429_183807`: `32`.
 - Error scan over the completed logs found no `Traceback`, `Error`, `Killed`,
@@ -1437,38 +1437,38 @@ baselines avoid the slow exact selection path.
 
 | Ratio | Method | Test ACC | Test loss | Log |
 | ---: | --- | ---: | ---: | --- |
-| `0.1` | `random` | `0.9052` | `0.3499` | `logs_celeba/hibug_redhair_brownskin_random_resnet_celeba_1000_ratio0p1_gpu1_20260429_183807.log` |
-| `0.1` | `stratified` | `0.9038` | `0.3679` | `logs_celeba/hibug_redhair_brownskin_stratified_resnet_celeba_1000_ratio0p1_gpu1_20260429_183807.log` |
-| `0.1` | `coreset` | `0.9035` | `0.3674` | `logs_celeba/hibug_redhair_brownskin_coreset_resnet_celeba_1000_ratio0p1_gpu1_20260429_183807.log` |
-| `0.1` | `badge` | **`0.9084`** | `0.3499` | `logs_celeba/hibug_redhair_brownskin_badge_resnet_celeba_1000_ratio0p1_gpu1_20260429_183807.log` |
-| `0.1` | `attribute_r003_p05_c15` | `0.8954` | `0.3912` | `logs_celeba/hibug_redhair_brownskin_attribute_r003_p05_c15_resnet_celeba_1000_ratio0p1_gpu1_20260429_183807.log` |
-| `0.1` | `attribute_r000_p0_c15` | `0.9008` | `0.3973` | `logs_celeba/hibug_redhair_brownskin_attribute_r000_p0_c15_resnet_celeba_1000_ratio0p1_gpu1_20260429_183807.log` |
-| `0.1` | `attribute_r000_p0_cinf` | `0.9007` | `0.3984` | `logs_celeba/hibug_redhair_brownskin_attribute_r000_p0_cinf_resnet_celeba_1000_ratio0p1_gpu1_20260429_183807.log` |
-| `0.1` | `attribute_r003_p05_cinf` | `0.8929` | `0.4136` | `logs_celeba/hibug_redhair_brownskin_attribute_r003_p05_cinf_resnet_celeba_1000_ratio0p1_gpu1_20260429_183807.log` |
-| `0.3` | `random` | `0.9076` | `0.3458` | `logs_celeba/hibug_redhair_brownskin_random_resnet_celeba_1000_ratio0p3_gpu1_20260429_183807.log` |
-| `0.3` | `stratified` | **`0.9121`** | `0.3522` | `logs_celeba/hibug_redhair_brownskin_stratified_resnet_celeba_1000_ratio0p3_gpu1_20260429_183807.log` |
-| `0.3` | `coreset` | `0.9064` | `0.3665` | `logs_celeba/hibug_redhair_brownskin_coreset_resnet_celeba_1000_ratio0p3_gpu1_20260429_183807.log` |
-| `0.3` | `badge` | `0.9065` | `0.3604` | `logs_celeba/hibug_redhair_brownskin_badge_resnet_celeba_1000_ratio0p3_gpu1_20260429_183807.log` |
-| `0.3` | `attribute_r003_p05_c15` | `0.9009` | `0.3719` | `logs_celeba/hibug_redhair_brownskin_attribute_r003_p05_c15_resnet_celeba_1000_ratio0p3_gpu1_20260429_183807.log` |
-| `0.3` | `attribute_r000_p0_c15` | `0.9087` | `0.3632` | `logs_celeba/hibug_redhair_brownskin_attribute_r000_p0_c15_resnet_celeba_1000_ratio0p3_gpu1_20260429_183807.log` |
-| `0.3` | `attribute_r000_p0_cinf` | `0.9095` | `0.3620` | `logs_celeba/hibug_redhair_brownskin_attribute_r000_p0_cinf_resnet_celeba_1000_ratio0p3_gpu1_20260429_183807.log` |
-| `0.3` | `attribute_r003_p05_cinf` | `0.9064` | `0.3668` | `logs_celeba/hibug_redhair_brownskin_attribute_r003_p05_cinf_resnet_celeba_1000_ratio0p3_gpu1_20260429_183807.log` |
-| `0.5` | `random` | `0.9096` | `0.3407` | `logs_celeba/hibug_redhair_brownskin_random_resnet_celeba_1000_ratio0p5_gpu2_20260429_183807.log` |
-| `0.5` | `stratified` | `0.9112` | `0.3535` | `logs_celeba/hibug_redhair_brownskin_stratified_resnet_celeba_1000_ratio0p5_gpu2_20260429_183807.log` |
-| `0.5` | `coreset` | `0.9102` | `0.3441` | `logs_celeba/hibug_redhair_brownskin_coreset_resnet_celeba_1000_ratio0p5_gpu2_20260429_183807.log` |
-| `0.5` | `badge` | `0.9121` | `0.3316` | `logs_celeba/hibug_redhair_brownskin_badge_resnet_celeba_1000_ratio0p5_gpu2_20260429_183807.log` |
-| `0.5` | `attribute_r003_p05_c15` | `0.9100` | `0.3593` | `logs_celeba/hibug_redhair_brownskin_attribute_r003_p05_c15_resnet_celeba_1000_ratio0p5_gpu2_20260429_183807.log` |
-| `0.5` | `attribute_r000_p0_c15` | `0.9081` | `0.3586` | `logs_celeba/hibug_redhair_brownskin_attribute_r000_p0_c15_resnet_celeba_1000_ratio0p5_gpu2_20260429_183807.log` |
-| `0.5` | `attribute_r000_p0_cinf` | `0.9081` | `0.3589` | `logs_celeba/hibug_redhair_brownskin_attribute_r000_p0_cinf_resnet_celeba_1000_ratio0p5_gpu2_20260429_183807.log` |
-| `0.5` | `attribute_r003_p05_cinf` | **`0.9131`** | `0.3492` | `logs_celeba/hibug_redhair_brownskin_attribute_r003_p05_cinf_resnet_celeba_1000_ratio0p5_gpu2_20260429_183807.log` |
-| `0.7` | `random` | `0.9057` | `0.3463` | `logs_celeba/hibug_redhair_brownskin_random_resnet_celeba_1000_ratio0p7_gpu3_20260429_183807.log` |
-| `0.7` | `stratified` | `0.9102` | `0.3519` | `logs_celeba/hibug_redhair_brownskin_stratified_resnet_celeba_1000_ratio0p7_gpu3_20260429_183807.log` |
-| `0.7` | `coreset` | `0.9052` | `0.3651` | `logs_celeba/hibug_redhair_brownskin_coreset_resnet_celeba_1000_ratio0p7_gpu3_20260429_183807.log` |
-| `0.7` | `badge` | `0.9072` | `0.3579` | `logs_celeba/hibug_redhair_brownskin_badge_resnet_celeba_1000_ratio0p7_gpu3_20260429_183807.log` |
-| `0.7` | `attribute_r003_p05_c15` | **`0.9116`** | `0.3457` | `logs_celeba/hibug_redhair_brownskin_attribute_r003_p05_c15_resnet_celeba_1000_ratio0p7_gpu3_20260429_183807.log` |
-| `0.7` | `attribute_r000_p0_c15` | `0.9085` | `0.3662` | `logs_celeba/hibug_redhair_brownskin_attribute_r000_p0_c15_resnet_celeba_1000_ratio0p7_gpu3_20260429_183807.log` |
-| `0.7` | `attribute_r000_p0_cinf` | `0.9084` | `0.3663` | `logs_celeba/hibug_redhair_brownskin_attribute_r000_p0_cinf_resnet_celeba_1000_ratio0p7_gpu3_20260429_183807.log` |
-| `0.7` | `attribute_r003_p05_cinf` | `0.9073` | `0.3662` | `logs_celeba/hibug_redhair_brownskin_attribute_r003_p05_cinf_resnet_celeba_1000_ratio0p7_gpu3_20260429_183807.log` |
+| `0.1` | `random` | `0.9052` | `0.3499` | `logs/celeba/hibug_redhair_brownskin_random_resnet_celeba_1000_ratio0p1_gpu1_20260429_183807.log` |
+| `0.1` | `stratified` | `0.9038` | `0.3679` | `logs/celeba/hibug_redhair_brownskin_stratified_resnet_celeba_1000_ratio0p1_gpu1_20260429_183807.log` |
+| `0.1` | `coreset` | `0.9035` | `0.3674` | `logs/celeba/hibug_redhair_brownskin_coreset_resnet_celeba_1000_ratio0p1_gpu1_20260429_183807.log` |
+| `0.1` | `badge` | **`0.9084`** | `0.3499` | `logs/celeba/hibug_redhair_brownskin_badge_resnet_celeba_1000_ratio0p1_gpu1_20260429_183807.log` |
+| `0.1` | `attribute_r003_p05_c15` | `0.8954` | `0.3912` | `logs/celeba/hibug_redhair_brownskin_attribute_r003_p05_c15_resnet_celeba_1000_ratio0p1_gpu1_20260429_183807.log` |
+| `0.1` | `attribute_r000_p0_c15` | `0.9008` | `0.3973` | `logs/celeba/hibug_redhair_brownskin_attribute_r000_p0_c15_resnet_celeba_1000_ratio0p1_gpu1_20260429_183807.log` |
+| `0.1` | `attribute_r000_p0_cinf` | `0.9007` | `0.3984` | `logs/celeba/hibug_redhair_brownskin_attribute_r000_p0_cinf_resnet_celeba_1000_ratio0p1_gpu1_20260429_183807.log` |
+| `0.1` | `attribute_r003_p05_cinf` | `0.8929` | `0.4136` | `logs/celeba/hibug_redhair_brownskin_attribute_r003_p05_cinf_resnet_celeba_1000_ratio0p1_gpu1_20260429_183807.log` |
+| `0.3` | `random` | `0.9076` | `0.3458` | `logs/celeba/hibug_redhair_brownskin_random_resnet_celeba_1000_ratio0p3_gpu1_20260429_183807.log` |
+| `0.3` | `stratified` | **`0.9121`** | `0.3522` | `logs/celeba/hibug_redhair_brownskin_stratified_resnet_celeba_1000_ratio0p3_gpu1_20260429_183807.log` |
+| `0.3` | `coreset` | `0.9064` | `0.3665` | `logs/celeba/hibug_redhair_brownskin_coreset_resnet_celeba_1000_ratio0p3_gpu1_20260429_183807.log` |
+| `0.3` | `badge` | `0.9065` | `0.3604` | `logs/celeba/hibug_redhair_brownskin_badge_resnet_celeba_1000_ratio0p3_gpu1_20260429_183807.log` |
+| `0.3` | `attribute_r003_p05_c15` | `0.9009` | `0.3719` | `logs/celeba/hibug_redhair_brownskin_attribute_r003_p05_c15_resnet_celeba_1000_ratio0p3_gpu1_20260429_183807.log` |
+| `0.3` | `attribute_r000_p0_c15` | `0.9087` | `0.3632` | `logs/celeba/hibug_redhair_brownskin_attribute_r000_p0_c15_resnet_celeba_1000_ratio0p3_gpu1_20260429_183807.log` |
+| `0.3` | `attribute_r000_p0_cinf` | `0.9095` | `0.3620` | `logs/celeba/hibug_redhair_brownskin_attribute_r000_p0_cinf_resnet_celeba_1000_ratio0p3_gpu1_20260429_183807.log` |
+| `0.3` | `attribute_r003_p05_cinf` | `0.9064` | `0.3668` | `logs/celeba/hibug_redhair_brownskin_attribute_r003_p05_cinf_resnet_celeba_1000_ratio0p3_gpu1_20260429_183807.log` |
+| `0.5` | `random` | `0.9096` | `0.3407` | `logs/celeba/hibug_redhair_brownskin_random_resnet_celeba_1000_ratio0p5_gpu2_20260429_183807.log` |
+| `0.5` | `stratified` | `0.9112` | `0.3535` | `logs/celeba/hibug_redhair_brownskin_stratified_resnet_celeba_1000_ratio0p5_gpu2_20260429_183807.log` |
+| `0.5` | `coreset` | `0.9102` | `0.3441` | `logs/celeba/hibug_redhair_brownskin_coreset_resnet_celeba_1000_ratio0p5_gpu2_20260429_183807.log` |
+| `0.5` | `badge` | `0.9121` | `0.3316` | `logs/celeba/hibug_redhair_brownskin_badge_resnet_celeba_1000_ratio0p5_gpu2_20260429_183807.log` |
+| `0.5` | `attribute_r003_p05_c15` | `0.9100` | `0.3593` | `logs/celeba/hibug_redhair_brownskin_attribute_r003_p05_c15_resnet_celeba_1000_ratio0p5_gpu2_20260429_183807.log` |
+| `0.5` | `attribute_r000_p0_c15` | `0.9081` | `0.3586` | `logs/celeba/hibug_redhair_brownskin_attribute_r000_p0_c15_resnet_celeba_1000_ratio0p5_gpu2_20260429_183807.log` |
+| `0.5` | `attribute_r000_p0_cinf` | `0.9081` | `0.3589` | `logs/celeba/hibug_redhair_brownskin_attribute_r000_p0_cinf_resnet_celeba_1000_ratio0p5_gpu2_20260429_183807.log` |
+| `0.5` | `attribute_r003_p05_cinf` | **`0.9131`** | `0.3492` | `logs/celeba/hibug_redhair_brownskin_attribute_r003_p05_cinf_resnet_celeba_1000_ratio0p5_gpu2_20260429_183807.log` |
+| `0.7` | `random` | `0.9057` | `0.3463` | `logs/celeba/hibug_redhair_brownskin_random_resnet_celeba_1000_ratio0p7_gpu3_20260429_183807.log` |
+| `0.7` | `stratified` | `0.9102` | `0.3519` | `logs/celeba/hibug_redhair_brownskin_stratified_resnet_celeba_1000_ratio0p7_gpu3_20260429_183807.log` |
+| `0.7` | `coreset` | `0.9052` | `0.3651` | `logs/celeba/hibug_redhair_brownskin_coreset_resnet_celeba_1000_ratio0p7_gpu3_20260429_183807.log` |
+| `0.7` | `badge` | `0.9072` | `0.3579` | `logs/celeba/hibug_redhair_brownskin_badge_resnet_celeba_1000_ratio0p7_gpu3_20260429_183807.log` |
+| `0.7` | `attribute_r003_p05_c15` | **`0.9116`** | `0.3457` | `logs/celeba/hibug_redhair_brownskin_attribute_r003_p05_c15_resnet_celeba_1000_ratio0p7_gpu3_20260429_183807.log` |
+| `0.7` | `attribute_r000_p0_c15` | `0.9085` | `0.3662` | `logs/celeba/hibug_redhair_brownskin_attribute_r000_p0_c15_resnet_celeba_1000_ratio0p7_gpu3_20260429_183807.log` |
+| `0.7` | `attribute_r000_p0_cinf` | `0.9084` | `0.3663` | `logs/celeba/hibug_redhair_brownskin_attribute_r000_p0_cinf_resnet_celeba_1000_ratio0p7_gpu3_20260429_183807.log` |
+| `0.7` | `attribute_r003_p05_cinf` | `0.9073` | `0.3662` | `logs/celeba/hibug_redhair_brownskin_attribute_r003_p05_cinf_resnet_celeba_1000_ratio0p7_gpu3_20260429_183807.log` |
 
 # 04/29/2026 Update — Brown-Rainy Completed Result Snapshot
 
@@ -1488,7 +1488,7 @@ baselines avoid the slow exact selection path.
   missing at the completion check.
 - Training resumes from the same base checkpoint used by the recent
   brown-rainy experiments:
-  `/home/oxx220000/scratch/safefix_cache/log_pose/pose_keypointrcnn_train20k_internvl3_bs8_e2_rare1p1_gpu0_20260415_144530/best.pth`
+  `/home/oxx220000/scratch/safefix_cache/logs/pose/pose_keypointrcnn_train20k_internvl3_bs8_e2_rare1p1_gpu0_20260415_144530/best.pth`
   with logged base best AP `0.6401`.
 - Common generated augmentation source:
   `/home/oxx220000/scratch/safefix_cache/data/coco-pose-weather-edits/generated_coco_qwen3_1500_brown_rain_icedit`.
@@ -1574,7 +1574,7 @@ selection.
 
 | Ratio | Method | Val AP | Val AP50 | Val AP75 | Test AP | Test AP50 | Test AP75 | Log |
 | ---: | --- | ---: | ---: | ---: | ---: | ---: | ---: | --- |
-| `1.00` | `full_data_controlnet` | `0.6310` | `0.8594` | `0.6865` | `0.6259` | `0.8544` | `0.6812` | `log_pose/pose_qwen3_brown_rainy_full_ratio1p0_gpu3_20260501_150816.log` |
+| `1.00` | `full_data_controlnet` | `0.6310` | `0.8594` | `0.6865` | `0.6259` | `0.8544` | `0.6812` | `logs/pose/pose_qwen3_brown_rainy_full_ratio1p0_gpu3_20260501_150816.log` |
 
 # 04/29/2026 Update — KITTI Attribute Assignment and Slice Analysis
 
@@ -1586,7 +1586,7 @@ selection.
   - script: `object_detection/train_yolov8_kitti.py`
   - launch helper: `scripts/launch_kitti_yolov8_gpu0_bs16_e30.sh`
   - environment: local `fp` conda
-  - pretrained weights: `weights/yolov8n.pt`
+  - pretrained weights: `save/weights/yolov8n.pt`
   - epochs: `30`
   - batch size: `16`
   - image size: `640`
@@ -1598,13 +1598,13 @@ selection.
   - log:
     `logs/kitti_yolov8_first5000_1240val_1241test_gpu0_bs16_e30_20260429_012232.log`
   - run directory:
-    `runs/kitti_yolov8/first5000_1240val_1241test_gpu0_bs16_e30_20260429_012232`
+    `save/runs/kitti_yolov8/first5000_1240val_1241test_gpu0_bs16_e30_20260429_012232`
   - final test evaluation directory:
-    `runs/kitti_yolov8/first5000_1240val_1241test_gpu0_bs16_e30_20260429_012232_test`
+    `save/runs/kitti_yolov8/first5000_1240val_1241test_gpu0_bs16_e30_20260429_012232_test`
   - best checkpoint:
-    `runs/kitti_yolov8/first5000_1240val_1241test_gpu0_bs16_e30_20260429_012232/weights/best.pt`
+    `save/runs/kitti_yolov8/first5000_1240val_1241test_gpu0_bs16_e30_20260429_012232/save/weights/best.pt`
   - last checkpoint:
-    `runs/kitti_yolov8/first5000_1240val_1241test_gpu0_bs16_e30_20260429_012232/weights/last.pt`
+    `save/runs/kitti_yolov8/first5000_1240val_1241test_gpu0_bs16_e30_20260429_012232/save/weights/last.pt`
 - Runtime:
   - training: `714.95 s` (`00:11:55`)
   - final test evaluation: `5.96 s` (`00:00:06`)
@@ -1632,10 +1632,10 @@ selection.
   will need separate val/test assignment JSONs.
 - Batch-size-64 GPU3 checkpoint analysis:
   - checkpoint:
-    `runs/kitti_yolov8/first5000_1240val_1241test_gpu3_e30_20260428_231728/weights/best.pt`
+    `save/runs/kitti_yolov8/first5000_1240val_1241test_gpu3_e30_20260428_231728/save/weights/best.pt`
   - log:
     `logs/kitti_slice_analysis_train_bs64best_gpu3_20260429_021509.log`
-  - output root: `log_kitti/kitti_slice_stats`
+  - output root: `logs/kitti/kitti_slice_stats`
   - overall train metrics: mAP50 `0.8744`, mAP50-95 `0.6051`
   - Qwen3: `25` slices, `12` failure slices
   - BLIP: `26` slices, `13` failure slices
@@ -1675,11 +1675,11 @@ batch-size-64 overall train mAP50-95 (`0.6051`).
 
 - Batch-size-16 GPU0 checkpoint analysis:
   - checkpoint:
-    `runs/kitti_yolov8/first5000_1240val_1241test_gpu0_bs16_e30_20260429_012232/weights/best.pt`
+    `save/runs/kitti_yolov8/first5000_1240val_1241test_gpu0_bs16_e30_20260429_012232/save/weights/best.pt`
   - log:
     `logs/kitti_slice_analysis_train_bs16_gpu0_20260429_012232.log`
   - output root:
-    `log_kitti/kitti_slice_stats_bs16_gpu0_20260429_012232`
+    `logs/kitti/kitti_slice_stats_bs16_gpu0_20260429_012232`
   - overall train metrics: mAP50 `0.8719`, mAP50-95 `0.6010`
   - Qwen3: `25` slices, `12` failure slices
   - BLIP: `26` slices, `14` failure slices
@@ -1687,7 +1687,7 @@ batch-size-64 overall train mAP50-95 (`0.6051`).
     - log:
       `logs/kitti_slice_analysis_train_internvl3_bs16_gpu2_20260429_0517.log`
     - output root:
-      `log_kitti/kitti_slice_stats_internvl3_bs16_gpu2_20260429_0517`
+      `logs/kitti/kitti_slice_stats_internvl3_bs16_gpu2_20260429_0517`
 
 - KITTI YOLOv8n pretrained batch-size recommendation:
   - Use `batch=16` as the default for future KITTI pretrained YOLOv8n runs.
@@ -1765,7 +1765,7 @@ batch-size-64 overall train mAP50-95 (`0.6051`).
   - launch helper: `scripts/launch_kitti_yolov8_gpu3_e30.sh`
   - environment: local `fp` conda; exported snapshot:
     `utils/fp-kitti-env.yml`
-  - pretrained weights: `weights/yolov8n.pt`
+  - pretrained weights: `save/weights/yolov8n.pt`
   - epochs: `30`
   - batch size: `64`
   - image size: `640`
@@ -1777,13 +1777,13 @@ batch-size-64 overall train mAP50-95 (`0.6051`).
   - log:
     `logs/kitti_yolov8_first5000_1240val_1241test_gpu3_e30_20260428_231728.log`
   - run directory:
-    `runs/kitti_yolov8/first5000_1240val_1241test_gpu3_e30_20260428_231728`
+    `save/runs/kitti_yolov8/first5000_1240val_1241test_gpu3_e30_20260428_231728`
   - final test evaluation directory:
-    `runs/kitti_yolov8/first5000_1240val_1241test_gpu3_e30_20260428_231728_test`
+    `save/runs/kitti_yolov8/first5000_1240val_1241test_gpu3_e30_20260428_231728_test`
   - checkpoint for resume:
-    `runs/kitti_yolov8/first5000_1240val_1241test_gpu3_e30_20260428_231728/weights/last.pt`
+    `save/runs/kitti_yolov8/first5000_1240val_1241test_gpu3_e30_20260428_231728/save/weights/last.pt`
   - best checkpoint:
-    `runs/kitti_yolov8/first5000_1240val_1241test_gpu3_e30_20260428_231728/weights/best.pt`
+    `save/runs/kitti_yolov8/first5000_1240val_1241test_gpu3_e30_20260428_231728/save/weights/best.pt`
 - Runtime:
   - training: `621.63 s` (`00:10:22`)
   - final test evaluation: `34.57 s` (`00:00:35`)
@@ -1821,11 +1821,11 @@ batch-size-64 overall train mAP50-95 (`0.6051`).
 - The only completed previous RTMPose Tiny COCO pose result currently present
   in the local repo is the 2026-04-03 GPU3 probe:
   - metric log:
-    `log_pose/rtmpose_tiny_coco_gpu3_probe/20260403_131401/20260403_131401.log`
+    `logs/pose/rtmpose_tiny_coco_gpu3_probe/20260403_131401/20260403_131401.log`
   - metric JSON:
-    `log_pose/rtmpose_tiny_coco_gpu3_probe/20260403_131401/20260403_131401.json`
+    `logs/pose/rtmpose_tiny_coco_gpu3_probe/20260403_131401/20260403_131401.json`
   - config snapshot:
-    `log_pose/rtmpose_tiny_coco_gpu3_probe/20260403_131401/vis_data/config.py`
+    `logs/pose/rtmpose_tiny_coco_gpu3_probe/20260403_131401/vis_data/config.py`
 - Evaluation setup from the log/config:
   - checkpoint:
     `pose_estimation/rtmpose_assets/rtmpose-tiny_simcc-coco_pt-aic-coco_420e-256x192-e613ba3f_20230127.pth`
@@ -1849,9 +1849,9 @@ batch-size-64 overall train mAP50-95 (`0.6051`).
   - AR(M): `0.6931439497405082`
   - AR(L): `0.773950204384987`
 - Related paths without a completed metric:
-  - `log_pose/NA/rtmpose_tiny_coco_gpu3_20260403_131338.log` exists but is
+  - `logs/pose/NA/rtmpose_tiny_coco_gpu3_20260403_131338.log` exists but is
     empty.
-  - `log_pose/rtmpose_tiny_coco_gpu3_latest/20260403_131220/20260403_131220.log`
+  - `logs/pose/rtmpose_tiny_coco_gpu3_latest/20260403_131220/20260403_131220.log`
     contains setup/config output but no final COCO metric line.
   - The newer Juno A30 RTMPose Tiny job `185461` was still `PENDING
     (Resources)` at the latest check, so it has no result yet.
@@ -1887,10 +1887,10 @@ batch-size-64 overall train mAP50-95 (`0.6051`).
 
 | Job | R | P | C | Status | Held-out Test AP | Delta vs Base | AL Selection Time | End-to-End Time | Canonical Log |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| `185429` | `0.03` | `0.5` | `15.0` | completed | **`0.6183`** | `+0.0281` | `0.36 s` | `00:07:48` | `/work/oxx220000/safefix/log_pose/pose_resume_qwen3_brown_rainy_r0p1_r0p03_p0p5_c15p0_gpu0_20260428_211734.log` |
-| `185430` | `0.03` | `0.5` | `8.0` | completed | `0.6165` | `+0.0263` | `0.35 s` | `00:07:41` | `/work/oxx220000/safefix/log_pose/pose_resume_qwen3_brown_rainy_r0p1_r0p03_p0p5_c8p0_gpu0_20260428_212637.log` |
-| `185428` | `0.01` | `0.5` | `15.0` | completed | `0.6152` | `+0.0250` | `0.36 s` | `00:07:51` | `/work/oxx220000/safefix/log_pose/pose_resume_qwen3_brown_rainy_r0p1_r0p01_p0p5_c15p0_gpu0_20260428_210833.log` |
-| `185427` | `0.0` | `0.0` | `15.0` | completed | `0.6042` | `+0.0140` | `0.37 s` | `00:08:00` | `/work/oxx220000/safefix/log_pose/pose_resume_qwen3_brown_rainy_r0p1_r0p0_p0p0_c15p0_gpu0_20260428_205920.log` |
+| `185429` | `0.03` | `0.5` | `15.0` | completed | **`0.6183`** | `+0.0281` | `0.36 s` | `00:07:48` | `/work/oxx220000/safefix/logs/pose/pose_resume_qwen3_brown_rainy_r0p1_r0p03_p0p5_c15p0_gpu0_20260428_211734.log` |
+| `185430` | `0.03` | `0.5` | `8.0` | completed | `0.6165` | `+0.0263` | `0.35 s` | `00:07:41` | `/work/oxx220000/safefix/logs/pose/pose_resume_qwen3_brown_rainy_r0p1_r0p03_p0p5_c8p0_gpu0_20260428_212637.log` |
+| `185428` | `0.01` | `0.5` | `15.0` | completed | `0.6152` | `+0.0250` | `0.36 s` | `00:07:51` | `/work/oxx220000/safefix/logs/pose/pose_resume_qwen3_brown_rainy_r0p1_r0p01_p0p5_c15p0_gpu0_20260428_210833.log` |
+| `185427` | `0.0` | `0.0` | `15.0` | completed | `0.6042` | `+0.0140` | `0.37 s` | `00:08:00` | `/work/oxx220000/safefix/logs/pose/pose_resume_qwen3_brown_rainy_r0p1_r0p0_p0p0_c15p0_gpu0_20260428_205920.log` |
 
 - Completed `185429` metrics:
   - held-out val: AP `0.6288`, AP50 `0.8604`, AP75 `0.6925`, AR `0.6995`
@@ -1943,15 +1943,15 @@ batch-size-64 overall train mAP50-95 (`0.6051`).
 
 | Setting | Metadata / generated target | Strategy | R | P | C | Held-out Test AP | Delta vs Base | AL Selection Time | End-to-End Time | Canonical Log |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| Juno brown-rainy | Qwen3; `clothes_color=brown`, `weather=rainy` | `attribute` | `0.0` | `0.0` | `15.0` | **`0.5871`** | `-0.0031` | `0.41 s` | `00:06:11` | `/work/oxx220000/safefix/log_pose/pose_resume_qwen3_brown_rainy_r0p05_r0p0_p0p0_c15p0_gpu0_20260428_185219.log` |
-| local rainy | InternVL3; `weather=rainy` | `attribute` (`attrx20_r000_p0_c15`) | `0.0` | `0.0` | `15.0` | `0.5846` | `-0.0056` | `0.26 s` | `00:07:46` | `log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.05_attrx20_r000_p0_c15_gpu0_20260423_232656.log` |
-| local rainy | InternVL3; `weather=rainy` | `stratified` | `n/a` | `n/a` | `n/a` | `0.5815` | `-0.0087` | `0.22 s` | `00:07:46` | `log_pose/pose_resume_internvl3_epoch2_stratified_ratio0.05_gpu0_20260424_000907.log` |
-| local rainy | InternVL3; `weather=rainy` | `random` | `n/a` | `n/a` | `n/a` | `0.5792` | `-0.0110` | `0.00 s` | `00:07:39` | `log_pose/pose_resume_internvl3_epoch2_random_ratio0.05_gpu0_20260424_000907.log` |
-| local rainy | InternVL3; `weather=rainy` | `badge` fast approximate | `n/a` | `n/a` | `n/a` | `0.5754` | `-0.0148` | `64.34 s` | `00:08:53` | `log_pose/pose_resume_internvl3_epoch2_badge_ratio0.05_gpu0_20260424_121700.log` |
-| local rainy | InternVL3; `weather=rainy` | `attribute` (`attrx20_r000_p0_c0`) | `0.0` | `0.0` | `0.0` | `0.5745` | `-0.0157` | `0.25 s` | `00:07:52` | `log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.05_attrx20_r000_p0_c0_gpu0_20260424_121700.log` |
-| local rainy | InternVL3; `weather=rainy` | `coreset` | `n/a` | `n/a` | `n/a` | `0.5619` | `-0.0283` | `202.56 s` | `00:11:11` | `log_pose/pose_resume_internvl3_epoch2_coreset_ratio0.05_gpu0_20260424_000907.log` |
-| local rainy | InternVL3; `weather=rainy` | `attribute` (`attrx20_r0005_p005_c15`) | `0.005` | `0.05` | `15.0` | `0.5273` | `-0.0629` | `0.26 s` | `00:08:14` | `log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.05_attrx20_r0005_p005_c15_gpu0_20260424_000907.log` |
-| local rainy | InternVL3; `weather=rainy` | `attribute` (`attrx20_r0001_p01_c15`) | `0.001` | `0.1` | `15.0` | `0.5185` | `-0.0717` | `0.28 s` | `00:09:11` | `log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.05_attrx20_r0001_p01_c15_gpu0_20260424_000907.log` |
+| Juno brown-rainy | Qwen3; `clothes_color=brown`, `weather=rainy` | `attribute` | `0.0` | `0.0` | `15.0` | **`0.5871`** | `-0.0031` | `0.41 s` | `00:06:11` | `/work/oxx220000/safefix/logs/pose/pose_resume_qwen3_brown_rainy_r0p05_r0p0_p0p0_c15p0_gpu0_20260428_185219.log` |
+| local rainy | InternVL3; `weather=rainy` | `attribute` (`attrx20_r000_p0_c15`) | `0.0` | `0.0` | `15.0` | `0.5846` | `-0.0056` | `0.26 s` | `00:07:46` | `logs/pose/pose_resume_internvl3_epoch2_attribute_ratio0.05_attrx20_r000_p0_c15_gpu0_20260423_232656.log` |
+| local rainy | InternVL3; `weather=rainy` | `stratified` | `n/a` | `n/a` | `n/a` | `0.5815` | `-0.0087` | `0.22 s` | `00:07:46` | `logs/pose/pose_resume_internvl3_epoch2_stratified_ratio0.05_gpu0_20260424_000907.log` |
+| local rainy | InternVL3; `weather=rainy` | `random` | `n/a` | `n/a` | `n/a` | `0.5792` | `-0.0110` | `0.00 s` | `00:07:39` | `logs/pose/pose_resume_internvl3_epoch2_random_ratio0.05_gpu0_20260424_000907.log` |
+| local rainy | InternVL3; `weather=rainy` | `badge` fast approximate | `n/a` | `n/a` | `n/a` | `0.5754` | `-0.0148` | `64.34 s` | `00:08:53` | `logs/pose/pose_resume_internvl3_epoch2_badge_ratio0.05_gpu0_20260424_121700.log` |
+| local rainy | InternVL3; `weather=rainy` | `attribute` (`attrx20_r000_p0_c0`) | `0.0` | `0.0` | `0.0` | `0.5745` | `-0.0157` | `0.25 s` | `00:07:52` | `logs/pose/pose_resume_internvl3_epoch2_attribute_ratio0.05_attrx20_r000_p0_c0_gpu0_20260424_121700.log` |
+| local rainy | InternVL3; `weather=rainy` | `coreset` | `n/a` | `n/a` | `n/a` | `0.5619` | `-0.0283` | `202.56 s` | `00:11:11` | `logs/pose/pose_resume_internvl3_epoch2_coreset_ratio0.05_gpu0_20260424_000907.log` |
+| local rainy | InternVL3; `weather=rainy` | `attribute` (`attrx20_r0005_p005_c15`) | `0.005` | `0.05` | `15.0` | `0.5273` | `-0.0629` | `0.26 s` | `00:08:14` | `logs/pose/pose_resume_internvl3_epoch2_attribute_ratio0.05_attrx20_r0005_p005_c15_gpu0_20260424_000907.log` |
+| local rainy | InternVL3; `weather=rainy` | `attribute` (`attrx20_r0001_p01_c15`) | `0.001` | `0.1` | `15.0` | `0.5185` | `-0.0717` | `0.28 s` | `00:09:11` | `logs/pose/pose_resume_internvl3_epoch2_attribute_ratio0.05_attrx20_r0001_p01_c15_gpu0_20260424_000907.log` |
 
 - Juno brown-rainy validation metrics:
   - held-out val: AP `0.6011`, AP50 `0.8492`, AP75 `0.6560`, AR `0.6834`
@@ -2032,19 +2032,19 @@ Source CSV: `figures/mock_targeted_repair/coco_brown_rainy_slice_delta_heatmap.c
 Paper-ready assets: `nips26/figures/mock_targeted_repair/coco_brown_rainy_slice_delta_heatmap.png`
 and `nips26/figures/mock_targeted_repair/coco_brown_rainy_slice_delta_heatmap.pdf`.
 Target-exposure source log:
-`log_pose/pose_qwen3_brown_rainy_rpc8_anchor_ratio0p3_gpu1_20260501_231910.log`.
+`logs/pose/pose_qwen3_brown_rainy_rpc8_anchor_ratio0p3_gpu1_20260501_231910.log`.
 
 # 04/17/2026 Update — COCO Pose InternVL3 Resume Baselines And Attribute Sweeps Completed
 
 - The controller-backed InternVL3 COCO pose resume sweep launched from the canonical base checkpoint has fully completed, and the finished `attribute` comparison runs are now merged directly into the same top-level ratio tables for like-for-like comparison.
 - Controller log:
-  - `log_pose/run_pose_resume_internvl3_all_20260417_022717.log`
+  - `logs/pose/run_pose_resume_internvl3_all_20260417_022717.log`
   - ends with:
     - `All strategies completed.`
 - Common setup for the tables below:
   - base reference for AP comparison:
-    - `log_pose/pose_keypointrcnn_train20k_internvl3_bs4_e2_rare0p97_gpuX_20260412_015544/`
-    - log: `log_pose/pose_train20k_internvl3_bs4_e2_rare0p97_gpuX_20260412_015544.log`
+    - `logs/pose/pose_keypointrcnn_train20k_internvl3_bs4_e2_rare0p97_gpuX_20260412_015544/`
+    - log: `logs/pose/pose_train20k_internvl3_bs4_e2_rare0p97_gpuX_20260412_015544.log`
   - base held-out test AP for comparison:
     - `0.5902`
   - note:
@@ -2065,53 +2065,53 @@ Target-exposure source log:
 
 | Strategy | Selected Original | Final Train Size | Held-out Test AP | Delta vs Base | AL Selection Time | End-to-End Time | Canonical Log |
 |----------|-------------------|------------------|------------------|---------------|-------------------|-----------------|---------------|
-| `random` | `2000` | `3000` | `0.6029` | `+0.0127` | `0.00 s` | `00:09:44` | `log_pose/pose_resume_internvl3_epoch2_random_ratio0.1_gpu0_20260417_022717.log` |
-| `stratified` | `2000` | `3000` | `0.6031` | `+0.0129` | `0.23 s` | `00:09:44` | `log_pose/pose_resume_internvl3_epoch2_stratified_ratio0.1_gpu0_20260417_023705.log` |
-| `coreset` | `2000` | `3000` | `0.5579` | `-0.0323` | `4.96 min` | `00:14:48` | `log_pose/pose_resume_internvl3_epoch2_coreset_ratio0.1_gpu0_20260417_024654.log` |
-| `badge` | `2000` | `3000` | `0.5919` | `+0.0017` | `21.43 min` | `00:31:20` | `log_pose/pose_resume_internvl3_epoch2_badge_ratio0.1_gpu0_20260417_030147.log` |
-| `attribute` (`attrx10_r000_p0_c15`) | `2000` | `3000` | **`0.6071`** | `+0.0169` | `0.26 s` | `00:09:48` | `log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.1_attrx10_r000_p0_c15_gpu0_20260417_114049.log` |
-| `attribute` (`attrx10_r003_p05_c15`) | `2000` | `3000` | `0.6012` | `+0.0110` | `0.27 s` | `00:10:04` | `log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.1_attrx10_r003_p05_c15_gpu2_20260417_114049.log` |
-| `attribute` (`attrx10_r001_p05_c15`) | `2000` | `3000` | `0.6003` | `+0.0101` | `0.26 s` | `00:09:50` | `log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.1_attrx10_r001_p05_c15_gpu1_20260417_114049.log` |
-| `attribute` (`attrx10_r003_p05_c8`) | `2000` | `3000` | `0.5963` | `+0.0061` | `0.26 s` | `00:09:47` | `log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.1_attrx10_r003_p05_c8_gpu3_20260417_114049.log` |
+| `random` | `2000` | `3000` | `0.6029` | `+0.0127` | `0.00 s` | `00:09:44` | `logs/pose/pose_resume_internvl3_epoch2_random_ratio0.1_gpu0_20260417_022717.log` |
+| `stratified` | `2000` | `3000` | `0.6031` | `+0.0129` | `0.23 s` | `00:09:44` | `logs/pose/pose_resume_internvl3_epoch2_stratified_ratio0.1_gpu0_20260417_023705.log` |
+| `coreset` | `2000` | `3000` | `0.5579` | `-0.0323` | `4.96 min` | `00:14:48` | `logs/pose/pose_resume_internvl3_epoch2_coreset_ratio0.1_gpu0_20260417_024654.log` |
+| `badge` | `2000` | `3000` | `0.5919` | `+0.0017` | `21.43 min` | `00:31:20` | `logs/pose/pose_resume_internvl3_epoch2_badge_ratio0.1_gpu0_20260417_030147.log` |
+| `attribute` (`attrx10_r000_p0_c15`) | `2000` | `3000` | **`0.6071`** | `+0.0169` | `0.26 s` | `00:09:48` | `logs/pose/pose_resume_internvl3_epoch2_attribute_ratio0.1_attrx10_r000_p0_c15_gpu0_20260417_114049.log` |
+| `attribute` (`attrx10_r003_p05_c15`) | `2000` | `3000` | `0.6012` | `+0.0110` | `0.27 s` | `00:10:04` | `logs/pose/pose_resume_internvl3_epoch2_attribute_ratio0.1_attrx10_r003_p05_c15_gpu2_20260417_114049.log` |
+| `attribute` (`attrx10_r001_p05_c15`) | `2000` | `3000` | `0.6003` | `+0.0101` | `0.26 s` | `00:09:50` | `logs/pose/pose_resume_internvl3_epoch2_attribute_ratio0.1_attrx10_r001_p05_c15_gpu1_20260417_114049.log` |
+| `attribute` (`attrx10_r003_p05_c8`) | `2000` | `3000` | `0.5963` | `+0.0061` | `0.26 s` | `00:09:47` | `logs/pose/pose_resume_internvl3_epoch2_attribute_ratio0.1_attrx10_r003_p05_c8_gpu3_20260417_114049.log` |
 
 ### Ratio = 0.3
 
 | Strategy | Selected Original | Final Train Size | Held-out Test AP | Delta vs Base | AL Selection Time | End-to-End Time | Canonical Log |
 |----------|-------------------|------------------|------------------|---------------|-------------------|-----------------|---------------|
-| `random` | `6000` | `7000` | `0.6061` | `+0.0159` | `0.00 s` | `00:17:55` | `log_pose/pose_resume_internvl3_epoch2_random_ratio0.3_gpu1_20260417_022717.log` |
-| `stratified` | `6000` | `7000` | `0.6041` | `+0.0139` | `0.21 s` | `00:18:37` | `log_pose/pose_resume_internvl3_epoch2_stratified_ratio0.3_gpu1_20260417_024517.log` |
-| `coreset` | `6000` | `7000` | `0.6031` | `+0.0129` | `19.29 min` | `00:37:10` | `log_pose/pose_resume_internvl3_epoch2_coreset_ratio0.3_gpu1_20260417_030359.log` |
-| `badge` | `6000` | `7000` | `0.6083` | `+0.0181` | `59.96 s` | `00:18:51` | `log_pose/pose_resume_internvl3_epoch2_badge_ratio0.3_gpu1_20260417_034116.log` |
-| `attribute` (`attrx333_r000_p0_c15`) | `6000` | `7000` | **`0.6174`** | `+0.0272` | `0.28 s` | `00:18:23` | `log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.3_attrx333_r000_p0_c15_gpu1_20260417_122328.log` |
-| `attribute` (`attrx333_r000_p0_c0`) | `6000` | `7000` | `0.6091` | `+0.0189` | `0.25 s` | `00:17:56` | `log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.3_attrx333_r000_p0_c0_gpu0_20260417_122328.log` |
-| `attribute` (`attrx333_r001_p05_c15`) | `6000` | `7000` | `0.6079` | `+0.0177` | `0.27 s` | `00:18:24` | `log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.3_attrx333_r001_p05_c15_gpu3_20260417_122328.log` |
-| `attribute` (`attrx333_r001_p05_c0`) | `6000` | `7000` | `0.6067` | `+0.0165` | `0.25 s` | `00:18:08` | `log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.3_attrx333_r001_p05_c0_gpu2_20260417_122328.log` |
+| `random` | `6000` | `7000` | `0.6061` | `+0.0159` | `0.00 s` | `00:17:55` | `logs/pose/pose_resume_internvl3_epoch2_random_ratio0.3_gpu1_20260417_022717.log` |
+| `stratified` | `6000` | `7000` | `0.6041` | `+0.0139` | `0.21 s` | `00:18:37` | `logs/pose/pose_resume_internvl3_epoch2_stratified_ratio0.3_gpu1_20260417_024517.log` |
+| `coreset` | `6000` | `7000` | `0.6031` | `+0.0129` | `19.29 min` | `00:37:10` | `logs/pose/pose_resume_internvl3_epoch2_coreset_ratio0.3_gpu1_20260417_030359.log` |
+| `badge` | `6000` | `7000` | `0.6083` | `+0.0181` | `59.96 s` | `00:18:51` | `logs/pose/pose_resume_internvl3_epoch2_badge_ratio0.3_gpu1_20260417_034116.log` |
+| `attribute` (`attrx333_r000_p0_c15`) | `6000` | `7000` | **`0.6174`** | `+0.0272` | `0.28 s` | `00:18:23` | `logs/pose/pose_resume_internvl3_epoch2_attribute_ratio0.3_attrx333_r000_p0_c15_gpu1_20260417_122328.log` |
+| `attribute` (`attrx333_r000_p0_c0`) | `6000` | `7000` | `0.6091` | `+0.0189` | `0.25 s` | `00:17:56` | `logs/pose/pose_resume_internvl3_epoch2_attribute_ratio0.3_attrx333_r000_p0_c0_gpu0_20260417_122328.log` |
+| `attribute` (`attrx333_r001_p05_c15`) | `6000` | `7000` | `0.6079` | `+0.0177` | `0.27 s` | `00:18:24` | `logs/pose/pose_resume_internvl3_epoch2_attribute_ratio0.3_attrx333_r001_p05_c15_gpu3_20260417_122328.log` |
+| `attribute` (`attrx333_r001_p05_c0`) | `6000` | `7000` | `0.6067` | `+0.0165` | `0.25 s` | `00:18:08` | `logs/pose/pose_resume_internvl3_epoch2_attribute_ratio0.3_attrx333_r001_p05_c0_gpu2_20260417_122328.log` |
 
 ### Ratio = 0.5
 
 | Strategy | Selected Original | Final Train Size | Held-out Test AP | Delta vs Base | AL Selection Time | End-to-End Time | Canonical Log |
 |----------|-------------------|------------------|------------------|---------------|-------------------|-----------------|---------------|
-| `random` | `10000` | `11000` | `0.5972` | `+0.0070` | `0.00 s` | `00:27:11` | `log_pose/pose_resume_internvl3_epoch2_random_ratio0.5_gpu2_20260417_022717.log` |
-| `stratified` | `10000` | `11000` | `0.6166` | `+0.0264` | `0.22 s` | `00:28:59` | `log_pose/pose_resume_internvl3_epoch2_stratified_ratio0.5_gpu2_20260417_025433.log` |
-| `coreset` | `10000` | `11000` | `0.6073` | `+0.0171` | `1.15 min` | `00:28:22` | `log_pose/pose_resume_internvl3_epoch2_coreset_ratio0.5_gpu2_20260417_032336.log` |
-| `badge` | `10000` | `11000` | `0.6111` | `+0.0209` | `59.68 s` | `00:27:22` | `log_pose/pose_resume_internvl3_epoch2_badge_ratio0.5_gpu2_20260417_035203.log` |
-| `attribute` (`attrx2_r000_p0_c0`) | `10000` | `11000` | **`0.6127`** | `+0.0225` | `0.25 s` | `00:26:42` | `log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.5_attrx2_r000_p0_c0_gpu0_20260417_125113.log` |
-| `attribute` (`attrx2_r000_p0_c15`) | `10000` | `11000` | `0.6097` | `+0.0195` | `0.28 s` | `00:27:23` | `log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.5_attrx2_r000_p0_c15_gpu1_20260417_125113.log` |
-| `attribute` (`attrx2_r001_p05_c15`) | `10000` | `11000` | `0.6084` | `+0.0182` | `0.28 s` | `00:27:14` | `log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.5_attrx2_r001_p05_c15_gpu3_20260417_125113.log` |
-| `attribute` (`attrx2_r001_p05_c0`) | `10000` | `11000` | `0.6047` | `+0.0145` | `0.25 s` | `00:26:34` | `log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.5_attrx2_r001_p05_c0_gpu2_20260417_125113.log` |
+| `random` | `10000` | `11000` | `0.5972` | `+0.0070` | `0.00 s` | `00:27:11` | `logs/pose/pose_resume_internvl3_epoch2_random_ratio0.5_gpu2_20260417_022717.log` |
+| `stratified` | `10000` | `11000` | `0.6166` | `+0.0264` | `0.22 s` | `00:28:59` | `logs/pose/pose_resume_internvl3_epoch2_stratified_ratio0.5_gpu2_20260417_025433.log` |
+| `coreset` | `10000` | `11000` | `0.6073` | `+0.0171` | `1.15 min` | `00:28:22` | `logs/pose/pose_resume_internvl3_epoch2_coreset_ratio0.5_gpu2_20260417_032336.log` |
+| `badge` | `10000` | `11000` | `0.6111` | `+0.0209` | `59.68 s` | `00:27:22` | `logs/pose/pose_resume_internvl3_epoch2_badge_ratio0.5_gpu2_20260417_035203.log` |
+| `attribute` (`attrx2_r000_p0_c0`) | `10000` | `11000` | **`0.6127`** | `+0.0225` | `0.25 s` | `00:26:42` | `logs/pose/pose_resume_internvl3_epoch2_attribute_ratio0.5_attrx2_r000_p0_c0_gpu0_20260417_125113.log` |
+| `attribute` (`attrx2_r000_p0_c15`) | `10000` | `11000` | `0.6097` | `+0.0195` | `0.28 s` | `00:27:23` | `logs/pose/pose_resume_internvl3_epoch2_attribute_ratio0.5_attrx2_r000_p0_c15_gpu1_20260417_125113.log` |
+| `attribute` (`attrx2_r001_p05_c15`) | `10000` | `11000` | `0.6084` | `+0.0182` | `0.28 s` | `00:27:14` | `logs/pose/pose_resume_internvl3_epoch2_attribute_ratio0.5_attrx2_r001_p05_c15_gpu3_20260417_125113.log` |
+| `attribute` (`attrx2_r001_p05_c0`) | `10000` | `11000` | `0.6047` | `+0.0145` | `0.25 s` | `00:26:34` | `logs/pose/pose_resume_internvl3_epoch2_attribute_ratio0.5_attrx2_r001_p05_c0_gpu2_20260417_125113.log` |
 
 ### Ratio = 0.7
 
 | Strategy | Selected Original | Final Train Size | Held-out Test AP | Delta vs Base | AL Selection Time | End-to-End Time | Canonical Log |
 |----------|-------------------|------------------|------------------|---------------|-------------------|-----------------|---------------|
-| `random` | `14000` | `15000` | `0.6244` | `+0.0342` | `0.01 s` | `00:34:27` | `log_pose/pose_resume_internvl3_epoch2_random_ratio0.7_gpu3_20260417_022717.log` |
-| `stratified` | `14000` | `15000` | `0.6244` | `+0.0342` | `0.23 s` | `00:35:26` | `log_pose/pose_resume_internvl3_epoch2_stratified_ratio0.7_gpu3_20260417_041149.log` |
-| `coreset` | `14000` | `15000` | `0.6176` | `+0.0274` | `59.12 s` | `00:35:25` | `log_pose/pose_resume_internvl3_epoch2_coreset_ratio0.7_gpu3_20260417_055719.log` |
-| `badge` | `14000` | `15000` | `0.6191` | `+0.0289` | `59.19 s` | `00:35:24` | `log_pose/pose_resume_internvl3_epoch2_badge_ratio0.7_gpu3_20260417_074249.log` |
-| `attribute` (`attrx143_r000_p0_c15`) | `14000` | `15000` | **`0.6263`** | `+0.0361` | `0.28 s` | `00:36:03` | `log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.7_attrx143_r000_p0_c15_gpu1_20260417_170346.log` |
-| `attribute` (`attrx143_r001_p05_c0`) | `14000` | `15000` | `0.6262` | `+0.0360` | `0.26 s` | `00:34:53` | `log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.7_attrx143_r001_p05_c0_gpu2_20260417_170346.log` |
-| `attribute` (`attrx143_r001_p05_c15`) | `14000` | `15000` | `0.6203` | `+0.0301` | `0.29 s` | `00:35:51` | `log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.7_attrx143_r001_p05_c15_gpu3_20260417_170346.log` |
-| `attribute` (`attrx143_r000_p0_c0`) | `14000` | `15000` | `0.6166` | `+0.0264` | `0.25 s` | `00:35:02` | `log_pose/pose_resume_internvl3_epoch2_attribute_ratio0.7_attrx143_r000_p0_c0_gpu0_20260417_170346.log` |
+| `random` | `14000` | `15000` | `0.6244` | `+0.0342` | `0.01 s` | `00:34:27` | `logs/pose/pose_resume_internvl3_epoch2_random_ratio0.7_gpu3_20260417_022717.log` |
+| `stratified` | `14000` | `15000` | `0.6244` | `+0.0342` | `0.23 s` | `00:35:26` | `logs/pose/pose_resume_internvl3_epoch2_stratified_ratio0.7_gpu3_20260417_041149.log` |
+| `coreset` | `14000` | `15000` | `0.6176` | `+0.0274` | `59.12 s` | `00:35:25` | `logs/pose/pose_resume_internvl3_epoch2_coreset_ratio0.7_gpu3_20260417_055719.log` |
+| `badge` | `14000` | `15000` | `0.6191` | `+0.0289` | `59.19 s` | `00:35:24` | `logs/pose/pose_resume_internvl3_epoch2_badge_ratio0.7_gpu3_20260417_074249.log` |
+| `attribute` (`attrx143_r000_p0_c15`) | `14000` | `15000` | **`0.6263`** | `+0.0361` | `0.28 s` | `00:36:03` | `logs/pose/pose_resume_internvl3_epoch2_attribute_ratio0.7_attrx143_r000_p0_c15_gpu1_20260417_170346.log` |
+| `attribute` (`attrx143_r001_p05_c0`) | `14000` | `15000` | `0.6262` | `+0.0360` | `0.26 s` | `00:34:53` | `logs/pose/pose_resume_internvl3_epoch2_attribute_ratio0.7_attrx143_r001_p05_c0_gpu2_20260417_170346.log` |
+| `attribute` (`attrx143_r001_p05_c15`) | `14000` | `15000` | `0.6203` | `+0.0301` | `0.29 s` | `00:35:51` | `logs/pose/pose_resume_internvl3_epoch2_attribute_ratio0.7_attrx143_r001_p05_c15_gpu3_20260417_170346.log` |
+| `attribute` (`attrx143_r000_p0_c0`) | `14000` | `15000` | `0.6166` | `+0.0264` | `0.25 s` | `00:35:02` | `logs/pose/pose_resume_internvl3_epoch2_attribute_ratio0.7_attrx143_r000_p0_c0_gpu0_20260417_170346.log` |
 
 - Main observations:
   - all non-attribute and attribute resume runs now have stable finished outputs for the four comparison ratios `0.1`, `0.3`, `0.5`, and `0.7`
@@ -2203,7 +2203,7 @@ Target-exposure source log:
 
 | Run | Selected Original | Final Train Size | Best Val AP | Held-out Test AP | Test AP50 | Test AP75 | Test AR | Train Time | End-to-End Time | Canonical Log |
 |-----|-------------------|------------------|-------------|------------------|-----------|-----------|---------|------------|-----------------|---------------|
-| InternVL3 + `1000` rain edits | `20000` | `21000` | `0.6333` | `0.6220` | `0.8528` | `0.6766` | `0.6893` | `01:33:45` | `01:33:59` | `log_pose/pose_train20k_rain1k_gpu3_20260417_011411.log` |
+| InternVL3 + `1000` rain edits | `20000` | `21000` | `0.6333` | `0.6220` | `0.8528` | `0.6766` | `0.6893` | `01:33:45` | `01:33:59` | `logs/pose/pose_train20k_rain1k_gpu3_20260417_011411.log` |
 
 - Main observations:
   - the best checkpoint still came from epoch `0`, with best val AP `0.6333`
@@ -2256,7 +2256,7 @@ Target-exposure source log:
 
 - The non-hierarchical CelebA resume sweep is now largely complete.
 - Common setup for the table below:
-  - base checkpoint: `weights/model_celeba_resnet_base.pth`
+  - base checkpoint: `save/weights/model_celeba_resnet_base.pth`
   - base held-out test accuracy for reporting: `90.57%`
   - model: `ResNet`
   - learning rate: `1e-5`
@@ -2269,39 +2269,39 @@ Target-exposure source log:
 
 | Strategy | Selected Original Samples | Final Train Size After +1000 Gen | Held-out Test ACC | Delta vs Base | AL Selection Time | Canonical Log |
 |----------|---------------------------|----------------------------------|-------------------|---------------|-------------------|---------------|
-| `random` | `8000` | `9000` | `90.15%` | `-0.42 pp` | `0.00 s` | `logs_celeba/resume_lr1e-5_epoch15_random_resnet_celeba_1000_ratio0.1.log` |
-| `stratified` | `8000` | `9000` | `90.95%` | `+0.38 pp` | `0.00 s` | `logs_celeba/resume_lr1e-5_epoch15_stratified_resnet_celeba_1000_ratio0.1.log` |
-| `coreset` | `8000` | `9000` | `90.29%` | `-0.28 pp` | `45 min` | `logs_celeba/resume_lr1e-5_epoch15_coreset_resnet_celeba_1000_ratio0.1.log` |
-| `badge` | `8000` | `9000` | `91.12%` | `+0.55 pp` | `1 h 52 min` | `logs_celeba/resume_lr1e-5_epoch15_badge_resnet_celeba_1000_ratio0.1.log` |
-| `attribute` | `8000` | `9000` | `91.07%` | `+0.50 pp` | `0.42 s` | `logs_celeba/attr_ratio0.1_qwen3mix_r003_p05_c15_gpu2_20260417_010718.log` |
+| `random` | `8000` | `9000` | `90.15%` | `-0.42 pp` | `0.00 s` | `logs/celeba/resume_lr1e-5_epoch15_random_resnet_celeba_1000_ratio0.1.log` |
+| `stratified` | `8000` | `9000` | `90.95%` | `+0.38 pp` | `0.00 s` | `logs/celeba/resume_lr1e-5_epoch15_stratified_resnet_celeba_1000_ratio0.1.log` |
+| `coreset` | `8000` | `9000` | `90.29%` | `-0.28 pp` | `45 min` | `logs/celeba/resume_lr1e-5_epoch15_coreset_resnet_celeba_1000_ratio0.1.log` |
+| `badge` | `8000` | `9000` | `91.12%` | `+0.55 pp` | `1 h 52 min` | `logs/celeba/resume_lr1e-5_epoch15_badge_resnet_celeba_1000_ratio0.1.log` |
+| `attribute` | `8000` | `9000` | `91.07%` | `+0.50 pp` | `0.42 s` | `logs/celeba/attr_ratio0.1_qwen3mix_r003_p05_c15_gpu2_20260417_010718.log` |
 
 ### Ratio = 0.3
 
 | Strategy | Selected Original Samples | Final Train Size After +1000 Gen | Held-out Test ACC | Delta vs Base | AL Selection Time | Canonical Log |
 |----------|---------------------------|----------------------------------|-------------------|---------------|-------------------|---------------|
-| `random` | `24000` | `25000` | `90.68%` | `+0.11 pp` | `0.00 s` | `logs_celeba/resume_lr1e-5_epoch15_random_resnet_celeba_1000_ratio0.3.log` |
-| `stratified` | `24000` | `25000` | `90.65%` | `+0.08 pp` | `0.00 s` | `logs_celeba/resume_lr1e-5_epoch15_stratified_resnet_celeba_1000_ratio0.3.log` |
-| `coreset` | `24000` | `25000` | `90.63%` | `+0.06 pp` | `2 h 41 min` | `logs_celeba/resume_lr1e-5_epoch15_coreset_resnet_celeba_1000_ratio0.3.log` |
-| `badge` | `24000` | `25000` | `90.54%` | `-0.03 pp` | `116.78 s` | `logs_celeba/resume_lr1e-5_epoch15_badge_resnet_celeba_1000_ratio0.3_gpu2_verbose_20260416_115906.log` |
-| `attribute` | `24000` | `25000` | `90.91%` | `+0.34 pp` | `0.43 s` | `logs_celeba/attr_rb_ratio0.3_rb_qwen3x333_r000_p0_cinf_gpu0_20260417_014040.log` |
+| `random` | `24000` | `25000` | `90.68%` | `+0.11 pp` | `0.00 s` | `logs/celeba/resume_lr1e-5_epoch15_random_resnet_celeba_1000_ratio0.3.log` |
+| `stratified` | `24000` | `25000` | `90.65%` | `+0.08 pp` | `0.00 s` | `logs/celeba/resume_lr1e-5_epoch15_stratified_resnet_celeba_1000_ratio0.3.log` |
+| `coreset` | `24000` | `25000` | `90.63%` | `+0.06 pp` | `2 h 41 min` | `logs/celeba/resume_lr1e-5_epoch15_coreset_resnet_celeba_1000_ratio0.3.log` |
+| `badge` | `24000` | `25000` | `90.54%` | `-0.03 pp` | `116.78 s` | `logs/celeba/resume_lr1e-5_epoch15_badge_resnet_celeba_1000_ratio0.3_gpu2_verbose_20260416_115906.log` |
+| `attribute` | `24000` | `25000` | `90.91%` | `+0.34 pp` | `0.43 s` | `logs/celeba/attr_rb_ratio0.3_rb_qwen3x333_r000_p0_cinf_gpu0_20260417_014040.log` |
 
 ### Ratio = 0.5
 
 | Strategy | Selected Original Samples | Final Train Size After +1000 Gen | Held-out Test ACC | Delta vs Base | AL Selection Time | Canonical Log |
 |----------|---------------------------|----------------------------------|-------------------|---------------|-------------------|---------------|
-| `random` | `40000` | `41000` | `90.77%` | `+0.20 pp` | `0.00 s` | `logs_celeba/resume_lr1e-5_epoch15_random_resnet_celeba_1000_ratio0.5.log` |
-| `stratified` | `40000` | `41000` | `90.79%` | `+0.22 pp` | `0.01 s` | `logs_celeba/resume_lr1e-5_epoch15_stratified_resnet_celeba_1000_ratio0.5.log` |
-| `coreset` | `40000` | `41000` | `90.59%` | `+0.02 pp` | `5 h 5 min` | `logs_celeba/resume_lr1e-5_epoch15_coreset_resnet_celeba_1000_ratio0.5.log` |
-| `badge` | `40000` | `41000` | `90.63%` | `+0.06 pp` | `124.76 s` | `logs_celeba/resume_lr1e-5_epoch15_badge_resnet_celeba_1000_ratio0.5_gpu0_20260416_120554.log` |
+| `random` | `40000` | `41000` | `90.77%` | `+0.20 pp` | `0.00 s` | `logs/celeba/resume_lr1e-5_epoch15_random_resnet_celeba_1000_ratio0.5.log` |
+| `stratified` | `40000` | `41000` | `90.79%` | `+0.22 pp` | `0.01 s` | `logs/celeba/resume_lr1e-5_epoch15_stratified_resnet_celeba_1000_ratio0.5.log` |
+| `coreset` | `40000` | `41000` | `90.59%` | `+0.02 pp` | `5 h 5 min` | `logs/celeba/resume_lr1e-5_epoch15_coreset_resnet_celeba_1000_ratio0.5.log` |
+| `badge` | `40000` | `41000` | `90.63%` | `+0.06 pp` | `124.76 s` | `logs/celeba/resume_lr1e-5_epoch15_badge_resnet_celeba_1000_ratio0.5_gpu0_20260416_120554.log` |
 
 ### Ratio = 0.7
 
 | Strategy | Selected Original Samples | Final Train Size After +1000 Gen | Held-out Test ACC | Delta vs Base | AL Selection Time | Canonical Log |
 |----------|---------------------------|----------------------------------|-------------------|---------------|-------------------|---------------|
-| `random` | `56000` | `57000` | `90.38%` | `-0.19 pp` | `0.00 s` | `logs_celeba/resume_lr1e-5_epoch15_random_resnet_celeba_1000_ratio0.7.log` |
-| `stratified` | `56000` | `57000` | `90.79%` | `+0.22 pp` | `0.01 s` | `logs_celeba/resume_lr1e-5_epoch15_stratified_resnet_celeba_1000_ratio0.7.log` |
-| `coreset` | `56000` | `57000` | `90.60%` | `+0.03 pp` | `56.85 s` | `logs_celeba/resume_lr1e-5_epoch15_coreset_resnet_celeba_1000_ratio0.7_gpu3_rerun_20260416_121045.log` |
-| `badge` | `56000` | `57000` | `90.81%` | `+0.24 pp` | `74.42 s` | `logs_celeba/resume_lr1e-5_epoch15_badge_resnet_celeba_1000_ratio0.7_gpu0_20260416_122047.log` |
+| `random` | `56000` | `57000` | `90.38%` | `-0.19 pp` | `0.00 s` | `logs/celeba/resume_lr1e-5_epoch15_random_resnet_celeba_1000_ratio0.7.log` |
+| `stratified` | `56000` | `57000` | `90.79%` | `+0.22 pp` | `0.01 s` | `logs/celeba/resume_lr1e-5_epoch15_stratified_resnet_celeba_1000_ratio0.7.log` |
+| `coreset` | `56000` | `57000` | `90.60%` | `+0.03 pp` | `56.85 s` | `logs/celeba/resume_lr1e-5_epoch15_coreset_resnet_celeba_1000_ratio0.7_gpu3_rerun_20260416_121045.log` |
+| `badge` | `56000` | `57000` | `90.81%` | `+0.24 pp` | `74.42 s` | `logs/celeba/resume_lr1e-5_epoch15_badge_resnet_celeba_1000_ratio0.7_gpu0_20260416_122047.log` |
 
 ### CelebA Resume Observations
 
@@ -2336,9 +2336,9 @@ Target-exposure source log:
 
 | Config | `R` | `P` | `C` | Held-out Test ACC | Delta vs Base | Gap vs `random` (`ratio=0.1`) | AL Selection Time | End-to-End Time | Canonical Log |
 |--------|-----|-----|-----|-------------------|---------------|-------------------------------|-------------------|-----------------|---------------|
-| `baseline_def_e0_r001_p5_cinf` | `0.01` | `5.0` | `inf` | **`90.59%`** | `+0.02 pp` | `+0.44 pp` | `0.72 s` | `237.61 s` | `logs_celeba/attr_ratio0.1_baseline_def_e0_r001_p5_cinf_gpu0_20260416_140026.log` |
-| `soft_e0_r01_p5_c15` | `0.1` | `5.0` | `15.0` | `90.55%` | `-0.02 pp` | `+0.40 pp` | `0.70 s` | `236.93 s` | `logs_celeba/attr_ratio0.1_soft_e0_r01_p5_c15_gpu1_20260416_140026.log` |
-| `aggro_e0_r08_p10_c4` | `0.8` | `10.0` | `4.0` | `90.47%` | `-0.10 pp` | `+0.32 pp` | `0.71 s` | `236.35 s` | `logs_celeba/attr_ratio0.1_aggro_e0_r08_p10_c4_gpu2_20260416_140026.log` |
+| `baseline_def_e0_r001_p5_cinf` | `0.01` | `5.0` | `inf` | **`90.59%`** | `+0.02 pp` | `+0.44 pp` | `0.72 s` | `237.61 s` | `logs/celeba/attr_ratio0.1_baseline_def_e0_r001_p5_cinf_gpu0_20260416_140026.log` |
+| `soft_e0_r01_p5_c15` | `0.1` | `5.0` | `15.0` | `90.55%` | `-0.02 pp` | `+0.40 pp` | `0.70 s` | `236.93 s` | `logs/celeba/attr_ratio0.1_soft_e0_r01_p5_c15_gpu1_20260416_140026.log` |
+| `aggro_e0_r08_p10_c4` | `0.8` | `10.0` | `4.0` | `90.47%` | `-0.10 pp` | `+0.32 pp` | `0.71 s` | `236.35 s` | `logs/celeba/attr_ratio0.1_aggro_e0_r08_p10_c4_gpu2_20260416_140026.log` |
 
 ### CelebA Attribute-Probe Observations
 
@@ -2371,14 +2371,14 @@ Target-exposure source log:
 
 | Config | `R` | `P` | `C` | Held-out Test ACC | Delta vs Base | Gap vs `random` (`ratio=0.1`) | AL Selection Time | End-to-End Time | Canonical Log |
 |--------|-----|-----|-----|-------------------|---------------|-------------------------------|-------------------|-----------------|---------------|
-| `mixselx10_e0_r003_p05_cinf` | `0.03` | `0.5` | `inf` | **`90.99%`** | `+0.42 pp` | `+0.84 pp` | `0.74 s` | `349.37 s` | `logs_celeba/attr_ratio0.1_mixselx10_e0_r003_p05_cinf_gpu2_20260416_141739.log` |
-| `mixselx10_e0_r000_p0_cinf` | `0.0` | `0.0` | `inf` | `90.86%` | `+0.29 pp` | `+0.71 pp` | `0.70 s` | `347.44 s` | `logs_celeba/attr_ratio0.1_mixselx10_e0_r000_p0_cinf_gpu1_20260416_141739.log` |
-| `mixselx10_e0_r01_p05_cinf` | `0.1` | `0.5` | `inf` | `90.81%` | `+0.24 pp` | `+0.66 pp` | `0.74 s` | `372.83 s` | `logs_celeba/attr_ratio0.1_mixselx10_e0_r01_p05_cinf_gpu3_20260416_141739.log` |
-| `mixselx10_e0_r000_p05_cinf` | `0.0` | `0.5` | `inf` | `90.71%` | `+0.14 pp` | `+0.56 pp` | `0.94 s` | `348.21 s` | `logs_celeba/attr_ratio0.1_mixselx10_e0_r000_p05_cinf_gpu1_20260416_141739.log` |
-| `mixselx10_e0_r001_p0_cinf` | `0.01` | `0.0` | `inf` | `90.70%` | `+0.13 pp` | `+0.55 pp` | `0.72 s` | `344.59 s` | `logs_celeba/attr_ratio0.1_mixselx10_e0_r001_p0_cinf_gpu0_20260416_141739.log` |
-| `mixselx10_e0_r001_p05_cinf` | `0.01` | `0.5` | `inf` | `90.67%` | `+0.10 pp` | `+0.52 pp` | `1.05 s` | `343.75 s` | `logs_celeba/attr_ratio0.1_mixselx10_e0_r001_p05_cinf_gpu0_20260416_141739.log` |
-| `mixselx10_e0_r001_p1_cinf` | `0.01` | `1.0` | `inf` | `90.61%` | `+0.04 pp` | `+0.46 pp` | `1.01 s` | `350.25 s` | `logs_celeba/attr_ratio0.1_mixselx10_e0_r001_p1_cinf_gpu2_20260416_141739.log` |
-| `mixselx10_e0_r01_p05_c15` | `0.1` | `0.5` | `15.0` | `90.61%` | `+0.04 pp` | `+0.46 pp` | `0.98 s` | `412.87 s` | `logs_celeba/attr_ratio0.1_mixselx10_e0_r01_p05_c15_gpu3_20260416_141739.log` |
+| `mixselx10_e0_r003_p05_cinf` | `0.03` | `0.5` | `inf` | **`90.99%`** | `+0.42 pp` | `+0.84 pp` | `0.74 s` | `349.37 s` | `logs/celeba/attr_ratio0.1_mixselx10_e0_r003_p05_cinf_gpu2_20260416_141739.log` |
+| `mixselx10_e0_r000_p0_cinf` | `0.0` | `0.0` | `inf` | `90.86%` | `+0.29 pp` | `+0.71 pp` | `0.70 s` | `347.44 s` | `logs/celeba/attr_ratio0.1_mixselx10_e0_r000_p0_cinf_gpu1_20260416_141739.log` |
+| `mixselx10_e0_r01_p05_cinf` | `0.1` | `0.5` | `inf` | `90.81%` | `+0.24 pp` | `+0.66 pp` | `0.74 s` | `372.83 s` | `logs/celeba/attr_ratio0.1_mixselx10_e0_r01_p05_cinf_gpu3_20260416_141739.log` |
+| `mixselx10_e0_r000_p05_cinf` | `0.0` | `0.5` | `inf` | `90.71%` | `+0.14 pp` | `+0.56 pp` | `0.94 s` | `348.21 s` | `logs/celeba/attr_ratio0.1_mixselx10_e0_r000_p05_cinf_gpu1_20260416_141739.log` |
+| `mixselx10_e0_r001_p0_cinf` | `0.01` | `0.0` | `inf` | `90.70%` | `+0.13 pp` | `+0.55 pp` | `0.72 s` | `344.59 s` | `logs/celeba/attr_ratio0.1_mixselx10_e0_r001_p0_cinf_gpu0_20260416_141739.log` |
+| `mixselx10_e0_r001_p05_cinf` | `0.01` | `0.5` | `inf` | `90.67%` | `+0.10 pp` | `+0.52 pp` | `1.05 s` | `343.75 s` | `logs/celeba/attr_ratio0.1_mixselx10_e0_r001_p05_cinf_gpu0_20260416_141739.log` |
+| `mixselx10_e0_r001_p1_cinf` | `0.01` | `1.0` | `inf` | `90.61%` | `+0.04 pp` | `+0.46 pp` | `1.01 s` | `350.25 s` | `logs/celeba/attr_ratio0.1_mixselx10_e0_r001_p1_cinf_gpu2_20260416_141739.log` |
+| `mixselx10_e0_r01_p05_c15` | `0.1` | `0.5` | `15.0` | `90.61%` | `+0.04 pp` | `+0.46 pp` | `0.98 s` | `412.87 s` | `logs/celeba/attr_ratio0.1_mixselx10_e0_r01_p05_c15_gpu3_20260416_141739.log` |
 
 ### CelebA Attribute Mix-Scaled Observations
 
@@ -2422,9 +2422,9 @@ Target-exposure source log:
 
 | Config | `R` | `P` | `C` | Held-out Test ACC | Delta vs Base | Gap vs `random` (`ratio=0.3`) | AL Selection Time | End-to-End Time | Canonical Log |
 |--------|-----|-----|-----|-------------------|---------------|-------------------------------|-------------------|-----------------|---------------|
-| `mixselx333_e0_r000_p0_cinf` | `0.0` | `0.0` | `inf` | **`90.89%`** | `+0.32 pp` | `-0.29 pp` | `0.71 s` | `492.89 s` | `logs_celeba/attr_ratio0.3_mixselx333_e0_r000_p0_cinf_gpu2_20260416_143519.log` |
-| `mixselx333_e0_r003_p05_cinf` | `0.03` | `0.5` | `inf` | `90.87%` | `+0.30 pp` | `-0.31 pp` | `0.76 s` | `470.50 s` | `logs_celeba/attr_ratio0.3_mixselx333_e0_r003_p05_cinf_gpu1_20260416_143519.log` |
-| `mixselx333_e0_r01_p05_cinf` | `0.1` | `0.5` | `inf` | `90.74%` | `+0.17 pp` | `-0.44 pp` | `0.76 s` | `637.82 s` | `logs_celeba/attr_ratio0.3_mixselx333_e0_r01_p05_cinf_gpu3_20260416_143519.log` |
+| `mixselx333_e0_r000_p0_cinf` | `0.0` | `0.0` | `inf` | **`90.89%`** | `+0.32 pp` | `-0.29 pp` | `0.71 s` | `492.89 s` | `logs/celeba/attr_ratio0.3_mixselx333_e0_r000_p0_cinf_gpu2_20260416_143519.log` |
+| `mixselx333_e0_r003_p05_cinf` | `0.03` | `0.5` | `inf` | `90.87%` | `+0.30 pp` | `-0.31 pp` | `0.76 s` | `470.50 s` | `logs/celeba/attr_ratio0.3_mixselx333_e0_r003_p05_cinf_gpu1_20260416_143519.log` |
+| `mixselx333_e0_r01_p05_cinf` | `0.1` | `0.5` | `inf` | `90.74%` | `+0.17 pp` | `-0.44 pp` | `0.76 s` | `637.82 s` | `logs/celeba/attr_ratio0.3_mixselx333_e0_r01_p05_cinf_gpu3_20260416_143519.log` |
 
 ### CelebA Attribute Mix-Scaled Ratio-0.3 Observations
 
@@ -2462,9 +2462,9 @@ Target-exposure source log:
 
 | Config | `R` | `P` | `C` | Held-out Test ACC | Delta vs Base | Gap vs `random` (`ratio=0.3`) | Best Val ACC | AL Selection Time | End-to-End Time | Canonical Log |
 |--------|-----|-----|-----|-------------------|---------------|-------------------------------|--------------|-------------------|-----------------|---------------|
-| `qwen3mixx333_r000_p0_c15` | `0.0` | `0.0` | `15.0` | **`90.88%`** | `+0.31 pp` | `-0.30 pp` | `90.92%` | `0.53 s` | `423.41 s` | `logs_celeba/attr_ratio0.3_qwen3mixx333_r000_p0_c15_gpu0_20260417_011502.log` |
-| `qwen3mixx333_r001_p05_c15` | `0.01` | `0.5` | `15.0` | `90.61%` | `+0.04 pp` | `-0.57 pp` | `90.55%` | `0.55 s` | `416.34 s` | `logs_celeba/attr_ratio0.3_qwen3mixx333_r001_p05_c15_gpu1_20260417_011502.log` |
-| `qwen3mixx333_r003_p05_c15` | `0.03` | `0.5` | `15.0` | `90.28%` | `-0.29 pp` | `-0.90 pp` | `90.38%` | `0.54 s` | `420.36 s` | `logs_celeba/attr_ratio0.3_qwen3mixx333_r003_p05_c15_gpu2_20260417_011502.log` |
+| `qwen3mixx333_r000_p0_c15` | `0.0` | `0.0` | `15.0` | **`90.88%`** | `+0.31 pp` | `-0.30 pp` | `90.92%` | `0.53 s` | `423.41 s` | `logs/celeba/attr_ratio0.3_qwen3mixx333_r000_p0_c15_gpu0_20260417_011502.log` |
+| `qwen3mixx333_r001_p05_c15` | `0.01` | `0.5` | `15.0` | `90.61%` | `+0.04 pp` | `-0.57 pp` | `90.55%` | `0.55 s` | `416.34 s` | `logs/celeba/attr_ratio0.3_qwen3mixx333_r001_p05_c15_gpu1_20260417_011502.log` |
+| `qwen3mixx333_r003_p05_c15` | `0.03` | `0.5` | `15.0` | `90.28%` | `-0.29 pp` | `-0.90 pp` | `90.38%` | `0.54 s` | `420.36 s` | `logs/celeba/attr_ratio0.3_qwen3mixx333_r003_p05_c15_gpu2_20260417_011502.log` |
 
 ### CelebA Qwen3 Ratio-0.3 Finite-`C` Observations
 
@@ -2502,10 +2502,10 @@ Target-exposure source log:
 
 | Config | `R` | `P` | `C` | Qwen3 Held-out Test ACC | BLIP Held-out Test ACC | Delta vs BLIP | Best Val ACC | AL Selection Time | End-to-End Time | Qwen3 Log |
 |--------|-----|-----|-----|--------------------------|------------------------|---------------|--------------|-------------------|-----------------|-----------|
-| `qwen3mix_r000_p0_cinf` | `0.0` | `0.0` | `inf` | **`90.86%`** | `90.86%` | `+0.00 pp` | `91.03%` | `0.38 s` | `217.35 s` | `logs_celeba/attr_ratio0.1_qwen3mix_r000_p0_cinf_gpu0_20260417_004805.log` |
-| `qwen3mix_r001_p05_cinf` | `0.01` | `0.5` | `inf` | `90.30%` | `90.67%` | `-0.37 pp` | `90.29%` | `0.42 s` | `217.03 s` | `logs_celeba/attr_ratio0.1_qwen3mix_r001_p05_cinf_gpu1_20260417_004805.log` |
-| `qwen3mix_r003_p05_cinf` | `0.03` | `0.5` | `inf` | `90.12%` | **`90.99%`** | `-0.87 pp` | `90.33%` | `0.45 s` | `216.75 s` | `logs_celeba/attr_ratio0.1_qwen3mix_r003_p05_cinf_gpu2_20260417_004805.log` |
-| `qwen3mix_r01_p05_cinf` | `0.1` | `0.5` | `inf` | `90.03%` | `90.81%` | `-0.78 pp` | `90.16%` | `0.41 s` | `216.72 s` | `logs_celeba/attr_ratio0.1_qwen3mix_r01_p05_cinf_gpu3_20260417_004805.log` |
+| `qwen3mix_r000_p0_cinf` | `0.0` | `0.0` | `inf` | **`90.86%`** | `90.86%` | `+0.00 pp` | `91.03%` | `0.38 s` | `217.35 s` | `logs/celeba/attr_ratio0.1_qwen3mix_r000_p0_cinf_gpu0_20260417_004805.log` |
+| `qwen3mix_r001_p05_cinf` | `0.01` | `0.5` | `inf` | `90.30%` | `90.67%` | `-0.37 pp` | `90.29%` | `0.42 s` | `217.03 s` | `logs/celeba/attr_ratio0.1_qwen3mix_r001_p05_cinf_gpu1_20260417_004805.log` |
+| `qwen3mix_r003_p05_cinf` | `0.03` | `0.5` | `inf` | `90.12%` | **`90.99%`** | `-0.87 pp` | `90.33%` | `0.45 s` | `216.75 s` | `logs/celeba/attr_ratio0.1_qwen3mix_r003_p05_cinf_gpu2_20260417_004805.log` |
+| `qwen3mix_r01_p05_cinf` | `0.1` | `0.5` | `inf` | `90.03%` | `90.81%` | `-0.78 pp` | `90.16%` | `0.41 s` | `216.72 s` | `logs/celeba/attr_ratio0.1_qwen3mix_r01_p05_cinf_gpu3_20260417_004805.log` |
 
 ### CelebA Qwen3 Re-Run Observations
 
@@ -2551,9 +2551,9 @@ Target-exposure source log:
 
 | Config | `R` | `P` | `C` | Qwen3 Held-out Test ACC | Delta vs Base | Gap vs `random` (`ratio=0.1`) | Best Val ACC | AL Selection Time | End-to-End Time | Qwen3 Log |
 |--------|-----|-----|-----|--------------------------|---------------|-------------------------------|--------------|-------------------|-----------------|-----------|
-| `qwen3mix_r003_p05_c15` | `0.03` | `0.5` | `15.0` | **`91.07%`** | `+0.50 pp` | `+0.92 pp` | `90.91%` | `0.42 s` | `216.89 s` | `logs_celeba/attr_ratio0.1_qwen3mix_r003_p05_c15_gpu2_20260417_010718.log` |
-| `qwen3mix_r000_p0_c15` | `0.0` | `0.0` | `15.0` | `90.84%` | `+0.27 pp` | `+0.69 pp` | `90.97%` | `0.40 s` | `217.38 s` | `logs_celeba/attr_ratio0.1_qwen3mix_r000_p0_c15_gpu0_20260417_010718.log` |
-| `qwen3mix_r001_p05_c15` | `0.01` | `0.5` | `15.0` | `90.09%` | `-0.48 pp` | `-0.06 pp` | `90.24%` | `0.43 s` | `217.79 s` | `logs_celeba/attr_ratio0.1_qwen3mix_r001_p05_c15_gpu1_20260417_010718.log` |
+| `qwen3mix_r003_p05_c15` | `0.03` | `0.5` | `15.0` | **`91.07%`** | `+0.50 pp` | `+0.92 pp` | `90.91%` | `0.42 s` | `216.89 s` | `logs/celeba/attr_ratio0.1_qwen3mix_r003_p05_c15_gpu2_20260417_010718.log` |
+| `qwen3mix_r000_p0_c15` | `0.0` | `0.0` | `15.0` | `90.84%` | `+0.27 pp` | `+0.69 pp` | `90.97%` | `0.40 s` | `217.38 s` | `logs/celeba/attr_ratio0.1_qwen3mix_r000_p0_c15_gpu0_20260417_010718.log` |
+| `qwen3mix_r001_p05_c15` | `0.01` | `0.5` | `15.0` | `90.09%` | `-0.48 pp` | `-0.06 pp` | `90.24%` | `0.43 s` | `217.79 s` | `logs/celeba/attr_ratio0.1_qwen3mix_r001_p05_c15_gpu1_20260417_010718.log` |
 
 ### CelebA Qwen3 Ratio-0.1 Finite-C Observations
 
@@ -2607,9 +2607,9 @@ Target-exposure source log:
 
 | Config | `R` | `P` | `C` | Qwen3 Held-out Test ACC | Delta vs Base | Gap vs `random` (`ratio=0.1`) | Best Val ACC | AL Selection Time | End-to-End Time | Qwen3 Log |
 |--------|-----|-----|-----|--------------------------|---------------|-------------------------------|--------------|-------------------|-----------------|-----------|
-| `qwen3mix_r003_p05_c8` | `0.03` | `0.5` | `8.0` | **`90.66%`** | `+0.09 pp` | `+0.51 pp` | `90.63%` | `0.53 s` | `235.02 s` | `logs_celeba/attr_ratio0.1_qwen3mix_r003_p05_c8_gpu2_20260417_012110.log` |
-| `qwen3mix_r002_p05_c15` | `0.02` | `0.5` | `15.0` | `90.41%` | `-0.16 pp` | `+0.26 pp` | `90.46%` | `0.52 s` | `230.14 s` | `logs_celeba/attr_ratio0.1_qwen3mix_r002_p05_c15_gpu0_20260417_012110.log` |
-| `qwen3mix_r005_p05_c15` | `0.05` | `0.5` | `15.0` | `90.15%` | `-0.42 pp` | `+0.00 pp` | `90.27%` | `0.52 s` | `235.35 s` | `logs_celeba/attr_ratio0.1_qwen3mix_r005_p05_c15_gpu1_20260417_012110.log` |
+| `qwen3mix_r003_p05_c8` | `0.03` | `0.5` | `8.0` | **`90.66%`** | `+0.09 pp` | `+0.51 pp` | `90.63%` | `0.53 s` | `235.02 s` | `logs/celeba/attr_ratio0.1_qwen3mix_r003_p05_c8_gpu2_20260417_012110.log` |
+| `qwen3mix_r002_p05_c15` | `0.02` | `0.5` | `15.0` | `90.41%` | `-0.16 pp` | `+0.26 pp` | `90.46%` | `0.52 s` | `230.14 s` | `logs/celeba/attr_ratio0.1_qwen3mix_r002_p05_c15_gpu0_20260417_012110.log` |
+| `qwen3mix_r005_p05_c15` | `0.05` | `0.5` | `15.0` | `90.15%` | `-0.42 pp` | `+0.00 pp` | `90.27%` | `0.52 s` | `235.35 s` | `logs/celeba/attr_ratio0.1_qwen3mix_r005_p05_c15_gpu1_20260417_012110.log` |
 
 ### CelebA Qwen3 Ratio-0.1 Local-Refinement Observations
 
@@ -2642,19 +2642,19 @@ Target-exposure source log:
 
 | Config | `R` | `P` | `C` | Best Observed Val ACC Before Crash | Last Completed Epoch | Failure Type | Canonical Log |
 |--------|-----|-----|-----|------------------------------------|----------------------|--------------|---------------|
-| `rb_qwen3_r003_p05_c15` | `0.03` | `0.5` | `15.0` | `90.21%` | `8` | `FileNotFoundError` after directory rename | `logs_celeba/attr_rb_ratio0.1_rb_qwen3_r003_p05_c15_gpu0_20260417_012831.log` |
-| `rb_qwen3_r000_p0_cinf` | `0.0` | `0.0` | `inf` | `90.79%` | `8` | `FileNotFoundError` after directory rename | `logs_celeba/attr_rb_ratio0.1_rb_qwen3_r000_p0_cinf_gpu0_20260417_012831.log` |
-| `rb_qwen3_r000_p0_c15` | `0.0` | `0.0` | `15.0` | `90.79%` | `7` | `FileNotFoundError` after directory rename | `logs_celeba/attr_rb_ratio0.1_rb_qwen3_r000_p0_c15_gpu1_20260417_012831.log` |
-| `rb_qwen3_r003_p05_cinf` | `0.03` | `0.5` | `inf` | `89.82%` | `7` | `FileNotFoundError` after directory rename | `logs_celeba/attr_rb_ratio0.1_rb_qwen3_r003_p05_cinf_gpu1_20260417_012831.log` |
-| `rb_qwen3_r003_p05_c8` | `0.03` | `0.5` | `8.0` | `90.87%` | `7` | `FileNotFoundError` after directory rename | `logs_celeba/attr_rb_ratio0.1_rb_qwen3_r003_p05_c8_gpu2_20260417_012831.log` |
-| `rb_qwen3_r002_p05_c15` | `0.02` | `0.5` | `15.0` | `90.33%` | `7` | `FileNotFoundError` after directory rename | `logs_celeba/attr_rb_ratio0.1_rb_qwen3_r002_p05_c15_gpu2_20260417_012831.log` |
+| `rb_qwen3_r003_p05_c15` | `0.03` | `0.5` | `15.0` | `90.21%` | `8` | `FileNotFoundError` after directory rename | `logs/celeba/attr_rb_ratio0.1_rb_qwen3_r003_p05_c15_gpu0_20260417_012831.log` |
+| `rb_qwen3_r000_p0_cinf` | `0.0` | `0.0` | `inf` | `90.79%` | `8` | `FileNotFoundError` after directory rename | `logs/celeba/attr_rb_ratio0.1_rb_qwen3_r000_p0_cinf_gpu0_20260417_012831.log` |
+| `rb_qwen3_r000_p0_c15` | `0.0` | `0.0` | `15.0` | `90.79%` | `7` | `FileNotFoundError` after directory rename | `logs/celeba/attr_rb_ratio0.1_rb_qwen3_r000_p0_c15_gpu1_20260417_012831.log` |
+| `rb_qwen3_r003_p05_cinf` | `0.03` | `0.5` | `inf` | `89.82%` | `7` | `FileNotFoundError` after directory rename | `logs/celeba/attr_rb_ratio0.1_rb_qwen3_r003_p05_cinf_gpu1_20260417_012831.log` |
+| `rb_qwen3_r003_p05_c8` | `0.03` | `0.5` | `8.0` | `90.87%` | `7` | `FileNotFoundError` after directory rename | `logs/celeba/attr_rb_ratio0.1_rb_qwen3_r003_p05_c8_gpu2_20260417_012831.log` |
+| `rb_qwen3_r002_p05_c15` | `0.02` | `0.5` | `15.0` | `90.33%` | `7` | `FileNotFoundError` after directory rename | `logs/celeba/attr_rb_ratio0.1_rb_qwen3_r002_p05_c15_gpu2_20260417_012831.log` |
 
 ### CelebA `redhair_brownskin` Pre-Rerun Snapshot Notes
 
 - All six interrupted runs successfully reached:
   - `Selected 1000 filenames for sampling`
   - `CelebA: Combined 8000 selected samples with 1000 generated images using Active Learning`
-  - resumed fine-tuning from `weights/model_celeba_resnet_base.pth`
+  - resumed fine-tuning from `save/weights/model_celeba_resnet_base.pth`
 - The crash mechanism was consistent across runs:
   - `FileNotFoundError`
   - missing generated image under `data/redhair_brownskin/...`
@@ -2676,12 +2676,12 @@ Target-exposure source log:
 
 | Config | `R` | `P` | `C` | Held-out Test ACC | Delta vs Base | Best Val ACC | AL Selection Time | End-to-End Time | Canonical Log |
 |--------|-----|-----|-----|-------------------|---------------|--------------|-------------------|-----------------|---------------|
-| `rb_qwen3_r000_p0_c15` | `0.0` | `0.0` | `15.0` | **`90.75%`** | `+0.18 pp` | `90.82%` | `0.34 s` | `323.19 s` | `logs_celeba/attr_rb_ratio0.1_rb_qwen3_r000_p0_c15_gpu1_20260417_013234.log` |
-| `rb_qwen3_r000_p0_cinf` | `0.0` | `0.0` | `inf` | `90.74%` | `+0.17 pp` | `90.82%` | `0.32 s` | `315.65 s` | `logs_celeba/attr_rb_ratio0.1_rb_qwen3_r000_p0_cinf_gpu0_20260417_013234.log` |
-| `rb_qwen3_r002_p05_c15` | `0.02` | `0.5` | `15.0` | `90.63%` | `+0.06 pp` | `90.63%` | `0.42 s` | `323.69 s` | `logs_celeba/attr_rb_ratio0.1_rb_qwen3_r002_p05_c15_gpu2_20260417_013234.log` |
-| `rb_qwen3_r003_p05_c15` | `0.03` | `0.5` | `15.0` | `90.33%` | `-0.24 pp` | `90.53%` | `0.37 s` | `316.43 s` | `logs_celeba/attr_rb_ratio0.1_rb_qwen3_r003_p05_c15_gpu0_20260417_013234.log` |
-| `rb_qwen3_r003_p05_c8` | `0.03` | `0.5` | `8.0` | `90.16%` | `-0.41 pp` | `90.30%` | `0.36 s` | `323.48 s` | `logs_celeba/attr_rb_ratio0.1_rb_qwen3_r003_p05_c8_gpu2_20260417_013234.log` |
-| `rb_qwen3_r003_p05_cinf` | `0.03` | `0.5` | `inf` | `89.65%` | `-0.92 pp` | `89.92%` | `0.36 s` | `322.76 s` | `logs_celeba/attr_rb_ratio0.1_rb_qwen3_r003_p05_cinf_gpu1_20260417_013234.log` |
+| `rb_qwen3_r000_p0_c15` | `0.0` | `0.0` | `15.0` | **`90.75%`** | `+0.18 pp` | `90.82%` | `0.34 s` | `323.19 s` | `logs/celeba/attr_rb_ratio0.1_rb_qwen3_r000_p0_c15_gpu1_20260417_013234.log` |
+| `rb_qwen3_r000_p0_cinf` | `0.0` | `0.0` | `inf` | `90.74%` | `+0.17 pp` | `90.82%` | `0.32 s` | `315.65 s` | `logs/celeba/attr_rb_ratio0.1_rb_qwen3_r000_p0_cinf_gpu0_20260417_013234.log` |
+| `rb_qwen3_r002_p05_c15` | `0.02` | `0.5` | `15.0` | `90.63%` | `+0.06 pp` | `90.63%` | `0.42 s` | `323.69 s` | `logs/celeba/attr_rb_ratio0.1_rb_qwen3_r002_p05_c15_gpu2_20260417_013234.log` |
+| `rb_qwen3_r003_p05_c15` | `0.03` | `0.5` | `15.0` | `90.33%` | `-0.24 pp` | `90.53%` | `0.37 s` | `316.43 s` | `logs/celeba/attr_rb_ratio0.1_rb_qwen3_r003_p05_c15_gpu0_20260417_013234.log` |
+| `rb_qwen3_r003_p05_c8` | `0.03` | `0.5` | `8.0` | `90.16%` | `-0.41 pp` | `90.30%` | `0.36 s` | `323.48 s` | `logs/celeba/attr_rb_ratio0.1_rb_qwen3_r003_p05_c8_gpu2_20260417_013234.log` |
+| `rb_qwen3_r003_p05_cinf` | `0.03` | `0.5` | `inf` | `89.65%` | `-0.92 pp` | `89.92%` | `0.36 s` | `322.76 s` | `logs/celeba/attr_rb_ratio0.1_rb_qwen3_r003_p05_cinf_gpu1_20260417_013234.log` |
 
 ### CelebA `redhair_brownskin` Ratio-0.1 Observations
 
@@ -2714,12 +2714,12 @@ Target-exposure source log:
 
 | Config | `R` | `P` | `C` | Held-out Test ACC | Delta vs Base | Best Val ACC | AL Selection Time | End-to-End Time | Canonical Log |
 |--------|-----|-----|-----|-------------------|---------------|--------------|-------------------|-----------------|---------------|
-| `rb_qwen3x333_r000_p0_c15` | `0.0` | `0.0` | `15.0` | **`90.91%`** | `+0.34 pp` | `91.02%` | `0.44 s` | `655.45 s` | `logs_celeba/attr_rb_ratio0.3_rb_qwen3x333_r000_p0_c15_gpu0_20260417_014040.log` |
-| `rb_qwen3x333_r000_p0_cinf` | `0.0` | `0.0` | `inf` | **`90.91%`** | `+0.34 pp` | `91.03%` | `0.43 s` | `656.18 s` | `logs_celeba/attr_rb_ratio0.3_rb_qwen3x333_r000_p0_cinf_gpu0_20260417_014040.log` |
-| `rb_qwen3x333_r003_p05_cinf` | `0.03` | `0.5` | `inf` | `90.63%` | `+0.06 pp` | `90.72%` | `0.44 s` | `676.91 s` | `logs_celeba/attr_rb_ratio0.3_rb_qwen3x333_r003_p05_cinf_gpu2_20260417_014040.log` |
-| `rb_qwen3x333_r003_p05_c15` | `0.03` | `0.5` | `15.0` | `90.53%` | `-0.04 pp` | `90.61%` | `0.47 s` | `661.52 s` | `logs_celeba/attr_rb_ratio0.3_rb_qwen3x333_r003_p05_c15_gpu1_20260417_014040.log` |
-| `rb_qwen3x333_r002_p05_c15` | `0.02` | `0.5` | `15.0` | `90.47%` | `-0.10 pp` | `90.63%` | `0.47 s` | `664.06 s` | `logs_celeba/attr_rb_ratio0.3_rb_qwen3x333_r002_p05_c15_gpu1_20260417_014040.log` |
-| `rb_qwen3x333_r003_p05_c8` | `0.03` | `0.5` | `8.0` | `90.37%` | `-0.20 pp` | `90.49%` | `0.46 s` | `678.05 s` | `logs_celeba/attr_rb_ratio0.3_rb_qwen3x333_r003_p05_c8_gpu2_20260417_014040.log` |
+| `rb_qwen3x333_r000_p0_c15` | `0.0` | `0.0` | `15.0` | **`90.91%`** | `+0.34 pp` | `91.02%` | `0.44 s` | `655.45 s` | `logs/celeba/attr_rb_ratio0.3_rb_qwen3x333_r000_p0_c15_gpu0_20260417_014040.log` |
+| `rb_qwen3x333_r000_p0_cinf` | `0.0` | `0.0` | `inf` | **`90.91%`** | `+0.34 pp` | `91.03%` | `0.43 s` | `656.18 s` | `logs/celeba/attr_rb_ratio0.3_rb_qwen3x333_r000_p0_cinf_gpu0_20260417_014040.log` |
+| `rb_qwen3x333_r003_p05_cinf` | `0.03` | `0.5` | `inf` | `90.63%` | `+0.06 pp` | `90.72%` | `0.44 s` | `676.91 s` | `logs/celeba/attr_rb_ratio0.3_rb_qwen3x333_r003_p05_cinf_gpu2_20260417_014040.log` |
+| `rb_qwen3x333_r003_p05_c15` | `0.03` | `0.5` | `15.0` | `90.53%` | `-0.04 pp` | `90.61%` | `0.47 s` | `661.52 s` | `logs/celeba/attr_rb_ratio0.3_rb_qwen3x333_r003_p05_c15_gpu1_20260417_014040.log` |
+| `rb_qwen3x333_r002_p05_c15` | `0.02` | `0.5` | `15.0` | `90.47%` | `-0.10 pp` | `90.63%` | `0.47 s` | `664.06 s` | `logs/celeba/attr_rb_ratio0.3_rb_qwen3x333_r002_p05_c15_gpu1_20260417_014040.log` |
+| `rb_qwen3x333_r003_p05_c8` | `0.03` | `0.5` | `8.0` | `90.37%` | `-0.20 pp` | `90.49%` | `0.46 s` | `678.05 s` | `logs/celeba/attr_rb_ratio0.3_rb_qwen3x333_r003_p05_c8_gpu2_20260417_014040.log` |
 
 ### CelebA `redhair_brownskin` Ratio-0.3 Observations
 
@@ -2766,9 +2766,9 @@ Target-exposure source log:
 
 | Config | `R` | `P` | `C` | Qwen3 Held-out Test ACC | Delta vs Base | Gap vs `random` (`ratio=0.3`) | Best Val ACC | AL Selection Time | End-to-End Time | Qwen3 Log |
 |--------|-----|-----|-----|--------------------------|---------------|-------------------------------|--------------|-------------------|-----------------|-----------|
-| `qwen3mixx333_r000_p0_cinf` | `0.0` | `0.0` | `inf` | **`90.89%`** | `+0.32 pp` | `-0.29 pp` | `90.90%` | `0.51 s` | `399.41 s` | `logs_celeba/attr_ratio0.3_qwen3mixx333_r000_p0_cinf_gpu0_20260417_005520.log` |
-| `qwen3mixx333_r001_p05_cinf` | `0.01` | `0.5` | `inf` | `90.49%` | `-0.08 pp` | `-0.69 pp` | `90.50%` | `0.50 s` | `401.53 s` | `logs_celeba/attr_ratio0.3_qwen3mixx333_r001_p05_cinf_gpu1_20260417_005520.log` |
-| `qwen3mixx333_r003_p05_cinf` | `0.03` | `0.5` | `inf` | `90.63%` | `+0.06 pp` | `-0.55 pp` | `90.71%` | `0.51 s` | `399.91 s` | `logs_celeba/attr_ratio0.3_qwen3mixx333_r003_p05_cinf_gpu2_20260417_005520.log` |
+| `qwen3mixx333_r000_p0_cinf` | `0.0` | `0.0` | `inf` | **`90.89%`** | `+0.32 pp` | `-0.29 pp` | `90.90%` | `0.51 s` | `399.41 s` | `logs/celeba/attr_ratio0.3_qwen3mixx333_r000_p0_cinf_gpu0_20260417_005520.log` |
+| `qwen3mixx333_r001_p05_cinf` | `0.01` | `0.5` | `inf` | `90.49%` | `-0.08 pp` | `-0.69 pp` | `90.50%` | `0.50 s` | `401.53 s` | `logs/celeba/attr_ratio0.3_qwen3mixx333_r001_p05_cinf_gpu1_20260417_005520.log` |
+| `qwen3mixx333_r003_p05_cinf` | `0.03` | `0.5` | `inf` | `90.63%` | `+0.06 pp` | `-0.55 pp` | `90.71%` | `0.51 s` | `399.91 s` | `logs/celeba/attr_ratio0.3_qwen3mixx333_r003_p05_cinf_gpu2_20260417_005520.log` |
 
 ### CelebA Qwen3 Ratio-0.3 Observations
 
@@ -2802,7 +2802,7 @@ Target-exposure source log:
 # 04/16/2026 Update — ImageNet10 BADGE Resume Sweep
 
 - Completed four ImageNet10 BADGE follow-up runs using the same resume-from-base setting as the earlier AL comparison:
-  - base checkpoint: `weights/model_imagenet_resnet_base.pth`
+  - base checkpoint: `save/weights/model_imagenet_resnet_base.pth`
   - model: `ResNet-18`
   - learning rate: `1e-5`
   - epochs: `15`
@@ -2849,13 +2849,13 @@ Target-exposure source log:
 
 | Run Tag | GPU | Best Epoch | Held-out Val AP | Held-out Test AP | Test AP50 | Test AP75 | Test AR | Train Time | Artifact Root | Log |
 |---------|-----|------------|-----------------|------------------|-----------|-----------|---------|------------|---------------|-----|
-| Qwen3-VL-8B | `3` | `0` | `0.6445` | `0.6352` | `0.8656` | `0.6902` | `0.6993` | `1 h 29 min` | `log_pose/pose_keypointrcnn_train20k_qwen3_bs8_e2_rare1p1_20260415_144429/` | `log_pose/pose_train20k_qwen3_bs8_e2_rare1p1_20260415_144429.log` |
-| InternVL3-8B | `0` | `0` | `0.6401` | `0.5902` | `0.8618` | `0.6936` | `0.7016` | `1 h 34 min` | `log_pose/pose_keypointrcnn_train20k_internvl3_bs8_e2_rare1p1_gpu0_20260415_144530/` | `log_pose/base_pose_train20k_compare.log` |
+| Qwen3-VL-8B | `3` | `0` | `0.6445` | `0.6352` | `0.8656` | `0.6902` | `0.6993` | `1 h 29 min` | `logs/pose/pose_keypointrcnn_train20k_qwen3_bs8_e2_rare1p1_20260415_144429/` | `logs/pose/pose_train20k_qwen3_bs8_e2_rare1p1_20260415_144429.log` |
+| InternVL3-8B | `0` | `0` | `0.6401` | `0.5902` | `0.8618` | `0.6936` | `0.7016` | `1 h 34 min` | `logs/pose/pose_keypointrcnn_train20k_internvl3_bs8_e2_rare1p1_gpu0_20260415_144530/` | `logs/pose/base_pose_train20k_compare.log` |
 
 - Relative to the earlier `4/12` held-out test probes:
   - Qwen3-VL-8B improved from `0.5968` to `0.6352` (`+0.0384`)
   - InternVL3-8B moved from `0.6340` to `0.5902` (`-0.0438`)
-- Top-level `log_pose/` logs explicitly record both training-only and end-to-end elapsed time for these runs:
+- Top-level `logs/pose/` logs explicitly record both training-only and end-to-end elapsed time for these runs:
   - Qwen3-VL-8B: training `1 h 29 min`, end-to-end `1 h 29 min`
   - InternVL3-8B: training `1 h 34 min`, end-to-end `1 h 34 min`
 - Held-out test slice analysis for both runs used `rare_label_threshold=1.1`.
@@ -2876,12 +2876,12 @@ Target-exposure source log:
 
 - Two later same-day reruns requested after the initial summary are now complete:
   - Qwen3-VL-8B reproducibility rerun on GPU `0`:
-    - artifact root: `log_pose/pose_keypointrcnn_train20k_qwen3_bs8_e2_rare1p1_gpu0_repro/`
-    - log: `log_pose/pose_train20k_qwen3_bs8_e2_rare1p1_gpu0_repro.log`
+    - artifact root: `logs/pose/pose_keypointrcnn_train20k_qwen3_bs8_e2_rare1p1_gpu0_repro/`
+    - log: `logs/pose/pose_train20k_qwen3_bs8_e2_rare1p1_gpu0_repro.log`
   - InternVL3-8B training-only rerun on GPU `3` followed by post-hoc slice analyses:
-    - artifact root: `log_pose/pose_keypointrcnn_train20k_internvl3_bs8_e2_trainonly_gpu3_20260415_183404/`
-    - training log: `log_pose/pose_train20k_internvl3_bs8_e2_trainonly_gpu3_20260415_183404.log`
-    - post-hoc sweep log: `log_pose/posthoc_slice_analysis_internvl3_trainonly_gpu3_20260415_183404.log`
+    - artifact root: `logs/pose/pose_keypointrcnn_train20k_internvl3_bs8_e2_trainonly_gpu3_20260415_183404/`
+    - training log: `logs/pose/pose_train20k_internvl3_bs8_e2_trainonly_gpu3_20260415_183404.log`
+    - post-hoc sweep log: `logs/pose/posthoc_slice_analysis_internvl3_trainonly_gpu3_20260415_183404.log`
 - In both later reruns, the best checkpoint again came from **epoch 0**.
 
 | Follow-Up Run | Earlier 4/17 Reference | Held-out Val AP | Held-out Test AP | Test AP50 | Test AP75 | Test AR | Train Time |
@@ -2911,14 +2911,14 @@ Target-exposure source log:
   - the resulting `test` CSVs are also byte-identical across thresholds
   - therefore, for this checkpoint, lowering the post-hoc rare threshold from `0.97` to `0.95` or `0.93` did **not** change the slice rankings or rare/hard-case labels
   - the three completed slice-analysis roots are:
-    - `log_pose/pose_keypointrcnn_train20k_internvl3_bs8_e2_trainonly_gpu3_20260415_183404/slice_analysis/internvl3_rare0p97/`
-    - `log_pose/pose_keypointrcnn_train20k_internvl3_bs8_e2_trainonly_gpu3_20260415_183404/slice_analysis/internvl3_rare0p95/`
-    - `log_pose/pose_keypointrcnn_train20k_internvl3_bs8_e2_trainonly_gpu3_20260415_183404/slice_analysis/internvl3_rare0p93/`
+    - `logs/pose/pose_keypointrcnn_train20k_internvl3_bs8_e2_trainonly_gpu3_20260415_183404/slice_analysis/internvl3_rare0p97/`
+    - `logs/pose/pose_keypointrcnn_train20k_internvl3_bs8_e2_trainonly_gpu3_20260415_183404/slice_analysis/internvl3_rare0p95/`
+    - `logs/pose/pose_keypointrcnn_train20k_internvl3_bs8_e2_trainonly_gpu3_20260415_183404/slice_analysis/internvl3_rare0p93/`
 - Important sweep result for the Qwen3 repro:
   - the post-hoc `rare_label_threshold` analyses at `0.97`, `0.95`, and `0.93` all completed successfully under:
-    - `log_pose/pose_keypointrcnn_train20k_qwen3_bs8_e2_rare1p1_gpu0_repro/slice_analysis/qwen3_rare0p97/`
-    - `log_pose/pose_keypointrcnn_train20k_qwen3_bs8_e2_rare1p1_gpu0_repro/slice_analysis/qwen3_rare0p95/`
-    - `log_pose/pose_keypointrcnn_train20k_qwen3_bs8_e2_rare1p1_gpu0_repro/slice_analysis/qwen3_rare0p93/`
+    - `logs/pose/pose_keypointrcnn_train20k_qwen3_bs8_e2_rare1p1_gpu0_repro/slice_analysis/qwen3_rare0p97/`
+    - `logs/pose/pose_keypointrcnn_train20k_qwen3_bs8_e2_rare1p1_gpu0_repro/slice_analysis/qwen3_rare0p95/`
+    - `logs/pose/pose_keypointrcnn_train20k_qwen3_bs8_e2_rare1p1_gpu0_repro/slice_analysis/qwen3_rare0p93/`
   - the resulting `val` CSVs are byte-identical across thresholds
   - the resulting `test` CSVs are also byte-identical across thresholds
   - therefore, for this checkpoint, lowering the post-hoc rare threshold from `0.97` to `0.95` or `0.93` did **not** change the Qwen3 slice rankings or rare/hard-case labels
@@ -2951,7 +2951,7 @@ Based on the completed runs and report updates consolidated on 4/12, the main re
 - Added the BLIP-based COCO pose attribute-assignment path, completed a full run with the Gemini-defined corpus, and extended BLIP output handling to support CSV export.
 - Finished the Gemini-corpus Qwen3 / InternVL3 validation runs on the COCO pose `val2017` split and recorded their runtimes, logs, and CSV outputs.
 - Finished the Gemini-corpus Qwen3 / InternVL3 train-split runs on the first `20,000` valid `train2017` images and recorded their runtimes, logs, and CSV outputs.
-- Finished three `train_pose_estimation.py` probe runs on the first `20,000` valid `train2017` images, added a reproducible held-out `val/test` split inside valid `val2017`, and recorded both the held-out keypoint metrics and the main slice-level failure cases.
+- Finished three `pose_estimation/train_pose_estimation.py` probe runs on the first `20,000` valid `train2017` images, added a reproducible held-out `val/test` split inside valid `val2017`, and recorded both the held-out keypoint metrics and the main slice-level failure cases.
 
 ### Recent COCO Gemini Workflow Updates
 
@@ -3010,8 +3010,8 @@ Based on the completed runs and report updates consolidated on 4/12, the main re
 
 | Model | Split | Valid Images | Runtime | JSON Output | CSV Output | Log |
 |-------|-------|--------------|---------|-------------|------------|-----|
-| Qwen3-VL-8B | val2017 | 2,346 | 45.8 min | `save/attribute_coco_pose_gemini_qwen3_8B.json` | `save/attribute_coco_pose_gemini_qwen3_8B.csv` | `log_pose/assign_attribute_coco_pose_qwen3_8B_gemini_gpu3_20260410_193102.log` |
-| InternVL3-8B | val2017 | 2,346 | 208.8 min | `save/attribute_coco_pose_gemini_internvl3_8B.json` | `save/attribute_coco_pose_gemini_internvl3_8B.csv` | `log_pose/assign_attribute_coco_pose_internvl3_8B_gemini_gpu2_20260410_193102.log` |
+| Qwen3-VL-8B | val2017 | 2,346 | 45.8 min | `save/attribute_coco_pose_gemini_qwen3_8B.json` | `save/attribute_coco_pose_gemini_qwen3_8B.csv` | `logs/pose/assign_attribute_coco_pose_qwen3_8B_gemini_gpu3_20260410_193102.log` |
+| InternVL3-8B | val2017 | 2,346 | 208.8 min | `save/attribute_coco_pose_gemini_internvl3_8B.json` | `save/attribute_coco_pose_gemini_internvl3_8B.csv` | `logs/pose/assign_attribute_coco_pose_internvl3_8B_gemini_gpu2_20260410_193102.log` |
 
 - Log endings confirm both jobs completed successfully:
   - Qwen3: `Done. Processed 2346 images in 45.8 minutes` and `Saved attribute annotations to save/attribute_coco_pose_gemini_qwen3_8B.json`
@@ -3026,8 +3026,8 @@ Based on the completed runs and report updates consolidated on 4/12, the main re
 
 | Model | Split | Source Pool | Processed Images | Runtime | JSON Output | CSV Output | Log |
 |-------|-------|-------------|------------------|---------|-------------|------------|-----|
-| Qwen3-VL-8B | train2017 | 56,599 valid images | 20,000 | 399.7 min (6.66 h) | `save/attribute_coco_pose_gemini_train20k_qwen3_8B.json` | `save/attribute_coco_pose_gemini_train20k_qwen3_8B.csv` | `log_pose/assign_attribute_coco_pose_qwen3_8B_gemini_train20k_gpu0_20260410_193459.log` |
-| InternVL3-8B | train2017 | 56,599 valid images | 20,000 | 1709.6 min (28.49 h) | `save/attribute_coco_pose_gemini_train20k_internvl3_8B.json` | `save/attribute_coco_pose_gemini_train20k_internvl3_8B.csv` | `log_pose/assign_attribute_coco_pose_internvl3_8B_gemini_train20k_gpu1_20260410_193459.log` |
+| Qwen3-VL-8B | train2017 | 56,599 valid images | 20,000 | 399.7 min (6.66 h) | `save/attribute_coco_pose_gemini_train20k_qwen3_8B.json` | `save/attribute_coco_pose_gemini_train20k_qwen3_8B.csv` | `logs/pose/assign_attribute_coco_pose_qwen3_8B_gemini_train20k_gpu0_20260410_193459.log` |
+| InternVL3-8B | train2017 | 56,599 valid images | 20,000 | 1709.6 min (28.49 h) | `save/attribute_coco_pose_gemini_train20k_internvl3_8B.json` | `save/attribute_coco_pose_gemini_train20k_internvl3_8B.csv` | `logs/pose/assign_attribute_coco_pose_internvl3_8B_gemini_train20k_gpu1_20260410_193459.log` |
 
 - Log endings confirm both jobs completed successfully:
   - Qwen3: `Done. Processed 20000 images in 399.7 minutes` and `Saved attribute annotations to save/attribute_coco_pose_gemini_train20k_qwen3_8B.json`
@@ -3041,10 +3041,10 @@ Based on the completed runs and report updates consolidated on 4/12, the main re
 
 | Model | Split / Shard | Valid Images Written | Runtime | Stable Outputs | Primary Log |
 |-------|---------------|----------------------|---------|----------------|-------------|
-| Qwen3-VL-8B | canonical `val2017` rerun | `2,346` | `46.7` min (`0.78 h`) | `save/attribute_coco_pose_gemini_qwen3_8B.json`, `save/attribute_coco_pose_gemini_qwen3_8B.csv`, plus alias copies `save/attribute_coco_pose_gemini_qwen3_8B_val.json` and `save/attribute_coco_pose_gemini_qwen3_8B_val.csv` | `log_pose/assign_attribute_coco_pose_qwen3_8B_gemini_val_gpu1_20260414_134529.log` |
-| InternVL3-8B | canonical `val2017` rerun | `2,346` | `217.2` min (`3.62 h`) | `save/attribute_coco_pose_gemini_internvl3_8B.json`, `save/attribute_coco_pose_gemini_internvl3_8B.csv` | `log_pose/assign_attribute_coco_pose_internvl3_8B_gemini_val_gpu1_20260414_143656.log` |
-| InternVL3-8B | canonical `train20k` rerun | `20,000` total rows in the canonical artifact; the resume stage processed the remaining `19,500` images after a `500`-row checkpoint | `1876.5` min (`31.28 h`) for the resumed segment | `save/attribute_coco_pose_gemini_train20k_internvl3_8B.json`, `save/attribute_coco_pose_gemini_train20k_internvl3_8B.csv` | `log_pose/assign_attribute_coco_pose_internvl3_8B_gemini_train20k_resume_gpu0_20260413_233306.log` |
-| Qwen3-VL-8B | `train_after20k` continuation shard | `36,599` | `731.4` min (`12.19 h`) | `save/attribute_coco_pose_gemini_train_after20k_qwen3_8B.json`, `save/attribute_coco_pose_gemini_train_after20k_qwen3_8B.csv` | `log_pose/assign_attribute_coco_pose_qwen3_8B_gemini_train_after20k_gpu3_20260414_134834.log` |
+| Qwen3-VL-8B | canonical `val2017` rerun | `2,346` | `46.7` min (`0.78 h`) | `save/attribute_coco_pose_gemini_qwen3_8B.json`, `save/attribute_coco_pose_gemini_qwen3_8B.csv`, plus alias copies `save/attribute_coco_pose_gemini_qwen3_8B_val.json` and `save/attribute_coco_pose_gemini_qwen3_8B_val.csv` | `logs/pose/assign_attribute_coco_pose_qwen3_8B_gemini_val_gpu1_20260414_134529.log` |
+| InternVL3-8B | canonical `val2017` rerun | `2,346` | `217.2` min (`3.62 h`) | `save/attribute_coco_pose_gemini_internvl3_8B.json`, `save/attribute_coco_pose_gemini_internvl3_8B.csv` | `logs/pose/assign_attribute_coco_pose_internvl3_8B_gemini_val_gpu1_20260414_143656.log` |
+| InternVL3-8B | canonical `train20k` rerun | `20,000` total rows in the canonical artifact; the resume stage processed the remaining `19,500` images after a `500`-row checkpoint | `1876.5` min (`31.28 h`) for the resumed segment | `save/attribute_coco_pose_gemini_train20k_internvl3_8B.json`, `save/attribute_coco_pose_gemini_train20k_internvl3_8B.csv` | `logs/pose/assign_attribute_coco_pose_internvl3_8B_gemini_train20k_resume_gpu0_20260413_233306.log` |
+| Qwen3-VL-8B | `train_after20k` continuation shard | `36,599` | `731.4` min (`12.19 h`) | `save/attribute_coco_pose_gemini_train_after20k_qwen3_8B.json`, `save/attribute_coco_pose_gemini_train_after20k_qwen3_8B.csv` | `logs/pose/assign_attribute_coco_pose_qwen3_8B_gemini_train_after20k_gpu3_20260414_134834.log` |
 
 - Current CSV row counts confirm the finished artifact sizes:
   - `save/attribute_coco_pose_gemini_qwen3_8B_val.csv`: `2,346` data rows
@@ -3076,19 +3076,19 @@ image_id,clothes_color,clothes_type,background_style,time_of_day,weather,pose
 ### Follow-Up
 
 - If a full CSV matching `save/attribute_coco_pose_gemini_blip.json` is needed, it can now be generated with the updated BLIP code in a rerun, or converted directly from the finished JSON in a short post-process step.
-- The dedicated BLIP `train20k` rerun with JSON+CSV output completed at `log_pose/blip_coco_pose_gemini_train20k_gpu2_20260412_162538.log`.
-- The dedicated BLIP `val` rerun with the cleaned corpus completed at `log_pose/blip_coco_pose_gemini_val_gpu2_20260412_171035.log` and produced:
+- The dedicated BLIP `train20k` rerun with JSON+CSV output completed at `logs/pose/blip_coco_pose_gemini_train20k_gpu2_20260412_162538.log`.
+- The dedicated BLIP `val` rerun with the cleaned corpus completed at `logs/pose/blip_coco_pose_gemini_val_gpu2_20260412_171035.log` and produced:
   - `save/attribute_coco_pose_gemini_blip_val.json`
   - `save/attribute_coco_pose_gemini_blip_val.csv`
 - A clean BLIP held-out `test` slice analysis now exists at:
-  - `log_pose/pose_keypointrcnn_train20k_blip_bs8_e2_rare0p97_20260412_021252/slice_analysis/blip_postcleanup_clean/test_slice_stats.json`
-  - `log_pose/pose_keypointrcnn_train20k_blip_bs8_e2_rare0p97_20260412_021252/slice_analysis/blip_postcleanup_clean/test_slice_stats.csv`
+  - `logs/pose/pose_keypointrcnn_train20k_blip_bs8_e2_rare0p97_20260412_021252/slice_analysis/blip_postcleanup_clean/test_slice_stats.json`
+  - `logs/pose/pose_keypointrcnn_train20k_blip_bs8_e2_rare0p97_20260412_021252/slice_analysis/blip_postcleanup_clean/test_slice_stats.csv`
 - In this clean BLIP reanalysis, `weather=unknown` no longer appears; the weather slices are now `sunny`, `clear`, `cloudy`, `rainy`, and `snowy`.
 
 ### COCO Pose 20k Probe Runs with Held-Out Slice Analysis
 
-- Extended `train_pose_estimation.py` so the current probe workflow trains on the first `20,000` valid `train2017` images by default, splits the `2,346` valid `val2017` images into reproducible held-out `val` / `test` halves (`1,173` each, seed `42`), evaluates the best checkpoint on both halves, and runs automatic slice analysis from Gemini-corpus attribute annotations.
-- Pose-related logs and experiment artifact directories are now consolidated under `log_pose/` instead of being split across `logs/` and `outputs/`.
+- Extended `pose_estimation/train_pose_estimation.py` so the current probe workflow trains on the first `20,000` valid `train2017` images by default, splits the `2,346` valid `val2017` images into reproducible held-out `val` / `test` halves (`1,173` each, seed `42`), evaluates the best checkpoint on both halves, and runs automatic slice analysis from Gemini-corpus attribute annotations.
+- Pose-related logs and experiment artifact directories are now consolidated under `logs/pose/` instead of being split across `logs/` and `outputs/`.
 - These results are useful as fast slice-analysis probes, but they are not direct replacements for the earlier full-val baseline because the train cap, batch size, and evaluation split are different.
 - The three runs below should be read as end-to-end run variants rather than a strict attribute-source-only ablation, because the `BLIP` run used `batch_size=8` while the `Qwen3` and `InternVL3` runs used `batch_size=4`.
 
@@ -3099,9 +3099,9 @@ image_id,clothes_color,clothes_type,background_style,time_of_day,weather,pose
 | BLIP | 8 | 20,000 | 0.6427 | 0.6370 | 0.8614 | 0.6902 | 0.7009 | 01:30:28 | 01:30:35 |
 
 - Main artifact roots:
-  - Qwen3: `log_pose/pose_keypointrcnn_train20k_qwen3_bs4_e2_rare0p97_20260412_015524/`
-  - InternVL3: `log_pose/pose_keypointrcnn_train20k_internvl3_bs4_e2_rare0p97_gpuX_20260412_015632/`
-  - BLIP: `log_pose/pose_keypointrcnn_train20k_blip_bs8_e2_rare0p97_20260412_021252/`
+  - Qwen3: `logs/pose/pose_keypointrcnn_train20k_qwen3_bs4_e2_rare0p97_20260412_015524/`
+  - InternVL3: `logs/pose/pose_keypointrcnn_train20k_internvl3_bs4_e2_rare0p97_gpuX_20260412_015632/`
+  - BLIP: `logs/pose/pose_keypointrcnn_train20k_blip_bs8_e2_rare0p97_20260412_021252/`
 - On the held-out test split, the strongest AP came from the `BLIP`-tagged run (`0.6370`), closely followed by `InternVL3` (`0.6340`); `Qwen3` reached `0.5968`.
 - The clearest repeated failure slice across all three variants was `pose=lying`:
   - Qwen3: `AP=0.2796` (`delta=-0.3172`, `34` images)
@@ -3125,8 +3125,8 @@ Following the safefix2 paper (arXiv:2501.16751), we train baseline models for po
 **Split**: train=`train2017` + `person_keypoints_train2017.json`; val=`val2017` + `person_keypoints_val2017.json`; local test also uses `val2017` by COCO convention because official test ground truth is not public
 **Training**: 2 epochs, batch_size=2, lr schedule from torchvision defaults
 **GPU**: GPU 3 | **Env**: `ad` conda (torch 1.13.1+cu117)
-**Output**: `log_pose/pose_keypointrcnn_ad_gpu3_e2/`
-**Log**: `log_pose/pose_coco_pretrained_gpu3_ad_e2.log`
+**Output**: `logs/pose/pose_keypointrcnn_ad_gpu3_e2/`
+**Log**: `logs/pose/pose_coco_pretrained_gpu3_ad_e2.log`
 
 ### Per-Epoch Results (OKS-based COCO Keypoint Metrics)
 
@@ -3148,7 +3148,7 @@ Following the safefix2 paper (arXiv:2501.16751), we train baseline models for po
 **Checkpoint**: `rtmpose-tiny_simcc-coco_pt-aic-coco_420e-256x192-e613ba3f_20230127.pth`
 **Dataset**: COCO 2017 val2017 (794 batches)
 **GPU**: GPU 3 | **Env**: `ad` conda (mmengine + mmpose)
-**Log**: `log_pose/rtmpose_tiny_coco_gpu3_probe/20260403_131401/20260403_131401.log`
+**Log**: `logs/pose/rtmpose_tiny_coco_gpu3_probe/20260403_131401/20260403_131401.log`
 
 ### Evaluation Results (OKS-based COCO Keypoint Metrics)
 
@@ -3172,13 +3172,13 @@ Following the safefix2 paper (arXiv:2501.16751), we train baseline models for po
 
 ## 3. KITTI Object Detection — YOLOv8n (Updated 2026-04-09, Car/Pedestrian Split)
 
-**Model**: YOLOv8n (pretrained on COCO, `weights/yolov8n.pt`)
+**Model**: YOLOv8n (pretrained on COCO, `save/weights/yolov8n.pt`)
 **Dataset**: KITTI training split in deterministic filename order, converted to YOLO format with only `Car` and `Pedestrian`
 **Split**: first 5000 images for train, next 1240 for val, remaining 1241 for test
 **Implementation note**: all three splits are derived from the KITTI `training/` set in deterministic filename order, then exported to YOLO-format `images/{train,val,test}` and `labels/{train,val,test}`
 **Training**: 30 epochs, batch=4, imgsz=640, optimizer=`auto` -> AdamW (`lr=0.001667`, momentum=0.9)
 **GPU**: NVIDIA RTX A5000 | **Env**: Ultralytics 8.4.33, torch 2.9.1+cu128
-**Output**: `runs/kitti_yolov8/first5000_gpu1_e30_20260409_194735/`
+**Output**: `save/runs/kitti_yolov8/first5000_gpu1_e30_20260409_194735/`
 **Log**: `logs/yolov8_kitti_gpu1_e30_20260409_194735.log`
 
 ### Best Validation Checkpoint (Epoch 29)
@@ -3242,7 +3242,7 @@ These baselines are ready for error slice discovery and model debugging with saf
 # 3/13/2026 Update
 ## All-Strategy Comparison across Sub Ratios (lr=1e-5, 15 epochs)
 
-All runs resume from `weights/model_imagenet_resnet_base.pth` (base test acc: **0.7162**). The Attribute strategy uses the optimized `aggro_exp_p10_c4` parameters ($R=0.8, P=10.0, C=4.0$, Entropy=True). Reference: using 100% of the data (ratio=1.0) yields Test ACC = **0.7488**. The 3/13 update adds two new LLM-based attribute generation results (`Qwen3` and `InternVL3`) to compare alongside the default BLIP-based attribute assignment.
+All runs resume from `save/weights/model_imagenet_resnet_base.pth` (base test acc: **0.7162**). The Attribute strategy uses the optimized `aggro_exp_p10_c4` parameters ($R=0.8, P=10.0, C=4.0$, Entropy=True). Reference: using 100% of the data (ratio=1.0) yields Test ACC = **0.7488**. The 3/13 update adds two new LLM-based attribute generation results (`Qwen3` and `InternVL3`) to compare alongside the default BLIP-based attribute assignment.
 
 Within each ratio table, the highest `Test ACC` among all strategies is bolded.
 
@@ -3370,7 +3370,7 @@ Runs for sub_ratio = 0.01, 0.02, and 0.05 train ResNet-18 **from scratch** (no p
 
 ## Active Learning Resume-from-Base Comparison (lr=1e-5, 15 epochs)
 
-This table shows results from `test_al_resume.sh` with `freeze_backbone=False`, `lr=1e-5`, and `epoch=15`. All runs use `sub_ratio=0.3` and resume from `weights/model_imagenet_resnet_base.pth` (base val acc: **0.7223**).
+This table shows results from `test_al_resume.sh` with `freeze_backbone=False`, `lr=1e-5`, and `epoch=15`. All runs use `sub_ratio=0.3` and resume from `save/weights/model_imagenet_resnet_base.pth` (base val acc: **0.7223**).
 
 | Strategy | Model Test ACC | Overall Val ACC Change | Status |
 | :--- | :--- | :--- | :--- |
@@ -3458,7 +3458,7 @@ We conducted a comprehensive grid search over the parameters $R, P, C,$ and the 
 # 2/20/2026 Update
 ## Active Learning Resume-from-Base Comparison
 
-This table compares the test results generated by `test_al_resume.sh` against the provided baseline (`logs_imagenet/AL_attr_resume_base_resnet_imagenet_0.3_1000.log`). All tasks use `sub_ratio=0.3` and resume from the base model.
+This table compares the test results generated by `test_al_resume.sh` against the provided baseline (`logs/imagenet/AL_attr_resume_base_resnet_imagenet_0.3_1000.log`). All tasks use `sub_ratio=0.3` and resume from the base model.
 
 | Strategy | Model Test ACC | Val Accuracy Difference | Status |
 | :--- | :--- | :--- | :--- |

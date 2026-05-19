@@ -19,11 +19,11 @@ What this script does:
   - pins ratio 0.1 / 0.3 / 0.5 / 0.7 to GPU 0 / 1 / 2 / 3
   - in `all` mode, each GPU runs `random -> stratified -> coreset -> badge` sequentially
     for its own ratio
-  - writes logs to log_pose/
-  - writes PID files to log_pose/pids/
+  - writes logs to logs/pose/
+  - writes PID files to logs/pose/pids/
 
 Important epoch semantics:
-  - this script uses `train_pose_estimation.py train --resume-model`
+  - this script uses `pose_estimation/train_pose_estimation.py train --resume-model`
   - `--epochs-total` is the total epoch count seen by the trainer, not "extra epochs"
   - the current canonical qwen3 / internvl3 best checkpoints are saved at epoch 0
   - therefore the default `--epochs-total 2` means "run one additional epoch"
@@ -32,7 +32,7 @@ Options:
   --base-model PATH         Explicit base checkpoint to resume from.
   --base-source NAME        Auto-resolve canonical base checkpoint for `qwen3` or `internvl3`.
                             Default: qwen3
-  --epochs-total N          Total epoch count passed to `train_pose_estimation.py`. Default: 2
+  --epochs-total N          Total epoch count passed to `pose_estimation/train_pose_estimation.py`. Default: 2
   --python PATH             Python executable. Default: /people/cs/o/oxx220000/.conda/envs/ad/bin/python
   --data-root PATH          COCO root. Default: /data/oxx220000/coco
   --assigner NAME           Analysis source for post-train slice analysis (`qwen3`, `internvl3`, `blip`).
@@ -56,7 +56,7 @@ Examples:
   ./scripts/run_pose_resume_baselines.sh all
   ./scripts/run_pose_resume_baselines.sh stratified --dry-run
   ./scripts/run_pose_resume_baselines.sh badge --base-source internvl3
-  ./scripts/run_pose_resume_baselines.sh random --base-model log_pose/pose_keypointrcnn_train20k_qwen3_bs8_e2_rare1p1_20260415_144429/best.pth
+  ./scripts/run_pose_resume_baselines.sh random --base-model logs/pose/pose_keypointrcnn_train20k_qwen3_bs8_e2_rare1p1_20260415_144429/best.pth
 EOF
 }
 
@@ -245,12 +245,12 @@ resolve_default_base_model() {
 
   case "$BASE_SOURCE" in
     qwen3)
-      preferred="log_pose/pose_keypointrcnn_train20k_qwen3_bs8_e2_rare1p1_20260415_144429/best.pth"
-      fallback="log_pose/pose_keypointrcnn_train20k_qwen3*/best.pth"
+      preferred="logs/pose/pose_keypointrcnn_train20k_qwen3_bs8_e2_rare1p1_20260415_144429/best.pth"
+      fallback="logs/pose/pose_keypointrcnn_train20k_qwen3*/best.pth"
       ;;
     internvl3)
-      preferred="log_pose/pose_keypointrcnn_train20k_internvl3_bs8_e2_rare1p1_gpu0_20260415_144530/best.pth"
-      fallback="log_pose/pose_keypointrcnn_train20k_internvl3*/best.pth"
+      preferred="logs/pose/pose_keypointrcnn_train20k_internvl3_bs8_e2_rare1p1_gpu0_20260415_144530/best.pth"
+      fallback="logs/pose/pose_keypointrcnn_train20k_internvl3*/best.pth"
       ;;
   esac
 
@@ -279,7 +279,7 @@ if [[ ! -f "$BASE_MODEL" ]]; then
   exit 1
 fi
 
-mkdir -p log_pose/pids
+mkdir -p logs/pose/pids
 
 if [[ "$DETACH_CONTROLLER" -eq 1 ]]; then
   if [[ "$DRY_RUN" -eq 1 ]]; then
@@ -288,8 +288,8 @@ if [[ "$DETACH_CONTROLLER" -eq 1 ]]; then
   fi
 
   local_ts="$(date +%Y%m%d_%H%M%S)"
-  controller_log="log_pose/run_pose_resume_${BASE_SOURCE}_${STRATEGY}_${local_ts}.log"
-  controller_pid="log_pose/pids/run_pose_resume_${BASE_SOURCE}_${STRATEGY}_${local_ts}.pid"
+  controller_log="logs/pose/run_pose_resume_${BASE_SOURCE}_${STRATEGY}_${local_ts}.log"
+  controller_pid="logs/pose/pids/run_pose_resume_${BASE_SOURCE}_${STRATEGY}_${local_ts}.pid"
 
   detached_cmd=(
     bash "$0" "$STRATEGY"
@@ -389,16 +389,16 @@ launch_ratio() {
   local ts
   ts="$(date +%Y%m%d_%H%M%S)"
 
-  local logfile="log_pose/pose_resume_${BASE_SOURCE}_epoch${EPOCHS_TOTAL}_${strategy}_ratio${ratio}_gpu${gpu}_${ts}.log"
-  local pidfile="log_pose/pids/pose_resume_${BASE_SOURCE}_epoch${EPOCHS_TOTAL}_${strategy}_ratio${ratio}_gpu${gpu}_${ts}.pid"
-  local outdir="log_pose/pose_keypointrcnn_resume_${BASE_SOURCE}_${strategy}_ratio${ratio}_gpu${gpu}_${ts}"
+  local logfile="logs/pose/pose_resume_${BASE_SOURCE}_epoch${EPOCHS_TOTAL}_${strategy}_ratio${ratio}_gpu${gpu}_${ts}.log"
+  local pidfile="logs/pose/pids/pose_resume_${BASE_SOURCE}_epoch${EPOCHS_TOTAL}_${strategy}_ratio${ratio}_gpu${gpu}_${ts}.pid"
+  local outdir="logs/pose/pose_keypointrcnn_resume_${BASE_SOURCE}_${strategy}_ratio${ratio}_gpu${gpu}_${ts}"
   local delay_seconds="${GPU_START_DELAYS[$gpu]:-0}"
 
   local cmd=(
     env
     MPLCONFIGDIR=/tmp/matplotlib-safefix
     CUDA_VISIBLE_DEVICES="${gpu}"
-    "${PYTHON_EXE}" -u train_pose_estimation.py train
+    "${PYTHON_EXE}" -u pose_estimation/train_pose_estimation.py train
     --data-root "${DATA_ROOT}"
     --pretrained true
     --device cuda

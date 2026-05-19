@@ -11,7 +11,7 @@ FP_PYTHON="${FP_PYTHON:-/people/cs/o/oxx220000/.conda/envs/fp/bin/python}"
 
 KITTI_BASE_ROOT="${KITTI_BASE_ROOT:-/data/oxx220000/kitti_yolov8_first5000}"
 KITTI_GEN_DIR="${KITTI_GEN_DIR:-/data/oxx220000/kitti-weather-edits/generated_kitti1352_red_cloudy_icedit_upscaled}"
-KITTI_PROJECT="${KITTI_PROJECT:-runs/kitti_yolov8}"
+KITTI_PROJECT="${KITTI_PROJECT:-save/runs/kitti_yolov8}"
 KITTI_NUM_ADDED="${KITTI_NUM_ADDED:-1000}"
 KITTI_BATCH="${KITTI_BATCH:-16}"
 KITTI_IMGSZ="${KITTI_IMGSZ:-640}"
@@ -19,7 +19,7 @@ KITTI_WORKERS="${KITTI_WORKERS:-4}"
 SEED="${SEED:-42}"
 
 cd "${ROOT}"
-mkdir -p "${LOG_DIR}" "${MPLCONFIGDIR}" selection_exports
+mkdir -p "${LOG_DIR}" "${MPLCONFIGDIR}" save/selection_exports
 
 if [[ ! -x "${AD_PYTHON}" ]]; then
   AD_PYTHON="python"
@@ -80,7 +80,7 @@ run_imagenet_export() {
   local gpu="$1"
   local method="$2"
   local log_file="${LOG_DIR}/selection_export_imagenet_ratio0p05_${method}_gpu${gpu}_${STAMP}.log"
-  local out_file="selection_exports/ratio0p05/imagenet/${method}/selected_original_ids.txt"
+  local out_file="save/selection_exports/ratio0p05/imagenet/${method}/selected_original_ids.txt"
 
   if [[ -s "${out_file}" ]]; then
     echo "[$(date '+%F %T')] SKIP  imagenet ratio=0.05 method=${method} existing=${out_file}"
@@ -93,7 +93,7 @@ run_imagenet_export() {
     --ratio 0.05 \
     --method "${method}" \
     --gpu "${gpu}" \
-    --out-root selection_exports \
+    --out-root save/selection_exports \
     --batch-size 32 \
     --num-workers 4 > "${log_file}" 2>&1
   echo "[$(date '+%F %T')] DONE  imagenet ratio=0.05 method=${method} gpu=${gpu}"

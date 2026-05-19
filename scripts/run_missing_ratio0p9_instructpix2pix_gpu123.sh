@@ -11,13 +11,13 @@ IMAGENET_BASE_MODEL="save/models/model_imagenet_resnet_base.pth"
 IMAGENET_DATA_DIR="data/imagenet_subset"
 IMAGENET_GEN_DIR="data/pinkcolor_fabrictexture_instruct_pix2pix_seed42_1k"
 
-CELEBA_BASE_MODEL="weights/model_celeba_resnet_base.pth"
+CELEBA_BASE_MODEL="save/weights/model_celeba_resnet_base.pth"
 CELEBA_ATTRIBUTE_FILE="save/attribute_celeba_trainval_qwen3_8B.json"
 CELEBA_ATTRIBUTES="redhair_brownskin_sademotion"
 CELEBA_GEN_DIR="data/redhair_brownskin_sademotion_instruct_pix2pix_seed42_1k"
 
 cd "${ROOT}"
-mkdir -p logs logs_imagenet logs_celeba logs_celeba/pids
+mkdir -p logs logs/imagenet logs/celeba logs/celeba/pids
 
 if [[ ! -x "${PYTHON_EXE}" ]]; then
   PYTHON_EXE="python3"
@@ -52,7 +52,7 @@ run_imagenet_one() {
   local method="$2"
   local rpc_tag="${3:-}"
   local method_tag="${method}${rpc_tag:+_${rpc_tag}}"
-  local log="logs_imagenet/instructpix2pix_${method_tag}_resnet_imagenet_1000_ratio${RATIO_TAG}_gpu${gpu}_${STAMP}.log"
+  local log="logs/imagenet/instructpix2pix_${method_tag}_resnet_imagenet_1000_ratio${RATIO_TAG}_gpu${gpu}_${STAMP}.log"
 
   echo "[$(date '+%Y-%m-%d %H:%M:%S')] imagenet gpu=${gpu} ratio=${RATIO} method=${method_tag} log=${log}"
   if [[ -s "${log}" ]] && grep -q "Model Test ACC:" "${log}"; then
@@ -123,7 +123,7 @@ run_celeba_one() {
   local method="$2"
   local rpc_tag="${3:-}"
   local method_tag="${method}${rpc_tag:+_${rpc_tag}}"
-  local log="logs_celeba/instructpix2pix_${method_tag}_resnet_celeba_1000_ratio${RATIO_TAG}_gpu${gpu}_${STAMP}.log"
+  local log="logs/celeba/instructpix2pix_${method_tag}_resnet_celeba_1000_ratio${RATIO_TAG}_gpu${gpu}_${STAMP}.log"
 
   echo "[$(date '+%Y-%m-%d %H:%M:%S')] celeba gpu=${gpu} ratio=${RATIO} method=${method_tag} log=${log}"
   if [[ -s "${log}" ]] && grep -q "Model Test ACC:" "${log}"; then

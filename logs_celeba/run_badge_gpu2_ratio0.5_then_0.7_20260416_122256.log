@@ -1,4 +1,0 @@
-[launch] ratio=0.5 log=logs_celeba/resume_lr1e-5_epoch15_badge_resnet_celeba_1000_ratio0.5_gpu2_20260416_122257.log
-[done] ratio=0.5 status=0 log=logs_celeba/resume_lr1e-5_epoch15_badge_resnet_celeba_1000_ratio0.5_gpu2_20260416_122257.log
-[launch] ratio=0.7 log=logs_celeba/resume_lr1e-5_epoch15_badge_resnet_celeba_1000_ratio0.7_gpu2_20260416_123932.log
-Terminated

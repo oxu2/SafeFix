@@ -93,7 +93,7 @@ while [[ $# -gt 0 ]]; do
 done
 
 if [[ -z "$BASE_MODEL" ]]; then
-  BASE_MODEL="$REPO_DIR/weights/model_celeba_resnet_base.pth"
+  BASE_MODEL="$REPO_DIR/save/weights/model_celeba_resnet_base.pth"
 fi
 
 if [[ -z "$ATTRIBUTE_FILE" ]]; then
@@ -112,9 +112,9 @@ done
 SCRATCH_BASE="${SCRATCH:-$HOME/scratch}"
 JOB_ID="${SLURM_JOB_ID:-manual}"
 TIMESTAMP="$(date +%Y%m%d_%H%M%S)"
-RUN_ROOT="$SCRATCH_BASE/safefix_runs/celeba_ip2p_smoke_${JOB_ID}_${TIMESTAMP}"
+RUN_ROOT="$SCRATCH_BASE/safefix_save/runs/celeba_ip2p_smoke_${JOB_ID}_${TIMESTAMP}"
 RUN_REPO="$RUN_ROOT/safefix"
-PERSIST_LOG_DIR="$REPO_DIR/logs_celeba"
+PERSIST_LOG_DIR="$REPO_DIR/logs/celeba"
 
 mkdir -p "$RUN_ROOT" "$PERSIST_LOG_DIR"
 
@@ -137,11 +137,11 @@ if [[ "$DRY_RUN" -eq 0 ]]; then
     --exclude '.git/' \
     --exclude '__pycache__/' \
     --exclude '*.pyc' \
-    --exclude 'log_pose/' \
+    --exclude 'logs/pose/' \
     --exclude 'logs/' \
-    --exclude 'logs_celeba/' \
-    --exclude 'logs_imagenet/' \
-    --exclude 'runs/' \
+    --exclude 'logs/celeba/' \
+    --exclude 'logs/imagenet/' \
+    --exclude 'save/runs/' \
     --exclude 'outputs/' \
     --exclude 'data/img_align_celeba/' \
     --exclude 'data/redhair_brownskin_sademotion_instruct_pix2pix/' \
@@ -156,9 +156,9 @@ else
 fi
 
 cd "$RUN_REPO"
-mkdir -p logs_celeba save
+mkdir -p logs/celeba save
 
-LOG_FILE="$RUN_REPO/logs_celeba/juno_smoke_instructpix2pix_random_resnet_celeba_1000_ratio${RATIO//./p}_${TIMESTAMP}.log"
+LOG_FILE="$RUN_REPO/logs/celeba/juno_smoke_instructpix2pix_random_resnet_celeba_1000_ratio${RATIO//./p}_${TIMESTAMP}.log"
 
 cmd=(
   env
@@ -172,7 +172,7 @@ cmd=(
   --gen_image_dir "$GEN_DIR"
   --num_added_img 1000
   --num_epochs 1
-  --resume_model "$RUN_REPO/weights/model_celeba_resnet_base.pth"
+  --resume_model "$RUN_REPO/save/weights/model_celeba_resnet_base.pth"
   --freeze_backbone False
   --lr 1e-5
   --batch_size 64
@@ -204,7 +204,7 @@ set -e
 echo "alpred exit status: $status"
 echo "scratch log: $LOG_FILE"
 
-rsync -a "$RUN_REPO/logs_celeba/" "$PERSIST_LOG_DIR/"
+rsync -a "$RUN_REPO/logs/celeba/" "$PERSIST_LOG_DIR/"
 
 if [[ "$status" -ne 0 ]]; then
   echo "Smoke test failed; copied logs to $PERSIST_LOG_DIR" >&2

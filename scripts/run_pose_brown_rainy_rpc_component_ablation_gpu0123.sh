@@ -8,10 +8,10 @@ RATIO="${RATIO:-0.9}"
 RATIO_TAG="${RATIO//./p}"
 COCO_ROOT="${COCO_ROOT:-/data/oxx220000/coco}"
 GEN_DIR="${GEN_DIR:-/data/oxx220000/coco-pose-weather-edits/generated_coco_qwen3_1500_brown_rain_icedit}"
-BASE_MODEL="${BASE_MODEL:-log_pose/pose_keypointrcnn_train20k_internvl3_bs8_e2_rare1p1_gpu0_20260415_144530/best.pth}"
+BASE_MODEL="${BASE_MODEL:-logs/pose/pose_keypointrcnn_train20k_internvl3_bs8_e2_rare1p1_gpu0_20260415_144530/best.pth}"
 ATTRIBUTE_FILE="${ATTRIBUTE_FILE:-save/attribute_coco_pose_gemini_train20k_qwen3_8B.json}"
-LOG_DIR="log_pose"
-PID_DIR="log_pose/pids"
+LOG_DIR="logs/pose"
+PID_DIR="logs/pose/pids"
 DRY_RUN="${DRY_RUN:-0}"
 INCLUDE_ANCHOR="${INCLUDE_ANCHOR:-0}"
 
@@ -36,7 +36,7 @@ run_one() {
   local log="${LOG_DIR}/pose_qwen3_brown_rainy_rpc_ablation_${tag}_ratio${RATIO_TAG}_gpu${gpu}_${STAMP}.log"
 
   local -a args=(
-    -u train_pose_estimation.py train
+    -u pose_estimation/train_pose_estimation.py train
     --data-root "${COCO_ROOT}"
     --pretrained true
     --device cuda

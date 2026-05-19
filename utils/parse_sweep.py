@@ -1,7 +1,7 @@
 import glob
 import re
 
-log_files = glob.glob("logs_imagenet/resume_lr5_epoch15_*_ratio*.log")
+log_files = glob.glob("logs/imagenet/resume_lr5_epoch15_*_ratio*.log")
 results = {}
 
 strategies_order = [

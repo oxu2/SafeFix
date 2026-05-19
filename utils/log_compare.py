@@ -31,7 +31,7 @@ args = parser.parse_args()
 
 # Select log directory based on dataset
 if args.dataset == 'imagenet':
-    log_dir = 'logs_imagenet'
+    log_dir = 'logs/imagenet'
 else:
     log_dir = 'logs'
 
@@ -82,7 +82,7 @@ for num in nums:
     
     if args.dataset == 'imagenet':
         safefix_log = f"{log_dir}/simple_{args.model}_{attr_part}_{num}imgs.log"
-        # example: logs_imagenet/safefix_resnet_simple_pinkcolor_fabrictexture_1000imgs.log
+        # example: logs/imagenet/safefix_resnet_simple_pinkcolor_fabrictexture_1000imgs.log
         print(f"safefix log: {safefix_log}")
     else:
         safefix_log = f"{log_dir}/safefix_{args.model}_simple_{num}imgs_last.log"

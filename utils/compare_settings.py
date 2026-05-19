@@ -10,7 +10,7 @@ def compare_settings():
     settings_comparison = {
         'Parameter': ['batch_size', 'learning_rate', 'num_epochs', 'initial_labeled_size', 'al_rounds', 'samples_per_round'],
         'Bash Script (run_active_learning.sh)': [32, '1e-4', 10, 1000, 5, 500],
-        'Python Demo (tests/demo_active_learning.py)': [16, '1e-4', 5, 500, 3, 200],
+        'Python Demo (utils/tests/demo_active_learning.py)': [16, '1e-4', 5, 500, 3, 200],
         'Enhanced AL (enhanced_active_learning.py)': [16, '1e-4', 3, 300, 3, 100]
     }
     
@@ -19,7 +19,7 @@ def compare_settings():
     
     for i, param in enumerate(settings_comparison['Parameter']):
         bash_val = settings_comparison['Bash Script (run_active_learning.sh)'][i]
-        demo_val = settings_comparison['Python Demo (tests/demo_active_learning.py)'][i] 
+        demo_val = settings_comparison['Python Demo (utils/tests/demo_active_learning.py)'][i] 
         enhanced_val = settings_comparison['Enhanced AL (enhanced_active_learning.py)'][i]
         
         print(f"{param:<20} {bash_val:<15} {demo_val:<15} {enhanced_val:<15}")

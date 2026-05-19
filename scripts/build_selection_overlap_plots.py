@@ -67,7 +67,7 @@ def read_selection_exports(path: Path) -> dict[str, set[str]] | None:
     if dataset is None or ratio_tag is None:
         return None
 
-    root = Path("selection_exports") / ratio_tag / dataset
+    root = Path("save/selection_exports") / ratio_tag / dataset
     if not root.exists():
         return None
 
@@ -86,7 +86,7 @@ def read_selection_exports(path: Path) -> dict[str, set[str]] | None:
 def read_selections(path: Path) -> tuple[dict[str, set[str]], str]:
     exported = read_selection_exports(path)
     if exported is not None:
-        return exported, "selection_exports"
+        return exported, "save/selection_exports"
     return read_selection_columns(path), "t-SNE CSV"
 
 

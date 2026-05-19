@@ -9,17 +9,17 @@ DRY_RUN="${DRY_RUN:-0}"
 RATIOS="${RATIOS:-0.1 0.3 0.5 0.7 0.9}"
 TAGS="${TAGS:-none only_r only_p only_c no_r no_p no_c anchor}"
 
-IMAGENET_BASE_MODEL="${IMAGENET_BASE_MODEL:-weights/model_imagenet_resnet_base.pth}"
+IMAGENET_BASE_MODEL="${IMAGENET_BASE_MODEL:-save/weights/model_imagenet_resnet_base.pth}"
 IMAGENET_ATTRIBUTE_FILE="${IMAGENET_ATTRIBUTE_FILE:-save/attribute10_internvl3_8B.json}"
 IMAGENET_GEN_DIR="${IMAGENET_GEN_DIR:-data/imagenet_pinkcolor_fabrictexture}"
 IMAGENET_DATA_DIR="${IMAGENET_DATA_DIR:-data/imagenet_subset}"
-IMAGENET_LOG_DIR="${IMAGENET_LOG_DIR:-logs_imagenet}"
+IMAGENET_LOG_DIR="${IMAGENET_LOG_DIR:-logs/imagenet}"
 
 COCO_ROOT="${COCO_ROOT:-/data/oxx220000/coco}"
 COCO_GEN_DIR="${COCO_GEN_DIR:-/data/oxx220000/coco-pose-weather-edits/generated_coco_qwen3_1500_brown_rain_icedit}"
-COCO_BASE_MODEL="${COCO_BASE_MODEL:-log_pose/pose_keypointrcnn_train20k_internvl3_bs8_e2_rare1p1_gpu0_20260415_144530/best.pth}"
+COCO_BASE_MODEL="${COCO_BASE_MODEL:-logs/pose/pose_keypointrcnn_train20k_internvl3_bs8_e2_rare1p1_gpu0_20260415_144530/best.pth}"
 COCO_ATTRIBUTE_FILE="${COCO_ATTRIBUTE_FILE:-save/attribute_coco_pose_gemini_train20k_qwen3_8B.json}"
-COCO_LOG_DIR="${COCO_LOG_DIR:-log_pose}"
+COCO_LOG_DIR="${COCO_LOG_DIR:-logs/pose}"
 
 PID_DIR="${PID_DIR:-logs}"
 
@@ -174,7 +174,7 @@ run_coco_one() {
   extra_scale="$(awk -v ratio="${ratio}" 'BEGIN { printf "%.6g", 1.0 / ratio }')"
 
   local -a args=(
-    -u train_pose_estimation.py train
+    -u pose_estimation/train_pose_estimation.py train
     --data-root "${COCO_ROOT}"
     --pretrained true
     --device cuda

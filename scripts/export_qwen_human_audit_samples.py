@@ -159,7 +159,7 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--n", type=int, default=100)
     parser.add_argument("--seed", type=int, default=20260506)
-    parser.add_argument("--out-dir", type=Path, default=REPO_ROOT / "bxz/qwen_human_audit")
+    parser.add_argument("--out-dir", type=Path, default=REPO_ROOT / "docs/bxz/qwen_human_audit")
     image_group = parser.add_mutually_exclusive_group()
     image_group.add_argument("--copy-images", dest="copy_images", action="store_true")
     image_group.add_argument("--no-copy-images", dest="copy_images", action="store_false")

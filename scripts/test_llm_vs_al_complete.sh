@@ -29,7 +29,7 @@ CUDA_VISIBLE_DEVICES=0 nohup python -u alpred.py \
   --sub_ratio $SUB_RATIO \
   --seed $SEED \
   --verbose True \
-  > logs_imagenet/LLM_qwen_diversity_difficulty_${MODEL}_${DATASET}_${NUM_IMGS}.log 2>&1 < /dev/null &
+  > logs/imagenet/LLM_qwen_diversity_difficulty_${MODEL}_${DATASET}_${NUM_IMGS}.log 2>&1 < /dev/null &
 
 # Test 2: LLM Diversity Strategy  
 echo "2. LLM Diversity Strategy (Qwen)"
@@ -42,7 +42,7 @@ CUDA_VISIBLE_DEVICES=1 nohup python -u alpred.py \
   --sub_ratio $SUB_RATIO \
   --seed $SEED \
   --verbose True \
-  > logs_imagenet/LLM_qwen_diversity_${MODEL}_${DATASET}_${NUM_IMGS}.log 2>&1 < /dev/null &
+  > logs/imagenet/LLM_qwen_diversity_${MODEL}_${DATASET}_${NUM_IMGS}.log 2>&1 < /dev/null &
 
 # Test 3: LLM Difficulty Strategy
 echo "3. LLM Difficulty Strategy (Qwen)"  
@@ -55,7 +55,7 @@ CUDA_VISIBLE_DEVICES=2 nohup python -u alpred.py \
   --sub_ratio $SUB_RATIO \
   --seed $SEED \
   --verbose True \
-  > logs_imagenet/LLM_qwen_difficulty_${MODEL}_${DATASET}_${NUM_IMGS}.log 2>&1 < /dev/null &
+  > logs/imagenet/LLM_qwen_difficulty_${MODEL}_${DATASET}_${NUM_IMGS}.log 2>&1 < /dev/null &
 
 # Test 4: Traditional Active Learning (Core-set)
 echo "4. Traditional Active Learning (Core-set)"
@@ -69,7 +69,7 @@ CUDA_VISIBLE_DEVICES=3 nohup python -u alpred.py \
   --sub_ratio $SUB_RATIO \
   --seed $SEED \
   --verbose True \
-  > logs_imagenet/AL_coreset_${MODEL}_${DATASET}_${NUM_IMGS}.log 2>&1 < /dev/null &
+  > logs/imagenet/AL_coreset_${MODEL}_${DATASET}_${NUM_IMGS}.log 2>&1 < /dev/null &
 
 echo ""
 echo "Waiting for first batch to complete..."
@@ -86,7 +86,7 @@ CUDA_VISIBLE_DEVICES=0 nohup python -u alpred.py \
   --sub_ratio $SUB_RATIO \
   --seed $SEED \
   --verbose True \
-  > logs_imagenet/LLM_qwen_random_${MODEL}_${DATASET}_${NUM_IMGS}.log 2>&1 < /dev/null &
+  > logs/imagenet/LLM_qwen_random_${MODEL}_${DATASET}_${NUM_IMGS}.log 2>&1 < /dev/null &
 
 # Test 6: Pure Random Selection (Control)
 echo "6. Pure Random Selection (Control)"
@@ -97,7 +97,7 @@ CUDA_VISIBLE_DEVICES=1 nohup python -u alpred.py \
   --sub_ratio $SUB_RATIO \
   --seed $SEED \
   --verbose True \
-  > logs_imagenet/Random_${MODEL}_${DATASET}_${NUM_IMGS}.log 2>&1 < /dev/null &
+  > logs/imagenet/Random_${MODEL}_${DATASET}_${NUM_IMGS}.log 2>&1 < /dev/null &
 
 # Test 7: LLaVA Model for comparison
 echo "7. LLM with LLaVA-7B Model"
@@ -110,7 +110,7 @@ CUDA_VISIBLE_DEVICES=2 nohup python -u alpred.py \
   --sub_ratio $SUB_RATIO \
   --seed $SEED \
   --verbose True \
-  > logs_imagenet/LLM_llava_diversity_difficulty_${MODEL}_${DATASET}_${NUM_IMGS}.log 2>&1 < /dev/null &
+  > logs/imagenet/LLM_llava_diversity_difficulty_${MODEL}_${DATASET}_${NUM_IMGS}.log 2>&1 < /dev/null &
 
 echo ""
 echo "All experiments started!"
@@ -124,4 +124,4 @@ echo "5. LLM Random"
 echo "6. Pure Random (worst)"
 echo ""
 echo "Monitor logs with:"
-echo "tail -f logs_imagenet/LLM_qwen_diversity_difficulty_${MODEL}_${DATASET}_${NUM_IMGS}.log"
+echo "tail -f logs/imagenet/LLM_qwen_diversity_difficulty_${MODEL}_${DATASET}_${NUM_IMGS}.log"

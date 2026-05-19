@@ -90,16 +90,16 @@ def method_logs() -> dict[str, dict[str, Path]]:
     for ratio in RATIOS:
         rp = ratio_tag(ratio)
         logs[ratio] = {
-            "Random": Path(f"logs/logs_imagenet/resume_lr5_epoch15_random_resnet_imagenet_1000_ratio{ratio}.log"),
-            "Stratified": Path(f"logs/logs_imagenet/resume_lr5_epoch15_stratified_resnet_imagenet_1000_ratio{ratio}.log"),
-            "Entropy": Path(f"logs/logs_imagenet/resume_lr5_epoch15_uncertainty_stratified_resnet_imagenet_1000_ratio{ratio}.log"),
-            "CoreSet": Path(f"logs/logs_imagenet/resume_lr5_epoch15_coreset_resnet_imagenet_1000_ratio{ratio}.log"),
-            "BADGE": Path(f"logs_imagenet/instructpix2pix_badge_resnet_imagenet_1000_ratio{rp}_gpu{badge_gpu(ratio)}_{badge_stamp(ratio)}.log"),
-            "PPAL": Path(f"logs_imagenet/ppal_resnet_imagenet_1000_ratio{rp}_gpu3_20260502_185507.log"),
-            "UHerding": Path(f"logs_imagenet/uherding_resnet_imagenet_1000_ratio{rp}_gpu1_20260502_140255.log"),
+            "Random": Path(f"logs/logs/imagenet/resume_lr5_epoch15_random_resnet_imagenet_1000_ratio{ratio}.log"),
+            "Stratified": Path(f"logs/logs/imagenet/resume_lr5_epoch15_stratified_resnet_imagenet_1000_ratio{ratio}.log"),
+            "Entropy": Path(f"logs/logs/imagenet/resume_lr5_epoch15_uncertainty_stratified_resnet_imagenet_1000_ratio{ratio}.log"),
+            "CoreSet": Path(f"logs/logs/imagenet/resume_lr5_epoch15_coreset_resnet_imagenet_1000_ratio{ratio}.log"),
+            "BADGE": Path(f"logs/imagenet/instructpix2pix_badge_resnet_imagenet_1000_ratio{rp}_gpu{badge_gpu(ratio)}_{badge_stamp(ratio)}.log"),
+            "PPAL": Path(f"logs/imagenet/ppal_resnet_imagenet_1000_ratio{rp}_gpu3_20260502_185507.log"),
+            "UHerding": Path(f"logs/imagenet/uherding_resnet_imagenet_1000_ratio{rp}_gpu1_20260502_140255.log"),
             "Attribute": attribute_log_for_ratio(ratio),
         }
-    logs["0.9"]["BADGE"] = Path("logs_imagenet/badge_resnet_imagenet_1000_ratio0p9_gpu1_20260504_004831.log")
+    logs["0.9"]["BADGE"] = Path("logs/imagenet/badge_resnet_imagenet_1000_ratio0p9_gpu1_20260504_004831.log")
     return logs
 
 
@@ -113,11 +113,11 @@ def badge_stamp(ratio: str) -> str:
 
 def attribute_log_for_ratio(ratio: str) -> Path:
     return {
-        "0.1": Path("logs_imagenet/controlnet_rpc8_no_r_resnet_imagenet_1000_ratio0p1_gpu3_20260501_231910.log"),
-        "0.3": Path("logs_imagenet/controlnet_rpc8_noentropy_only_c_resnet_imagenet_1000_ratio0p3_gpu3_20260502_023905.log"),
-        "0.5": Path("logs_imagenet/controlnet_rpc8_noentropy_none_resnet_imagenet_1000_ratio0p5_gpu3_20260502_023905.log"),
-        "0.7": Path("logs_imagenet/controlnet_rpc_numeric_r003_p05_cinf_resnet_imagenet_1000_ratio0p7_gpu3_20260504_120159.log"),
-        "0.9": Path("logs_imagenet/controlnet_rpc8_only_p_resnet_imagenet_1000_ratio0p9_gpu3_20260501_231910.log"),
+        "0.1": Path("logs/imagenet/controlnet_rpc8_no_r_resnet_imagenet_1000_ratio0p1_gpu3_20260501_231910.log"),
+        "0.3": Path("logs/imagenet/controlnet_rpc8_noentropy_only_c_resnet_imagenet_1000_ratio0p3_gpu3_20260502_023905.log"),
+        "0.5": Path("logs/imagenet/controlnet_rpc8_noentropy_none_resnet_imagenet_1000_ratio0p5_gpu3_20260502_023905.log"),
+        "0.7": Path("logs/imagenet/controlnet_rpc_numeric_r003_p05_cinf_resnet_imagenet_1000_ratio0p7_gpu3_20260504_120159.log"),
+        "0.9": Path("logs/imagenet/controlnet_rpc8_only_p_resnet_imagenet_1000_ratio0p9_gpu3_20260501_231910.log"),
     }[ratio]
 
 

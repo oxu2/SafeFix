@@ -88,7 +88,7 @@ def parse_args():
         "--resume-model",
         type=Path,
         default=Path(
-            "runs/kitti_yolov8/"
+            "save/runs/kitti_yolov8/"
             "first5000_1240val_1241test_gpu0_bs16_e30_20260429_012232/"
             "weights/best.pt"
         ),
@@ -318,7 +318,7 @@ def parse_args():
         default=1.0,
         help="Short warmup for resume fine-tuning.",
     )
-    parser.add_argument("--project", type=str, default="runs/kitti_yolov8")
+    parser.add_argument("--project", type=str, default="save/runs/kitti_yolov8")
     parser.add_argument(
         "--name",
         type=str,
@@ -1236,7 +1236,7 @@ def train_yolov8(args, data_yaml: Path):
         batch=args.batch,
         device=args.device,
         workers=args.workers,
-        project=args.project,
+        project=str(Path(args.project).resolve()),
         name=run_name,
         seed=args.seed,
         plots=args.plots,
@@ -1271,7 +1271,7 @@ def train_yolov8(args, data_yaml: Path):
             batch=args.batch,
             device=args.device,
             workers=args.workers,
-            project=args.project,
+            project=str(Path(args.project).resolve()),
             name=f"{run_name}_test",
         )
         test_elapsed = time.time() - test_start_time

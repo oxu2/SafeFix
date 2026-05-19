@@ -9,7 +9,7 @@ SafeFix COCO pose experiments.
   environment under the PI group path `/groups/yguo/oxx220000/conda/envs/ad`.
 - Use `~/scratch` for heavy batch-job I/O. Copy COCO and generated images from
   scratch at the start of a SLURM job, run there, then write logs/results under
-  `~/work/safefix/log_pose/`.
+  `~/work/safefix/logs/pose/`.
 - Run GPU work through SLURM, not direct `nohup` from the login node.
 - Current Juno GPU partitions observed with `sinfo` on 2026-04-28:
   - `h100`: physical H100, 80 GB or 94 GB VRAM.
@@ -145,7 +145,7 @@ Juno state checked on 2026-04-29 is:
     `152d2d415ac8c5de12bd64f6cae4515b77a1e9ece158604d12068b4baa6af6ab`
 - The CelebA resume checkpoint is present:
   - path:
-    `/home/oxx220000/work/safefix/weights/model_celeba_resnet_base.pth`
+    `/home/oxx220000/work/safefix/save/weights/model_celeba_resnet_base.pth`
   - size: `2.7M`
   - SHA-256:
     `dafdd2481587604df6e32f614ad9c42df8c165c6a6bce9e568bddd6814916dc0`
@@ -164,12 +164,12 @@ Important path caveat:
 ```bash
 --data_dir /home/oxx220000/scratch/safefix_cache/data/img_align_celeba \
 --gen_image_dir /home/oxx220000/scratch/safefix_cache/data/redhair_brownskin_sademotion_instruct_pix2pix_seed42_1k \
---resume_model weights/model_celeba_resnet_base.pth \
+--resume_model save/weights/model_celeba_resnet_base.pth \
 --attribute_file save/attribute_celeba_trainval_qwen3_8B.json
 ```
 
 The original base-run log is not currently present on Juno. This is not a
-blocker for loading `weights/model_celeba_resnet_base.pth`; it only means helper
+blocker for loading `save/weights/model_celeba_resnet_base.pth`; it only means helper
 code may not recover the base test accuracy from a local log.
 
 One-epoch GPU smoke test:
@@ -181,8 +181,8 @@ One-epoch GPU smoke test:
   using the scratch cached
   `redhair_brownskin_sademotion_instruct_pix2pix_seed42_1k` generated subset.
 - The script stages a runnable repo copy under
-  `$HOME/scratch/safefix_runs/celeba_ip2p_smoke_${SLURM_JOB_ID}_${TIMESTAMP}`
-  and runs from that scratch copy so run-time `save/` and `logs_celeba/` writes
+  `$HOME/scratch/safefix_save/runs/celeba_ip2p_smoke_${SLURM_JOB_ID}_${TIMESTAMP}`
+  and runs from that scratch copy so run-time `save/` and `logs/celeba/` writes
   happen under scratch.
 - Submitted on 2026-04-29 as SLURM job `185848`; initial state was
   `PENDING (Resources)` on `h100`.
@@ -207,7 +207,7 @@ The following are required beyond a normal `git clone`:
    - Download on Juno from Hugging Face dataset
      `BZNR3/coco-pose-weather-edits`.
    - Size observed on UTD: about `1.0G`
-   - Used by `train_pose_estimation.py` when `--attribute rainy` is set.
+   - Used by `pose_estimation/train_pose_estimation.py` when `--attribute rainy` is set.
 
 3. COCO pose generated brown-rainy images:
    - Juno path:
@@ -218,7 +218,7 @@ The following are required beyond a normal `git clone`:
    - Current experiment policy: keep this full directory intact, but append
      only `1000` generated images per run, sampled deterministically with
      `--seed 42`.
-   - Used by `train_pose_estimation.py` when `--attribute brown_rainy` is set.
+   - Used by `pose_estimation/train_pose_estimation.py` when `--attribute brown_rainy` is set.
    - Attribute selection for this setting uses exact metadata keys and values:
      - `clothes_color=brown`
      - `weather=rainy`
@@ -239,16 +239,16 @@ The following are required beyond a normal `git clone`:
      - `weather`: includes `rainy`
 
 6. Resume checkpoint, only if you want to resume from the current UTD run:
-   - `log_pose/pose_keypointrcnn_train20k_internvl3_bs8_e2_rare1p1_gpu0_20260415_144530/best.pth`
-   - `.gitignore` ignores `*.pth` and most of `log_pose/`, so this checkpoint
+   - `logs/pose/pose_keypointrcnn_train20k_internvl3_bs8_e2_rare1p1_gpu0_20260415_144530/best.pth`
+   - `.gitignore` ignores `*.pth` and most of `logs/pose/`, so this checkpoint
      will not move with Git.
-   - Current migration policy: do not copy `log_pose` output folders or
+   - Current migration policy: do not copy `logs/pose` output folders or
      checkpoints by default. If the checkpoint is not copied, pass another
      `--base-model` path on Juno or rerun the base model there first.
 
 7. Existing experiment logs:
-   - Top-level `log_pose/*.log` are unignored by `.gitignore`, but nested
-     output directories under `log_pose/pose_keypointrcnn_*` are ignored.
+   - Top-level `logs/pose/*.log` are unignored by `.gitignore`, but nested
+     output directories under `logs/pose/pose_keypointrcnn_*` are ignored.
    - Copy only log files for this migration. Do not copy nested output folders,
      PID files, checkpoints, metrics JSONs, or predictions unless a specific run
      must be resumed or inspected.
@@ -317,8 +317,8 @@ rsync -av \
   --exclude '.git/' \
   --exclude '__pycache__/' \
   --exclude '*.pyc' \
-  --exclude 'log_pose/' \
-  --exclude 'runs/' \
+  --exclude 'logs/pose/' \
+  --exclude 'save/runs/' \
   --exclude 'outputs/' \
   ./ juno:~/work/safefix/
 ```
@@ -373,17 +373,17 @@ Use rsync only for selected logs:
 
 ```bash
 rsync -aP --include '*/' --include '*.log' --exclude '*' \
-  /people/cs/o/oxx220000/safefix/log_pose/ \
-  juno:~/work/safefix/log_pose/
+  /people/cs/o/oxx220000/safefix/logs/pose/ \
+  juno:~/work/safefix/logs/pose/
 ```
 
 If you later decide that the current resume checkpoint is required, copy only
-that checkpoint, not the full `log_pose` output tree:
+that checkpoint, not the full `logs/pose` output tree:
 
 ```bash
 rsync -aP \
-  /people/cs/o/oxx220000/safefix/log_pose/pose_keypointrcnn_train20k_internvl3_bs8_e2_rare1p1_gpu0_20260415_144530/best.pth \
-  juno:~/work/safefix/log_pose/pose_keypointrcnn_train20k_internvl3_bs8_e2_rare1p1_gpu0_20260415_144530/best.pth
+  /people/cs/o/oxx220000/safefix/logs/pose/pose_keypointrcnn_train20k_internvl3_bs8_e2_rare1p1_gpu0_20260415_144530/best.pth \
+  juno:~/work/safefix/logs/pose/pose_keypointrcnn_train20k_internvl3_bs8_e2_rare1p1_gpu0_20260415_144530/best.pth
 ```
 
 ## Conda Environment
@@ -457,8 +457,8 @@ Current Juno `ad` state after the April 28 sync:
 ```bash
 cd ~/work/safefix
 /groups/yguo/oxx220000/conda/envs/ad/bin/python -c 'from utils.imports import *; print("utils.imports ok")'
-/groups/yguo/oxx220000/conda/envs/ad/bin/python -m py_compile train_pose_estimation.py utils/imports.py utils/active_learning.py
-/groups/yguo/oxx220000/conda/envs/ad/bin/python train_pose_estimation.py train --help
+/groups/yguo/oxx220000/conda/envs/ad/bin/python -m py_compile pose_estimation/train_pose_estimation.py utils/imports.py utils/active_learning.py
+/groups/yguo/oxx220000/conda/envs/ad/bin/python pose_estimation/train_pose_estimation.py train --help
 bash scripts/juno_pose_brown_rainy_attribute.sbatch --ratio 0.05 --dry-run --no-scratch-copy
 ```
 
@@ -519,7 +519,7 @@ generated set as `clothes_color:brown` plus `weather:rainy`:
 
 ```bash
 sbatch scripts/juno_pose_brown_rainy_attribute.sbatch \
-  --base-model ~/work/safefix/log_pose/pose_keypointrcnn_train20k_internvl3_bs8_e2_rare1p1_gpu0_20260415_144530/best.pth
+  --base-model ~/work/safefix/logs/pose/pose_keypointrcnn_train20k_internvl3_bs8_e2_rare1p1_gpu0_20260415_144530/best.pth
 ```
 
 If the Juno scratch cache already exists, prefer reading it directly and do not
@@ -528,7 +528,7 @@ copy the dataset again for each job. The cache is currently:
 ```text
 ~/scratch/safefix_cache/data/coco
 ~/scratch/safefix_cache/data/coco-pose-weather-edits/generated_coco_qwen3_1500_brown_rain_icedit
-~/scratch/safefix_cache/log_pose/pose_keypointrcnn_train20k_internvl3_bs8_e2_rare1p1_gpu0_20260415_144530/best.pth
+~/scratch/safefix_cache/logs/pose/pose_keypointrcnn_train20k_internvl3_bs8_e2_rare1p1_gpu0_20260415_144530/best.pth
 ```
 
 Use `--no-scratch-copy` with those paths:
@@ -538,7 +538,7 @@ sbatch scripts/juno_pose_brown_rainy_attribute.sbatch \
   --ratio 0.1 \
   --data-root ~/scratch/safefix_cache/data/coco \
   --generated-dir ~/scratch/safefix_cache/data/coco-pose-weather-edits/generated_coco_qwen3_1500_brown_rain_icedit \
-  --base-model ~/scratch/safefix_cache/log_pose/pose_keypointrcnn_train20k_internvl3_bs8_e2_rare1p1_gpu0_20260415_144530/best.pth \
+  --base-model ~/scratch/safefix_cache/logs/pose/pose_keypointrcnn_train20k_internvl3_bs8_e2_rare1p1_gpu0_20260415_144530/best.pth \
   --no-scratch-copy
 ```
 

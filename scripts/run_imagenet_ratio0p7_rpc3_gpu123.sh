@@ -4,14 +4,14 @@ set -euo pipefail
 
 ROOT="/people/cs/o/oxx220000/safefix"
 PYTHON_EXE="${PYTHON_EXE:-/people/cs/o/oxx220000/.conda/envs/ad/bin/python}"
-BASE_MODEL="${BASE_MODEL:-weights/model_imagenet_resnet_base.pth}"
+BASE_MODEL="${BASE_MODEL:-save/weights/model_imagenet_resnet_base.pth}"
 ATTRIBUTE_FILE="${ATTRIBUTE_FILE:-save/attribute10_internvl3_8B.json}"
 GEN_DIR="${GEN_DIR:-data/imagenet_pinkcolor_fabrictexture}"
 DATA_DIR="${DATA_DIR:-data/imagenet_subset}"
 STAMP="${STAMP:-$(date +%Y%m%d_%H%M%S)}"
 
 cd "${ROOT}"
-mkdir -p logs logs_imagenet
+mkdir -p logs logs/imagenet
 
 rpc_params() {
   local rpc="$1"
@@ -31,7 +31,7 @@ run_one() {
   local rpc="$2"
   local rarity penalty class_balance log
   read -r rarity penalty class_balance < <(rpc_params "${rpc}")
-  log="logs_imagenet/controlnet_rpc_numeric_${rpc}_resnet_imagenet_1000_ratio0p7_gpu${gpu}_${STAMP}.log"
+  log="logs/imagenet/controlnet_rpc_numeric_${rpc}_resnet_imagenet_1000_ratio0p7_gpu${gpu}_${STAMP}.log"
 
   echo "[run] gpu=${gpu} ratio=0.7 rpc=${rpc} R=${rarity} P=${penalty} C=${class_balance} log=${log}"
   CUDA_VISIBLE_DEVICES="${gpu}" "${PYTHON_EXE}" -u alpred.py \

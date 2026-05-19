@@ -9,7 +9,7 @@ results = {}
 for ratio in ratios:
     results[ratio] = {}
     for model_key, model_name in models.items():
-        log_file = f"logs_imagenet/aggro_p10_c4_{model_key}_ratio{ratio}.log"
+        log_file = f"logs/imagenet/aggro_p10_c4_{model_key}_ratio{ratio}.log"
         if not os.path.exists(log_file):
             results[ratio][model_name] = {"test_acc": "N/A", "val_acc": "N/A"}
             continue

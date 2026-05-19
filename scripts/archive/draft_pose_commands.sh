@@ -1,9 +1,9 @@
-mkdir -p log_pose && \
+mkdir -p logs/pose && \
 ts=$(date +%Y%m%d_%H%M%S) && \
 suffix="blip_bs8_e2_rare0p97" && \
-outdir="log_pose/pose_keypointrcnn_train20k_${suffix}_${ts}" && \
-logfile="log_pose/pose_train20k_${suffix}_${ts}.log" && \
-CUDA_VISIBLE_DEVICES=0 nohup python -u train_pose_estimation.py train \
+outdir="logs/pose/pose_keypointrcnn_train20k_${suffix}_${ts}" && \
+logfile="logs/pose/pose_train20k_${suffix}_${ts}.log" && \
+CUDA_VISIBLE_DEVICES=0 nohup python -u pose_estimation/train_pose_estimation.py train \
   --output-dir "${outdir}" \
   --assigner blip \
   --analysis-rare-label-threshold 0.97 \
@@ -11,12 +11,12 @@ CUDA_VISIBLE_DEVICES=0 nohup python -u train_pose_estimation.py train \
 
 
 
-mkdir -p log_pose && \
+mkdir -p logs/pose && \
 ts=$(date +%Y%m%d_%H%M%S) && \
 suffix="qwen3_bs4_e2_rare0p97" && \
-outdir="log_pose/pose_keypointrcnn_train20k_${suffix}_${ts}" && \
-logfile="log_pose/pose_train20k_${suffix}_${ts}.log" && \
-CUDA_VISIBLE_DEVICES=1 nohup python -u train_pose_estimation.py train \
+outdir="logs/pose/pose_keypointrcnn_train20k_${suffix}_${ts}" && \
+logfile="logs/pose/pose_train20k_${suffix}_${ts}.log" && \
+CUDA_VISIBLE_DEVICES=1 nohup python -u pose_estimation/train_pose_estimation.py train \
   --data-root /data/oxx220000/coco \
   --pretrained true \
   --device cuda \
@@ -39,12 +39,12 @@ CUDA_VISIBLE_DEVICES=1 nohup python -u train_pose_estimation.py train \
   --analysis-rare-label-threshold 0.97 \
   > "${logfile}" 2>&1 & echo "${logfile}"
 
-mkdir -p log_pose && \
+mkdir -p logs/pose && \
 ts=$(date +%Y%m%d_%H%M%S) && \
 suffix="internvl3_bs4_e2_rare0p97_gpuX" && \
-outdir="log_pose/pose_keypointrcnn_train20k_${suffix}_${ts}" && \
-logfile="log_pose/pose_train20k_${suffix}_${ts}.log" && \
-CUDA_VISIBLE_DEVICES=2 nohup python -u train_pose_estimation.py train \
+outdir="logs/pose/pose_keypointrcnn_train20k_${suffix}_${ts}" && \
+logfile="logs/pose/pose_train20k_${suffix}_${ts}.log" && \
+CUDA_VISIBLE_DEVICES=2 nohup python -u pose_estimation/train_pose_estimation.py train \
   --data-root /data/oxx220000/coco \
   --pretrained true \
   --device cuda \
@@ -68,12 +68,12 @@ CUDA_VISIBLE_DEVICES=2 nohup python -u train_pose_estimation.py train \
   > "${logfile}" 2>&1 & echo "${logfile}"
 
 
-mkdir -p log_pose && \
+mkdir -p logs/pose && \
 ts=$(date +%Y%m%d_%H%M%S) && \
 suffix="internvl3_bs4_e2_rare0p97_gpuX" && \
-outdir="log_pose/pose_keypointrcnn_train20k_${suffix}_${ts}" && \
-logfile="log_pose/pose_train20k_${suffix}_${ts}.log" && \
-CUDA_VISIBLE_DEVICES=3 nohup python -u train_pose_estimation.py train \
+outdir="logs/pose/pose_keypointrcnn_train20k_${suffix}_${ts}" && \
+logfile="logs/pose/pose_train20k_${suffix}_${ts}.log" && \
+CUDA_VISIBLE_DEVICES=3 nohup python -u pose_estimation/train_pose_estimation.py train \
   --data-root /data/oxx220000/coco \
   --pretrained true \
   --device cuda \
@@ -100,19 +100,19 @@ CUDA_VISIBLE_DEVICES=3 nohup python -u train_pose_estimation.py train \
 
 nohup python3 predict_focal.py --dataset celeba --model resnet --ltl_baseline focal --gpu 2 > logs/focal_celeba_resnet.log 2>&1 &
 
-CUDA_VISIBLE_DEVICES=2 python predict_ltl.py --dataset imagenet --model resnet --ltl_baseline focal --focal_gamma 3.0 --num_epochs 1 
+CUDA_VISIBLE_DEVICES=2 python utils/predict_ltl.py --dataset imagenet --model resnet --ltl_baseline focal --focal_gamma 3.0 --num_epochs 1 
 
 CUDA_VISIBLE_DEVICES=2 nohup python -u alpred.py \
   --dataset imagenet --model resnet --num_added_img 1000 \
   --attributes pinkcolor_fabrictexture --num_epochs 15 \
   --sub_ratio 0.3 \
-  --resume_model weights/model_imagenet_resnet_base.pth \
+  --resume_model save/weights/model_imagenet_resnet_base.pth \
   --al_strategy attribute \
   --al_attribute_focus color,background,texture \
   --al_attribute_balance_strength 5 \
   --al_attribute_class_balance inf \
   --verbose True \
-  > logs_imagenet/AL_attr_resume_base_resnet_imagenet_0.3_1000.log 2>&1 < /dev/null &
+  > logs/imagenet/AL_attr_resume_base_resnet_imagenet_0.3_1000.log 2>&1 < /dev/null &
 
 CUDA_VISIBLE_DEVICES=1 nohup python -u alpred.py \
   --dataset imagenet --model resnet --num_added_img 1000 \
@@ -126,7 +126,7 @@ CUDA_VISIBLE_DEVICES=1 nohup python -u alpred.py \
   --al_attribute_log_acc_scale 1 \
   --al_attribute_balance_strength 5 \
   --al_attribute_class_balance inf \
-  > logs_imagenet/AL_resnet_attr_imagenet_0.3_R1_L1_B5_classINF_1000.log 2>&1 < /dev/null &
+  > logs/imagenet/AL_resnet_attr_imagenet_0.3_R1_L1_B5_classINF_1000.log 2>&1 < /dev/null &
 
 CUDA_VISIBLE_DEVICES=2 nohup python -u alpred.py \
   --dataset imagenet --model resnet --num_added_img 1000 \
@@ -140,7 +140,7 @@ CUDA_VISIBLE_DEVICES=2 nohup python -u alpred.py \
   --al_attribute_log_acc_scale 1 \
   --al_attribute_balance_strength 5 \
   --al_attribute_class_balance inf \
-  > logs_imagenet/AL_resnet_attr_imagenet_0.3_R1_L1_B5_classINF_1000.log 2>&1 < /dev/null &
+  > logs/imagenet/AL_resnet_attr_imagenet_0.3_R1_L1_B5_classINF_1000.log 2>&1 < /dev/null &
 
 CUDA_VISIBLE_DEVICES=3 nohup python -u alpred.py \
   --dataset imagenet --model resnet --num_added_img 0 \
@@ -148,7 +148,7 @@ CUDA_VISIBLE_DEVICES=3 nohup python -u alpred.py \
   --save_model True \
   --use_active_learning False \
   --sub_ratio 1 \
-  > logs_imagenet/baseline_imagenet_0.log 2>&1 < /dev/null &
+  > logs/imagenet/baseline_imagenet_0.log 2>&1 < /dev/null &
 
 CUDA_VISIBLE_DEVICES=3 nohup python -u alpred.py \
   --dataset imagenet --model resnet --num_added_img 0 \
@@ -157,7 +157,7 @@ CUDA_VISIBLE_DEVICES=3 nohup python -u alpred.py \
   --use_active_learning False \
   --sub_ratio 1 \
   --save_pred_model last \
-  > logs_imagenet/baseline_imagenet_last_0.log 2>&1 < /dev/null &
+  > logs/imagenet/baseline_imagenet_last_0.log 2>&1 < /dev/null &
 
 
 
@@ -167,7 +167,7 @@ CUDA_VISIBLE_DEVICES=3 nohup python -u alpred.py \
   --save_preds True \
   --use_active_learning False \
   --sub_ratio 1 \
-  > logs_imagenet/check_imagenet_1000.log 2>&1 < /dev/null &
+  > logs/imagenet/check_imagenet_1000.log 2>&1 < /dev/null &
 
 
 nohup ./test_al_strategies.sh --sub_ratio 0.05 > test_al_strategies_ratio0.05.log 2>&1 < /dev/null &
@@ -181,20 +181,20 @@ CUDA_VISIBLE_DEVICES=3 nohup python -u alpred.py \
   --dataset imagenet --model resnet --num_added_img 1000 \
   --attributes pinkcolor_fabrictexture --num_epochs 30 \
   --gen_only train_val_test \
-  > logs_imagenet/gen_imagenet_1000.log 2>&1 < /dev/null &
+  > logs/imagenet/gen_imagenet_1000.log 2>&1 < /dev/null &
 
 CUDA_VISIBLE_DEVICES=0 nohup python -u alpred.py \
   --dataset imagenet --model resnet --num_added_img 1000 \
   --attributes pinkcolor_fabrictexture --num_epochs 60 \
   --gen_only train_val_test \
-  > logs_imagenet/gen_imagenet_epoch60_1000.log 2>&1 < /dev/null &
+  > logs/imagenet/gen_imagenet_epoch60_1000.log 2>&1 < /dev/null &
 
 
 CUDA_VISIBLE_DEVICES=2 nohup python -u alpred.py \
   --dataset imagenet --model resnet --num_added_img 1000 \
   --attributes pinkcolor_fabrictexture --num_epochs 30 \
   --gen_only train_only \
-  > logs_imagenet/gen_imagenet_train_only_1000.log 2>&1 < /dev/null &
+  > logs/imagenet/gen_imagenet_train_only_1000.log 2>&1 < /dev/null &
 
 CUDA_VISIBLE_DEVICES=3 nohup python -u alpred.py \
   --dataset imagenet --model resnet --num_added_img 1000 \
@@ -206,7 +206,7 @@ CUDA_VISIBLE_DEVICES=3 nohup python -u alpred.py \
   --num_epochs 30 \
   --al_attribute_balance_strength 5 \
   --al_attribute_class_balance inf \
-  > logs_imagenet/AL_resnet_attr_imagenet_0.1_scale1_B5_classINF_1000.log 2>&1 < /dev/null &
+  > logs/imagenet/AL_resnet_attr_imagenet_0.1_scale1_B5_classINF_1000.log 2>&1 < /dev/null &
 
 CUDA_VISIBLE_DEVICES=0 nohup python -u alpred.py \
   --dataset imagenet --model resnet --num_added_img 1000 \
@@ -218,7 +218,7 @@ CUDA_VISIBLE_DEVICES=0 nohup python -u alpred.py \
   --al_attribute_log_acc_scale 0 \
   --al_attribute_balance_strength 0 \
   --al_attribute_class_balance 4 \
-  > logs_imagenet/AL_resnet_attr_imagenet_0.1_R0_L0_B0_class4_1000.log 2>&1 < /dev/null &
+  > logs/imagenet/AL_resnet_attr_imagenet_0.1_R0_L0_B0_class4_1000.log 2>&1 < /dev/null &
 
 CUDA_VISIBLE_DEVICES=1 nohup python -u alpred.py \
   --dataset imagenet --model resnet --num_added_img 1000 \
@@ -230,7 +230,7 @@ CUDA_VISIBLE_DEVICES=1 nohup python -u alpred.py \
   --al_attribute_log_acc_scale 0 \
   --al_attribute_balance_strength 0 \
   --al_attribute_class_balance 4 \
-  > logs_imagenet/AL_resnet_attr_imagenet_0.1_R1_L0_B0_class4_1000.log 2>&1 < /dev/null &
+  > logs/imagenet/AL_resnet_attr_imagenet_0.1_R1_L0_B0_class4_1000.log 2>&1 < /dev/null &
 
 CUDA_VISIBLE_DEVICES=2 nohup python -u alpred.py \
   --dataset imagenet --model resnet --num_added_img 1000 \
@@ -242,7 +242,7 @@ CUDA_VISIBLE_DEVICES=2 nohup python -u alpred.py \
   --al_attribute_log_acc_scale 1 \
   --al_attribute_balance_strength 0 \
   --al_attribute_class_balance 4 \
-  > logs_imagenet/AL_resnet_attr_imagenet_0.1_R0_L1_B0_class4_1000.log 2>&1 < /dev/null &
+  > logs/imagenet/AL_resnet_attr_imagenet_0.1_R0_L1_B0_class4_1000.log 2>&1 < /dev/null &
 
 CUDA_VISIBLE_DEVICES=3 nohup python -u alpred.py \
   --dataset imagenet --model resnet --num_added_img 1000 \
@@ -254,7 +254,7 @@ CUDA_VISIBLE_DEVICES=3 nohup python -u alpred.py \
   --al_attribute_log_acc_scale 0 \
   --al_attribute_balance_strength 5 \
   --al_attribute_class_balance 4 \
-  > logs_imagenet/AL_resnet_attr_imagenet_0.1_R0_L0_B5_class4_1000.log 2>&1 < /dev/null &
+  > logs/imagenet/AL_resnet_attr_imagenet_0.1_R0_L0_B5_class4_1000.log 2>&1 < /dev/null &
 
 CUDA_VISIBLE_DEVICES=1 nohup python -u alpred.py \
   --dataset imagenet --model resnet --num_added_img 1000 \
@@ -268,7 +268,7 @@ CUDA_VISIBLE_DEVICES=1 nohup python -u alpred.py \
   --al_attribute_log_acc_scale 1 \
   --al_attribute_balance_strength 5 \
   --al_attribute_class_balance inf \
-  > logs_imagenet/AL_resnet_attr_imagenet_0.3_scale1_B5_classINF_1000.log 2>&1 < /dev/null &
+  > logs/imagenet/AL_resnet_attr_imagenet_0.3_scale1_B5_classINF_1000.log 2>&1 < /dev/null &
 
 CUDA_VISIBLE_DEVICES=1 nohup python -u alpred.py \
   --dataset imagenet --model resnet --num_added_img 1000 \
@@ -280,7 +280,7 @@ CUDA_VISIBLE_DEVICES=1 nohup python -u alpred.py \
   --num_epochs 30 \
   --al_attribute_balance_strength 5 \
   --al_attribute_class_balance 4 \
-  > logs_imagenet/AL_resnet_attr_imagenet_0.3_scale1_B5_class4_1000.log 2>&1 < /dev/null &
+  > logs/imagenet/AL_resnet_attr_imagenet_0.3_scale1_B5_class4_1000.log 2>&1 < /dev/null &
 
 CUDA_VISIBLE_DEVICES=1 nohup python -u alpred.py \
   --dataset imagenet --model resnet --num_added_img 1000 \
@@ -292,7 +292,7 @@ CUDA_VISIBLE_DEVICES=1 nohup python -u alpred.py \
   --num_epochs 30 \
   --al_attribute_balance_strength 5 \
   --al_attribute_class_balance 3 \
-  > logs_imagenet/AL_resnet_attr_imagenet_0.3_scale1_B5_class3_1000.log 2>&1 < /dev/null &
+  > logs/imagenet/AL_resnet_attr_imagenet_0.3_scale1_B5_class3_1000.log 2>&1 < /dev/null &
 
 
 CUDA_VISIBLE_DEVICES=0 nohup python -u alpred.py \
@@ -304,7 +304,7 @@ CUDA_VISIBLE_DEVICES=0 nohup python -u alpred.py \
   --al_attribute_log_acc_scale 1 \
   --num_epochs 30 \
   --al_attribute_balance_strength 1 \
-  > logs_imagenet/AL_resnet_attr_imagenet_0.1_scale1_B1_1000.log 2>&1 < /dev/null &
+  > logs/imagenet/AL_resnet_attr_imagenet_0.1_scale1_B1_1000.log 2>&1 < /dev/null &
 
 CUDA_VISIBLE_DEVICES=1 nohup python -u alpred.py \
   --dataset imagenet --model resnet --num_added_img 1000 \
@@ -315,7 +315,7 @@ CUDA_VISIBLE_DEVICES=1 nohup python -u alpred.py \
   --al_attribute_log_acc_scale 1 \
   --num_epochs 30 \
   --al_attribute_balance_strength 0.5 \
-  > logs_imagenet/AL_resnet_attr_imagenet_0.3_scale1_B0.5_1000.log 2>&1 < /dev/null &
+  > logs/imagenet/AL_resnet_attr_imagenet_0.3_scale1_B0.5_1000.log 2>&1 < /dev/null &
 
 CUDA_VISIBLE_DEVICES=3 nohup python -u alpred.py \
   --dataset imagenet --model resnet --num_added_img 1000 \
@@ -325,7 +325,7 @@ CUDA_VISIBLE_DEVICES=3 nohup python -u alpred.py \
   --verbose False \
   --al_attribute_log_acc_scale 1 \
   --num_epochs 0 \
-  > logs_imagenet/Debug_AL_resnet_attr_imagenet_0.5_scale1_1000.log 2>&1 < /dev/null &
+  > logs/imagenet/Debug_AL_resnet_attr_imagenet_0.5_scale1_1000.log 2>&1 < /dev/null &
 
 CUDA_VISIBLE_DEVICES=3 nohup python -u alpred.py \
   --dataset imagenet --model resnet --num_added_img 1000 \
@@ -336,7 +336,7 @@ CUDA_VISIBLE_DEVICES=3 nohup python -u alpred.py \
   --al_attribute_log_acc_scale 1 \
   --num_epochs 0 \
   --al_attribute_balance_strength 5 \
-  > logs_imagenet/Debug_B5_AL_resnet_attr_imagenet_0.5_scale1_1000.log 2>&1 < /dev/null &
+  > logs/imagenet/Debug_B5_AL_resnet_attr_imagenet_0.5_scale1_1000.log 2>&1 < /dev/null &
 
 CUDA_VISIBLE_DEVICES=3 nohup python -u alpred.py \
   --dataset imagenet --model resnet --num_added_img 1000 \
@@ -347,7 +347,7 @@ CUDA_VISIBLE_DEVICES=3 nohup python -u alpred.py \
   --al_attribute_log_acc_scale 1 \
   --num_epochs 30 \
   --al_attribute_balance_strength 5 \
-  > logs_imagenet/AL_resnet_attr_imagenet_0.5_scale1_B5_1000.log 2>&1 < /dev/null &
+  > logs/imagenet/AL_resnet_attr_imagenet_0.5_scale1_B5_1000.log 2>&1 < /dev/null &
 
 CUDA_VISIBLE_DEVICES=1 nohup python -u alpred.py \
   --dataset imagenet --model resnet --num_added_img 1000 \
@@ -358,7 +358,7 @@ CUDA_VISIBLE_DEVICES=1 nohup python -u alpred.py \
   --al_attribute_log_acc_scale 1 \
   --num_epochs 30 \
   --al_attribute_balance_strength 5 \
-  > logs_imagenet/AL_resnet_attr_imagenet_0.3_scale1_B5_1000.log 2>&1 < /dev/null &
+  > logs/imagenet/AL_resnet_attr_imagenet_0.3_scale1_B5_1000.log 2>&1 < /dev/null &
 
 CUDA_VISIBLE_DEVICES=2 nohup python -u alpred.py \
   --dataset imagenet --model resnet --num_added_img 1000 \
@@ -368,7 +368,7 @@ CUDA_VISIBLE_DEVICES=2 nohup python -u alpred.py \
   --verbose False \
   --al_attribute_log_acc_scale 1 \
   --num_epochs 0 \
-  > logs_imagenet/Debug_AL_resnet_attr_imagenet_0.3_scale1_1000.log 2>&1 < /dev/null &
+  > logs/imagenet/Debug_AL_resnet_attr_imagenet_0.3_scale1_1000.log 2>&1 < /dev/null &
 
 nohup ./test_al_strategies.sh --sub_ratio 0.9 > test_al_strategies_ratio0.9.log 2>&1 < /dev/null &
 nohup ./test_al_strategies.sh --sub_ratio 0.7 > test_al_strategies_ratio0.7.log 2>&1 < /dev/null &
@@ -388,7 +388,7 @@ CUDA_VISIBLE_DEVICES=0 nohup python -u alpred.py \
   --al_attribute_focus color,background,texture \
   --verbose True \
   --al_attribute_log_acc_scale 1 \
-  > logs_imagenet/AL_resnet_attr_imagenet_0.9_scale1_1000.log 2>&1 < /dev/null &
+  > logs/imagenet/AL_resnet_attr_imagenet_0.9_scale1_1000.log 2>&1 < /dev/null &
 
 CUDA_VISIBLE_DEVICES=3 nohup python -u alpred.py \
   --dataset imagenet --model resnet --num_added_img 1000 \
@@ -401,7 +401,7 @@ CUDA_VISIBLE_DEVICES=3 nohup python -u alpred.py \
   --al_attribute_focus color,background,texture \
   --verbose True \
   --al_attribute_log_acc_scale 1 \
-  > logs_imagenet/AL_resnet_attr_imagenet_0.5_scale1_1000.log 2>&1 < /dev/null &
+  > logs/imagenet/AL_resnet_attr_imagenet_0.5_scale1_1000.log 2>&1 < /dev/null &
 
 CUDA_VISIBLE_DEVICES=2 nohup python -u alpred.py \
   --dataset imagenet --model resnet --num_added_img 1000 \
@@ -414,7 +414,7 @@ CUDA_VISIBLE_DEVICES=2 nohup python -u alpred.py \
   --al_attribute_focus color,background,texture \
   --verbose True \
   --al_attribute_log_acc_scale 1 \
-  > logs_imagenet/AL_resnet_attr_imagenet_0.7_scale1_1000.log 2>&1 < /dev/null &
+  > logs/imagenet/AL_resnet_attr_imagenet_0.7_scale1_1000.log 2>&1 < /dev/null &
 
 
 CUDA_VISIBLE_DEVICES=0 nohup python -u alpred.py \
@@ -428,7 +428,7 @@ CUDA_VISIBLE_DEVICES=0 nohup python -u alpred.py \
   --al_attribute_focus color,background,texture \
   --verbose True \
   --al_attribute_log_acc_scale 10 \
-  > logs_imagenet/AL_resnet_imagenet_attr_0.9_scale10_1000.log 2>&1 < /dev/null &
+  > logs/imagenet/AL_resnet_imagenet_attr_0.9_scale10_1000.log 2>&1 < /dev/null &
 
 CUDA_VISIBLE_DEVICES=3 nohup python -u alpred.py \
   --dataset imagenet --model resnet --num_added_img 1000 \
@@ -441,7 +441,7 @@ CUDA_VISIBLE_DEVICES=3 nohup python -u alpred.py \
   --al_attribute_focus color,background,texture \
   --verbose True \
   --al_attribute_log_acc_scale 10 \
-  > logs_imagenet/AL_resnet_imagenet_attr_0.5_scale10_1000.log 2>&1 < /dev/null &
+  > logs/imagenet/AL_resnet_imagenet_attr_0.5_scale10_1000.log 2>&1 < /dev/null &
 
 CUDA_VISIBLE_DEVICES=2 nohup python -u alpred.py \
   --dataset imagenet --model resnet --num_added_img 1000 \
@@ -454,7 +454,7 @@ CUDA_VISIBLE_DEVICES=2 nohup python -u alpred.py \
   --al_attribute_focus color,background,texture \
   --verbose True \
   --al_attribute_log_acc_scale 10 \
-  > logs_imagenet/AL_resnet_imagenet_attr_0.7_scale10_1000.log 2>&1 < /dev/null &
+  > logs/imagenet/AL_resnet_imagenet_attr_0.7_scale10_1000.log 2>&1 < /dev/null &
 
 CUDA_VISIBLE_DEVICES=1 nohup python -u alpred.py \
   --dataset imagenet --model resnet --num_added_img 1000 \
@@ -467,7 +467,7 @@ CUDA_VISIBLE_DEVICES=1 nohup python -u alpred.py \
   --al_attribute_focus color,background,texture \
   --verbose True \
   --al_attribute_log_acc_scale 10 \
-  > logs_imagenet/AL_resnet_imagenet_attr_0.3_scale10_1000.log 2>&1 < /dev/null &
+  > logs/imagenet/AL_resnet_imagenet_attr_0.3_scale10_1000.log 2>&1 < /dev/null &
 
 
 CUDA_VISIBLE_DEVICES=0 nohup python -u alpred.py \
@@ -489,40 +489,40 @@ CUDA_VISIBLE_DEVICES=1 nohup python -u alpred.py \
   --attributes pinkcolor_fabrictexture --num_epochs 15 \
   --sub_ratio 1 \
   --save_pred_model last \
-  > logs_imagenet/test_clip_last_15epoch.log 2>&1 < /dev/null &j
+  > logs/imagenet/test_clip_last_15epoch.log 2>&1 < /dev/null &j
 
 CUDA_VISIBLE_DEVICES=3 nohup python -u alpred.py \
   --dataset imagenet --model clip --num_added_img 0 \
   --attributes pinkcolor_fabrictexture --num_epochs 15 \
   --sub_ratio 1 \
   --save_pred_model best \
-  > logs_imagenet/test_clip_best_15epoch.log 2>&1 < /dev/null &
+  > logs/imagenet/test_clip_best_15epoch.log 2>&1 < /dev/null &
 
 CUDA_VISIBLE_DEVICES=1 nohup python -u alpred.py \
   --dataset imagenet --model resnet --num_added_img 1000 \
   --attributes pinkcolor_fabrictexture --num_epochs 30 \
   --sub_ratio 0 \
-  > logs_imagenet/test_resnet_only_1000.log 2>&1 < /dev/null &
+  > logs/imagenet/test_resnet_only_1000.log 2>&1 < /dev/null &
 
 CUDA_VISIBLE_DEVICES=1 nohup python -u alpred.py \
   --dataset imagenet --model resnet --num_added_img 0 \
   --attributes pinkcolor_fabrictexture --num_epochs 30 \
   --sub_ratio 1 \
   --save_pred_model last \
-  > logs_imagenet/test_resnet_last_30epoch.log 2>&1 < /dev/null &
+  > logs/imagenet/test_resnet_last_30epoch.log 2>&1 < /dev/null &
 
 CUDA_VISIBLE_DEVICES=3 nohup python -u alpred.py \
   --dataset imagenet --model resnet --num_added_img 0 \
   --attributes pinkcolor_fabrictexture --num_epochs 30 \
   --sub_ratio 1 \
-  > logs_imagenet/test_resnet_only_30epoch.log 2>&1 < /dev/null &
+  > logs/imagenet/test_resnet_only_30epoch.log 2>&1 < /dev/null &
 
 
 CUDA_VISIBLE_DEVICES=2 nohup python -u alpred.py \
   --dataset imagenet --model resnet --num_added_img 0 \
   --attributes pinkcolor_fabrictexture --num_epochs 30 \
   --sub_ratio 1 \
-  > logs_imagenet/test_resnet_only_0.log 2>&1 < /dev/null &
+  > logs/imagenet/test_resnet_only_0.log 2>&1 < /dev/null &
 
 CUDA_VISIBLE_DEVICES=3 nohup python -u alpred.py \
   --dataset imagenet --model resnet --num_added_img 1000 \
@@ -535,39 +535,39 @@ CUDA_VISIBLE_DEVICES=3 nohup python -u alpred.py \
   --al_attribute_focus color,background \
   --verbose True \
   --al_attribute_log_acc_scale 10 \
-  > logs_imagenet/AL_resnet_imagenet_attr_0.5_scale10_1000.log 2>&1 < /dev/null &
+  > logs/imagenet/AL_resnet_imagenet_attr_0.5_scale10_1000.log 2>&1 < /dev/null &
 
 CUDA_VISIBLE_DEVICES=0 nohup python -u alpred.py \
   --dataset imagenet --model resnet --num_added_img 1000 \
   --attributes pinkcolor_fabrictexture --num_epochs 30 \
   --sub_ratio 0 \
-  > logs_imagenet/resnet_only_1000.log 2>&1 < /dev/null &
+  > logs/imagenet/resnet_only_1000.log 2>&1 < /dev/null &
 
 CUDA_VISIBLE_DEVICES=2 nohup python -u alpred.py \
   --dataset imagenet --model vit --num_added_img 1000 \
   --attributes pinkcolor_fabrictexture --num_epochs 30 \
   --sub_ratio 0 \
-  > logs_imagenet/vit_only_1000.log 2>&1 < /dev/null &
+  > logs/imagenet/vit_only_1000.log 2>&1 < /dev/null &
 
 CUDA_VISIBLE_DEVICES=2 nohup python -u alpred.py \
   --dataset imagenet --model vit --num_added_img 1000 \
   --attributes pinkcolor_fabrictexture --num_epochs 30 \
   --sub_ratio 0 \
   --pretrained False \
-  > logs_imagenet/vit_only_1000_nopretrain.log 2>&1 < /dev/null &
+  > logs/imagenet/vit_only_1000_nopretrain.log 2>&1 < /dev/null &
 
 CUDA_VISIBLE_DEVICES=1 nohup python -u alpred.py \
   --dataset imagenet --model clip --num_added_img 1000 \
   --attributes pinkcolor_fabrictexture --num_epochs 30 \
   --sub_ratio 0 \
   --pretrained False \
-  > logs_imagenet/clip_only_1000_nopretrain.log 2>&1 < /dev/null &
+  > logs/imagenet/clip_only_1000_nopretrain.log 2>&1 < /dev/null &
 
 CUDA_VISIBLE_DEVICES=1 nohup python -u alpred.py \
   --dataset imagenet --model clip --num_added_img 1000 \
   --attributes pinkcolor_fabrictexture --num_epochs 30 \
   --sub_ratio 0 \
-  > logs_imagenet/clip_only_1000.log 2>&1 < /dev/null &
+  > logs/imagenet/clip_only_1000.log 2>&1 < /dev/null &
 
 CUDA_VISIBLE_DEVICES=2 python predict.py --model resnet --num_added_img 1000 --cdm instruct_pix2pix --attributes pinkcolor_fabrictexture --dataset imagenet
 
@@ -596,7 +596,7 @@ CUDA_VISIBLE_DEVICES=3 nohup python -u alpred.py \
   --al_attribute_focus color,background \
   --verbose True \
   --al_attribute_log_acc_scale 10 \
-  > logs_imagenet/AL_resnet_imagenet_attr_0.5_scale10_1000.log 2>&1 < /dev/null &
+  > logs/imagenet/AL_resnet_imagenet_attr_0.5_scale10_1000.log 2>&1 < /dev/null &
 
 
 CUDA_VISIBLE_DEVICES=1 nohup python -u alpred.py \
@@ -609,7 +609,7 @@ CUDA_VISIBLE_DEVICES=1 nohup python -u alpred.py \
   --attribute_file save/attribute10.json \
   --al_attribute_focus color,background \
   --verbose True \
-  > logs_imagenet/AL_resnet_imagenet_attr_0.9_1000.log 2>&1 < /dev/null &
+  > logs/imagenet/AL_resnet_imagenet_attr_0.9_1000.log 2>&1 < /dev/null &
 
 CUDA_VISIBLE_DEVICES=2 nohup python -u alpred.py \
   --dataset imagenet --model resnet --num_added_img 1000 \
@@ -622,7 +622,7 @@ CUDA_VISIBLE_DEVICES=2 nohup python -u alpred.py \
   --al_attribute_focus color,background \
   --al_attribute_log_rare_boost 1.2 \
   --verbose True \
-  > logs_imagenet/AL_resnet_imagenet_attr_0.7_1000.log 2>&1 < /dev/null &
+  > logs/imagenet/AL_resnet_imagenet_attr_0.7_1000.log 2>&1 < /dev/null &
 
 
 CUDA_VISIBLE_DEVICES=3 nohup python -u alpred.py \
@@ -635,7 +635,7 @@ CUDA_VISIBLE_DEVICES=3 nohup python -u alpred.py \
   --attribute_file save/attribute10.json \
   --al_attribute_focus color,background \
   --verbose True \
-  > logs_imagenet/AL_resnet_imagenet_attr_0.5_1000.log 2>&1 < /dev/null &
+  > logs/imagenet/AL_resnet_imagenet_attr_0.5_1000.log 2>&1 < /dev/null &
 
 CUDA_VISIBLE_DEVICES=3 nohup python -u alpred.py \
   --dataset imagenet --model resnet --num_added_img 1000 \
@@ -645,7 +645,7 @@ CUDA_VISIBLE_DEVICES=3 nohup python -u alpred.py \
   --llm_strategy diversity_difficulty \
   --sub_ratio 0.9 \
   --verbose True \
-  > logs_imagenet/qwen_resnet_imagenet_0.9_1000.log 2>&1 < /dev/null &
+  > logs/imagenet/qwen_resnet_imagenet_0.9_1000.log 2>&1 < /dev/null &
   
 CUDA_VISIBLE_DEVICES=0 nohup python -u alpred.py \
   --dataset imagenet --model resnet --num_added_img 1000 \
@@ -655,7 +655,7 @@ CUDA_VISIBLE_DEVICES=0 nohup python -u alpred.py \
   --llm_strategy diversity_difficulty \
   --sub_ratio 0.9 \
   --verbose True \
-  > logs_imagenet/llava7b_resnet_imagenet_0.9_1000.log 2>&1 < /dev/null &
+  > logs/imagenet/llava7b_resnet_imagenet_0.9_1000.log 2>&1 < /dev/null &
 
 CUDA_VISIBLE_DEVICES=1 nohup python -u alpred.py \
   --dataset imagenet --model resnet --num_added_img 1000 \
@@ -665,7 +665,7 @@ CUDA_VISIBLE_DEVICES=1 nohup python -u alpred.py \
   --llm_strategy diversity_difficulty \
   --sub_ratio 0.5 \
   --verbose True \
-  > logs_imagenet/llava7b_resnet_imagenet_0.5_1000.log 2>&1 < /dev/null &
+  > logs/imagenet/llava7b_resnet_imagenet_0.5_1000.log 2>&1 < /dev/null &
 
 
 CUDA_VISIBLE_DEVICES=2 nohup python -u alpred.py \
@@ -676,7 +676,7 @@ CUDA_VISIBLE_DEVICES=2 nohup python -u alpred.py \
   --llm_strategy diversity_difficulty \
   --sub_ratio 0.7 \
   --verbose True \
-  > logs_imagenet/qwen_resnet_imagenet_0.7_1000.log 2>&1 < /dev/null &
+  > logs/imagenet/qwen_resnet_imagenet_0.7_1000.log 2>&1 < /dev/null &
 
 # LLM-based selection using Qwen model
 CUDA_VISIBLE_DEVICES=3 nohup python -u alpred.py \
@@ -687,7 +687,7 @@ CUDA_VISIBLE_DEVICES=3 nohup python -u alpred.py \
   --llm_strategy diversity_difficulty \
   --sub_ratio 0.5 \
   --verbose True \
-  > logs_imagenet/qwen_resnet_imagenet_0.5_1000.log 2>&1 < /dev/null &
+  > logs/imagenet/qwen_resnet_imagenet_0.5_1000.log 2>&1 < /dev/null &
 
 nohup ./test_hierarchical_al.sh --sub_ratio 0.9 > test_hierarchical_al.sh_ratio0.9.log 2>&1 < /dev/null &
 
@@ -711,7 +711,7 @@ CUDA_VISIBLE_DEVICES=3 nohup python -u alpred.py \
   --al_initial_labeled 400 \
   --al_embedding_dim 256 \
   --sub_ratio 0.5 \
-  > logs_imagenet/AL_resnet_imagenet_balanced_1000.log 2>&1 < /dev/null &
+  > logs/imagenet/AL_resnet_imagenet_balanced_1000.log 2>&1 < /dev/null &
 
 CUDA_VISIBLE_DEVICES=2 nohup python -u alpred.py \
   --dataset imagenet --model resnet --num_added_img 1000 \
@@ -719,7 +719,7 @@ CUDA_VISIBLE_DEVICES=2 nohup python -u alpred.py \
   --al_initial_labeled 200 \
   --al_embedding_dim 128 \
   --sub_ratio 0.5 \
-  > logs_imagenet/AL_resnet_imagenet_lightweight_1000.log 2>&1 < /dev/null &
+  > logs/imagenet/AL_resnet_imagenet_lightweight_1000.log 2>&1 < /dev/null &
 
 
 CUDA_VISIBLE_DEVICES=3 nohup python -u alpred.py \
@@ -727,7 +727,7 @@ CUDA_VISIBLE_DEVICES=3 nohup python -u alpred.py \
   --attributes pinkcolor_fabrictexture --num_epochs 30 \
   --use_active_learning False \
   --sub_ratio 0.5 \
-  > logs_imagenet/AL_resnet_imagenet_random_1000.log 2>&1 < /dev/null &
+  > logs/imagenet/AL_resnet_imagenet_random_1000.log 2>&1 < /dev/null &
 
 CUDA_VISIBLE_DEVICES=3 nohup ./run_active_learning.sh coreset resnet 5 > logs/al.log 2>&1 < /dev/null &
 
@@ -740,7 +740,7 @@ CUDA_VISIBLE_DEVICES=1 nohup ./run_active_learning.sh coreset resnet 5 > logs/co
 
 # move
 
-mv logs_imagenet/RH_BS_SE_*_celeba_*.log logs/
+mv logs/imagenet/RH_BS_SE_*_celeba_*.log logs/
 
 CUDA_VISIBLE_DEVICES=0 nohup python -u utils/filter.py \
   --attributes orangecolor_fabrictexture \
@@ -754,47 +754,47 @@ CUDA_VISIBLE_DEVICES=0 nohup python -u predict.py \
   --dataset imagenet --model clip --num_added_img 100 \
   --save_pred_model best --attributes orangecolor_fabrictexture \
   --lvlm llava --num_epochs 15 \
-  > logs_imagenet/OC_FT_clip_imagenet_100.log 2>&1 < /dev/null &&
+  > logs/imagenet/OC_FT_clip_imagenet_100.log 2>&1 < /dev/null &&
 
 CUDA_VISIBLE_DEVICES=0 nohup python -u predict.py \
   --dataset imagenet --model clip --num_added_img 500 \
   --save_pred_model best --attributes orangecolor_fabrictexture \
   --lvlm llava --num_epochs 15 \
-  > logs_imagenet/OC_FT_clip_imagenet_500.log 2>&1 < /dev/null &&
+  > logs/imagenet/OC_FT_clip_imagenet_500.log 2>&1 < /dev/null &&
 
 CUDA_VISIBLE_DEVICES=0 nohup python -u predict.py \
   --dataset imagenet --model clip --num_added_img 1000 \
   --save_pred_model best --attributes orangecolor_fabrictexture \
   --lvlm llava --num_epochs 15 \
-  > logs_imagenet/OC_FT_clip_imagenet_1000.log 2>&1 < /dev/null &
+  > logs/imagenet/OC_FT_clip_imagenet_1000.log 2>&1 < /dev/null &
 
 
 CUDA_VISIBLE_DEVICES=0 nohup python -u predict.py \
   --dataset imagenet --model clip --num_added_img 1000 \
   --save_pred_model best --attributes orangecolor_fabrictexture \
   --lvlm llava --num_epochs 15 \
-  > logs_imagenet/OC_FT_clip_imagenet_llava_1000.log 2>&1 < /dev/null &
+  > logs/imagenet/OC_FT_clip_imagenet_llava_1000.log 2>&1 < /dev/null &
 
-CUDA_VISIBLE_DEVICES=0 nohup python -u predict.py --dataset imagenet --model vit --num_added_img 100  --save_pred_model best --attributes pinkcolor_fabrictexture --lvlm llava  --num_epochs 15   > logs_imagenet/PC_FT_vit_imagenet_100.log 2>&1 < /dev/null &
-CUDA_VISIBLE_DEVICES=0 nohup python -u predict.py --dataset imagenet --model vit --num_added_img 500  --save_pred_model best --attributes pinkcolor_fabrictexture --lvlm llava  --num_epochs 15   > logs_imagenet/PC_FT_vit_imagenet_500.log 2>&1 < /dev/null &
-CUDA_VISIBLE_DEVICES=0 nohup python -u predict.py --dataset imagenet --model vit --num_added_img 1000  --save_pred_model best --attributes pinkcolor_fabrictexture --lvlm llava  --num_epochs 15   > logs_imagenet/PC_FT_vit_imagenet_1000.log 2>&1 < /dev/null &
+CUDA_VISIBLE_DEVICES=0 nohup python -u predict.py --dataset imagenet --model vit --num_added_img 100  --save_pred_model best --attributes pinkcolor_fabrictexture --lvlm llava  --num_epochs 15   > logs/imagenet/PC_FT_vit_imagenet_100.log 2>&1 < /dev/null &
+CUDA_VISIBLE_DEVICES=0 nohup python -u predict.py --dataset imagenet --model vit --num_added_img 500  --save_pred_model best --attributes pinkcolor_fabrictexture --lvlm llava  --num_epochs 15   > logs/imagenet/PC_FT_vit_imagenet_500.log 2>&1 < /dev/null &
+CUDA_VISIBLE_DEVICES=0 nohup python -u predict.py --dataset imagenet --model vit --num_added_img 1000  --save_pred_model best --attributes pinkcolor_fabrictexture --lvlm llava  --num_epochs 15   > logs/imagenet/PC_FT_vit_imagenet_1000.log 2>&1 < /dev/null &
 
 CUDA_VISIBLE_DEVICES=1 nohup python -u predict.py --dataset celeba --model vit --num_added_img 1000  --save_pred_model best --attributes redhair_brownskin_sademotion --num_epochs 15  --seed 12376  > logs/RH_BS_SE_vit_celeba_1000.log 2>&1 < /dev/null &
 CUDA_VISIBLE_DEVICES=2 nohup python -u predict.py --dataset celeba --model vit --num_added_img 5000  --save_pred_model best --attributes redhair_brownskin_sademotion --num_epochs 15  --seed 12376  > logs/RH_BS_SE_vit_celeba_5000.log 2>&1 < /dev/null &
 CUDA_VISIBLE_DEVICES=3 nohup python -u predict.py --dataset celeba --model vit --num_added_img 10000  --save_pred_model best --attributes redhair_brownskin_sademotion --num_epochs 15  --seed 12376  > logs/RH_BS_SE_vit_celeba_10000.log 2>&1 < /dev/null &
 
 
-CUDA_VISIBLE_DEVICES=2 nohup python -u predict.py --dataset imagenet --model resnet --num_added_img 1000  --save_pred_model best --attributes pinkcolor_fabrictexture --num_epochs 30 --lvlm llava  > logs_imagenet/PC_FT_resnet_imagenet_llava_1000.log 2>&1 < /dev/null &
+CUDA_VISIBLE_DEVICES=2 nohup python -u predict.py --dataset imagenet --model resnet --num_added_img 1000  --save_pred_model best --attributes pinkcolor_fabrictexture --num_epochs 30 --lvlm llava  > logs/imagenet/PC_FT_resnet_imagenet_llava_1000.log 2>&1 < /dev/null &
 
-CUDA_VISIBLE_DEVICES=1 nohup python -u predict.py --dataset imagenet --model resnet --num_added_img 500  --save_pred_model best --attributes pinkcolor_fabrictexture --num_epochs 30 --lvlm llava  > logs_imagenet/PC_FT_resnet_imagenet_llava_500.log 2>&1 < /dev/null &
+CUDA_VISIBLE_DEVICES=1 nohup python -u predict.py --dataset imagenet --model resnet --num_added_img 500  --save_pred_model best --attributes pinkcolor_fabrictexture --num_epochs 30 --lvlm llava  > logs/imagenet/PC_FT_resnet_imagenet_llava_500.log 2>&1 < /dev/null &
 
-CUDA_VISIBLE_DEVICES=0 nohup python -u predict.py --dataset imagenet --model resnet --num_added_img 100  --save_pred_model best --attributes pinkcolor_fabrictexture --num_epochs 30 --lvlm llava  > logs_imagenet/PC_FT_resnet_imagenet_llava_100.log 2>&1 < /dev/null &
+CUDA_VISIBLE_DEVICES=0 nohup python -u predict.py --dataset imagenet --model resnet --num_added_img 100  --save_pred_model best --attributes pinkcolor_fabrictexture --num_epochs 30 --lvlm llava  > logs/imagenet/PC_FT_resnet_imagenet_llava_100.log 2>&1 < /dev/null &
 
-CUDA_VISIBLE_DEVICES=1 nohup python -u predict.py --dataset celeba --model resnet --num_added_img 1000  --save_pred_model best --attributes redhair_brownskin_sademotion --num_epochs 20   > logs_imagenet/RH_BS_SE_resnet_celeba_1000.log 2>&1 < /dev/null &
+CUDA_VISIBLE_DEVICES=1 nohup python -u predict.py --dataset celeba --model resnet --num_added_img 1000  --save_pred_model best --attributes redhair_brownskin_sademotion --num_epochs 20   > logs/imagenet/RH_BS_SE_resnet_celeba_1000.log 2>&1 < /dev/null &
 
-CUDA_VISIBLE_DEVICES=2 nohup python -u predict.py --dataset celeba --model resnet --num_added_img 5000  --save_pred_model best --attributes redhair_brownskin_sademotion --num_epochs 20 --seed 12376  > logs_imagenet/RH_BS_SE_resnet_celeba_5000.log 2>&1 < /dev/null &
+CUDA_VISIBLE_DEVICES=2 nohup python -u predict.py --dataset celeba --model resnet --num_added_img 5000  --save_pred_model best --attributes redhair_brownskin_sademotion --num_epochs 20 --seed 12376  > logs/imagenet/RH_BS_SE_resnet_celeba_5000.log 2>&1 < /dev/null &
 
-CUDA_VISIBLE_DEVICES=3 nohup python -u predict.py --dataset celeba --model resnet --num_added_img 10000  --save_pred_model best --attributes redhair_brownskin_sademotion --num_epochs 20 --seed 12376  > logs_imagenet/RH_BS_SE_resnet_celeba_10000.log 2>&1 < /dev/null &
+CUDA_VISIBLE_DEVICES=3 nohup python -u predict.py --dataset celeba --model resnet --num_added_img 10000  --save_pred_model best --attributes redhair_brownskin_sademotion --num_epochs 20 --seed 12376  > logs/imagenet/RH_BS_SE_resnet_celeba_10000.log 2>&1 < /dev/null &
 
 CUDA_VISIBLE_DEVICES=3 nohup python -u utils/filter.py \
   --attributes pinkcolor_fabrictexture \
@@ -825,49 +825,49 @@ CUDA_VISIBLE_DEVICES=1 nohup python -u utils/filter.py \
 CUDA_VISIBLE_DEVICES=3 nohup python -u controlnet.py --attributes redhair_brownskin_sademotion --stop_at 1000 > logs/controlnet_redhair_brownskin_sademotion.log 2>&1 < /dev/null &
 
 
-CUDA_VISIBLE_DEVICES=3 nohup python -u predict.py --dataset imagenet --model resnet --num_added_img 500 --attributes pinkcolor_fabrictexture --num_epochs 30 --sub_ratio 1  --gen_only 1 > logs_imagenet/pinkcolor_fabrictexture_resnet_imagenet_500_gen_only.log 2>&1 < /dev/null &
-CUDA_VISIBLE_DEVICES=2 nohup python -u predict.py --dataset imagenet --model resnet --num_added_img 100 --attributes pinkcolor_fabrictexture --num_epochs 30 --sub_ratio 1  --gen_only 1 > logs_imagenet/pinkcolor_fabrictexture_resnet_imagenet_100_gen_only.log 2>&1 < /dev/null &
+CUDA_VISIBLE_DEVICES=3 nohup python -u predict.py --dataset imagenet --model resnet --num_added_img 500 --attributes pinkcolor_fabrictexture --num_epochs 30 --sub_ratio 1  --gen_only 1 > logs/imagenet/pinkcolor_fabrictexture_resnet_imagenet_500_gen_only.log 2>&1 < /dev/null &
+CUDA_VISIBLE_DEVICES=2 nohup python -u predict.py --dataset imagenet --model resnet --num_added_img 100 --attributes pinkcolor_fabrictexture --num_epochs 30 --sub_ratio 1  --gen_only 1 > logs/imagenet/pinkcolor_fabrictexture_resnet_imagenet_100_gen_only.log 2>&1 < /dev/null &
 
-CUDA_VISIBLE_DEVICES=1 nohup python -u predict.py --dataset imagenet --model resnet --num_added_img 1000 --attributes pinkcolor_fabrictexture --num_epochs 30 --sub_ratio 1  --gen_only 1 > logs_imagenet/pinkcolor_fabrictexture_resnet_imagenet_1000_gen_only.log 2>&1 < /dev/null &
+CUDA_VISIBLE_DEVICES=1 nohup python -u predict.py --dataset imagenet --model resnet --num_added_img 1000 --attributes pinkcolor_fabrictexture --num_epochs 30 --sub_ratio 1  --gen_only 1 > logs/imagenet/pinkcolor_fabrictexture_resnet_imagenet_1000_gen_only.log 2>&1 < /dev/null &
 
-CUDA_VISIBLE_DEVICES=2 nohup python -u predict.py --dataset imagenet --model resnet --num_added_img 1000  --save_pred_model best --attributes pinkcolor_fabrictexture --num_epochs 30 > logs_imagenet/pinkcolor_fabrictexture_resnet_imagenet_1000_sub_ratio0.3.log 2>&1 < /dev/null &
+CUDA_VISIBLE_DEVICES=2 nohup python -u predict.py --dataset imagenet --model resnet --num_added_img 1000  --save_pred_model best --attributes pinkcolor_fabrictexture --num_epochs 30 > logs/imagenet/pinkcolor_fabrictexture_resnet_imagenet_1000_sub_ratio0.3.log 2>&1 < /dev/null &
 
-CUDA_VISIBLE_DEVICES=2 nohup python -u predict.py --dataset imagenet --model resnet --num_added_img 1000  --save_pred_model best --attributes pinkcolor_fabrictexture --num_epochs 30 --sub_ratio 0.5  > logs_imagenet/pinkcolor_fabrictexture_resnet_imagenet_1000_sub_ratio0.5.log 2>&1 < /dev/null &
+CUDA_VISIBLE_DEVICES=2 nohup python -u predict.py --dataset imagenet --model resnet --num_added_img 1000  --save_pred_model best --attributes pinkcolor_fabrictexture --num_epochs 30 --sub_ratio 0.5  > logs/imagenet/pinkcolor_fabrictexture_resnet_imagenet_1000_sub_ratio0.5.log 2>&1 < /dev/null &
 
-CUDA_VISIBLE_DEVICES=2 nohup python -u predict.py --dataset imagenet --model resnet --num_added_img 1000  --save_pred_model best --attributes pinkcolor_fabrictexture --num_epochs 30 --sub_ratio 0.9  > logs_imagenet/pinkcolor_fabrictexture_resnet_imagenet_1000_sub_ratio0.9.log 2>&1 < /dev/null &
+CUDA_VISIBLE_DEVICES=2 nohup python -u predict.py --dataset imagenet --model resnet --num_added_img 1000  --save_pred_model best --attributes pinkcolor_fabrictexture --num_epochs 30 --sub_ratio 0.9  > logs/imagenet/pinkcolor_fabrictexture_resnet_imagenet_1000_sub_ratio0.9.log 2>&1 < /dev/null &
 
-CUDA_VISIBLE_DEVICES=1 nohup python -u predict.py --dataset imagenet --model resnet --num_added_img 1000  --save_pred_model best --attributes pinkcolor_fabrictexture --num_epochs 30 --sub_ratio 1  > logs_imagenet/pinkcolor_fabrictexture_resnet_imagenet_1000_sub_ratio1.0.log 2>&1 < /dev/null &
+CUDA_VISIBLE_DEVICES=1 nohup python -u predict.py --dataset imagenet --model resnet --num_added_img 1000  --save_pred_model best --attributes pinkcolor_fabrictexture --num_epochs 30 --sub_ratio 1  > logs/imagenet/pinkcolor_fabrictexture_resnet_imagenet_1000_sub_ratio1.0.log 2>&1 < /dev/null &
 
-CUDA_VISIBLE_DEVICES=0 nohup python -u predict.py --dataset imagenet --model resnet --num_added_img 1000  --save_pred_model best --attributes pinkcolor_fabrictexture --num_epochs 30 --sub_ratio 0.8  > logs_imagenet/pinkcolor_fabrictexture_resnet_imagenet_1000_sub_ratio0.8.log 2>&1 < /dev/null &
+CUDA_VISIBLE_DEVICES=0 nohup python -u predict.py --dataset imagenet --model resnet --num_added_img 1000  --save_pred_model best --attributes pinkcolor_fabrictexture --num_epochs 30 --sub_ratio 0.8  > logs/imagenet/pinkcolor_fabrictexture_resnet_imagenet_1000_sub_ratio0.8.log 2>&1 < /dev/null &
 
-CUDA_VISIBLE_DEVICES=1 nohup python -u predict.py --dataset imagenet --model resnet --num_added_img 1000  --save_pred_model best --attributes pinkcolor_fabrictexture --num_epochs 30 --sub_ratio 0.7  > logs_imagenet/pinkcolor_fabrictexture_resnet_imagenet_1000_sub_ratio0.7.log 2>&1 < /dev/null &
+CUDA_VISIBLE_DEVICES=1 nohup python -u predict.py --dataset imagenet --model resnet --num_added_img 1000  --save_pred_model best --attributes pinkcolor_fabrictexture --num_epochs 30 --sub_ratio 0.7  > logs/imagenet/pinkcolor_fabrictexture_resnet_imagenet_1000_sub_ratio0.7.log 2>&1 < /dev/null &
 
-CUDA_VISIBLE_DEVICES=3 nohup python -u predict.py --dataset imagenet --model resnet --num_added_img 500  --save_pred_model best --attributes pinkcolor_fabrictexture --num_epochs 30 --sub_ratio 0  > logs_imagenet/pinkcolor_fabrictexture_resnet_imagenet_500_sub_ratio0.log 2>&1 < /dev/null &
+CUDA_VISIBLE_DEVICES=3 nohup python -u predict.py --dataset imagenet --model resnet --num_added_img 500  --save_pred_model best --attributes pinkcolor_fabrictexture --num_epochs 30 --sub_ratio 0  > logs/imagenet/pinkcolor_fabrictexture_resnet_imagenet_500_sub_ratio0.log 2>&1 < /dev/null &
 
-CUDA_VISIBLE_DEVICES=3 nohup python -u predict.py --dataset imagenet --model resnet --num_added_img 1000  --save_pred_model best --attributes pinkcolor_fabrictexture --num_epochs 30 --sub_ratio 0  > logs_imagenet/pinkcolor_fabrictexture_resnet_imagenet_1000_sub_ratio0.log 2>&1 < /dev/null &
+CUDA_VISIBLE_DEVICES=3 nohup python -u predict.py --dataset imagenet --model resnet --num_added_img 1000  --save_pred_model best --attributes pinkcolor_fabrictexture --num_epochs 30 --sub_ratio 0  > logs/imagenet/pinkcolor_fabrictexture_resnet_imagenet_1000_sub_ratio0.log 2>&1 < /dev/null &
 
-CUDA_VISIBLE_DEVICES=3 nohup python -u predict.py --dataset imagenet --model resnet --num_added_img 100  --save_pred_model best --attributes pinkcolor_fabrictexture --num_epochs 30 --sub_ratio 0  > logs_imagenet/pinkcolor_fabrictexture_resnet_imagenet_100_sub_ratio0.log 2>&1 < /dev/null &
+CUDA_VISIBLE_DEVICES=3 nohup python -u predict.py --dataset imagenet --model resnet --num_added_img 100  --save_pred_model best --attributes pinkcolor_fabrictexture --num_epochs 30 --sub_ratio 0  > logs/imagenet/pinkcolor_fabrictexture_resnet_imagenet_100_sub_ratio0.log 2>&1 < /dev/null &
 
 
 CUDA_VISIBLE_DEVICES=1 python predict.py --dataset imagenet --model resnet --num_added_img 100  --save_pred_model last --attributes pinkcolor_fabrictexture --num_epochs 30
 
-CUDA_VISIBLE_DEVICES=3 nohup python -u predict.py --dataset imagenet --model resnet --num_added_img 100  --save_pred_model best --attributes pinkcolor_fabrictexture --num_epochs 30 > logs_imagenet/pinkcolor_fabrictexture_resnet_imagenet_100.log 2>&1 < /dev/null &
+CUDA_VISIBLE_DEVICES=3 nohup python -u predict.py --dataset imagenet --model resnet --num_added_img 100  --save_pred_model best --attributes pinkcolor_fabrictexture --num_epochs 30 > logs/imagenet/pinkcolor_fabrictexture_resnet_imagenet_100.log 2>&1 < /dev/null &
 
-CUDA_VISIBLE_DEVICES=1 nohup python -u predict.py --dataset imagenet --model resnet --num_added_img 0  --save_pred_model best --attributes purplecolor --num_epochs 30 > logs_imagenet/base_resnet_imagenet_best.log 2>&1 < /dev/null &
+CUDA_VISIBLE_DEVICES=1 nohup python -u predict.py --dataset imagenet --model resnet --num_added_img 0  --save_pred_model best --attributes purplecolor --num_epochs 30 > logs/imagenet/base_resnet_imagenet_best.log 2>&1 < /dev/null &
 
-CUDA_VISIBLE_DEVICES=1 nohup python -u predict.py --dataset imagenet --model resnet --num_added_img 0  --save_pred_model last --attributes purplecolor --num_epochs 30 > logs_imagenet/base_resnet_imagenet.log 2>&1 < /dev/null &
+CUDA_VISIBLE_DEVICES=1 nohup python -u predict.py --dataset imagenet --model resnet --num_added_img 0  --save_pred_model last --attributes purplecolor --num_epochs 30 > logs/imagenet/base_resnet_imagenet.log 2>&1 < /dev/null &
 
-CUDA_VISIBLE_DEVICES=3 nohup python -u predict.py --dataset imagenet --model resnet --num_added_img 100  --save_pred_model best --attributes pinkcolor_fabrictexture --num_epochs 30 > logs_imagenet/pinkcolor_fabrictexture_resnet_imagenet_best.log 2>&1 < /dev/null &
+CUDA_VISIBLE_DEVICES=3 nohup python -u predict.py --dataset imagenet --model resnet --num_added_img 100  --save_pred_model best --attributes pinkcolor_fabrictexture --num_epochs 30 > logs/imagenet/pinkcolor_fabrictexture_resnet_imagenet_best.log 2>&1 < /dev/null &
 
-CUDA_VISIBLE_DEVICES=2 nohup python -u predict.py --dataset imagenet --model resnet --num_added_img 100  --save_pred_model last --attributes pinkcolor_fabrictexture --num_epochs 30 > logs_imagenet/pinkcolor_fabrictexture_resnet_imagenet_last.log 2>&1 < /dev/null &
-
-
-CUDA_VISIBLE_DEVICES=3 nohup python -u predict.py --dataset imagenet --model resnet --num_added_img 1000  --save_pred_model best --attributes pinkcolor_fabrictexture --num_epochs 30 > logs_imagenet/pinkcolor_fabrictexture_resnet_imagenet_1000_best.log 2>&1 < /dev/null &
-
-CUDA_VISIBLE_DEVICES=2 nohup python -u predict.py --dataset imagenet --model resnet --num_added_img 1000  --save_pred_model last --attributes pinkcolor_fabrictexture --num_epochs 30 > logs_imagenet/pinkcolor_fabrictexture_resnet_imagenet_1000_last.log 2>&1 < /dev/null &
+CUDA_VISIBLE_DEVICES=2 nohup python -u predict.py --dataset imagenet --model resnet --num_added_img 100  --save_pred_model last --attributes pinkcolor_fabrictexture --num_epochs 30 > logs/imagenet/pinkcolor_fabrictexture_resnet_imagenet_last.log 2>&1 < /dev/null &
 
 
-CUDA_VISIBLE_DEVICES=3 nohup python -u lpips.py --dataset imagenet > logs_imagenet/lpips_imagenet.log 2>&1 < /dev/null &
+CUDA_VISIBLE_DEVICES=3 nohup python -u predict.py --dataset imagenet --model resnet --num_added_img 1000  --save_pred_model best --attributes pinkcolor_fabrictexture --num_epochs 30 > logs/imagenet/pinkcolor_fabrictexture_resnet_imagenet_1000_best.log 2>&1 < /dev/null &
+
+CUDA_VISIBLE_DEVICES=2 nohup python -u predict.py --dataset imagenet --model resnet --num_added_img 1000  --save_pred_model last --attributes pinkcolor_fabrictexture --num_epochs 30 > logs/imagenet/pinkcolor_fabrictexture_resnet_imagenet_1000_last.log 2>&1 < /dev/null &
+
+
+CUDA_VISIBLE_DEVICES=3 nohup python -u lpips.py --dataset imagenet > logs/imagenet/lpips_imagenet.log 2>&1 < /dev/null &
 
 
 nohup ./batch.sh -m resnet -a redhair_brownskin_sademotion -d 0 \
@@ -901,10 +901,10 @@ nohup ./batch.sh -m clip -a pinkcolor -d 2 -s \
 nohup ./batch.sh -m clip -a pinkcolor -d 1 \
   > logs/batch/batch_clip_pinkcolor.log 2>&1 < /dev/null &
 
-CUDA_VISIBLE_DEVICES=3 nohup python -u predict.py --dataset imagenet --model vit --num_added_img 0  --save_pred_model last > logs_imagenet/base_vit_p.log 2>&1 < /dev/null &
+CUDA_VISIBLE_DEVICES=3 nohup python -u predict.py --dataset imagenet --model vit --num_added_img 0  --save_pred_model last > logs/imagenet/base_vit_p.log 2>&1 < /dev/null &
 
 
-CUDA_VISIBLE_DEVICES=1 nohup python -u predict.py --dataset imagenet --model resnet --num_added_img 0  --save_pred_model last --attributes purplecolor --num_epochs 30 > logs_imagenet/base_resnet.log 2>&1 < /dev/null &
+CUDA_VISIBLE_DEVICES=1 nohup python -u predict.py --dataset imagenet --model resnet --num_added_img 0  --save_pred_model last --attributes purplecolor --num_epochs 30 > logs/imagenet/base_resnet.log 2>&1 < /dev/null &
 
 
 nohup ./batch.sh -m resnet -a pinkcolor -d 2 -s \
@@ -922,7 +922,7 @@ nohup ./batch.sh -m resnet -a purplecolor -d 3 \
 
 CUDA_VISIBLE_DEVICES=3 python predict.py --dataset imagenet --model resnet --num_added_img 100  --save_pred_model last --attributes purplecolor --num_epochs 10 
 
-CUDA_VISIBLE_DEVICES=1 nohup python -u predict.py --dataset imagenet --model resnet --num_added_img 0  --save_pred_model last --attributes purplecolor --num_epochs 30 > logs_imagenet/base_resnet.log 2>&1 < /dev/null &
+CUDA_VISIBLE_DEVICES=1 nohup python -u predict.py --dataset imagenet --model resnet --num_added_img 0  --save_pred_model last --attributes purplecolor --num_epochs 30 > logs/imagenet/base_resnet.log 2>&1 < /dev/null &
 
 CUDA_VISIBLE_DEVICES=1 python predict.py --dataset imagenet --model resnet --num_added_img 100  --save_pred_model last --num_epochs 10 
 

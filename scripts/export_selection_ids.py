@@ -100,7 +100,7 @@ def common_al_args(args: argparse.Namespace, method: str) -> SimpleNamespace:
 
 def imagenet_args(args: argparse.Namespace, method: str) -> SimpleNamespace:
     ns = common_al_args(args, method)
-    ns.resume_model = "weights/model_imagenet_resnet_base.pth" if method == "entropy" else None
+    ns.resume_model = "save/weights/model_imagenet_resnet_base.pth" if method == "entropy" else None
     if method == "ours":
         ns.attributes = "pinkcolor_fabrictexture"
         ns.attribute_file = "save/attribute10_internvl3_8B.json"
@@ -115,7 +115,7 @@ def imagenet_args(args: argparse.Namespace, method: str) -> SimpleNamespace:
 
 def celeba_args(args: argparse.Namespace, method: str) -> SimpleNamespace:
     ns = common_al_args(args, method)
-    ns.resume_model = "weights/model_celeba_resnet_base.pth" if method == "entropy" else None
+    ns.resume_model = "save/weights/model_celeba_resnet_base.pth" if method == "entropy" else None
     if method == "ours":
         ns.attributes = "redhair_brownskin_sademotion"
         ns.attribute_file = "save/attribute_celeba_trainval_qwen3_8B.json"
@@ -285,7 +285,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--batch-size", type=int, default=32)
     parser.add_argument("--num-workers", type=int, default=4)
-    parser.add_argument("--out-root", type=Path, default=Path("selection_exports"))
+    parser.add_argument("--out-root", type=Path, default=Path("save/selection_exports"))
     parser.add_argument("--imagenet-root", default="data/imagenet_subset")
     parser.add_argument("--celeba-root", default="/data/oxx220000/img_align_celeba")
     parser.add_argument("--coco-root", default="/data/oxx220000/coco")

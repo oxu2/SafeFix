@@ -13,14 +13,14 @@ AD_PYTHON="${AD_PYTHON:-/people/cs/o/oxx220000/.conda/envs/ad/bin/python}"
 
 KITTI_BASE_ROOT="${KITTI_BASE_ROOT:-/data/oxx220000/kitti_yolov8_first5000}"
 KITTI_GEN_DIR="${KITTI_GEN_DIR:-/data/oxx220000/kitti-weather-edits/generated_kitti1352_red_cloudy_icedit_upscaled}"
-KITTI_PROJECT="${KITTI_PROJECT:-${ROOT}/runs/kitti_yolov8}"
+KITTI_PROJECT="${KITTI_PROJECT:-${ROOT}/save/runs/kitti_yolov8}"
 KITTI_NUM_ADDED="${KITTI_NUM_ADDED:-1000}"
 KITTI_EPOCHS="${KITTI_EPOCHS:-10}"
 KITTI_BATCH="${KITTI_BATCH:-16}"
 KITTI_IMGSZ="${KITTI_IMGSZ:-640}"
 KITTI_WORKERS="${KITTI_WORKERS:-4}"
 
-CELEBA_BASE_MODEL="${CELEBA_BASE_MODEL:-weights/model_celeba_resnet_base.pth}"
+CELEBA_BASE_MODEL="${CELEBA_BASE_MODEL:-save/weights/model_celeba_resnet_base.pth}"
 CELEBA_ATTRIBUTES="${CELEBA_ATTRIBUTES:-redhair_brownskin_sademotion}"
 CELEBA_GEN_DIR="${CELEBA_GEN_DIR:-data/redhair_brownskin_sademotion}"
 CELEBA_NUM_ADDED="${CELEBA_NUM_ADDED:-1000}"
@@ -31,7 +31,7 @@ CELEBA_LR="${CELEBA_LR:-1e-5}"
 
 COCO_ROOT="${COCO_ROOT:-/data/oxx220000/coco}"
 COCO_GEN_DIR="${COCO_GEN_DIR:-/data/oxx220000/coco-pose-weather-edits/generated_coco_qwen3_1500_brown_rain_icedit}"
-COCO_BASE_MODEL="${COCO_BASE_MODEL:-log_pose/pose_keypointrcnn_train20k_internvl3_bs8_e2_rare1p1_gpu0_20260415_144530/best.pth}"
+COCO_BASE_MODEL="${COCO_BASE_MODEL:-logs/pose/pose_keypointrcnn_train20k_internvl3_bs8_e2_rare1p1_gpu0_20260415_144530/best.pth}"
 COCO_NUM_ADDED="${COCO_NUM_ADDED:-1000}"
 COCO_EPOCHS="${COCO_EPOCHS:-2}"
 COCO_BATCH="${COCO_BATCH:-8}"
@@ -42,7 +42,7 @@ COCO_MAX_TRAIN="${COCO_MAX_TRAIN:-20000}"
 SEED="${SEED:-42}"
 
 cd "${ROOT}"
-mkdir -p logs logs_celeba log_pose
+mkdir -p logs logs/celeba logs/pose
 
 if [[ ! -x "${FP_PYTHON}" ]]; then
   FP_PYTHON="python"
@@ -119,7 +119,7 @@ run_celeba_one() {
   local ratio="$1"
   local rtag
   rtag="$(ratio_tag "${ratio}")"
-  local log_file="logs_celeba/controlnet_entropy_${CELEBA_ATTRIBUTES}_resnet_celeba_${CELEBA_NUM_ADDED}_ratio${rtag}_gpu${GPU}_${STAMP}.log"
+  local log_file="logs/celeba/controlnet_entropy_${CELEBA_ATTRIBUTES}_resnet_celeba_${CELEBA_NUM_ADDED}_ratio${rtag}_gpu${GPU}_${STAMP}.log"
 
   local -a args=(
     "${AD_PYTHON}" -u alpred.py
@@ -160,11 +160,11 @@ run_coco_one() {
   local ratio="$1"
   local rtag
   rtag="$(ratio_tag "${ratio}")"
-  local out_dir="log_pose/pose_keypointrcnn_resume_qwen3_brown_rainy_entropy_ratio${rtag}_gpu${GPU}_${STAMP}"
-  local log_file="log_pose/pose_qwen3_brown_rainy_entropy_ratio${rtag}_gpu${GPU}_${STAMP}.log"
+  local out_dir="logs/pose/pose_keypointrcnn_resume_qwen3_brown_rainy_entropy_ratio${rtag}_gpu${GPU}_${STAMP}"
+  local log_file="logs/pose/pose_qwen3_brown_rainy_entropy_ratio${rtag}_gpu${GPU}_${STAMP}.log"
 
   local -a args=(
-    "${AD_PYTHON}" -u train_pose_estimation.py train
+    "${AD_PYTHON}" -u pose_estimation/train_pose_estimation.py train
     --data-root "${COCO_ROOT}"
     --pretrained true
     --device cuda

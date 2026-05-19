@@ -20,7 +20,7 @@ Options:
   --python PATH             Python executable.
   --attribute-file PATH     InternVL3 attribute metadata JSON.
   --data-root PATH          COCO root.
-  --epochs-total N          Total epochs passed to train_pose_estimation.py. Default: 2
+  --epochs-total N          Total epochs passed to pose_estimation/train_pose_estimation.py. Default: 2
   --generated-attribute V   Generated attribute to append. Default: rainy
   --generated-image-dir P   Generated image directory override.
   --gpu ID                  CUDA_VISIBLE_DEVICES value. Default: 0
@@ -38,7 +38,7 @@ EOF
 }
 
 PYTHON_EXE="/people/cs/o/oxx220000/.conda/envs/ad/bin/python"
-BASE_MODEL="log_pose/pose_keypointrcnn_train20k_internvl3_bs8_e2_rare1p1_gpu0_20260415_144530/best.pth"
+BASE_MODEL="logs/pose/pose_keypointrcnn_train20k_internvl3_bs8_e2_rare1p1_gpu0_20260415_144530/best.pth"
 ATTRIBUTE_FILE="save/attribute_coco_pose_gemini_train20k_internvl3_8B.json"
 DATA_ROOT="/data/oxx220000/coco"
 GPU=0
@@ -160,7 +160,7 @@ if [[ ! -f "$ATTRIBUTE_FILE" ]]; then
   exit 1
 fi
 
-mkdir -p log_pose/pids
+mkdir -p logs/pose/pids
 
 if [[ "$DETACH_CONTROLLER" -eq 1 ]]; then
   if [[ "$DRY_RUN" -eq 1 ]]; then
@@ -169,8 +169,8 @@ if [[ "$DETACH_CONTROLLER" -eq 1 ]]; then
   fi
 
   local_ts="$(date +%Y%m%d_%H%M%S)"
-  controller_log="log_pose/run_pose_ratio0.05_gpu0_badge_then_attr_refine_${local_ts}.log"
-  controller_pid="log_pose/pids/run_pose_ratio0.05_gpu0_badge_then_attr_refine_${local_ts}.pid"
+  controller_log="logs/pose/run_pose_ratio0.05_gpu0_badge_then_attr_refine_${local_ts}.log"
+  controller_pid="logs/pose/pids/run_pose_ratio0.05_gpu0_badge_then_attr_refine_${local_ts}.pid"
 
   detached_cmd=(
     bash "$0"
@@ -211,7 +211,7 @@ common_cmd_prefix() {
     env
     MPLCONFIGDIR=/tmp/matplotlib-safefix
     CUDA_VISIBLE_DEVICES="${GPU}"
-    "${PYTHON_EXE}" -u train_pose_estimation.py train
+    "${PYTHON_EXE}" -u pose_estimation/train_pose_estimation.py train
     --data-root "${DATA_ROOT}"
     --pretrained true
     --device cuda
@@ -267,9 +267,9 @@ launch_and_wait() {
 }
 
 launch_badge() {
-  local log_file="log_pose/pose_resume_internvl3_epoch${EPOCHS_TOTAL}_badge_ratio${RATIO}_gpu${GPU}_${TIMESTAMP}.log"
-  local pid_file="log_pose/pids/pose_resume_internvl3_epoch${EPOCHS_TOTAL}_badge_ratio${RATIO}_gpu${GPU}_${TIMESTAMP}.pid"
-  local out_dir="log_pose/pose_keypointrcnn_resume_internvl3_badge_ratio${RATIO}_gpu${GPU}_${TIMESTAMP}"
+  local log_file="logs/pose/pose_resume_internvl3_epoch${EPOCHS_TOTAL}_badge_ratio${RATIO}_gpu${GPU}_${TIMESTAMP}.log"
+  local pid_file="logs/pose/pids/pose_resume_internvl3_epoch${EPOCHS_TOTAL}_badge_ratio${RATIO}_gpu${GPU}_${TIMESTAMP}.pid"
+  local out_dir="logs/pose/pose_keypointrcnn_resume_internvl3_badge_ratio${RATIO}_gpu${GPU}_${TIMESTAMP}"
 
   common_cmd_prefix
   local cmd=(
@@ -288,9 +288,9 @@ launch_badge() {
 launch_attribute() {
   local name="$1"
   local c="$2"
-  local log_file="log_pose/pose_resume_internvl3_epoch${EPOCHS_TOTAL}_attribute_ratio${RATIO}_${name}_gpu${GPU}_${TIMESTAMP}.log"
-  local pid_file="log_pose/pids/pose_resume_internvl3_epoch${EPOCHS_TOTAL}_attribute_ratio${RATIO}_${name}_gpu${GPU}_${TIMESTAMP}.pid"
-  local out_dir="log_pose/pose_keypointrcnn_resume_internvl3_attribute_ratio${RATIO}_${name}_gpu${GPU}_${TIMESTAMP}"
+  local log_file="logs/pose/pose_resume_internvl3_epoch${EPOCHS_TOTAL}_attribute_ratio${RATIO}_${name}_gpu${GPU}_${TIMESTAMP}.log"
+  local pid_file="logs/pose/pids/pose_resume_internvl3_epoch${EPOCHS_TOTAL}_attribute_ratio${RATIO}_${name}_gpu${GPU}_${TIMESTAMP}.pid"
+  local out_dir="logs/pose/pose_keypointrcnn_resume_internvl3_attribute_ratio${RATIO}_${name}_gpu${GPU}_${TIMESTAMP}"
 
   common_cmd_prefix
   local cmd=(

@@ -117,7 +117,7 @@ def ratio_tag(ratio: float) -> str:
 
 def read_exported_selection(dataset: str, ratio: float, method: str, id_to_idx: dict[str, int]) -> set[int] | None:
     method_key = "ours" if method == "Ours" else method.lower()
-    path = Path("selection_exports") / ratio_tag(ratio) / dataset / method_key / "selected_original_ids.txt"
+    path = Path("save/selection_exports") / ratio_tag(ratio) / dataset / method_key / "selected_original_ids.txt"
     if not path.exists():
         return None
     selected = {
@@ -140,7 +140,7 @@ def selection_from_export_or_fallback(
 ) -> Selection:
     exported = read_exported_selection(dataset, ratio, method, {image_id: idx for idx, image_id in enumerate(ids)})
     if exported is not None:
-        return Selection(method, exported, metric, "selection_exports")
+        return Selection(method, exported, metric, "save/selection_exports")
     return Selection(method, fallback, metric, fallback_source)
 
 

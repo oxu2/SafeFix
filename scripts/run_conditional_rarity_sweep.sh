@@ -7,7 +7,7 @@ echo "Starting Conditional Rarity Sweep (Class Balance: INF) on GPU $CUDA_VISIBL
 echo "Using Python: $PYTHON_EXEC"
 
 for RATIO in 0.1 0.3 0.5 0.7 0.9; do
-    LOG_FILE="logs_imagenet/AL_resnet_condRarity_imagenet_${RATIO}_1000_classINF.log"
+    LOG_FILE="logs/imagenet/AL_resnet_condRarity_imagenet_${RATIO}_1000_classINF.log"
     echo "----------------------------------------------------------------"
     echo "Running ratio $RATIO... Logging to $LOG_FILE"
     

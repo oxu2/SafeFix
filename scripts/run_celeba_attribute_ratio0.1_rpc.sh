@@ -16,7 +16,7 @@ EOF
 }
 
 PYTHON_EXE="/people/cs/o/oxx220000/.conda/envs/ad/bin/python"
-BASE_MODEL="weights/model_celeba_resnet_base.pth"
+BASE_MODEL="save/weights/model_celeba_resnet_base.pth"
 DRY_RUN=0
 
 ATTRIBUTES="redhair_brownskin_sademotion"
@@ -66,7 +66,7 @@ if [[ ! -f "$BASE_MODEL" ]]; then
   exit 1
 fi
 
-mkdir -p logs_celeba/pids
+mkdir -p logs/celeba/pids
 
 TIMESTAMP="$(date +%Y%m%d_%H%M%S)"
 
@@ -77,8 +77,8 @@ launch_one() {
   local p="$4"
   local c="$5"
 
-  local log_file="logs_celeba/attr_ratio${RATIO}_${name}_gpu${gpu}_${TIMESTAMP}.log"
-  local pid_file="logs_celeba/pids/attr_ratio${RATIO}_${name}_gpu${gpu}_${TIMESTAMP}.pid"
+  local log_file="logs/celeba/attr_ratio${RATIO}_${name}_gpu${gpu}_${TIMESTAMP}.log"
+  local pid_file="logs/celeba/pids/attr_ratio${RATIO}_${name}_gpu${gpu}_${TIMESTAMP}.pid"
 
   local cmd=(
     env

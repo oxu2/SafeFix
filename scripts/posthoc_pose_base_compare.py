@@ -14,14 +14,14 @@ from typing import Dict, Iterable, List, Optional, Sequence, Tuple
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-DEFAULT_BASE_RUN_DIR = REPO_ROOT / "log_pose/pose_keypointrcnn_train20k_internvl3_bs4_e2_rare0p97_gpuX_20260412_015544"
-DEFAULT_BASE_LOG = REPO_ROOT / "log_pose/pose_train20k_internvl3_bs4_e2_rare0p97_gpuX_20260412_015544.log"
+DEFAULT_BASE_RUN_DIR = REPO_ROOT / "logs/pose/pose_keypointrcnn_train20k_internvl3_bs4_e2_rare0p97_gpuX_20260412_015544"
+DEFAULT_BASE_LOG = REPO_ROOT / "logs/pose/pose_train20k_internvl3_bs4_e2_rare0p97_gpuX_20260412_015544.log"
 DEFAULT_REPORT_MD = REPO_ROOT / "report.md"
 DEFAULT_ANALYSIS_TAG = "internvl3"
 DEFAULT_ATTRIBUTE_FILE = REPO_ROOT / "save/attribute_coco_pose_gemini_internvl3_8B.json"
 DEFAULT_TRAIN_ATTRIBUTE_FILE = REPO_ROOT / "save/attribute_coco_pose_gemini_train20k_internvl3_8B.json"
 DEFAULT_CORPUS_FILE = REPO_ROOT / "save/corpus_coco_pose_gemini.json"
-DEFAULT_BASE_REFERENCE_DIR = REPO_ROOT / "log_pose/base_reference"
+DEFAULT_BASE_REFERENCE_DIR = REPO_ROOT / "logs/pose/base_reference"
 
 
 def parse_args() -> argparse.Namespace:
@@ -179,7 +179,7 @@ def ensure_repo_relative(path: Path) -> str:
 
 def parse_report_logs(report_md: Path) -> List[Path]:
     text = report_md.read_text(encoding="utf-8")
-    rel_paths = re.findall(r"`(log_pose/pose_resume_internvl3_epoch2_[^`]+\.log)`", text)
+    rel_paths = re.findall(r"`(logs/pose/pose_resume_internvl3_epoch2_[^`]+\.log)`", text)
     unique_paths: List[Path] = []
     seen = set()
     for rel_path in rel_paths:

@@ -68,7 +68,7 @@ conda activate fp
 python3 object_detection/train_yolov8_kitti.py \
   --data-yaml /data/oxx220000/kitti_yolov8_first5000/kitti_first5000.yaml \
   --pretrained true \
-  --weights weights/yolov8n.pt \
+  --weights save/weights/yolov8n.pt \
   --epochs 100 \
   --batch 64 \
   --imgsz 640 \
@@ -92,10 +92,10 @@ python3 object_detection/train_yolov8_kitti.py \
 After training, the script will also run `model.val(split="test")` automatically when the dataset yaml includes a `test:` entry.
 
 Ultralytics writes resumable artifacts under
-`runs/kitti_yolov8/<run-name>/weights/`. Resume from
-`weights/last.pt`; use `weights/best.pt` for evaluation or model selection.
+`save/runs/kitti_yolov8/<run-name>/save/weights/`. Resume from
+`save/weights/last.pt`; use `save/weights/best.pt` for evaluation or model selection.
 The previous completed local run
-`runs/kitti_yolov8/first5000_gpu1_e30_20260409_194735/` has both files. A new
+`save/runs/kitti_yolov8/first5000_gpu1_e30_20260409_194735/` has both files. A new
 run only has `args.yaml` until it reaches the first checkpoint save point.
 For the current YOLOv8n KITTI run, `best.pt` and `last.pt` are about `18.4 MB`
 each, below GitHub's 100 MB hard file limit. Larger model families can exceed

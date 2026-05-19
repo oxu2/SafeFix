@@ -1,8 +1,0 @@
-[run] gpu=1 ratio=0.9 attribute=r000_p0_c15 R=0.0 P=0.0 C=15.0 log=logs_celeba/mainfill_attribute_r000_p0_c15_resnet_celeba_1000_ratio0p9_gpu1_20260504_024733.log
-[run] gpu=1 ratio=0.9 attribute=r000_p0_cinf R=0.0 P=0.0 C=inf log=logs_celeba/mainfill_attribute_r000_p0_cinf_resnet_celeba_1000_ratio0p9_gpu1_20260504_024733.log
-[run] gpu=1 ratio=0.9 attribute=r003_p05_c15 R=0.03 P=0.5 C=15.0 log=logs_celeba/mainfill_attribute_r003_p05_c15_resnet_celeba_1000_ratio0p9_gpu1_20260504_024733.log
-[run] gpu=1 ratio=0.9 attribute=r003_p05_cinf R=0.03 P=0.5 C=inf log=logs_celeba/mainfill_attribute_r003_p05_cinf_resnet_celeba_1000_ratio0p9_gpu1_20260504_024733.log
-[refine] ratio=0.9 best_attr=0.9146 best_baseline=0.9114 delta=0.003200
-[refine] ratio=0.9 close/competitive; running 2 extra RPCs
-[run] gpu=1 ratio=0.9 attribute=r003_p05_c8 R=0.03 P=0.5 C=8.0 log=logs_celeba/mainfill_attribute_r003_p05_c8_resnet_celeba_1000_ratio0p9_gpu1_20260504_024733.log
-[run] gpu=1 ratio=0.9 attribute=r002_p05_c15 R=0.02 P=0.5 C=15.0 log=logs_celeba/mainfill_attribute_r002_p05_c15_resnet_celeba_1000_ratio0p9_gpu1_20260504_024733.log

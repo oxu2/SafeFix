@@ -16,7 +16,7 @@ RUN_BASELINES="${RUN_BASELINES:-1}"
 SKIP_COMPLETED="${SKIP_COMPLETED:-1}"
 
 SCRIPT="${ROOT_DIR}/object_detection/train_yolov8_kitti_generated.py"
-PROJECT="${ROOT_DIR}/runs/kitti_yolov8"
+PROJECT="${ROOT_DIR}/save/runs/kitti_yolov8"
 DATA_ROOT="/data/oxx220000/kitti_yolov8_first5000"
 GEN_DIR="/data/oxx220000/kitti-weather-edits/generated_kitti1352_red_cloudy_icedit_upscaled"
 RUN_LOG_DIR="${ROOT_DIR}/logs"

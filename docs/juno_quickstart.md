@@ -144,8 +144,8 @@ rsync -av \
   --exclude '.git/' \
   --exclude '__pycache__/' \
   --exclude '*.pyc' \
-  --exclude 'log_pose/' \
-  --exclude 'runs/' \
+  --exclude 'logs/pose/' \
+  --exclude 'save/runs/' \
   --exclude 'outputs/' \
   ./ juno:/work/NetID/project/
 ```
@@ -302,8 +302,8 @@ Copy a specific checkpoint only when it is needed:
 
 ```bash
 rsync -aP \
-  juno:/work/NetID/project/runs/<run-name>/weights/best.pt \
-  runs/<run-name>/weights/best.pt
+  juno:/work/NetID/project/save/runs/<run-name>/weights/best.pt \
+  save/runs/<run-name>/weights/best.pt
 ```
 
 Do not copy editor folders, Python caches, `.pytest_cache/`, PID files, or

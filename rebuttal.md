@@ -29,9 +29,11 @@ We will add the following table to the manuscript to explicitly highlight how Sa
 > According to the paper, the metric Fix Rate "measures the fraction of previously misclassified samples that are corrected." However, Eq. (6) does not compute that. It looks only at the aggregate accuracy, not per-sample accuracy.
 
 **Response:**
-The reviewer is correct. Equation (6) computes the net relative reduction in the error rate based on aggregate accuracy, rather than tracking the exact per-sample transitions from incorrect to correct. We appreciate this precise observation. 
+We appreciate this precise observation. If we expand the accuracy terms as $Acc_{\text{before}} = \frac{C_{\text{before}}}{N}$ and $Acc_{\text{after}} = \frac{C_{\text{after}}}{N}$ (where $C$ is the number of correct predictions and $N$ is the total number of samples), the derivation of the equation unfolds as follows:
+$$ FR = \frac{Acc_{\text{after}} - Acc_{\text{before}}}{1 - Acc_{\text{before}}} = \frac{\frac{C_{\text{after}}}{N} - \frac{C_{\text{before}}}{N}}{1 - \frac{C_{\text{before}}}{N}} = \frac{\frac{C_{\text{after}} - C_{\text{before}}}{N}}{\frac{N - C_{\text{before}}}{N}} = \frac{C_{\text{after}} - C_{\text{before}}}{N - C_{\text{before}}} $$
+Here, $N - C_{\text{before}}$ is exactly the total number of previously misclassified samples, and $C_{\text{after}} - C_{\text{before}}$ represents the net increase in correct predictions. Therefore, in a net aggregate sense, $FR$ does functionally compute the fraction of previously misclassified samples that are corrected. 
 
-To resolve this, we will correct the text in the revised manuscript. We will update the description of the Fix Rate to state that it "measures the relative reduction in the error rate" instead of claiming it tracks individual misclassified samples. 
+However, we fully agree with the reviewer that because this formula relies on aggregate counts rather than tracking the exact per-sample transitions (i.e., verifying that sample $i$ specifically flipped from incorrect to correct), describing it as the "relative reduction in the error rate" is mathematically more rigorous and avoids any ambiguity. We will update the text in the revised manuscript to adopt this improved phrasing. 
 
 ## 3. Generation-based vs. Retrieval-based Approaches
 

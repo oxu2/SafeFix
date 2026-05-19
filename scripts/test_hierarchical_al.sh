@@ -38,7 +38,7 @@ CUDA_VISIBLE_DEVICES=0 python -u alpred.py \
   --sub_ratio $SUB_RATIO \
   --al_strategy hierarchical \
   --al_embedding_dim $EMBEDDING_DIM \
-  > logs_imagenet/AL_hierarchical_default_imagenet_1000_${SUB_RATIO}.log 2>&1 &
+  > logs/imagenet/AL_hierarchical_default_imagenet_1000_${SUB_RATIO}.log 2>&1 &
 
 echo "=== Test 1: Hierarchical AL with High Error Weight ==="
 CUDA_VISIBLE_DEVICES=1 python -u alpred.py \
@@ -51,7 +51,7 @@ CUDA_VISIBLE_DEVICES=1 python -u alpred.py \
   --al_alpha 0.5 \
   --al_beta 0.3 \
   --al_gamma 0.2 \
-  > logs_imagenet/AL_hierarchical_higherr_imagenet_1000_${SUB_RATIO}.log 2>&1 &
+  > logs/imagenet/AL_hierarchical_higherr_imagenet_1000_${SUB_RATIO}.log 2>&1 &
 
 echo "=== Test 2: Hierarchical AL with High Coverage Weight ==="
 CUDA_VISIBLE_DEVICES=2 python -u alpred.py \
@@ -65,7 +65,7 @@ CUDA_VISIBLE_DEVICES=2 python -u alpred.py \
   --al_beta 0.6 \
   --al_gamma 0.2 \
   --al_lambda_div 0.6 \
-  > logs_imagenet/AL_hierarchical_highcov_imagenet_1000_${SUB_RATIO}.log 2>&1 &
+  > logs/imagenet/AL_hierarchical_highcov_imagenet_1000_${SUB_RATIO}.log 2>&1 &
 
 echo "=== Test 3: Hierarchical AL with Balanced Round Allocation ==="
 CUDA_VISIBLE_DEVICES=3 python -u alpred.py \
@@ -77,7 +77,7 @@ CUDA_VISIBLE_DEVICES=3 python -u alpred.py \
   --al_min_slice_quota 3 \
   --al_max_slice_quota 30 \
   --al_lambda_div 0.8 \
-  > logs_imagenet/AL_hierarchical_balanced_imagenet_1000_${SUB_RATIO}.log 2>&1 &
+  > logs/imagenet/AL_hierarchical_balanced_imagenet_1000_${SUB_RATIO}.log 2>&1 &
 
 echo ""
 echo "All hierarchical AL tests launched in parallel..."
@@ -92,13 +92,13 @@ echo "Waiting for all tests to complete..."
 wait
 
 echo ""
-echo "Tests completed. Check logs in logs_imagenet/AL_hierarchical_*.log"
+echo "Tests completed. Check logs in logs/imagenet/AL_hierarchical_*.log"
 echo "Look for lines like 'Hierarchical AL selected X samples total'"
 
 # Check if all log files were created
 echo ""
 echo "=== Log Files Summary ==="
-for log_file in logs_imagenet/AL_hierarchical_*_imagenet_1000_${SUB_RATIO}.log; do
+for log_file in logs/imagenet/AL_hierarchical_*_imagenet_1000_${SUB_RATIO}.log; do
     if [ -f "$log_file" ]; then
         size=$(wc -l < "$log_file")
         echo "✓ $(basename "$log_file"): $size lines"
@@ -135,7 +135,7 @@ echo ""
 echo "=== Performance Comparison ==="
 echo "Compare final validation accuracies across different hierarchical AL configurations:"
 echo ""
-for log_file in logs_imagenet/AL_hierarchical_*_imagenet_1000_${SUB_RATIO}.log; do
+for log_file in logs/imagenet/AL_hierarchical_*_imagenet_1000_${SUB_RATIO}.log; do
     if [ -f "$log_file" ]; then
         config=$(basename "$log_file" | cut -d'_' -f3)
         final_acc=$(grep -o "Final Epoch Validation Accuracy: [0-9.]*" "$log_file" | tail -1 | cut -d' ' -f5)

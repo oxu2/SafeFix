@@ -39,7 +39,7 @@ CUDA_VISIBLE_DEVICES=0 python -u alpred.py \
   $COMMON_ARGS \
   --sub_ratio $SUB_RATIO \
   --use_active_learning False \
-  > logs_imagenet/AL_comparison_random_imagenet_${NUM_ADDED_IMG}_${SUB_RATIO}.log 2>&1 &
+  > logs/imagenet/AL_comparison_random_imagenet_${NUM_ADDED_IMG}_${SUB_RATIO}.log 2>&1 &
 
 echo "=== Test 1: Core-set AL ==="
 CUDA_VISIBLE_DEVICES=1 python -u alpred.py \
@@ -47,14 +47,14 @@ CUDA_VISIBLE_DEVICES=1 python -u alpred.py \
   --sub_ratio $SUB_RATIO \
   --al_strategy coreset \
   --al_embedding_dim 256 \
-  > logs_imagenet/AL_comparison_coreset_imagenet_${NUM_ADDED_IMG}_${SUB_RATIO}.log 2>&1 &
+  > logs/imagenet/AL_comparison_coreset_imagenet_${NUM_ADDED_IMG}_${SUB_RATIO}.log 2>&1 &
 
 echo "=== Test 2: Stratified AL ==="
 CUDA_VISIBLE_DEVICES=2 python -u alpred.py \
   $COMMON_ARGS \
   --sub_ratio $SUB_RATIO \
   --al_strategy stratified \
-  > logs_imagenet/AL_comparison_stratified_imagenet_${NUM_ADDED_IMG}_${SUB_RATIO}.log 2>&1 &
+  > logs/imagenet/AL_comparison_stratified_imagenet_${NUM_ADDED_IMG}_${SUB_RATIO}.log 2>&1 &
 
 echo "=== Test 3: Diversity AL ==="
 CUDA_VISIBLE_DEVICES=3 python -u alpred.py \
@@ -63,7 +63,7 @@ CUDA_VISIBLE_DEVICES=3 python -u alpred.py \
   --al_strategy diversity \
   --al_clusters 50 \
   --al_embedding_dim 256 \
-  > logs_imagenet/AL_comparison_diversity_imagenet_${NUM_ADDED_IMG}_${SUB_RATIO}.log 2>&1 &
+  > logs/imagenet/AL_comparison_diversity_imagenet_${NUM_ADDED_IMG}_${SUB_RATIO}.log 2>&1 &
 
 echo "=== Test 4: Hybrid AL ==="
 CUDA_VISIBLE_DEVICES=0 python -u alpred.py \
@@ -73,7 +73,7 @@ CUDA_VISIBLE_DEVICES=0 python -u alpred.py \
   --al_coreset_ratio 0.3 \
   --al_stratified_ratio 0.4 \
   --al_embedding_dim 256 \
-  > logs_imagenet/AL_comparison_hybrid_imagenet_${NUM_ADDED_IMG}_${SUB_RATIO}.log 2>&1 &
+  > logs/imagenet/AL_comparison_hybrid_imagenet_${NUM_ADDED_IMG}_${SUB_RATIO}.log 2>&1 &
 
 echo "=== Test 5: Hierarchical AL (Default) ==="
 CUDA_VISIBLE_DEVICES=1 python -u alpred.py \
@@ -81,7 +81,7 @@ CUDA_VISIBLE_DEVICES=1 python -u alpred.py \
   --sub_ratio $SUB_RATIO \
   --al_strategy hierarchical \
   --al_embedding_dim 256 \
-  > logs_imagenet/AL_comparison_hierarchical_imagenet_${NUM_ADDED_IMG}_${SUB_RATIO}.log 2>&1 &
+  > logs/imagenet/AL_comparison_hierarchical_imagenet_${NUM_ADDED_IMG}_${SUB_RATIO}.log 2>&1 &
 
 echo "=== Test 6: Hierarchical AL (Optimized) ==="
 CUDA_VISIBLE_DEVICES=2 python -u alpred.py \
@@ -98,7 +98,7 @@ CUDA_VISIBLE_DEVICES=2 python -u alpred.py \
   --al_round1_ratio 0.6 \
   --al_min_slice_quota 3 \
   --al_max_slice_quota 30 \
-  > logs_imagenet/AL_comparison_hierarchical_opt_imagenet_${NUM_ADDED_IMG}_${SUB_RATIO}.log 2>&1 &
+  > logs/imagenet/AL_comparison_hierarchical_opt_imagenet_${NUM_ADDED_IMG}_${SUB_RATIO}.log 2>&1 &
 
 echo ""
 echo "All strategy comparison tests launched..."
@@ -132,7 +132,7 @@ echo "----------------------------"
 for i in "${!strategies[@]}"; do
     strategy="${strategies[$i]}"
     strategy_name="${strategy_names[$i]}"
-    log_file="logs_imagenet/AL_comparison_${strategy}_imagenet_${NUM_ADDED_IMG}_${SUB_RATIO}.log"
+    log_file="logs/imagenet/AL_comparison_${strategy}_imagenet_${NUM_ADDED_IMG}_${SUB_RATIO}.log"
     
     if [ -f "$log_file" ]; then
         final_acc=$(grep -o "Final Epoch Validation Accuracy: [0-9.]*" "$log_file" | tail -1 | cut -d' ' -f5)
@@ -154,7 +154,7 @@ echo "-----------------------------------"
 for i in "${!strategies[@]}"; do
     strategy="${strategies[$i]}"
     strategy_name="${strategy_names[$i]}"
-    log_file="logs_imagenet/AL_comparison_${strategy}_imagenet_${NUM_ADDED_IMG}_${SUB_RATIO}.log"
+    log_file="logs/imagenet/AL_comparison_${strategy}_imagenet_${NUM_ADDED_IMG}_${SUB_RATIO}.log"
     
     if [ -f "$log_file" ]; then
         printf "%-30s: " "$strategy_name"
@@ -216,7 +216,7 @@ echo ""
 echo "Log Files Summary:"
 echo "-----------------"
 for strategy in "${strategies[@]}"; do
-    log_file="logs_imagenet/AL_comparison_${strategy}_imagenet_${NUM_ADDED_IMG}_${SUB_RATIO}.log"
+    log_file="logs/imagenet/AL_comparison_${strategy}_imagenet_${NUM_ADDED_IMG}_${SUB_RATIO}.log"
     if [ -f "$log_file" ]; then
         size=$(wc -l < "$log_file")
         printf "%-30s: %d lines\n" "$(basename "$log_file")" "$size"

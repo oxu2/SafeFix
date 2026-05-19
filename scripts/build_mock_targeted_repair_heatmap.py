@@ -197,7 +197,7 @@ METHOD_TARGET_RESPONSE = {
 }
 
 QWEN3_RATIO_0P3_TARGET_EXPOSURE = {
-    "log": "log_pose/pose_qwen3_brown_rainy_rpc8_anchor_ratio0p3_gpu1_20260501_231910.log",
+    "log": "logs/pose/pose_qwen3_brown_rainy_rpc8_anchor_ratio0p3_gpu1_20260501_231910.log",
     "selected_original": 6000,
     "generated_selected": 1000,
     "brown_selected": 176,

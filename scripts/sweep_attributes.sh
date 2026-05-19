@@ -6,7 +6,7 @@
 # GPU 0 -> ratio 0.1, GPU 1 -> ratio 0.3, GPU 2 -> ratio 0.5, GPU 3 -> ratio 0.9
 # =============================================================================
 
-mkdir -p logs_imagenet
+mkdir -p logs/imagenet
 
 PYTHON_EXE="/people/cs/o/oxx220000/.conda/envs/ad/bin/python"
 
@@ -15,7 +15,7 @@ if [ ! -f "$PYTHON_EXE" ]; then
     PYTHON_EXE="python3"
 fi
 
-BASE_MODEL="save/models/weights/model_imagenet_resnet_base.pth"
+BASE_MODEL="save/weights/model_imagenet_resnet_base.pth"
 NUM_EPOCHS=15
 
 if [ ! -f "$BASE_MODEL" ]; then
@@ -49,7 +49,7 @@ run_gpu_queue() {
     for scenario in "${SCENARIOS[@]}"; do
         IFS=' ' read -r name r_val p_val c_val entropy_val <<< "$scenario"
 
-        LOG_FILE="logs_imagenet/sweep_attr_${name}_${ratio_str}.log"
+        LOG_FILE="logs/imagenet/sweep_attr_${name}_${ratio_str}.log"
         echo "[$(date '+%Y-%m-%d %H:%M:%S')] GPU ${gpu}: ${name} (R=${r_val} P=${p_val} C=${c_val} E=${entropy_val}) -> ${LOG_FILE}"
 
         CUDA_VISIBLE_DEVICES=${gpu} $PYTHON_EXE -u alpred.py \
