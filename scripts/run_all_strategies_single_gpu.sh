@@ -13,13 +13,13 @@ if [ -z "$GPU_ID" ] || [ -z "$SUB_RATIO" ]; then
     exit 1
 fi
 
-mkdir -p logs_imagenet
+mkdir -p logs/imagenet
 
 PYTHON_EXE="/people/cs/o/oxx220000/.conda/envs/ad/bin/python"
-BASE_MODEL="save/models/weights/model_imagenet_resnet_base.pth"
+BASE_MODEL="save/weights/model_imagenet_resnet_base.pth"
 NUM_EPOCHS=15
 RATIO_STR="ratio${SUB_RATIO}"
-LOG_PREFIX="logs_imagenet/resume_lr5_epoch15"
+LOG_PREFIX="logs/imagenet/resume_lr5_epoch15"
 
 COMMON_ARGS="--dataset imagenet --model resnet --num_added_img 1000 --attributes pinkcolor_fabrictexture --num_epochs $NUM_EPOCHS --verbose False --resume_model $BASE_MODEL --sub_ratio $SUB_RATIO"
 

@@ -137,8 +137,8 @@ for required in "$DATA_ROOT" "$CONFIG"; do
 done
 
 TIMESTAMP="$(date +%Y%m%d_%H%M%S)"
-OUT_DIR="$REPO_DIR/log_pose/rtmpose_tiny_coco_val_seed${SEED}_a30_${TIMESTAMP}"
-LOG_FILE="$REPO_DIR/log_pose/rtmpose_tiny_coco_val_seed${SEED}_a30_${TIMESTAMP}.log"
+OUT_DIR="$REPO_DIR/logs/pose/rtmpose_tiny_coco_val_seed${SEED}_a30_${TIMESTAMP}"
+LOG_FILE="$REPO_DIR/logs/pose/rtmpose_tiny_coco_val_seed${SEED}_a30_${TIMESTAMP}.log"
 mkdir -p "$OUT_DIR"
 
 cmd=(

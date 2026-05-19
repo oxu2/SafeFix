@@ -46,7 +46,7 @@ def main():
     ratio_str = f"ratio{ratio}"
     
     # Find all AL log files with the specified ratio
-    log_files = glob.glob(f'logs_imagenet/AL_*_resnet_imagenet_1000_{ratio_str}.log')
+    log_files = glob.glob(f'logs/imagenet/AL_*_resnet_imagenet_1000_{ratio_str}.log')
     
     if not log_files:
         print(f"No log files found for ratio {ratio}. Pattern: AL_*_resnet_imagenet_1000_{ratio_str}.log")

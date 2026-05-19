@@ -39,7 +39,7 @@ def parse_args():
     parser.add_argument("--batch", type=int, default=16)
     parser.add_argument("--device", type=str, default="0")
     parser.add_argument("--workers", type=int, default=8)
-    parser.add_argument("--project", type=str, default="runs/kitti_yolov8")
+    parser.add_argument("--project", type=str, default="save/runs/kitti_yolov8")
     parser.add_argument("--name", type=str, default="first5000")
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument(
@@ -104,7 +104,7 @@ def main():
         batch=args.batch,
         device=args.device,
         workers=args.workers,
-        project=args.project,
+        project=str(Path(args.project).resolve()),
         name=args.name,
         seed=args.seed,
         pretrained=args.pretrained,
@@ -141,7 +141,7 @@ def main():
             batch=args.batch,
             device=args.device,
             workers=args.workers,
-            project=args.project,
+            project=str(Path(args.project).resolve()),
             name=f"{args.name}_test",
         )
         test_elapsed = time.time() - test_start_time

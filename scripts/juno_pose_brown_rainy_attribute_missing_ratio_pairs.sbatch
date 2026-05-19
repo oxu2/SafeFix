@@ -46,7 +46,7 @@ Options:
   --ratios "R ..."         Space-separated ratios. Default: "0.7 0.9"
   --batch-size N           Training batch size. Default: 8
   --num-workers N          DataLoader workers per run. Default: 4
-  --epochs-total N         Total epochs passed to train_pose_estimation.py. Default: 2
+  --epochs-total N         Total epochs passed to pose_estimation/train_pose_estimation.py. Default: 2
   --max-parallel N         Max concurrent training processes. Default: 2
   --rerun-existing         Rerun rows that already have test_metrics.json.
   --dry-run                Print per-run commands without training.
@@ -57,7 +57,7 @@ REPO_DIR="${SLURM_SUBMIT_DIR:-$PWD}"
 CONDA_ENV="/groups/yguo/oxx220000/conda/envs/ad"
 DATA_ROOT="$HOME/scratch/safefix_cache/data/coco"
 GENERATED_DIR="$HOME/scratch/safefix_cache/data/coco-pose-weather-edits/generated_coco_qwen3_1500_brown_rain_icedit"
-BASE_MODEL="$HOME/scratch/safefix_cache/log_pose/pose_keypointrcnn_train20k_internvl3_bs8_e2_rare1p1_gpu0_20260415_144530/best.pth"
+BASE_MODEL="$HOME/scratch/safefix_cache/logs/pose/pose_keypointrcnn_train20k_internvl3_bs8_e2_rare1p1_gpu0_20260415_144530/best.pth"
 ATTRIBUTE_FILE=""
 RATIOS_STRING="0.7 0.9"
 BATCH_SIZE=8
@@ -155,7 +155,7 @@ for required in \
   fi
 done
 
-mkdir -p "$REPO_DIR/log_pose/pids"
+mkdir -p "$REPO_DIR/logs/pose/pids"
 
 PYTHON_EXE="$CONDA_ENV/bin/python"
 read -r -a RATIOS <<< "$RATIOS_STRING"
@@ -188,7 +188,7 @@ run_name() {
 
 has_existing_result() {
   local name="$1"
-  compgen -G "$REPO_DIR/log_pose/pose_keypointrcnn_resume_${name}_gpu0_*/test_metrics.json" >/dev/null
+  compgen -G "$REPO_DIR/logs/pose/pose_keypointrcnn_resume_${name}_gpu0_*/test_metrics.json" >/dev/null
 }
 
 launch_one() {
@@ -210,15 +210,15 @@ launch_one() {
     return 0
   fi
 
-  local out_dir="$REPO_DIR/log_pose/pose_keypointrcnn_resume_${name}_gpu0_${ts}"
-  local log_file="$REPO_DIR/log_pose/pose_resume_${name}_gpu0_${ts}.log"
-  local pid_file="$REPO_DIR/log_pose/pids/pose_resume_${name}_gpu0_${ts}.pid"
+  local out_dir="$REPO_DIR/logs/pose/pose_keypointrcnn_resume_${name}_gpu0_${ts}"
+  local log_file="$REPO_DIR/logs/pose/pose_resume_${name}_gpu0_${ts}.log"
+  local pid_file="$REPO_DIR/logs/pose/pids/pose_resume_${name}_gpu0_${ts}.pid"
 
   local cmd=(
     env
     MPLCONFIGDIR=/tmp/matplotlib-safefix
     CUDA_VISIBLE_DEVICES=0
-    "$PYTHON_EXE" -u train_pose_estimation.py train
+    "$PYTHON_EXE" -u pose_estimation/train_pose_estimation.py train
     --data-root "$DATA_ROOT"
     --pretrained true
     --device cuda

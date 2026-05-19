@@ -14,7 +14,7 @@ CUDA_VISIBLE_DEVICES=1 nohup python -u alpred.py \
   --al_attribute_rarity_power 1 \
   --al_attribute_uncertainty_boost 0 \
   --al_attribute_log_acc_scale 0 \
-  > logs_imagenet/AL_resnet_imagenet_attr_0.7_alpha1_beta0_gamma0_1000.log 2>&1 < /dev/null &
+  > logs/imagenet/AL_resnet_imagenet_attr_0.7_alpha1_beta0_gamma0_1000.log 2>&1 < /dev/null &
 
 # GPU 2: alpha=0, beta=1, gamma=0
 CUDA_VISIBLE_DEVICES=2 nohup python -u alpred.py \
@@ -29,7 +29,7 @@ CUDA_VISIBLE_DEVICES=2 nohup python -u alpred.py \
   --al_attribute_rarity_power 0 \
   --al_attribute_uncertainty_boost 1 \
   --al_attribute_log_acc_scale 0 \
-  > logs_imagenet/AL_resnet_imagenet_attr_0.7_alpha0_beta1_gamma0_1000.log 2>&1 < /dev/null &
+  > logs/imagenet/AL_resnet_imagenet_attr_0.7_alpha0_beta1_gamma0_1000.log 2>&1 < /dev/null &
 
 # GPU 3: alpha=0, beta=0, gamma=1
 CUDA_VISIBLE_DEVICES=3 nohup python -u alpred.py \
@@ -44,7 +44,7 @@ CUDA_VISIBLE_DEVICES=3 nohup python -u alpred.py \
   --al_attribute_rarity_power 0 \
   --al_attribute_uncertainty_boost 0 \
   --al_attribute_log_acc_scale 1 \
-  > logs_imagenet/AL_resnet_imagenet_attr_0.7_alpha0_beta0_gamma1_1000.log 2>&1 < /dev/null &
+  > logs/imagenet/AL_resnet_imagenet_attr_0.7_alpha0_beta0_gamma1_1000.log 2>&1 < /dev/null &
 
 # GPU 0: alpha=0, beta=0, gamma=0
 CUDA_VISIBLE_DEVICES=0 nohup python -u alpred.py \
@@ -59,4 +59,4 @@ CUDA_VISIBLE_DEVICES=0 nohup python -u alpred.py \
   --al_attribute_rarity_power 0 \
   --al_attribute_uncertainty_boost 0 \
   --al_attribute_log_acc_scale 0 \
-  > logs_imagenet/AL_resnet_imagenet_attr_0.7_alpha0_beta0_gamma0_1000.log 2>&1 < /dev/null &
+  > logs/imagenet/AL_resnet_imagenet_attr_0.7_alpha0_beta0_gamma0_1000.log 2>&1 < /dev/null &

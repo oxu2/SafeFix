@@ -12,7 +12,7 @@ save_period: -1
 cache: false
 device: '0'
 workers: 8
-project: runs/kitti_yolov8
+project: save/runs/kitti_yolov8
 name: first5000
 exist_ok: false
 pretrained: true
@@ -106,4 +106,4 @@ auto_augment: randaugment
 erasing: 0.4
 cfg: null
 tracker: botsort.yaml
-save_dir: /people/cs/o/oxx220000/safefix/runs/detect/runs/kitti_yolov8/first5000
+save_dir: /people/cs/o/oxx220000/safefix/save/runs/detect/save/runs/kitti_yolov8/first5000

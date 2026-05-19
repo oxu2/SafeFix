@@ -8,15 +8,15 @@ IMAGENET_GPU="${IMAGENET_GPU:-2}"
 CELEBA_GPU="${CELEBA_GPU:-3}"
 
 cd "${ROOT}"
-mkdir -p logs logs_imagenet logs_celeba
+mkdir -p logs logs/imagenet logs/celeba
 
 if [[ ! -x "${PYTHON_EXE}" ]]; then
   PYTHON_EXE="python3"
 fi
 
 launch_imagenet() {
-  local log="logs_imagenet/controlnet_pinkcolor_fabrictexture_resnet_imagenet_1000_ratio1p0_e30_baseparams_noresume_gpu${IMAGENET_GPU}_${STAMP}.log"
-  local pidfile="logs_imagenet/controlnet_pinkcolor_fabrictexture_resnet_imagenet_1000_ratio1p0_e30_baseparams_noresume_gpu${IMAGENET_GPU}_${STAMP}.pid"
+  local log="logs/imagenet/controlnet_pinkcolor_fabrictexture_resnet_imagenet_1000_ratio1p0_e30_baseparams_noresume_gpu${IMAGENET_GPU}_${STAMP}.log"
+  local pidfile="logs/imagenet/controlnet_pinkcolor_fabrictexture_resnet_imagenet_1000_ratio1p0_e30_baseparams_noresume_gpu${IMAGENET_GPU}_${STAMP}.pid"
 
   setsid nohup bash -lc "
     set -euo pipefail
@@ -49,8 +49,8 @@ launch_imagenet() {
 }
 
 launch_celeba() {
-  local log="logs_celeba/controlnet_redhair_brownskin_sademotion_resnet_celeba_1000_ratio1p0_e20_baseparams_noresume_gpu${CELEBA_GPU}_${STAMP}.log"
-  local pidfile="logs_celeba/controlnet_redhair_brownskin_sademotion_resnet_celeba_1000_ratio1p0_e20_baseparams_noresume_gpu${CELEBA_GPU}_${STAMP}.pid"
+  local log="logs/celeba/controlnet_redhair_brownskin_sademotion_resnet_celeba_1000_ratio1p0_e20_baseparams_noresume_gpu${CELEBA_GPU}_${STAMP}.log"
+  local pidfile="logs/celeba/controlnet_redhair_brownskin_sademotion_resnet_celeba_1000_ratio1p0_e20_baseparams_noresume_gpu${CELEBA_GPU}_${STAMP}.pid"
 
   setsid nohup bash -lc "
     set -euo pipefail

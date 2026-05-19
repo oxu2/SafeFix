@@ -82,7 +82,7 @@ conda create -p /groups/yguo/oxx220000/conda/envs/sf python=3.10 pip -y
 
 ## Train-Pose Dependency Surface
 
-For `train_pose_estimation.py train`, the direct and relevant transitive
+For `pose_estimation/train_pose_estimation.py train`, the direct and relevant transitive
 third-party dependencies are:
 
 - `torch`
@@ -158,7 +158,7 @@ detector-inclusive Keypoint R-CNN AP.
 The repo import and syntax validation passed with `sf` for:
 
 ```text
-train_pose_estimation.py
+pose_estimation/train_pose_estimation.py
 utils/imports.py
 utils/active_learning.py
 utils/hierarchical_al.py
@@ -173,5 +173,5 @@ The command below also passed on Juno:
 
 ```bash
 cd ~/work/safefix
-/groups/yguo/oxx220000/conda/envs/sf/bin/python train_pose_estimation.py train --help
+/groups/yguo/oxx220000/conda/envs/sf/bin/python pose_estimation/train_pose_estimation.py train --help
 ```

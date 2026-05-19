@@ -1,6 +1,0 @@
-[run] gpu=3 ratio=0.9 baseline=random log=logs_celeba/mainfill_random_resnet_celeba_1000_ratio0p9_gpu3_20260504_024733.log
-[run] gpu=3 ratio=0.9 baseline=stratified log=logs_celeba/mainfill_stratified_resnet_celeba_1000_ratio0p9_gpu3_20260504_024733.log
-[run] gpu=3 ratio=0.9 baseline=coreset log=logs_celeba/mainfill_coreset_resnet_celeba_1000_ratio0p9_gpu3_20260504_024733.log
-[run] gpu=3 ratio=0.9 baseline=badge log=logs_celeba/mainfill_badge_resnet_celeba_1000_ratio0p9_gpu3_20260504_024733.log
-[run] gpu=3 ratio=0.7 attribute=r000_p0_c15 R=0.0 P=0.0 C=15.0 log=logs_celeba/mainfill_attribute_r000_p0_c15_resnet_celeba_1000_ratio0p7_gpu3_20260504_024733.log
-[run] gpu=3 ratio=0.7 attribute=r000_p0_cinf R=0.0 P=0.0 C=inf log=logs_celeba/mainfill_attribute_r000_p0_cinf_resnet_celeba_1000_ratio0p7_gpu3_20260504_024733.log

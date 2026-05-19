@@ -39,7 +39,7 @@ Options:
   --max-train-samples N    Original train cap before sub-ratio. Default: 20000
   --batch-size N           Training batch size. Default: 8
   --num-workers N          DataLoader workers. Default: 4
-  --epochs-total N         Total epochs passed to train_pose_estimation.py. Default: 2
+  --epochs-total N         Total epochs passed to pose_estimation/train_pose_estimation.py. Default: 2
   --rarity-power FLOAT     Attribute rarity exponent. Default: 0.0
   --frequency-penalty F    Attribute frequency penalty. Default: 0.0
   --class-balance VALUE    Pose class-balance weight. Default: 15.0
@@ -153,7 +153,7 @@ done
 cd "$REPO_DIR"
 
 if [[ -z "$BASE_MODEL" ]]; then
-  BASE_MODEL="$REPO_DIR/log_pose/pose_keypointrcnn_train20k_internvl3_bs8_e2_rare1p1_gpu0_20260415_144530/best.pth"
+  BASE_MODEL="$REPO_DIR/logs/pose/pose_keypointrcnn_train20k_internvl3_bs8_e2_rare1p1_gpu0_20260415_144530/best.pth"
 fi
 
 if [[ -z "$ATTRIBUTE_FILE" ]]; then
@@ -187,20 +187,20 @@ elif [[ "$USE_SCRATCH" -eq 1 ]]; then
   echo "Dry-run mode: skipping scratch copy and printing persistent input paths."
 fi
 
-mkdir -p "$REPO_DIR/log_pose/pids"
+mkdir -p "$REPO_DIR/logs/pose/pids"
 
 TIMESTAMP="$(date +%Y%m%d_%H%M%S)"
 EXTRA_COUNT_SCALE="$(awk -v ratio="$RATIO" 'BEGIN { printf "%.6g", 1.0 / ratio }')"
 RUN_NAME="qwen3_brown_rainy_r${RATIO}_r${RARITY_POWER}_p${FREQUENCY_PENALTY}_c${CLASS_BALANCE}"
 RUN_NAME="${RUN_NAME//./p}"
-OUT_DIR="$REPO_DIR/log_pose/pose_keypointrcnn_resume_${RUN_NAME}_gpu0_${TIMESTAMP}"
-LOG_FILE="$REPO_DIR/log_pose/pose_resume_${RUN_NAME}_gpu0_${TIMESTAMP}.log"
+OUT_DIR="$REPO_DIR/logs/pose/pose_keypointrcnn_resume_${RUN_NAME}_gpu0_${TIMESTAMP}"
+LOG_FILE="$REPO_DIR/logs/pose/pose_resume_${RUN_NAME}_gpu0_${TIMESTAMP}.log"
 
 cmd=(
   env
   MPLCONFIGDIR=/tmp/matplotlib-safefix
   CUDA_VISIBLE_DEVICES=0
-  "$PYTHON_EXE" -u train_pose_estimation.py train
+  "$PYTHON_EXE" -u pose_estimation/train_pose_estimation.py train
   --data-root "$RUN_DATA_ROOT"
   --pretrained true
   --device cuda

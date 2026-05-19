@@ -1,6 +1,0 @@
-Current time: 0731144829
-Added 100 generated images.
-Added 100 ImageNet pinkcolor_fabrictexture images: 10400 -> 10500
-Using vit model with pretrained weights
-Epoch [1/15], Train Loss: 2.3826, Train Acc: 0.2009, Val Loss: 1.5710, Val Acc: 0.6304
-Epoch [2/15], Train Loss: 1.5987, Train Acc: 0.4919, Val Loss: 0.8955, Val Acc: 0.9131

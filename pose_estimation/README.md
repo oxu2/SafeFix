@@ -33,26 +33,26 @@ Or include test split:
 ## 2) Train
 
 ```bash
-python train_pose_estimation.py train \
+python pose_estimation/train_pose_estimation.py train \
   --data-root /data/oxx220000/coco \
   --epochs 12 \
   --batch-size 2 \
   --num-workers 4 \
-  --output-dir log_pose/pose_keypointrcnn
+  --output-dir logs/pose/pose_keypointrcnn
 
 # From scratch baseline:
-python train_pose_estimation.py train \
+python pose_estimation/train_pose_estimation.py train \
   --data-root /data/oxx220000/coco \
   --pretrained false \
-  --output-dir log_pose/pose_keypointrcnn_scratch
+  --output-dir logs/pose/pose_keypointrcnn_scratch
 
 # Add 1000 randomly sampled generated rainy images while keeping all capped originals:
-python train_pose_estimation.py train \
+python pose_estimation/train_pose_estimation.py train \
   --data-root /data/oxx220000/coco \
   --attribute rainy \
   --num-added-img 1000 \
   --sub-ratio 1.0 \
-  --output-dir log_pose/pose_keypointrcnn_rain
+  --output-dir logs/pose/pose_keypointrcnn_rain
 ```
 
 When `--attribute rainy` is enabled, the script loads generated images from:
@@ -70,19 +70,19 @@ The generated PNG stems are matched against COCO `image_id`s and reuse the origi
 ## 3) Evaluate
 
 ```bash
-python train_pose_estimation.py eval \
+python pose_estimation/train_pose_estimation.py eval \
   --data-root /data/oxx220000/coco \
-  --checkpoint log_pose/pose_keypointrcnn/best.pth \
-  --output-json log_pose/pose_eval_results.json
+  --checkpoint logs/pose/pose_keypointrcnn/best.pth \
+  --output-json logs/pose/pose_eval_results.json
 ```
 
 ## 4) Inference visualization
 
 ```bash
-python train_pose_estimation.py infer \
+python pose_estimation/train_pose_estimation.py infer \
   --image /path/to/image.jpg \
-  --checkpoint log_pose/pose_keypointrcnn/best.pth \
-  --output log_pose/pose_infer.jpg
+  --checkpoint logs/pose/pose_keypointrcnn/best.pth \
+  --output logs/pose/pose_infer.jpg
 ```
 
 ## Dependencies

@@ -4,7 +4,7 @@ set -euo pipefail
 ROOT="/people/cs/o/oxx220000/safefix"
 PYTHON_EXE="${PYTHON_EXE:-/people/cs/o/oxx220000/.conda/envs/ad/bin/python}"
 STAMP="${STAMP:-$(date +%Y%m%d_%H%M%S)}"
-OUT_ROOT="${OUT_ROOT:-selection_exports}"
+OUT_ROOT="${OUT_ROOT:-save/selection_exports}"
 LOG_DIR="${LOG_DIR:-logs}"
 MPLCONFIGDIR="${MPLCONFIGDIR:-/tmp/matplotlib-safefix}"
 

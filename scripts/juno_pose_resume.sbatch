@@ -110,7 +110,7 @@ done
 cd "$REPO_DIR"
 
 if [[ -z "$BASE_MODEL" ]]; then
-  BASE_MODEL="$REPO_DIR/log_pose/pose_keypointrcnn_train20k_internvl3_bs8_e2_rare1p1_gpu0_20260415_144530/best.pth"
+  BASE_MODEL="$REPO_DIR/logs/pose/pose_keypointrcnn_train20k_internvl3_bs8_e2_rare1p1_gpu0_20260415_144530/best.pth"
 fi
 
 if [[ -z "$ATTRIBUTE_FILE" ]]; then
@@ -148,7 +148,7 @@ if [[ "$USE_SCRATCH" -eq 1 ]]; then
   RUN_GENERATED_DIR="$SCRATCH_RUN_DIR/coco-pose-weather-edits/generated_coco_train1500_rain"
 fi
 
-mkdir -p "$REPO_DIR/log_pose/pids"
+mkdir -p "$REPO_DIR/logs/pose/pids"
 
 if [[ "$QUEUE" == "ratio0.9" ]]; then
   QUEUE_SCRIPT="$REPO_DIR/scripts/run_pose_ratio0.9_gpu1_internvl3_queue.sh"

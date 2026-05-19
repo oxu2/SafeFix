@@ -1,6 +1,0 @@
-[2026-04-29 18:36:59] Launching CelebA HiBUG redhair_brownskin local queues, stamp=20260429_183659
-Generated:      data/hibug_redhair_brownskin_seed42_1k
-Base model:     weights/model_celeba_resnet_base.pth
-Attribute file: save/attribute_celeba_trainval_qwen3_8B.json
-Attributes:     redhair_brownskin
-[2026-04-29 18:36:59] gpu=3 ratio=0.7 method=random log=logs_celeba/hibug_redhair_brownskin_random_resnet_celeba_1000_ratio0p7_gpu3_20260429_183659.log

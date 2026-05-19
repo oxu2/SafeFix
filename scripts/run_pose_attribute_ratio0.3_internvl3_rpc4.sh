@@ -25,7 +25,7 @@ EOF
 }
 
 PYTHON_EXE="/people/cs/o/oxx220000/.conda/envs/ad/bin/python"
-BASE_MODEL="log_pose/pose_keypointrcnn_train20k_internvl3_bs8_e2_rare1p1_gpu0_20260415_144530/best.pth"
+BASE_MODEL="logs/pose/pose_keypointrcnn_train20k_internvl3_bs8_e2_rare1p1_gpu0_20260415_144530/best.pth"
 ATTRIBUTE_FILE="save/attribute_coco_pose_gemini_train20k_internvl3_8B.json"
 DATA_ROOT="/data/oxx220000/coco"
 DRY_RUN=0
@@ -95,7 +95,7 @@ if [[ -z "$EXTRA_COUNT_SCALE" ]]; then
   EXTRA_COUNT_SCALE="$(awk -v ratio="$RATIO" 'BEGIN { printf "%.6g", 1.0 / ratio }')"
 fi
 
-mkdir -p log_pose/pids
+mkdir -p logs/pose/pids
 
 TIMESTAMP="$(date +%Y%m%d_%H%M%S)"
 
@@ -106,15 +106,15 @@ launch_one() {
   local p="$4"
   local c="$5"
 
-  local log_file="log_pose/pose_resume_internvl3_epoch${EPOCHS_TOTAL}_attribute_ratio${RATIO}_${name}_gpu${gpu}_${TIMESTAMP}.log"
-  local pid_file="log_pose/pids/pose_resume_internvl3_epoch${EPOCHS_TOTAL}_attribute_ratio${RATIO}_${name}_gpu${gpu}_${TIMESTAMP}.pid"
-  local out_dir="log_pose/pose_keypointrcnn_resume_internvl3_attribute_ratio${RATIO}_${name}_gpu${gpu}_${TIMESTAMP}"
+  local log_file="logs/pose/pose_resume_internvl3_epoch${EPOCHS_TOTAL}_attribute_ratio${RATIO}_${name}_gpu${gpu}_${TIMESTAMP}.log"
+  local pid_file="logs/pose/pids/pose_resume_internvl3_epoch${EPOCHS_TOTAL}_attribute_ratio${RATIO}_${name}_gpu${gpu}_${TIMESTAMP}.pid"
+  local out_dir="logs/pose/pose_keypointrcnn_resume_internvl3_attribute_ratio${RATIO}_${name}_gpu${gpu}_${TIMESTAMP}"
 
   local cmd=(
     env
     MPLCONFIGDIR=/tmp/matplotlib-safefix
     CUDA_VISIBLE_DEVICES="${gpu}"
-    "${PYTHON_EXE}" -u train_pose_estimation.py train
+    "${PYTHON_EXE}" -u pose_estimation/train_pose_estimation.py train
     --data-root "${DATA_ROOT}"
     --pretrained true
     --device cuda

@@ -3,7 +3,7 @@
 set -euo pipefail
 
 PYTHON_EXE="${PYTHON_EXE:-/people/cs/o/oxx220000/.conda/envs/ad/bin/python}"
-BASE_MODEL="${BASE_MODEL:-weights/model_celeba_resnet_base.pth}"
+BASE_MODEL="${BASE_MODEL:-save/weights/model_celeba_resnet_base.pth}"
 ATTRIBUTE_FILE="${ATTRIBUTE_FILE:-save/attribute_celeba_trainval_qwen3_8B.json}"
 ATTRIBUTES="${ATTRIBUTES:-redhair_brownskin_sademotion}"
 GEN_IMAGE_DIR="${GEN_IMAGE_DIR:-data/${ATTRIBUTES}}"
@@ -22,7 +22,7 @@ SEED="${SEED:-42}"
 FOCUS="${FOCUS:-hair color,skin,emotion}"
 BASE_EXTRA_COUNTS="${BASE_EXTRA_COUNTS:-hair color:red=1000,skin:brown=1000,emotion:sad=1000}"
 
-mkdir -p logs_celeba/pids
+mkdir -p logs/celeba/pids
 
 if [[ ! -x "${PYTHON_EXE}" ]]; then
   echo "Python executable not found: ${PYTHON_EXE}" >&2
@@ -134,7 +134,7 @@ run_baseline() {
   local strategy="$3"
   local rtag
   rtag="$(ratio_tag "${ratio}")"
-  local log="logs_celeba/mainfill_${strategy}_resnet_celeba_1000_ratio${rtag}_gpu${gpu}_${STAMP}.log"
+  local log="logs/celeba/mainfill_${strategy}_resnet_celeba_1000_ratio${rtag}_gpu${gpu}_${STAMP}.log"
 
   echo "[run] gpu=${gpu} ratio=${ratio} baseline=${strategy} log=${log}"
   mapfile -t extra_args < <(strategy_args "${strategy}")
@@ -160,7 +160,7 @@ run_attribute() {
   local rpc="$3"
   local rtag
   rtag="$(ratio_tag "${ratio}")"
-  local log="logs_celeba/mainfill_attribute_${rpc}_resnet_celeba_1000_ratio${rtag}_gpu${gpu}_${STAMP}.log"
+  local log="logs/celeba/mainfill_attribute_${rpc}_resnet_celeba_1000_ratio${rtag}_gpu${gpu}_${STAMP}.log"
   local rarity penalty class_balance
   read -r rarity penalty class_balance < <(rpc_params "${rpc}")
   local extra_scale
@@ -217,7 +217,7 @@ best_attr_acc_for_ratio() {
   local best=""
   local log acc
   shopt -s nullglob
-  for log in logs_celeba/mainfill_attribute_*_ratio"${rtag}"_gpu*_"${STAMP}".log; do
+  for log in logs/celeba/mainfill_attribute_*_ratio"${rtag}"_gpu*_"${STAMP}".log; do
     acc="$(extract_test_acc "${log}")"
     if [[ -n "${acc}" ]] && awk -v acc="${acc}" -v best="${best:-0}" 'BEGIN { exit !(acc > best) }'; then
       best="${acc}"
@@ -234,7 +234,7 @@ best_baseline_acc_for_ratio() {
   local best=""
   local log acc
   shopt -s nullglob
-  for log in logs_celeba/mainfill_{random,stratified,coreset,badge}_resnet_celeba_1000_ratio"${rtag}"_gpu*_"${STAMP}".log; do
+  for log in logs/celeba/mainfill_{random,stratified,coreset,badge}_resnet_celeba_1000_ratio"${rtag}"_gpu*_"${STAMP}".log; do
     acc="$(extract_test_acc "${log}")"
     if [[ -n "${acc}" ]] && awk -v acc="${acc}" -v best="${best:-0}" 'BEGIN { exit !(acc > best) }'; then
       best="${acc}"
@@ -323,8 +323,8 @@ run_gpu1_queue() {
 launch_controller() {
   local gpu="$1"
   local func="$2"
-  local out="logs_celeba/mainfill_gpu${gpu}_${STAMP}.out"
-  local pidfile="logs_celeba/pids/mainfill_gpu${gpu}_${STAMP}.pid"
+  local out="logs/celeba/mainfill_gpu${gpu}_${STAMP}.out"
+  local pidfile="logs/celeba/pids/mainfill_gpu${gpu}_${STAMP}.pid"
 
   echo "[launch-controller] gpu=${gpu} func=${func} out=${out}"
   if [[ "${DRY_RUN}" -eq 1 ]]; then
@@ -348,11 +348,11 @@ launch_controller 2 run_gpu2_queue
 launch_controller 3 run_gpu3_queue
 launch_controller 1 run_gpu1_queue
 
-cat > "logs_celeba/pids/mainfill_gpu231_${STAMP}.pids" <<EOF
-gpu2 $(cat "logs_celeba/pids/mainfill_gpu2_${STAMP}.pid" 2>/dev/null || true) logs_celeba/mainfill_gpu2_${STAMP}.out
-gpu3 $(cat "logs_celeba/pids/mainfill_gpu3_${STAMP}.pid" 2>/dev/null || true) logs_celeba/mainfill_gpu3_${STAMP}.out
-gpu1 $(cat "logs_celeba/pids/mainfill_gpu1_${STAMP}.pid" 2>/dev/null || true) logs_celeba/mainfill_gpu1_${STAMP}.out
+cat > "logs/celeba/pids/mainfill_gpu231_${STAMP}.pids" <<EOF
+gpu2 $(cat "logs/celeba/pids/mainfill_gpu2_${STAMP}.pid" 2>/dev/null || true) logs/celeba/mainfill_gpu2_${STAMP}.out
+gpu3 $(cat "logs/celeba/pids/mainfill_gpu3_${STAMP}.pid" 2>/dev/null || true) logs/celeba/mainfill_gpu3_${STAMP}.out
+gpu1 $(cat "logs/celeba/pids/mainfill_gpu1_${STAMP}.pid" 2>/dev/null || true) logs/celeba/mainfill_gpu1_${STAMP}.out
 EOF
 
 echo "[stamp] ${STAMP}"
-cat "logs_celeba/pids/mainfill_gpu231_${STAMP}.pids"
+cat "logs/celeba/pids/mainfill_gpu231_${STAMP}.pids"

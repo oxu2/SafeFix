@@ -8,14 +8,14 @@ RATIO="1.0"
 RATIO_TAG="1p0"
 export STAMP
 
-CELEBA_BASE_MODEL="weights/model_celeba_resnet_base.pth"
-IMAGENET_BASE_MODEL="weights/model_imagenet_resnet_base.pth"
-COCO_POSE_BASE_MODEL="log_pose/pose_keypointrcnn_train20k_internvl3_bs8_e2_rare1p1_gpu0_20260415_144530/best.pth"
+CELEBA_BASE_MODEL="save/weights/model_celeba_resnet_base.pth"
+IMAGENET_BASE_MODEL="save/weights/model_imagenet_resnet_base.pth"
+COCO_POSE_BASE_MODEL="logs/pose/pose_keypointrcnn_train20k_internvl3_bs8_e2_rare1p1_gpu0_20260415_144530/best.pth"
 COCO_ROOT="/data/oxx220000/coco"
 COCO_GEN_DIR="/data/oxx220000/coco-pose-weather-edits/generated_coco_qwen3_1500_brown_rain_icedit"
 
 cd "${ROOT}"
-mkdir -p logs logs_celeba logs_imagenet log_pose
+mkdir -p logs logs/celeba logs/imagenet logs/pose
 
 if [[ ! -x "${PYTHON_EXE}" ]]; then
   PYTHON_EXE="python3"
@@ -26,7 +26,7 @@ run_celeba_full() {
   local label="$2"
   local attrs="$3"
   local gen_dir="$4"
-  local log="logs_celeba/controlnet_${label}_resnet_celeba_1000_ratio${RATIO_TAG}_gpu${gpu}_${STAMP}.log"
+  local log="logs/celeba/controlnet_${label}_resnet_celeba_1000_ratio${RATIO_TAG}_gpu${gpu}_${STAMP}.log"
 
   echo "[$(date '+%Y-%m-%d %H:%M:%S')] celeba gpu=${gpu} label=${label} attrs=${attrs} log=${log}"
   CUDA_VISIBLE_DEVICES="${gpu}" "${PYTHON_EXE}" -u alpred.py \
@@ -56,7 +56,7 @@ run_celeba_full() {
 
 run_imagenet_full() {
   local gpu="3"
-  local log="logs_imagenet/controlnet_pinkcolor_fabrictexture_resnet_imagenet_1000_ratio${RATIO_TAG}_gpu${gpu}_${STAMP}.log"
+  local log="logs/imagenet/controlnet_pinkcolor_fabrictexture_resnet_imagenet_1000_ratio${RATIO_TAG}_gpu${gpu}_${STAMP}.log"
 
   echo "[$(date '+%Y-%m-%d %H:%M:%S')] imagenet gpu=${gpu} log=${log}"
   CUDA_VISIBLE_DEVICES="${gpu}" "${PYTHON_EXE}" -u alpred.py \
@@ -77,11 +77,11 @@ run_imagenet_full() {
 
 run_coco_pose_full() {
   local gpu="3"
-  local out_dir="log_pose/pose_keypointrcnn_resume_qwen3_brown_rainy_full_ratio${RATIO_TAG}_gpu${gpu}_${STAMP}"
-  local log="log_pose/pose_qwen3_brown_rainy_full_ratio${RATIO_TAG}_gpu${gpu}_${STAMP}.log"
+  local out_dir="logs/pose/pose_keypointrcnn_resume_qwen3_brown_rainy_full_ratio${RATIO_TAG}_gpu${gpu}_${STAMP}"
+  local log="logs/pose/pose_qwen3_brown_rainy_full_ratio${RATIO_TAG}_gpu${gpu}_${STAMP}.log"
 
   echo "[$(date '+%Y-%m-%d %H:%M:%S')] coco-pose gpu=${gpu} out_dir=${out_dir} log=${log}"
-  CUDA_VISIBLE_DEVICES="${gpu}" "${PYTHON_EXE}" -u train_pose_estimation.py train \
+  CUDA_VISIBLE_DEVICES="${gpu}" "${PYTHON_EXE}" -u pose_estimation/train_pose_estimation.py train \
     --data-root "${COCO_ROOT}" \
     --device cuda \
     --epochs 2 \
@@ -126,10 +126,10 @@ pid3=$!
 
 pid_file="logs/controlnet_ratio${RATIO_TAG}_gpu0123_${STAMP}.pids"
 cat > "${pid_file}" <<EOF
-gpu0 ${pid0} logs/controlnet_ratio${RATIO_TAG}_celeba_gpu0_${STAMP}.out logs_celeba/controlnet_redhair_brownskin_sademotion_resnet_celeba_1000_ratio${RATIO_TAG}_gpu0_${STAMP}.log
-gpu1 ${pid1} logs/controlnet_ratio${RATIO_TAG}_celeba_gpu1_${STAMP}.out logs_celeba/controlnet_redhair_brownskin_unfiltered_resnet_celeba_1000_ratio${RATIO_TAG}_gpu1_${STAMP}.log
-gpu2 ${pid2} logs/controlnet_ratio${RATIO_TAG}_celeba_gpu2_${STAMP}.out logs_celeba/controlnet_redhair_brownskin_resnet_celeba_1000_ratio${RATIO_TAG}_gpu2_${STAMP}.log
-gpu3 ${pid3} logs/controlnet_ratio${RATIO_TAG}_imagenet_then_coco_pose_gpu3_${STAMP}.out logs_imagenet/controlnet_pinkcolor_fabrictexture_resnet_imagenet_1000_ratio${RATIO_TAG}_gpu3_${STAMP}.log then log_pose/pose_qwen3_brown_rainy_full_ratio${RATIO_TAG}_gpu3_${STAMP}.log
+gpu0 ${pid0} logs/controlnet_ratio${RATIO_TAG}_celeba_gpu0_${STAMP}.out logs/celeba/controlnet_redhair_brownskin_sademotion_resnet_celeba_1000_ratio${RATIO_TAG}_gpu0_${STAMP}.log
+gpu1 ${pid1} logs/controlnet_ratio${RATIO_TAG}_celeba_gpu1_${STAMP}.out logs/celeba/controlnet_redhair_brownskin_unfiltered_resnet_celeba_1000_ratio${RATIO_TAG}_gpu1_${STAMP}.log
+gpu2 ${pid2} logs/controlnet_ratio${RATIO_TAG}_celeba_gpu2_${STAMP}.out logs/celeba/controlnet_redhair_brownskin_resnet_celeba_1000_ratio${RATIO_TAG}_gpu2_${STAMP}.log
+gpu3 ${pid3} logs/controlnet_ratio${RATIO_TAG}_imagenet_then_coco_pose_gpu3_${STAMP}.out logs/imagenet/controlnet_pinkcolor_fabrictexture_resnet_imagenet_1000_ratio${RATIO_TAG}_gpu3_${STAMP}.log then logs/pose/pose_qwen3_brown_rainy_full_ratio${RATIO_TAG}_gpu3_${STAMP}.log
 EOF
 
 echo "[$(date '+%Y-%m-%d %H:%M:%S')] Queues launched:"

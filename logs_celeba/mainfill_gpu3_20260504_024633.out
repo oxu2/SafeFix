@@ -1,1 +1,0 @@
-[run] gpu=3 ratio=0.9 baseline=random log=logs_celeba/mainfill_random_resnet_celeba_1000_ratio0p9_gpu3_20260504_024633.log

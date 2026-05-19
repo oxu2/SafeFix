@@ -14,7 +14,7 @@ The approach:
 
 Usage:
     python utils/stat_kitti_detection.py \
-        --model-weights runs/kitti_yolov8/.../weights/best.pt \
+        --model-weights save/runs/kitti_yolov8/.../weights/best.pt \
         --attribute-file save/attribute_kitti_qwen3_8B.json save/attribute_kitti_blip.json \
         --split train
 """
@@ -59,7 +59,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--train-attribute-file", type=Path, default=None,
                         help="Optional attribute JSON for train-distribution comparison.")
     parser.add_argument("--corpus", type=Path, default=Path(DEFAULT_CORPUS))
-    parser.add_argument("--output-dir", type=Path, default=Path("log_kitti/kitti_slice_stats"))
+    parser.add_argument("--output-dir", type=Path, default=Path("logs/kitti/kitti_slice_stats"))
     parser.add_argument("--min-images", type=int, default=10)
     parser.add_argument("--top-k", type=int, default=20)
     parser.add_argument("--acc-diff-threshold", type=float, default=0.02)

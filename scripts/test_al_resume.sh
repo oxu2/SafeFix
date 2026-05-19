@@ -39,7 +39,7 @@ wait_for_gpu_free() {
 }
 
 # Ensure logs directory exists
-mkdir -p logs_imagenet
+mkdir -p logs/imagenet
 
 # Specify Python executable
 PYTHON_EXE="/people/cs/o/oxx220000/.conda/envs/ad/bin/python"
@@ -51,7 +51,7 @@ fi
 
 # Default values
 SUB_RATIO=0.3
-BASE_MODEL="save/models/weights/model_imagenet_resnet_base.pth"
+BASE_MODEL="save/weights/model_imagenet_resnet_base.pth"
 NUM_EPOCHS=15
 
 # Parse command line arguments
@@ -95,7 +95,7 @@ COMMON_ARGS="--dataset imagenet --model resnet --num_added_img 1000 --attributes
 
 # Generate ratio string for filenames
 RATIO_STR="ratio${SUB_RATIO}"
-LOG_PREFIX="logs_imagenet/resume_lr5_epoch15"
+LOG_PREFIX="logs/imagenet/resume_lr5_epoch15"
 
 # --- GPU 0: Random Baseline & Stratified ---
 (

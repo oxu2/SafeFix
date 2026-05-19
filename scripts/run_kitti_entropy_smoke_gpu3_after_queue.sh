@@ -67,7 +67,7 @@ python -u \
   --imgsz "${IMG_SIZE}" \
   --device "${GPU}" \
   --workers "${WORKERS}" \
-  --project "${ROOT}/runs/kitti_yolov8" \
+  --project "${ROOT}/save/runs/kitti_yolov8" \
   --name "${RUN_NAME}" \
   --seed "${SEED}" \
   --eval-test true \

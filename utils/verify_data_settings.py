@@ -79,7 +79,7 @@ def show_unified_settings():
     print("\n=== Unified Settings Configuration ===\n")
     
     settings = {
-        "Quick Demo (tests/demo_active_learning.py)": {
+        "Quick Demo (utils/tests/demo_active_learning.py)": {
             "Purpose": "Fast testing and verification",
             "batch_size": 16,
             "learning_rate": 1e-4,

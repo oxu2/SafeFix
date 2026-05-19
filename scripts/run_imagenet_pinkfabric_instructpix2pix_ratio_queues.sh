@@ -20,7 +20,7 @@ if [[ "${1:-}" == "--worker" ]]; then
 fi
 
 cd "${ROOT}"
-mkdir -p logs_imagenet logs
+mkdir -p logs/imagenet logs
 
 if [[ ! -x "${PYTHON_EXE}" ]]; then
   PYTHON_EXE="python3"
@@ -48,7 +48,7 @@ run_one() {
   local rpc_tag="${4:-}"
   local ratio_tag="${ratio/./p}"
   local method_tag="${method}${rpc_tag:+_${rpc_tag}}"
-  local log="logs_imagenet/instructpix2pix_${method_tag}_resnet_imagenet_1000_ratio${ratio_tag}_gpu${gpu}_${STAMP}.log"
+  local log="logs/imagenet/instructpix2pix_${method_tag}_resnet_imagenet_1000_ratio${ratio_tag}_gpu${gpu}_${STAMP}.log"
 
   echo "[$(date '+%Y-%m-%d %H:%M:%S')] gpu=${gpu} ratio=${ratio} method=${method} log=${log}"
   if [[ -s "${log}" ]] && grep -q "Model Test ACC:" "${log}"; then

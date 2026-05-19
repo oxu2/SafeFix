@@ -4,11 +4,11 @@ set -euo pipefail
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$repo_root"
 
-mkdir -p log_pose/base_reference
+mkdir -p logs/pose/base_reference
 
 ts="$(date +%Y%m%d_%H%M%S)"
-logfile="log_pose/base_reference/posthoc_pose_base_compare_${ts}.log"
-pidfile="log_pose/base_reference/posthoc_pose_base_compare_${ts}.pid"
+logfile="logs/pose/base_reference/posthoc_pose_base_compare_${ts}.log"
+pidfile="logs/pose/base_reference/posthoc_pose_base_compare_${ts}.pid"
 
 setsid nohup /people/cs/o/oxx220000/.conda/envs/ad/bin/python \
   scripts/posthoc_pose_base_compare.py \

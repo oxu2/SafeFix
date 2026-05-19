@@ -3,14 +3,14 @@
 set -euo pipefail
 
 PYTHON_EXE="${PYTHON_EXE:-/people/cs/o/oxx220000/.conda/envs/ad/bin/python}"
-BASE_MODEL="${BASE_MODEL:-weights/model_celeba_resnet_base.pth}"
+BASE_MODEL="${BASE_MODEL:-save/weights/model_celeba_resnet_base.pth}"
 ATTRIBUTE_FILE="${ATTRIBUTE_FILE:-save/attribute_celeba_trainval_qwen3_8B.json}"
 ATTRIBUTES="${ATTRIBUTES:-redhair_brownskin_sademotion}"
 GEN_IMAGE_DIR="${GEN_IMAGE_DIR:-data/${ATTRIBUTES}}"
 STAMP="${STAMP:-20260504_024733}"
 MANUAL_STAMP="${MANUAL_STAMP:-$(date +%Y%m%d_%H%M%S)}"
 
-mkdir -p logs_celeba/pids
+mkdir -p logs/celeba/pids
 
 rpc_params() {
   local rpc="$1"
@@ -29,7 +29,7 @@ run_attribute() {
   local rpc="$2"
   local rarity penalty class_balance log
   read -r rarity penalty class_balance < <(rpc_params "${rpc}")
-  log="logs_celeba/mainfill_attribute_${rpc}_resnet_celeba_1000_ratio0p7_gpu${gpu}_${STAMP}.log"
+  log="logs/celeba/mainfill_attribute_${rpc}_resnet_celeba_1000_ratio0p7_gpu${gpu}_${STAMP}.log"
 
   echo "[run] gpu=${gpu} ratio=0.7 attribute=${rpc} log=${log}"
   env MPLCONFIGDIR=/tmp/matplotlib-safefix CUDA_VISIBLE_DEVICES="${gpu}" \
@@ -68,8 +68,8 @@ run_attribute() {
 launch_one() {
   local gpu="$1"
   local rpc="$2"
-  local out="logs_celeba/mainfill_ratio0p7_manual_${rpc}_gpu${gpu}_${MANUAL_STAMP}.out"
-  local pidfile="logs_celeba/pids/mainfill_ratio0p7_manual_${rpc}_gpu${gpu}_${MANUAL_STAMP}.pid"
+  local out="logs/celeba/mainfill_ratio0p7_manual_${rpc}_gpu${gpu}_${MANUAL_STAMP}.out"
+  local pidfile="logs/celeba/pids/mainfill_ratio0p7_manual_${rpc}_gpu${gpu}_${MANUAL_STAMP}.pid"
 
   setsid bash "$0" --worker "${gpu}" "${rpc}" > "${out}" 2>&1 < /dev/null &
   echo "$!" > "${pidfile}"

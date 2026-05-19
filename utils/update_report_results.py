@@ -12,7 +12,7 @@ while True:
     completed = 0
     for model_key in models.keys():
         for ratio in ratios:
-            log_file = f"logs_imagenet/aggro_p10_c4_{model_key}_ratio{ratio}.log"
+            log_file = f"logs/imagenet/aggro_p10_c4_{model_key}_ratio{ratio}.log"
             if os.path.exists(log_file):
                 with open(log_file, 'r') as f:
                     content = f.read()
@@ -30,7 +30,7 @@ results = {}
 for model_key, model_name in models.items():
     results[model_name] = {}
     for ratio in ratios:
-        log_file = f"logs_imagenet/aggro_p10_c4_{model_key}_ratio{ratio}.log"
+        log_file = f"logs/imagenet/aggro_p10_c4_{model_key}_ratio{ratio}.log"
         with open(log_file, 'r') as f:
             content = f.read()
             

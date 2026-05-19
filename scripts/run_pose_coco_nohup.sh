@@ -6,16 +6,16 @@ GPU_ID="${2:-3}"
 EPOCHS="${3:-12}"
 
 ts="$(date +%Y%m%d_%H%M%S)"
-mkdir -p log_pose
+mkdir -p logs/pose
 
-LOGFILE="log_pose/pose_coco_pretrained_gpu${GPU_ID}_${ENV_NAME}_${ts}.log"
-PIDFILE="log_pose/pose_coco_pretrained_gpu${GPU_ID}_${ENV_NAME}_${ts}.pid"
-OUTDIR="log_pose/pose_keypointrcnn_${ENV_NAME}_gpu${GPU_ID}_${ts}"
+LOGFILE="logs/pose/pose_coco_pretrained_gpu${GPU_ID}_${ENV_NAME}_${ts}.log"
+PIDFILE="logs/pose/pose_coco_pretrained_gpu${GPU_ID}_${ENV_NAME}_${ts}.pid"
+OUTDIR="logs/pose/pose_keypointrcnn_${ENV_NAME}_gpu${GPU_ID}_${ts}"
 
 source /usr/local/anaconda3/etc/profile.d/conda.sh
 conda activate "${ENV_NAME}"
 
-CUDA_VISIBLE_DEVICES="${GPU_ID}" nohup python train_pose_estimation.py train \
+CUDA_VISIBLE_DEVICES="${GPU_ID}" nohup python pose_estimation/train_pose_estimation.py train \
   --data-root /data/oxx220000/coco \
   --pretrained true \
   --device cuda \

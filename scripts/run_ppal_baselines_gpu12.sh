@@ -12,14 +12,14 @@ MPLCONFIGDIR="${MPLCONFIGDIR:-/tmp/matplotlib_safefix}"
 
 KITTI_BASE_ROOT="${KITTI_BASE_ROOT:-/data/oxx220000/kitti_yolov8_first5000}"
 KITTI_GEN_DIR="${KITTI_GEN_DIR:-/data/oxx220000/kitti-weather-edits/generated_kitti1352_red_cloudy_icedit_upscaled}"
-KITTI_PROJECT="${KITTI_PROJECT:-${ROOT}/runs/kitti_yolov8}"
+KITTI_PROJECT="${KITTI_PROJECT:-${ROOT}/save/runs/kitti_yolov8}"
 KITTI_NUM_ADDED="${KITTI_NUM_ADDED:-1000}"
 KITTI_EPOCHS="${KITTI_EPOCHS:-10}"
 KITTI_BATCH="${KITTI_BATCH:-16}"
 KITTI_IMGSZ="${KITTI_IMGSZ:-640}"
 KITTI_WORKERS="${KITTI_WORKERS:-4}"
 
-IMAGENET_BASE_MODEL="${IMAGENET_BASE_MODEL:-weights/model_imagenet_resnet_base.pth}"
+IMAGENET_BASE_MODEL="${IMAGENET_BASE_MODEL:-save/weights/model_imagenet_resnet_base.pth}"
 IMAGENET_GEN_DIR="${IMAGENET_GEN_DIR:-data/imagenet_pinkcolor_fabrictexture}"
 IMAGENET_DATA_DIR="${IMAGENET_DATA_DIR:-data/imagenet_subset}"
 IMAGENET_NUM_ADDED="${IMAGENET_NUM_ADDED:-1000}"
@@ -30,7 +30,7 @@ IMAGENET_LR="${IMAGENET_LR:-1e-5}"
 
 COCO_ROOT="${COCO_ROOT:-/data/oxx220000/coco}"
 COCO_GEN_DIR="${COCO_GEN_DIR:-/data/oxx220000/coco-pose-weather-edits/generated_coco_qwen3_1500_brown_rain_icedit}"
-COCO_BASE_MODEL="${COCO_BASE_MODEL:-log_pose/pose_keypointrcnn_train20k_internvl3_bs8_e2_rare1p1_gpu0_20260415_144530/best.pth}"
+COCO_BASE_MODEL="${COCO_BASE_MODEL:-logs/pose/pose_keypointrcnn_train20k_internvl3_bs8_e2_rare1p1_gpu0_20260415_144530/best.pth}"
 COCO_NUM_ADDED="${COCO_NUM_ADDED:-1000}"
 COCO_EPOCHS="${COCO_EPOCHS:-2}"
 COCO_BATCH="${COCO_BATCH:-8}"
@@ -45,7 +45,7 @@ PPAL_DIVERSITY_POWER="${PPAL_DIVERSITY_POWER:-1.0}"
 SEED="${SEED:-42}"
 
 cd "${ROOT}"
-mkdir -p logs logs_imagenet log_pose
+mkdir -p logs logs/imagenet logs/pose
 
 ratio_tag() {
   local ratio="$1"
@@ -62,7 +62,7 @@ run_imagenet_one() {
   local ratio="$2"
   local rtag
   rtag="$(ratio_tag "${ratio}")"
-  local log_file="logs_imagenet/ppal_resnet_imagenet_${IMAGENET_NUM_ADDED}_ratio${rtag}_gpu${gpu}_${STAMP}.log"
+  local log_file="logs/imagenet/ppal_resnet_imagenet_${IMAGENET_NUM_ADDED}_ratio${rtag}_gpu${gpu}_${STAMP}.log"
 
   local -a args=(
     "${AD_PYTHON}" -u alpred.py
@@ -153,11 +153,11 @@ run_coco_one() {
   local ratio="$2"
   local rtag
   rtag="$(ratio_tag "${ratio}")"
-  local out_dir="log_pose/pose_keypointrcnn_resume_qwen3_brown_rainy_ppal_ratio${rtag}_gpu${gpu}_${STAMP}"
-  local log_file="log_pose/pose_qwen3_brown_rainy_ppal_ratio${rtag}_gpu${gpu}_${STAMP}.log"
+  local out_dir="logs/pose/pose_keypointrcnn_resume_qwen3_brown_rainy_ppal_ratio${rtag}_gpu${gpu}_${STAMP}"
+  local log_file="logs/pose/pose_qwen3_brown_rainy_ppal_ratio${rtag}_gpu${gpu}_${STAMP}.log"
 
   local -a args=(
-    "${AD_PYTHON}" -u train_pose_estimation.py train
+    "${AD_PYTHON}" -u pose_estimation/train_pose_estimation.py train
     --data-root "${COCO_ROOT}"
     --pretrained true
     --device cuda
@@ -222,7 +222,7 @@ case "${1:-launch}" in
     ;;
   launch)
     gpu1_out="logs/ppal_gpu1_imagenet_then_kitti_${STAMP}.out"
-    gpu2_out="log_pose/ppal_gpu2_coco_${STAMP}.out"
+    gpu2_out="logs/pose/ppal_gpu2_coco_${STAMP}.out"
     pid_file="logs/ppal_baselines_gpu12_${STAMP}.pids"
 
     echo "Launching PPAL baselines, stamp=${STAMP}"

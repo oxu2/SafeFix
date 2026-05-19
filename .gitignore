@@ -10,7 +10,7 @@ __pycache__/
 # Weights
 *.pth
 *.pt
-weights/
+save/weights/
 
 # Data
 data/
@@ -39,13 +39,13 @@ imagenet*
 
 # Outputs & Results
 outputs/
-log_pose/*
-log_pose/NA/
-!log_pose/*.log
-!log_pose/base_reference/
-log_pose/base_reference/*
-!log_pose/base_reference/test_base_failure_set_compare_summary.md
-!log_pose/base_reference/test_base_failure_set_compare_summary.csv
+logs/pose/*
+logs/pose/NA/
+!logs/pose/*.log
+!logs/pose/base_reference/
+logs/pose/base_reference/*
+!logs/pose/base_reference/test_base_failure_set_compare_summary.md
+!logs/pose/base_reference/test_base_failure_set_compare_summary.csv
 /safefix_*
 
 # Logs
@@ -62,24 +62,24 @@ logs/*
 
 # Other
 tasks/
-runs/*
-!runs/kitti_yolov8/
-runs/kitti_yolov8/*
-!runs/kitti_yolov8/first5000*/
-!runs/kitti_yolov8/first5000*/args.yaml
-!runs/kitti_yolov8/first5000*/results.csv
-!runs/kitti_yolov8/first5000*/weights/
-!runs/kitti_yolov8/first5000*/weights/last.pt
-!runs/kitti_yolov8/first5000*/weights/best.pt
+save/runs/*
+!save/runs/kitti_yolov8/
+save/runs/kitti_yolov8/*
+!save/runs/kitti_yolov8/first5000*/
+!save/runs/kitti_yolov8/first5000*/args.yaml
+!save/runs/kitti_yolov8/first5000*/results.csv
+!save/runs/kitti_yolov8/first5000*/weights/
+!save/runs/kitti_yolov8/first5000*/weights/last.pt
+!save/runs/kitti_yolov8/first5000*/weights/best.pt
 *.npy
 
 TMLR_26_SafeFix
 SLACK_WEBHOOK_HANDOFF.md
-logs_imagenet/pids/
+logs/imagenet/pids/
 save/*
 
 outputs/save/
-logs_celeba/pids/
+logs/celeba/pids/
 
 figures/teaser_imagenet_selection
 

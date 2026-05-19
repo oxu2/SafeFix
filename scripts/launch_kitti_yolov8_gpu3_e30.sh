@@ -21,14 +21,14 @@ export CUDA_VISIBLE_DEVICES=3
 setsid nohup python -u object_detection/train_yolov8_kitti.py \
   --data-yaml /data/oxx220000/kitti_yolov8_first5000/kitti_first5000.yaml \
   --pretrained true \
-  --weights weights/yolov8n.pt \
+  --weights save/weights/yolov8n.pt \
   --epochs 30 \
   --batch 64 \
   --imgsz 640 \
   --device 3 \
   --workers 4 \
   --plots false \
-  --project /people/cs/o/oxx220000/safefix/runs/kitti_yolov8 \
+  --project /people/cs/o/oxx220000/safefix/save/runs/kitti_yolov8 \
   --name "${name}" \
   > "${log}" 2>&1 < /dev/null &
 

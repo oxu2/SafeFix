@@ -1,8 +1,0 @@
-[2026-04-29 07:15:51] Launching CelebA instruct-pix2pix local queues, stamp=20260429_071551
-Generated:      data/redhair_brownskin_sademotion_instruct_pix2pix_seed42_1k
-Base model:     weights/model_celeba_resnet_base.pth
-Attribute file: save/attribute_celeba_trainval_qwen3_8B.json
-[2026-04-29 07:15:51] gpu=3 ratio=0.7 method=random log=logs_celeba/instructpix2pix_random_resnet_celeba_1000_ratio0p7_gpu3_20260429_071551.log
-[2026-04-29 07:51:20] gpu=3 ratio=0.7 method=stratified log=logs_celeba/instructpix2pix_stratified_resnet_celeba_1000_ratio0p7_gpu3_20260429_071551.log
-[2026-04-29 08:14:55] gpu=3 ratio=0.7 method=coreset log=logs_celeba/instructpix2pix_coreset_resnet_celeba_1000_ratio0p7_gpu3_20260429_071551.log
-[2026-04-29 08:39:18] gpu=3 ratio=0.7 method=badge log=logs_celeba/instructpix2pix_badge_resnet_celeba_1000_ratio0p7_gpu3_20260429_071551.log

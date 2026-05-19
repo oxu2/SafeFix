@@ -20,7 +20,7 @@ RUN_SCRIPT="time_run.sh"
 PREDICT_SCRIPT="predict.py"
 # Set log directory based on dataset
 if [[ "$DATASET" == "imagenet" ]]; then
-  LOG_DIR="logs_imagenet"
+  LOG_DIR="logs/imagenet"
 else
   LOG_DIR="logs"
 fi

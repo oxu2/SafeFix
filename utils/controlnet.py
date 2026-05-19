@@ -91,8 +91,8 @@ apply_hed = HEDdetector()
 config_path = '/home/jovyan/ouser/ControlNet/models/cldm_v15.yaml'
 weights_path = '/home/jovyan/ouser/ControlNet/models/control_sd15_hed.pth'
 if not os.path.exists(config_path):
-    config_path = 'model_controlnet/cldm_v15.yaml'
-    weights_path = 'model_controlnet/control_sd15_hed.pth'
+    config_path = 'utils/model_controlnet/cldm_v15.yaml'
+    weights_path = 'utils/model_controlnet/control_sd15_hed.pth'
 
 # Suppress verbose model loading output
 f = io.StringIO()

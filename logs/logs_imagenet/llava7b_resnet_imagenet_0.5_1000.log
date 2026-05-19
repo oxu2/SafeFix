@@ -1,30 +1,0 @@
-Random seed set to 42
-Adjusted al_initial_labeled for ImageNet scale to 500
-Adjusted al_embedding_dim for ResNet on ImageNet to 256
-Warning: Both --use_active_learning and --use_llm_selection are enabled.
-Disabling Active Learning in favor of LLM selection.
-Current time: 0921164123
-Loaded 1311 feasible pinkcolor_fabrictexture images
-Using generated image directory: exampleData/imagenet_pinkcolor_fabrictexture
-[DEBUG] Normal mode: looking for generated images in directory: exampleData/imagenet_pinkcolor_fabrictexture
-[DEBUG] Starting traversal of class subfolders for generated images...
-[DEBUG] Candidate images before feasible filtering: 1311
-[DEBUG] Total candidate generated images before sampling: 1311
-[DEBUG] Sampled generated images: 1000 items
-Added 1000 generated images.
-Using LLM-based selection (diversity_difficulty) to select 5200 samples from 10400
-LLM data selection: diversity_difficulty strategy with llava-7b
-Selecting 5200/10400 samples (ratio=0.5)
-Configured 1 GPUs with 23GiB memory each
-Loading llava-7b model...
-Loading checkpoint shards:   0%|          | 0/3 [00:00<?, ?it/s]Loading checkpoint shards:  33%|███▎      | 1/3 [00:04<00:09,  4.82s/it]Loading checkpoint shards:  67%|██████▋   | 2/3 [00:08<00:04,  4.40s/it]Loading checkpoint shards: 100%|██████████| 3/3 [00:12<00:00,  3.98s/it]Loading checkpoint shards: 100%|██████████| 3/3 [00:12<00:00,  4.13s/it]
-Model loaded successfully: llava-hf/llava-1.5-7b-hf
-LLM-based sample selection: diversity_difficulty strategy, selecting 5200/10400 samples
-Analyzing subset of 10400 images for LLM-based selection...
-Analyzed 50/10400 images (440.7s elapsed, ETA: 91229.8s)
-Analyzed 100/10400 images (859.4s elapsed, ETA: 88517.0s)
-Analyzed 150/10400 images (1299.0s elapsed, ETA: 88766.7s)
-Analyzed 200/10400 images (1729.5s elapsed, ETA: 88203.2s)
-Analyzed 250/10400 images (2183.9s elapsed, ETA: 88666.0s)
-Analyzed 300/10400 images (2616.5s elapsed, ETA: 88088.2s)
-Analyzed 350/10400 images (3064.0s elapsed, ETA: 87981.1s)

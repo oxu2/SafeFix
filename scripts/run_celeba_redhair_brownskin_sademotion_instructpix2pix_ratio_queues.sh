@@ -3,7 +3,7 @@ set -euo pipefail
 
 ROOT="/people/cs/o/oxx220000/safefix"
 PYTHON_EXE="/people/cs/o/oxx220000/.conda/envs/ad/bin/python"
-BASE_MODEL="weights/model_celeba_resnet_base.pth"
+BASE_MODEL="save/weights/model_celeba_resnet_base.pth"
 ATTRIBUTE_FILE="save/attribute_celeba_trainval_qwen3_8B.json"
 ATTRIBUTES="redhair_brownskin_sademotion"
 GEN_DIR="data/redhair_brownskin_sademotion_instruct_pix2pix_seed42_1k"
@@ -25,7 +25,7 @@ if [[ "${1:-}" == "--worker" ]]; then
 fi
 
 cd "${ROOT}"
-mkdir -p logs_celeba logs_celeba/pids logs
+mkdir -p logs/celeba logs/celeba/pids logs
 
 if [[ ! -x "${PYTHON_EXE}" ]]; then
   PYTHON_EXE="python3"
@@ -64,7 +64,7 @@ run_one() {
   local rtag
   rtag="$(ratio_tag "${ratio}")"
   local method_tag="${method}${rpc_tag:+_${rpc_tag}}"
-  local log="logs_celeba/instructpix2pix_${method_tag}_resnet_celeba_1000_ratio${rtag}_gpu${gpu}_${STAMP}.log"
+  local log="logs/celeba/instructpix2pix_${method_tag}_resnet_celeba_1000_ratio${rtag}_gpu${gpu}_${STAMP}.log"
 
   echo "[$(date '+%Y-%m-%d %H:%M:%S')] gpu=${gpu} ratio=${ratio} method=${method_tag} log=${log}"
   if [[ -s "${log}" ]] && grep -q "Model Test ACC:" "${log}"; then
@@ -186,18 +186,18 @@ if [[ "${WORKER_MODE}" == "True" ]]; then
   exit 0
 fi
 
-setsid nohup bash "$0" --worker 1 0.1 0.3 > "logs_celeba/instructpix2pix_queue_gpu1_${STAMP}.log" 2>&1 < /dev/null &
+setsid nohup bash "$0" --worker 1 0.1 0.3 > "logs/celeba/instructpix2pix_queue_gpu1_${STAMP}.log" 2>&1 < /dev/null &
 pid1=$!
-setsid nohup bash "$0" --worker 2 0.5 > "logs_celeba/instructpix2pix_queue_gpu2_${STAMP}.log" 2>&1 < /dev/null &
+setsid nohup bash "$0" --worker 2 0.5 > "logs/celeba/instructpix2pix_queue_gpu2_${STAMP}.log" 2>&1 < /dev/null &
 pid2=$!
-setsid nohup bash "$0" --worker 3 0.7 > "logs_celeba/instructpix2pix_queue_gpu3_${STAMP}.log" 2>&1 < /dev/null &
+setsid nohup bash "$0" --worker 3 0.7 > "logs/celeba/instructpix2pix_queue_gpu3_${STAMP}.log" 2>&1 < /dev/null &
 pid3=$!
 
-cat > "logs_celeba/instructpix2pix_queues_${STAMP}.pids" <<EOF
-gpu1 ${pid1} logs_celeba/instructpix2pix_queue_gpu1_${STAMP}.log
-gpu2 ${pid2} logs_celeba/instructpix2pix_queue_gpu2_${STAMP}.log
-gpu3 ${pid3} logs_celeba/instructpix2pix_queue_gpu3_${STAMP}.log
+cat > "logs/celeba/instructpix2pix_queues_${STAMP}.pids" <<EOF
+gpu1 ${pid1} logs/celeba/instructpix2pix_queue_gpu1_${STAMP}.log
+gpu2 ${pid2} logs/celeba/instructpix2pix_queue_gpu2_${STAMP}.log
+gpu3 ${pid3} logs/celeba/instructpix2pix_queue_gpu3_${STAMP}.log
 EOF
 
 echo "[$(date '+%Y-%m-%d %H:%M:%S')] Queues launched:"
-cat "logs_celeba/instructpix2pix_queues_${STAMP}.pids"
+cat "logs/celeba/instructpix2pix_queues_${STAMP}.pids"

@@ -1,7 +1,7 @@
 import os
 import re
 
-LOG_DIR = "logs_imagenet"
+LOG_DIR = "logs/imagenet"
 
 # example filename:
 # AL_resnet_attr_imagenet_0.1_R0_L0_B0_class_INF_1000.log

@@ -34,7 +34,7 @@ wait_for_gpu_free() {
 }
 
 # Ensure logs directory exists
-mkdir -p logs_imagenet
+mkdir -p logs/imagenet
 
 # Specify Python executable
 PYTHON_EXE="/people/cs/o/oxx220000/.conda/envs/ad/bin/python"
@@ -81,14 +81,14 @@ RATIO_STR="ratio${SUB_RATIO}"
     $COMMON_ARGS \
     --sub_ratio $SUB_RATIO \
     --use_active_learning False \
-    > logs_imagenet/AL_random_resnet_imagenet_1000_${RATIO_STR}.log 2>&1
+    > logs/imagenet/AL_random_resnet_imagenet_1000_${RATIO_STR}.log 2>&1
   
   echo "--- [GPU 0] Starting Stratified Strategy ---"
   CUDA_VISIBLE_DEVICES=0 $PYTHON_EXE -u alpred.py \
     $COMMON_ARGS \
     --sub_ratio $SUB_RATIO \
     --al_strategy stratified \
-    > logs_imagenet/AL_stratified_resnet_imagenet_1000_${RATIO_STR}.log 2>&1
+    > logs/imagenet/AL_stratified_resnet_imagenet_1000_${RATIO_STR}.log 2>&1
   
   echo "=== [GPU 0] Jobs finished ==="
 ) &
@@ -105,14 +105,14 @@ RATIO_STR="ratio${SUB_RATIO}"
     --al_strategy coreset \
     --al_initial_labeled 400 \
     --al_embedding_dim 256 \
-    > logs_imagenet/AL_coreset_resnet_imagenet_1000_${RATIO_STR}.log 2>&1
+    > logs/imagenet/AL_coreset_resnet_imagenet_1000_${RATIO_STR}.log 2>&1
     
   echo "--- [GPU 1] Starting Uncertainty-Stratified Strategy ---"
   CUDA_VISIBLE_DEVICES=1 $PYTHON_EXE -u alpred.py \
     $COMMON_ARGS \
     --sub_ratio $SUB_RATIO \
     --al_strategy uncertainty_stratified \
-    > logs_imagenet/AL_uncertainty_stratified_resnet_imagenet_1000_${RATIO_STR}.log 2>&1
+    > logs/imagenet/AL_uncertainty_stratified_resnet_imagenet_1000_${RATIO_STR}.log 2>&1
 
   echo "=== [GPU 1] Jobs finished ==="
 ) &
@@ -129,7 +129,7 @@ RATIO_STR="ratio${SUB_RATIO}"
     --al_strategy diversity \
     --al_clusters 100 \
     --al_embedding_dim 256 \
-    > logs_imagenet/AL_diversity_resnet_imagenet_1000_${RATIO_STR}.log 2>&1
+    > logs/imagenet/AL_diversity_resnet_imagenet_1000_${RATIO_STR}.log 2>&1
     
   echo "--- [GPU 2] Starting Hierarchical Strategy ---"
   CUDA_VISIBLE_DEVICES=2 $PYTHON_EXE -u alpred.py \
@@ -137,7 +137,7 @@ RATIO_STR="ratio${SUB_RATIO}"
     --sub_ratio $SUB_RATIO \
     --al_strategy hierarchical \
     --al_alpha 0.4 --al_beta 0.4 --al_gamma 0.2 \
-    > logs_imagenet/AL_hierarchical_resnet_imagenet_1000_${RATIO_STR}.log 2>&1
+    > logs/imagenet/AL_hierarchical_resnet_imagenet_1000_${RATIO_STR}.log 2>&1
 
   echo "=== [GPU 2] Jobs finished ==="
 ) &
@@ -156,7 +156,7 @@ RATIO_STR="ratio${SUB_RATIO}"
     --al_stratified_ratio 0.5 \
     --al_initial_labeled 200 \
     --al_embedding_dim 256 \
-    > logs_imagenet/AL_hybrid_resnet_imagenet_1000_${RATIO_STR}.log 2>&1
+    > logs/imagenet/AL_hybrid_resnet_imagenet_1000_${RATIO_STR}.log 2>&1
     
   echo "--- [GPU 3] Starting Attribute Strategy ---"
   # Attempt to use attribute strategy if metadata is available
@@ -165,10 +165,10 @@ RATIO_STR="ratio${SUB_RATIO}"
     --sub_ratio $SUB_RATIO \
     --al_strategy attribute \
     --al_attribute_focus pinkcolor,fabrictexture \
-    > logs_imagenet/AL_attribute_resnet_imagenet_1000_${RATIO_STR}.log 2>&1
+    > logs/imagenet/AL_attribute_resnet_imagenet_1000_${RATIO_STR}.log 2>&1
 
   echo "=== [GPU 3] Jobs finished ==="
 ) &
 
 echo "[$(date '+%Y-%m-%d %H:%M:%S')] All experiment pipelines launched with sub_ratio=${SUB_RATIO}."
-echo "Check main log for progress or individual logs in logs_imagenet/ directory."
+echo "Check main log for progress or individual logs in logs/imagenet/ directory."

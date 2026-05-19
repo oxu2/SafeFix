@@ -31,7 +31,7 @@ Options:
   --base-model PATH        Resume checkpoint path.
   --batch-size N           Training batch size. Default: 8
   --num-workers N          DataLoader workers per run. Default: 4
-  --epochs-total N         Total epochs passed to train_pose_estimation.py. Default: 2
+  --epochs-total N         Total epochs passed to pose_estimation/train_pose_estimation.py. Default: 2
   --dry-run                Print per-run commands without training.
 EOF
 }
@@ -40,7 +40,7 @@ REPO_DIR="${SLURM_SUBMIT_DIR:-$PWD}"
 CONDA_ENV="/groups/yguo/oxx220000/conda/envs/ad"
 DATA_ROOT="$HOME/scratch/safefix_cache/data/coco"
 GENERATED_DIR="$HOME/scratch/safefix_cache/data/coco-pose-weather-edits/generated_coco_qwen3_1500_brown_rain_icedit"
-BASE_MODEL="$HOME/scratch/safefix_cache/log_pose/pose_keypointrcnn_train20k_internvl3_bs8_e2_rare1p1_gpu0_20260415_144530/best.pth"
+BASE_MODEL="$HOME/scratch/safefix_cache/logs/pose/pose_keypointrcnn_train20k_internvl3_bs8_e2_rare1p1_gpu0_20260415_144530/best.pth"
 BATCH_SIZE=8
 NUM_WORKERS=4
 EPOCHS_TOTAL=2
@@ -115,7 +115,7 @@ for required in \
   fi
 done
 
-mkdir -p "$REPO_DIR/log_pose/pids"
+mkdir -p "$REPO_DIR/logs/pose/pids"
 
 PYTHON_EXE="$CONDA_ENV/bin/python"
 RATIOS=(0.05 0.1 0.3 0.5 0.7 0.9)
@@ -163,15 +163,15 @@ launch_one() {
   build_strategy_args "$strategy"
 
   local ratio_label="${ratio//./p}"
-  local out_dir="$REPO_DIR/log_pose/pose_keypointrcnn_resume_qwen3_brown_rainy_${strategy}_ratio${ratio_label}_gpu0_${ts}"
-  local log_file="$REPO_DIR/log_pose/pose_resume_qwen3_brown_rainy_${strategy}_ratio${ratio_label}_gpu0_${ts}.log"
-  local pid_file="$REPO_DIR/log_pose/pids/pose_resume_qwen3_brown_rainy_${strategy}_ratio${ratio_label}_gpu0_${ts}.pid"
+  local out_dir="$REPO_DIR/logs/pose/pose_keypointrcnn_resume_qwen3_brown_rainy_${strategy}_ratio${ratio_label}_gpu0_${ts}"
+  local log_file="$REPO_DIR/logs/pose/pose_resume_qwen3_brown_rainy_${strategy}_ratio${ratio_label}_gpu0_${ts}.log"
+  local pid_file="$REPO_DIR/logs/pose/pids/pose_resume_qwen3_brown_rainy_${strategy}_ratio${ratio_label}_gpu0_${ts}.pid"
 
   local cmd=(
     env
     MPLCONFIGDIR=/tmp/matplotlib-safefix
     CUDA_VISIBLE_DEVICES=0
-    "$PYTHON_EXE" -u train_pose_estimation.py train
+    "$PYTHON_EXE" -u pose_estimation/train_pose_estimation.py train
     --data-root "$DATA_ROOT"
     --pretrained true
     --device cuda

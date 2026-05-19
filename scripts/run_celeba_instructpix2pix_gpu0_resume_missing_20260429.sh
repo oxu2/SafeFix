@@ -3,7 +3,7 @@ set -euo pipefail
 
 ROOT="/people/cs/o/oxx220000/safefix"
 PYTHON_EXE="/people/cs/o/oxx220000/.conda/envs/ad/bin/python"
-BASE_MODEL="weights/model_celeba_resnet_base.pth"
+BASE_MODEL="save/weights/model_celeba_resnet_base.pth"
 ATTRIBUTE_FILE="save/attribute_celeba_trainval_qwen3_8B.json"
 ATTRIBUTES="redhair_brownskin_sademotion"
 GEN_DIR="data/redhair_brownskin_sademotion_instruct_pix2pix_seed42_1k"
@@ -18,7 +18,7 @@ SOURCE_STAMP="20260429_071551"
 STAMP="${STAMP:-$(date +%Y%m%d_%H%M%S)}"
 
 cd "${ROOT}"
-mkdir -p logs_celeba logs_celeba/pids
+mkdir -p logs/celeba logs/celeba/pids
 
 if [[ ! -x "${PYTHON_EXE}" ]]; then
   PYTHON_EXE="python3"
@@ -60,7 +60,7 @@ has_completed_source_log() {
     if grep -q "Model Test ACC:" "${candidate}"; then
       return 0
     fi
-  done < <(compgen -G "logs_celeba/instructpix2pix_${method_tag}_resnet_celeba_1000_ratio${rtag}_gpu*_${SOURCE_STAMP}.log" || true)
+  done < <(compgen -G "logs/celeba/instructpix2pix_${method_tag}_resnet_celeba_1000_ratio${rtag}_gpu*_${SOURCE_STAMP}.log" || true)
   return 1
 }
 
@@ -71,7 +71,7 @@ run_one() {
   local rtag
   rtag="$(ratio_tag "${ratio}")"
   local method_tag="${method}${rpc_tag:+_${rpc_tag}}"
-  local log="logs_celeba/instructpix2pix_${method_tag}_resnet_celeba_1000_ratio${rtag}_gpu${GPU}_resume_${STAMP}.log"
+  local log="logs/celeba/instructpix2pix_${method_tag}_resnet_celeba_1000_ratio${rtag}_gpu${GPU}_resume_${STAMP}.log"
 
   echo "[$(date '+%Y-%m-%d %H:%M:%S')] gpu=${GPU} ratio=${ratio} method=${method_tag} log=${log}"
   if has_completed_source_log "${ratio}" "${method_tag}"; then

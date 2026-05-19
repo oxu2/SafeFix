@@ -7,7 +7,7 @@
 # Each GPU runs ImageNet first, then CelebA.
 
 PYTHON="/people/cs/o/oxx220000/.conda/envs/ad/bin/python"
-SCRIPT="predict_ltl.py"
+SCRIPT="utils/predict_ltl.py"
 LOGDIR="logs"
 mkdir -p "$LOGDIR"
 SUFFIX=$(date +%m%d_%H%M)

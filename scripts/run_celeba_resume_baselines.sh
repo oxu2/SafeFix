@@ -19,8 +19,8 @@ What this script does:
   - launches CelebA ResNet resume-from-base runs with 1000 generated images
   - pins ratio 0.1 / 0.3 / 0.5 / 0.7 to GPU 0 / 1 / 2 / 3
   - in `all` mode, each GPU runs `random -> stratified -> coreset -> badge -> hierarchical` sequentially for its own ratio
-  - writes logs to logs_celeba/
-  - writes PID files to logs_celeba/pids/
+  - writes logs to logs/celeba/
+  - writes PID files to logs/celeba/pids/
 
 Examples:
   ./scripts/run_celeba_resume_baselines.sh all
@@ -133,7 +133,7 @@ if [[ ! -f "$BASE_MODEL" ]]; then
   exit 1
 fi
 
-mkdir -p logs_celeba/pids
+mkdir -p logs/celeba/pids
 
 build_strategy_args() {
   local strategy="$1"
@@ -188,8 +188,8 @@ launch_ratio() {
   local gpu="$2"
   local ratio="$3"
 
-  local logfile="logs_celeba/resume_lr1e-5_epoch${NUM_EPOCHS}_${strategy}_resnet_celeba_1000_ratio${ratio}.log"
-  local pidfile="logs_celeba/pids/resume_lr1e-5_epoch${NUM_EPOCHS}_${strategy}_ratio${ratio}.pid"
+  local logfile="logs/celeba/resume_lr1e-5_epoch${NUM_EPOCHS}_${strategy}_resnet_celeba_1000_ratio${ratio}.log"
+  local pidfile="logs/celeba/pids/resume_lr1e-5_epoch${NUM_EPOCHS}_${strategy}_ratio${ratio}.pid"
 
   local cmd=(
     env

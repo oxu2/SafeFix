@@ -10,11 +10,11 @@ GPU="${GPU:-3}"
 RATIOS="${RATIOS:-0.1 0.3 0.5 0.7 0.9}"
 TAGS="${TAGS:-none only_r only_p only_c no_r no_p no_c anchor}"
 
-BASE_MODEL="${BASE_MODEL:-weights/model_imagenet_resnet_base.pth}"
+BASE_MODEL="${BASE_MODEL:-save/weights/model_imagenet_resnet_base.pth}"
 ATTRIBUTE_FILE="${ATTRIBUTE_FILE:-save/attribute10_internvl3_8B.json}"
 GEN_DIR="${GEN_DIR:-data/imagenet_pinkcolor_fabrictexture}"
 DATA_DIR="${DATA_DIR:-data/imagenet_subset}"
-LOG_DIR="${LOG_DIR:-logs_imagenet}"
+LOG_DIR="${LOG_DIR:-logs/imagenet}"
 PID_DIR="${PID_DIR:-logs}"
 
 cd "${ROOT}"
