@@ -1,5 +1,5 @@
 {
-  "checkpoint": "outputs/pose_keypointrcnn_train20k_blip_bs8_e2_rare0p97_20260412_021252/best.pth",
+  "checkpoint": "logs/pose/pose_keypointrcnn_train20k_blip_bs8_e2_rare0p97_20260412_021252/best.pth",
   "metrics": {
     "AP": 0.636988046751438,
     "AP50": 0.8613716421873073,
