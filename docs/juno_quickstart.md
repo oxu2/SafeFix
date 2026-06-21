@@ -157,6 +157,93 @@ ssh juno 'cd /work/NetID/project && ls -l utils/my_new_eval.py'
 ssh juno 'cd /work/NetID/project && bash -n scripts/my_job.sbatch'
 ```
 
+## Backup Local Data To Juno
+
+For non-sensitive local data and logs, use `rsync` snapshots under
+`/work/NetID/backups/`. This is simpler than `restic` or `borg` and keeps
+dated restore points. Use `/work`, not `~/scratch`, for backups that should
+survive beyond temporary job I/O.
+
+Check quota first:
+
+```bash
+ssh juno
+```
+
+Juno prints quota at login. For example, user `oxx220000` currently has a
+`1.0TB` soft limit and `1.1TB` hard limit under `/work/oxx220000`, so this is
+appropriate for hundreds of GB but not for tens of TB unless a larger group
+storage path is available.
+
+One-time or first snapshot backup:
+
+```bash
+src="$HOME/fp"
+name="$(basename "$src")"
+host="$(hostname -s)"
+stamp="$(date +%F_%H%M%S)"
+dest_base="/work/NetID/backups/${host}/${name}"
+
+ssh juno "mkdir -p ${dest_base}/snapshots/${stamp}"
+
+rsync -aHAX --numeric-ids --delete --info=progress2 \
+  "${src}/" \
+  "juno:${dest_base}/snapshots/${stamp}/"
+
+ssh juno "cd ${dest_base} && ln -sfn snapshots/${stamp} latest"
+```
+
+Later snapshots can reuse unchanged files from the previous snapshot through
+hardlinks:
+
+```bash
+src="$HOME/fp"
+name="$(basename "$src")"
+host="$(hostname -s)"
+stamp="$(date +%F_%H%M%S)"
+dest_base="/work/NetID/backups/${host}/${name}"
+
+ssh juno "mkdir -p ${dest_base}/snapshots/${stamp}"
+
+rsync -aHAX --numeric-ids --delete --info=progress2 \
+  --link-dest="${dest_base}/latest" \
+  "${src}/" \
+  "juno:${dest_base}/snapshots/${stamp}/"
+
+ssh juno "cd ${dest_base} && ln -sfn snapshots/${stamp} latest"
+```
+
+Important details:
+
+- Keep the trailing slash in `"${src}/"` so `rsync` copies the directory
+  contents, not an extra nested top-level directory.
+- `--delete` makes each snapshot match the source at that time. Previous dated
+  snapshots remain available unless manually removed.
+- `--link-dest` must be the absolute path as seen on Juno.
+- The `latest` symlink is only a convenience pointer. The dated snapshot
+  remains valid even if updating `latest` has to be retried.
+
+Verify a completed backup:
+
+```bash
+ssh juno "du -sh ${dest_base}/snapshots/${stamp}; \
+  find ${dest_base}/snapshots/${stamp} -type f | wc -l; \
+  readlink ${dest_base}/latest"
+```
+
+Example completed on `2026-06-12`:
+
+```text
+Local source:
+/people/cs/o/oxx220000/fp/
+
+Juno snapshot:
+/work/oxx220000/backups/csr-93601/fp/snapshots/2026-06-12_025413
+
+Result:
+1.5G, 4666 files, latest -> snapshots/2026-06-12_025413
+```
+
 ## Download Public Data On Juno
 
 Use Juno-local downloads for public datasets instead of copying large datasets
