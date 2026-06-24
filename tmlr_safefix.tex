@@ -99,9 +99,11 @@ Deep learning models for visual recognition often exhibit systematic errors due 
 \section{Introduction}
 Despite strong performance on standard benchmarks, computer vision models often fail on rare semantic subpopulations~\citep{barbu2019objectnet,gao2023adaptive,leclerc20223db}. Such errors usually arise from dataset bias: some attribute combinations (for example, individuals with red hair color) are rarely represented in the training data~\citep{buolamwini2018gender}. Finding and fixing these bug slices is important for deploying AI systems in safety-critical applications.
 
-Recent research has focused on identifying these failures using interpretable debugging pipelines~\citep{gao2023adaptive,chen2023hibug,singla2024data}. For instance, \hibug~\citep{chen2023hibug} uses vision--language models to discover failure slices based on shared visual attributes. However, the subsequent repair process remains a major bottleneck. Existing repair strategies generally fall into two categories: retrieval-based and generation-based. Retrieval-based methods~\citep{gao2023adaptive,singla2024data} collect samples from external datasets, which often introduces a domain gap. Generation-based methods, such as those suggested by \hibug, use text-to-image models to synthesize training data. However, standard generative augmentation suffers from two critical flaws: (1) \textbf{Semantic Drift}: Generative models often fail to preserve attributes unrelated to the intended edit, and (2) \textbf{Distribution Mismatch}: Synthetic images may not align with the original data distribution, leading the model to learn generative artifacts rather than the intended semantic concepts.
+Recent interpretable debugging pipelines can identify failure slices in vision models~\citep{gao2023adaptive,chen2023hibug,singla2024data}. For example, \hibug~\citep{chen2023hibug} uses vision--language models to discover slices that share visual attributes. Once these slices are found, however, repairing them remains difficult. Existing repair strategies mainly follow two directions. Retrieval-based methods~\citep{gao2023adaptive,singla2024data} collect additional samples from external datasets, but these samples can introduce domain gaps. Generation-based methods, including the repair strategy suggested by \hibug, synthesize new training data with text-to-image models. This avoids dependence on an external image pool, but prompt-based generation introduces two common failure modes: (1) \textbf{Semantic Drift}, where generated images change attributes unrelated to the intended edit, and (2) \textbf{Distribution Mismatch}, where synthetic images deviate from the original data distribution and teach the model generative artifacts rather than the intended visual concept.
 
-To overcome these challenges, we propose \model, a targeted model repair method designed to correct failures caused by underrepresented semantic subpopulations through controlled image generation—without degrading overall performance or introducing new errors. Compared to AdaVision~\citep{gao2023adaptive} and DCD~\citep{singla2024data}, which retrieve samples from another dataset, our method generates new examples grounded in the training set to ensure distributional consistency. Unlike \hibug~\citep{chen2023hibug}, which simply composes failure attributes into language prompts, \model anchors generation on real instances in the training set to preserve unrelated attributes and avoid unintended changes. While the latent-space-based filtering method~\citep{jain2023latentfailures} explores repair via diffusion models, their approach relies solely on caption-based prompting and does not guarantee the semantic accuracy of critical attributes. In contrast, \model mitigates the unreliability of generative models in rendering sensitive attributes—such as skin tone or hair color—by further filtering out semantically inconsistent images using a large vision--language model (LVLM)~\citep{bai2025qwen25vl, liu2023improvedllava}, and the LVLM is verified by human audit. This system ensures that the final outputs faithfully reflect the intended attribute change (e.g., generating a sad expression on a darker-skinned woman with red hair, whereas standard diffusion models often mistakenly produce a darker-skinned man with black hair instead), enabling precise and robust repair of underrepresented semantic subpopulation failures.
+We propose \model, a targeted repair method that uses controlled image generation to correct these underrepresented slices without degrading overall performance or introducing new errors. Compared with AdaVision~\citep{gao2023adaptive} and DCD~\citep{singla2024data}, which retrieve samples from another dataset, \model generates repair examples from the original training distribution. Compared with \hibug~\citep{chen2023hibug}, which follows the same high-level diagnose-generate-retrain structure, \model changes the repair-data construction step. \hibug{} turns attribute text into a prompt and generates a new image; even when the target attribute appears, source-specific factors such as eye shape, face contour, background, pose, and lighting can change. \model instead conditions generation on real training images, edits the diagnosed attributes, and preserves the other visual factors of the source image.
+
+This distinction is not due to a stronger diffusion backbone; both \hibug{} and \model use Stable Diffusion 1.5~\citep{rombach2022high}. The latent-space-based filtering method~\citep{jain2023latentfailures} also explores repair via diffusion models, but it relies on caption-based prompting and does not verify the semantic accuracy of critical attributes. \model adds a large vision--language model (LVLM) filter~\citep{bai2025qwen25vl, liu2023improvedllava}, verified by human audit, to remove generated images that miss the intended attribute or change the label. The resulting repair images reflect the intended edit (e.g., a sad expression on a darker-skinned woman with red hair) while staying close to the source image and the original data distribution.
 
 
 \begin{figure}[t]
@@ -111,13 +113,13 @@ To overcome these challenges, we propose \model, a targeted model repair method 
   \label{fig:teaser}
 \end{figure}
 
-As shown in Figure~\ref{fig:teaser}, \model directly addresses two major challenges in existing model repair strategies: \textbf{1.} ensuring the generated images reflect the true failure attributes, and \textbf{2.} aligning them with the original data distribution. By retraining models on this augmentation set, we reduce errors associated with underrepresented semantic subpopulations, where model failures stem from insufficient training coverage of specific attributes. The contributions of this work are as follows:
+As shown in Figure~\ref{fig:teaser}, \model addresses two repair requirements: generated images should contain the diagnosed failure attributes, and they should remain close to the original data distribution. By retraining models on this augmentation set, we reduce errors on underrepresented semantic subpopulations. The contributions of this work are as follows:
 \begin{itemize}
 \item We formulate a targeted model repair pipeline, \model, which leverages conditional text-to-image generation and LVLM-based filtering to synthesize high-quality, attribute-faithful data for correcting model failures arising from underrepresented subpopulations.
 
 \item We introduce a verification mechanism that leverages LVLMs to mitigate the inherent unreliability of generative models, ensuring that the synthesized repair data is both semantically accurate and remains aligned with the original dataset distribution.
 
-\item We demonstrate that our approach significantly improves model performance on rare-case failure slices across multiple architectures and datasets, leading to higher accuracy and robustness in underrepresented scenarios without introducing new errors.
+\item We demonstrate that \model{} improves rare-case failure slices across multiple architectures and datasets, achieving the best performance in the evaluated CelebA, ImageNet10, COCO, and KITTI settings across image classification, pose estimation, and object detection.
 \end{itemize}
 
 \section{Related Work}
@@ -327,7 +329,7 @@ We construct a 10-class subset of ImageNet~\citep{deng2009imagenet} containing t
     - \textit{ImageNet10}:  
     \textit{``A photo of a \{color\} \{class name\} (*label) with \{texture\} texture, located \{object position\}, appearing \{object size\}, in a \{background\}, under \{lighting\} lighting, during \{time\}, from a \{perspective\} perspective.''}
 
-    \textit{Note:} Unless otherwise specified, ``\hibug'' refers to this optimized ``HiBug\_Task'' variant in the paper. We do not compare with HiBug2~\citep{chen2025hibug2}, which is a data selection method and differs from the synthetic generation strategy.
+    \textit{Note:} Unless otherwise specified, ``\hibug'' refers to this optimized ``HiBug\_Task'' variant in the paper. We do not compare with HiBug2~\citep{chen2025hibug2}, which is a data selection method and differs from the synthetic generation strategy. \hibug{} is the closest generation baseline: it generates new images from attribute prompts, whereas \model edits real training images and verifies the edited outputs with LVLMs. A filtered \hibug{} image can contain the requested attribute but still lose source-specific visual factors, while \model keeps the repair image anchored to the original example.
 
 \end{itemize}
 
@@ -337,12 +339,12 @@ We construct a 10-class subset of ImageNet~\citep{deng2009imagenet} containing t
 \vspace{-4pt}
 \begin{equation}
 \mathrm{RER}
-= \dfrac{\operatorname{Err}_{\text{before}} - \operatorname{Err}_{\text{after}}}
-{\operatorname{Err}_{\text{before}}}
+= \dfrac{\mathrm{Err}_{\text{before}} - \mathrm{Err}_{\text{after}}}
+{\mathrm{Err}_{\text{before}}}
 = \dfrac{(1 - Acc_{\text{before}}) - (1 - Acc_{\text{after}})}{1 - Acc_{\text{before}}}
 = \dfrac{Acc_{\text{after}} - Acc_{\text{before}}}{1 - Acc_{\text{before}}},
 \end{equation}
-where $\operatorname{Err}=1-Acc$. This metric measures the fraction of the original aggregate error rate removed by repair. Here, $Acc_{\text{after}}$ denotes the accuracy obtained after applying the proposed method, and $Acc_{\text{before}}$ represents the baseline accuracy from standard training using the vision model.
+where $\mathrm{Err}=1-Acc$. This metric measures the fraction of the original aggregate error rate removed by repair. Here, $Acc_{\text{after}}$ denotes the accuracy obtained after applying the proposed method, and $Acc_{\text{before}}$ represents the baseline accuracy from standard training using the vision model.
 
 \noindent \textbf{Implementation Details.} All experiments use an NVIDIA A100 GPU\@.
 We take the CelebA ``wearing lipstick'' classification task as an example.  
@@ -475,7 +477,7 @@ HiBug\_Task        & 73.51 & 72.88 & 73.36 \\
 
 \noindent\textbf{Analysis.}
 Combined with Tables~\ref{tab:rer_celeba},~\ref{tab:rer_imagenet10},~\ref{tab:imagenet_resnet_only}, and \emph{all other test-accuracy results} in Appendix~\ref{sec:appendix_acc}, our experiments show that baseline performance is often unstable. For instance, baselines like DA-CDM and Mask-ControlNet show some improvement on object and facial attribute tasks, respectively, due to their use of conditional diffusion models. However, they are \textbf{not targeted model repair methods}, so their overall performance is inferior to both HiBug and \model. This lack of a targeted strategy means their gains are task-specific and \textbf{not robustly transferable}.
-Similarly, the accuracy of \hibug{} does not improve substantially. This is likely because it does not precisely target failure-critical attributes; instead, it applies general augmentations that can introduce noise or modify unintended features. As shown in Figure~\ref{fig:picture_compare}, this issue is compounded by the lack of LVLM filtering, resulting in generated data that is often misaligned with the intended rare-case fixes.
+Similarly, the accuracy of \hibug{} does not improve substantially. The main limitation is prompt-only generation: even when a generated image contains the requested attribute, it is not an edit of a specific source image and can change non-target factors such as face shape, background, pose, and lighting. As shown in Figure~\ref{fig:picture_compare}, adding LVLM filtering can reject visibly invalid samples, but filtering alone cannot enforce consistency with a particular original training image. \model succeeds because the LVLM operates on candidates that are already tied to the source distribution through conditional image editing.
 
 
 In contrast, \textbf{our method (\model) consistently shows stable or improving performance}. This robustness indicates our attribute-targeted augmentation and LVLM filtering are highly effective at correcting failure-prone subpopulations with meaningful data. 
@@ -516,7 +518,7 @@ To test whether \model{} extends beyond the two classification settings, we also
 \small
 \setlength{\tabcolsep}{3.5pt}
 \renewcommand{\arraystretch}{1.0}
-\caption{Results on denser visual prediction tasks.}
+\caption{Results on denser visual prediction tasks. Pose estimation reports COCO keypoint AP, and object detection reports mAP50-95.}
 \label{tab:visual_task_results}
 \resizebox{\linewidth}{!}{
 \begin{tabular}{l l c c c}
@@ -679,7 +681,7 @@ We use an LVLM as the attribute filter, and a human-based test yields nearly ide
   \vspace{-10pt}
 \end{wraptable}
 
-We ablate the contributions of the two core components in our pipeline: the Conditional Diffusion Model (CDM) and the LVLM filter. Table~\ref{tab:ablate_csd_lvlm} reports RER on CelebA when using different combinations of these components across three augmentation scales. Note that configuration (a) corresponds to the baseline strategy from \hibug~\citep{chen2023hibug}. We observe several trends: adding either the LVLM (b) or the CDM (c) individually improves accuracy across all scales; \model{} combining both the CDM and the LVLM (d) yields the highest performance in all cases. The relatively low performance of configuration (b) also explains why applying LVLM filtering to HiBug-style prompt generations is insufficient. The filter can remove visibly invalid images, but it cannot make a prompt-generated image preserve the eye shape, face contour, background, pose, lighting, and other non-target factors of a specific source training image. Conditional image editing is therefore needed before filtering so that accepted samples remain tied to the original training distribution.
+We ablate the contributions of the two core components in our pipeline: the Conditional Diffusion Model (CDM) and the LVLM filter. Table~\ref{tab:ablate_csd_lvlm} reports RER on CelebA when using different combinations of these components across three augmentation scales. Configuration (a) corresponds to the prompt-only baseline strategy from \hibug~\citep{chen2023hibug}. Configuration (b) adds LVLM filtering to HiBug-style prompt generations. The filter can remove images that miss the requested attribute, but it cannot make a prompt-generated image preserve the eye shape, face contour, background, pose, lighting, and other non-target factors of a specific source training image. Configuration (c) uses source-image-conditioned editing without LVLM verification, which preserves more non-target visual factors but can retain failed edits. \model{} combines both components in configuration (d) and yields the highest performance, showing that conditional image editing and semantic filtering address different failure modes.
 
 \section{Conclusion}
 
