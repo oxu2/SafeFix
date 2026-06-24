@@ -20,19 +20,23 @@ checking H100 availability. Replace `NetID` with your Juno username.
   - `a30-2.12gb`: half A30 virtual GPU, 12 GB VRAM.
   - `a30-4.6gb`: quarter A30 virtual GPU, 6 GB VRAM.
 
-## Current H100 Layout
+## Historical H100 Layout Snapshot
 
-Snapshot from Juno at `2026-04-29 02:16 CDT`:
+Snapshot from Juno at `2026-04-29 02:16 CDT`. This is historical context for
+why some April jobs stayed pending; do not treat it as a current resource
+constraint.
 
 | Node | H100 Type | Total GPUs | Allocated GPUs | Nominal Free GPUs | Notes |
 | --- | --- | ---: | ---: | ---: | --- |
 | `g-04-02` | `nvidia_h100_80gb_hbm3` | `4` | `4` | `0` | 80 GB H100 node; fully allocated. |
 | `g-05-01` | `nvidia_h100_nvl` | `1` | `1` | `0` | H100 NVL node; fully allocated. |
-| `g-06-01` | `nvidia_h100_nvl` | `2` | `1` | `1` | SLURM shows one nominal free GPU, but allocated memory was `500G / 500G`, so a new job may still stay pending. |
+| `g-06-01` | `nvidia_h100_nvl` | `2` | `1` | `1` | SLURM showed one nominal free GPU, but allocated host memory was `500G / 500G`, so a new job could still stay pending at that time. |
 
 Interpret the table as a scheduling hint, not a guarantee. A job can stay
 `PENDING (Resources)` even when one GPU looks free if CPU, memory, node state,
-priority, or reservations prevent placement.
+priority, or reservations prevent placement. Recheck the live layout before
+making placement decisions; the old host-memory pressure should not block
+current Juno planning unless it appears in the live `scontrol show node` output.
 
 Check the current H100 layout yourself:
 
@@ -74,8 +78,11 @@ scontrol show job <jobid> | grep -E "JobId=|JobState=|Reason=|Partition=|NumNode
 
 For independent single-GPU experiment sweeps:
 
-- Keep H100-only or H100-sensitive jobs on `h100` when the workload needs H100
-  memory or speed.
+- Default all experiment submissions to `h100`.
+- Do not use A30 or virtual-A30 partitions by default. Use them only when the
+  user explicitly asks for A30 or when a specific small probe has already shown
+  that the workload fits the target A30 partition's GPU VRAM and host-memory
+  profile.
 - Prefer smaller batches of submissions, for example `2` to `4` jobs at a
   time, instead of filling all `8` submitted slots when the queue is congested.
 - Monitor the queue before and after submission.

@@ -37,13 +37,13 @@ even if the user is below the nominal job cap.
 
 For independent single-GPU experiment sweeps:
 
-- Keep H100-only or H100-sensitive jobs on `h100` when the workload needs H100
-  memory or speed.
-- For COCO training and COCO pose resume jobs in this repo, use `h100` only.
-  Do not plan COCO runs on `a30` by default because memory is the limiting
-  resource. The A30 probe job `185433` failed with CUDA OOM at
-  `--batch-size 8`, and the current project policy is to reserve A30 only for
-  smaller non-COCO work or explicit memory-fit probes.
+- Default all experiment submissions in this repo to `h100`.
+- Do not use A30 or virtual-A30 partitions by default. Use them only when the
+  user explicitly asks for A30 or when a specific small probe has already shown
+  that the workload fits the target A30 partition's GPU VRAM and host-memory
+  profile. The old A30 probe job `185433` failed with CUDA OOM at
+  `--batch-size 8`, so that specific batch size should not be reused on A30
+  without rechecking memory.
 - Prefer smaller batches of submissions, for example `2` to `4` jobs at a time,
   instead of filling all `8` submitted slots when the queue is congested.
 - Monitor both partitions before and after submission, then move only jobs that
@@ -96,8 +96,9 @@ Interpretation:
 - A node with `CfgTRES gres/gpu=4` and `AllocTRES gres/gpu=3` has one nominally
   unallocated GPU.
 - A nominally unallocated GPU may still not be schedulable for a new job if CPU,
-  memory, priority, or planned allocations block it. Check `AllocTRES` memory
-  and the node `State` as well as GPU count.
+  host memory, priority, or planned allocations block it. Check `AllocTRES`
+  memory and the node `State` as well as GPU count. Treat old `AllocTRES`
+  memory observations as historical only; the live node state is what matters.
 
 To inspect why a pending job is not starting and what it requested:
 
@@ -592,6 +593,6 @@ sbatch scripts/juno_pose_resume.sbatch \
   --conda-env /groups/yguo/oxx220000/conda/envs/ad \
   --data-root ~/work/data/coco \
   --generated-dir ~/work/data/coco-pose-weather-edits/generated_coco_train1500_rain \
-  --partition h100-2.47gb \
+  --partition h100 \
   --batch-size 8
 ```

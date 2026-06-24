@@ -1,3 +1,16 @@
+## Note on Revised PDF Upload2
+
+Dear reviewers and Action Editor,
+
+We have uploaded a second revised PDF to incorporate the latest discussion-driven clarifications. The revision does not change the core method or experimental setup. The main updates are:
+
+1. We further clarified the contribution relative to HiBug in the Introduction, Baselines, Main Results analysis, and Ablation Study. In particular, we now state that SafeFix and HiBug share the same high-level diagnose-generate-retrain structure, but differ in the repair-data construction step: HiBug generates new images from attribute prompts, whereas SafeFix edits real training images and verifies the edited outputs with LVLMs.
+2. We clarified that the performance gap is not due to a stronger diffusion backbone, since both SafeFix and HiBug use Stable Diffusion 1.5. The key difference is source-image-conditioned editing plus LVLM filtering.
+3. We updated the denser visual prediction task table caption to specify the metrics: COCO keypoint AP for pose estimation and mAP50-95 for KITTI object detection.
+4. We refined the no-new-bugs wording to avoid an unconditional claim. The manuscript now states that SafeFix produces **no additional detected bugs under the evaluated attributes and thresholds**, and Appendix I explicitly notes that this claim is threshold-conditioned.
+
+These updates are intended to make the revised manuscript more precise and easier to verify against the reviewer discussion.
+
 ## Note on Revised PDF Upload
 
 Dear reviewers and Action Editor,
@@ -42,7 +55,7 @@ Here, $Err = 1 - Acc$. This measures the fraction of the original error rate rem
 Since the formula uses aggregate accuracy values rather than per-sample correctness changes, we will avoid saying that it directly counts previously misclassified samples that become correct.
 
 
-# Rebuttal to Reviewer KtnS
+# Response to Reviewer KtnS
 
 ## 1. Contribution and Novelty
 
@@ -79,7 +92,7 @@ This is a useful question. If an infinitely rich external dataset existed, retri
 2. **Distribution consistency:** Retrieved samples from an external dataset can carry domain shifts such as different sensors, resolutions, or object framings. SafeFix conditions on the original training images, so non-targeted attributes and image structure remain tied to the target dataset.
 3. **Search efficiency:** Finding rare attribute combinations in a large external pool can require scanning millions of images. Conditional generation creates the requested combination directly.
 
-# Rebuttal to Reviewer NMkE
+# Response to Reviewer NMkE
 
 ## 1. Fix Rate Interpretation and Absolute Accuracy
 
@@ -172,7 +185,7 @@ We also did not use pretrained classifiers in the main classification experiment
 
 We will also bring the larger visual-task results into the main paper. On COCO person keypoints with Keypoint R-CNN and a ResNet-50-FPN backbone, SafeFix improves test AP from 0.5902 to 0.6280, while the best competing baseline reaches 0.6145. On KITTI object detection with YOLOv8n, SafeFix improves test mAP50-95 from 0.5626 to 0.5790, compared with 0.5713 for the best competing baseline. These results do not replace a full ImageNet-scale pretrained-classifier study, but they show that the diagnose-generate-filter-retrain pipeline works on larger datasets and denser visual prediction tasks, including settings with standard pretrained visual backbones. We will revise the claims accordingly: the current evidence supports SafeFix as a controlled model-repair framework across classification, pose estimation, and detection.
 
-# Rebuttal to Reviewer 1vpz
+# Response to Reviewer 1vpz
 
 ## 1. Contribution Clarity
 
