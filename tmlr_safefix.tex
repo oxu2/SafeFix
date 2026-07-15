@@ -1,8 +1,8 @@
 
 \documentclass[10pt]{article} % For LaTeX2e
-% \usepackage{tmlr}
+\usepackage{tmlr}
 % If accepted, instead use the following line for the camera-ready submission:
-\usepackage[accepted]{tmlr}
+%\usepackage[accepted]{tmlr}
 % To de-anonymize and remove mentions to TMLR (for example for posting to preprint servers), instead use the following:
 %\usepackage[preprint]{tmlr}
 
@@ -58,54 +58,23 @@
 % \setlength{\abovedisplayshortskip}{3pt plus 1.0pt minus 1.0pt}
 % \setlength{\belowdisplayshortskip}{4pt plus 1.0pt minus 1.0pt}
 
-\title{\Large SafeFix: Targeted Model Repair via Controlled Image Generation}
+\title{SafeFix: Targeted Model Repair via Controlled Image Generation}
 
 % Authors must not appear in the submitted version. They should be hidden
 % as long as the tmlr package is used without the [accepted] or [preprint] options.
 % Non-anonymous submissions will be rejected without review.
 
-\author{\name Ouyang Xu\email oxu@utdallas.edu \\
+\author{\name Kyunghyun Cho \email kyunghyun.cho@nyu.edu \\
       \addr Department of Computer Science\\
-      The University of Texas at Dallas
+      University of New York
       \AND
-      \name Baoming Zhang \email baoming.zhang@utdallas.edu\\
-      \addr Department of Computer Science\\
-      The University of Texas at Dallas
+      \name Raia Hadsell \email raia@google.com \\
+      \addr DeepMind
       \AND
-      \name Ruiyu Mao  \email ruiyu.mao@utdallas.edu \\
-      \addr Department of Computer Science\\
-      The University of Texas at Dallas 
-      \AND
-      \name Yunhui Guo  \email yunhui.guo@utdallas.edu \\
-      \addr Department of Computer Science\\
-      The University of Texas at Dallas }
-
-% \author{
-% \name Ouyang Xu \email oxu@utdallas.edu
-% \AND
-% \name Baoming Zhang \email baoming.zhang@utdallas.edu
-% \AND
-% \name Ruiyu Mao \email ruiyu.mao@utdallas.edu
-% \AND
-% \name Yunhui Guo \email yunhui.guo@utdallas.edu
-% \\[1ex]
-% \addr Department of Computer Science\\
-% The University of Texas at Dallas
-% }
-
-
-% \author{\name Ouyang Xu\email oxu@utdallas.edu \\
-%       % \addr Department of Computer Science\\
-%       % University of Texas at Dallas
-%       \name Baoming Zhang \email baoming.zhang@utdallas.edu\\
-%       % \addr Department of Computer Science\\
-%       % The University of Texas at Dallas
-%       \name Ruiyu Mao  \email ruiyu.mao@utdallas.edu \\
-%       % \addr Department of Computer Science\\
-%       % The University of Texas at Dallas 
-%       \name Yunhui Guo  \email yunhui.guo@utdallas.edu \\
-%       \addr Department of Computer Science\\
-%       The University of Texas at Dallas }
+      \name Hugo Larochelle \email hugolarochelle@google.com\\
+      \addr Mila, Universit\'e de Montr\'eal \\
+      Google Research\\
+      CIFAR Fellow}
 
 % The \author macro works with any number of authors. Use \AND 
 % to separate the names and addresses of multiple authors.
@@ -113,9 +82,9 @@
 \newcommand{\fix}{\marginpar{FIX}}
 \newcommand{\new}{\marginpar{NEW}}
 
-\def\month{07}  % Insert correct month for camera-ready version
-\def\year{2026} % Insert correct year for camera-ready version
-\def\openreview{\url{https://openreview.net/forum?id=TtpW6JiEiW}} % Insert correct link to OpenReview for camera-ready version
+\def\month{MM}  % Insert correct month for camera-ready version
+\def\year{YYYY} % Insert correct year for camera-ready version
+\def\openreview{\url{https://openreview.net/forum?id=XXXX}} % Insert correct link to OpenReview for camera-ready version
 
 
 \begin{document}
@@ -197,19 +166,19 @@ Let \(x \in \mathcal{X}\) be an input image with its corresponding ground-truth 
 \end{equation}
 In attribute-based model debugging~\citep{chen2023hibug}, each image is assigned several attributes that represent different subpopulations. 
 In particular, let \(\mathcal{A} = \{a_1, \dots, a_m\}\) be a set of attribute functions, where each \(a_i \colon \mathcal{X} \to \mathcal{V}_i\) maps an image \(x\) to a discrete value \(v \in \mathcal{V}_i\) and $\mathcal{V}_i$ represents the set of all possible values for attribute $i$. A slice $S$ is defined as the set of images that satisfy a conjunction of attribute-value assignments: 
-% \vspace{-5pt}
+\vspace{-5pt}
 \begin{equation}
 S = \{ x \mid a_{j_1}(x) = v_{j_1}, \dots, a_{j_k}(x) = v_{j_k}\},
 \end{equation}
 where \(\mathcal{J} = \{j_1, \dots, j_k\} \subseteq [m]\) is the index set of attributes involved in the slice \(S\).  
 The slice accuracy is
-% \vspace{-5pt}
+\vspace{-5pt}
 \begin{equation}
 \mathrm{Acc}(S) = \frac{1}{|S|}\sum_{x\in S}\mathbf{1}\{f_\theta(x) = y(x)\}.
-% \vspace{-5pt}
+\vspace{-5pt}
 \end{equation}
 
-% \vspace{-5pt}
+\vspace{-5pt}
 \paragraph{Underrepresented Semantic Subpopulations.} Rare-case bugs, often caused by underrepresented semantic subpopulations~\citep{eyuboglu2022rare}, are attribute-based failure modes for which the model’s error rate on validation samples matching a target description significantly exceeds its overall error and those samples appear infrequently in the training dataset. We say a slice \(S_r\) is a \emph{rare-case slice} if it constitutes less than a fraction \(\rho\) of the training data, i.e., 
 \begin{equation}
 |S_r| < \rho \,\bigl|\mathcal{D}_{\mathrm{train}}\bigr|,
@@ -304,7 +273,7 @@ Specifically, for each synthetic image \(x'\) generated to satisfy a bug slice \
 \texttt{``Does the object have attribute \(a_j\) equal to \(v_j'\)?''} \newline
 \texttt{``Is the object in this picture labeled \(y(x)\)?''}
 \end{quote}
-% \vspace{-5pt}
+\vspace{-5pt}
 
 We retain only those images for which the LVLM answers “yes” to all queries and confirms that the label matches the original ground truth \(y(x)\). Thus, after the LVLM filtering, the generated image \(x'\) satisfies the desired attributes and preserves the original label, i.e., \(y(x') = y(x)\). These validated samples are then added to \(\mathcal{D}_{\mathrm{train}}\) for model retraining. We conduct human-audit experiments to verify that the LVLMs can reliably filter out low-quality generated samples.
 
@@ -312,9 +281,9 @@ We retain only those images for which the LVLM answers “yes” to all queries 
 
 \subsection{Combining Generated Images with the Original Dataset and Retraining}
 To repair the rare-case bugs while maintaining the model's performance on the overall training distribution~\citep{lee2024genmix}, we augment the training set by adding the validated synthetic images \(\{x'\}\), yielding an updated training set 
-\[
+$
 \mathcal{D}_{\mathrm{train}}' = \mathcal{D}_{\mathrm{train}} \cup \{x'\}.
-\]
+$
 We then retrain the vision model \(f_\theta\) on \(\mathcal{D}_{\mathrm{train}}'\) and evaluate its performance on \(\mathcal{D}_{\mathrm{val}}\). We report both the overall accuracy improvement and the reduction in failure rates (fix rate) on critical rare‐attribute slices \(S_e\), before and after augmentation.
 
 \section{Results}
@@ -470,7 +439,7 @@ On \textbf{ImageNet10}, similar trends emerge, as shown in Table~\ref{tab:rer_im
 
 
 \begin{wraptable}{r}{0.48\linewidth}
-\vspace{-10pt}
+% \vspace{-10pt}
 \centering
 \small
 \setlength{\tabcolsep}{4pt}
@@ -575,13 +544,13 @@ These results do not replace a full ImageNet-scale pretrained-classifier study, 
 
 \begin{figure}[t]
   \centering
-  \begin{subfigure}[b]{0.492\linewidth}
+  \begin{subfigure}[b]{0.49\linewidth}
     \includegraphics[width=\linewidth]{Figure/CelebA_2.pdf}
     \caption{CelebA}
     \label{fig:fix_bugs_a}
   \end{subfigure}
   \hfill
-  \begin{subfigure}[b]{0.492\linewidth}
+  \begin{subfigure}[b]{0.49\linewidth}
     \includegraphics[width=\linewidth]{Figure/Imagenet10_2.pdf}
     \caption{ImageNet10}
     \label{fig:fix_bugs_b}
@@ -607,10 +576,10 @@ These substantial attribute-specific improvements confirm that \model effectivel
 
 To verify that SafeFix’s performance gains stem from accurately fixing rare-case bugs rather than from generic data augmentation, we compare red-hair and yellow-hair augmentations on CLIP\@. As discussed in Section~\ref{sec:main_results}, we select red hair for ResNet and yellow hair for CLIP in the CelebA dataset, based on which attribute is more likely to trigger rare-case bugs. For CLIP, both \texttt{red hair} and \texttt{yellow hair} are low-frequency attributes that meet the rarity criterion in Eq.~\eqref{eq:rare}. However, only the \texttt{yellow hair} slice additionally satisfies the low-accuracy criterion in Eq.~\eqref{eq:low_acc_and_rare}, making it a true rare-case bug slice for CLIP\@.
 
-\begin{wrapfigure}{r}{0.55\textwidth}
+\begin{wrapfigure}{r}{0.6\textwidth}
   \centering
-  \vspace{-8pt}
-  \includegraphics[width=0.55\textwidth]{Figure/red_yellow.pdf}
+  % \vspace{-12pt}
+  \includegraphics[width=0.58\textwidth]{Figure/red_yellow.pdf}
   \vspace{-8pt}
   \caption{Test accuracy (\%) improvements for red-hair vs.\ yellow-hair augmentation on CLIP.}
   \label{fig:red_yellow_clip}
@@ -687,7 +656,7 @@ We use an LVLM as the attribute filter, and a human-based test yields nearly ide
 \label{sec:ablation}
 
 \begin{wraptable}{r}{0.48\linewidth}
-  \vspace{-14pt}
+  % \vspace{-15pt}
   \centering
   \setlength{\tabcolsep}{4pt}
   \renewcommand{\arraystretch}{1.0}
@@ -709,7 +678,7 @@ We use an LVLM as the attribute filter, and a human-based test yields nearly ide
       \bottomrule
     \end{tabular}
   }
-  \vspace{-14pt}
+  \vspace{-10pt}
 \end{wraptable}
 
 We ablate the contributions of the two core components in our pipeline: the Conditional Diffusion Model (CDM) and the LVLM filter. Table~\ref{tab:ablate_csd_lvlm} reports RER on CelebA when using different combinations of these components across three augmentation scales. Configuration (a) corresponds to the prompt-only baseline strategy from \hibug~\citep{chen2023hibug}. Configuration (b) adds LVLM filtering to HiBug-style prompt generations. The filter can remove images that miss the requested attribute, but it cannot make a prompt-generated image preserve the eye shape, face contour, background, pose, lighting, and other non-target factors of a specific source training image. Configuration (c) uses source-image-conditioned editing without LVLM verification, which preserves more non-target visual factors but can retain failed edits. \model{} combines both components in configuration (d) and yields the highest performance, showing that conditional image editing and semantic filtering address different failure modes.
@@ -721,9 +690,6 @@ We presented an automated model repair pipeline for vision tasks that combines f
 \noindent\textbf{Limitations.}
 Our method’s effectiveness is constrained by its components. Crucially, the pipeline can inherit biases from the diffusion model or the LVLM, potentially perpetuating fairness issues if these components have demographic bias. An LVLM filter may reject some demographic groups at different rates; in such cases, the pipeline can generate a larger initial candidate pool to reach the target number of accepted samples, but this increases compute and does not remove the need for better calibrated or debiased verifiers. Other limitations include the computational cost of generation and filtering, potential image artifacts, and a fixed attribute vocabulary that cannot address unmodeled failure modes. Future work will focus on mitigating inherited biases, improving efficiency, adaptive filtering thresholds, and dynamic attribute discovery.
 
-
-\section{Acknowledgement}
-We would like to thank the anonymous reviewers for their helpful comments. This project was partially funded by The University of Texas at Dallas Office of Research and Innovation through the SPIRe grant program. This research was also partially supported by the National Science Foundation (NSF) under Grant No. 2513070.
 
 
 \bibliography{main}
