@@ -1,7 +1,9 @@
 # SafeFix: Targeted Model Repair via Controlled Image Generation
 
 [![arXiv](https://img.shields.io/badge/arXiv-2508.08701-b31b1b.svg)](https://arxiv.org/abs/2508.08701)
+[![TMLR](https://img.shields.io/badge/TMLR-Accepted-blue.svg)](https://openreview.net/forum?id=TtpW6JiEiW)
 
+🎉 **Accepted to Transactions on Machine Learning Research (TMLR)!**
 
 <a id="authors-line"></a>
 Authors: [Ouyang Xu](https://oxu2.github.io/), [Baoming Zhang](#authors-line), [Ruiyu Mao](#authors-line), [Yunhui Guo](https://yunhuiguo.github.io)
@@ -75,14 +77,15 @@ Authors: [Ouyang Xu](https://oxu2.github.io/), [Baoming Zhang](#authors-line), [
 If you find our paper and code useful in your research, please consider giving a star ⭐ and citation 📝.
 
 ```bibtex
-@misc{xu2025safefix,
-   title={SafeFix: Targeted Model Repair via Controlled Image Generation}, 
-   author={Ouyang Xu and Baoming Zhang and Ruiyu Mao and Yunhui Guo},
-   year={2025},
-   eprint={2508.08701},
-   archivePrefix={arXiv},
-   primaryClass={cs.CV},
-   url={https://arxiv.org/abs/2508.08701}, 
+@article{
+xu2026safefix,
+title={SafeFix: Targeted Model Repair via Controlled Image Generation},
+author={Ouyang Xu and Baoming Zhang and Ruiyu Mao and Yunhui Guo},
+journal={Transactions on Machine Learning Research},
+issn={2835-8856},
+year={2026},
+url={https://openreview.net/forum?id=TtpW6JiEiW},
+note={}
 }
 ```
 
