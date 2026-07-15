@@ -1,15 +1,16 @@
-## Note on Revised PDF Upload2
+## Note on Camera Ready Revision
 
 Dear reviewers and Action Editor,
 
-We have uploaded a second revised PDF to incorporate the latest discussion-driven clarifications. The revision does not change the core method or experimental setup. The main updates are:
+We have uploaded a Camera Ready Revision to incorporate the latest discussion-driven clarifications. The main updates are:
 
 1. We further clarified the contribution relative to HiBug in the Introduction, Baselines, Main Results analysis, and Ablation Study. In particular, we now state that SafeFix and HiBug share the same high-level diagnose-generate-retrain structure, but differ in the repair-data construction step: HiBug generates new images from attribute prompts, whereas SafeFix edits real training images and verifies the edited outputs with LVLMs.
 2. We clarified that the performance gap is not due to a stronger diffusion backbone, since both SafeFix and HiBug use Stable Diffusion 1.5. The key difference is source-image-conditioned editing plus LVLM filtering.
 3. We updated the denser visual prediction task table caption to specify the metrics: COCO keypoint AP for pose estimation and mAP50-95 for KITTI object detection.
-4. We refined the no-new-bugs wording to avoid an unconditional claim. The manuscript now states that SafeFix produces **no additional detected bugs under the evaluated attributes and thresholds**, and Appendix I explicitly notes that this claim is threshold-conditioned.
+4. We adjusted the font and size of Figures 4 and 5 to match the rest of the text.
 
-These updates are intended to make the revised manuscript more precise and easier to verify against the reviewer discussion.
+These updates are intended to make the revised manuscript more precise and easier to verify against the reviewer discussion. The revision does not change the core method or experimental data.
+
 
 ## Note on Revised PDF Upload
 
