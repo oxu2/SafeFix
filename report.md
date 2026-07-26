@@ -1,3 +1,20 @@
+# NeurIPS 2026 manuscript result authority note
+
+**Updated:** July 23, 2026
+
+For the AttriSelect NeurIPS 2026 submission and rebuttal, the results reported in `nips26_new/main.tex` and `nips26_new/appendix/*.tex` are the authoritative values. The author confirmed that several final experiments were rerun on other machines and that the resulting artifacts are not fully mirrored in this local workspace.
+
+The following manuscript claims are confirmed:
+
+- the main-result tables report five-seed means and standard deviations, with the paired statistical tests stated in the appendix;
+- the main results use ControlNet as described in the implementation appendix;
+- the alternative-generator tables, human audit, and attribute-noise sensitivity tables come from completed external runs and are accurate;
+- the CelebA InstructPix2Pix and COCO ICEdit appendix comparisons are valid alternative-generator experiments.
+
+Older local logs, launcher paths, and tables in this report document earlier experiment workflows and may not reproduce the final manuscript values exactly. They must not be used to overwrite or reject a confirmed value in `nips26_new`. When preparing the NeurIPS rebuttal or revising the paper, use the TeX manuscript as the source of truth unless the author explicitly provides a newer correction.
+
+---
+
 ## SafeFix Baselines Comparison
 
 ### COCO Brown-Rainy Pose (Test AP)

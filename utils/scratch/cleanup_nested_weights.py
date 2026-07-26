@@ -38,17 +38,7 @@ for filepath in ['object_detection/train_yolov8_kitti_generated.py', 'docs/supp/
             f.write(content)
         print(f"Cleaned {filepath}")
 
-# 4. docs/juno_quickstart.md
-quickstart_path = os.path.join(workspace, 'docs/juno_quickstart.md')
-if os.path.exists(quickstart_path):
-    with open(quickstart_path, 'r') as f:
-        content = f.read()
-    content = content.replace('save/runs/<run-name>/save/weights/best.pt', 'save/runs/<run-name>/weights/best.pt')
-    with open(quickstart_path, 'w') as f:
-        f.write(content)
-    print("Cleaned docs/juno_quickstart.md")
-
-# 5. .handoff.md and report.md
+# 4. .handoff.md and report.md
 for filepath in ['.handoff.md', 'report.md']:
     full_path = os.path.join(workspace, filepath)
     if os.path.exists(full_path):

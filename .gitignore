@@ -2,6 +2,8 @@
 __pycache__/
 .pytest_cache/
 .DS_Store
+.env
+.vscode/.env
 *.pid
 *.png
 *.jpg

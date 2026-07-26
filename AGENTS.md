@@ -48,6 +48,16 @@ After any meaningful implementation, modification, or completed investigation th
 
 ## Repo-Specific GPU Assignment Rule
 
+- Default new Juno GPU experiment submissions to the `h200` partition. Use
+  `h100` only as the secondary fallback or when the user explicitly requests
+  it. Do not default to A30 or virtual-A30 partitions.
+- Read `/people/cs/o/oxx220000/.codex/docs/juno_quickstart.md` as the only
+  Juno workflow source. It contains both shared rules and the SafeFix project
+  profile.
+- Repo-local `docs/juno_quickstart.md` is a convenience symlink to the
+  canonical Codex file. It may be opened or edited from the repo, but do not
+  replace it with an independent copy.
+
 When the user explicitly tells the agent to run a job on a specific GPU, do not spend time checking whether that GPU is available first. Assume the user has already verified that the named GPU is ready, and launch directly on the requested GPU unless the user asks for a check.
 
 ## Repo-Specific Figure-Making Rule
