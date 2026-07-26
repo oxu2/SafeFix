@@ -12,14 +12,178 @@ Usage:
     python assign_attribute.py --stop_at 20 --verbose                # test run
 """
 
+import time
+_PROCESS_START = time.perf_counter()
+
 import os
 import sys
 import json
 import copy
-import time
 import argparse
+import atexit
 import csv
+import platform
+import socket
 from pathlib import Path
+
+
+def _get_cli_value(option, default=None):
+    """Quick parse for early options needed before heavy imports."""
+    for i, arg in enumerate(sys.argv):
+        if arg == option and i + 1 < len(sys.argv):
+            return sys.argv[i + 1]
+        if arg.startswith(option + '='):
+            return arg.split('=', 1)[1]
+    return default
+
+
+_TIMING_PATH = _get_cli_value('--timing-json')
+_timing_state = {
+    'status': 'running',
+    'model': _get_cli_value('--model', 'Qwen/Qwen3-VL-8B-Instruct'),
+    'dataset': _get_cli_value('--dataset', 'folder'),
+    'split': _get_cli_value('--split', 'val'),
+    'counts': {
+        'images_total': None,
+        'images_pending': None,
+        'images_processed': 0,
+        'attributes': None,
+    },
+    'resume': '--resume' in sys.argv,
+    'outputs': {
+        'json': _get_cli_value('--output'),
+        'csv': _get_cli_value('--csv-output'),
+        'partial': _get_cli_value('--partial'),
+        'timing_json': _TIMING_PATH,
+    },
+    'stages_seconds': {
+        'process_total': None,
+        'model_processor_load': None,
+        'dataset_corpus_setup': None,
+        'annotation_inference_loop': None,
+        'final_serialization': None,
+    },
+    'error': None,
+}
+_active_stage = None
+_active_stage_start = None
+_timing_success_written = False
+_timing_reexec_launcher = False
+
+
+def _start_timing_stage(stage_name):
+    global _active_stage, _active_stage_start
+    _active_stage = stage_name
+    _active_stage_start = time.perf_counter()
+
+
+def _finish_timing_stage(stage_name):
+    global _active_stage, _active_stage_start
+    if _active_stage == stage_name and _active_stage_start is not None:
+        _timing_state['stages_seconds'][stage_name] = time.perf_counter() - _active_stage_start
+    _active_stage = None
+    _active_stage_start = None
+
+
+def _runtime_metadata():
+    metadata = {
+        'host': {
+            'hostname': socket.gethostname(),
+            'platform': platform.platform(),
+        },
+        'slurm': {},
+        'gpu': {
+            'cuda_visible_devices': os.environ.get('CUDA_VISIBLE_DEVICES'),
+            'devices': [],
+        },
+        'software': {
+            'python': platform.python_version(),
+            'python_executable': sys.executable,
+        },
+    }
+    slurm_fields = {
+        'job_id': 'SLURM_JOB_ID',
+        'array_job_id': 'SLURM_ARRAY_JOB_ID',
+        'array_task_id': 'SLURM_ARRAY_TASK_ID',
+        'job_name': 'SLURM_JOB_NAME',
+        'partition': 'SLURM_JOB_PARTITION',
+        'node_list': 'SLURM_JOB_NODELIST',
+        'job_gpus': 'SLURM_JOB_GPUS',
+    }
+    metadata['slurm'] = {
+        key: os.environ[env_name]
+        for key, env_name in slurm_fields.items()
+        if env_name in os.environ
+    }
+
+    torch_module = sys.modules.get('torch')
+    if torch_module is not None:
+        metadata['software']['torch'] = getattr(torch_module, '__version__', None)
+        metadata['software']['cuda'] = getattr(getattr(torch_module, 'version', None), 'cuda', None)
+        try:
+            if torch_module.cuda.is_available():
+                metadata['gpu']['devices'] = [
+                    {
+                        'index': index,
+                        'name': torch_module.cuda.get_device_name(index),
+                        'total_memory_bytes': torch_module.cuda.get_device_properties(index).total_memory,
+                    }
+                    for index in range(torch_module.cuda.device_count())
+                ]
+        except Exception:
+            pass
+
+    for module_name in ('transformers', 'numpy', 'PIL'):
+        module = sys.modules.get(module_name)
+        if module is not None:
+            metadata['software'][module_name] = getattr(module, '__version__', None)
+    return metadata
+
+
+def _write_timing_json():
+    if not _TIMING_PATH or _timing_reexec_launcher:
+        return False
+    try:
+        now = time.perf_counter()
+        if _active_stage is not None and _active_stage_start is not None:
+            _timing_state['stages_seconds'][_active_stage] = now - _active_stage_start
+        _timing_state['stages_seconds']['process_total'] = now - _PROCESS_START
+        _timing_state['metadata'] = _runtime_metadata()
+        timing_path = Path(_TIMING_PATH)
+        timing_path.parent.mkdir(parents=True, exist_ok=True)
+        temporary_path = timing_path.with_name(timing_path.name + '.tmp')
+        with open(temporary_path, 'w', encoding='utf-8') as handle:
+            json.dump(_timing_state, handle, indent=2)
+        os.replace(temporary_path, timing_path)
+        return True
+    except Exception as timing_error:
+        print(f"Warning: could not write timing JSON to {_TIMING_PATH}: {timing_error}", file=sys.stderr)
+        return False
+
+
+def _timing_excepthook(exc_type, exc_value, exc_traceback):
+    _timing_state['status'] = 'failure'
+    _timing_state['error'] = {
+        'type': exc_type.__name__,
+        'message': str(exc_value),
+    }
+    sys.__excepthook__(exc_type, exc_value, exc_traceback)
+
+
+def _timing_atexit():
+    if not _TIMING_PATH or _timing_reexec_launcher or _timing_success_written:
+        return
+    if _timing_state['status'] == 'running':
+        _timing_state['status'] = 'failure'
+        _timing_state['error'] = {
+            'type': 'IncompleteRun',
+            'message': 'Process exited before successful completion.',
+        }
+    _write_timing_json()
+
+
+sys.excepthook = _timing_excepthook
+atexit.register(_timing_atexit)
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 if str(REPO_ROOT) not in sys.path:
@@ -53,8 +217,10 @@ _is_qwen25 = not _is_qwen3 and not _is_internvl
 # Auto-switch conda env: Qwen3/InternVL need 'qwen' env, Qwen2.5 uses 'ad'
 def ensure_conda_env(env_name):
     """Re-launch this script under the correct conda environment if needed."""
+    global _timing_reexec_launcher
     current_env = os.environ.get('CONDA_DEFAULT_ENV')
     if current_env != env_name:
+        _timing_reexec_launcher = True
         print(f"Switching to conda environment '{env_name}' (current: {current_env or 'None'})")
         conda_path = os.environ.get('CONDA_EXE', 'conda')
         script_path = os.path.abspath(sys.argv[0])
@@ -71,7 +237,8 @@ def ensure_conda_env(env_name):
         sys.exit(exit_code)
 
 target_env = 'ad' if _is_qwen25 else 'qwen'
-ensure_conda_env(target_env)
+if not _has_cli_flag('no-env-reexec'):
+    ensure_conda_env(target_env)
 
 # Set environment variables before importing torch
 os.environ['TOKENIZERS_PARALLELISM'] = 'false'
@@ -134,7 +301,18 @@ parser.add_argument('--verbose', action='store_true', default=False,
                     help='Print verbose output')
 parser.add_argument('--model', type=str, default='Qwen/Qwen3-VL-8B-Instruct',
                     help='HuggingFace model path. E.g., Qwen/Qwen3-VL-8B-Instruct, Qwen/Qwen2.5-VL-7B-Instruct, or OpenGVLab/InternVL3-8B')
+parser.add_argument('--no-env-reexec', action='store_true', default=False,
+                    help='Use the current Python interpreter instead of relaunching in a hard-coded Conda environment')
+parser.add_argument('--timing-json', type=str, default=None,
+                    help='Optional path for machine-readable process and stage timing metadata')
 args = parser.parse_args()
+
+_timing_state.update({
+    'model': args.model,
+    'dataset': args.dataset,
+    'split': args.split,
+    'resume': args.resume,
+})
 
 if args.dataset == 'kitti' and not _has_cli_flag('split'):
     args.split = 'train'
@@ -142,6 +320,7 @@ if args.dataset == 'kitti' and not _has_cli_flag('split'):
 elif args.dataset == 'celeba' and not _has_cli_flag('split'):
     args.split = 'all'
     print("No --split provided for CelebA; defaulting to split='all' to match the 80k train + 10k val setup.")
+_timing_state['split'] = args.split
 
 # Auto-generate output filename from model version and stop_at
 if args.output is None or args.partial is None:
@@ -191,6 +370,13 @@ if args.corpus is None:
         args.corpus = 'save/corpus_celeba.json'
     else:
         args.corpus = 'save/corpus10.json'
+
+_timing_state['outputs'].update({
+    'json': args.output,
+    'csv': args.csv_output,
+    'partial': args.partial,
+    'timing_json': args.timing_json,
+})
 
 Path(args.output).parent.mkdir(parents=True, exist_ok=True)
 Path(args.csv_output).parent.mkdir(parents=True, exist_ok=True)
@@ -317,6 +503,7 @@ is_internvl = _is_internvl
 available_gpus = get_available_gpus()
 device_memory = configure_gpu_memory(available_gpus, args.max_memory_per_gpu)
 
+_start_timing_stage('model_processor_load')
 if torch.cuda.is_available():
     torch.cuda.empty_cache()
 
@@ -360,6 +547,7 @@ else:
     )
     processor = AutoProcessor.from_pretrained(model_path, use_fast=True)
 print("Model loaded.")
+_finish_timing_stage('model_processor_load')
 
 if torch.cuda.is_available():
     torch.cuda.empty_cache()
@@ -963,6 +1151,7 @@ def collect_celeba_dataset(celeba_root=None, split='all', seed=42):
     return filtered_datas, labels, sample_rows
 
 
+_start_timing_stage('dataset_corpus_setup')
 if args.dataset == 'coco_pose':
     all_datas, labels, sample_rows = collect_coco_pose_dataset(
         coco_root=args.coco_root,
@@ -1062,6 +1251,12 @@ pending_indices = [
     if not all(attributes_dict[attr_name]['data'][index] for attr_name in attr_names)
 ]
 print(f"Remaining images to process: {len(pending_indices)}")
+_timing_state['counts'].update({
+    'images_total': total_images,
+    'images_pending': len(pending_indices),
+    'attributes': len(attr_names),
+})
+_finish_timing_stage('dataset_corpus_setup')
 
 # ---------------------------------------------------------------------------
 # Main processing loop
@@ -1069,12 +1264,13 @@ print(f"Remaining images to process: {len(pending_indices)}")
 print(f"\nProcessing {len(pending_indices)} images across {len(attr_names)} attributes...")
 print(f"Attributes: {attr_names}")
 
-overall_start = time.time()
+_start_timing_stage('annotation_inference_loop')
+overall_start = time.perf_counter()
 processed_count = 0
 
 for loop_index, i in enumerate(pending_indices, start=1):
     img_path = all_datas[i]
-    img_start = time.time()
+    img_start = time.perf_counter()
 
     for attr_name in attr_names:
         word_list = attributes_dict[attr_name]['word']
@@ -1102,11 +1298,12 @@ for loop_index, i in enumerate(pending_indices, start=1):
                 torch.cuda.empty_cache()
 
     processed_count += 1
-    elapsed = time.time() - img_start
+    _timing_state['counts']['images_processed'] = processed_count
+    elapsed = time.perf_counter() - img_start
 
     # Progress logging
     if processed_count % 100 == 0 or processed_count == 1:
-        total_elapsed = time.time() - overall_start
+        total_elapsed = time.perf_counter() - overall_start
         avg_per_img = total_elapsed / processed_count
         remaining = (len(pending_indices) - processed_count) * avg_per_img
         print(
@@ -1131,11 +1328,13 @@ for loop_index, i in enumerate(pending_indices, start=1):
 # ---------------------------------------------------------------------------
 # Save final output
 # ---------------------------------------------------------------------------
-total_time = time.time() - overall_start
+total_time = time.perf_counter() - overall_start
+_finish_timing_stage('annotation_inference_loop')
 print(f"\nDone. Processed {processed_count} images in {total_time/60:.1f} minutes "
       f"({total_time/3600:.2f} hours)")
 print(f"Average time per image: {total_time/max(processed_count,1):.2f}s")
 
+_start_timing_stage('final_serialization')
 with open(args.output, 'w') as f:
     json.dump(attributes_dict, f, indent=4)
 print(f"Saved attribute annotations to {args.output}")
@@ -1147,3 +1346,8 @@ print(f"Saved attribute CSV to {args.csv_output}")
 if os.path.exists(args.partial) and effective_count >= total_images:
     os.remove(args.partial)
     print(f"Removed partial checkpoint {args.partial}")
+_finish_timing_stage('final_serialization')
+
+_timing_state['status'] = 'success'
+_timing_state['error'] = None
+_timing_success_written = _write_timing_json()

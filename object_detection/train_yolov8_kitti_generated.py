@@ -5,12 +5,16 @@ from collections import defaultdict
 import datetime
 import json
 import os
+import platform
 import random
 import shutil
+import socket
+import subprocess
 import sys
 from pathlib import Path
 import time
-from typing import Dict, List, Sequence
+import traceback
+from typing import Any, Dict, List, Optional, Sequence, Tuple, Union
 
 import numpy as np
 
@@ -369,6 +373,12 @@ def parse_args():
         default=None,
         help="Optional explicit log path. Overrides --log-dir.",
     )
+    parser.add_argument(
+        "--timing-json",
+        type=Path,
+        default=None,
+        help="Optional machine-readable timing and cost-accounting JSON output path.",
+    )
     return parser.parse_args()
 
 
@@ -413,6 +423,253 @@ def _setup_log(args, run_name: str, start_time: float):
     sys.stdout = Tee(original_stdout, log_handle)
     sys.stderr = Tee(original_stderr, log_handle)
     return log_path, log_handle, (original_stdout, original_stderr)
+
+
+TIMING_STAGE_NAMES = (
+    "setup_input_validation",
+    "original_source_selection",
+    "generated_pool_discovery_sampling",
+    "dataset_materialization",
+    "yolo_checkpoint_model_load",
+    "model_train",
+    "final_eval_checkpoint_load",
+    "test_evaluation",
+)
+
+
+def _resolved_path(path: Optional[Union[Path, str]]) -> Optional[str]:
+    if path is None:
+        return None
+    return str(Path(path).expanduser().resolve())
+
+
+def _collect_gpu_metadata() -> Dict[str, Any]:
+    command = [
+        "nvidia-smi",
+        "--query-gpu=index,name,uuid,driver_version,memory.total",
+        "--format=csv,noheader,nounits",
+    ]
+    try:
+        completed = subprocess.run(
+            command,
+            check=False,
+            capture_output=True,
+            text=True,
+            timeout=5,
+        )
+    except (OSError, subprocess.SubprocessError) as exc:
+        return {"query": command, "available": False, "error": f"{type(exc).__name__}: {exc}"}
+
+    if completed.returncode != 0:
+        return {
+            "query": command,
+            "available": False,
+            "returncode": completed.returncode,
+            "error": completed.stderr.strip(),
+        }
+
+    devices = []
+    for raw_line in completed.stdout.splitlines():
+        parts = [part.strip() for part in raw_line.split(",", 4)]
+        if len(parts) == 5:
+            devices.append(
+                {
+                    "index": parts[0],
+                    "name": parts[1],
+                    "uuid": parts[2],
+                    "driver_version": parts[3],
+                    "memory_total_mib": parts[4],
+                }
+            )
+        elif raw_line.strip():
+            devices.append({"raw": raw_line.strip()})
+    return {"query": command, "available": True, "devices": devices}
+
+
+def _selection_parameters(args) -> Dict[str, Any]:
+    return {
+        "strategy": args.selection_strategy,
+        "sub_ratio": args.sub_ratio,
+        "seed": args.seed,
+        "num_added_img": args.num_added_img,
+        "entropy": {
+            "conf_thres": args.al_entropy_conf_thres,
+            "iou": args.al_entropy_iou,
+            "batch": args.al_entropy_batch,
+        },
+        "embedding_proxy": {
+            "initial_labeled": args.al_initial_labeled,
+            "thumbnail_size": args.al_embedding_thumbnail_size,
+            "fast_selection": args.al_fast_selection,
+        },
+        "ppal": {
+            "temperature": args.al_ppal_temperature,
+            "uncertainty": args.al_ppal_uncertainty,
+            "pool_expand_ratio": args.al_ppal_pool_expand_ratio,
+            "class_weight_ub": args.al_ppal_class_weight_ub,
+            "class_weight_alpha": args.al_ppal_class_weight_alpha,
+            "diversity_power": args.al_ppal_diversity_power,
+        },
+        "uherding": {
+            "temperature": args.al_uherding_temperature,
+            "uncertainty": args.al_uherding_uncertainty,
+            "kernel_scale": args.al_uherding_kernel_scale,
+        },
+        "attribute": {
+            "file": _resolved_path(args.attribute_file),
+            "focus": _parse_focus_attributes(args.al_attribute_focus),
+            "rarity_power": args.al_attribute_rarity_power,
+            "use_rarity": args.al_attribute_use_rarity,
+            "uncertainty_boost": args.al_attribute_uncertainty_boost,
+            "log_path": _resolved_path(args.al_attribute_log_path),
+            "log_acc_scale": args.al_attribute_log_acc_scale,
+            "extra_counts_raw": args.al_attribute_extra_counts,
+            "extra_counts_resolved": (
+                _resolve_attribute_extra_counts(args)
+                if args.selection_strategy == "attribute"
+                else None
+            ),
+            "extra_count_scale": args.al_attribute_extra_count_scale,
+            "frequency_penalty": args.al_attribute_frequency_penalty,
+            "class_balance": args.al_attribute_class_balance,
+            "conditional_rarity": args.al_conditional_rarity,
+        },
+    }
+
+
+def _training_schedule(args) -> Dict[str, Any]:
+    return {
+        "prepare_only": args.prepare_only,
+        "epochs": args.epochs,
+        "imgsz": args.imgsz,
+        "batch": args.batch,
+        "device": args.device,
+        "workers": args.workers,
+        "optimizer": args.optimizer,
+        "lr0": args.lr0,
+        "lrf": args.lrf,
+        "warmup_epochs": args.warmup_epochs,
+        "plots": args.plots,
+        "eval_test": args.eval_test,
+    }
+
+
+def _initial_timing_record(args, run_name: str, start_wall_time: float) -> Dict[str, Any]:
+    environment_keys = (
+        "CUDA_VISIBLE_DEVICES",
+        "NVIDIA_VISIBLE_DEVICES",
+        "CONDA_DEFAULT_ENV",
+        "CONDA_PREFIX",
+        "VIRTUAL_ENV",
+        "OMP_NUM_THREADS",
+        "MKL_NUM_THREADS",
+    )
+    project_path = Path(args.project).expanduser().resolve()
+    prepared_root = args.prepared_root.expanduser().resolve()
+    return {
+        "schema_version": 1,
+        "status": "running",
+        "error": None,
+        "command": {
+            "argv": list(sys.argv),
+            "executable": sys.executable,
+            "cwd": str(Path.cwd()),
+            "script": str(Path(__file__).resolve()),
+        },
+        "timestamps": {
+            "start_unix": start_wall_time,
+            "start_iso": datetime.datetime.fromtimestamp(start_wall_time).astimezone().isoformat(),
+            "end_unix": None,
+            "end_iso": None,
+        },
+        "selection_parameters": _selection_parameters(args),
+        "training_schedule": _training_schedule(args),
+        "dataset_options": {
+            "copy_images": args.copy_images,
+            "overwrite_prepared": args.overwrite_prepared,
+            "reuse_prepared": args.reuse_prepared,
+        },
+        "paths": {
+            "base_data_root": _resolved_path(args.base_data_root),
+            "base_dataset_yaml": _resolved_path(args.base_data_root / "kitti_first5000.yaml"),
+            "generated_image_dir": _resolved_path(args.generated_image_dir),
+            "prepared_root": str(prepared_root),
+            "prepared_dataset_yaml": str(prepared_root / "kitti_random_generated.yaml"),
+            "selection_summary": str(prepared_root / "selection_summary.json"),
+            "selected_original_ids": str(prepared_root / "selected_original_ids.txt"),
+            "selected_generated_source_ids": str(
+                prepared_root / "selected_generated_source_ids.txt"
+            ),
+            "resume_checkpoint": _resolved_path(args.resume_model),
+            "project": str(project_path),
+            "requested_run_dir": str(project_path / run_name),
+            "actual_run_dir": None,
+            "best_checkpoint": None,
+            "test_eval_dir": None,
+            "log_file": None,
+            "timing_json": _resolved_path(args.timing_json),
+        },
+        "provenance": {
+            "run_name": run_name,
+            "prepared_dataset_reused": False,
+            "selection_summary_preserved": True,
+        },
+        "counts": {},
+        "environment": {
+            "hostname": socket.gethostname(),
+            "platform": platform.platform(),
+            "python_version": platform.python_version(),
+            "pid": os.getpid(),
+            "variables": {key: os.environ.get(key) for key in environment_keys},
+            "slurm": {
+                key: value for key, value in sorted(os.environ.items()) if key.startswith("SLURM_")
+            },
+            "gpu": {},
+        },
+        "stage_seconds": {name: 0.0 for name in TIMING_STAGE_NAMES},
+        "stage_seconds_sum": 0.0,
+        "command_total_seconds": 0.0,
+        "unattributed_seconds": 0.0,
+    }
+
+
+def _finalize_timing_record(
+    record: Dict[str, Any],
+    command_start: float,
+    status: str,
+    error: Optional[BaseException] = None,
+):
+    end_wall_time = time.time()
+    total_seconds = time.perf_counter() - command_start
+    stage_sum = sum(float(record["stage_seconds"].get(name, 0.0)) for name in TIMING_STAGE_NAMES)
+    record["status"] = status
+    record["timestamps"]["end_unix"] = end_wall_time
+    record["timestamps"]["end_iso"] = datetime.datetime.fromtimestamp(end_wall_time).astimezone().isoformat()
+    record["stage_seconds_sum"] = stage_sum
+    record["command_total_seconds"] = total_seconds
+    record["unattributed_seconds"] = max(0.0, total_seconds - stage_sum)
+    if error is not None:
+        record["error"] = {
+            "type": type(error).__name__,
+            "message": str(error),
+            "traceback": "".join(traceback.format_exception(type(error), error, error.__traceback__)),
+        }
+
+
+def _write_timing_json(path: Optional[Path], record: Dict[str, Any]):
+    if path is None:
+        return
+    output_path = path.expanduser().resolve()
+    try:
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        temporary_path = output_path.with_name(f".{output_path.name}.tmp.{os.getpid()}")
+        temporary_path.write_text(json.dumps(record, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+        os.replace(temporary_path, output_path)
+    except Exception as exc:
+        print(
+            f"Warning: failed to write timing JSON {output_path}: {type(exc).__name__}: {exc}",
+            file=sys.stderr,
+        )
 
 
 def _dataset_has_split(data_yaml: Path, split_name: str) -> bool:
@@ -969,7 +1226,8 @@ def _select_generated_candidates(generated_dir: Path, base_train_label_dir: Path
     return dict(sorted(candidates.items()))
 
 
-def prepare_dataset(args) -> Path:
+def prepare_dataset(args, stage_seconds: Dict[str, float]) -> Tuple[Path, Dict[str, Any]]:
+    setup_start = time.perf_counter()
     base_root = args.base_data_root
     base_yaml = base_root / "kitti_first5000.yaml"
     base_train_images = base_root / "images" / "train"
@@ -985,7 +1243,35 @@ def prepare_dataset(args) -> Path:
 
     if args.prepared_root.exists():
         if args.reuse_prepared:
-            return args.prepared_root / "kitti_random_generated.yaml"
+            yaml_path = args.prepared_root / "kitti_random_generated.yaml"
+            summary_path = args.prepared_root / "selection_summary.json"
+            reused_summary: Dict[str, Any] = {}
+            if summary_path.exists():
+                try:
+                    reused_summary = json.loads(summary_path.read_text(encoding="utf-8"))
+                except (OSError, json.JSONDecodeError) as exc:
+                    print(
+                        f"Warning: could not read reused selection summary {summary_path}: {exc}",
+                        file=sys.stderr,
+                    )
+            stage_seconds["setup_input_validation"] += time.perf_counter() - setup_start
+            return yaml_path, {
+                "counts": {
+                    key: reused_summary[key]
+                    for key in (
+                        "original_candidates",
+                        "selected_original",
+                        "generated_candidates_with_labels",
+                        "selected_generated",
+                        "final_train_images",
+                        "val_images",
+                        "test_images",
+                    )
+                    if key in reused_summary
+                },
+                "prepared_dataset_reused": True,
+                "selection_summary": reused_summary,
+            }
         if args.overwrite_prepared:
             shutil.rmtree(args.prepared_root)
         else:
@@ -1006,7 +1292,9 @@ def prepare_dataset(args) -> Path:
         raise ValueError(
             f"--sub-ratio {args.sub_ratio} selected zero images from {len(train_ids)} candidates"
         )
-    original_selection_start = time.time()
+    stage_seconds["setup_input_validation"] += time.perf_counter() - setup_start
+
+    original_selection_start = time.perf_counter()
     if original_sample_count < len(train_ids):
         if args.selection_strategy == "stratified":
             selected_original_ids = _stratified_sample_ids(
@@ -1044,11 +1332,16 @@ def prepare_dataset(args) -> Path:
             selected_original_ids = sorted(rng.sample(train_ids, original_sample_count))
     else:
         selected_original_ids = list(train_ids)
-    original_selection_time = time.time() - original_selection_start
+    original_selection_time = time.perf_counter() - original_selection_start
+    stage_seconds["original_source_selection"] += original_selection_time
     print(f"Total KITTI original selection time: {original_selection_time:.2f} seconds")
 
+    generated_selection_start = time.perf_counter()
     generated_candidates = _select_generated_candidates(args.generated_image_dir, base_train_labels)
     if not generated_candidates:
+        stage_seconds["generated_pool_discovery_sampling"] += (
+            time.perf_counter() - generated_selection_start
+        )
         raise RuntimeError(
             f"No generated images in {args.generated_image_dir} have matching train labels "
             f"under {base_train_labels}."
@@ -1056,7 +1349,11 @@ def prepare_dataset(args) -> Path:
     generated_ids = list(generated_candidates)
     generated_sample_count = min(args.num_added_img, len(generated_ids))
     selected_generated_ids = sorted(rng.sample(generated_ids, generated_sample_count))
+    stage_seconds["generated_pool_discovery_sampling"] += (
+        time.perf_counter() - generated_selection_start
+    )
 
+    materialization_start = time.perf_counter()
     train_image_out = args.prepared_root / "images" / "train"
     train_label_out = args.prepared_root / "labels" / "train"
     val_image_out = args.prepared_root / "images" / "val"
@@ -1202,6 +1499,7 @@ def prepare_dataset(args) -> Path:
         json.dumps(summary, indent=2) + "\n",
         encoding="utf-8",
     )
+    stage_seconds["dataset_materialization"] += time.perf_counter() - materialization_start
 
     print("Prepared KITTI YOLO generated-training dataset:")
     print(json.dumps(summary, indent=2))
@@ -1211,98 +1509,179 @@ def prepare_dataset(args) -> Path:
             f"Warning: requested {args.num_added_img} generated images, "
             f"but only {len(selected_generated_ids)} matched train labels."
         )
-    return yaml_path
+    return yaml_path, {
+        "counts": {
+            "original_candidates": len(train_ids),
+            "selected_original": len(selected_original_ids),
+            "generated_candidates_with_labels": len(generated_candidates),
+            "selected_generated": len(selected_generated_ids),
+            "final_train_images": len(selected_original_ids) + len(selected_generated_ids),
+            "val_images": len(val_ids),
+            "test_images": len(test_ids),
+        },
+        "prepared_dataset_reused": False,
+        "selection_summary": summary,
+    }
 
 
-def train_yolov8(args, data_yaml: Path):
+def train_yolov8(
+    args,
+    data_yaml: Path,
+    stage_seconds: Dict[str, float],
+) -> Dict[str, Any]:
+    model_load_start = time.perf_counter()
     try:
-        from ultralytics import YOLO
-    except ImportError as exc:
-        raise ImportError(
-            "ultralytics is required. Use the KITTI fp environment described in object_detection/README.md."
-        ) from exc
+        try:
+            from ultralytics import YOLO
+        except ImportError as exc:
+            raise ImportError(
+                "ultralytics is required. Use the KITTI fp environment described in object_detection/README.md."
+            ) from exc
 
-    if not args.resume_model.exists():
-        raise FileNotFoundError(f"Resume checkpoint not found: {args.resume_model}")
+        if not args.resume_model.exists():
+            raise FileNotFoundError(f"Resume checkpoint not found: {args.resume_model}")
 
-    run_name = _make_run_name(args)
+        run_name = _make_run_name(args)
+        model = YOLO(str(args.resume_model))
+    finally:
+        stage_seconds["yolo_checkpoint_model_load"] += time.perf_counter() - model_load_start
+    output_details: Dict[str, Any] = {
+        "actual_run_dir": None,
+        "best_checkpoint": None,
+        "test_eval_dir": None,
+        "test_evaluation_performed": False,
+    }
 
-    model = YOLO(str(args.resume_model))
-    train_start_time = time.time()
-    train_results = model.train(
-        data=str(data_yaml),
-        epochs=args.epochs,
-        imgsz=args.imgsz,
-        batch=args.batch,
-        device=args.device,
-        workers=args.workers,
-        project=str(Path(args.project).resolve()),
-        name=run_name,
-        seed=args.seed,
-        plots=args.plots,
-        optimizer=args.optimizer,
-        lr0=args.lr0,
-        lrf=args.lrf,
-        warmup_epochs=args.warmup_epochs,
-    )
-    train_elapsed = time.time() - train_start_time
-    print(f"Total training time for {args.epochs} epochs: {train_elapsed:.2f} seconds")
-    print(f"Training elapsed (HH:MM:SS): {_format_duration(train_elapsed)}")
-    print(train_results)
-
-    if args.eval_test and _dataset_has_split(data_yaml, "test"):
-        save_dir = None
-        if hasattr(model, "trainer") and model.trainer is not None:
-            save_dir = Path(model.trainer.save_dir)
-
-        best_weights = None
-        if save_dir is not None:
-            candidate = save_dir / "weights" / "best.pt"
-            if candidate.exists():
-                best_weights = candidate
-
-        eval_model = YOLO(str(best_weights)) if best_weights is not None else model
-        print("Running final evaluation on dataset test split...")
-        test_start_time = time.time()
-        test_results = eval_model.val(
+    train_start_time = time.perf_counter()
+    try:
+        train_results = model.train(
             data=str(data_yaml),
-            split="test",
+            epochs=args.epochs,
             imgsz=args.imgsz,
             batch=args.batch,
             device=args.device,
             workers=args.workers,
             project=str(Path(args.project).resolve()),
-            name=f"{run_name}_test",
+            name=run_name,
+            seed=args.seed,
+            plots=args.plots,
+            optimizer=args.optimizer,
+            lr0=args.lr0,
+            lrf=args.lrf,
+            warmup_epochs=args.warmup_epochs,
         )
-        test_elapsed = time.time() - test_start_time
+    finally:
+        train_elapsed = time.perf_counter() - train_start_time
+        stage_seconds["model_train"] += train_elapsed
+    print(f"Total training time for {args.epochs} epochs: {train_elapsed:.2f} seconds")
+    print(f"Training elapsed (HH:MM:SS): {_format_duration(train_elapsed)}")
+    print(train_results)
+
+    save_dir = None
+    best_weights = None
+    if hasattr(model, "trainer") and model.trainer is not None:
+        save_dir = Path(model.trainer.save_dir).resolve()
+        output_details["actual_run_dir"] = str(save_dir)
+        candidate = save_dir / "weights" / "best.pt"
+        if candidate.exists():
+            best_weights = candidate.resolve()
+            output_details["best_checkpoint"] = str(best_weights)
+
+    if args.eval_test and _dataset_has_split(data_yaml, "test"):
+        if best_weights is not None:
+            eval_load_start = time.perf_counter()
+            try:
+                eval_model = YOLO(str(best_weights))
+            finally:
+                stage_seconds["final_eval_checkpoint_load"] += (
+                    time.perf_counter() - eval_load_start
+                )
+        else:
+            eval_model = model
+
+        print("Running final evaluation on dataset test split...")
+        test_start_time = time.perf_counter()
+        try:
+            test_results = eval_model.val(
+                data=str(data_yaml),
+                split="test",
+                imgsz=args.imgsz,
+                batch=args.batch,
+                device=args.device,
+                workers=args.workers,
+                project=str(Path(args.project).resolve()),
+                name=f"{run_name}_test",
+            )
+        finally:
+            test_elapsed = time.perf_counter() - test_start_time
+            stage_seconds["test_evaluation"] += test_elapsed
+        output_details["test_evaluation_performed"] = True
+        test_save_dir = getattr(test_results, "save_dir", None)
+        if test_save_dir is not None:
+            output_details["test_eval_dir"] = _resolved_path(test_save_dir)
         print(f"Test evaluation elapsed: {test_elapsed:.2f} seconds")
         print(f"Test evaluation elapsed (HH:MM:SS): {_format_duration(test_elapsed)}")
         print(test_results)
     elif args.eval_test:
         print("Dataset yaml has no test split configured; skipping final test evaluation.")
 
+    return output_details
+
 
 def main():
-    overall_start_time = time.time()
+    command_start = time.perf_counter()
+    start_wall_time = time.time()
     args = parse_args()
     run_name = _make_run_name(args)
-    log_path, log_handle, original_streams = _setup_log(args, run_name, overall_start_time)
+    timing_record = _initial_timing_record(args, run_name, start_wall_time)
+    log_path = None
+    log_handle = None
+    original_streams = None
+
     try:
+        log_path, log_handle, original_streams = _setup_log(args, run_name, start_wall_time)
+        timing_record["paths"]["log_file"] = _resolved_path(log_path)
+        timing_record["environment"]["gpu"] = _collect_gpu_metadata()
         if log_path is not None:
             print(f"Log file: {log_path}")
         print("Current time:", datetime.datetime.now().strftime("%m%d%H%M%S"))
-        print(f"Start timestamp: {_timestamp_str(overall_start_time)}")
+        print(f"Start timestamp: {_timestamp_str(start_wall_time)}")
+        timing_record["stage_seconds"]["setup_input_validation"] += (
+            time.perf_counter() - command_start
+        )
 
-        data_yaml = prepare_dataset(args)
+        data_yaml, dataset_details = prepare_dataset(args, timing_record["stage_seconds"])
+        timing_record["counts"].update(dataset_details["counts"])
+        timing_record["provenance"]["prepared_dataset_reused"] = dataset_details[
+            "prepared_dataset_reused"
+        ]
+        timing_record["provenance"]["selection_summary_snapshot"] = dataset_details[
+            "selection_summary"
+        ]
+
         if args.prepare_only:
             print("prepare-only mode enabled; skipping training.")
         else:
-            train_yolov8(args, data_yaml)
+            output_details = train_yolov8(args, data_yaml, timing_record["stage_seconds"])
+            timing_record["paths"]["actual_run_dir"] = output_details["actual_run_dir"]
+            timing_record["paths"]["best_checkpoint"] = output_details["best_checkpoint"]
+            timing_record["paths"]["test_eval_dir"] = output_details["test_eval_dir"]
+            timing_record["provenance"]["test_evaluation_performed"] = output_details[
+                "test_evaluation_performed"
+            ]
 
-        overall_elapsed = time.time() - overall_start_time
         end_timestamp = time.time()
         print(f"End timestamp: {_timestamp_str(end_timestamp)}")
-        print(f"End-to-end elapsed (HH:MM:SS): {_format_duration(overall_elapsed)}")
+        _finalize_timing_record(timing_record, command_start, status="success")
+        print(
+            "End-to-end elapsed (HH:MM:SS): "
+            f"{_format_duration(timing_record['command_total_seconds'])}"
+        )
+        _write_timing_json(args.timing_json, timing_record)
+    except BaseException as exc:
+        _finalize_timing_record(timing_record, command_start, status="error", error=exc)
+        _write_timing_json(args.timing_json, timing_record)
+        raise
     finally:
         if log_handle is not None:
             log_handle.flush()

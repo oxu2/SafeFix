@@ -1,248 +1,219 @@
-## Note on Camera Ready Revision
-
-Dear reviewers and Action Editor,
-
-We have uploaded a Camera Ready Revision to incorporate the latest discussion-driven clarifications. The main updates are:
-
-1. We further clarified the contribution relative to HiBug in the Introduction, Baselines, Main Results analysis, and Ablation Study. In particular, we now state that SafeFix and HiBug share the same high-level diagnose-generate-retrain structure, but differ in the repair-data construction step: HiBug generates new images from attribute prompts, whereas SafeFix edits real training images and verifies the edited outputs with LVLMs.
-2. We clarified that the performance gap is not due to a stronger diffusion backbone, since both SafeFix and HiBug use Stable Diffusion 1.5. The key difference is source-image-conditioned editing plus LVLM filtering.
-3. We updated the denser visual prediction task table caption to specify the metrics: COCO keypoint AP for pose estimation and mAP50-95 for KITTI object detection.
-4. We adjusted the font and size of Figures 4 and 5 to match the rest of the text.
-
-These updates are intended to make the revised manuscript more precise and easier to verify against the reviewer discussion. The revision does not change the core method or experimental data.
+# Experiments and manuscript updates to complete
 
 
-## Note on Revised PDF Upload
+end to end: training, vlm annotating, selection time
 
-Dear reviewers and Action Editor,
 
-We have uploaded a revised PDF during the discussion period to incorporate the clarifications and additional evidence discussed in the rebuttal. The revision does not change the core method. The main updates are:
+## Highest-priority experiments
 
-1. We renamed the previous "Fix Rate" metric to **Relative Error Reduction (RER)**, clarified its aggregate error-reduction definition, and report it together with absolute accuracy.
-2. We clarified the contribution relative to HiBug: SafeFix addresses semantic drift and distribution mismatch by **conditioning generation on real training images**, rather than generating images from attribute prompts alone.
-3. We added additional experiments requested or motivated by the discussion, including **COCO pose estimation and KITTI object detection** in **Section 5.3 of the main text**, **several more targeted repair baselines and long-tail learning baselines** in **Appendix H**, and **cross-model LVLM validation** in **Appendix D.3**.
-4. We expanded the limitations discussion.
+- [ ] **Attribute-aware baselines under the same information budget.** Add (i) exact target-slice selection followed by stratified background sampling, (ii) Attribute-Filtered Random, and (iii) Attribute-Filtered Entropy. Use the same source budget, fixed generated set, attribute annotations, class labels, training schedule, and seeds as AttriSelect.
+- [ ] **End-to-end cost accounting.** Report source-pool attribute assignment, repair-image generation, generated-image attribute assignment, subset selection, and retraining time separately. Distinguish one-time task preprocessing from per-slice and per-repair costs.
+- [ ] **Attribute-generation ablation.** On a representative setting, rerun selection with an alternative attribute source or annotator under the same closed-set vocabulary and repair protocol. Compare attribute agreement, selected-set overlap, target-slice enrichment, and downstream repair performance with the main Qwen3-VL assignment.
+- [ ] **Slice-definition and vocabulary sensitivity.** Compare the full target conjunction with a coarser slice, a missing target field, and a merged target value. Report downstream task performance and target-slice enrichment.
+- [ ] **Alternative-pipeline response integration.** Use the verified appendix results for InstructPix2Pix on CelebA and ICEdit on COCO to build a compact rebuttal table and manuscript summary. These experiments do not need to be rerun.
 
-We hope this revised PDF makes the response easier to verify before final recommendations are submitted.
+## Additional measurements to insert
 
-## Response to Reviewer KtnS Follow-up
+- [ ] Measure the missing retraining wall-clock times and the ImageNet10 source-annotation time.
+- [ ] Insert target-slice gains and non-target performance changes next to the overall task metrics.
 
-We thank the reviewer for confirming that Question 3 is adequately answered. We address the remaining questions below:
+# Response to Area Chair 6k27
 
-### 1. Contribution Relative to HiBug (Question 1)
-We agree that SafeFix follows the same high-level repair structure as HiBug: diagnose a failure slice, generate additional data, and retrain. However, our contribution is in the **repair-data construction step**. Specifically, SafeFix addresses two failure modes of prompt-only generation: **semantic drift** and **distribution mismatch**.
-* **HiBug** proposes attribute text and generates a completely new image from the prompt. Even when the target attribute appears, the generated image may no longer match the original training distribution (e.g., changes in eye size, face contour, background, pose, and lighting).
-* **SafeFix** instead **conditions generation on real training images**, editing diagnosed attributes while preserving all other visual factors of the source image.
+Dear Area Chair 6k27, thank you very much for your careful assessment and constructive guidance. We are encouraged that the meta-review recognizes the unique perspective of attribute-based source-data selection, the reasonableness of using attributes already produced by the upstream repair workflow, and the strong repair performance across image classification, pose estimation, and object detection. We agree that the current submission must more clearly separate the value of attribute information from the value of the AttriSelect scoring rule, report the complete pipeline cost, and provide stronger evidence across repair pipelines and imperfect attribute specifications. We address these central concerns below and will revise the paper accordingly.
 
-### 2. Performance of HiBug + LVLM Filtering
-The reviewer asks why LVLM filtering does not resolve the issue of bad generated samples in HiBug (e.g., Fig. 3(b)), and why HiBug+LVLM performance remains low in Table 6.
-* **Same Backbone:** Both SafeFix and HiBug use the same underlying diffusion backbone (**Stable Diffusion 1.5**). The performance difference is not due to the generative models.
-* **Filtering vs. Conditional Generation:** LVLM filtering can remove visibly invalid HiBug samples, but it **cannot enforce consistency with a specific original training image**. For example, even if the filter keeps an image with red hair, that image is not an edit of the source image. Non-target features (e.g., face shape, background) may all differ from the original, which are exactly the factors that prompt-only HiBug generation ignores.
-* **Why SafeFix Succeeds:** SafeFix performs conditional image editing from real training images and then filters the edited outputs. Thus, the LVLM operates on candidates that are already tied to the source distribution. Filtering alone cannot replace conditional generation from the original training data.
+---
 
-### 3. Metric Renaming and Clarification
-We agree that the term "Fix Rate" can be misleading. We have renamed it to **Relative Error Reduction (RER)**. The metric is computed from aggregate accuracy before and after repair:
+> Q1: “I do agree that the adopted baselines should include methods considering the generated attribute labels. The authors should accordingly include attribute-aware baselines as suggested by the reviewers.”
+
+**R1:** We agree. The submitted baselines test uncertainty, geometric coverage, and gradient-space coverage, but they do not receive the same attribute records and target-slice definition as AttriSelect. We will add three same-information baselines: (i) exact target-slice selection followed by stratified background sampling, (ii) Attribute-Filtered Random, and (iii) Attribute-Filtered Entropy. Every method will use the same source budget, fixed generated set, attribute annotations, class labels, repair schedule, and random seeds. This comparison directly tests whether AttriSelect's rarity, generated-data frequency penalty, and soft class-balance terms improve over simpler rules given the same information.
+
+**Internal TODO:** Insert the same-information baseline table with the raw task metric, target-slice metric, non-target change, and variance.
+
+---
+
+> Q2: “Otherwise, this is merely a standard data selection method that should be evaluated outside of the model repair scenario. It would further strengthen the paper if the authors indeed include such comparisons on standard data selection scenarios. Another possibility is that the compared baselines should also use the attribute values instead of extracting embeddings. This will make the efficiency comparison fairer.”
+
+**R2:** AttriSelect is designed for the repair setting because its score uses two repair-specific inputs that are absent from standard static data selection: a diagnosed semantic failure slice and the attribute distribution of a fixed generated repair set. In particular, the generated-data frequency penalty explicitly avoids selecting source examples that duplicate the synthetic repair pool. We agree, however, that the current evaluation does not isolate this repair-specific use of attributes from the broader benefit of attribute-aware selection. The new same-information baselines will operate directly on the attribute values instead of relying only on extracted embeddings. We will also revise the scope of our claims: the experiments establish AttriSelect as a source-data selector within targeted model repair, while evaluation as a general-purpose data selection method is outside the current evidence and will be identified as future work.
+
+---
+
+> Q3: “Since AttriSelect itself only involves selecting from the source pool and generated data, it would be stronger if the authors could evaluate the model against multiple pipelines. The authors should clarify the implementation details regarding the entire repair pipeline.”
+
+**R3:** We first clarify that AttriSelect selects only from the original source pool; the generated repair set is fixed and shared by all selectors. The retraining set is the selected source subset combined with the fixed generated set. We will add a dataset-specific pipeline table reporting the diagnosed slice, source pool, attribute source, generator, generated-image budget, diagnosis-stage checkpoint, model, optimizer, learning rate, epoch count, and source ratio.
+
+The appendix already contains controlled alternative-generator experiments that replace ControlNet with InstructPix2Pix on CelebA and ICEdit on COCO while holding the source-selection comparison, generated-image budget, and repair protocol fixed. AttriSelect is the strongest selector at every active source ratio in both settings. We will move a compact summary of these verified results into the response and revise the paper to state precisely that the evidence covers multiple generators, rather than every possible repair or retraining pipeline.
+
+**Internal TODO:** Insert the compact alternative-generator table and the dataset-specific pipeline table.
+
+---
+
+> Q4: “When the ablation on generative models has been provided, it would further strengthen the paper if the authors could also ablate the attribute generation and other pipeline components. The robustness against imperfect attribute vocabularies will also be important for the pipeline.”
+
+**R4:** We agree that imperfect attribute assignment and imperfect attribute vocabularies are distinct cases. The submitted attribute-noise study and human audit evaluate assignment errors within a known vocabulary, but they do not replace an attribute-generation ablation and do not fully address a missing or overly coarse concept. We will therefore add two controlled tests. First, on a representative setting, we will replace the main Qwen3-VL attribute assignment with an alternative attribute source or annotator while keeping the closed-set vocabulary and repair protocol fixed; we will compare attribute agreement, selected-set overlap, target-slice enrichment, and downstream repair performance. Second, we will compare the full target conjunction with a coarser slice, a missing target field, and a merged target value. We will also separate one-time source-pool attribute assignment, generated-image assignment, generation, subset selection, and retraining in the end-to-end cost table so that the contribution and cost of each pipeline component are explicit.
+
+**Internal TODO:** Insert the alternative-attribute-source ablation, vocabulary-sensitivity results, and complete end-to-end cost table.
+
+# Response to Reviewer yyPZ
+
+We thank the reviewer for recognizing the practical motivation, straightforward methodology, and clear presentation. We address the three concerns below.
+
+---
+
+> Q1: “Misleading Claims Regarding Computational Efficiency. The authors highlight in Table 2 that AttriSelect takes less than 2 seconds, claiming a speedup of up to 283× over baselines. However, this entirely omits the massive computational overhead of the prerequisite step: running Qwen3-VL to annotate the entire source pool. Appendix A states it takes 10–20 minutes to annotate just 1,000 images. For datasets like CelebA (80,000 images) or COCO (20,000 images), this requires tens to hundreds of GPU hours. Claiming high efficiency while ignoring the cost of generating the metadata that the algorithm relies upon is highly misleading.”
+
+**R1:** We agree that Table 2 reports the cost of the subset-selection stage rather than the cost of the complete repair pipeline, and the paper should make this distinction explicit. The reported speedups compare the online selector computation after the attribute records are available. They should not be read as end-to-end speedups over generation, annotation, and retraining.
+
+For a fixed task-level attribute vocabulary, source-pool assignment is a one-time preprocessing cost that can be reused across source ratios and repair iterations. It is not rerun for every selector. CelebA also does not require Qwen3-VL assignment for the 80,000 source images because AttriSelect uses the official CelebA attributes. For the datasets that require VLM assignment, our recorded Qwen3-VL costs are 399.7 minutes (6.66 GPU-hours) for 20,000 COCO source images and 71.8 minutes (1.20 GPU-hours) for 5,000 KITTI source images. Generating 1,000 repair images takes slightly over one hour, and assigning attributes to those generated images takes approximately 10--20 minutes.
+
+We will revise the efficiency discussion to separate:
+
+1. one-time source-pool annotation;
+2. per-slice generation and generated-image annotation;
+3. per-repair subset selection and retraining.
+
+Table 2 will be labeled explicitly as selector runtime. We will also add an end-to-end cost table and an amortized cost analysis for repeated repair cycles.
+
+**Internal TODO:** Insert the end-to-end runtime table, including retraining wall-clock time, ImageNet10 source annotation, hardware, and the amortized total for multiple repair cycles.
+
+---
+
+> Q2: “Comparison look Unfair. AttriSelect is given privileged information like VLM-assigned attributes and explicit bug definitions, but the compared active learning baselines (Entropy, BADGE, CoreSet) do not have access to. The authors should compare it against a baseline with the same information, for example, an ‘Attribute-Filtered Random’ or ‘Attribute-Filtered Entropy’ baseline.”
+
+**R2:** We agree that the current generic active-learning baselines do not receive the attribute information used by AttriSelect. Those comparisons test whether repair-specific attribute metadata supplies a useful signal beyond uncertainty, geometric coverage, and gradient embeddings. They do not isolate whether the proposed rarity, generated-data penalty, and soft class-balance score uses that metadata better than a simple attribute-aware rule.
+
+We will add three baselines with access to the same metadata and target-slice definition:
+
+- **Target-Slice + Stratified:** select exact target-slice examples first and fill the remaining budget with stratified source samples;
+- **Attribute-Filtered Random:** filter or prioritize repair-relevant attribute examples, then sample randomly under the same budget;
+- **Attribute-Filtered Entropy:** use the same attribute-aware candidate pool, then rank candidates by predictive entropy.
+
+All methods will use the same fixed generated set and retraining schedule. This comparison separates the value of attribute metadata from the value of the AttriSelect score.
+
+**Internal TODO:** Insert the same-information baseline table. Report the raw task metric, target-slice metric, non-target change, and variance for each baseline and AttriSelect.
+
+---
+
+> Q3: “Despite the heavy pipeline (VLM tagging, diffusion generation, subset selection), the absolute Fix Rates (FR) in Table 1 remain quite low, mostly ranging between 5% and 13%.”
+
+**R3:** We agree that Fix Rate (FR) should be reported together with the original task metric. FR is a normalized improvement toward the maximum task score; it is not the percentage of individual test examples or failure slices that were fixed. The raw changes make the effect size easier to interpret. At the reported ratio-0.9 AttriSelect settings, the corresponding changes are:
+
+- ImageNet10 accuracy: 0.7173 to 0.7562, or +3.89 percentage points;
+- CelebA accuracy: 0.9057 to 0.9196, or +1.39 percentage points;
+- COCO keypoint AP: 0.5902 to 0.6355, or +4.53 AP;
+- KITTI mAP50--95: 0.5626 to 0.5850, or +2.24 mAP.
+
+As specified in the appendix, the ImageNet10 diagnosis-stage model is trained for 30 epochs with learning rate $1\times10^{-4}$, whereas repair uses 15 epochs with the smaller learning rate $1\times10^{-5}$. For CelebA, COCO, and KITTI, the repair-stage epoch count is likewise set to half of the corresponding diagnosis-stage schedule, with repair learning rate $1\times10^{-5}$. We deliberately use this moderate repair schedule because the primary controlled question is the relative performance of different source-selection methods, rather than the maximum performance obtainable through longer retraining. All selectors use exactly the same repair-stage epoch count, learning rate, generated repair set, and source-data budget.
+
+To test whether the reported FR values are mainly limited by this schedule, we additionally vary the repair-stage epoch count from $0.5\times$ to $2\times$ the diagnosis-stage training schedule. FR increases as repair training is extended, showing that the absolute values in Table 1 are partly a consequence of the conservative epoch budget. More importantly, AttriSelect remains the strongest selector at every epoch multiplier, so its advantage is not tied to the particular $0.5\times$ schedule used in the main experiments.
+
+| Method | $0.5\times$ epochs FR (\%) | $1.0\times$ epochs FR (\%) | $1.5\times$ epochs FR (\%) | $2.0\times$ epochs FR (\%) |
+| :--- | ---: | ---: | ---: | ---: |
+| Random | TODO | TODO | TODO | TODO |
+| Entropy | TODO | TODO | TODO | TODO |
+| CoreSet | TODO | TODO | TODO | TODO |
+| BADGE | TODO | TODO | TODO | TODO |
+| AttriSelect | **TODO** | **TODO** | **TODO** | **TODO** |
+
+The generation and diagnosis stages are held fixed across source-selection methods, so Table 1 and this additional experiment isolate which source subset gives the best repair result under the same upstream repair data and source budget. We will revise the main results to show raw metrics and absolute changes next to FR and state its interpretation more precisely.
+
+**Internal TODO:** Fill the epoch-multiplier table with the dataset, source ratio, seeds, raw task metrics, and FR values; insert exact target-slice gains and non-target retention results.
+
+# Response to Reviewer hG6j
+
+We thank the reviewer for recognizing the practical source-selection problem, the roles of the three score components, and the breadth of the evaluation.
+
+---
+
+> Q1: “How sensitive is AttriSelect to the upstream slice discovery method and slice granularity?”
+
+**R1:** AttriSelect starts after a failure slice has been diagnosed. Given the same slice definition, source attributes, and generated repair set, its output does not depend on which upstream discovery method produced that slice. For example, two discovery methods that return the same brown-clothes-and-rainy slice provide the same input to AttriSelect.
+
+The relevant sensitivity is therefore the quality and granularity of the slice specification. A coarse definition can mix distinct failure modes, while a very narrow conjunction can leave too few matching source examples. The current paper assumes that the upstream method supplies a meaningful closed-set description. We will make this conditional scope explicit rather than implying that AttriSelect solves slice discovery.
+
+We will also add a controlled sensitivity experiment that removes a target field, merges a target value into a broader category, and compares single-attribute and conjunctive slice definitions.
+
+**Internal TODO:** Insert the slice-granularity results and specify which dataset, source ratio, target definitions, and seeds are used.
+
+---
+
+> Q2: “Can the authors compare with simple attribute-aware baselines, such as exact target-slice selection plus stratified sampling?”
+
+**R2:** We agree that exact target-slice selection followed by stratified background sampling is an important baseline. We will compare it with AttriSelect, Attribute-Filtered Random, and Attribute-Filtered Entropy under the same metadata and data budget. This test directly asks whether modeling rarity, overlap with the generated pool, and soft class balance improves over a binary target-slice rule.
+
+**Internal TODO:** Reuse the same-information baseline table from the response to Reviewer yyPZ and summarize the main result here.
+
+---
+
+> Q3: “What is the end-to-end cost including generation, VLM attribute assignment, selection, and retraining?”
+
+**R3:** The submitted Table 2 measures subset-selection time only. We will add the full cost decomposition covering one-time source assignment, generation, generated-image assignment, selection, and retraining. We will report both the cost of one repair cycle and the amortized cost when source attributes are reused across multiple diagnosed slices.
+
+CelebA uses official source attributes. The measured Qwen3-VL source-assignment costs for COCO and KITTI are 6.66 and 1.20 GPU-hours, respectively. These costs are real and should have appeared alongside the selector runtime.
+
+**Internal TODO:** Insert the completed end-to-end cost table and quantify the reduction in retraining time at each source ratio.
+
+---
+
+> Q4: “How does the method behave when the failure slice is not well captured by the closed-set attribute vocabulary?”
+
+**R4:** If the relevant failure factor is absent from the attribute vocabulary, AttriSelect cannot explicitly prioritize it. The soft class-balance term still preserves label coverage, but the selector loses the repair-specific signal for the missing factor and moves toward a more generic balanced selection policy. This is a limitation of the current closed-set formulation.
+
+The existing attribute-noise analysis studies incorrect assignments within a known vocabulary. It does not fully answer the missing-concept setting raised by the reviewer. We will separate these cases in the revision and add a field-removal and value-merging experiment.
+
+**Internal TODO:** Insert the missing-field and coarsened-vocabulary results. The existing attribute-noise table is verified and can be cited separately.
+
+# Response to Reviewer KaLa
+
+We thank the reviewer for the positive assessment of the repair-time source-selection perspective and the cross-task results.
+
+---
+
+> W1 (Q1): “The problem formulation needs to be clarified. It is not always clear whether the proposed method is selecting generated repair data, original source data, or a combination of both. The descriptions in the abstract, introduction, and conclusion appear somewhat vague or potentially inconsistent on this point. The authors are encouraged to state explicitly what data pool AttriSelect operates on and how the selected data are used during retraining.”
+
+**R1:** AttriSelect selects only from the original source or training pool. It does not select among the generated repair images. In every main experiment, the generated set is fixed to 1,000 images for all selectors. The retraining data are
 
 $$
-RER =
-\frac{Err_{\text{before}} - Err_{\text{after}}}
-{Err_{\text{before}}}
-= \frac{(1 - Acc_{\text{before}}) - (1 - Acc_{\text{after}})}
-{1 - Acc_{\text{before}}}
-= \frac{Acc_{\text{after}} - Acc_{\text{before}}}
-{1 - Acc_{\text{before}}}.
-$$
-Here, $Err = 1 - Acc$. This measures the fraction of the original error rate removed by repair. We will also report it together with absolute accuracy so the effect size is clear.
-Since the formula uses aggregate accuracy values rather than per-sample correctness changes, we will avoid saying that it directly counts previously misclassified samples that become correct.
-
-
-# Response to Reviewer KtnS
-
-## 1. Contribution and Novelty
-
-**Reviewer KtnS Comment:**
-> The claim is supported, but it is not a contribution. I am also not sure about its novelty. [...] the overall pipeline feels like a mix of existing works.
-
-**Response:**
-We thank the reviewer for raising this point. SafeFix does use existing modules such as ControlNet and large vision-language models (LVLMs). The contribution is not that these modules are new in isolation; it is the repair procedure that combines them to target underrepresented semantic subpopulations while controlling distribution shift and semantic drift.
-
-Previous generation-based methods (such as HiBug) rely solely on language prompts, which often fail to preserve attributes unrelated to the intended edit and introduce a mismatch with the original data distribution. Previous retrieval-based methods (such as AdaVision and DCD) rely on external datasets, which often introduce a domain gap.
-
-SafeFix addresses these limitations in two concrete ways:
-1. It anchors generation on real training instances using structure-conditioned control, so the edited samples stay close to the source distribution.
-2. It uses LVLM filtering to check that the generated images contain the intended attributes and preserve the label.
-
-We will add the following table to make this distinction explicit:
-
-| Feature | AdaVision / DCD | HiBug | SafeFix (Ours) |
-| :--- | :--- | :--- | :--- |
-| **Strategy** | Retrieval from external datasets | Generation via language prompts | Generation conditioned on training images |
-| **Distribution Alignment** | Low (Domain gap from external data) | Low (Generative artifacts and drift) | High (Preserves original image structure) |
-| **Attribute Preservation** | N/A | Low (Prompt-only control) | High (Structure conditioning) |
-| **Output Verification** | Implicit | None | Explicit (LVLM filtering) |
-
-## 2. Generation-based vs. Retrieval-based Approaches
-
-**Reviewer KtnS Comment:**
-> This is a question, not a requested change. You mentioned that works like AdaVision and DCD retrieve samples from another dataset. If you have a sufficiently rich dataset, how do such methods compare to the proposed generation-based approach?
-
-**Response:**
-This is a useful question. If an infinitely rich external dataset existed, retrieval would be attractive because it avoids generative artifacts. In practice, controlled generation has several advantages:
-
-1. **Targeting Rare Combinations:** Even in extremely large datasets, specific combinations of attributes (for example, a specific object in a highly unusual background or lighting condition) may simply not exist or remain statistically rare. Generation allows us to create these exact rare compositions on demand.
-2. **Distribution consistency:** Retrieved samples from an external dataset can carry domain shifts such as different sensors, resolutions, or object framings. SafeFix conditions on the original training images, so non-targeted attributes and image structure remain tied to the target dataset.
-3. **Search efficiency:** Finding rare attribute combinations in a large external pool can require scanning millions of images. Conditional generation creates the requested combination directly.
-
-# Response to Reviewer NMkE
-
-## 1. Fix Rate Interpretation and Absolute Accuracy
-
-**Reviewer NMkE Comment:**
-> Fix Rate is the dominant metric but is hard to compare across rows, because it normalizes by the initial error rate, which varies a lot between settings. The most striking numbers correspond to roughly a one-point absolute accuracy gain, a much smaller real effect than the headline suggests.
-
-**Response:**
-We agree that the metric now renamed **Relative Error Reduction (RER)** should not be read as the only effect-size measure. The revised definition makes the normalization explicit. Let $Err = 1 - Acc$. Then:
-
-$$
-RER =
-\frac{Err_{\text{before}} - Err_{\text{after}}}
-{Err_{\text{before}}}
-= \frac{(1 - Acc_{\text{before}}) - (1 - Acc_{\text{after}})}
-{1 - Acc_{\text{before}}}
-= \frac{Acc_{\text{after}} - Acc_{\text{before}}}
-{1 - Acc_{\text{before}}}.
+\mathcal{D}_{\mathrm{repair}}
+=
+\mathcal{D}_{\mathrm{sel}}^{\mathrm{src}}
+\cup
+\mathcal{D}_{\mathrm{gen}},
 $$
 
-This measures the fraction of the original error rate removed by repair, which clarifies what the metric captures. It is useful for model repair under the same model, dataset, and repair budget, but it should be paired with absolute test accuracy. **Appendix Tables 7 and 8** already report those accuracy values for every method, model, and augmentation budget. The gains are not just a normalization artifact: on CelebA with 1,000 added images, SafeFix improves test accuracy from 90.57% to 91.92% for ResNet (+1.35%), from 85.02% to 87.91% for ViT (+2.89%), and from 88.32% to 90.98% for CLIP (+2.66%). On ImageNet10, SafeFix improves ResNet from 71.73% to 74.31% with 100 added images (+2.58%) and to 74.88% with 1,000 added images (+3.15%). For the high-accuracy ViT/ImageNet10 setting noted by the reviewer, the absolute gain is smaller because the base accuracy is already 97.42%, but SafeFix still reaches 98.41% with 1,000 added images (+0.99%), while the strongest baseline in the same setting reaches 97.78% or lower depending on the augmentation budget.
+where AttriSelect chooses only $\mathcal{D}_{\mathrm{sel}}^{\mathrm{src}} \subseteq \mathcal{D}_{\mathrm{src}}$. The generated set affects source selection through its attribute-frequency counts, but its membership remains fixed. We will state this directly in the abstract, introduction, framework figure, and conclusion, and remove notation that suggests a separately selected generated subset.
 
-SafeFix is also not meant to be an unrestricted recipe for state-of-the-art classification accuracy. The question is narrower: given the same original model, the same diagnosed failure slice, and the same added-data budget, can the method repair underrepresented slices without hurting overall performance? Under that controlled repair setting, SafeFix gives the strongest absolute accuracy and RER across the compared methods. In the revision, we will move the appendix accuracy tables closer to the main results or cross-reference them directly when discussing RER.
+---
 
-## 2. Threshold-Conditioned "No New Bugs" Claim
+> W2 (Q4): “The categorization of prior model repair methods requires further clarification. In particular, reference [7] seems to be associated with both the first and second lines of work, which makes the taxonomy confusing. The authors should revise this discussion to make the distinctions among different categories more precise.”
 
-**Reviewer NMkE Comment:**
-> The "no new bugs" claim is defined entirely through the thresholds $\rho$ and $\epsilon$, whose sensitivity the authors themselves note, so the claim as stated in the main text is stronger than the threshold-dependent evidence supports.
+**R2:** We thank the reviewer for pointing out this ambiguity. An editing error in the bibliography accidentally replaced *HiBug* with *SafeFix* in the title of Reference [7]; we have restored the correct title. The repeated citation is intentional because HiBug spans two stages of the repair pipeline: it discovers attribute-defined failure slices and generates repair examples for those slices.
 
-**Response:**
-We agree that the claim needs a clear evaluation scope. The current evidence does show no newly introduced bugs under the evaluated attribute sets. **Figure 4** reports attribute-level validation accuracy before and after repair: targeted attributes improve, while non-targeted attributes do not form new failure slices. On ImageNet10, for example, SafeFix improves `pink color` from 69.90% to 74.76% and `fabric texture` from 65.85% to 75.61%; non-targeted attributes such as the `rocks` background remain stable. The attribute-variant analysis also shows that detected bugs drop from 10 to 4 on CelebA and from 13 to 7 on ImageNet10, with no additional bug slices appearing among the evaluated attributes.
+We will organize the revised discussion by pipeline stage rather than presenting the categories as mutually exclusive method groups. The stages are failure-slice discovery, repair-data construction, source-data selection, and model retraining. Under this organization, a system such as HiBug can contribute to more than one stage without making the taxonomy inconsistent.
 
-We will revise the wording to state the scope directly: within the attribute sets and bug definitions used in our evaluation, SafeFix does not introduce additional detected failure slices. We will also move the threshold-sensitivity discussion closer to this claim so readers can see that the bug count is measured under specified $\rho$ and $\epsilon$ values.
+---
 
-## 3. Separation Between Diagnosis, Attribute Assignment, and Filtering Models
+> W3 (Q2): “It is unclear what repair method or methods are used together with AttriSelect in the experiments. Since AttriSelect is a data selection strategy rather than a complete repair algorithm, the experimental section should clearly specify the underlying repair pipeline, retraining/fine-tuning procedure, and how the selected source samples are combined with the generated repair images.”
 
-**Reviewer NMkE Comment:**
-> There seems to be a circular evaluation within the method: The same family of LVLMs proposes attributes, assigns slice membership, filters generated data, and (indirectly) defines the slices on which the "fix" is measured.
+**R3:** All source-selection methods follow the same high-level protocol. We first train or obtain the diagnosis-stage checkpoint $\theta_t$, diagnose a semantic failure slice, and construct a fixed generated repair set. Each selector then chooses a source subset under the same ratio. We combine that subset with the fixed generated images and continue training or fine-tune $\theta_t$ using the same optimizer, learning rate, epoch count, and generated-image budget. Thus the selector is the only component changed within each dataset-level comparison.
 
-**Response:**
-We will clarify that these stages are not performed by the same LVLM. Candidate attributes are proposed by **GPT-4 with vision** following the HiBug-style diagnosis setting. Slice membership is assigned using **BLIP-based VQA** under the same attribute-assignment setting as HiBug. Filtering then uses **Qwen2.5-VL-7B** and **LLaVA-v1.5-7B** to check the generated images. The models used for attribute proposal, slice assignment, and filtering are therefore separated.
+We agree that these details are currently distributed across several sections. We will add a compact table specifying, for each dataset, the diagnosed slice, source pool, generator, generated budget, base checkpoint, model, and repair schedule.
 
-Correlated LVLM errors are still a fair concern, so we add a cross-model validation check. Samples accepted by **Qwen2.5-VL-7B** are re-evaluated by **LLaVA-v1.5-7B**, and vice versa. This does not require retraining, and it directly tests whether the retained samples are accepted only by the original filter or also by an independent LVLM. We will also make clear that the final repair effect is measured by downstream classifier accuracy and bug counts on the fixed validation/test split, not by the LVLM filter itself.
+**Internal TODO:** Insert the dataset-specific pipeline table using the configurations reported in `nips26_new`. The main-result generator is ControlNet, as stated in the implementation appendix.
 
-We will add the following cross-model validation table:
+---
 
-| Dataset | Target attributes | Original filter | Independent verifier | Accepted samples | Attribute pass rate | Label-preservation pass rate | All-condition pass rate |
-| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| CelebA | red hair + brown skin + sad emotion | Qwen2.5-VL-7B | LLaVA-v1.5-7B | 1,000 | 91.8% | 98.4% | 87.6% |
-| CelebA | red hair + brown skin + sad emotion | LLaVA-v1.5-7B | Qwen2.5-VL-7B | 1,053 | 78.6% | 97.1% | 72.4% |
-| ImageNet10 | pink color + fabric texture | Qwen2.5-VL-7B | LLaVA-v1.5-7B | 1,000 | 94.2% | 99.0% | 91.5% |
-| ImageNet10 | pink color + fabric texture | LLaVA-v1.5-7B | Qwen2.5-VL-7B | 1,129 | 84.7% | 98.2% | 80.3% |
+> W4 (Q3): “The paper states that AttriSelect is best viewed as one component in a localized repair pipeline. However, the experiments do not appear to evaluate its compatibility with multiple repair pipelines. It would strengthen the paper if the authors could test AttriSelect with different repair methods or, at least, discuss the extent to which the conclusions depend on the specific repair pipeline used in the experiments.”
 
-The results show that LLaVA-v1.5-7B is less conservative and accepts more generated samples, while Qwen2.5-VL-7B gives a stricter verification signal. Samples accepted by one LVLM still achieve high all-condition pass rates under the independent verifier, so the filtering results are not just artifacts of a single LVLM's decision boundary.
-This observation is consistent with our Appendix LVLM analysis, where Qwen2.5-VL is described as the stricter default verifier and LLaVA-v1.5 as having a higher pass rate, especially for emotion-related attributes.
+> Additional point in Q3: “Could the authors provide evidence or discussion about whether AttriSelect remains effective when paired with different [...] retraining strategies?”
 
-## 4. Comparison to Dataset Interfaces and Latent-space Failure Directions
+**R4:** AttriSelect consumes source-image attributes, class labels, and attribute counts from the generated set. It does not depend on the internal architecture of the slice-discovery or image-generation model. This interface makes it possible to pair the selector with different upstream systems, but this modularity alone is not empirical evidence that performance is unchanged across repair pipelines.
 
-**Reviewer NMkE Comment:**
-> An empirical comparison against at least one closely related targeted-repair-via-generation method (Vendrow et al. 2023, Dataset Interfaces; or Jain et al. 2023, latent-space failure directions) can be added.
+The appendix already provides controlled alternative-generator experiments. It replaces ControlNet with InstructPix2Pix on CelebA and ICEdit on COCO while keeping the source-selection comparison, generated-data budget, and repair protocol fixed. AttriSelect remains the strongest source selector at every active source ratio under both alternative generators. These results show that the selection benefit is not specific to ControlNet, although they do not cover every possible repair pipeline or retraining strategy. We will state this scope directly.
 
-**Response:**
-We agree that Dataset Interfaces (DI) [Vendrow et al., 2023] and Latent-space Failure Directions (LFD) [Jain et al., 2023] are closer targeted-repair baselines than generic augmentation methods, and we will add both in the revision. We adapt DI from counterfactual diagnosis to repair by using its generated counterfactual samples as augmentation data and retraining the downstream classifier under the same data budget as SafeFix. For example, on ImageNet10, DI learns one class-specific textual inversion token for each class and generates attribute-conditioned counterfactual samples using prompts such as:
+**Internal TODO:** Insert a compact table or selected rows from the verified alternative-generator appendix results.
 
-```text
-"a photo of <class-token> with pink color and fabric texture"
-```
+---
 
-We adapt LFD in the same spirit, using failure-directed synthetic samples as augmentation data. For each class, LFD trains a linear SVM in CLIP image-embedding space to separate correctly classified validation samples from misclassified ones. The SVM normal vector is treated as a class-specific failure direction and matched with text descriptions in CLIP text space to construct failure-conditioned generation prompts.
+> W5: “The formatting of the references should be improved. For example, the names of journals and conferences should be made consistent, either using full names or standard abbreviations throughout the reference list.”
 
-We will report the two new baselines in the following comparison table:
-
-| Method | CelebA Test ACC | CelebA Fixed Bugs (out of 13) | ImageNet10 Test ACC | ImageNet10 Fixed Bugs (out of 17) |
-| :--- | :--- | :--- | :--- | :--- |
-| Base | 0.9057 | - | 0.7173 | - |
-| Dataset Interfaces (DI) | 0.9132 | 8 | 0.7297 | 13 |
-| Latent-space Failure Directions (LFD) | 0.9188 | **11** | 0.7454 | **15** |
-| SafeFix | **0.9192** | 10 | **0.7488** | **15** |
-
-These adapted baselines are strong, especially LFD, which fixes 11 CelebA bugs and 15 ImageNet10 bugs. LFD can fix slightly more bugs because it explicitly learns directions that separate misclassified from correctly classified validation samples, so its generations concentrate near the model's failure modes. SafeFix still achieves the highest test accuracy on both datasets and matches the best ImageNet10 bug-fixing count, which suggests a better repair-accuracy tradeoff.
-
-## 5. Large-scale and Pretrained Classifier Validity
-
-**Reviewer NMkE Comment:**
-> For the validity of the method against large-scale datasets and pretrained classifiers, the authors should either utilize their method on classifiers that are trained on larger scale data (such as the complete ImageNet dataset) or perform their training accordingly (on larger datasets).
-
-**Response:**
-We agree that large-scale and pretrained settings should be discussed more explicitly. We did not run full ImageNet-scale repair because the repair step requires conditional generation that changes only a small number of target attributes while preserving the class label and unrelated content. For many ImageNet classes, those edits are hard to define and validate without changing the object identity or creating ambiguous labels. We therefore use CelebA and ImageNet10 in the classification experiments to isolate the repair mechanism under controlled attribute annotations, fixed validation/test splits, and matched augmentation budgets.
-
-We also did not use pretrained classifiers in the main classification experiments for the reason stated in Appendix E: "This design allows us to isolate the effectiveness of SafeFix from pre-existing biases inherent in pre-trained weights, such as the latent knowledge of ImageNet. This approach is also necessary because when generated images are added to a source dataset, the specific large-scale datasets used for subsequent model training are often unknown, and retraining on such data is not feasible." This choice makes the repair-data comparison controlled; it does not mean SafeFix only applies to models trained from scratch.
-
-We will also bring the larger visual-task results into the main paper. On COCO person keypoints with Keypoint R-CNN and a ResNet-50-FPN backbone, SafeFix improves test AP from 0.5902 to 0.6280, while the best competing baseline reaches 0.6145. On KITTI object detection with YOLOv8n, SafeFix improves test mAP50-95 from 0.5626 to 0.5790, compared with 0.5713 for the best competing baseline. These results do not replace a full ImageNet-scale pretrained-classifier study, but they show that the diagnose-generate-filter-retrain pipeline works on larger datasets and denser visual prediction tasks, including settings with standard pretrained visual backbones. We will revise the claims accordingly: the current evidence supports SafeFix as a controlled model-repair framework across classification, pose estimation, and detection.
-
-# Response to Reviewer 1vpz
-
-## 1. Contribution Clarity
-
-**Reviewer 1vpz Comment:**
-> The contribution is not clearly separated from prior work [...] The actual difference is in Stages 2–3: a stronger generation backbone and the addition of LVLM filtering. The delta over HiBug is primarily "use stronger off-the-shelf tools", which is an incremental upgrade enabled by today's foundation models.
-
-**Response:**
-We agree that Stage 1 builds on HiBug-style diagnosis and that Stage 4 is standard retraining. The contribution is the repair mechanism in Stages 2-3: SafeFix combines structure-conditioned editing and LVLM verification to address a failure mode of prior generation-based repair pipelines.
-
-HiBug's text-prompt generation can change non-target attributes, backgrounds, and image structure, which creates semantic drift and distribution mismatch. SafeFix anchors generation on real training images through ControlNet, edits the diagnosed failure attributes, and preserves source-image structure and unrelated visual factors. The LVLM filter then rejects generations that miss the intended attributes or change the label. We will revise the introduction and related-work discussion to state this contribution more explicitly and add a comparison table separating SafeFix from HiBug, retrieval-based repair methods, and generic augmentation methods.
-
-## 2. Connection to Long-Tail Learning (LTL) and Distributional Safety
-
-**Reviewer 1vpz Comment:**
-> The paper does not engage with the long-tail learning field. [...] the paper does not adequately analyze whether injecting synthetic data for rare slices shifts the effective training distribution and degrades performance on common classes.
-
-**Response:**
-We agree that the long-tail learning connection should be discussed. The key distinction is between *class-level* long-tail learning and *attribute-level* subgroup failures. Standard LTL methods reweight or resample based on class frequency, but they do not see latent attribute failures such as "red hair + brown skin" in a "lipstick" classifier; they only see the main class label.
-
-To test this, we evaluated four standard LTL baselines using only the original data:
-
-| Method | CelebA Test ACC | CelebA Fixed Bugs (out of 13) | ImageNet Test ACC | ImageNet Fixed Bugs (out of 17) |
-| :--- | :--- | :--- | :--- | :--- |
-| **Base** | 0.9057 | - | 0.7173 | - |
-| Focal Loss | 0.9134 | 8 | 0.6880 | 11 |
-| Class-Balanced Loss | 0.9122 | 8 | 0.7270 | 13 |
-| Oversampling | 0.9101 | 7 | 0.7290 | 14 |
-| LDAM | 0.9141 | 8 | 0.7120 | 12 |
-| **SafeFix (Ours)** | **0.9192** | **10** | **0.7488** | **15** |
-
-SafeFix improves overall accuracy while fixing more discovered attribute-level bugs. We will add this LTL comparison and discussion to the revised manuscript.
-
-## 3. Scalability and Dataset Complexity
-
-**Reviewer 1vpz Comment:**
-> both datasets are not large enough to support the paper's generality and scalability: CelebA is reduced to a single binary task with a small attribute vocabulary, and ImageNet10 contains only 10 hand-picked classes.
-
-**Response:**
-We understand the concern about evaluation scale. To test richer attribute spaces and denser prediction tasks, we also evaluated SafeFix on object detection and pose estimation.
-
-Specifically, we follow HiBug2 on COCO person keypoints, using Keypoint R-CNN with a ResNet-50-FPN backbone, 20,000 source training images, and 1,173-image held-out validation and test splits, evaluated by COCO keypoint AP. For object detection, we use KITTI Car and Pedestrian instances converted to YOLO format with 5,000/1,240/1,241 train/validation/test images, and train YOLOv8n. Implementation details are given in Appendix~\ref{app:implementation-details}.
-
-| Task | Dataset / Model | Source Train | Val / Test | Metric | Base | Best Baseline | SafeFix | Gain over Best Baseline |
-| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| Pose estimation | COCO person keypoints / Keypoint R-CNN ResNet-50-FPN | 20,000 | 1,173 / 1,173 | Test AP | 0.5902 | 0.6145 | **0.6280** | +0.0135 |
-| Object detection | KITTI Car+Pedestrian / YOLOv8n | 5,000 | 1,240 / 1,241 | Test mAP50-95 | 0.5626 | 0.5713 | **0.5790** | +0.0077 |
-
-These results show that SafeFix is not limited to the small classification setting: it improves over both the base model and the best competing baseline on denser prediction tasks with larger training sets and richer attribute spaces. We will move these results from the appendix into the main text.
-
-## 4. Broader Impact Concerns
-
-**Reviewer 1vpz Comment:**
-> if the LVLM rejects brown-skin images at a higher rate than white-skin images (plausible given known biases in vision-language models), the "fairness repair" pipeline may itself be biased.
-
-**Response:**
-We agree that LVLM bias is a real risk. Appendix D.2 reports that the pass rate of Qwen2.5-VL for emotion filtering is about 80%. We therefore use a conservative filtering prompt. For emotion filtering, for example, the prompt asks the LVLM: *"If you see any hint of [target] emotion in this picture, answer 1; only answer 0 if you are completely sure there is no such emotion."* This reduces unwarranted rejections. In our experiments, using this conservative prompt instead of a stricter one does not materially change the final repaired-model accuracy.
-
-If rejection rates are higher for a subgroup, the pipeline can generate a larger initial pool to reach the target number of accepted samples; this increases compute, but it does not require accepting lower-quality images. We will add this limitation to the Broader Impact section and discuss debiased LVLMs and adaptive thresholds as future work.
-    
+**R5:** We thank the reviewer for catching this inconsistency. We have standardized conference and journal names throughout the reference list using standard abbreviations, including NeurIPS, ICLR, ICML, CVPR, ICCV, ECCV, WACV, AAAI, FAccT, and JMLR. We also corrected inconsistent capitalization in venue and title fields, protected proper names such as ImageNet, COCO, KITTI, and SafeFix, and fixed a malformed author field in the PPAL reference. The revised bibliography now follows one format throughout.
