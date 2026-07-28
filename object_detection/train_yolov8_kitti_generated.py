@@ -287,6 +287,15 @@ def parse_args():
         help="Use class-conditional rarity instead of global rarity.",
     )
     parser.add_argument("--num-added-img", type=int, default=1000)
+    parser.add_argument(
+        "--require-exact-generated-count",
+        type=str2bool,
+        default=False,
+        help=(
+            "Fail when fewer than --num-added-img eligible generated images are available. "
+            "The default preserves the existing best-effort behavior."
+        ),
+    )
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument(
         "--epochs",
@@ -437,6 +446,23 @@ TIMING_STAGE_NAMES = (
 )
 
 
+def _finish_active_stage(stage_seconds: Dict[str, float], stage_state: Dict[str, Any]):
+    stage_name = stage_state.pop("name", None)
+    stage_start = stage_state.pop("start", None)
+    if stage_name is not None and stage_start is not None:
+        stage_seconds[stage_name] += time.perf_counter() - float(stage_start)
+
+
+def _switch_active_stage(
+    stage_seconds: Dict[str, float],
+    stage_state: Dict[str, Any],
+    stage_name: str,
+):
+    _finish_active_stage(stage_seconds, stage_state)
+    stage_state["name"] = stage_name
+    stage_state["start"] = time.perf_counter()
+
+
 def _resolved_path(path: Optional[Union[Path, str]]) -> Optional[str]:
     if path is None:
         return None
@@ -492,6 +518,7 @@ def _selection_parameters(args) -> Dict[str, Any]:
         "sub_ratio": args.sub_ratio,
         "seed": args.seed,
         "num_added_img": args.num_added_img,
+        "require_exact_generated_count": args.require_exact_generated_count,
         "entropy": {
             "conf_thres": args.al_entropy_conf_thres,
             "iou": args.al_entropy_iou,
@@ -524,11 +551,8 @@ def _selection_parameters(args) -> Dict[str, Any]:
             "log_path": _resolved_path(args.al_attribute_log_path),
             "log_acc_scale": args.al_attribute_log_acc_scale,
             "extra_counts_raw": args.al_attribute_extra_counts,
-            "extra_counts_resolved": (
-                _resolve_attribute_extra_counts(args)
-                if args.selection_strategy == "attribute"
-                else None
-            ),
+            "default_extra_counts": DEFAULT_GENERATED_ATTRIBUTE_COUNTS,
+            "extra_counts_default_count": args.num_added_img,
             "extra_count_scale": args.al_attribute_extra_count_scale,
             "frequency_penalty": args.al_attribute_frequency_penalty,
             "class_balance": args.al_attribute_class_balance,
@@ -614,7 +638,11 @@ def _initial_timing_record(args, run_name: str, start_wall_time: float) -> Dict[
             "prepared_dataset_reused": False,
             "selection_summary_preserved": True,
         },
-        "counts": {},
+        "counts": {
+            "requested_generated": args.num_added_img,
+            "require_exact_generated_count": args.require_exact_generated_count,
+        },
+        "evaluation": {},
         "environment": {
             "hostname": socket.gethostname(),
             "platform": platform.platform(),
@@ -1226,8 +1254,13 @@ def _select_generated_candidates(generated_dir: Path, base_train_label_dir: Path
     return dict(sorted(candidates.items()))
 
 
-def prepare_dataset(args, stage_seconds: Dict[str, float]) -> Tuple[Path, Dict[str, Any]]:
-    setup_start = time.perf_counter()
+def prepare_dataset(
+    args,
+    stage_seconds: Dict[str, float],
+    stage_state: Dict[str, Any],
+    timing_counts: Dict[str, Any],
+) -> Tuple[Path, Dict[str, Any]]:
+    _switch_active_stage(stage_seconds, stage_state, "setup_input_validation")
     base_root = args.base_data_root
     base_yaml = base_root / "kitti_first5000.yaml"
     base_train_images = base_root / "images" / "train"
@@ -1254,21 +1287,44 @@ def prepare_dataset(args, stage_seconds: Dict[str, float]) -> Tuple[Path, Dict[s
                         f"Warning: could not read reused selection summary {summary_path}: {exc}",
                         file=sys.stderr,
                     )
-            stage_seconds["setup_input_validation"] += time.perf_counter() - setup_start
+            reused_counts = {
+                key: reused_summary[key]
+                for key in (
+                    "original_candidates",
+                    "selected_original",
+                    "generated_candidates_with_labels",
+                    "selected_generated",
+                    "final_train_images",
+                    "val_images",
+                    "test_images",
+                )
+                if key in reused_summary
+            }
+            reused_counts["requested_generated"] = args.num_added_img
+            reused_counts["require_exact_generated_count"] = args.require_exact_generated_count
+            generated_manifest = args.prepared_root / "selected_generated_source_ids.txt"
+            if "selected_generated" not in reused_counts and generated_manifest.exists():
+                reused_counts["selected_generated"] = sum(
+                    1
+                    for line in generated_manifest.read_text(encoding="utf-8").splitlines()
+                    if line.strip()
+                )
+            if "selected_generated" in reused_counts:
+                reused_counts["generated_count_exact"] = (
+                    reused_counts["selected_generated"] == args.num_added_img
+                )
+            timing_counts.update(reused_counts)
+            if (
+                args.require_exact_generated_count
+                and reused_counts.get("selected_generated", 0) < args.num_added_img
+            ):
+                raise RuntimeError(
+                    f"Reused prepared dataset contains "
+                    f"{reused_counts.get('selected_generated', 0)} generated images, "
+                    f"but exactly {args.num_added_img} were requested."
+                )
             return yaml_path, {
-                "counts": {
-                    key: reused_summary[key]
-                    for key in (
-                        "original_candidates",
-                        "selected_original",
-                        "generated_candidates_with_labels",
-                        "selected_generated",
-                        "final_train_images",
-                        "val_images",
-                        "test_images",
-                    )
-                    if key in reused_summary
-                },
+                "counts": reused_counts,
                 "prepared_dataset_reused": True,
                 "selection_summary": reused_summary,
             }
@@ -1292,9 +1348,9 @@ def prepare_dataset(args, stage_seconds: Dict[str, float]) -> Tuple[Path, Dict[s
         raise ValueError(
             f"--sub-ratio {args.sub_ratio} selected zero images from {len(train_ids)} candidates"
         )
-    stage_seconds["setup_input_validation"] += time.perf_counter() - setup_start
-
-    original_selection_start = time.perf_counter()
+    timing_counts["original_candidates"] = len(train_ids)
+    timing_counts["requested_original"] = original_sample_count
+    _switch_active_stage(stage_seconds, stage_state, "original_source_selection")
     if original_sample_count < len(train_ids):
         if args.selection_strategy == "stratified":
             selected_original_ids = _stratified_sample_ids(
@@ -1332,16 +1388,17 @@ def prepare_dataset(args, stage_seconds: Dict[str, float]) -> Tuple[Path, Dict[s
             selected_original_ids = sorted(rng.sample(train_ids, original_sample_count))
     else:
         selected_original_ids = list(train_ids)
-    original_selection_time = time.perf_counter() - original_selection_start
-    stage_seconds["original_source_selection"] += original_selection_time
+    timing_counts["selected_original"] = len(selected_original_ids)
+
+    _switch_active_stage(stage_seconds, stage_state, "generated_pool_discovery_sampling")
+    original_selection_time = stage_seconds["original_source_selection"]
     print(f"Total KITTI original selection time: {original_selection_time:.2f} seconds")
 
-    generated_selection_start = time.perf_counter()
     generated_candidates = _select_generated_candidates(args.generated_image_dir, base_train_labels)
+    timing_counts["generated_candidates_with_labels"] = len(generated_candidates)
     if not generated_candidates:
-        stage_seconds["generated_pool_discovery_sampling"] += (
-            time.perf_counter() - generated_selection_start
-        )
+        timing_counts["selected_generated"] = 0
+        timing_counts["generated_count_exact"] = args.num_added_img == 0
         raise RuntimeError(
             f"No generated images in {args.generated_image_dir} have matching train labels "
             f"under {base_train_labels}."
@@ -1349,11 +1406,16 @@ def prepare_dataset(args, stage_seconds: Dict[str, float]) -> Tuple[Path, Dict[s
     generated_ids = list(generated_candidates)
     generated_sample_count = min(args.num_added_img, len(generated_ids))
     selected_generated_ids = sorted(rng.sample(generated_ids, generated_sample_count))
-    stage_seconds["generated_pool_discovery_sampling"] += (
-        time.perf_counter() - generated_selection_start
-    )
+    timing_counts["selected_generated"] = len(selected_generated_ids)
+    timing_counts["generated_count_exact"] = len(selected_generated_ids) == args.num_added_img
+    if args.require_exact_generated_count and len(selected_generated_ids) < args.num_added_img:
+        raise RuntimeError(
+            f"Requested exactly {args.num_added_img} generated images, but only "
+            f"{len(selected_generated_ids)} eligible images in {args.generated_image_dir} "
+            f"have matching train labels under {base_train_labels}."
+        )
 
-    materialization_start = time.perf_counter()
+    _switch_active_stage(stage_seconds, stage_state, "dataset_materialization")
     train_image_out = args.prepared_root / "images" / "train"
     train_label_out = args.prepared_root / "labels" / "train"
     val_image_out = args.prepared_root / "images" / "val"
@@ -1481,7 +1543,10 @@ def prepare_dataset(args, stage_seconds: Dict[str, float]) -> Tuple[Path, Dict[s
         "selected_original": len(selected_original_ids),
         "original_selection_time_seconds": original_selection_time,
         "generated_candidates_with_labels": len(generated_candidates),
+        "requested_generated": args.num_added_img,
         "selected_generated": len(selected_generated_ids),
+        "require_exact_generated_count": args.require_exact_generated_count,
+        "generated_count_exact": len(selected_generated_ids) == args.num_added_img,
         "final_train_images": len(selected_original_ids) + len(selected_generated_ids),
         "val_images": len(val_ids),
         "test_images": len(test_ids),
@@ -1499,12 +1564,12 @@ def prepare_dataset(args, stage_seconds: Dict[str, float]) -> Tuple[Path, Dict[s
         json.dumps(summary, indent=2) + "\n",
         encoding="utf-8",
     )
-    stage_seconds["dataset_materialization"] += time.perf_counter() - materialization_start
+    _finish_active_stage(stage_seconds, stage_state)
 
     print("Prepared KITTI YOLO generated-training dataset:")
     print(json.dumps(summary, indent=2))
     print(f"Dataset YAML: {yaml_path}")
-    if len(selected_generated_ids) < args.num_added_img:
+    if not args.require_exact_generated_count and len(selected_generated_ids) < args.num_added_img:
         print(
             f"Warning: requested {args.num_added_img} generated images, "
             f"but only {len(selected_generated_ids)} matched train labels."
@@ -1514,7 +1579,10 @@ def prepare_dataset(args, stage_seconds: Dict[str, float]) -> Tuple[Path, Dict[s
             "original_candidates": len(train_ids),
             "selected_original": len(selected_original_ids),
             "generated_candidates_with_labels": len(generated_candidates),
+            "requested_generated": args.num_added_img,
             "selected_generated": len(selected_generated_ids),
+            "require_exact_generated_count": args.require_exact_generated_count,
+            "generated_count_exact": len(selected_generated_ids) == args.num_added_img,
             "final_train_images": len(selected_original_ids) + len(selected_generated_ids),
             "val_images": len(val_ids),
             "test_images": len(test_ids),
@@ -1550,6 +1618,7 @@ def train_yolov8(
         "best_checkpoint": None,
         "test_eval_dir": None,
         "test_evaluation_performed": False,
+        "test_metrics": {},
     }
 
     train_start_time = time.perf_counter()
@@ -1616,6 +1685,13 @@ def train_yolov8(
             test_elapsed = time.perf_counter() - test_start_time
             stage_seconds["test_evaluation"] += test_elapsed
         output_details["test_evaluation_performed"] = True
+        raw_metrics = getattr(test_results, "results_dict", {})
+        if isinstance(raw_metrics, dict):
+            for key, value in raw_metrics.items():
+                try:
+                    output_details["test_metrics"][str(key)] = float(value)
+                except (TypeError, ValueError):
+                    continue
         test_save_dir = getattr(test_results, "save_dir", None)
         if test_save_dir is not None:
             output_details["test_eval_dir"] = _resolved_path(test_save_dir)
@@ -1650,7 +1726,16 @@ def main():
             time.perf_counter() - command_start
         )
 
-        data_yaml, dataset_details = prepare_dataset(args, timing_record["stage_seconds"])
+        dataset_stage_state: Dict[str, Any] = {}
+        try:
+            data_yaml, dataset_details = prepare_dataset(
+                args,
+                timing_record["stage_seconds"],
+                dataset_stage_state,
+                timing_record["counts"],
+            )
+        finally:
+            _finish_active_stage(timing_record["stage_seconds"], dataset_stage_state)
         timing_record["counts"].update(dataset_details["counts"])
         timing_record["provenance"]["prepared_dataset_reused"] = dataset_details[
             "prepared_dataset_reused"
@@ -1669,6 +1754,7 @@ def main():
             timing_record["provenance"]["test_evaluation_performed"] = output_details[
                 "test_evaluation_performed"
             ]
+            timing_record["evaluation"] = output_details["test_metrics"]
 
         end_timestamp = time.time()
         print(f"End timestamp: {_timestamp_str(end_timestamp)}")

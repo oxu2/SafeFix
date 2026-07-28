@@ -3,7 +3,17 @@ from utils.imports import *
 from utils.defines import *
 
 # Modular imports
-from utils.active_learning import CoreSetStrategy, extract_embeddings_for_al, active_learning_selection
+from utils.active_learning import (
+    CoreSetStrategy,
+    active_learning_selection,
+    extract_embeddings_for_al,
+    infer_generated_attribute_counts,
+    load_attribute_metadata,
+)
+from utils.attribute_aware_baselines import (
+    build_attribute_match_pools,
+    target_values_from_generated_counts,
+)
 from utils.models import CLIPForBinary, SmoothBCEWithLogitsLoss
 from utils.path_utils import (
     LEGACY_SAVE_ROOT,
@@ -15,6 +25,7 @@ from utils.path_utils import (
 from utils.data_utils import (default_img_transform, clip_processor_transform, make_loader, 
                              CelebADataset, GeneratedImageDataset, SimpleImageDataset, GeneratedDataset)
 from utils.training import evaluate, train_model, save_predictions, parse_log
+from utils.training_milestones import parse_evaluation_milestones
 
 
 _llm_data_selection = None
@@ -267,6 +278,229 @@ def _print_class_distribution(subset, description, verbose=False):
             print(f"Warning: could not compute class distribution for {description}: {exc}")
         return False
 
+
+def _default_selection_manifest_path(args):
+    ratio_tag = str(args.sub_ratio).replace('.', 'p')
+    generated_seed = args.seed if args.generated_seed is None else args.generated_seed
+    filename = (
+        f"{args.al_strategy}_ratio{ratio_tag}_seed{args.seed}"
+        f"_genseed{generated_seed}.json"
+    )
+    return Path("save/selection_exports/rebuttal_imagenet") / filename
+
+
+def _write_imagenet_selection_manifest(
+    *,
+    args,
+    train_subset,
+    selected_indices,
+    generated_paths,
+    generated_labels,
+    selection_time_seconds,
+):
+    manifest_path = (
+        Path(args.selection_manifest)
+        if args.selection_manifest
+        else _default_selection_manifest_path(args)
+    )
+    manifest_path = manifest_path.expanduser()
+    manifest_path.parent.mkdir(parents=True, exist_ok=True)
+
+    base_dataset = train_subset.dataset
+    source_rows = []
+    for local_index in selected_indices:
+        dataset_index = int(train_subset.indices[int(local_index)])
+        sample_path, label = base_dataset.samples[dataset_index]
+        class_name = (
+            base_dataset.classes[int(label)]
+            if hasattr(base_dataset, "classes") and int(label) < len(base_dataset.classes)
+            else str(label)
+        )
+        source_rows.append(
+            {
+                "local_index": int(local_index),
+                "dataset_index": dataset_index,
+                "path": str(Path(sample_path)),
+                "label": int(label),
+                "class_name": class_name,
+            }
+        )
+
+    generated_rows = []
+    for path, label in zip(generated_paths, generated_labels):
+        class_name = (
+            base_dataset.classes[int(label)]
+            if hasattr(base_dataset, "classes") and int(label) < len(base_dataset.classes)
+            else str(label)
+        )
+        generated_rows.append(
+            {
+                "path": str(Path(path)),
+                "label": int(label),
+                "class_name": class_name,
+            }
+        )
+
+    generated_seed = args.seed if args.generated_seed is None else args.generated_seed
+    manifest = {
+        "dataset": "imagenet10",
+        "strategy": args.al_strategy,
+        "source_ratio": float(args.sub_ratio),
+        "source_seed": int(args.seed),
+        "generated_seed": int(generated_seed),
+        "source_candidate_count": len(train_subset),
+        "selected_source_count": len(source_rows),
+        "selected_generated_count": len(generated_rows),
+        "source_budget": int(len(train_subset) * args.sub_ratio),
+        "target_attributes": args.attributes,
+        "attribute_file": str(args.attribute_file),
+        "generated_image_dir": str(args.gen_image_dir),
+        "resume_model": str(args.resume_model) if args.resume_model else None,
+        "selection_time_seconds": float(selection_time_seconds),
+        "attribute_baseline_diagnostics": getattr(
+            args, "attribute_baseline_diagnostics", None
+        ),
+        "selected_source": source_rows,
+        "selected_generated": generated_rows,
+    }
+    temporary_path = manifest_path.with_name(
+        f".{manifest_path.name}.tmp.{os.getpid()}"
+    )
+    temporary_path.write_text(
+        json.dumps(manifest, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+    os.replace(temporary_path, manifest_path)
+    print(f"Selection manifest: {manifest_path}")
+    return manifest_path
+
+
+def _compute_imagenet_test_slice_metrics(predictions, labels):
+    """Compute exact generated-target and background test accuracies."""
+    if args.dataset != "imagenet" or len(test_idx) == 0:
+        return None
+
+    attribute_metadata = load_attribute_metadata(args.attribute_file)
+    focus_attributes = None
+    if args.al_attribute_focus:
+        focus_attributes = [
+            value.strip()
+            for value in str(args.al_attribute_focus).split(",")
+            if value.strip()
+        ]
+    generated_counts = infer_generated_attribute_counts(
+        attribute_metadata,
+        args.evaluation_attributes or args.attributes,
+        args.num_added_img,
+        focus_attributes=None if args.evaluation_attributes else focus_attributes,
+    )
+    if not generated_counts:
+        raise ValueError(
+            "Could not infer generated target attributes for ImageNet test-slice evaluation."
+        )
+    target_values = target_values_from_generated_counts(generated_counts)
+    exact_indices, _, _ = build_attribute_match_pools(
+        attribute_metadata=attribute_metadata,
+        metadata_indices=[int(index) for index in test_idx],
+        target_values=target_values,
+    )
+
+    predictions = np.asarray(predictions).reshape(-1)
+    labels = np.asarray(labels).reshape(-1)
+    if len(predictions) != len(test_idx) or len(labels) != len(test_idx):
+        raise ValueError(
+            "ImageNet test predictions, labels, and split indices must have equal length: "
+            f"predictions={len(predictions)}, labels={len(labels)}, test_idx={len(test_idx)}."
+        )
+
+    target_mask = np.zeros(len(test_idx), dtype=bool)
+    target_mask[np.asarray(exact_indices, dtype=int)] = True
+    correct = predictions == labels
+
+    def slice_summary(mask):
+        count = int(mask.sum())
+        return {
+            "count": count,
+            "correct": int(correct[mask].sum()) if count else 0,
+            "accuracy": float(correct[mask].mean()) if count else None,
+        }
+
+    return {
+        "definition": "exact conjunction of generated-supported target attributes",
+        "target_values": {
+            attribute: [str(value) for value in values]
+            for attribute, values in target_values.items()
+        },
+        "overall": slice_summary(np.ones(len(test_idx), dtype=bool)),
+        "target": slice_summary(target_mask),
+        "non_target": slice_summary(~target_mask),
+    }
+
+
+def _write_experiment_result(
+    *,
+    train_loss_history,
+    train_acc_history,
+    val_loss_history,
+    val_acc_history,
+    selection_time_seconds,
+    training_time_seconds,
+    wall_time_seconds,
+):
+    """Write one atomic machine-readable result record when requested."""
+    if not args.result_json:
+        return None
+
+    result_path = Path(args.result_json).expanduser()
+    result_path.parent.mkdir(parents=True, exist_ok=True)
+    generated_seed = args.seed if args.generated_seed is None else args.generated_seed
+    result = {
+        "dataset": "imagenet10" if args.dataset == "imagenet" else args.dataset,
+        "strategy": args.al_strategy,
+        "source_ratio": float(args.sub_ratio),
+        "source_seed": int(args.seed),
+        "generated_seed": int(generated_seed),
+        "num_generated": int(args.num_added_img),
+        "num_epochs": int(args.num_epochs),
+        "learning_rate": float(args.lr),
+        "lr_step_size": int(args.lr_step_size),
+        "lr_gamma": float(args.lr_gamma),
+        "batch_size": int(args.batch_size),
+        "resume_model": str(args.resume_model) if args.resume_model else None,
+        "attribute_file": str(args.attribute_file) if args.attribute_file else None,
+        "generated_image_dir": str(args.gen_image_dir) if args.gen_image_dir else None,
+        "selection_manifest": str(args.selection_manifest) if args.selection_manifest else None,
+        "selection_time_seconds": float(selection_time_seconds),
+        "training_time_seconds": float(training_time_seconds),
+        "wall_time_seconds": float(wall_time_seconds),
+        "best_validation_accuracy": (
+            float(max(val_acc_history)) if val_acc_history else None
+        ),
+        "best_validation_epoch": getattr(args, "best_validation_epoch", None),
+        "test_slice_metrics": getattr(args, "final_test_slice_metrics", None),
+        "evaluation_milestones": list(
+            getattr(args, "evaluation_milestones_parsed", [])
+        ),
+        "milestone_results": getattr(args, "milestone_results", []),
+        "attribute_baseline_diagnostics": getattr(
+            args, "attribute_baseline_diagnostics", None
+        ),
+        "history": {
+            "train_loss": [float(value) for value in train_loss_history],
+            "train_accuracy": [float(value) for value in train_acc_history],
+            "validation_loss": [float(value) for value in val_loss_history],
+            "validation_accuracy": [float(value) for value in val_acc_history],
+        },
+    }
+    temporary_path = result_path.with_name(f".{result_path.name}.tmp.{os.getpid()}")
+    temporary_path.write_text(
+        json.dumps(result, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+    os.replace(temporary_path, result_path)
+    print(f"Experiment result: {result_path}")
+    return result_path
+
 # Parse command-line arguments
 parser = argparse.ArgumentParser(description='Train model on CelebA dataset')
 parser.add_argument('--verbose', type=str2bool, default=False,
@@ -283,6 +517,18 @@ parser.add_argument('--pretrained', type=str2bool, default=False,
                     help='Use pre-trained weights (default: False)')
 parser.add_argument('--lr', type=float, default=1e-4,
                     help='Learning rate (default: 1e-4)')
+parser.add_argument(
+    '--lr_step_size',
+    type=int,
+    default=3,
+    help='StepLR decay interval for ResNet training (default: 3 epochs).',
+)
+parser.add_argument(
+    '--lr_gamma',
+    type=float,
+    default=0.5,
+    help='StepLR multiplicative decay factor for ResNet training (default: 0.5).',
+)
 parser.add_argument('--attributes', type=str, default="redhair_brownskin", 
                     help='attributes to detect, e.g. redhair_sademotion, redhair_brownskin, redhair, brownskin, yellowhair, sademotion, etc.')
 parser.add_argument('--lvlm', type=str, default='qwen',
@@ -292,6 +538,15 @@ parser.add_argument('--model', type=str, default='resnet', choices=['resnet', 'v
 parser.add_argument('--plot', type=str2bool, default=False, help='Enable plotting training metrics')
 parser.add_argument('--num_epochs', type=int, default=20,
                     help='Number of training epochs (default: 20)')
+parser.add_argument(
+    '--evaluation_milestones',
+    type=str,
+    default=None,
+    help=(
+        'Optional comma-separated epochs at which to evaluate the best-validation '
+        'checkpoint observed so far, for example 15,30,45,60.'
+    ),
+)
 parser.add_argument('--num_added_img', type=int, default=1000,
                     help='Number of generated images to add (default: 4000)')
 # Add argument for attribute file path
@@ -361,6 +616,46 @@ parser.add_argument('--workers', type=int, default=4,
 # Add random seed argument for reproducibility
 parser.add_argument('--seed', type=int, default=42,
                     help='Random seed for reproducibility (default: 42)')
+parser.add_argument(
+    '--generated_seed',
+    type=int,
+    default=None,
+    help=(
+        'Independent seed for sampling the fixed generated repair set. '
+        'Defaults to --seed for backward compatibility.'
+    ),
+)
+parser.add_argument(
+    '--selection_manifest',
+    type=str,
+    default=None,
+    help='Optional JSON path recording exact selected source and generated images.',
+)
+parser.add_argument(
+    '--selection_only',
+    type=str2bool,
+    default=False,
+    help='Prepare selection and its manifest, then exit before model training.',
+)
+parser.add_argument(
+    '--result_json',
+    type=str,
+    default=None,
+    help=(
+        'Optional JSON path for overall, target-slice, and non-target test metrics '
+        'plus training and selection metadata.'
+    ),
+)
+parser.add_argument(
+    '--evaluation_attributes',
+    type=str,
+    default=None,
+    help=(
+        'Optional canonical attribute string used only to define ImageNet test '
+        'slice metrics. This decouples evaluation of the original fine-grained '
+        'failure slice from a coarsened or missing-field selection variant.'
+    ),
+)
 # Separate learning rates for CLIP head and backbone (for scratch mode)
 parser.add_argument('--lr_head', type=float, default=None,
                     help='Learning rate for CLIP classification head (scratch mode)')
@@ -371,7 +666,9 @@ parser.add_argument('--use_active_learning', type=str2bool, default=True,
                     help='Use Active Learning strategy for data selection (default: True)')
 parser.add_argument('--al_strategy', type=str, default='attribute',
                     choices=['coreset', 'badge', 'uherding', 'ppal', 'stratified', 'diversity', 'hybrid', 'hierarchical',
-                             'attribute', 'entropy', 'uncertainty_stratified', 'gen_probe',
+                             'attribute', 'entropy', 'target_slice_stratified',
+                             'attribute_filtered_random', 'attribute_filtered_entropy',
+                             'uncertainty_stratified', 'gen_probe',
                              'random', 'none', '0', 'false', 'no'],
                     help='Active Learning strategy: coreset, badge, uherding, ppal, stratified, diversity, hybrid, hierarchical, '
                          'attribute, entropy, uncertainty_stratified, gen_probe, or random/none/0/false (all map to plain random selection)')
@@ -466,6 +763,11 @@ parser.add_argument('--llm_max_memory', type=int, default=23,
 # Parse arguments
 args = parser.parse_args()
 
+if args.lr_step_size <= 0:
+    raise ValueError(f"--lr_step_size must be positive, got {args.lr_step_size}.")
+if args.lr_gamma <= 0:
+    raise ValueError(f"--lr_gamma must be positive, got {args.lr_gamma}.")
+
 # Normalize al_strategy: treat none/0/false/no/random as 'random' (plain random selection)
 _strategy_str = str(args.al_strategy).lower().strip() if args.al_strategy is not None else 'random'
 if _strategy_str in ('none', '0', 'false', 'no', 'random', ''):
@@ -525,6 +827,18 @@ if args.model == 'vit' and args.num_epochs == 20:
 
 if args.dataset == 'imagenet' and args.model == 'clip' and args.num_epochs == 20:
     args.num_epochs = 15
+
+args.evaluation_milestones_parsed = parse_evaluation_milestones(
+    args.evaluation_milestones,
+    num_epochs=args.num_epochs,
+)
+args.milestone_results = []
+args.best_validation_epoch = None
+if args.evaluation_milestones_parsed:
+    print(
+        "Best-validation checkpoint evaluation milestones: "
+        + ",".join(str(value) for value in args.evaluation_milestones_parsed)
+    )
 
 # Adjust number of epochs default for ImageNet subset
 # if args.dataset == 'imagenet' and args.num_epochs == 20 and args.model == 'resnet':
@@ -729,8 +1043,10 @@ if args.dataset == 'imagenet':
         )
     if verbose:
         print(f"Using ImageNet source data directory: {data_dir}")
-    feature_extractor = CLIPImageProcessor.from_pretrained("openai/clip-vit-base-patch32")
     if args.model == 'clip':
+        feature_extractor = CLIPImageProcessor.from_pretrained(
+            "openai/clip-vit-base-patch32"
+        )
         train_transform = clip_processor_transform(feature_extractor)
         val_transform = train_transform
     else:
@@ -771,11 +1087,11 @@ if args.dataset == 'imagenet':
         # Use only generated images for ImageNet
         # Collect generated image paths and labels
         gen_paths, gen_labels = [], []
-        for cls_name, cls_idx in full_ds.class_to_idx.items():
+        for cls_name, cls_idx in sorted(full_ds.class_to_idx.items()):
             cls_dir = Path(args.gen_image_dir) / cls_name
             if not cls_dir.is_dir():
                 continue
-            for img_name in os.listdir(cls_dir):
+            for img_name in sorted(os.listdir(cls_dir)):
                 if img_name.lower().endswith(('.png', '.jpg', '.jpeg')):
                     gen_paths.append(str(cls_dir / img_name))
                     gen_labels.append(cls_idx)
@@ -939,9 +1255,10 @@ if args.dataset == 'imagenet':
         if len(gen_paths) < args.num_added_img:
             print(f"Warning: requested {args.num_added_img}, but only {len(gen_paths)} available.")
         # Sample up to requested number
-        random.seed(args.seed)
+        generated_seed = args.seed if args.generated_seed is None else args.generated_seed
+        generated_rng = random.Random(generated_seed)
         if len(gen_paths) > args.num_added_img:
-            idxs = random.sample(range(len(gen_paths)), args.num_added_img)
+            idxs = generated_rng.sample(range(len(gen_paths)), args.num_added_img)
             gen_paths = [gen_paths[i] for i in idxs]
             gen_labels = [gen_labels[i] for i in idxs]
         modified_image_paths = gen_paths
@@ -1000,16 +1317,30 @@ if args.dataset == 'imagenet':
             # Original approach: Apply AL/random on original data, then add all generated
             orig_count = len(train_ds)
             sub_count = int(orig_count * args.sub_ratio)
+            selection_duration = 0.0
             
             if args.use_active_learning and args.sub_ratio < 1.0:
                 if verbose:
                     print(f"Using Active Learning strategy to select {sub_count} samples from {orig_count}")
                 # Define device for Active Learning if not already defined
                 al_device = _resolve_runtime_device(args.gpu)
+                selection_train_ds = train_ds
+                if args.al_strategy in {'entropy', 'attribute_filtered_entropy'}:
+                    selection_train_ds = Subset(
+                        ImageFolder(data_dir, transform=val_transform),
+                        train_idx,
+                    )
                 # Use Active Learning for data selection (timed)
                 al_select_start = time.time()
-                selected_indices = active_learning_selection(train_ds, val_ds, args, al_device, verbose)
+                selected_indices = active_learning_selection(
+                    selection_train_ds,
+                    val_ds,
+                    args,
+                    al_device,
+                    verbose,
+                )
                 al_duration = time.time() - al_select_start
+                selection_duration = al_duration
                 al_total_time += al_duration
                 if verbose:
                     print(f"[TIMING] Active Learning selection (ImageNet) took {al_duration:.2f} seconds")
@@ -1043,6 +1374,7 @@ if args.dataset == 'imagenet':
                     verbose=verbose
                 )
                 llm_duration = time.time() - llm_select_start
+                selection_duration = llm_duration
                 al_total_time += llm_duration  # Add to AL time for comparison
                 if verbose:
                     print(f"[TIMING] LLM selection (ImageNet) took {llm_duration:.2f} seconds")
@@ -1052,6 +1384,15 @@ if args.dataset == 'imagenet':
                 # Use random sampling (original behavior)
                 random.seed(args.seed)
                 selected_indices = random.sample(range(orig_count), sub_count)
+
+            _write_imagenet_selection_manifest(
+                args=args,
+                train_subset=train_ds,
+                selected_indices=selected_indices,
+                generated_paths=modified_image_paths,
+                generated_labels=modified_image_labels,
+                selection_time_seconds=selection_duration,
+            )
             
             # Map subset indices back to the original dataset indices
             sub_orig_indices = [train_ds.indices[i] for i in selected_indices]
@@ -1082,6 +1423,10 @@ if args.dataset == 'imagenet':
             args.orig_train_count = None
         
         train_loader = make_loader(train_dataset, shuffle=True)
+
+        if args.selection_only:
+            print("Selection-only mode completed; skipping ImageNet model training.")
+            raise SystemExit(0)
 
     # Skip CelebA loading
     all_train_imgs = None  # placeholder
@@ -1188,8 +1533,10 @@ elif args.dataset == 'celeba':
             return img, label
 
     # Initialize CLIP feature extractor
-    feature_extractor = CLIPImageProcessor.from_pretrained("openai/clip-vit-base-patch32")
     if args.model == 'clip':
+        feature_extractor = CLIPImageProcessor.from_pretrained(
+            "openai/clip-vit-base-patch32"
+        )
         train_transform = clip_processor_transform(feature_extractor)
         val_transform = train_transform
     else:
@@ -1702,8 +2049,8 @@ elif args.model == 'vit':
 elif args.model == 'resnet':
     scheduler = torch.optim.lr_scheduler.StepLR(
         optimizer,
-        step_size=3,
-        gamma=0.5
+        step_size=args.lr_step_size,
+        gamma=args.lr_gamma,
     )
 
 def evaluate(model, data_loader, save_preds=False):
@@ -1866,12 +2213,16 @@ def save_predictions(model, train_loader, valid_loader, test_loader=None, write_
 def train_model(model, train_loader, valid_loader, criterion, optimizer, scheduler=None, num_epochs=20, test_loader=None):
     global predictions_for_diagnostics
     # Track best validation performance
-    best_val_acc = 0.0
+    best_val_acc = float("-inf")
+    best_val_epoch = None
     best_model_state = None
     train_loss_history = []
     train_acc_history = []
     val_loss_history = []
     val_acc_history = []
+    milestone_epochs = set(getattr(args, "evaluation_milestones_parsed", []))
+    training_start_time = time.time()
+    milestone_evaluation_time = 0.0
 
     # For pretrained ViT and CLIP on ImageNet, freeze backbone for initial epochs
     freeze_epochs = 10
@@ -1929,6 +2280,7 @@ def train_model(model, train_loader, valid_loader, criterion, optimizer, schedul
         # Update best model if this epoch's validation accuracy is higher
         if val_acc > best_val_acc:
             best_val_acc = val_acc
+            best_val_epoch = epoch + 1
             best_model_state = copy.deepcopy(model.state_dict())
         
         # Step the learning rate scheduler if provided
@@ -1944,6 +2296,62 @@ def train_model(model, train_loader, valid_loader, criterion, optimizer, schedul
         train_acc_history.append(train_acc)
         val_loss_history.append(val_loss)
         val_acc_history.append(val_acc)
+
+        completed_epoch = epoch + 1
+        if completed_epoch in milestone_epochs:
+            if test_loader is None:
+                raise ValueError(
+                    "--evaluation_milestones requires an available test loader."
+                )
+            if best_model_state is None or best_val_epoch is None:
+                raise RuntimeError(
+                    f"No best-validation checkpoint is available at epoch {completed_epoch}."
+                )
+
+            cumulative_training_time = (
+                time.time() - training_start_time - milestone_evaluation_time
+            )
+            milestone_evaluation_start = time.time()
+            current_model_state = copy.deepcopy(model.state_dict())
+            model.load_state_dict(best_model_state)
+            milestone_test_acc, milestone_preds, milestone_labels = evaluate(
+                model,
+                test_loader,
+                save_preds=True,
+            )
+            milestone_test_loss = evaluate(model, test_loader)[1]
+            milestone_slice_metrics = None
+            if args.dataset == "imagenet":
+                milestone_slice_metrics = _compute_imagenet_test_slice_metrics(
+                    milestone_preds,
+                    milestone_labels,
+                )
+            model.load_state_dict(current_model_state)
+
+            milestone_result = {
+                "epoch": int(completed_epoch),
+                "best_epoch": int(best_val_epoch),
+                "best_validation_accuracy": float(best_val_acc),
+                "training_time_seconds": float(cumulative_training_time),
+                "test_accuracy": float(milestone_test_acc),
+                "test_loss": float(milestone_test_loss),
+                "test_slice_metrics": milestone_slice_metrics,
+            }
+            args.milestone_results.append(milestone_result)
+            print(
+                "Milestone evaluation: "
+                f"epoch={completed_epoch}, best_epoch={best_val_epoch}, "
+                f"best_val_acc={best_val_acc:.4f}, test_acc={milestone_test_acc:.4f}"
+            )
+            if milestone_slice_metrics is not None:
+                print(
+                    "Milestone ImageNet slice metrics: "
+                    f"target={milestone_slice_metrics['target']['accuracy']} "
+                    f"(n={milestone_slice_metrics['target']['count']}), "
+                    f"non_target={milestone_slice_metrics['non_target']['accuracy']} "
+                    f"(n={milestone_slice_metrics['non_target']['count']})"
+                )
+            milestone_evaluation_time += time.time() - milestone_evaluation_start
 
     if args.plot:
         epochs = range(1, num_epochs+1)
@@ -1982,6 +2390,7 @@ def train_model(model, train_loader, valid_loader, criterion, optimizer, schedul
     # Load best or last model before saving predictions
     if args.save_pred_model == 'best' and best_model_state is not None:
         model.load_state_dict(best_model_state)
+    args.best_validation_epoch = best_val_epoch
 
     # Save model checkpoint if requested
     if args.save_model:
@@ -1998,8 +2407,22 @@ def train_model(model, train_loader, valid_loader, criterion, optimizer, schedul
 
     # Evaluate on test set (when available) before saving predictions
     if test_loader is not None:
-        test_acc, test_loss = evaluate(model, test_loader)
+        test_acc, test_preds, test_labels = evaluate(model, test_loader, save_preds=True)
+        test_loss = evaluate(model, test_loader)[1]
         print(f"Model Test ACC: {test_acc:.4f}, test loss: {test_loss:.4f}")
+        if args.dataset == "imagenet":
+            args.final_test_slice_metrics = _compute_imagenet_test_slice_metrics(
+                test_preds,
+                test_labels,
+            )
+            metrics = args.final_test_slice_metrics
+            print(
+                "ImageNet target-slice metrics: "
+                f"target={metrics['target']['accuracy']} "
+                f"(n={metrics['target']['count']}), "
+                f"non_target={metrics['non_target']['accuracy']} "
+                f"(n={metrics['non_target']['count']})"
+            )
 
     predictions_for_diagnostics = save_predictions(
         model,
@@ -2081,6 +2504,15 @@ selection_time_label = "LLM selection" if args.use_llm_selection else "Active Le
 print(f"Total {selection_time_label} time: {al_total_time:.2f} seconds")
 overall_elapsed_time = time.time() - overall_start_time
 print(f"End-to-end wall time (data prep + selection + training + setup): {overall_elapsed_time:.2f} seconds")
+_write_experiment_result(
+    train_loss_history=train_loss_history,
+    train_acc_history=train_acc_history,
+    val_loss_history=val_loss_history,
+    val_acc_history=val_acc_history,
+    selection_time_seconds=al_total_time,
+    training_time_seconds=total_elapsed_time,
+    wall_time_seconds=overall_elapsed_time,
+)
 
 
 

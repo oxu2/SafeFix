@@ -50,6 +50,12 @@ _timing_state = {
         'attributes': None,
     },
     'resume': '--resume' in sys.argv,
+    'inference': {
+        'fail_on_error': '--fail-on-inference-error' in sys.argv,
+        'error_count': 0,
+        'fallback_count': 0,
+        'representative_errors': [],
+    },
     'outputs': {
         'json': _get_cli_value('--output'),
         'csv': _get_cli_value('--csv-output'),
@@ -305,6 +311,8 @@ parser.add_argument('--no-env-reexec', action='store_true', default=False,
                     help='Use the current Python interpreter instead of relaunching in a hard-coded Conda environment')
 parser.add_argument('--timing-json', type=str, default=None,
                     help='Optional path for machine-readable process and stage timing metadata')
+parser.add_argument('--fail-on-inference-error', action='store_true', default=False,
+                    help='Exit nonzero after saving outputs if any attribute inference used the fallback value')
 args = parser.parse_args()
 
 _timing_state.update({
@@ -313,6 +321,7 @@ _timing_state.update({
     'split': args.split,
     'resume': args.resume,
 })
+_timing_state['inference']['fail_on_error'] = args.fail_on_inference_error
 
 if args.dataset == 'kitti' and not _has_cli_flag('split'):
     args.split = 'train'
@@ -1294,6 +1303,16 @@ for loop_index, i in enumerate(pending_indices, start=1):
         except Exception as e:
             print(f"  Error on image {i} ({img_path}), attr {attr_name}: {e}")
             attributes_dict[attr_name]['data'][i] = word_list[0]  # fallback
+            _timing_state['inference']['error_count'] += 1
+            _timing_state['inference']['fallback_count'] += 1
+            if len(_timing_state['inference']['representative_errors']) < 10:
+                _timing_state['inference']['representative_errors'].append({
+                    'image_index': i,
+                    'image_path': img_path,
+                    'attribute': attr_name,
+                    'type': type(e).__name__,
+                    'message': str(e),
+                })
             if torch.cuda.is_available():
                 torch.cuda.empty_cache()
 
@@ -1347,6 +1366,16 @@ if os.path.exists(args.partial) and effective_count >= total_images:
     os.remove(args.partial)
     print(f"Removed partial checkpoint {args.partial}")
 _finish_timing_stage('final_serialization')
+
+inference_error_count = _timing_state['inference']['error_count']
+if args.fail_on_inference_error and inference_error_count:
+    _timing_state['status'] = 'failure'
+    _timing_state['error'] = {
+        'type': 'InferenceFallbackError',
+        'message': f'{inference_error_count} attribute inference error(s) used fallback values.',
+    }
+    _timing_success_written = _write_timing_json()
+    sys.exit(1)
 
 _timing_state['status'] = 'success'
 _timing_state['error'] = None
