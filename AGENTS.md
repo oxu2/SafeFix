@@ -23,9 +23,32 @@ Before continuing work in a new session, read these files in order:
 
 1. `.trellis/workspace/oxu/journal-1.md` — detailed recent multi-agent context, decisions, outputs, and caveats
 2. `.handoff.md` — short cross-session / cross-account handoff summary
-3. `report.md` — human-facing experiment summary and results
+3. `report.md` — human-facing summaries of newly completed or historical local experiments; not the authority for previously reported manuscript results
 
 Do not assume chat history is available or complete. Use the Trellis workspace journal as the detailed source of truth for recent project context.
+
+## NeurIPS 2026 Result Authority Rule
+
+- When retrieving any result already reported in the NeurIPS 2026 manuscript,
+  rebuttal, or appendix, use the corresponding files under `nips26_new/` as
+  the primary and authoritative source. In particular, use
+  `nips26_new/appendix/main_metric_tables.tex` for the official five-seed main
+  task metrics.
+- Search `nips26_new/main.tex` and the relevant
+  `nips26_new/appendix/*.tex` section before consulting `report.md`, old logs,
+  or workspace notes for a previously reported value, protocol, seed set,
+  variance, or statistical claim.
+- Use `report.md` to record newly completed experiments, local diagnostics,
+  artifact paths, and historical context. New results may be added there, but
+  older `report.md` values must not overwrite, invalidate, or silently replace
+  an existing value in `nips26_new/`.
+- If a new experiment is compared with a manuscript result, label differences
+  in seeds, aggregation, code state, generator, checkpoint, or protocol. Do not
+  present a single-seed local result and a five-seed manuscript mean as a
+  paired or statistically matched comparison.
+- If local artifacts and `nips26_new/` disagree, preserve both records, treat
+  the TeX manuscript as authoritative, and document the discrepancy in the
+  Trellis journal and `.handoff.md`.
 
 ## Repo-Specific Documentation Update Rule
 
@@ -51,6 +74,14 @@ After any meaningful implementation, modification, or completed investigation th
 - Default new Juno GPU experiment submissions to the `h200` partition. Use
   `h100` only as the secondary fallback or when the user explicitly requests
   it. Do not default to A30 or virtual-A30 partitions.
+- For future independent experiment shards with the same code, environment,
+  model, and resource shape, use one SLURM array. Through August 10, 2026, add
+  `--qos=juno-pri` and use `%8` concurrency whenever the array contains more
+  than eight tasks, for example `#SBATCH --array=0-N%8` or
+  `sbatch --qos=juno-pri --array=0-N%8 ...`. Do not default these workloads to
+  one-GPU sequential execution unless task dependencies or an explicit user
+  instruction require it. After the temporary QoS is removed, return to `%4`
+  concurrency unless newer guidance replaces this rule.
 - Read `/people/cs/o/oxx220000/.codex/docs/juno_quickstart.md` as the only
   Juno workflow source. It contains both shared rules and the SafeFix project
   profile.

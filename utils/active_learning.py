@@ -1441,12 +1441,12 @@ def _build_resnet_entropy_model(args, device, train_dataset):
     return model.to(device)
 
 
-def entropy_sample_with_model(train_dataset, args, device, n_select):
-    """Select samples with highest predictive entropy from the resume/base model."""
+def compute_entropy_scores_with_model(train_dataset, args, device):
+    """Compute predictive entropy for every source candidate."""
     if getattr(args, "model", "resnet") != "resnet":
         raise ValueError("Pure entropy strategy currently supports alpred.py ResNet runs only.")
 
-    print(f"Entropy sampling: choosing {n_select} most uncertain samples...")
+    print(f"Entropy scoring: evaluating {len(train_dataset)} source candidates...")
     model = _build_resnet_entropy_model(args, device, train_dataset)
     model.eval()
 
@@ -1482,6 +1482,13 @@ def entropy_sample_with_model(train_dataset, args, device, n_select):
         raise RuntimeError(
             f"Entropy scoring produced {scores.shape[0]} scores for {len(train_dataset)} samples."
         )
+    return scores
+
+
+def entropy_sample_with_model(train_dataset, args, device, n_select):
+    """Select samples with highest predictive entropy from the resume/base model."""
+    print(f"Entropy sampling: choosing {n_select} most uncertain samples...")
+    scores = compute_entropy_scores_with_model(train_dataset, args, device)
 
     if n_select >= len(scores):
         return list(range(len(scores)))
@@ -2228,6 +2235,86 @@ def active_learning_selection(train_dataset, val_dataset, args, device, verbose=
             print(f"Random selection: choosing {target_samples} samples from {total_train_samples}")
         random.seed(args.seed)
         return random.sample(range(total_train_samples), target_samples)
+
+    attribute_aware_strategies = {
+        'target_slice_stratified',
+        'attribute_filtered_random',
+        'attribute_filtered_entropy',
+    }
+    if al_strategy in attribute_aware_strategies:
+        from utils.attribute_aware_baselines import select_attribute_aware_baseline
+
+        attribute_path = getattr(args, 'attribute_file', None)
+        focus_raw = getattr(args, 'al_attribute_focus', None)
+        extra_counts_raw = getattr(args, 'al_attribute_extra_counts', None)
+        extra_count_scale = getattr(args, 'al_attribute_extra_count_scale', 1.0)
+
+        focus_attributes = None
+        if isinstance(focus_raw, str) and focus_raw.strip():
+            focus_attributes = [part.strip() for part in focus_raw.split(',') if part.strip()]
+        elif isinstance(focus_raw, (list, tuple)):
+            focus_attributes = list(focus_raw)
+
+        attribute_metadata_obj = load_attribute_metadata(attribute_path)
+        extra_counts = None
+        if isinstance(extra_counts_raw, str) and extra_counts_raw.strip():
+            extra_counts = parse_attribute_value_counts(
+                extra_counts_raw.strip(),
+                default_count=getattr(args, 'num_added_img', None),
+            )
+        if extra_counts is None and getattr(args, 'num_added_img', 0):
+            extra_counts = infer_generated_attribute_counts(
+                attribute_metadata_obj,
+                getattr(args, 'attributes', ''),
+                getattr(args, 'num_added_img', 0),
+                focus_attributes=focus_attributes,
+            )
+        if not extra_counts:
+            raise ValueError(
+                f"{al_strategy} could not resolve generated target attribute counts. "
+                "Pass --al_attribute_extra_counts explicitly."
+            )
+
+        try:
+            extra_count_scale = max(float(extra_count_scale), 0.0)
+        except (TypeError, ValueError) as exc:
+            raise ValueError(
+                f"Invalid --al_attribute_extra_count_scale: {extra_count_scale}"
+            ) from exc
+        if extra_count_scale != 1.0:
+            extra_counts = {
+                attr_name: {
+                    value: float(count) * extra_count_scale
+                    for value, count in value_map.items()
+                }
+                for attr_name, value_map in extra_counts.items()
+            }
+
+        resolver = AttributeFocusedStrategy(
+            attribute_metadata=attribute_metadata_obj,
+            focus_attributes=list(extra_counts),
+            use_rarity=False,
+        )
+        metadata_indices = resolver._resolve_metadata_indices(train_dataset)
+        class_labels = resolver._resolve_class_labels(train_dataset)
+        entropy_scores = None
+        if al_strategy == 'attribute_filtered_entropy':
+            entropy_scores = compute_entropy_scores_with_model(train_dataset, args, device)
+
+        selected_indices, diagnostics = select_attribute_aware_baseline(
+            strategy=al_strategy,
+            attribute_metadata=attribute_metadata_obj,
+            metadata_indices=metadata_indices,
+            class_labels=class_labels,
+            generated_attribute_counts=extra_counts,
+            n_select=target_samples,
+            seed=args.seed,
+            entropy_scores=entropy_scores,
+        )
+        args.attribute_baseline_diagnostics = diagnostics
+        print("Attribute-aware baseline diagnostics:")
+        print(json.dumps(diagnostics, indent=2, sort_keys=True))
+        return selected_indices
 
     # Handle pure stratified sampling (doesn't need embeddings)
     if al_strategy == 'stratified':

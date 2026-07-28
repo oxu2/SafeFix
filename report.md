@@ -1,8 +1,189 @@
-# NeurIPS 2026 manuscript result authority note
+# ImageNet10 Missing-Field Vocabulary-Coverage Experiment
 
-**Updated:** July 23, 2026
+**Updated:** July 28, 2026
+
+## Research Question
+
+This experiment tests how AttriSelect behaves when the closed-set attribute
+vocabulary does not contain one of the fields needed to represent the diagnosed
+failure slice. The original ImageNet10 slice is `color=pink AND
+texture=fabric`. We remove either `texture` or `color` from source selection
+while keeping the generated repair data and all training settings fixed.
+
+## Experimental Protocol
+
+- Dataset and model: ImageNet10 with the same ResNet diagnosis checkpoint used
+  by the repair pipeline.
+- Seed: `42` for source selection and generated-image sampling.
+- Source ratios: `0.1`, `0.3`, `0.5`, `0.7`, and `0.9`.
+- Generated repair data: the same combined `pink AND fabric` pool in every
+  controlled variant, with a fixed sample of 1,000 generated images.
+- Source metadata: the same Qwen3-VL assignment file
+  `save/attribute10_qwen3_8B.json`.
+- AttriSelect settings: rarity power `0.03`, generated-frequency penalty
+  `0.5`, class-balance coefficient `15`, conditional rarity enabled, and
+  entropy disabled.
+- Repair training: 15 epochs, learning rate `1e-5`, batch size `64`, and an
+  unfrozen backbone.
+- Evaluation: every model is evaluated on the original exact `pink AND
+  fabric` test slice, containing 16 target images and 1,284 non-target images
+  among 1,300 test images.
+
+The three controlled variants are:
+
+1. **Full conjunction:** select with `pinkcolor_fabrictexture`.
+2. **Missing texture:** select with `pinkcolor` while retaining the combined
+   `pink AND fabric` generated pool.
+3. **Missing color:** select with `fabrictexture` while retaining the same
+   combined generated pool.
+
+## Results
+
+All ACC values below are percentages. `ACC change` is measured relative to the
+Full conjunction result at the same source ratio.
+
+| Ratio | Variant | Overall ACC (%) | ACC change (%) | Original target ACC (%) | Non-target ACC (%) | Source-set Jaccard vs. Full |
+| ---: | --- | ---: | ---: | ---: | ---: | ---: |
+| 0.1 | Full conjunction | 74.00 | 0.00 | 68.75 | 74.07 | 1.0000 |
+| 0.1 | Missing texture | 73.85 | -0.15 | 62.50 | 73.99 | 0.3904 |
+| 0.1 | Missing color | 72.69 | -1.31 | 68.75 | 72.74 | 0.5604 |
+| 0.3 | Full conjunction | 74.62 | 0.00 | 75.00 | 74.61 | 1.0000 |
+| 0.3 | Missing texture | 73.54 | -1.08 | 68.75 | 73.60 | 0.5842 |
+| 0.3 | Missing color | 73.77 | -0.85 | 68.75 | 73.83 | 0.6166 |
+| 0.5 | Full conjunction | 73.69 | 0.00 | 75.00 | 73.68 | 1.0000 |
+| 0.5 | Missing texture | 74.23 | +0.54 | 68.75 | 74.30 | 0.7330 |
+| 0.5 | Missing color | 74.23 | +0.54 | 68.75 | 74.30 | 0.6443 |
+| 0.7 | Full conjunction | 74.15 | 0.00 | 75.00 | 74.14 | 1.0000 |
+| 0.7 | Missing texture | 74.23 | +0.08 | 68.75 | 74.30 | 0.8826 |
+| 0.7 | Missing color | 74.00 | -0.15 | 75.00 | 73.99 | 0.6999 |
+| 0.9 | Full conjunction | 74.62 | 0.00 | 68.75 | 74.69 | 1.0000 |
+| 0.9 | Missing texture | 74.54 | -0.08 | 68.75 | 74.61 | 0.9668 |
+| 0.9 | Missing color | 75.08 | +0.46 | 68.75 | 75.16 | 0.8765 |
+
+## Result Summary
+
+| Missing field | Mean Overall ACC change (%) | Largest decrease (%) |
+| --- | ---: | ---: |
+| Texture | -0.14 | -1.08 at ratio 0.3 |
+| Color | -0.26 | -1.31 at ratio 0.1 |
+| Both variants combined | -0.20 | -1.31 |
+
+Removing an attribute field has the clearest effect on source-set composition.
+At ratios `0.1--0.3`, Jaccard overlap with the Full selector falls to
+`0.3904--0.6166`. Overall ACC changes are smaller and non-monotonic: some
+settings decrease, while the missing-field variants increase ACC at ratios
+`0.5`, `0.7`, or `0.9`. The largest observed decrease is from `74.00%` to
+`72.69%` when color is missing at ratio `0.1`.
+
+The supported conclusion is that incomplete vocabulary coverage can
+substantially change which source examples AttriSelect retains, but this
+single-seed experiment does not show that missing fields consistently reduce
+Overall ACC. The original target slice contains only 16 images, so its ACC is
+too coarse for a strong target-slice performance claim.
+
+## Execution and Artifacts
+
+- Main ratio sweep: H200 job `307515`, which produced 22 of 23 planned
+  vocabulary-coverage and slice-granularity result/selection pairs before its
+  90-minute timeout.
+- Ratio-`0.5` controlled runs: jobs `307507_0` and `307513_1..4`.
+- Missing fabric-only ratio-`1.0` slice-granularity run: H200 job `307853_4`,
+  completed with exit `0:0`. This run is not part of the controlled
+  missing-field comparison above.
+- Results and selection manifests:
+  `logs/juno/imagenet_vocabulary_sensitivity/`.
+- Launchers:
+  `scripts/juno_imagenet_vocabulary_sensitivity.sbatch` and
+  `scripts/juno_imagenet_vocabulary_sensitivity_ratio_sweep.sbatch`.
+
+This experiment does **not** test merged-value or coarsened-category
+sensitivity. Pink-only and fabric-only runs also change the generated repair
+pool and are therefore separate slice-granularity diagnostics, not controlled
+vocabulary-coverage ablations.
+
+---
+
+# Quick Comparison: ImageNet10 and COCO Slice-Granularity Diagnostics
+
+**Updated:** July 27, 2026
+
+All entries are five-seed means. The Full ImageNet10 and brown-rain COCO
+columns use the authoritative values from
+`nips26_new/appendix/main_metric_tables.tex`; the remaining columns record the
+new five-seed granularity runs provided by the author. The variants change the
+selection vocabulary and generated repair pool together, so they measure
+practical slice-granularity and repair-data sensitivity rather than an
+isolated selector-only effect. Dispersion values are not shown here, so the
+comparison supports descriptive rather than statistical claims.
+
+## COCO: Single-Attribute vs. Multi-Attribute Repair Sets
+
+The `brown AND rainy` column reports the diagnosed slice used in the main
+paper. Brown-only and Rain-only use their respective single-attribute
+selection definitions and generated repair pools. The three-attribute variant
+adds `time_of_day=night`. The rightmost column reports **Ours** using the
+target slice `brown AND rainy`.
+
+| Ratio | Brown-only Test AP | Rain-only Test AP | Brown AND rainy AND night Test AP | **Ours: Brown AND rainy Test AP** |
+| ---: | ---: | ---: | ---: | ---: |
+| `0.1` | `0.6161` | `0.6174` | `0.6097` | **`0.6183`** |
+| `0.3` | `0.6238` | `0.6224` | `0.6179` | **`0.6306`** |
+| `0.5` | `0.6284` | `0.6217` | `0.6246` | **`0.6317`** |
+| `0.7` | `0.6327` | **`0.6333`** | `0.6291` | `0.6319` |
+| `0.9` | `0.6348` | `0.6132` | `0.6336` | **`0.6355`** |
+| `1.0` | **`0.6295`** | `0.6276` | `0.6278` | `0.6259` |
+
+Over active ratios `0.1--0.9`, `brown AND rainy` exceeds Brown-only and
+Rain-only at four of five ratios, by average margins of `0.0024` and `0.0080`
+AP. It exceeds `brown AND rainy AND night` at all five ratios by `0.0066` AP
+on average. The ratio-`0.7` single-attribute exceptions show that the effect is
+not monotonic. Ratio `1.0` is excluded from the selector-sensitivity summary
+because the complete source pool is retained.
+
+## ImageNet10: Single-Attribute vs. Multi-Attribute Repair Sets
+
+Each column reports overall ACC. Pink-only and Fabric-only use their
+corresponding single-attribute selection definitions and generated pools. The
+three-attribute ImageNet10 variant adds `rainy background` to `pink AND
+fabric`. The rightmost column reports **Ours** using the diagnosed target slice
+`pink AND fabric`.
+
+| Ratio | Pink-only ACC | Fabric-only ACC | Pink AND fabric AND rainy background ACC | **Ours: Pink AND fabric ACC** |
+| ---: | ---: | ---: | ---: | ---: |
+| `0.1` | `0.7223` | `0.7346` | **`0.7398`** | `0.7369` |
+| `0.3` | `0.7369` | `0.7431` | `0.7414` | **`0.7492`** |
+| `0.5` | `0.7377` | `0.7438` | `0.7429` | **`0.7508`** |
+| `0.7` | `0.7485` | `0.7423` | `0.7462` | **`0.7515`** |
+| `0.9` | `0.7500` | `0.7354` | `0.7491` | **`0.7562`** |
+| `1.0` | `0.7423` | **`0.7431`** | `0.7365` | `0.7400` |
+
+Over active ratios `0.1--0.9`, `pink AND fabric` exceeds Pink-only and
+Fabric-only at all five ratios, by average margins of `0.0098` and `0.0091`
+ACC. It exceeds `pink AND fabric AND rainy background` at four of five ratios
+by `0.0050` ACC on average. The three-attribute result at ratio `0.1` is the
+exception, so the result supports sensitivity to granularity but not a rule
+that performance changes monotonically with the number of attributes. Ratio
+`1.0` is included as a full-data reference and excluded from the
+selector-sensitivity summary.
+
+---
+
+# NeurIPS 2026 Manuscript Result Authority Note
+
+**Updated:** July 26, 2026
 
 For the AttriSelect NeurIPS 2026 submission and rebuttal, the results reported in `nips26_new/main.tex` and `nips26_new/appendix/*.tex` are the authoritative values. The author confirmed that several final experiments were rerun on other machines and that the resulting artifacts are not fully mirrored in this local workspace.
+
+Result lookup order for previously reported experiments:
+
+1. the corresponding table or discussion in `nips26_new/main.tex`;
+2. the relevant file under `nips26_new/appendix/`;
+3. local logs or `report.md` only for implementation context or when the TeX
+   does not contain the requested detail.
+
+For official five-seed task metrics, use
+`nips26_new/appendix/main_metric_tables.tex`. Do not recover an older paper
+value from this report when a corresponding authoritative TeX value exists.
 
 The following manuscript claims are confirmed:
 
@@ -11,7 +192,613 @@ The following manuscript claims are confirmed:
 - the alternative-generator tables, human audit, and attribute-noise sensitivity tables come from completed external runs and are accurate;
 - the CelebA InstructPix2Pix and COCO ICEdit appendix comparisons are valid alternative-generator experiments.
 
-Older local logs, launcher paths, and tables in this report document earlier experiment workflows and may not reproduce the final manuscript values exactly. They must not be used to overwrite or reject a confirmed value in `nips26_new`. When preparing the NeurIPS rebuttal or revising the paper, use the TeX manuscript as the source of truth unless the author explicitly provides a newer correction.
+Older local logs, launcher paths, and tables in this report document earlier experiment workflows and may not reproduce the final manuscript values exactly. They must not be used to overwrite or reject a confirmed value in `nips26_new`. Newly completed experiments may be recorded in this report, but they must be labeled with their protocol, seeds, and relationship to the manuscript results. When preparing the NeurIPS rebuttal or revising the paper, use the TeX manuscript as the source of truth unless the author explicitly provides a newer correction.
+
+---
+
+## COCO Rain-Only ICEdit Slice-Granularity Diagnostic
+
+**Updated:** July 27, 2026
+
+This single-seed (`42`) diagnostic replaces the original COCO target
+`clothes_color=brown AND weather=rainy` with `weather=rainy`. It uses the
+rain-only ICEdit directory
+`generated_coco_qwen3_1500_rain_icedit`, weather-only AttriSelect scoring for
+ratios below `1.0`, Qwen3 train20k metadata, a fixed 1,000-image generated
+subset, a 20,000-image source cap, two total epochs, learning rate `0.005`,
+and RPC `(R,P,C)=(0.03,0.5,15)`. Ratio `1.0` uses the full source set, so no
+subset selector is applied.
+
+The loader found all 1,500 generated JPGs readable and retained 1,314 after
+COCO train-ID and bounding-box compatibility checks. Seed `42` selected the
+same fixed 1,000 generated IDs at every ratio. Required-complete validation
+confirmed the expected source counts, all metric files, and successful
+weather-only val/test slice analysis for all six ratios.
+
+| Ratio | Source images | Val AP | Test AP | Rainy val AP (`n=26`) | Rainy test AP (`n=31`) | Rainy test delta vs. overall |
+| ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| `0.1` | `2,000` | `0.6217` | `0.6174` | `0.6202` | **`0.5837`** | `-0.0336` |
+| `0.3` | `6,000` | `0.6278` | `0.6224` | **`0.6440`** | `0.5744` | `-0.0480` |
+| `0.5` | `10,000` | `0.6320` | `0.6217` | `0.6259` | `0.5501` | `-0.0716` |
+| `0.7` | `14,000` | **`0.6390`** | **`0.6333`** | `0.6430` | `0.5688` | `-0.0645` |
+| `0.9` | `18,000` | `0.6227` | `0.6132` | `0.5944` | `0.5692` | `-0.0440` |
+| `1.0` | `20,000` | `0.6274` | `0.6276` | `0.6233` | `0.5746` | `-0.0530` |
+
+Overall AP is non-monotonic and peaks at ratio `0.7`. The rainy-slice result
+also does not increase with source ratio; its best test AP is `0.5837` at
+ratio `0.1`. The rainy test slice contains only 31 images, so slice AP is a
+small-slice diagnostic and should not support a strong comparative claim.
+
+For context, the older local brown-rain ICEdit runs with the same
+`(0.03,0.5,15)` RPC tuple report overall test AP
+`0.6183/0.6176/0.5866/0.6319/0.6255` at ratios
+`0.1/0.3/0.5/0.7/0.9`. The corresponding rain-only values are
+`0.6174/0.6224/0.6217/0.6333/0.6132`. The differences are non-monotonic.
+Because this experiment changes both the selection vocabulary and the
+generated repair pool, this comparison measures slice granularity and repair
+data sensitivity together; it does not isolate the effect of removing the
+`brown` attribute. Ratio `1.0` is an extra diagnostic and is not part of the
+standard five-ratio COCO manuscript protocol.
+
+All six trained models were evaluated from the in-memory final state because
+their validation AP did not exceed the resumed checkpoint's recorded best AP
+`0.6401`; the runner therefore did not write a new best/last checkpoint.
+Predictions, overall metrics, slice summaries, logs, and the durable aggregate
+summary are preserved.
+
+Execution and artifacts:
+
+- H200 job `308170`: completed with exit `0:0` in `02:30:42`;
+- summary:
+  `logs/juno/coco_rainy_icedit_vocabulary_sensitivity/coco_rainy_icedit_seed42_summary.{json,md}`;
+- validated per-ratio artifacts:
+  `logs/juno/coco_rainy_icedit_vocabulary_sensitivity/308170/`;
+- launcher: `scripts/juno_pose_rainy_icedit_vocabulary_sensitivity.sbatch`;
+- summarizer:
+  `scripts/summarize_coco_rainy_icedit_vocabulary_sensitivity.py`.
+
+This result is a seed-42 local diagnostic. It must not overwrite or be
+presented as a statistically matched comparison with the authoritative COCO
+results under `nips26_new/`.
+
+---
+
+## H200 End-to-End Cost Projection Summary
+
+**Updated:** July 27, 2026
+
+The following two planning-level tables are placed at the top for quick
+reference. They are estimates, not matched measured H200 benchmarks. Detailed
+assumptions and the measured KITTI accounting are preserved in the dedicated
+COCO and KITTI sections below.
+
+### COCO: 20,000 Source Images
+
+Image generation and generated-repair-image assignment are excluded. Ours
+conservatively includes the complete 20,000-image source-pool Qwen3-VL
+assignment (`3.04 h` projected on H200) in every row.
+
+| Ratio | Random | Stratified | Entropy | CoreSet | BADGE | UHerding$^{\dagger}$ | PPAL$^{\dagger}$ | Ours$^{\ddagger}$ |
+| ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| `0.1` | `4.4 min` | `4.4 min` | `11.0 min` | `9.4 min` | `14.0 min` | `5.1 min` | `7.0 min` | `3.11 h` |
+| `0.3` | `8.2 min` | `8.2 min` | `14.7 min` | `23.2 min` | `35.6 min` | `8.9 min` | `17.9 min` | `3.18 h` |
+| `0.5` | `12.4 min` | `12.4 min` | `19.0 min` | `37.4 min` | `1.12 h` | `13.1 min` | `29.5 min` | `3.25 h` |
+| `0.7` | `15.7 min` | `15.7 min` | `22.3 min` | `50.7 min` | `1.63 h` | `16.3 min` | `37.6 min` | `3.30 h` |
+| `0.9` | `19.7 min` | `19.7 min` | `26.3 min` | `1.08 h` | `2.16 h` | `20.2 min` | `40.9 min` | `3.37 h` |
+
+### KITTI: 5,000 Source Images
+
+Ours conservatively includes the mean fresh 5,000-image H200 Qwen3-VL
+assignment (`1966.42 s`, or `32.77 min`) in every row.
+
+| Ratio | Random | Stratified | Entropy | CoreSet | BADGE | UHerding$^{\dagger}$ | PPAL$^{\dagger}$ | Ours$^{\ddagger}$ |
+| ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| `0.1` | `42.2 min` | `42.2 min` | `48.8 min` | `47.4 min` | `47.7 min` | `43.5 min` | `43.5 min` | `1.25 h` |
+| `0.3` | `43.8 min` | `43.8 min` | `50.3 min` | `49.7 min` | `50.9 min` | `45.1 min` | `45.6 min` | `1.28 h` |
+| `0.5` | `45.2 min` | `45.2 min` | `51.7 min` | `51.8 min` | `54.2 min` | `46.4 min` | `47.5 min` | `1.30 h` |
+| `0.7` | `47.0 min` | `47.0 min` | `53.5 min` | `54.1 min` | `57.6 min` | `48.2 min` | `49.7 min` | `1.33 h` |
+| `0.9` | `48.9 min` | `48.9 min` | `55.5 min` | `56.6 min` | `1.02 h` | `50.3 min` | `51.5 min` | `1.36 h` |
+
+$^{\dagger}$PPAL is a complexity-based projection. UHerding uses the scalable
+`_fast_select` path that the current COCO and KITTI code actually executes.
+$^{\ddagger}$Ours charges fresh source assignment in every row; subtract the
+assignment cost for subsequent repair cycles that reuse metadata.
+
+---
+
+## ImageNet10 Independent Epoch-Budget Diagnostic
+
+**Updated:** July 27, 2026
+
+This corrected single-seed (`42`) diagnostic addresses the repeated Ours
+result in the initial cumulative-milestone experiment below and provides the
+matched comparison with Random, Entropy, CoreSet, and BADGE. The original
+60-epoch trajectory used a fixed `StepLR(step_size=3, gamma=0.5)`, so its
+learning rate had nearly vanished at longer milestones, and AttriSelect
+repeatedly selected the epoch-6 checkpoint.
+
+Each method now uses four independent trajectories with the StepLR interval
+rescaled to the training horizon. The epoch/interval pairs are `15/3`, `30/6`,
+`45/9`, and `60/12`, so every run applies five learning-rate decays and ends at
+`3.125e-7`. All runs use source ratio `0.9`, source and generated seed `42`,
+the same diagnosis checkpoint, the same exact 1,000-image ControlNet repair
+set, `lr=1e-5`, `gamma=0.5`, and batch size `64`. Within each method, strict
+manifest validation confirms that the exact 9,360-image selected source subset
+is unchanged across the four epoch budgets.
+
+| Method | 15 epochs FR (%) | 30 epochs FR (%) | 45 epochs FR (%) | 60 epochs FR (%) |
+| --- | ---: | ---: | ---: | ---: |
+| Random | 6.67 | 12.11 | 11.84 | **12.38** |
+| Entropy | **12.38** | 11.57 | **12.38** | 11.84 |
+| CoreSet | 11.29 | **12.93** | 10.48 | 9.93 |
+| BADGE | **12.38** | 8.30 | 11.84 | 12.11 |
+| AttriSelect | 10.21 | 12.11 | 12.11 | 11.57 |
+
+Bold marks the highest FR at each epoch budget, including ties.
+
+| Method | Best epoch at 15/30/45/60 | Test ACC at 15/30/45/60 | Target ACC (`n=16`) | Non-target ACC (`n=1284`) |
+| --- | --- | --- | --- | --- |
+| Random | `7/13/19/17` | `0.7362/0.7515/0.7508/0.7523` | `0.6875/0.7500/0.6875/0.6875` | `0.7368/0.7516/0.7516/0.7531` |
+| Entropy | `10/25/36/27` | `0.7523/0.7500/0.7523/0.7508` | `0.6875/0.6875/0.7500/0.8125` | `0.7531/0.7508/0.7523/0.7500` |
+| CoreSet | `8/24/26/52` | `0.7492/0.7538/0.7469/0.7454` | `0.6875/0.6875/0.6875/0.6875` | `0.7500/0.7547/0.7477/0.7461` |
+| BADGE | `6/7/32/35` | `0.7523/0.7408/0.7508/0.7515` | `0.7500/0.6875/0.7500/0.7500` | `0.7523/0.7414/0.7508/0.7516` |
+| AttriSelect | `6/29/30/30` | `0.7462/0.7515/0.7515/0.7500` | `0.6875/0.7500/0.6875/0.6875` | `0.7469/0.7516/0.7523/0.7508` |
+
+The corrected runs confirm that Ours does not inherently produce an identical
+checkpoint or result at every budget. Its best epoch changes from `6` to
+`29/30`, and test ACC improves by `0.0054` at 30 and 45 epochs relative to the
+15-epoch run. However, no method improves monotonically with more epochs.
+AttriSelect reaches FR `12.11%` at 30 and 45 epochs, then drops to `11.57%` at
+60 epochs. The best method also changes by budget: Entropy/BADGE at 15,
+CoreSet at 30, Entropy at 45, and Random at 60 epochs. AttriSelect ranks
+`4/2/2/4` at the four budgets and does not win a milestone in this seed-42
+diagnostic.
+
+Across all methods and budgets, FR ranges from `6.67%` to `12.93%`. The
+horizon-matched schedule therefore removes the checkpoint-reuse artifact and
+can improve individual runs, but it does not make FR consistently large or
+support the claim that the original low absolute FR is mainly a consequence
+of training for only 15 epochs.
+
+The 30- and 45-epoch test ACC values tie even though they use different best
+checkpoints and have different validation ACC. This is a discrete test-set
+tie, not checkpoint reuse. Target ACC remains too coarse for a strong claim
+because the exact target slice has only 16 images.
+
+Execution and artifacts:
+
+- H200 scheduler smoke job `307913`: completed with exit `0:0`;
+- H200 AttriSelect-only array `307915_0..3`: all tasks completed with exit
+  `0:0`;
+- H200 baseline array `307993_0..15`: all Random, Entropy, CoreSet, and BADGE
+  tasks completed with exit `0:0`;
+- complete summary:
+  `logs/juno/imagenet_fr_epoch_multiplier_rescaled/imagenet_seed42_rescaled_full_summary.{json,md}`;
+- AttriSelect-only intermediate summary:
+  `logs/juno/imagenet_fr_epoch_multiplier_rescaled/imagenet_seed42_attriselect_rescaled_summary.{json,md}`;
+- validated result and selection records:
+  `logs/juno/imagenet_fr_epoch_multiplier_rescaled/{attriselect,corrected}/`;
+- launcher: `scripts/juno_imagenet_fr_epoch_multiplier_rescaled.sbatch`;
+- summarizer: `scripts/summarize_imagenet_fr_epoch_multiplier_rescaled.py`.
+
+This result is a seed-42 diagnostic only. It must not be combined
+statistically with or overwrite the authoritative five-seed manuscript values
+under `nips26_new/`.
+
+---
+
+## ImageNet10 Initial Cumulative-Milestone Diagnostic
+
+**Updated:** July 27, 2026
+
+This initial single-seed (`42`) diagnostic for Reviewer `yyPZ` Q3 is preserved
+for provenance. Its cumulative-checkpoint design is superseded by the
+independent horizon-rescaled AttriSelect diagnostic above for interpreting the
+Ours epoch trend. It uses the
+ImageNet10 ratio-`0.9` repair setting, the fixed 1,000-image ControlNet repair
+set, generated seed `42`, learning rate `1e-5`, and the same diagnosis
+checkpoint for Random, Entropy, CoreSet, BADGE, and AttriSelect. The
+before-repair accuracy used for Fix Rate (FR) is the manuscript value `0.7173`.
+
+Each method follows one continuous 60-epoch trajectory. At epochs
+`15/30/45/60`, evaluation uses the best-validation checkpoint observed up to
+that milestone. This matches the existing best-checkpoint evaluation rule and
+keeps the selected source subset fixed across all four repair budgets.
+
+| Method | 15 epochs FR (%) | 30 epochs FR (%) | 45 epochs FR (%) | 60 epochs FR (%) |
+| --- | ---: | ---: | ---: | ---: |
+| Random | 6.67 | **12.66** | **12.66** | 11.29 |
+| Entropy | **12.38** | 12.38 | 12.38 | 12.38 |
+| CoreSet | 11.29 | 11.29 | 11.29 | 11.29 |
+| BADGE | **12.38** | **12.66** | **12.66** | **12.66** |
+| AttriSelect | 10.21 | 10.21 | 10.21 | 10.21 |
+
+Bold marks the highest value at each milestone, including ties.
+
+| Method | Best epoch at 15/30/45/60 | Test ACC | Target ACC (`n=16`) | Non-target ACC (`n=1284`) |
+| --- | --- | --- | --- | --- |
+| Random | `7/16/16/56` | `0.7362/0.7531/0.7531/0.7492` | `0.6875/0.6875/0.6875/0.7500` | `0.7368/0.7539/0.7539/0.7492` |
+| Entropy | `10/10/10/10` | `0.7523/0.7523/0.7523/0.7523` | `0.6875/0.6875/0.6875/0.6875` | `0.7531/0.7531/0.7531/0.7531` |
+| CoreSet | `8/8/8/8` | `0.7492/0.7492/0.7492/0.7492` | `0.6875/0.6875/0.6875/0.6875` | `0.7500/0.7500/0.7500/0.7500` |
+| BADGE | `6/25/25/25` | `0.7523/0.7531/0.7531/0.7531` | `0.7500/0.6875/0.6875/0.6875` | `0.7523/0.7539/0.7539/0.7539` |
+| AttriSelect | `6/6/6/6` | `0.7462/0.7462/0.7462/0.7462` | `0.6875/0.6875/0.6875/0.6875` | `0.7469/0.7469/0.7469/0.7469` |
+
+The result does not show a consistent increase from longer repair training.
+Random improves at 30 epochs but drops when a later checkpoint becomes the
+best-validation choice at 60 epochs; BADGE improves slightly at 30 epochs;
+Entropy, CoreSet, and AttriSelect retain an early checkpoint across all later
+milestones. AttriSelect is not the strongest method in this seed-42 rerun.
+Therefore, this diagnostic does not support the draft claim that low absolute
+FR is mainly caused by the 15-epoch schedule or that AttriSelect remains best
+at every epoch multiplier.
+
+The target slice contains only `16/1300` test images, so target ACC changes in
+increments of `0.0625` and should not be used for a strong comparative claim.
+This single-seed result must not be combined statistically with or overwrite
+the authoritative five-seed values in `nips26_new/appendix/main_metric_tables.tex`.
+
+Execution and artifacts:
+
+- H200 smoke job `307867`: completed with exit `0:0` in `00:02:30`;
+- H200 pilot array `307870_0..4`: all tasks completed with exit `0:0` in
+  `00:15:44--00:16:31`;
+- summary: `logs/juno/imagenet_fr_epoch_multiplier/imagenet_seed42_epoch_multiplier_summary.{json,md}`;
+- validated result and selection records:
+  `logs/juno/imagenet_fr_epoch_multiplier/pilot/307870_<task>/`;
+- launcher: `scripts/juno_imagenet_fr_epoch_multiplier.sbatch`;
+- summarizer: `scripts/summarize_imagenet_fr_epoch_multiplier.py`.
+
+---
+
+## ImageNet10 Five-Seed Same-Information Attribute-Aware Baselines
+
+**Updated:** July 27, 2026
+
+The three reviewer-requested attribute-aware baselines are complete over seeds
+`0`, `42`, `1234`, `3407`, and `2024`. Each method uses the current Qwen3-VL
+source metadata, the same fixed 1,000-image generated set, class labels,
+diagnosis checkpoint, source budget, generated seed `42`, and 15-epoch repair
+schedule. The required-complete summarizer validated all `3 x 5 x 5 = 75`
+baseline records and their selection manifests.
+
+| Ratio | Target-Slice + Stratified | Attribute-Filtered Random | Attribute-Filtered Entropy | AttriSelect (authoritative manuscript) |
+| ---: | ---: | ---: | ---: | ---: |
+| 0.1 | 0.7303 $\pm$ 0.0051 | 0.7340 $\pm$ 0.0034 | 0.7317 $\pm$ 0.0025 | **0.7369 $\pm$ 0.0043** |
+| 0.3 | 0.7385 $\pm$ 0.0024 | 0.7382 $\pm$ 0.0042 | 0.7365 $\pm$ 0.0023 | **0.7492 $\pm$ 0.0044** |
+| 0.5 | 0.7438 $\pm$ 0.0037 | 0.7442 $\pm$ 0.0038 | 0.7442 $\pm$ 0.0031 | **0.7508 $\pm$ 0.0010** |
+| 0.7 | 0.7434 $\pm$ 0.0065 | 0.7474 $\pm$ 0.0038 | 0.7482 $\pm$ 0.0020 | **0.7515 $\pm$ 0.0037** |
+| 0.9 | 0.7485 $\pm$ 0.0026 | 0.7469 $\pm$ 0.0036 | 0.7503 $\pm$ 0.0045 | **0.7562 $\pm$ 0.0019** |
+
+AttriSelect has the highest mean at all five ratios. Its margin over the best
+same-information baseline is `0.0029`, `0.0107`, `0.0066`, `0.0033`, and
+`0.0059`, respectively. These use matched seed sets and protocols, but no new
+paired significance claim is made because the authoritative manuscript TeX
+does not expose the per-seed AttriSelect values.
+
+The exact `pink AND fabric` test slice contains only `16/1300` images. Target
+ACC therefore changes in increments of `0.0625`; overall ACC is the more
+stable reviewer-facing summary.
+
+Artifacts:
+
+- `logs/juno/imagenet_attribute_aware/imagenet_baselines_fiveseed_summary.json`
+- `logs/juno/imagenet_attribute_aware/imagenet_baselines_fiveseed_summary.md`
+- Juno completed jobs: `307496_0..2` and sequential job `307503` tasks `3..59`
+- Authoritative AttriSelect values: `nips26_new/appendix/main_metric_tables.tex`
+
+---
+
+## Historical ImageNet10 Seed-42 Attribute-Aware Baseline Pilot
+
+**Updated:** July 26, 2026
+
+Juno H200 array `306871` completed all `20/20` seed-42 diagnostic tasks with
+exit code `0:0`. Each method selects from the same `10,400`-image source pool and
+uses the same fixed `1,000` generated images, Qwen3-VL attribute file, class
+labels, diagnosis checkpoint, source and generated seeds, 15 repair epochs,
+learning rate `1e-5`, and batch size `64`.
+
+Historical snapshot: the AttriSelect rows produced by array `306871`
+are diagnostic reruns and are not the manuscript's official AttriSelect
+results. The authoritative values are the five-seed mean and standard
+deviation in `nips26_new/appendix/main_metric_tables.tex`, over seeds
+`0`, `42`, `1234`, `3407`, and `2024`. At the time of this pilot, the new
+same-information baselines had only seed `42`; the completed five-seed result
+is now reported in the section above.
+
+Operational definitions:
+
+- Target-Slice + Stratified selects exact `pink AND fabric` examples first,
+  then fills the source budget from class-stratified background samples.
+- Attribute-Filtered Random prioritizes the `pink OR fabric` candidate pool,
+  samples randomly within class-balanced queues, then fills from background.
+- Attribute-Filtered Entropy uses the same candidate pool and queues, ranking
+  candidates by diagnosis-checkpoint predictive entropy.
+- AttriSelect uses `alpha=0.03`, `lambda=0.5`, `w=15`, conditional rarity,
+  and no entropy term.
+
+### Seed-42 Diagnostic Rerun
+
+The following table preserves the exact output of array `306871` for
+reproducibility. Its AttriSelect rows are not manuscript-authoritative.
+
+| Ratio | Method | Overall ACC | Target ACC | Non-target ACC | Exact target selected | Selection | Training |
+| ---: | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
+| 0.1 | Target-Slice + Stratified | 0.7254 | 0.7500 | 0.7251 | 130/1040 | 0.02 s | 66.87 s |
+| 0.1 | Attribute-Filtered Random | 0.7362 | 0.6875 | 0.7368 | 30/1040 | 0.02 s | 67.95 s |
+| 0.1 | Attribute-Filtered Entropy | 0.7285 | 0.7500 | 0.7282 | 34/1040 | 10.76 s | 66.94 s |
+| 0.1 | AttriSelect | **0.7400** | 0.6875 | **0.7407** | 24/1040 | 0.05 s | 67.16 s |
+| 0.3 | Target-Slice + Stratified | 0.7392 | 0.6875 | 0.7399 | 130/3120 | 0.03 s | 103.62 s |
+| 0.3 | Attribute-Filtered Random | 0.7362 | 0.6875 | 0.7368 | 60/3120 | 0.03 s | 102.23 s |
+| 0.3 | Attribute-Filtered Entropy | 0.7354 | **0.8125** | 0.7344 | 70/3120 | 10.81 s | 102.74 s |
+| 0.3 | AttriSelect | **0.7462** | 0.7500 | **0.7461** | 40/3120 | 0.06 s | 102.85 s |
+| 0.5 | Target-Slice + Stratified | **0.7492** | 0.7500 | **0.7492** | 130/5200 | 0.03 s | 140.15 s |
+| 0.5 | Attribute-Filtered Random | 0.7485 | **0.8125** | 0.7477 | 101/5200 | 0.03 s | 140.58 s |
+| 0.5 | Attribute-Filtered Entropy | 0.7431 | 0.6875 | 0.7438 | 92/5200 | 10.71 s | 140.97 s |
+| 0.5 | AttriSelect | 0.7369 | 0.7500 | 0.7368 | 95/5200 | 0.07 s | 140.78 s |
+| 0.7 | Target-Slice + Stratified | 0.7431 | **0.7500** | 0.7430 | 130/7279 | 0.04 s | 177.59 s |
+| 0.7 | Attribute-Filtered Random | **0.7531** | 0.6875 | **0.7539** | 125/7279 | 0.04 s | 176.65 s |
+| 0.7 | Attribute-Filtered Entropy | 0.7508 | 0.6875 | 0.7516 | 118/7279 | 11.98 s | 178.80 s |
+| 0.7 | AttriSelect | 0.7415 | **0.7500** | 0.7414 | 95/7279 | 0.08 s | 179.10 s |
+| 0.9 | Target-Slice + Stratified | **0.7492** | **0.7500** | **0.7492** | 130/9360 | 0.04 s | 212.03 s |
+| 0.9 | Attribute-Filtered Random | 0.7438 | **0.7500** | 0.7438 | 129/9360 | 0.04 s | 211.31 s |
+| 0.9 | Attribute-Filtered Entropy | 0.7485 | **0.7500** | 0.7484 | 129/9360 | 10.66 s | 213.03 s |
+| 0.9 | AttriSelect | 0.7462 | 0.6875 | 0.7469 | 130/9360 | 0.10 s | 214.87 s |
+
+The exact target slice contains only `16/1300` test images, so target ACC
+moves in `0.0625` increments and should not support a strong single-seed
+conclusion.
+
+### Official AttriSelect Reference and New Baseline Pilot
+
+| Ratio | Target-Slice + Stratified (seed 42) | Attribute-Filtered Random (seed 42) | Attribute-Filtered Entropy (seed 42) | Official AttriSelect (5-seed mean $\pm$ std) |
+| ---: | ---: | ---: | ---: | ---: |
+| 0.1 | 0.7254 | 0.7362 | 0.7285 | 0.7369 $\pm$ 0.0043 |
+| 0.3 | 0.7392 | 0.7362 | 0.7354 | 0.7492 $\pm$ 0.0044 |
+| 0.5 | 0.7492 | 0.7485 | 0.7431 | 0.7508 $\pm$ 0.0010 |
+| 0.7 | 0.7431 | 0.7531 | 0.7508 | 0.7515 $\pm$ 0.0037 |
+| 0.9 | 0.7492 | 0.7438 | 0.7485 | 0.7562 $\pm$ 0.0019 |
+
+This table is descriptive only because its columns use different seed
+aggregation. The official AttriSelect mean is above the seed-42 baseline
+maximum at ratios `0.1`, `0.3`, `0.5`, and `0.9`, and is `0.0016` below
+Attribute-Filtered Random at ratio `0.7`. A reviewer-ready comparison requires
+the four remaining seeds for each of the three new baselines.
+
+Validation confirmed `20` result/manifest pairs, one identical generated-set
+hash across all tasks, source budgets of `1040/3120/5200/7279/9360`, source
+and generated seeds `42`, and one shared checkpoint and attribute file.
+
+Artifacts:
+
+- Juno tasks: `/work/oxx220000/safefix_rebuttal/logs/juno/imagenet_attribute_aware/full/306871_<task>`
+- Juno summary: `/work/oxx220000/safefix_rebuttal/logs/juno/imagenet_attribute_aware/imagenet_seed42_summary.{json,md}`
+- Local summary: `logs/juno/imagenet_attribute_aware/imagenet_seed42_summary.{json,md}`
+- Official AttriSelect table: `nips26_new/appendix/main_metric_tables.tex`
+
+---
+
+## COCO Rough H200 End-to-End Cost Projection
+
+**Updated:** July 27, 2026
+
+This planning-level table estimates the COCO repair cost for the manuscript's
+`20,000`-image source pool. Per the current accounting scope, image generation
+is excluded. The 20,000-image Qwen3-VL cost is source-pool attribute assignment
+rather than generated-image assignment: the measured A5000 run took
+`399.7 min`, which becomes `182.5 min` (`3.04 h`) after applying the
+A5000-to-H200 factor `0.4565`. This charge is included only for Ours and is
+conservatively repeated in every ratio row; it can be removed after the source
+metadata has been created once.
+
+The shared repair-stage cost uses completed A5000 COCO Random end-to-end times
+of `9:44`, `17:55`, `27:11`, and `34:27` at ratios `0.1--0.7`, converted to
+H200 with the same factor. Ratio `0.9` is a linear extrapolation. This gives
+H200 retraining/evaluation estimates of `4.4/8.2/12.4/15.7/19.7 min`.
+
+Selector estimates follow `nips26_new/main.tex` and the exact algorithmic
+paths:
+
+- Entropy uses the TeX `863--865 s` scoring time;
+- CoreSet uses `5/15/25/35/45 min`, extending the observed linear trend. These
+  A5000 measurements are retained without the Qwen-derived hardware factor:
+  original greedy k-center repeatedly updates the full candidate pool, and its
+  CPU/GPU distance-update scaling is not represented by VLM inference speed;
+- BADGE uses `21 min/1 h/2 h/3 h/4 h`, extending the slow exact trend rather
+  than the later approximation;
+- exact PPAL expands the TeX proxy times with the documented full-diversity
+  work factors `5/15/25/35/45`;
+- UHerding follows the implementation that is actually executed in the COCO
+  experiments. `UncertaintyHerdingStrategy` defaults to
+  `exact_max_samples=10000`; because COCO has 20,000 candidates, `select()`
+  dispatches to `_fast_select`. This path computes proxy uncertainty and
+  initial labeled-set coverage, then performs one weighted sample without
+  replacement. It does not build the exact full pairwise kernel. The TeX
+  `86/93/94/80/64 s` times are therefore converted directly to H200.
+
+| Ratio | Random | Stratified | Entropy | CoreSet | BADGE | UHerding$^{\dagger}$ | PPAL$^{\dagger}$ | Ours$^{\ddagger}$ |
+| ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| `0.1` | `4.4 min` | `4.4 min` | `11.0 min` | `9.4 min` | `14.0 min` | `5.1 min` | `7.0 min` | `3.11 h` |
+| `0.3` | `8.2 min` | `8.2 min` | `14.7 min` | `23.2 min` | `35.6 min` | `8.9 min` | `17.9 min` | `3.18 h` |
+| `0.5` | `12.4 min` | `12.4 min` | `19.0 min` | `37.4 min` | `1.12 h` | `13.1 min` | `29.5 min` | `3.25 h` |
+| `0.7` | `15.7 min` | `15.7 min` | `22.3 min` | `50.7 min` | `1.63 h` | `16.3 min` | `37.6 min` | `3.30 h` |
+| `0.9` | `19.7 min` | `19.7 min` | `26.3 min` | `1.08 h` | `2.16 h` | `20.2 min` | `40.9 min` | `3.37 h` |
+
+$^{\dagger}$PPAL is a complexity-based estimate. UHerding is projected from
+the measured A5000 runtime of the actual scalable implementation.
+$^{\ddagger}$Ours includes the complete
+20,000-image source assignment in every row. With reusable metadata, subtract
+`3.04 h`; the remaining Ours cost is approximately the Random repair-stage
+time because pure AttriSelect subset selection takes less than one second.
+
+The table excludes ControlNet generation and generated-repair-image assignment.
+It should remain labeled as estimated until the exact selectors and the full
+COCO retraining grid are measured on the same H200.
+
+---
+
+## KITTI End-to-End Cost Accounting
+
+**Updated:** July 25, 2026
+
+### Rough H200 End-to-End Projection With Non-Approximate Selectors
+
+**Updated:** July 27, 2026
+
+The table below is a planning-level projection, not a measured benchmark and
+not an authoritative replacement for the selector-only results in
+`nips26_new/main.tex`. It estimates the complete cost of a representative
+repair cycle on one H200 for source ratios `0.1--0.9`. The estimate combines:
+
+- the measured H200 ratio-dependent KITTI repair pipeline time, using the
+  Random rows below as the shared cost of dataset materialization, 10 repair
+  epochs, checkpoint loading, and test evaluation;
+- a projected ControlNet generation cost of `27.4 min` for 1,000 images and a
+  projected generated-image Qwen3-VL assignment cost of `6.8 min`, obtained by
+  multiplying the A5000 costs in `nips26_new/appendix/implementation.tex` by
+  the measured Qwen3-VL A5000-to-H200 factor
+  `(1942.98 s + 1989.86 s) / 2 / (71.8 min) = 0.4565`;
+- KITTI-size exact-selector trends derived from the TeX rows and the actual
+  source-pool sizes: KITTI has `N=5,000`, compared with `10,400` for
+  ImageNet10, `20,000` for COCO, and `80,000` for CelebA. CoreSet and exact
+  BADGE update distances over the candidate pool once per selected sample, so
+  their dominant greedy work is approximated as `O(rN^2)`. The COCO slow-path
+  CoreSet work is therefore multiplied by `(5000/20000)^2=1/16` and added to
+  the measured H200 fast-path time as a fixed embedding/setup floor. It is not
+  additionally multiplied by the Qwen hardware factor because greedy distance
+  updates do not share the VLM inference bottleneck;
+- exact PPAL uses `O(k min(4k,N))` greedy diversity work. At the same ratio,
+  reducing COCO from 20,000 to 5,000 candidates also reduces this work by
+  approximately `1/16`; the scaled greedy term is added to the measured KITTI
+  H200 PPAL proxy time;
+- UHerding uses the path actually selected by the KITTI cost launcher.
+  `scripts/juno_kitti_cost_accounting.sbatch` passes
+  `--al-fast-selection true`, which sets `exact_max_select=1` and
+  `exact_max_samples=1`; every active ratio therefore dispatches to
+  `_fast_select`. The H200 selector times are the measured
+  `75.02/76.44/72.04/73.09/83.63 s`, not an exact dense-kernel estimate;
+- an Ours preprocessing/selection charge of `1966.42 s` (`32.77 min`) in
+  every row, the mean of the two fresh 5,000-image H200 Qwen3-VL assignments
+  (`1942.98 s` and `1989.86 s`). This deliberately charges source annotation
+  to every repair cycle and is therefore conservative; when metadata is
+  reused, this `32.77 min` should be removed from subsequent cycles.
+
+| Ratio | Random | Stratified | Entropy | CoreSet | BADGE | UHerding$^{\dagger}$ | PPAL$^{\dagger}$ | Ours$^{\ddagger}$ |
+| ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| `0.1` | `42.2 min` | `42.2 min` | `48.8 min` | `47.4 min` | `47.7 min` | `43.5 min` | `43.5 min` | `1.25 h` |
+| `0.3` | `43.8 min` | `43.8 min` | `50.3 min` | `49.7 min` | `50.9 min` | `45.1 min` | `45.6 min` | `1.28 h` |
+| `0.5` | `45.2 min` | `45.2 min` | `51.7 min` | `51.8 min` | `54.2 min` | `46.4 min` | `47.5 min` | `1.30 h` |
+| `0.7` | `47.0 min` | `47.0 min` | `53.5 min` | `54.1 min` | `57.6 min` | `48.2 min` | `49.7 min` | `1.33 h` |
+| `0.9` | `48.9 min` | `48.9 min` | `55.5 min` | `56.6 min` | `1.02 h` | `50.3 min` | `51.5 min` | `1.36 h` |
+
+$^{\dagger}$PPAL remains a complexity-based projection. UHerding uses measured
+H200 runtime from the launcher's forced scalable path. $^{\ddagger}$Ours
+includes fresh source-pool Qwen3-VL assignment
+in every row. With reusable source metadata, the projected Ours totals become
+approximately `42.2/43.8/45.2/47.0/48.9 min`, because its pure subset-selection
+time is below one second and is negligible at this scale.
+
+These totals should be used only as coarse reviewer-facing accounting. They
+mix a hardware projection with measured H200 repair-stage timings; they do not
+support a precise speedup claim. A paper-ready table should either retain the
+`estimated` label or be replaced by matched H200 measurements of generation,
+generated-image assignment, exact baseline selection, and retraining.
+
+The measured scope starts at source selection and includes prepared-dataset
+materialization, YOLOv8 checkpoint loading, 10 repair epochs, final checkpoint
+loading, and evaluation on the `1241`-image KITTI test split. For Ours, the
+included total also covers Qwen3-VL attribute assignment for all `5000` source
+images. Repair-image generation is excluded. Generated-image attribute
+assignment is not applicable because the known `red` and `cloudy` counts are
+passed directly to the selector.
+
+| Ratio | Method | Job | Selected Data | Annotation | Repair | Included Total | Test mAP50-95 |
+|---:|---|---:|---:|---:|---:|---:|---:|
+| `0.1` | Random | `305835` | 500 source + 1000 generated | N/A | 477.09 s | 477.09 s (7.95 min) | 0.5270 |
+| `0.1` | Ours | `305836` | 500 source + 1000 generated | 1989.86 s | 583.09 s | 2572.94 s (42.88 min) | 0.4945 |
+| `0.3` | Ours | `306774_0` | 1500 source + 1000 generated | Excluded (canonical metadata reused) | 350.14 s | 350.14 s (5.84 min) | 0.5607 |
+| `0.5` | Ours | `306774_1` | 2500 source + 1000 generated | Excluded (canonical metadata reused) | 419.62 s | 419.62 s (6.99 min) | 0.5723 |
+| `0.7` | Ours | `306774_2` | 3500 source + 1000 generated | Excluded (canonical metadata reused) | 492.87 s | 492.87 s (8.21 min) | 0.5782 |
+| `0.9` | Entropy | `306046_0` | 4500 source + 1000 generated | N/A | 933.82 s | 933.82 s (15.56 min) | 0.5833 |
+| `0.9` | Ours | `306046_1` | 4500 source + 1000 generated | 1942.98 s | 1057.76 s | 3000.74 s (50.01 min) | 0.5858 |
+
+At ratio `0.9`, Ours improves test mAP50-95 by `0.0025` over Entropy
+(`0.5858` versus `0.5833`). This is a single-run cost comparison and should
+not be interpreted as a multi-seed performance estimate. The isolated fresh
+Qwen3-VL annotation output is measured for cost, while repair selection uses
+the canonical existing metadata to preserve the intended selection behavior.
+
+Artifacts:
+
+- `/work/oxx220000/safefix_rebuttal/logs/juno/kitti_cost/305835`
+- `/work/oxx220000/safefix_rebuttal/logs/juno/kitti_cost/305836`
+- `/work/oxx220000/safefix_rebuttal/logs/juno/kitti_cost/306046_0`
+- `/work/oxx220000/safefix_rebuttal/logs/juno/kitti_cost/306046_1`
+- `/work/oxx220000/safefix_rebuttal/logs/juno/kitti_cost/306774_0`
+- `/work/oxx220000/safefix_rebuttal/logs/juno/kitti_cost/306774_1`
+- `/work/oxx220000/safefix_rebuttal/logs/juno/kitti_cost/306774_2`
+
+### KITTI Baseline Runtime Grid
+
+The completed sweep measures the included repair pipeline for Random, Entropy,
+fast approximate CoreSet, and fast approximate BADGE at source ratios `0.1`,
+`0.3`, `0.5`, `0.7`, and `0.9`. Each entry includes source selection,
+dataset materialization, 10 repair epochs, and final test evaluation. Qwen
+attribute annotation is not used by these four baselines.
+
+| Method | 0.1 | 0.3 | 0.5 | 0.7 | 0.9 |
+|---|---:|---:|---:|---:|---:|
+| Random | 477.09 s (7.95 min) | 571.40 s (9.52 min) | 656.10 s (10.93 min) | 763.84 s (12.73 min) | 880.68 s (14.68 min) |
+| Entropy | 538.44 s (8.97 min) | 619.16 s (10.32 min) | 720.48 s (12.01 min) | 823.22 s (13.72 min) | 933.82 s (15.56 min) |
+| CoreSet (fast) | 686.91 s (11.45 min) | 803.02 s (13.38 min) | 901.48 s (15.02 min) | 978.78 s (16.31 min) | 1079.98 s (18.00 min) |
+| BADGE (fast) | 696.40 s (11.61 min) | 835.47 s (13.92 min) | 946.56 s (15.78 min) | 1065.40 s (17.76 min) | 1173.77 s (19.56 min) |
+
+Random ratio `0.1` and Entropy ratio `0.9` reuse validated jobs `305835` and
+`306046_0`; the other 18 cells are successful tasks from array `306333`.
+
+#### Source-Selection Time Only
+
+| Method | 0.1 | 0.3 | 0.5 | 0.7 | 0.9 |
+|---|---:|---:|---:|---:|---:|
+| Random | 0.00 s | 0.00 s | 0.00 s | 0.00 s | 0.00 s |
+| Entropy | 159.46 s | 154.09 s | 159.45 s | 159.05 s | 160.47 s |
+| CoreSet (fast) | 294.14 s | 297.87 s | 302.40 s | 293.71 s | 292.29 s |
+| BADGE (fast) | 293.07 s | 321.48 s | 332.27 s | 326.83 s | 338.57 s |
+| Ours | 170.34 s | **62.03 s** | **66.14 s** | **75.47 s** | 172.17 s |
+
+Ours ratios `0.3/0.5/0.7` are the corrected runs from array `306774`. Fresh
+Qwen annotation was skipped, but the selector used the canonical KITTI
+attribute metadata with `R=0.03`, `P=5`, `C=15`, seed `42`, and the same
+red/cloudy generated-count injection. The ratio `0.1` and `0.9` selection
+times come from the earlier complete cost runs and were not rerun in this
+array.
+
+#### Final KITTI Test mAP50-95
+
+| Method | 0.1 | 0.3 | 0.5 | 0.7 | 0.9 |
+|---|---:|---:|---:|---:|---:|
+| Random | 0.5270 | 0.5579 | 0.5746 | 0.5780 | 0.5796 |
+| Entropy | **0.5417** | **0.5676** | **0.5758** | **0.5797** | **0.5833** |
+| CoreSet (fast) | 0.5278 | 0.5604 | 0.5645 | 0.5767 | 0.5829 |
+| BADGE (fast) | 0.5355 | 0.5549 | 0.5713 | 0.5758 | 0.5823 |
+| Ours | 0.4945 | 0.5607 | 0.5723 | 0.5782 | 0.5858 |
+
+All 18 array tasks completed with exit code `0:0`, exact requested source and
+generated-image counts, and final evaluation on all `1241` KITTI test images.
+The two-GPU throttle kept two tasks active concurrently on nodes `g-07-01` and
+`g-07-10` until the grid finished.
+
+Main observations:
+
+- Random is the fastest method at every ratio because its source-selection
+  cost is negligible.
+- Entropy adds about `154--160` seconds of source scoring and is the strongest
+  baseline by test mAP50-95 at every measured ratio.
+- Fast CoreSet selection remains around `292--302` seconds across ratios.
+- Fast BADGE selection ranges from `293` to `339` seconds and has higher total
+  runtime than fast CoreSet at all five ratios.
+- Total runtime increases with the source ratio because the prepared training
+  set grows from `1500` images at ratio `0.1` to `5500` images at ratio `0.9`.
 
 ---
 

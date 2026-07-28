@@ -6,7 +6,7 @@ end to end: training, vlm annotating, selection time
 
 ## Highest-priority experiments
 
-- [ ] **Attribute-aware baselines under the same information budget.** Add (i) exact target-slice selection followed by stratified background sampling, (ii) Attribute-Filtered Random, and (iii) Attribute-Filtered Entropy. Use the same source budget, fixed generated set, attribute annotations, class labels, training schedule, and seeds as AttriSelect.
+- [x] **Attribute-aware baselines under the same information budget.** The matched ImageNet10 five-seed comparison is complete for exact target-slice plus stratified sampling, Attribute-Filtered Random, and Attribute-Filtered Entropy. The AttriSelect column uses the authoritative values in `nips26_new/appendix/main_metric_tables.tex`.
 - [ ] **End-to-end cost accounting.** Report source-pool attribute assignment, repair-image generation, generated-image attribute assignment, subset selection, and retraining time separately. Distinguish one-time task preprocessing from per-slice and per-repair costs.
 - [ ] **Attribute-generation ablation.** On a representative setting, rerun selection with an alternative attribute source or annotator under the same closed-set vocabulary and repair protocol. Compare attribute agreement, selected-set overlap, target-slice enrichment, and downstream repair performance with the main Qwen3-VL assignment.
 - [ ] **Slice-definition and vocabulary sensitivity.** Compare the full target conjunction with a coarser slice, a missing target field, and a merged target value. Report downstream task performance and target-slice enrichment.
@@ -25,9 +25,9 @@ Dear Area Chair 6k27, thank you very much for your careful assessment and constr
 
 > Q1: “I do agree that the adopted baselines should include methods considering the generated attribute labels. The authors should accordingly include attribute-aware baselines as suggested by the reviewers.”
 
-**R1:** We agree. The submitted baselines test uncertainty, geometric coverage, and gradient-space coverage, but they do not receive the same attribute records and target-slice definition as AttriSelect. We will add three same-information baselines: (i) exact target-slice selection followed by stratified background sampling, (ii) Attribute-Filtered Random, and (iii) Attribute-Filtered Entropy. Every method will use the same source budget, fixed generated set, attribute annotations, class labels, repair schedule, and random seeds. This comparison directly tests whether AttriSelect's rarity, generated-data frequency penalty, and soft class-balance terms improve over simpler rules given the same information.
+**R1:** We agree. The submitted baselines test uncertainty, geometric coverage, and gradient-space coverage, but they do not receive the same attribute records and target-slice definition as AttriSelect. We therefore implemented three same-information baselines: (i) exact target-slice selection followed by class-stratified background sampling, (ii) Attribute-Filtered Random over the repair-relevant attribute pool, and (iii) Attribute-Filtered Entropy over the same pool. All methods use the same source budget, fixed 1,000-image generated set, Qwen3-VL attribute annotations, class labels, diagnosis checkpoint, and 15-epoch repair schedule.
 
-**Internal TODO:** Insert the same-information baseline table with the raw task metric, target-slice metric, non-target change, and variance.
+The matched five-seed comparison is complete over seeds 0, 42, 1234, 3407, and 2024. AttriSelect has the highest mean ACC at every source ratio; its margins over the strongest same-information baseline are 0.0029, 0.0107, 0.0066, 0.0033, and 0.0059 at ratios 0.1--0.9. We do not add a new paired significance claim because the manuscript TeX is the authoritative record and does not expose the per-seed AttriSelect values.
 
 ---
 
@@ -49,9 +49,9 @@ The appendix already contains controlled alternative-generator experiments that 
 
 > Q4: “When the ablation on generative models has been provided, it would further strengthen the paper if the authors could also ablate the attribute generation and other pipeline components. The robustness against imperfect attribute vocabularies will also be important for the pipeline.”
 
-**R4:** We agree that imperfect attribute assignment and imperfect attribute vocabularies are distinct cases. The submitted attribute-noise study and human audit evaluate assignment errors within a known vocabulary, but they do not replace an attribute-generation ablation and do not fully address a missing or overly coarse concept. We will therefore add two controlled tests. First, on a representative setting, we will replace the main Qwen3-VL attribute assignment with an alternative attribute source or annotator while keeping the closed-set vocabulary and repair protocol fixed; we will compare attribute agreement, selected-set overlap, target-slice enrichment, and downstream repair performance. Second, we will compare the full target conjunction with a coarser slice, a missing target field, and a merged target value. We will also separate one-time source-pool attribute assignment, generated-image assignment, generation, subset selection, and retraining in the end-to-end cost table so that the contribution and cost of each pipeline component are explicit.
+**R4:** We agree that imperfect attribute assignment and imperfect attribute vocabularies are distinct cases. The submitted attribute-noise study and human audit evaluate assignment errors within a known vocabulary, but they do not replace an attribute-generation ablation and do not fully address a missing or overly coarse concept. We completed a controlled missing-field and slice-granularity diagnostic on ImageNet10. Removing one target field materially changes the selected source set at low ratios, although overall ACC does not degrade monotonically. A genuine merged-value transformation and the alternative-attribute-source ablation remain to be run. We will also separate one-time source-pool attribute assignment, generated-image assignment, generation, subset selection, and retraining in the end-to-end cost table so that the contribution and cost of each pipeline component are explicit.
 
-**Internal TODO:** Insert the alternative-attribute-source ablation, vocabulary-sensitivity results, and complete end-to-end cost table.
+**Internal TODO:** Insert the completed missing-field result; run the alternative-attribute-source and merged-value ablations; complete the end-to-end cost table.
 
 # Response to Reviewer yyPZ
 
@@ -81,15 +81,25 @@ Table 2 will be labeled explicitly as selector runtime. We will also add an end-
 
 **R2:** We agree that the current generic active-learning baselines do not receive the attribute information used by AttriSelect. Those comparisons test whether repair-specific attribute metadata supplies a useful signal beyond uncertainty, geometric coverage, and gradient embeddings. They do not isolate whether the proposed rarity, generated-data penalty, and soft class-balance score uses that metadata better than a simple attribute-aware rule.
 
-We will add three baselines with access to the same metadata and target-slice definition:
+We added three baselines with access to the same metadata and target-slice definition:
 
-- **Target-Slice + Stratified:** select exact target-slice examples first and fill the remaining budget with stratified source samples;
-- **Attribute-Filtered Random:** filter or prioritize repair-relevant attribute examples, then sample randomly under the same budget;
-- **Attribute-Filtered Entropy:** use the same attribute-aware candidate pool, then rank candidates by predictive entropy.
+- **Target-Slice + Stratified:** select exact `pink`-and-`fabric` source examples first and fill the remaining budget with class-stratified background samples;
+- **Attribute-Filtered Random:** prioritize the `pink`-or-`fabric` source pool and sample randomly within class-balanced queues before filling from the background;
+- **Attribute-Filtered Entropy:** use the same candidate pool and class-balanced queues, but rank candidates by predictive entropy from the fixed diagnosis checkpoint.
 
-All methods will use the same fixed generated set and retraining schedule. This comparison separates the value of attribute metadata from the value of the AttriSelect score.
+All methods select only source images and use the same fixed 1,000-image generated set, source budget, annotations, labels, checkpoint, generated seed, and 15 repair epochs. The table reports matched five-seed means and standard deviations over seeds 0, 42, 1234, 3407, and 2024. The AttriSelect values are the authoritative results from Appendix Table~\ref{tab:app-main-imagenet}.
 
-**Internal TODO:** Insert the same-information baseline table. Report the raw task metric, target-slice metric, non-target change, and variance for each baseline and AttriSelect.
+| Ratio | Target-Slice + Stratified | Attribute-Filtered Random | Attribute-Filtered Entropy | AttriSelect |
+| ---: | ---: | ---: | ---: | ---: |
+| 0.1 | 0.7303 $\pm$ 0.0051 | 0.7340 $\pm$ 0.0034 | 0.7317 $\pm$ 0.0025 | **0.7369 $\pm$ 0.0043** |
+| 0.3 | 0.7385 $\pm$ 0.0024 | 0.7382 $\pm$ 0.0042 | 0.7365 $\pm$ 0.0023 | **0.7492 $\pm$ 0.0044** |
+| 0.5 | 0.7438 $\pm$ 0.0037 | 0.7442 $\pm$ 0.0038 | 0.7442 $\pm$ 0.0031 | **0.7508 $\pm$ 0.0010** |
+| 0.7 | 0.7434 $\pm$ 0.0065 | 0.7474 $\pm$ 0.0038 | 0.7482 $\pm$ 0.0020 | **0.7515 $\pm$ 0.0037** |
+| 0.9 | 0.7485 $\pm$ 0.0026 | 0.7469 $\pm$ 0.0036 | 0.7503 $\pm$ 0.0045 | **0.7562 $\pm$ 0.0019** |
+
+The same-information baselines are competitive and therefore constitute necessary controls, but AttriSelect retains the highest mean at all five ratios. The exact target slice contains only 16 of 1,300 test images, so target accuracy changes in increments of 6.25 percentage points and is not used as evidence of superiority.
+
+**Internal note:** The three baseline grids passed required-complete validation over 75 result/manifest pairs. Do not use the non-authoritative AttriSelect values from Juno array `306871` in the rebuttal.
 
 ---
 
@@ -130,17 +140,15 @@ We thank the reviewer for recognizing the practical source-selection problem, th
 
 The relevant sensitivity is therefore the quality and granularity of the slice specification. A coarse definition can mix distinct failure modes, while a very narrow conjunction can leave too few matching source examples. The current paper assumes that the upstream method supplies a meaningful closed-set description. We will make this conditional scope explicit rather than implying that AttriSelect solves slice discovery.
 
-We will also add a controlled sensitivity experiment that removes a target field, merges a target value into a broader category, and compares single-attribute and conjunctive slice definitions.
+In a controlled ImageNet10 diagnostic, we evaluated the original `pink AND fabric` slice while removing either `texture` or `color` from source selection and keeping the combined generated set fixed. At source ratios 0.1 and 0.3, source-set Jaccard overlap with the full selector fell to 0.390--0.617. Overall ACC changes were not monotonic, and the original target test slice contains only 16 images. The supported conclusion is that slice specification materially changes the selected source set, while downstream impact depends on source ratio and training variation. Single-attribute runs provide a separate granularity diagnostic because they also change the generated repair pool.
 
-**Internal TODO:** Insert the slice-granularity results and specify which dataset, source ratio, target definitions, and seeds are used.
+**Internal TODO:** Add the still-unrun merged-value transformation. The full planned granularity sweep, including the separately completed fabric-only ratio-1.0 item, is now complete.
 
 ---
 
 > Q2: “Can the authors compare with simple attribute-aware baselines, such as exact target-slice selection plus stratified sampling?”
 
-**R2:** We agree that exact target-slice selection followed by stratified background sampling is an important baseline. We will compare it with AttriSelect, Attribute-Filtered Random, and Attribute-Filtered Entropy under the same metadata and data budget. This test directly asks whether modeling rarity, overlap with the generated pool, and soft class balance improves over a binary target-slice rule.
-
-**Internal TODO:** Reuse the same-information baseline table from the response to Reviewer yyPZ and summarize the main result here.
+**R2:** We agree that exact target-slice selection followed by stratified background sampling is an important baseline. We implemented this baseline together with Attribute-Filtered Random and Attribute-Filtered Entropy under the same metadata, fixed generated set, source budget, checkpoint, and repair schedule. The matched five-seed comparison is complete, and AttriSelect has the highest mean ACC at all five source ratios. The full table is reported in Response to Reviewer yyPZ Q2.
 
 ---
 
@@ -158,9 +166,9 @@ CelebA uses official source attributes. The measured Qwen3-VL source-assignment 
 
 **R4:** If the relevant failure factor is absent from the attribute vocabulary, AttriSelect cannot explicitly prioritize it. The soft class-balance term still preserves label coverage, but the selector loses the repair-specific signal for the missing factor and moves toward a more generic balanced selection policy. This is a limitation of the current closed-set formulation.
 
-The existing attribute-noise analysis studies incorrect assignments within a known vocabulary. It does not fully answer the missing-concept setting raised by the reviewer. We will separate these cases in the revision and add a field-removal and value-merging experiment.
+The existing attribute-noise analysis studies incorrect assignments within a known vocabulary. It does not fully answer the missing-concept setting raised by the reviewer. In the new field-removal diagnostic, removing one target field changed source selection substantially at low ratios: Jaccard overlap with the full selector was 0.390--0.617 at ratios 0.1--0.3. Overall ACC did not degrade monotonically across this single-seed sweep, so we interpret the result as evidence of selection sensitivity rather than a universal performance failure.
 
-**Internal TODO:** Insert the missing-field and coarsened-vocabulary results. The existing attribute-noise table is verified and can be cited separately.
+**Internal TODO:** The merged-value/coarsened-category experiment has not been run and must not be claimed. The existing attribute-noise table is verified and can be cited separately.
 
 # Response to Reviewer KaLa
 
