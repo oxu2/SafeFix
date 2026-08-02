@@ -60,6 +60,29 @@ def test_classwise_coreset_respects_class_quota() -> None:
     assert np.bincount(train_labels[selected], minlength=3).tolist() == [3, 3, 3]
 
 
+def test_classwise_coreset_fills_without_duplicate_indices_when_vectors_repeat() -> None:
+    train_labels = np.repeat(np.arange(2), 8)
+    reference_labels = np.repeat(np.arange(2), 2)
+    train_vectors = np.zeros((16, 3), dtype=np.float32)
+    train_vectors[:8, 0] = 1.0
+    train_vectors[8:, 1] = 1.0
+    reference_vectors = np.zeros((4, 3), dtype=np.float32)
+    reference_vectors[:2, 0] = 1.0
+    reference_vectors[2:, 1] = 1.0
+
+    selected = selection.classwise_coreset(
+        train_vectors,
+        train_labels,
+        reference_vectors,
+        reference_labels,
+        n_select=12,
+        seed=42,
+    )
+
+    assert len(selected) == len(set(selected)) == 12
+    assert np.bincount(train_labels[selected], minlength=2).tolist() == [6, 6]
+
+
 def test_object_attribute_entropy_reduction_prioritizes_under_labeled_value() -> None:
     bundle = _bundle(
         labels=np.asarray([0, 0, 0, 1, 1]),
@@ -171,6 +194,7 @@ if __name__ == "__main__":
     tests = [
         test_stratified_sample_is_balanced_and_reproducible,
         test_classwise_coreset_respects_class_quota,
+        test_classwise_coreset_fills_without_duplicate_indices_when_vectors_repeat,
         test_object_attribute_entropy_reduction_prioritizes_under_labeled_value,
         test_attribute_query_does_not_use_unlabeled_ground_truth,
         test_active_learning_round_sizes_and_query_uniqueness,

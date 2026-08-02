@@ -1,3 +1,184 @@
+# CelebA Five-Seed HiBug Pipeline Compatibility
+
+**Updated:** July 30, 2026
+
+The author supplied the following five-seed mean Fix Rate (FR) results for a
+CelebA repair comparison using the HiBug upstream repair pipeline. CelebA has
+80,000 training images. Within this table, every selector uses the same
+HiBug-generated repair set and repair protocol; the source-selection rule is
+the comparison variable. Per-seed values, standard deviations, and artifact
+paths were not supplied with the aggregate table, so the comparison is
+descriptive and no new significance claim is made.
+
+| Ratio | Random | Stratified | Entropy | CoreSet | BADGE | UHerding | PPAL | **AttriSelect (HiBug)** |
+|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| 0.1 | 4.59 | 2.33 | 6.92 | -6.20 | 2.87 | -1.36 | 5.58 | **7.36** |
+| 0.3 | 5.91 | 5.08 | 8.02 | 7.79 | 1.66 | 3.39 | 3.87 | **8.07** |
+| 0.5 | 5.76 | 7.70 | 7.48 | 7.90 | 2.53 | 2.13 | 9.64 | **12.54** |
+| 0.7 | 2.57 | 8.06 | 10.03 | 6.19 | 7.86 | 4.96 | 5.90 | **11.16** |
+| 0.9 | 2.84 | 4.28 | 7.95 | 5.71 | 5.80 | 4.19 | 6.37 | **13.42** |
+
+AttriSelect is strongest at all five ratios. Its margins over the strongest
+baseline are `0.44/0.05/2.90/1.13/5.47` FR points at ratios
+`0.1/0.3/0.5/0.7/0.9`, respectively, with a mean margin of `1.998` points
+(`2.00` when rounded to two decimals).
+
+These results should be compared horizontally within the HiBug table. They
+must not be combined with the SafeFix baseline rows in `nips26_new/main.tex`
+as if they shared the same generated repair set: changing the upstream repair
+pipeline can shift the absolute FR of every selector.
+
+# ImageNet10 General Data Selection and Active Learning
+
+## Scope and Protocol
+
+This experiment evaluates AttriSelect outside the model-repair setting. It
+uses only the original ImageNet10 source pool: no generated images, diagnosed
+failure slice, or resume-from-repair checkpoint is included in final training.
+Each selected subset trains a fresh ResNet-18 for 30 epochs with Adam
+(`lr=1e-3`, weight decay `1e-3`), StepLR (`step_size=3`, `gamma=0.5`), batch
+size 64, and best-validation checkpoint selection. The primary tables below
+are author-provided five-seed means received on July 29, 2026. Dispersion and
+per-seed artifacts were not provided with the aggregate tables, so the
+comparisons below are descriptive.
+
+The one-shot data-selection comparison contains Random, class-Stratified
+Random, Entropy, CoreSet, BADGE, Attribute Rarity, class-balanced Semantic
+CoreSet, and AttriSelect at source ratios `0.1/0.3/0.5/0.7/0.9`.
+Entropy, CoreSet, and BADGE use the existing full-data classifier only as a
+selection proxy; the final subset-trained classifier is always initialized
+from scratch.
+
+The active-learning comparison uses a shared class-stratified initial labeled
+ratio of `0.1`, followed by five queries of ratio `0.1`. It evaluates six
+rounds at labeled ratios `0.1--0.6`. Every method starts from the same initial
+labeled set and uses the same model initialization at a given round.
+
+## One-Shot Data Selection
+
+| Source Ratio | Random | Stratified | Entropy | CoreSet | BADGE | Attribute Rarity | Semantic CoreSet | AttriSelect |
+|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| 0.1 | 43.23 | 41.85 | 26.86 | 38.33 | 42.62 | 44.46 | 44.08 | **45.00** |
+| 0.3 | 55.84 | 57.15 | 44.64 | 56.16 | 58.17 | 56.54 | 56.55 | **58.32** |
+| 0.5 | 64.77 | 64.14 | 58.69 | 64.87 | 63.19 | 65.31 | 62.56 | **66.53** |
+| 0.7 | 69.47 | 71.63 | 66.71 | 68.03 | 69.57 | 71.01 | 67.18 | **72.02** |
+| 0.9 | 71.34 | 71.70 | 72.88 | 72.89 | 72.38 | 72.48 | 71.24 | **72.92** |
+
+**Attribute Rarity:** uses the Qwen3-VL `color`, `background`, and `texture`
+labels. For each image, it sums the inverse frequencies of its attribute
+values within its class, so class--attribute combinations that occur less
+often receive higher scores. A soft class-balance re-ranking then selects the
+requested subset. Unlike AttriSelect, this baseline does not apply the global
+attribute-frequency penalty.
+
+Metric: five-seed mean ImageNet10 overall test accuracy (%). Bold marks the
+strongest method at each ratio. AttriSelect is strongest at all five source
+ratios, with margins of `0.54/0.15/1.22/0.39/0.03` points over the strongest
+baseline at ratios `0.1/0.3/0.5/0.7/0.9`.
+
+## Iterative Active Learning
+
+| Ratio | Random | Entropy | CoreSet | BADGE | Attribute Rarity | Object--Attribute Entropy Reduction | AttriSelect-AL |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| 0.1 | 43.23 | 43.23 | 43.23 | 43.23 | 43.23 | 43.23 | 43.23 |
+| 0.2 | 51.11 | **52.26** | 50.00 | 51.27 | 50.93 | 50.48 | 51.33 |
+| 0.3 | 55.38 | 54.85 | 55.01 | 56.17 | 52.94 | 55.95 | **56.96** |
+| 0.4 | 58.71 | 58.63 | 59.54 | 60.46 | 60.47 | 60.31 | **63.02** |
+| 0.5 | 61.97 | 63.70 | 63.92 | 61.89 | 61.86 | 63.88 | **65.18** |
+| 0.6 | 66.15 | 66.70 | 68.16 | 67.11 | 65.78 | 65.79 | **68.80** |
+| Curve Mean | 56.09 | 56.56 | 56.64 | 56.69 | 55.87 | 56.61 | **58.09** |
+
+**Attribute Rarity:** applies the same attribute-rarity principle during each
+query round. Frequencies are estimated from the currently labeled set;
+unlabeled images use model-predicted classes for class-conditional scoring,
+followed by soft class balancing. It does not use model entropy or the global
+frequency penalty used by AttriSelect-AL.
+
+**Object--Attribute Entropy Reduction:** an object-query adaptation of
+Kovashka et al. (ICCV 2011). The Qwen3-VL attributes are treated as already
+known, and only the unknown class label is queried. Each candidate is scored
+by its model predictive entropy multiplied by the average uncertainty of the
+class distribution associated with its attribute values; values with fewer
+labeled examples receive more weight. Soft class balancing is applied using
+model-predicted classes, without reading unlabeled ground-truth labels.
+
+Metric: five-seed mean test accuracy (%) at each labeled ratio. All methods use
+the same initial labeled set at ratio `0.1`; `Curve Mean` is the arithmetic
+mean over the six evaluated ratios.
+
+AttriSelect-AL is strongest at ratios `0.3--0.6` and has the highest Curve
+Mean, `58.09`, exceeding BADGE by `1.40` points. At ratio `0.6`, it reaches
+`68.80%`, `0.64` points above CoreSet.
+
+## Alternative Attribute Sources: Five-Seed Summary
+
+All three attribute sources use the same five seeds and source-only evaluation
+protocol.
+
+Metric: five-seed ImageNet10 test accuracy (%). `One-Shot Mean` averages
+source ratios `0.1/0.3/0.5/0.7/0.9`; `AL Curve Mean` averages labeled ratios
+`0.1--0.6`; and `Final ACC` is the Active Learning accuracy at ratio `0.6`.
+
+| Attribute Source | One-Shot Mean | AL Curve Mean | Final ACC at Ratio 0.6 |
+|---|---:|---:|---:|
+| Qwen3-VL | 62.96 | **58.09** | **68.80** |
+| BLIP | 62.18 | 55.99 | 65.46 |
+| InternVL3 | **63.27** | 56.33 | 66.23 |
+
+InternVL3 has the highest One-Shot Mean, exceeding Qwen3-VL by `0.31`
+accuracy points. Qwen3-VL has the highest Active Learning Curve Mean and final
+ratio-`0.6` accuracy, exceeding InternVL3 by `1.76` and `2.57` points,
+respectively. No attribute source is strongest under both selection settings.
+
+### Historical Local Seed-42 Diagnostic
+
+The ratio-wise rows below are retained only as an older local execution
+record. They are superseded by the five-seed summary above and must not be
+used for the current reviewer response.
+
+### One-Shot AttriSelect
+
+| Source Ratio | Qwen3-VL | BLIP | InternVL3 |
+|---:|---:|---:|---:|
+| 0.1 | **45.00** | 43.15 | 43.31 |
+| 0.3 | 55.85 | **59.54** | 56.46 |
+| 0.5 | **66.54** | 65.62 | 65.54 |
+| 0.7 | 68.00 | 70.15 | **71.15** |
+| 0.9 | 71.23 | 70.85 | **72.85** |
+
+### AttriSelect-AL Summary
+
+| Attribute Source | Curve Mean | Final Ratio 0.6 |
+|---|---:|---:|
+| Qwen3-VL | **57.04** | **64.77** |
+| BLIP | 55.95 | 64.46 |
+| InternVL3 | 56.33 | 64.23 |
+
+These rows are local seed-42 diagnostics and are retained for historical
+traceability only.
+
+**Historical BLIP note (July 29, 2026):** an intermediate local rerun reported
+a BLIP One-Shot Mean of `61.18` without supplying its five ratio-wise values.
+This intermediate result is superseded by the five-seed value `62.18` above.
+
+## ImageNet10 Source-Annotation Cost
+
+Fresh Qwen3-VL assignment over the exact 10,400-image training pool completed
+successfully with zero inference errors or fallback labels:
+
+| Component | Time |
+|---|---:|
+| Model and processor loading | 13.85 s |
+| Attribute inference loop | 1646.70 s (27.44 min) |
+| Final serialization | 0.05 s |
+| Total process time | 1760.88 s (29.35 min) |
+
+The assignment produces `color`, `background`, and `texture` metadata for
+every training image. This is a one-time preprocessing cost: the resulting
+metadata are reused across ratios, selectors, and all active-learning rounds.
+The measurement is retained as an internal exact reference even if the final
+reviewer response reports only the existing COCO and KITTI cost averages.
+
 # ImageNet10 Missing-Field Vocabulary-Coverage Experiment
 
 **Updated:** July 28, 2026
@@ -100,6 +281,97 @@ This experiment does **not** test merged-value or coarsened-category
 sensitivity. Pink-only and fabric-only runs also change the generated repair
 pool and are therefore separate slice-granularity diagnostics, not controlled
 vocabulary-coverage ablations.
+
+---
+
+# COCO Missing-Field Vocabulary-Coverage Experiment
+
+**Updated:** July 28, 2026
+
+## Research Question and Protocol
+
+This experiment tests how the COCO pose repair pipeline behaves when source
+selection omits one field from the diagnosed target
+`clothes_color=brown AND weather=rainy`. The generated repair pool remains the
+same brown-rainy ICEdit pool in every run, and seed `42` samples the same fixed
+budget of 1,000 generated images. The three source-selection variants are:
+
+1. **Full conjunction:** `clothes_color,weather`, with generated extra-count
+   terms for both `brown` and `rainy`.
+2. **Missing weather:** `clothes_color` only, with the `brown` extra-count term.
+3. **Missing color:** `weather` only, with the `rainy` extra-count term.
+
+All variants use the same Qwen3-VL train20k metadata, diagnosis checkpoint,
+20,000-image source candidate pool, source ratios `0.1/0.3/0.5/0.7/0.9`, two
+repair epochs, learning rate `0.005`, RPC parameters
+`(R,P,C)=(0.03,0.5,15)`, and post-training evaluation fields
+`clothes_color,weather`. Only the available source-selection fields and their
+corresponding generated extra-count terms change.
+
+Array `309094` completed all `15/15` tasks. Every selection manifest contains
+the expected number of unique source image IDs: 2,000, 6,000, 10,000, 14,000,
+and 18,000 across the five ratios.
+
+## Results
+
+`AP change` is relative to Full conjunction at the same ratio. `Rainy AP` and
+`Brown AP` are marginal diagnostics on the original test subsets containing
+31 rainy images and 38 brown-clothing images, respectively. The current slice
+analyzer does not report the exact brown-and-rainy intersection.
+
+| Ratio | Variant | Overall AP | AP change | AP50 | AP75 | AR | Rainy AP | Brown AP | Source-set Jaccard vs. Full |
+| ---: | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| 0.1 | Full conjunction | **0.6192** | 0.0000 | 0.8469 | 0.6759 | 0.6871 | 0.5742 | 0.6114 | 1.0000 |
+| 0.1 | Missing weather | 0.6105 | -0.0086 | 0.8467 | 0.6622 | 0.6861 | 0.5430 | 0.5600 | 0.2034 |
+| 0.1 | Missing color | 0.6055 | -0.0137 | 0.8324 | 0.6585 | 0.6799 | 0.5667 | 0.5469 | 0.4782 |
+| 0.3 | Full conjunction | 0.6170 | 0.0000 | 0.8508 | 0.6683 | 0.6870 | 0.5598 | 0.5530 | 1.0000 |
+| 0.3 | Missing weather | 0.6214 | +0.0044 | 0.8570 | 0.6775 | 0.6929 | 0.5713 | 0.5944 | 0.4613 |
+| 0.3 | Missing color | **0.6221** | +0.0051 | 0.8546 | 0.6785 | 0.6941 | 0.5743 | 0.6053 | 0.5611 |
+| 0.5 | Full conjunction | 0.5870 | 0.0000 | 0.8321 | 0.6321 | 0.6666 | 0.5349 | 0.5511 | 1.0000 |
+| 0.5 | Missing weather | **0.6271** | +0.0401 | 0.8576 | 0.6764 | 0.6946 | 0.5717 | 0.5954 | 0.6084 |
+| 0.5 | Missing color | 0.6178 | +0.0309 | 0.8515 | 0.6699 | 0.6866 | 0.5665 | 0.5909 | 0.7063 |
+| 0.7 | Full conjunction | 0.6313 | 0.0000 | 0.8578 | 0.6882 | 0.6981 | 0.5901 | 0.5758 | 1.0000 |
+| 0.7 | Missing weather | 0.6323 | +0.0010 | 0.8618 | 0.6839 | 0.6947 | 0.5729 | 0.6154 | 0.8110 |
+| 0.7 | Missing color | **0.6332** | +0.0019 | 0.8560 | 0.6928 | 0.6976 | 0.6023 | 0.5831 | 0.7836 |
+| 0.9 | Full conjunction | 0.6238 | 0.0000 | 0.8573 | 0.6740 | 0.6889 | 0.5827 | 0.5634 | 1.0000 |
+| 0.9 | Missing weather | **0.6244** | +0.0006 | 0.8576 | 0.6725 | 0.6898 | 0.5444 | 0.5612 | 0.8708 |
+| 0.9 | Missing color | 0.6236 | -0.0002 | 0.8539 | 0.6799 | 0.6931 | 0.5815 | 0.5676 | 0.8969 |
+
+## Result Summary
+
+| Missing field | Mean Overall AP change | Largest decrease | Largest increase | Mean Jaccard vs. Full |
+| --- | ---: | ---: | ---: | ---: |
+| Weather | +0.0075 | -0.0086 at ratio 0.1 | +0.0401 at ratio 0.5 | 0.5910 |
+| Color | +0.0048 | -0.0137 at ratio 0.1 | +0.0309 at ratio 0.5 | 0.6852 |
+
+Removing a field has the clearest and most consistent effect on source-set
+composition. At ratio `0.1`, Jaccard overlap with Full conjunction falls to
+`0.2034` when weather is missing and `0.4782` when color is missing. The
+overlap rises to `0.8708/0.8969` at ratio `0.9` as the retained source pool
+approaches the full candidate set.
+
+Overall AP changes are non-monotonic. Both missing-field variants are worse at
+ratio `0.1`, slightly better at ratios `0.3` and `0.7`, and nearly tied with
+Full conjunction at ratio `0.9`. The positive mean changes are driven by ratio
+`0.5`, where Full conjunction drops to `0.5870` while the missing-field
+variants reach `0.6271` and `0.6178`. This isolated low point makes the mean
+effect sensitive to one ratio.
+
+The supported conclusion is that incomplete vocabulary coverage can strongly
+change selected source examples, especially at low budgets, but this
+single-seed experiment does not show that omitting a field consistently lowers
+Overall AP. The marginal rainy and brown slice results are also non-monotonic.
+
+## Execution and Artifacts
+
+- H200 array: `309094`, completed `15/15` with exit `0:0` for every task.
+- Launcher: `scripts/juno_pose_brown_rainy_missing_field_vocabulary.sbatch`.
+- Local artifacts:
+  `logs/juno/coco_missing_field_vocabulary/309094_*`.
+- Durable Juno artifacts:
+  `/work/oxx220000/safefix_rebuttal/logs/juno/coco_missing_field_vocabulary/309094_*`.
+- Each task preserves `selection_manifest.json`, `test_metrics.json`, test and
+  validation predictions, and Qwen3-VL slice-analysis outputs.
 
 ---
 
@@ -263,46 +535,67 @@ results under `nips26_new/`.
 
 ---
 
-## H200 End-to-End Cost Projection Summary
+## H200 End-to-End Cost Summary
 
-**Updated:** July 27, 2026
+**Updated:** July 28, 2026
 
-The following two planning-level tables are placed at the top for quick
-reference. They are estimates, not matched measured H200 benchmarks. Detailed
-assumptions and the measured KITTI accounting are preserved in the dedicated
-COCO and KITTI sections below.
+The following current tables are placed at the top for quick reference. They
+use the H200 source-assignment charges:
+`90 min` for the 20,000-image COCO source pool and `32.77 min`
+for the 5,000-image KITTI source pool.
+
+The assignment timings cover each dataset's complete task-level metadata
+schema, not only the two fields in the diagnosed repair slice. KITTI assigns
+six fields (`color`, `weather`, `background_style`, `traffic_density`,
+`lighting_condition`, and `road_condition`); COCO assigns five fields
+(`clothes_color`, `clothes_type`, `background_style`, `time_of_day`, and
+`weather`); and ImageNet10 assigns three fields (`color`, `background`, and
+`texture`). The selector focuses on `color,weather` for KITTI,
+`clothes_color,weather` for COCO, and the ImageNet10 repair slice is
+`color=pink AND texture=fabric`.
+
+| Dataset | Source Images | Assigned Attributes | H200 Assignment Time | Normalized Assignment Time (min / 1K images / attribute) |
+| --- | ---: | ---: | ---: | ---: |
+| KITTI | 5,000 | 6 | 32.77 min | 1.09 |
+| ImageNet10 | 10,400 | 3 | 29.35 min | 0.94 |
+| COCO | 20,000 | 5 | 90 min | 0.90 |
+
+`Normalized Assignment Time` divides wall-clock time by the source-pool size
+in thousands and the number of assigned attributes. For example, the COCO
+value is `90 / (20 x 5) = 0.90` minutes per 1,000 images per attribute. This is
+a throughput summary, not an assumption of exact linear scaling: model
+loading, image loading, prompt and output lengths, and serialization also
+affect wall-clock time.
 
 ### COCO: 20,000 Source Images
 
 Image generation and generated-repair-image assignment are excluded. Ours
 conservatively includes the complete 20,000-image source-pool Qwen3-VL
-assignment (`3.04 h` projected on H200) in every row.
+assignment (`90 min` on H200) in every row.
 
-| Ratio | Random | Stratified | Entropy | CoreSet | BADGE | UHerding$^{\dagger}$ | PPAL$^{\dagger}$ | Ours$^{\ddagger}$ |
+| Ratio | Random | Stratified | Entropy | CoreSet | BADGE | UHerding | PPAL | Ours |
 | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| `0.1` | `4.4 min` | `4.4 min` | `11.0 min` | `9.4 min` | `14.0 min` | `5.1 min` | `7.0 min` | `3.11 h` |
-| `0.3` | `8.2 min` | `8.2 min` | `14.7 min` | `23.2 min` | `35.6 min` | `8.9 min` | `17.9 min` | `3.18 h` |
-| `0.5` | `12.4 min` | `12.4 min` | `19.0 min` | `37.4 min` | `1.12 h` | `13.1 min` | `29.5 min` | `3.25 h` |
-| `0.7` | `15.7 min` | `15.7 min` | `22.3 min` | `50.7 min` | `1.63 h` | `16.3 min` | `37.6 min` | `3.30 h` |
-| `0.9` | `19.7 min` | `19.7 min` | `26.3 min` | `1.08 h` | `2.16 h` | `20.2 min` | `40.9 min` | `3.37 h` |
+| `0.1` | `4.41 min` | `4.42 min` | `10.98 min` | `16.18 min` | `19.63 min` | `5.08 min` | `6.97 min` | `1.57 h` |
+| `0.3` | `8.18 min` | `8.18 min` | `14.74 min` | `39.86 min` | `49.76 min` | `8.93 min` | `17.86 min` | `1.62 h` |
+| `0.5` | `12.37 min` | `12.36 min` | `19.04 min` | `1.08 h` | `1.56 h` | `13.08 min` | `29.47 min` | `1.66 h` |
+| `0.7` | `15.73 min` | `15.75 min` | `22.27 min` | `1.45 h` | `2.29 h` | `16.34 min` | `37.63 min` | `1.69 h` |
+| `0.9` | `19.66 min` | `19.65 min` | `26.28 min` | `1.87 h` | `3.01 h` | `20.18 min` | `40.94 min` | `1.72 h` |
 
 ### KITTI: 5,000 Source Images
 
 Ours conservatively includes the mean fresh 5,000-image H200 Qwen3-VL
 assignment (`1966.42 s`, or `32.77 min`) in every row.
 
-| Ratio | Random | Stratified | Entropy | CoreSet | BADGE | UHerding$^{\dagger}$ | PPAL$^{\dagger}$ | Ours$^{\ddagger}$ |
+| Ratio | Random | Stratified | Entropy | CoreSet | BADGE | UHerding | PPAL | Ours |
 | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| `0.1` | `42.2 min` | `42.2 min` | `48.8 min` | `47.4 min` | `47.7 min` | `43.5 min` | `43.5 min` | `1.25 h` |
-| `0.3` | `43.8 min` | `43.8 min` | `50.3 min` | `49.7 min` | `50.9 min` | `45.1 min` | `45.6 min` | `1.28 h` |
-| `0.5` | `45.2 min` | `45.2 min` | `51.7 min` | `51.8 min` | `54.2 min` | `46.4 min` | `47.5 min` | `1.30 h` |
-| `0.7` | `47.0 min` | `47.0 min` | `53.5 min` | `54.1 min` | `57.6 min` | `48.2 min` | `49.7 min` | `1.33 h` |
-| `0.9` | `48.9 min` | `48.9 min` | `55.5 min` | `56.6 min` | `1.02 h` | `50.3 min` | `51.5 min` | `1.36 h` |
+| `0.1` | `42.17 min` | `42.18 min` | `48.82 min` | `1.37 h` | `1.12 h` | `43.47 min` | `43.53 min` | `1.01 h` |
+| `0.3` | `43.84 min` | `43.85 min` | `50.28 min` | `1.44 h` | `1.20 h` | `45.08 min` | `45.63 min` | `1.09 h` |
+| `0.5` | `45.18 min` | `45.18 min` | `51.73 min` | `1.49 h` | `1.27 h` | `46.42 min` | `47.47 min` | `1.11 h` |
+| `0.7` | `47.04 min` | `47.05 min` | `53.46 min` | `1.56 h` | `1.35 h` | `48.16 min` | `49.73 min` | `1.13 h` |
+| `0.9` | `48.86 min` | `48.87 min` | `55.53 min` | `1.63 h` | `1.42 h` | `50.34 min` | `51.46 min` | `1.15 h` |
 
-$^{\dagger}$PPAL is a complexity-based projection. UHerding uses the scalable
-`_fast_select` path that the current COCO and KITTI code actually executes.
-$^{\ddagger}$Ours charges fresh source assignment in every row; subtract the
-assignment cost for subsequent repair cycles that reuse metadata.
+Ours charges fresh source assignment in every row; subtract the assignment
+cost for subsequent repair cycles that reuse metadata.
 
 ---
 
@@ -578,18 +871,21 @@ Artifacts:
 
 ---
 
-## COCO Rough H200 End-to-End Cost Projection
+## Historical COCO Rough H200 End-to-End Cost Projection — Superseded
 
 **Updated:** July 27, 2026
 
-This planning-level table estimates the COCO repair cost for the manuscript's
-`20,000`-image source pool. Per the current accounting scope, image generation
-is excluded. The 20,000-image Qwen3-VL cost is source-pool attribute assignment
-rather than generated-image assignment: the measured A5000 run took
+This historical planning-level table estimates the COCO repair cost for the
+manuscript's `20,000`-image source pool. Per the current accounting scope,
+image generation is excluded. The 20,000-image Qwen3-VL cost is source-pool
+attribute assignment rather than generated-image assignment: the measured A5000 run took
 `399.7 min`, which becomes `182.5 min` (`3.04 h`) after applying the
 A5000-to-H200 factor `0.4565`. This charge is included only for Ours and is
 conservatively repeated in every ratio row; it can be removed after the source
 metadata has been created once.
+
+Do not use this projection for the current rebuttal. It is superseded by the
+approximately `1.50 h` measured H200 charge and the current table above.
 
 The shared repair-stage cost uses completed A5000 COCO Random end-to-end times
 of `9:44`, `17:55`, `27:11`, and `34:27` at ratios `0.1--0.7`, converted to
