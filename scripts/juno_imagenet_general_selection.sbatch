@@ -17,6 +17,7 @@ usage() {
 Usage:
   sbatch --qos=juno-pri --array=0-14%8 scripts/juno_imagenet_general_selection.sbatch --mode smoke
   sbatch --qos=juno-pri --array=0-46%8 scripts/juno_imagenet_general_selection.sbatch --mode pilot
+  sbatch --qos=juno-pri --array=0-4%4 scripts/juno_imagenet_general_selection.sbatch --mode semantic_correction
   bash scripts/juno_imagenet_general_selection.sbatch --mode smoke --dry-run
 
 Runs source-only ImageNet10 experiments outside model repair:
@@ -24,9 +25,12 @@ Runs source-only ImageNet10 experiments outside model repair:
          two rounds, seed 42, one epoch per trained model. Expected array 0-14.
   pilot  8 one-shot methods x 5 ratios and 7 six-round active-learning methods,
          seed 42, 30 epochs per trained model. Expected array 0-46.
+  semantic_correction
+         Corrected class-balanced Semantic CoreSet at five ratios, seed 42,
+         30 epochs. Expected array 0-4.
 
 Options:
-  --mode smoke|pilot
+  --mode smoke|pilot|semantic_correction
   --repo-dir PATH       Default: /work/$USER/safefix_rebuttal
   --python PATH         Default: /work/$USER/venvs/kitti/bin/python
   --data-dir PATH       Default: scratch ImageNet10 ImageFolder
@@ -131,8 +135,19 @@ case "$MODE" in
       ROUNDS=6
     fi
     ;;
+  semantic_correction)
+    (( TASK_ID >= 0 && TASK_ID < 5 )) || {
+      echo "Semantic-correction mode expects SLURM_ARRAY_TASK_ID in 0-4, got $TASK_ID" >&2
+      exit 2
+    }
+    EXPERIMENT="data_selection"
+    METHOD="semantic_coreset"
+    RATIO="${RATIOS[$TASK_ID]}"
+    ROUNDS=1
+    EPOCHS=30
+    ;;
   *)
-    echo "--mode must be smoke or pilot, got: $MODE" >&2
+    echo "--mode must be smoke, pilot, or semantic_correction, got: $MODE" >&2
     exit 2
     ;;
 esac

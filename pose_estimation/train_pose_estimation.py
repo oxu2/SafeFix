@@ -356,6 +356,12 @@ def parse_args():
         default=1000,
         help="Maximum number of generated images to append to the training split.",
     )
+    train_parser.add_argument(
+        "--selection-manifest",
+        type=Path,
+        default=None,
+        help="Optional JSON path for the selected original COCO image ids and selection metadata.",
+    )
     train_parser.add_argument("--pretrained", type=str2bool, default=True)
     train_parser.add_argument("--device", type=str, default="cuda")
     train_parser.add_argument("--analyze-after-train", type=str2bool, default=True)
@@ -1196,6 +1202,25 @@ def build_loaders(args) -> Dict[str, DataLoader]:
         seed=args.seed,
         args=args,
     )
+    if args.selection_manifest is not None:
+        args.selection_manifest.parent.mkdir(parents=True, exist_ok=True)
+        selection_payload = {
+            "dataset": "coco_pose",
+            "seed": int(args.seed),
+            "source_ratio": float(args.sub_ratio),
+            "max_train_samples": int(args.max_train_samples),
+            "candidate_count": int(capped_original_count),
+            "selected_count": len(selected_original_ids),
+            "selected_image_ids": [int(image_id) for image_id in selected_original_ids],
+            "selection": selection_info,
+            "attribute_focus": getattr(args, "al_attribute_focus", None),
+            "attribute_extra_counts": getattr(args, "al_attribute_extra_counts", None),
+        }
+        args.selection_manifest.write_text(
+            json.dumps(selection_payload, indent=2, sort_keys=True) + "\n",
+            encoding="utf-8",
+        )
+        print(f"Wrote selection manifest: {args.selection_manifest}")
     original_train_dataset = clone_dataset_with_image_ids(
         full_train_dataset,
         selected_original_ids,

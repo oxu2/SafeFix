@@ -27,6 +27,31 @@ Before continuing work in a new session, read these files in order:
 
 Do not assume chat history is available or complete. Use the Trellis workspace journal as the detailed source of truth for recent project context.
 
+## Current Rebuttal Editing Scope: Reviewer KaLa and Area Chair 6k27
+
+- The user has explicitly authorized edits to both `Response to Reviewer KaLa`
+  and `Response to Area Chair 6k27` in `draft.md`.
+- KaLa clarifications may now be synchronized into the Area Chair response when
+  they address the same concern, but preserve the scope and evidence limits of
+  the underlying experiments.
+- Partition both responses into Parts close to the 5,000-character limit.
+  Split at a natural paragraph, table, equation, or blockquote boundary rather
+  than forcing the boundary to align with `##` or `###` headings. No Part may
+  exceed 5,000 characters, including its Part heading. Add another Part when
+  needed to keep tables, equations, or blockquotes intact. Revalidate all Part
+  counts after substantive edits.
+- Across all OpenReview responses, inline backticks may be used as ordinary
+  quotation or code-style formatting. When a direct answer, takeaway, or core
+  conclusion uses inline backticks for emphasis, combine them with `**bold**`
+  as the strongest emphasis. Use `**bold**` alone as the secondary emphasis
+  level for ordinary emphasis, subsection labels, and best values in tables.
+  Do not apply backticks or the combined strongest emphasis to ordinary table
+  values, including runtimes. Do not place LaTeX expressions inside backticks.
+  Use double quotation marks for exact semantic slice expressions and field
+  assignments, such as "pink AND fabric" and "color=pink". Keep natural
+  compound modifiers such as pink-and-fabric unquoted; do not use italics for
+  these labels because italics belong to the emphasis hierarchy.
+
 ## NeurIPS 2026 Result Authority Rule
 
 - When retrieving any result already reported in the NeurIPS 2026 manuscript,
