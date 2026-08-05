@@ -106,7 +106,12 @@ def parse_args():
     )
     parser.add_argument(
         "--selection-strategy",
-        choices=["random", "stratified", "attribute", "coreset", "badge", "uherding", "ppal", "entropy"],
+        choices=[
+            "random", "stratified", "attribute", "coreset", "badge",
+            "uherding", "ppal", "entropy", "target_slice_stratified",
+            "attribute_filtered_random", "attribute_filtered_entropy",
+            "generated_complement",
+        ],
         default="random",
         help=(
             "How to select original KITTI train images before adding generated images. "
@@ -1033,12 +1038,11 @@ def _batched(sequence: Sequence, batch_size: int):
         yield start, sequence[start : start + step]
 
 
-def _select_entropy_ids(
+def _compute_entropy_scores(
     image_ids: Sequence[str],
     image_dir: Path,
-    n_select: int,
     args,
-) -> List[str]:
+) -> np.ndarray:
     try:
         from ultralytics import YOLO
     except ImportError as exc:
@@ -1086,6 +1090,16 @@ def _select_entropy_ids(
         )
 
     scores_array = np.asarray(scores, dtype=np.float64)
+    return scores_array
+
+
+def _select_entropy_ids(
+    image_ids: Sequence[str],
+    image_dir: Path,
+    n_select: int,
+    args,
+) -> List[str]:
+    scores_array = _compute_entropy_scores(image_ids, image_dir, args)
     order = np.argsort(-scores_array, kind="mergesort")[:n_select]
     selected_ids = [image_ids[int(idx)] for idx in order]
     selected_scores = scores_array[order]
@@ -1221,6 +1235,50 @@ def _select_attribute_ids(
     )
     selected_ids = [image_ids[int(idx)] for idx in selected_indices]
     return sorted(selected_ids)
+
+
+def _select_attribute_aware_baseline_ids(
+    strategy_name: str,
+    image_ids: Sequence[str],
+    label_dir: Path,
+    n_select: int,
+    args,
+) -> List[str]:
+    from utils.active_learning import load_attribute_metadata
+    from utils.attribute_aware_baselines import select_attribute_aware_baseline
+
+    if not args.attribute_file.exists():
+        raise FileNotFoundError(f"Attribute metadata file not found: {args.attribute_file}")
+    metadata = load_attribute_metadata(str(args.attribute_file))
+    focus_attributes = _parse_focus_attributes(args.al_attribute_focus)
+    metadata = {
+        key: value for key, value in metadata.items() if key in focus_attributes
+    }
+    signatures = [_label_signature(label_dir / f"{image_id}.txt") for image_id in image_ids]
+    signature_to_label = {
+        signature: idx for idx, signature in enumerate(sorted(set(signatures)))
+    }
+    proxy_labels = [signature_to_label[signature] for signature in signatures]
+    entropy_scores = None
+    if strategy_name == "attribute_filtered_entropy":
+        entropy_scores = _compute_entropy_scores(
+            image_ids,
+            args.base_data_root / "images" / "train",
+            args,
+        )
+    selected_indices, diagnostics = select_attribute_aware_baseline(
+        strategy=strategy_name,
+        attribute_metadata=metadata,
+        metadata_indices=list(range(len(image_ids))),
+        class_labels=proxy_labels,
+        generated_attribute_counts=_resolve_attribute_extra_counts(args),
+        n_select=n_select,
+        seed=args.seed,
+        entropy_scores=entropy_scores,
+    )
+    print("KITTI same-information baseline diagnostics:")
+    print(json.dumps(diagnostics, indent=2, sort_keys=True))
+    return sorted(image_ids[int(index)] for index in selected_indices)
 
 
 def _prepare_split_copy(
@@ -1379,6 +1437,19 @@ def prepare_dataset(
             )
         elif args.selection_strategy == "attribute":
             selected_original_ids = _select_attribute_ids(
+                train_ids,
+                base_train_labels,
+                original_sample_count,
+                args,
+            )
+        elif args.selection_strategy in {
+            "target_slice_stratified",
+            "attribute_filtered_random",
+            "attribute_filtered_entropy",
+            "generated_complement",
+        }:
+            selected_original_ids = _select_attribute_aware_baseline_ids(
+                args.selection_strategy,
                 train_ids,
                 base_train_labels,
                 original_sample_count,

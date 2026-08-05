@@ -2240,6 +2240,7 @@ def active_learning_selection(train_dataset, val_dataset, args, device, verbose=
         'target_slice_stratified',
         'attribute_filtered_random',
         'attribute_filtered_entropy',
+        'generated_complement',
     }
     if al_strategy in attribute_aware_strategies:
         from utils.attribute_aware_baselines import select_attribute_aware_baseline

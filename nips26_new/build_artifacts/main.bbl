@@ -1,0 +1,323 @@
+\begin{thebibliography}{46}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[Ash et~al.(2020)Ash, Zhang, Krishnamurthy, Langford, and
+  Agarwal]{ash2020deep}
+Jordan~T Ash, Chicheng Zhang, Akshay Krishnamurthy, John Langford, and Alekh
+  Agarwal.
+\newblock Deep batch active learning by diverse, uncertain gradient lower
+  bounds.
+\newblock In \emph{ICLR}, 2020.
+
+\bibitem[Bae et~al.(2025)Bae, Sutherland, and Oliveira]{bae2025uncertainty}
+Wonho Bae, Danica~J Sutherland, and Gabriel~L Oliveira.
+\newblock Uncertainty herding: One active learning method for all label
+  budgets.
+\newblock In \emph{ICLR}, 2025.
+
+\bibitem[Bai et~al.(2025)Bai, Cai, Chen, Chen, et~al.]{bai2025qwen3vl}
+Shuai Bai, Yuxuan Cai, Ruizhe Chen, Keqin Chen, et~al.
+\newblock Qwen3-vl technical report, 2025.
+\newblock URL \url{https://arxiv.org/abs/2511.21631}.
+
+\bibitem[Barbu et~al.(2019)Barbu, Mayo, Alverio, Luo, Wang, Gutfreund,
+  Tenenbaum, and Katz]{barbu2019objectnet}
+Andrei Barbu, David Mayo, Julian Alverio, William Luo, Christopher Wang, Dan
+  Gutfreund, Josh Tenenbaum, and Boris Katz.
+\newblock Objectnet: A large-scale bias-controlled dataset for pushing the
+  limits of object recognition models.
+\newblock \emph{Advances in neural information processing systems}, 32, 2019.
+
+\bibitem[Brooks et~al.(2023)Brooks, Holynski, and
+  Efros]{brooks2023instructpix2pix}
+Tim Brooks, Aleksander Holynski, and Alexei~A. Efros.
+\newblock Instructpix2pix: Learning to follow image editing instructions, 2023.
+\newblock URL \url{https://arxiv.org/abs/2211.09800}.
+
+\bibitem[Buolamwini and Gebru(2018)]{buolamwini2018gender}
+Joy Buolamwini and Timnit Gebru.
+\newblock Gender shades: Intersectional accuracy disparities in commercial
+  gender classification.
+\newblock In \emph{Conference on fairness, accountability and transparency},
+  pages 77--91. PMLR, 2018.
+
+\bibitem[Chen et~al.(2023)Chen, Li, and Xu]{chen2023hibug}
+Muxi Chen, Yu~Li, and Qiang Xu.
+\newblock Safefix: On human-interpretable model debug.
+\newblock In \emph{Advances in Neural Information Processing Systems}, 2023.
+
+\bibitem[Chen et~al.(2025)Chen, Zhao, and Xu]{chen2025hibug2}
+Muxi Chen, Chenchen Zhao, and Qiang Xu.
+\newblock Safefix2: Efficient and interpretable error slice discovery for
+  comprehensive model debugging.
+\newblock \emph{arXiv preprint arXiv:2501.16751}, 2025.
+
+\bibitem[Deng et~al.(2009)Deng, Dong, Socher, Li, Li, and
+  Fei-Fei]{deng2009imagenet}
+Jia Deng, Wei Dong, Richard Socher, Li-Jia Li, Kai Li, and Li~Fei-Fei.
+\newblock Imagenet: A large-scale hierarchical image database.
+\newblock In \emph{Conference on Computer Vision and Pattern Recognition
+  (CVPR)}, 2009.
+\newblock \url{https://ieeexplore.ieee.org/abstract/document/5206848}.
+
+\bibitem[Dunlap et~al.(2023)Dunlap, Umino, Zhang, Yang, Gonzalez, and
+  Darrell]{dunlap2023diversify}
+Lisa Dunlap, Alyssa Umino, Han Zhang, Jiezhi Yang, Joseph~E Gonzalez, and
+  Trevor Darrell.
+\newblock Diversify your vision datasets with automatic diffusion-based
+  augmentation.
+\newblock In \emph{Advances in Neural Information Processing Systems}, 2023.
+
+\bibitem[Eyuboglu et~al.(2022)Eyuboglu, Varma, Saab, Delbrouck, Lee-Messer,
+  Dunnmon, Zou, and R{\'e}]{eyuboglu2022domino}
+Sabri Eyuboglu, Maya Varma, Khaled Saab, Jean-Benoit Delbrouck, Christopher
+  Lee-Messer, Jared Dunnmon, James Zou, and Christopher R{\'e}.
+\newblock Domino: Discovering systematic errors with cross-modal embeddings.
+\newblock \emph{arXiv preprint arXiv:2203.14960}, 2022.
+
+\bibitem[{Facebook AI Research}(2024)]{detectron2modelzoo}
+{Facebook AI Research}.
+\newblock Detectron2 model zoo.
+\newblock
+  \url{https://github.com/facebookresearch/detectron2/blob/main/MODEL_ZOO.md},
+  2024.
+\newblock Accessed: 2026-04-24.
+
+\bibitem[Gao et~al.(2023)Gao, Ilharco, Lundberg, and Ribeiro]{gao2023adaptive}
+Irena Gao, Gabriel Ilharco, Scott Lundberg, and Marco~Tulio Ribeiro.
+\newblock Adaptive testing of computer vision models.
+\newblock In \emph{Proceedings of the IEEE/CVF International Conference on
+  Computer Vision}, pages 4003--4014, 2023.
+
+\bibitem[Geiger et~al.(2012)Geiger, Lenz, and Urtasun]{geiger2012we}
+Andreas Geiger, Philip Lenz, and Raquel Urtasun.
+\newblock Are we ready for autonomous driving? the kitti vision benchmark
+  suite.
+\newblock In \emph{2012 IEEE conference on computer vision and pattern
+  recognition}, pages 3354--3361. IEEE, 2012.
+
+\bibitem[Geirhos et~al.(2020)Geirhos, Jacobsen, Michaelis, Zemel, Brendel,
+  Bethge, and Wichmann]{geirhos2020shortcut}
+Robert Geirhos, J{\"o}rn-Henrik Jacobsen, Claudio Michaelis, Richard Zemel,
+  Wieland Brendel, Matthias Bethge, and Felix~A Wichmann.
+\newblock Shortcut learning in deep neural networks.
+\newblock \emph{Nature Machine Intelligence}, 2\penalty0 (11):\penalty0
+  665--673, 2020.
+
+\bibitem[{He} et~al.(2017){He}, {Gkioxari}, {Dollár}, and
+  {Girshick}]{mask-rcnn-2017}
+K.~{He}, G.~{Gkioxari}, P.~{Dollár}, and R.~{Girshick}.
+\newblock Mask r-cnn.
+\newblock In \emph{2017 IEEE International Conference on Computer Vision
+  (ICCV)}, pages 2980--2988, 2017.
+
+\bibitem[He et~al.(2016)He, Zhang, Ren, and Sun]{he2016deep}
+Kaiming He, Xiangyu Zhang, Shaoqing Ren, and Jian Sun.
+\newblock Deep residual learning for image recognition.
+\newblock In \emph{Proceedings of the IEEE conference on computer vision and
+  pattern recognition}, pages 770--778, 2016.
+
+\bibitem[Karanam et~al.(2022)Karanam, Killamsetty, Kokel, and
+  Iyer]{karanam2022orient}
+Athresh Karanam, Krishnateja Killamsetty, Harsha Kokel, and Rishabh~K Iyer.
+\newblock Orient: Submodular mutual information measures for data subset
+  selection under distribution shift.
+\newblock In \emph{Advances in Neural Information Processing Systems}, 2022.
+
+\bibitem[Killamsetty et~al.(2021{\natexlab{a}})Killamsetty, Durga,
+  Ramakrishnan, De, and Iyer]{killamsetty2021grad}
+Krishnateja Killamsetty, S~Durga, Ganesh Ramakrishnan, Abir De, and Rishabh
+  Iyer.
+\newblock Grad-match: Gradient matching based data subset selection for
+  efficient deep model training.
+\newblock In \emph{International Conference on Machine Learning}, pages
+  5464--5474. PMLR, 2021{\natexlab{a}}.
+
+\bibitem[Killamsetty et~al.(2021{\natexlab{b}})Killamsetty, Sivasubramanian,
+  Ramakrishnan, and Iyer]{killamsetty2021glister}
+Krishnateja Killamsetty, Durga Sivasubramanian, Ganesh Ramakrishnan, and
+  Rishabh Iyer.
+\newblock Glister: Generalization based data subset selection for efficient and
+  robust learning.
+\newblock In \emph{Proceedings of the AAAI Conference on Artificial
+  Intelligence}, volume~35, pages 8110--8118, 2021{\natexlab{b}}.
+
+\bibitem[Kingma and Ba(2015)]{kingma2015adam}
+Diederik~P. Kingma and Jimmy Ba.
+\newblock Adam: {A} method for stochastic optimization.
+\newblock In Yoshua Bengio and Yann LeCun, editors, \emph{International
+  Conference on Learning Representations (ICLR)}, 2015.
+
+\bibitem[Kothawade et~al.(2021{\natexlab{a}})Kothawade, Beck, Killamsetty, and
+  Iyer]{kothawade2021similar}
+Suraj Kothawade, Nathan Beck, Krishnateja Killamsetty, and Rishabh Iyer.
+\newblock Similar: Submodular information measures based active learning in
+  realistic scenarios.
+\newblock \emph{Advances in Neural Information Processing Systems},
+  34:\penalty0 18685--18697, 2021{\natexlab{a}}.
+
+\bibitem[Kothawade et~al.(2021{\natexlab{b}})Kothawade, Ghosh, Shekhar, Xiang,
+  and Iyer]{kothawade2021talisman}
+Suraj Kothawade, Saikat Ghosh, Sumit Shekhar, Yu~Xiang, and Rishabh Iyer.
+\newblock Talisman: Targeted active learning for object detection with rare
+  classes and slices using submodular mutual information.
+\newblock \emph{arXiv preprint arXiv:2112.00166}, pages 1--16,
+  2021{\natexlab{b}}.
+
+\bibitem[Lai et~al.(2023)Lai, Mansimov, Xie, and
+  Zhang]{lai2023improvingpredictionbackwardcompatiblilitynlp}
+Yi-An Lai, Elman Mansimov, Yuqing Xie, and Yi~Zhang.
+\newblock Improving prediction backward-compatiblility in nlp model upgrade
+  with gated fusion, 2023.
+\newblock URL \url{https://arxiv.org/abs/2302.02080}.
+
+\bibitem[Leclerc et~al.(2021)Leclerc, Salman, Ilyas, Vemprala, Engstrom,
+  Vineet, Xiao, Zhang, Santurkar, Yang, et~al.]{leclerc20213db}
+Guillaume Leclerc, Hadi Salman, Andrew Ilyas, Sai Vemprala, Logan Engstrom,
+  Vibhav Vineet, Kai Xiao, Pengchuan Zhang, Shibani Santurkar, Greg Yang,
+  et~al.
+\newblock 3db: A framework for debugging computer vision models.
+\newblock \emph{arXiv preprint arXiv:2106.03805}, 2021.
+
+\bibitem[Li et~al.(2024)]{li2024self}
+X~Li et~al.
+\newblock Your vision-language model itself is a strong filter.
+\newblock \emph{arXiv preprint arXiv:2402.12501}, 2024.
+
+\bibitem[Lin et~al.(2014)Lin, Maire, Belongie, Hays, Perona, Ramanan,
+  Doll{\'a}r, and Zitnick]{lin2014microsoft}
+Tsung-Yi Lin, Michael Maire, Serge Belongie, James Hays, Pietro Perona, Deva
+  Ramanan, Piotr Doll{\'a}r, and C~Lawrence Zitnick.
+\newblock Microsoft coco: Common objects in context.
+\newblock In \emph{European conference on computer vision}, pages 740--755.
+  Springer, 2014.
+
+\bibitem[Liu et~al.(2015)Liu, Luo, Wang, and Tang]{liu2015deep}
+Ziwei Liu, Ping Luo, Xiaogang Wang, and Xiaoou Tang.
+\newblock Deep learning face attributes in the wild.
+\newblock In \emph{Proceedings of the IEEE international conference on computer
+  vision}, pages 3730--3738, December 2015.
+
+\bibitem[Neyman(1934)]{neyman1934two}
+Jerzy Neyman.
+\newblock On the two different aspects of the representative method: The method
+  of stratified sampling and the method of purposive selection.
+\newblock \emph{Journal of the Royal Statistical Society}, 97\penalty0
+  (4):\penalty0 558--625, 1934.
+
+\bibitem[OpenAI(2025)]{openai2025gpt5}
+OpenAI.
+\newblock Introducing gpt-5.
+\newblock \url{https://openai.com/index/introducing-gpt-5/}, 2025.
+\newblock Accessed: 2026-05-05.
+
+\bibitem[Rombach et~al.(2022)Rombach, Blattmann, Lorenz, Esser, and
+  Ommer]{rombach2022high}
+Robin Rombach, Andreas Blattmann, Dominik Lorenz, Patrick Esser, and Bj{\"o}rn
+  Ommer.
+\newblock High-resolution image synthesis with latent diffusion models.
+\newblock In \emph{Proceedings of the IEEE/CVF conference on computer vision
+  and pattern recognition}, pages 10684--10695, 2022.
+
+\bibitem[Sener and Savarese(2018)]{sener2018active}
+Ozan Sener and Silvio Savarese.
+\newblock Active learning for convolutional neural networks: A core-set
+  approach.
+\newblock In \emph{International Conference on Learning Representations}, 2018.
+
+\bibitem[Settles(2009)]{settles2009active}
+Burr Settles.
+\newblock Active learning literature survey.
+\newblock 2009.
+
+\bibitem[Singla et~al.(2024)Singla, Chegini, Moayeri, and
+  Feizi]{singla2024data}
+Sahil Singla, Atoosa~Malemir Chegini, Mazda Moayeri, and Soheil Feizi.
+\newblock Data-centric debugging: Mitigating model failures via targeted image
+  retrieval.
+\newblock In \emph{Proceedings of the IEEE/CVF Winter Conference on
+  Applications of Computer Vision (WACV)}, pages 4991--5000, 2024.
+
+\bibitem[Song et~al.(2020)Song, Meng, and Ermon]{ddim}
+Jiaming Song, Chenlin Meng, and Stefano Ermon.
+\newblock Denoising diffusion implicit models.
+\newblock In \emph{International Conference on Learning Representations}, 2020.
+
+\bibitem[Trabucco et~al.(2023)Trabucco, Doherty, Gurinas, and
+  Salakhutdinov]{trabucco2023effective}
+Brandon Trabucco, Kyle Doherty, Max Gurinas, and Ruslan Salakhutdinov.
+\newblock Effective data augmentation with diffusion models.
+\newblock \emph{arXiv preprint arXiv:2302.07944}, 2023.
+
+\bibitem[Van~der Maaten and Hinton(2008)]{van2008visualizing}
+Laurens Van~der Maaten and Geoffrey Hinton.
+\newblock Visualizing data using t-sne.
+\newblock \emph{Journal of machine learning research}, 9\penalty0 (11), 2008.
+
+\bibitem[Wang et~al.(2024{\natexlab{a}})Wang, Mrini, Yang, Kumar, Tian, Yan,
+  and Wang]{wang2024finetuned}
+Weizhi Wang, Khalil Mrini, Linjie Yang, Sateesh Kumar, Yu~Tian, Xifeng Yan, and
+  Heng Wang.
+\newblock Finetuned multimodal language models are high-quality image-text data
+  filters.
+\newblock \emph{arXiv preprint arXiv:2403.02677}, 2024{\natexlab{a}}.
+
+\bibitem[Wang et~al.(2024{\natexlab{b}})Wang, Chung, Wu, and De~la
+  Torre]{wang2024domain}
+Yinong~Oliver Wang, Younjoon Chung, Chen~Henry Wu, and Fernando De~la Torre.
+\newblock Domain gap embeddings for generative dataset augmentation.
+\newblock In \emph{Proceedings of the IEEE/CVF Conference on Computer Vision
+  and Pattern Recognition}, 2024{\natexlab{b}}.
+
+\bibitem[Wei et~al.(2015)Wei, Iyer, and Bilmes]{wei2015submodularity}
+Kai Wei, Rishabh Iyer, and Jeff Bilmes.
+\newblock Submodularity in data subset selection and active learning.
+\newblock In \emph{International conference on machine learning}, pages
+  1954--1963. PMLR, 2015.
+
+\bibitem[Xie and Tu(2015)]{xie2015holistically}
+Saining Xie and Zhuowen Tu.
+\newblock Holistically-nested edge detection, 2015.
+\newblock URL \url{https://arxiv.org/abs/1504.06375}.
+
+\bibitem[Xu et~al.(2025)Xu, Zhang, Mao, and Guo]{xu2025safefix}
+Ouyang Xu, Baoming Zhang, Ruiyu Mao, and Yunhui Guo.
+\newblock Safefix: Targeted model repair via controlled image generation, 2025.
+\newblock URL \url{https://arxiv.org/abs/2508.08701}.
+
+\bibitem[{Yang, Chenhongyi and Huang, Lichao and Crowley, Elliot
+  J.}(2024)]{yang2024ppal}
+{Yang, Chenhongyi and Huang, Lichao and Crowley, Elliot J.}
+\newblock {Plug and Play Active Learning for Object Detection}.
+\newblock In \emph{Proceedings of the IEEE/CVF Conference on Computer Vision
+  and Pattern Recognition (CVPR)}, 2024.
+
+\bibitem[Zhang et~al.(2024)Zhang, He, Kuang, Liu, Chen, Wu, Xiao, and
+  Zhang]{zhang2024distributionally}
+Fengda Zhang, Qianpei He, Kun Kuang, Jiashuo Liu, Long Chen, Chao Wu, Jun Xiao,
+  and Hanwang Zhang.
+\newblock Distributionally generative augmentation for fair facial attribute
+  classification.
+\newblock In \emph{Proceedings of the IEEE/CVF Conference on Computer Vision
+  and Pattern Recognition (CVPR)}, 2024.
+
+\bibitem[Zhang et~al.(2023)Zhang, Wu, Zhang, He, Zhang, Xu, Yang, Shih, Wang,
+  Zhang, et~al.]{zhang2023adding}
+Lvmin Zhang, Maneesh Wu, Chengyue Zhang, Yijun He, Siwei Zhang, Xiaolong Xu,
+  Jingwan Yang, Kevin Shih, Xintao Wang, Yingying Zhang, et~al.
+\newblock Adding conditional control to text-to-image diffusion models.
+\newblock \emph{arXiv preprint arXiv:2302.05543}, 2023.
+
+\bibitem[Zhang et~al.(2025)Zhang, Xie, Lu, Yang, and Yang]{zhang2025icedit}
+Zechuan Zhang, Ji~Xie, Yu~Lu, Zongxin Yang, and Yi~Yang.
+\newblock In-context edit: Enabling instructional image editing with in-context
+  generation in large-scale diffusion transformers.
+\newblock In \emph{Advances in Neural Information Processing Systems
+  (NeurIPS)}, 2025.
+\newblock arXiv:2504.20690.
+
+\end{thebibliography}

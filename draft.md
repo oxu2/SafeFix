@@ -1,3 +1,1226 @@
+> Are all reported downstream task metrics in Parts 1–6, including the
+> Generated-Complement table in Q2 and the exact-target/non-target tables in
+> Q3, computed using the same five seeds: 0, 42, 1234, 3407, and 2024? Please
+> indicate explicitly if any table instead reports a single seed or a
+> different aggregation.
+
+**Response:** Yes. All reported downstream task metrics in Parts 1–6 use the
+same five seeds: **0, 42, 1234, 3407, and 2024**. This includes the main
+cross-task comparison across all questions. **No downstream performance table in
+our response reports a single seed or uses a different seed set.**
+
+The previous official comment contained several numerical transcription
+errors. We have corrected those values below and clarified that all reported
+results are averaged over the same five random seeds. These corrections affect
+neither the experimental setup nor the conclusions. We apologize for the
+oversight and have updated the comment with a clearer description of the
+experimental setup.
+
+# Response to Reviewer yyPZ — Per-Seed Exact-Target Counts
+
+> Could the authors provide the per-seed numbers of correctly classified
+> target images for Generated-Complement and AttriSelect at source ratio 0.5,
+> together with the resulting per-seed exact-target accuracies using the
+> following format?
+
+**Response:** Yes. The exact ImageNet10 target is "pink AND fabric" and
+contains the same 16 test images for every seed. Each per-seed exact-target
+ACC is therefore the number of correct predictions divided by 16.
+
+**Generated-Complement:**
+
+seed 0: 12 / 16 = 0.7500
+
+seed 42: 11 / 16 = 0.6875
+
+seed 1234: 12 / 16 = 0.7500
+
+seed 3407: 13 / 16 = 0.8125
+
+seed 2024: 12 / 16 = 0.7500
+
+**AttriSelect:**
+
+seed 0: 13 / 16 = 0.8125
+
+seed 42: 12 / 16 = 0.7500
+
+seed 1234: 13 / 16 = 0.8125
+
+seed 3407: 11 / 16 = 0.6875
+
+seed 2024: 12 / 16 = 0.7500
+
+Across the five seeds, Generated-Complement obtains 60/80 correct predictions
+and mean exact-target ACC $0.7500 \pm 0.0442$, while AttriSelect obtains 61/80
+and $0.7625 \pm 0.0523$. The uncertainty is the sample standard deviation
+across the five seed-level accuracies. Because the methods differ by one
+correct prediction across the 80 seed-image evaluations, we treat this
+exact-target comparison as descriptive.
+
+# Response to Reviewer hG6j — Discussion Follow-Up (Part 1)
+
+Dear Reviewer, thank you for the follow-up. We appreciate your careful assessment of the additional results and address the remaining questions below.
+
+**This response is organized into 5 parts.**
+
+> Regarding the computational-cost evaluation, I noted that this concern was also raised by other reviewers and the AC. In my view, however, this issue primarily concerns the completeness and fairness of the experimental evaluation, rather than the core practical value of the proposed method. The revised results improve this aspect of the paper, but resolving this concern is unlikely to substantially change overall assessment or score.
+
+## Q1. Reusable Source-Attribute Metadata
+
+Thank you for recognizing the distinction between the completeness of the cost evaluation and the practical value of the method. We would like to clarify that our previous end-to-end tables used a deliberately conservative first-run accounting: **every AttriSelect row included the full source-pool attribute-assignment cost**, even though this preprocessing does not need to be repeated at each source ratio or repair iteration.
+
+For a fixed task-level attribute vocabulary, source-pool assignment is a one-time preprocessing step. The resulting metadata can be reused across source ratios, attribute-aware selectors, and later repair iterations on the same task. The full source pool therefore does not need to be annotated again for every repair. The corrected tables below remove this reusable assignment component from the AttriSelect totals; all baseline times are unchanged.
+
+**KITTI wall-clock time after reusing source-attribute metadata.**
+
+| Ratio | Random | Stratified | Entropy | CoreSet | BADGE | UHerding | PPAL | AttriSelect |
+|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| 0.1 | 42.17 min | 42.18 min | 48.82 min | 1.37 h | 1.12 h | 43.47 min | 43.53 min | 42.20 min |
+| 0.3 | 43.84 min | 43.85 min | 50.28 min | 1.44 h | 1.20 h | 45.08 min | 45.63 min | 43.87 min |
+| 0.5 | 45.18 min | 45.18 min | 51.73 min | 1.49 h | 1.27 h | 46.42 min | 47.47 min | 45.20 min |
+| 0.7 | 47.04 min | 47.05 min | 53.46 min | 1.56 h | 1.35 h | 48.16 min | 49.73 min | 47.07 min |
+| 0.9 | 48.86 min | 48.87 min | 55.53 min | 1.63 h | 1.42 h | 50.34 min | 51.46 min | 48.89 min |
+
+**COCO wall-clock time after reusing source-attribute metadata.**
+
+| Ratio | Random | Stratified | Entropy | CoreSet | BADGE | UHerding | PPAL | AttriSelect |
+|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| 0.1 | 4.41 min | 4.42 min | 10.98 min | 16.18 min | 19.63 min | 5.08 min | 6.97 min | 4.44 min |
+| 0.3 | 8.18 min | 8.18 min | 14.74 min | 39.86 min | 49.76 min | 8.93 min | 17.86 min | 8.20 min |
+| 0.5 | 12.37 min | 12.36 min | 19.04 min | 1.08 h | 1.56 h | 13.08 min | 29.47 min | 12.39 min |
+| 0.7 | 15.73 min | 15.75 min | 22.27 min | 1.45 h | 2.29 h | 16.34 min | 37.63 min | 15.77 min |
+| 0.9 | 19.66 min | 19.65 min | 26.28 min | 1.87 h | 3.01 h | 20.18 min | 40.94 min | 19.68 min |
+
+These adjusted tables represent later ratios or repair iterations after the task-level metadata has been created once. **`With metadata reuse, AttriSelect has nearly the same wall-clock cost as Random and Stratified at every ratio, while remaining substantially faster than CoreSet and BADGE.`** The earlier tables remain the conservative upper bound for a first repair on a task with no existing metadata.
+
+> I also examined the concerns raised by the AC and the other reviewers, particularly regarding the Same-Information Repair Baselines. While the new results are consistently positive, the improvement over the strongest same-information baseline appears relatively modest. It may therefore be helpful to investigate whether the advantage of AttriSelect can be demonstrated from additional perspectives—for example, through target-slice performance, robustness across different target attributes or failure slices, data efficiency at more constrained budgets, or a more detailed analysis of which samples are selected and why they lead to better repair. Such evidence could more clearly establish the benefit of the proposed selection mechanism beyond the small improvement in overall accuracy.
+
+## Q2. Same-Information Repair Baselines Across Downstream Tasks
+
+**Response:** We extended the same-information comparison across all three downstream tasks considered in this follow-up: ImageNet10 classification, COCO pose estimation, and KITTI object detection. For each task, all methods share the source pool, VLM attributes, diagnosed slice, fixed 1,000-image generated repair set, source ratios, diagnosis checkpoint, five seeds (0, 42, 1234, 3407, and 2024), and repair schedule. **Only the source-subset selection rule changes.**
+
+In addition to the three direct attribute-aware controls—Target-Slice + Stratified, Attribute-Filtered Random, and Attribute-Filtered Entropy—we added a stronger **Generated-Complement** baseline. It uses the same generated-set attribute statistics and source metadata as AttriSelect, prioritizes source samples whose attributes are underrepresented in the generated set, and maintains task-specific class or proxy-label balance. The full score and deterministic balancing procedure are described in our response to Reviewer yyPZ under **Q2. Generated-Complement baseline**. We also include all seven generic baselines from the manuscript appendix: Random, Stratified, Entropy, CoreSet, BADGE, UHerding, and PPAL.
+
+**ImageNet10 same-information repair comparison. Metric: FR (\%).**
+Each entry is the five-seed mean $\pm$ standard deviation. Attribute-aware
+baselines are marked with inline backticks and rendered in red on OpenReview.
+Ratio Mean averages the five FR means at source ratios 0.1/0.3/0.5/0.7/0.9;
+standard deviations are not pooled.
+
+# Response to Reviewer hG6j — Discussion Follow-Up (Part 2)
+
+## Q2. Same-Information Repair Baselines Across Downstream Tasks (continued)
+
+**ImageNet10.**
+
+| Source Ratio | Random | Stratified | Entropy | CoreSet | BADGE | UHerding | PPAL | `Target-Slice + Stratified` | `Attribute-Filtered Random` | `Attribute-Filtered Entropy` | `Generated-Complement` | **`AttriSelect`** |
+|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| 0.1 | 3.40 $\pm$ 0.88 | 3.47 $\pm$ 1.31 | 2.87 $\pm$ 0.57 | 3.40 $\pm$ 1.13 | 5.31 $\pm$ 0.78 | 5.59 $\pm$ 0.81 | 3.96 $\pm$ 0.92 | 4.60 $\pm$ 1.80 | 5.91 $\pm$ 1.20 | 5.09 $\pm$ 0.88 | 1.50 $\pm$ 0.87 | **6.93 $\pm$ 1.52** |
+| 0.3 | 4.78 $\pm$ 0.71 | 6.93 $\pm$ 1.27 | 4.21 $\pm$ 0.57 | 6.93 $\pm$ 0.42 | 8.84 $\pm$ 1.27 | 10.47 $\pm$ 1.52 | 7.75 $\pm$ 0.78 | 7.50 $\pm$ 0.85 | 7.39 $\pm$ 1.49 | 6.79 $\pm$ 0.81 | 5.31 $\pm$ 1.04 | **11.28 $\pm$ 1.56** |
+| 0.5 | 7.32 $\pm$ 1.06 | 9.66 $\pm$ 0.60 | 5.59 $\pm$ 0.96 | 8.03 $\pm$ 0.60 | 10.47 $\pm$ 1.03 | 8.38 $\pm$ 0.99 | 8.84 $\pm$ 0.57 | 9.37 $\pm$ 1.31 | 9.52 $\pm$ 1.34 | 9.52 $\pm$ 1.10 | 11.29 $\pm$ 0.76 | **11.85 $\pm$ 0.35** |
+| 0.7 | 8.84 $\pm$ 1.52 | 6.12 $\pm$ 1.52 | 6.40 $\pm$ 1.49 | 7.75 $\pm$ 1.52 | 10.75 $\pm$ 0.39 | 10.47 $\pm$ 1.20 | 8.84 $\pm$ 1.20 | 9.23 $\pm$ 2.30 | 10.65 $\pm$ 1.34 | 10.93 $\pm$ 0.71 | 8.57 $\pm$ 1.18 | **12.10 $\pm$ 1.31** |
+| 0.9 | 10.22 $\pm$ 1.41 | 10.47 $\pm$ 0.39 | 10.22 $\pm$ 0.92 | 6.12 $\pm$ 1.24 | 9.37 $\pm$ 0.96 | 11.57 $\pm$ 1.17 | 11.85 $\pm$ 1.45 | 11.04 $\pm$ 0.92 | 10.47 $\pm$ 1.27 | 11.67 $\pm$ 1.59 | 10.48 $\pm$ 0.95 | **13.76 $\pm$ 0.67** |
+| Ratio Mean | 6.91 | 7.33 | 5.86 | 6.44 | 8.95 | 9.30 | 8.25 | 8.35 | 8.79 | 8.80 | 7.43 | **11.19** |
+
+**COCO pose estimation. Metric: Fix Rate (FR, %).**
+
+| Source Ratio | Random | Stratified | Entropy | CoreSet | BADGE | UHerding | PPAL | `Target-Slice + Stratified` | `Attribute-Filtered Random` | `Attribute-Filtered Entropy` | `Generated-Complement` | **`AttriSelect`** |
+|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| 0.1 | 3.56 $\pm$ 0.68 | 5.08 $\pm$ 0.78 | 5.61 $\pm$ 0.46 | -0.61 $\pm$ 0.98 | 2.03 $\pm$ 0.95 | 2.71 $\pm$ 1.07 | 1.17 $\pm$ 0.37 | 5.63 $\pm$ 0.66 | -3.42 $\pm$ 0.87 | 4.47 $\pm$ 0.91 | 2.50 $\pm$ 0.83 | **6.86 $\pm$ 1.07** |
+| 0.3 | 3.37 $\pm$ 0.73 | 8.32 $\pm$ 0.51 | 7.64 $\pm$ 0.71 | 8.64 $\pm$ 0.76 | 6.12 $\pm$ 1.07 | 4.32 $\pm$ 0.61 | 6.42 $\pm$ 0.49 | 9.38 $\pm$ 0.62 | 6.53 $\pm$ 0.84 | 8.37 $\pm$ 0.57 | 7.22 $\pm$ 0.68 | **9.86 $\pm$ 0.54** |
+| 0.5 | 7.49 $\pm$ 0.49 | 8.00 $\pm$ 0.66 | 9.27 $\pm$ 0.63 | 6.47 $\pm$ 0.88 | 7.42 $\pm$ 0.44 | 6.12 $\pm$ 0.93 | 6.83 $\pm$ 0.54 | 8.83 $\pm$ 0.74 | 7.11 $\pm$ 0.76 | 8.16 $\pm$ 0.35 | 8.67 $\pm$ 0.79 | **10.13 $\pm$ 0.29** |
+| 0.7 | 6.08 $\pm$ 1.00 | 9.69 $\pm$ 0.51 | 9.54 $\pm$ 0.54 | 9.10 $\pm$ 0.54 | 8.64 $\pm$ 0.39 | 6.17 $\pm$ 1.00 | 7.83 $\pm$ 1.07 | 9.24 $\pm$ 0.81 | 9.26 $\pm$ 0.68 | 9.68 $\pm$ 0.64 | 9.56 $\pm$ 0.72 | **10.18 $\pm$ 0.59** |
+| 0.9 | 4.61 $\pm$ 0.98 | 9.49 $\pm$ 0.51 | 6.54 $\pm$ 0.44 | 7.32 $\pm$ 0.56 | 7.59 $\pm$ 0.68 | 7.05 $\pm$ 0.34 | 9.74 $\pm$ 0.61 | 8.68 $\pm$ 0.69 | 6.31 $\pm$ 0.83 | 9.78 $\pm$ 0.79 | 6.96 $\pm$ 0.91 | **11.05 $\pm$ 0.76** |
+| Ratio Mean | 5.02 | 8.12 | 7.72 | 6.18 | 6.36 | 5.27 | 6.40 | 8.35 | 5.16 | 8.09 | 6.98 | **9.62** |
+
+**KITTI object detection. Metric: Fix Rate (FR, %).**
+
+| Source Ratio | Random | Stratified | Entropy | CoreSet | BADGE | UHerding | PPAL | `Target-Slice + Stratified` | `Attribute-Filtered Random` | `Attribute-Filtered Entropy` | `Generated-Complement` | **`AttriSelect`** |
+|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| 0.1 | -9.65 $\pm$ 0.48 | -7.27 $\pm$ 0.85 | -7.52 $\pm$ 0.85 | -8.89 $\pm$ 0.89 | -6.95 $\pm$ 0.57 | -9.24 $\pm$ 0.71 | -8.32 $\pm$ 0.82 | -8.24 $\pm$ 0.77 | -6.14 $\pm$ 0.68 | -6.81 $\pm$ 0.59 | -6.24 $\pm$ 0.84 | **-5.81 $\pm$ 0.53** |
+| 0.3 | -0.48 $\pm$ 0.39 | -1.23 $\pm$ 0.82 | 0.23 $\pm$ 0.75 | -0.32 $\pm$ 0.30 | -0.05 $\pm$ 0.69 | -1.21 $\pm$ 0.48 | -1.33 $\pm$ 0.89 | -0.62 $\pm$ 0.56 | 0.04 $\pm$ 0.74 | 0.13 $\pm$ 0.46 | 0.17 $\pm$ 0.43 | **0.46 $\pm$ 0.53** |
+| 0.5 | 2.13 $\pm$ 0.69 | 1.23 $\pm$ 0.89 | 3.20 $\pm$ 1.01 | 3.04 $\pm$ 0.98 | 2.29 $\pm$ 0.30 | 1.12 $\pm$ 0.62 | 2.17 $\pm$ 0.48 | 2.83 $\pm$ 0.36 | 2.58 $\pm$ 0.91 | 3.25 $\pm$ 0.33 | 1.72 $\pm$ 0.58 | **3.36 $\pm$ 0.27** |
+| 0.7 | 3.20 $\pm$ 0.89 | 3.06 $\pm$ 0.30 | 3.34 $\pm$ 0.55 | 3.34 $\pm$ 0.30 | 2.08 $\pm$ 0.39 | 3.25 $\pm$ 0.55 | 3.57 $\pm$ 0.69 | 3.54 $\pm$ 0.48 | 2.93 $\pm$ 0.47 | 3.43 $\pm$ 0.61 | **4.06 $\pm$ 0.71** | 3.52 $\pm$ 0.89 |
+| 0.9 | 4.37 $\pm$ 0.89 | 4.66 $\pm$ 0.85 | 4.66 $\pm$ 0.96 | 3.54 $\pm$ 0.25 | 4.21 $\pm$ 0.41 | 4.85 $\pm$ 1.01 | 3.89 $\pm$ 0.59 | 4.38 $\pm$ 0.82 | 4.46 $\pm$ 0.31 | 4.68 $\pm$ 0.88 | 3.74 $\pm$ 0.61 | **5.12 $\pm$ 0.27** |
+| Ratio Mean | -0.09 | 0.09 | 0.78 | 0.14 | 0.32 | -0.25 | 0.00 | 0.38 | 0.77 | 0.94 | 0.69 | **1.33** |
+
+# Response to Reviewer hG6j — Discussion Follow-Up (Part 3)
+
+## Q2. Same-Information Repair Baselines Across Downstream Tasks (continued)
+
+> **Takeaway.** The ImageNet10 controls show that repair-relevant attributes
+> help simple selectors. Attribute-Filtered Random and Attribute-Filtered
+> Entropy beat their generic counterparts at all five ratios, and Target-Slice + Stratified beats Stratified at four of five. Attribute access by itself is
+> not enough, however. **AttriSelect has the highest Ratio Mean on ImageNet10,
+> COCO, and KITTI, and the highest FR at 14 of the 15 task--ratio points.** The
+> exception is KITTI at ratio 0.7, where Generated-Complement is higher by 0.54
+> FR points. **`Under matched information and repair budgets, AttriSelect still
+> gives the best aggregate performance across classification, pose estimation,
+> and object detection.`**
+>
+> **Stability under extreme source budgets.** Budget size affects both
+> traditional Active Learning methods and the same-information baselines. At
+> KITTI ratio 0.1, only 500 source images are selected. AttriSelect has the
+> highest FR, while the other methods have larger drops. COCO ratio 0.9 selects
+> 18,000 source images. Several methods are worse than at ratio 0.7, but
+> AttriSelect rises from 10.18 to 11.05 FR.
+> **`AttriSelect is the only evaluated method whose mean FR increases at every
+> successive ratio on all three tasks.`**
+
+
+## Q3. More Constrained Source Budgets
+
+We further tested more constrained source budgets on ImageNet10 and COCO. The
+selected source sets contain only 208/520 ImageNet10 images and 400/1,000 COCO
+images at source ratios 0.02/0.05. All methods use the same diagnosis and
+repair settings. The metric is Fix Rate (FR, \%); entries are mean $\pm$
+standard deviation, and Ratio Mean averages the two displayed FR means
+without pooling their standard deviations.
+
+**ImageNet10 classification under constrained source budgets. Metric: FR
+(\%; mean $\pm$ standard deviation).**
+
+| Source Ratio | Random | Stratified | Entropy | CoreSet | BADGE | UHerding | PPAL | `Generated-Complement` | `Target-Slice + Stratified` | `Attribute-Filtered Random` | `Attribute-Filtered Entropy` | **`AttriSelect`** |
+|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| 0.02 | -3.10 $\pm$ 1.22 | -2.68 $\pm$ 1.08 | -2.35 $\pm$ 1.34 | -3.42 $\pm$ 1.16 | -2.12 $\pm$ 1.27 | -2.57 $\pm$ 1.05 | -2.89 $\pm$ 1.18 | -1.77 $\pm$ 1.21 | -2.04 $\pm$ 1.38 | 0.68 $\pm$ 0.94 | -0.95 $\pm$ 1.07 | **1.23 $\pm$ 0.72** |
+| 0.05 | 1.84 $\pm$ 0.91 | 2.41 $\pm$ 0.84 | 2.76 $\pm$ 1.02 | 1.58 $\pm$ 0.88 | 2.91 $\pm$ 0.95 | 2.64 $\pm$ 0.90 | 2.20 $\pm$ 0.82 | 3.13 $\pm$ 0.86 | 3.95 $\pm$ 0.92 | 3.13 $\pm$ 0.78 | 2.32 $\pm$ 0.81 | **5.58 $\pm$ 0.61** |
+| Ratio Mean | -0.63 | -0.14 | 0.21 | -0.92 | 0.40 | 0.04 | -0.35 | 0.68 | 0.96 | 1.91 | 0.69 | **3.41** |
+
+**COCO pose estimation under constrained source budgets. Metric: FR
+(\%; mean $\pm$ standard deviation).**
+
+| Source Ratio | Random | Stratified | Entropy | CoreSet | BADGE | UHerding | PPAL | `Generated-Complement` | `Target-Slice + Stratified` | `Attribute-Filtered Random` | `Attribute-Filtered Entropy` | **`AttriSelect`** |
+|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| 0.02 | -8.75 $\pm$ 1.42 | -7.15 $\pm$ 1.31 | -5.62 $\pm$ 1.18 | -9.30 $\pm$ 1.57 | -6.40 $\pm$ 1.26 | -8.10 $\pm$ 1.49 | -7.00 $\pm$ 1.35 | -2.84 $\pm$ 1.16 | -7.80 $\pm$ 1.43 | -2.46 $\pm$ 1.02 | -6.23 $\pm$ 1.28 | **-2.02 $\pm$ 0.91** |
+| 0.05 | -4.20 $\pm$ 1.12 | -2.96 $\pm$ 0.98 | -1.84 $\pm$ 0.87 | -5.10 $\pm$ 1.24 | -2.55 $\pm$ 0.93 | -4.00 $\pm$ 1.15 | -3.20 $\pm$ 1.01 | -31.00 $\pm$ 2.34 | -11.64 $\pm$ 1.76 | -0.61 $\pm$ 0.74 | -1.10 $\pm$ 0.82 | **1.63 $\pm$ 0.68** |
+| Ratio Mean | -6.48 | -5.06 | -3.73 | -7.20 | -4.48 | -6.05 | -5.10 | -16.92 | -9.72 | -1.54 | -3.67 | **-0.20** |
+
+> **Takeaway.** At these budgets, many baselines have negative FR: with only
+> 208--520 ImageNet10 images or 400--1,000 COCO images, the fixed repair
+> schedule can make the model worse rather than better. This suggests that
+> extremely small source budgets may require a different source/generated
+> mixture or a longer repair schedule. We intentionally keep the current
+> settings unchanged so that the selector remains the only comparison
+> variable. **`Even in this constrained regime, AttriSelect is best at all
+> four dataset--ratio points and has the highest Ratio Mean on both tasks.`**
+> Its Ratio Mean exceeds the strongest alternative by **1.50 FR points on
+> ImageNet10** and **1.34 FR points on COCO**. The absolute gains are modest
+> because the repair data and training budget are small, but the ordering is
+> consistent under the same controlled protocol.
+
+# Response to Reviewer hG6j — Discussion Follow-Up (Part 4)
+
+## Q4. Exact-Slice and Selected-Sample Evidence
+
+The cross-task results in Q2 cover classification, pose estimation, and object detection under task-specific diagnosed failures. We also evaluated the exact diagnosed conjunctions at ratio 0.5. On ImageNet10, AttriSelect improves the exact "pink AND fabric" slice by **13.75 percentage points** and its non-target complement by **3.22 points**. On COCO, it improves the exact "brown AND rainy" slice by **10.13 points** and the non-target complement by **4.04 points**. The full five-seed tables, slice sizes, per-seed ImageNet10 correct counts, and variability are reported in our response to Reviewer yyPZ under **Q3. Exact diagnosed-slice and non-target performance**. The positive target and non-target changes show that the overall gains include the diagnosed failures without reducing performance on the remaining test data; because the ImageNet10 exact slice contains only 16 images, its method ordering is descriptive.
+
+To examine which source samples are selected, we compare AttriSelect with Generated-Complement and the three direct same-information controls on ImageNet10. All methods use the same source pool, fixed 1,000-image generated set, diagnosis checkpoint, source ratios, and 15-epoch repair schedule. Downstream FR values are five-seed means.
+
+Each `# (%)` entry gives the sample count and its percentage within the selected source subset. Exact Target matches "pink AND fabric"; Single-Factor matches exactly one of pink or fabric; Background matches neither. Unique Class--Attribute Tuples counts distinct (class, color, background, texture) combinations. Classes Covered is the number of ImageNet10 classes represented in the selected subset. FR is Relative Error Reduction, $(M_{repair}-M_{diagnosis})/(1-M_{diagnosis})\times100\%$; higher is better.
+
+| Ratio | Method | Exact Target # (%) | Single-Factor # (%) | Background # (%) | Unique Class--Attribute Tuples | Classes Covered | FR |
+|---:|:---|---:|---:|---:|---:|---:|---:|
+| 0.1 | Target-Slice + Stratified | 130 (12.50%) | 141 (13.56%) | 769 (73.94%) | 382 | 10 | 4.60 |
+| 0.1 | Attribute-Filtered Random | 30 (2.88%) | 686 (65.96%) | 324 (31.15%) | 401 | 10 | 5.91 |
+| 0.1 | Attribute-Filtered Entropy | 34 (3.27%) | 682 (65.58%) | 324 (31.15%) | 410 | 10 | 5.09 |
+| 0.1 | Generated-Complement | 0 (0.00%) | 58 (5.58%) | 982 (94.42%) | 396 | 10 | 1.50 |
+| 0.1 | AttriSelect | 24 (2.31%) | 269 (25.87%) | 747 (71.83%) | 680 | 10 | 6.93 |
+| 0.3 | Target-Slice + Stratified | 130 (4.17%) | 581 (18.62%) | 2409 (77.21%) | 762 | 10 | 7.50 |
+| 0.3 | Attribute-Filtered Random | 60 (1.92%) | 1130 (36.22%) | 1930 (61.86%) | 780 | 10 | 7.39 |
+| 0.3 | Attribute-Filtered Entropy | 70 (2.24%) | 1120 (35.90%) | 1930 (61.86%) | 801 | 10 | 6.79 |
+| 0.3 | Generated-Complement | 0 (0.00%) | 266 (8.53%) | 2854 (91.47%) | 692 | 10 | 5.31 |
+| 0.3 | AttriSelect | 40 (1.28%) | 823 (26.38%) | 2257 (72.34%) | 1165 | 10 | 11.28 |
+| 0.5 | Target-Slice + Stratified | 130 (2.50%) | 1005 (19.33%) | 4065 (78.17%) | 1007 | 10 | 9.37 |
+| 0.5 | Attribute-Filtered Random | 101 (1.94%) | 1505 (28.94%) | 3594 (69.12%) | 989 | 10 | 9.52 |
+| 0.5 | Attribute-Filtered Entropy | 92 (1.77%) | 1514 (29.12%) | 3594 (69.12%) | 995 | 10 | 9.52 |
+| 0.5 | Generated-Complement | 0 (0.00%) | 618 (11.88%) | 4582 (88.12%) | 902 | 10 | 11.29 |
+| 0.5 | AttriSelect | 95 (1.83%) | 1183 (22.75%) | 3922 (75.42%) | 1318 | 10 | 11.85 |
+| 0.7 | Target-Slice + Stratified | 130 (1.79%) | 1449 (19.91%) | 5700 (78.31%) | 1194 | 10 | 9.23 |
+| 0.7 | Attribute-Filtered Random | 125 (1.72%) | 1834 (25.20%) | 5320 (73.09%) | 1186 | 10 | 10.65 |
+| 0.7 | Attribute-Filtered Entropy | 118 (1.62%) | 1841 (25.29%) | 5320 (73.09%) | 1168 | 10 | 10.93 |
+| 0.7 | Generated-Complement | 0 (0.00%) | 1034 (14.21%) | 6245 (85.79%) | 1044 | 10 | 8.57 |
+| 0.7 | AttriSelect | 95 (1.31%) | 1519 (20.87%) | 5665 (77.83%) | 1379 | 10 | 12.10 |
+| 0.9 | Target-Slice + Stratified | 130 (1.39%) | 1884 (20.13%) | 7346 (78.48%) | 1345 | 10 | 11.04 |
+| 0.9 | Attribute-Filtered Random | 129 (1.38%) | 2038 (21.77%) | 7193 (76.85%) | 1325 | 10 | 10.47 |
+| 0.9 | Attribute-Filtered Entropy | 129 (1.38%) | 2038 (21.77%) | 7193 (76.85%) | 1315 | 10 | 11.67 |
+| 0.9 | Generated-Complement | 0 (0.00%) | 1493 (15.95%) | 7867 (84.05%) | 1187 | 10 | 10.48 |
+| 0.9 | AttriSelect | 130 (1.39%) | 1888 (20.17%) | 7342 (78.44%) | 1403 | 10 | 13.76 |
+
+# Response to Reviewer hG6j — Discussion Follow-Up (Part 5)
+
+## Q4. Exact-Slice and Selected-Sample Evidence (continued)
+
+Class Imbalance is the difference between the largest and smallest selected counts across the ten ImageNet10 classes; lower is more balanced. Generated Redundancy is the selected-set mean fraction of the two generated-supported target fields matched by each source sample, namely "color=pink" and "texture=fabric"; lower means less duplication of the generated target attributes. Jaccard with AttriSelect is $|S_m\cap S_A|/|S_m\cup S_A|$, where $S_m$ and $S_A$ are the source subsets selected by method $m$ and AttriSelect at the same ratio. Mean Pairwise Attribute Distance is the mean categorical Hamming distance over color, background, and texture across all unordered selected-source pairs; higher indicates broader attribute variation.
+
+| Ratio | Method | Class Imbalance $\downarrow$ | Generated Redundancy $\downarrow$ | Jaccard with AttriSelect | Mean Pairwise Attribute Distance $\uparrow$ | FR |
+|---:|:---|---:|---:|---:|---:|---:|
+| 0.1 | Target-Slice + Stratified | 0 | 0.1928 | 0.0500 | 0.7870 | 4.60 |
+| 0.1 | Attribute-Filtered Random | 0 | 0.3587 | 0.1129 | 0.7188 | 5.91 |
+| 0.1 | Attribute-Filtered Entropy | 0 | 0.3606 | 0.1141 | 0.7265 | 5.09 |
+| 0.1 | Generated-Complement | 0 | 0.0279 | 0.0711 | 0.7853 | 1.50 |
+| 0.1 | AttriSelect | 0 | 0.1524 | 1.0000 | 0.8597 | 6.93 |
+| 0.3 | Target-Slice + Stratified | 0 | 0.1348 | 0.1782 | 0.7902 | 7.50 |
+| 0.3 | Attribute-Filtered Random | 0 | 0.2003 | 0.2086 | 0.7772 | 7.39 |
+| 0.3 | Attribute-Filtered Entropy | 0 | 0.2019 | 0.2197 | 0.7805 | 6.79 |
+| 0.3 | Generated-Complement | 0 | 0.0426 | 0.1710 | 0.7861 | 5.31 |
+| 0.3 | AttriSelect | 2 | 0.1447 | 1.0000 | 0.8414 | 11.28 |
+| 0.5 | Target-Slice + Stratified | 0 | 0.1216 | 0.3281 | 0.7912 | 9.37 |
+| 0.5 | Attribute-Filtered Random | 0 | 0.1641 | 0.3437 | 0.7847 | 9.52 |
+| 0.5 | Attribute-Filtered Entropy | 0 | 0.1633 | 0.3437 | 0.7861 | 9.52 |
+| 0.5 | Generated-Complement | 0 | 0.0594 | 0.3161 | 0.7881 | 11.29 |
+| 0.5 | AttriSelect | 4 | 0.1320 | 1.0000 | 0.8272 | 11.85 |
+| 0.7 | Target-Slice + Stratified | 1 | 0.1174 | 0.5391 | 0.7919 | 9.23 |
+| 0.7 | Attribute-Filtered Random | 1 | 0.1432 | 0.5323 | 0.7883 | 10.65 |
+| 0.7 | Attribute-Filtered Entropy | 1 | 0.1427 | 0.5300 | 0.7879 | 10.93 |
+| 0.7 | Generated-Complement | 1 | 0.0710 | 0.5165 | 0.7896 | 8.57 |
+| 0.7 | AttriSelect | 5 | 0.1174 | 1.0000 | 0.8124 | 12.10 |
+| 0.9 | Target-Slice + Stratified | 0 | 0.1145 | 0.8169 | 0.7915 | 11.04 |
+| 0.9 | Attribute-Filtered Random | 0 | 0.1226 | 0.8154 | 0.7904 | 10.47 |
+| 0.9 | Attribute-Filtered Entropy | 0 | 0.1226 | 0.8162 | 0.7909 | 11.67 |
+| 0.9 | Generated-Complement | 0 | 0.0798 | 0.8080 | 0.7899 | 10.48 |
+| 0.9 | AttriSelect | 6 | 0.1147 | 1.0000 | 0.7977 | 13.76 |
+
+At the more constrained ratios, each Best-Control value is selected independently from Target-Slice + Stratified, Attribute-Filtered Random, Attribute-Filtered Entropy, and Generated-Complement. Best-Control is the maximum for FR, Unique Tuples, and Attribute Distance and the minimum for Class Imbalance. Each margin or gain is the AttriSelect value minus the corresponding Best-Control value.
+
+| Ratio | AttriSelect FR | Best-Control FR | FR Margin | AttriSelect Class Imbalance | Best-Control Class Imbalance | AttriSelect Unique Tuples | Best-Control Unique Tuples | Tuple Gain | AttriSelect Attribute Distance | Best-Control Attribute Distance | Distance Gain |
+|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| 0.02 | 1.23 | 0.68 | +0.55 | 1 | 1 | 184 | 142 | +42 | 0.8823 | 0.7695 | +0.1128 |
+| 0.05 | 5.58 | 3.95 | +1.63 | 0 | 0 | 397 | 267 | +130 | 0.8680 | 0.7828 | +0.0853 |
+
+> **Takeaway.** At ratios 0.02 and 0.05, AttriSelect improves five-seed FR over the strongest control by 0.55 and 1.63 points. It also covers 42 and 130 more class--attribute tuples and increases Mean Pairwise Attribute Distance by 0.1128 and 0.0853, while matching the best Class Imbalance. **`With only 208 or 520 selected source samples, AttriSelect has the highest FR and covers a broader range of classes and attributes.`**
+>
+> Across ratios 0.1--0.9, AttriSelect also has the highest FR, Unique Class--Attribute Tuples, and Mean Pairwise Attribute Distance among the matched controls. Generated-Complement has lower Generated Redundancy but lower FR, so avoiding generated-target duplication alone is insufficient. This pattern is consistent with AttriSelect retaining repair-relevant samples without narrowing class and attribute coverage.
+
+
+# Response to Reviewer yyPZ — Discussion Follow-Up (Part 1)
+
+Dear Reviewer yyPZ, thank you for the follow-up. We added the requested
+cross-task controls and exact-slice evaluation, and we also test how the
+conclusions change under different repair and source budgets.
+
+**This response is organized into 7 parts.**
+
+## Q1. Cross-task same-information comparison
+
+> 1. The same-information comparison is only conducted on ImageNet10. The
+> paper claims generality across classification, pose estimation, and
+> detection, but no attribute-aware comparison is provided on COCO or KITTI.
+> Therefore, the rebuttal currently shows only that AttriSelect outperforms
+> several simple heuristics on one 10-class classification task.
+
+**Response:** ImageNet10 alone was not enough to support the cross-task claim,
+so we repeated the same-information comparison on COCO pose estimation and
+KITTI object detection. For each task, all methods share the source pool, VLM
+attributes, diagnosed slice, fixed 1,000-image generated repair set, source
+ratios, diagnosis checkpoint, five seeds (0, 42, 1234, 3407, and 2024), and
+repair schedule. **Only the source-subset selection rule changes.** We also
+include all seven generic baselines from the manuscript appendix: Random,
+Stratified, Entropy, CoreSet, BADGE, UHerding, and PPAL.
+
+**ImageNet10 same-information repair comparison. Metric: FR (\%).**
+Each entry is the five-seed mean $\pm$ standard deviation. Attribute-aware
+baselines are marked with inline backticks and rendered in red on OpenReview.
+Ratio Mean averages the five FR means at source ratios 0.1/0.3/0.5/0.7/0.9;
+standard deviations are not pooled.
+
+
+| Source Ratio | Random | Stratified | Entropy | CoreSet | BADGE | UHerding | PPAL | `Target-Slice + Stratified` | `Attribute-Filtered Random` | `Attribute-Filtered Entropy` | `Generated-Complement` | **`AttriSelect`** |
+|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| 0.1 | 3.40 $\pm$ 0.88 | 3.47 $\pm$ 1.31 | 2.87 $\pm$ 0.57 | 3.40 $\pm$ 1.13 | 5.31 $\pm$ 0.78 | 5.59 $\pm$ 0.81 | 3.96 $\pm$ 0.92 | 4.60 $\pm$ 1.80 | 5.91 $\pm$ 1.20 | 5.09 $\pm$ 0.88 | 1.50 $\pm$ 0.87 | **6.93 $\pm$ 1.52** |
+| 0.3 | 4.78 $\pm$ 0.71 | 6.93 $\pm$ 1.27 | 4.21 $\pm$ 0.57 | 6.93 $\pm$ 0.42 | 8.84 $\pm$ 1.27 | 10.47 $\pm$ 1.52 | 7.75 $\pm$ 0.78 | 7.50 $\pm$ 0.85 | 7.39 $\pm$ 1.49 | 6.79 $\pm$ 0.81 | 5.31 $\pm$ 1.04 | **11.28 $\pm$ 1.56** |
+| 0.5 | 7.32 $\pm$ 1.06 | 9.66 $\pm$ 0.60 | 5.59 $\pm$ 0.96 | 8.03 $\pm$ 0.60 | 10.47 $\pm$ 1.03 | 8.38 $\pm$ 0.99 | 8.84 $\pm$ 0.57 | 9.37 $\pm$ 1.31 | 9.52 $\pm$ 1.34 | 9.52 $\pm$ 1.10 | 11.29 $\pm$ 0.76 | **11.85 $\pm$ 0.35** |
+| 0.7 | 8.84 $\pm$ 1.52 | 6.12 $\pm$ 1.52 | 6.40 $\pm$ 1.49 | 7.75 $\pm$ 1.52 | 10.75 $\pm$ 0.39 | 10.47 $\pm$ 1.20 | 8.84 $\pm$ 1.20 | 9.23 $\pm$ 2.30 | 10.65 $\pm$ 1.34 | 10.93 $\pm$ 0.71 | 8.57 $\pm$ 1.18 | **12.10 $\pm$ 1.31** |
+| 0.9 | 10.22 $\pm$ 1.41 | 10.47 $\pm$ 0.39 | 10.22 $\pm$ 0.92 | 6.12 $\pm$ 1.24 | 9.37 $\pm$ 0.96 | 11.57 $\pm$ 1.17 | 11.85 $\pm$ 1.45 | 11.04 $\pm$ 0.92 | 10.47 $\pm$ 1.27 | 11.67 $\pm$ 1.59 | 10.48 $\pm$ 0.95 | **13.76 $\pm$ 0.67** |
+| Ratio Mean | 6.91 | 7.33 | 5.86 | 6.44 | 8.95 | 9.30 | 8.25 | 8.35 | 8.79 | 8.80 | 7.43 | **11.19** |
+
+**COCO pose estimation. Metric: Fix Rate (FR, %).**
+
+| Source Ratio | Random | Stratified | Entropy | CoreSet | BADGE | UHerding | PPAL | `Target-Slice + Stratified` | `Attribute-Filtered Random` | `Attribute-Filtered Entropy` | `Generated-Complement` | **`AttriSelect`** |
+|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| 0.1 | 3.56 $\pm$ 0.68 | 5.08 $\pm$ 0.78 | 5.61 $\pm$ 0.46 | -0.61 $\pm$ 0.98 | 2.03 $\pm$ 0.95 | 2.71 $\pm$ 1.07 | 1.17 $\pm$ 0.37 | 5.63 $\pm$ 0.66 | -3.42 $\pm$ 0.87 | 4.47 $\pm$ 0.91 | 2.50 $\pm$ 0.83 | **6.86 $\pm$ 1.07** |
+| 0.3 | 3.37 $\pm$ 0.73 | 8.32 $\pm$ 0.51 | 7.64 $\pm$ 0.71 | 8.64 $\pm$ 0.76 | 6.12 $\pm$ 1.07 | 4.32 $\pm$ 0.61 | 6.42 $\pm$ 0.49 | 9.38 $\pm$ 0.62 | 6.53 $\pm$ 0.84 | 8.37 $\pm$ 0.57 | 7.22 $\pm$ 0.68 | **9.86 $\pm$ 0.54** |
+| 0.5 | 7.49 $\pm$ 0.49 | 8.00 $\pm$ 0.66 | 9.27 $\pm$ 0.63 | 6.47 $\pm$ 0.88 | 7.42 $\pm$ 0.44 | 6.12 $\pm$ 0.93 | 6.83 $\pm$ 0.54 | 8.83 $\pm$ 0.74 | 7.11 $\pm$ 0.76 | 8.16 $\pm$ 0.35 | 8.67 $\pm$ 0.79 | **10.13 $\pm$ 0.29** |
+| 0.7 | 6.08 $\pm$ 1.00 | 9.69 $\pm$ 0.51 | 9.54 $\pm$ 0.54 | 9.10 $\pm$ 0.54 | 8.64 $\pm$ 0.39 | 6.17 $\pm$ 1.00 | 7.83 $\pm$ 1.07 | 9.24 $\pm$ 0.81 | 9.26 $\pm$ 0.68 | 9.68 $\pm$ 0.64 | 9.56 $\pm$ 0.72 | **10.18 $\pm$ 0.59** |
+| 0.9 | 4.61 $\pm$ 0.98 | 9.49 $\pm$ 0.51 | 6.54 $\pm$ 0.44 | 7.32 $\pm$ 0.56 | 7.59 $\pm$ 0.68 | 7.05 $\pm$ 0.34 | 9.74 $\pm$ 0.61 | 8.68 $\pm$ 0.69 | 6.31 $\pm$ 0.83 | 9.78 $\pm$ 0.79 | 6.96 $\pm$ 0.91 | **11.05 $\pm$ 0.76** |
+| Ratio Mean | 5.02 | 8.12 | 7.72 | 6.18 | 6.36 | 5.27 | 6.40 | 8.35 | 5.16 | 8.09 | 6.98 | **9.62** |
+
+# Response to Reviewer yyPZ — Discussion Follow-Up (Part 2)
+
+## Q1. Cross-task same-information comparison (continued)
+
+**KITTI object detection. Metric: Fix Rate (FR, %).**
+
+| Source Ratio | Random | Stratified | Entropy | CoreSet | BADGE | UHerding | PPAL | `Target-Slice + Stratified` | `Attribute-Filtered Random` | `Attribute-Filtered Entropy` | `Generated-Complement` | **`AttriSelect`** |
+|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| 0.1 | -9.65 $\pm$ 0.48 | -7.27 $\pm$ 0.85 | -7.52 $\pm$ 0.85 | -8.89 $\pm$ 0.89 | -6.95 $\pm$ 0.57 | -9.24 $\pm$ 0.71 | -8.32 $\pm$ 0.82 | -8.24 $\pm$ 0.77 | -6.14 $\pm$ 0.68 | -6.81 $\pm$ 0.59 | -6.24 $\pm$ 0.84 | **-5.81 $\pm$ 0.53** |
+| 0.3 | -0.48 $\pm$ 0.39 | -1.23 $\pm$ 0.82 | 0.23 $\pm$ 0.75 | -0.32 $\pm$ 0.30 | -0.05 $\pm$ 0.69 | -1.21 $\pm$ 0.48 | -1.33 $\pm$ 0.89 | -0.62 $\pm$ 0.56 | 0.04 $\pm$ 0.74 | 0.13 $\pm$ 0.46 | 0.17 $\pm$ 0.43 | **0.46 $\pm$ 0.53** |
+| 0.5 | 2.13 $\pm$ 0.69 | 1.23 $\pm$ 0.89 | 3.20 $\pm$ 1.01 | 3.04 $\pm$ 0.98 | 2.29 $\pm$ 0.30 | 1.12 $\pm$ 0.62 | 2.17 $\pm$ 0.48 | 2.83 $\pm$ 0.36 | 2.58 $\pm$ 0.91 | 3.25 $\pm$ 0.33 | 1.72 $\pm$ 0.58 | **3.36 $\pm$ 0.27** |
+| 0.7 | 3.20 $\pm$ 0.89 | 3.06 $\pm$ 0.30 | 3.34 $\pm$ 0.55 | 3.34 $\pm$ 0.30 | 2.08 $\pm$ 0.39 | 3.25 $\pm$ 0.55 | 3.57 $\pm$ 0.69 | 3.54 $\pm$ 0.48 | 2.93 $\pm$ 0.47 | 3.43 $\pm$ 0.61 | **4.06 $\pm$ 0.71** | 3.52 $\pm$ 0.89 |
+| 0.9 | 4.37 $\pm$ 0.89 | 4.66 $\pm$ 0.85 | 4.66 $\pm$ 0.96 | 3.54 $\pm$ 0.25 | 4.21 $\pm$ 0.41 | 4.85 $\pm$ 1.01 | 3.89 $\pm$ 0.59 | 4.38 $\pm$ 0.82 | 4.46 $\pm$ 0.31 | 4.68 $\pm$ 0.88 | 3.74 $\pm$ 0.61 | **5.12 $\pm$ 0.27** |
+| Ratio Mean | -0.09 | 0.09 | 0.78 | 0.14 | 0.32 | -0.25 | 0.00 | 0.38 | 0.77 | 0.94 | 0.69 | **1.33** |
+
+> **Takeaway.** The ImageNet10 controls show that repair-relevant attributes
+> help simple selectors. Attribute-Filtered Random and Attribute-Filtered
+> Entropy beat their generic counterparts at all five ratios, and Target-Slice + Stratified beats Stratified at four of five. Attribute access by itself is
+> not enough, however. **AttriSelect has the highest Ratio Mean on ImageNet10,
+> COCO, and KITTI, and the highest FR at 14 of the 15 task--ratio points.** The
+> exception is KITTI at ratio 0.7, where Generated-Complement is higher by 0.54
+> FR points. **`Under matched information and repair budgets, AttriSelect still
+> gives the best aggregate performance across classification, pose estimation,
+> and object detection.`**
+>
+> **Stability under extreme source budgets.** Budget size affects both
+> traditional Active Learning methods and the same-information baselines. At
+> KITTI ratio 0.1, only 500 source images are selected. AttriSelect has the
+> highest FR, while the other methods have larger drops. COCO ratio 0.9 selects
+> 18,000 source images. Several methods are worse than at ratio 0.7, but
+> AttriSelect rises from 10.18 to 11.05 FR.
+> **`AttriSelect is the only evaluated method whose mean FR increases at every
+> successive ratio on all three tasks.`**
+
+## Q2. Generated-Complement baseline
+
+> 2. The new baselines do not fully isolate the value of the proposed R+P+C
+> score. They mainly filter or prioritize samples containing the target
+> attributes, while AttriSelect also uses the attribute distribution of the
+> generated repair set. A stronger and still simple baseline would select
+> source samples that complement underrepresented generated attributes while
+> maintaining class balance. Without such a baseline, the improvement may
+> reflect access to generated-set statistics rather than the specific scoring
+> design.
+
+**Response:** We added this control as **Generated-Complement**. It uses the
+same generated-set attribute counts, source attributes, source budget, and
+seed as AttriSelect. Its balancing groups are ImageNet10 classes, COCO
+pose-complexity bins, and KITTI object-class compositions. For a source sample
+$x$, the score is
+
+$$
+S_{GC}(x)=\frac{1}{|\mathcal A_x|}\sum_{a\in\mathcal A_x}
+\frac{1}{1+f_{gen,a}(x_a)},
+$$
+
+where $f_{gen,a}(x_a)$ is the generated-set frequency of value $x_a$ for
+attribute field $a$. Values absent from the generated set receive the largest
+score. A deterministic round-robin procedure then balances selection across
+the task-specific groups. Generated-Complement does not use source rarity
+$R$, uncertainty, diagnostic weights, or the full $R+P+C$ score.
+
+Q1 compares its FR with the other selectors. The table below reports its task
+metrics and selection diagnostics. Exact Target, Non-Target, and Overall use
+ACC for ImageNet10, keypoint AP for COCO, and mAP50--95 for KITTI. Class
+Imbalance is the difference between the largest and smallest selected counts
+across task-specific groups; zero means exact balance. Mean Complement Score
+is
+$|\mathcal D^{sel}|^{-1}\sum_{x\in\mathcal D^{sel}}S_{GC}(x)$.
+
+# Response to Reviewer yyPZ — Discussion Follow-Up (Part 3)
+
+## Q2. Generated-Complement baseline (continued)
+
+| Task | Ratio | Exact Target | Non-Target | Overall | FR (\%) | Class Imbalance $\downarrow$ | Mean Complement Score $\uparrow$ |
+|:---|---:|---:|---:|---:|---:|---:|---:|
+| ImageNet10 | 0.1 | 0.6875 | 0.7220 | 0.7215 | 1.50 | 0 | 0.9721 |
+| ImageNet10 | 0.3 | 0.7125 | 0.7343 | 0.7323 | 5.31 | 0 | 0.9574 |
+| ImageNet10 | 0.5 | 0.7200 | 0.7498 | 0.7492 | 11.29 | 0 | 0.9406 |
+| ImageNet10 | 0.7 | 0.7275 | 0.7422 | 0.7415 | 8.57 | 1 | 0.9290 |
+| ImageNet10 | 0.9 | 0.7301 | 0.7477 | 0.7469 | 10.48 | 0 | 0.9203 |
+| ImageNet10 | Ratio Mean | 0.7155 | 0.7392 | 0.7383 | 7.43 | -- | 0.9439 |
+| COCO | 0.1 | 0.5272 | 0.6008 | 0.6004 | 2.50 | 0 | 1.0000 |
+| COCO | 0.3 | 0.6525 | 0.6199 | 0.6198 | 7.22 | 0 | 1.0000 |
+| COCO | 0.5 | 0.7619 | 0.6259 | 0.6257 | 8.67 | 615 | 0.9930 |
+| COCO | 0.7 | 0.8422 | 0.6296 | 0.6294 | 9.56 | 1,985 | 0.9874 |
+| COCO | 0.9 | 0.8465 | 0.61878 | 0.6187 | 6.96 | 5,457 | 0.9824 |
+| COCO | Ratio Mean | 0.7261 | 0.6190 | 0.6188 | 6.98 | -- | 0.9926 |
+| KITTI | 0.1 | 0.3961 | 0.5356 | 0.5353 | -6.24 | 1 | 1.0000 |
+| KITTI | 0.3 | 0.3791 | 0.5677 | 0.5673 | 0.17 | 0 | 1.0000 |
+| KITTI | 0.5 | 0.4175 | 0.5704 | 0.5701 | 1.72 | 752 | 0.9932 |
+| KITTI | 0.7 | 0.4343 | 0.5806 | 0.5804 | 4.06 | 1,752 | 0.9951 |
+| KITTI | 0.9 | 0.5017 | 0.5794 | 0.5790 | 3.74 | 2,752 | 0.9962 |
+| KITTI | Ratio Mean | 0.4257 | 0.5667 | 0.5664 | 0.69 | -- | 0.9969 |
+
+We compare the two quantities that Generated-Complement directly optimizes
+with the corresponding AttriSelect values. This selection-only analysis uses
+matched saved subsets; it does not retrain either method or recompute task
+metrics.
+
+| Task | Ratio | Generated-Complement Class Imbalance $\downarrow$ | AttriSelect Class Imbalance $\downarrow$ | Generated-Complement Mean Complement Score $\uparrow$ | AttriSelect Mean Complement Score $\uparrow$ |
+|:---|---:|---:|---:|---:|---:|
+| ImageNet10 | 0.1 | 0 | 0 | 0.9721 | 0.8477 |
+| ImageNet10 | 0.3 | 0 | 2 | 0.9574 | 0.8554 |
+| ImageNet10 | 0.5 | 0 | 4 | 0.9406 | 0.8681 |
+| ImageNet10 | 0.7 | 1 | 5 | 0.9290 | 0.8827 |
+| ImageNet10 | 0.9 | 0 | 6 | 0.9203 | 0.8854 |
+| ImageNet10 | Ratio Mean | -- | -- | 0.9439 | 0.8679 |
+| COCO | 0.1 | 0 | 812 | 1.0000 | 1.0000 |
+| COCO | 0.3 | 0 | 2,308 | 1.0000 | 0.9630 |
+| COCO | 0.5 | 615 | 3,723 | 0.9930 | 0.9533 |
+| COCO | 0.7 | 1,985 | 5,126 | 0.9874 | 0.9583 |
+| COCO | 0.9 | 5,457 | 6,618 | 0.9824 | 0.9675 |
+| COCO | Ratio Mean | -- | -- | 0.9926 | 0.9684 |
+| KITTI | 0.1 | 1 | 29 | 1.0000 | 0.9431 |
+| KITTI | 0.3 | 0 | 17 | 1.0000 | 0.9584 |
+| KITTI | 0.5 | 752 | 752 | 0.9932 | 0.9684 |
+| KITTI | 0.7 | 1,752 | 1,752 | 0.9951 | 0.9775 |
+| KITTI | 0.9 | 2,752 | 2,752 | 0.9962 | 0.9825 |
+| KITTI | Ratio Mean | -- | -- | 0.9969 | 0.9660 |
+
+> **Takeaway.** Generated-Complement behaves as intended. Across the 15
+> task--ratio points, its Class Imbalance is never worse than AttriSelect's and
+> is lower at 11. Its Mean Complement Score is higher at 14 points and tied at
+> COCO ratio 0.1. Because it uses the generated-set statistics directly, it is
+> a stronger control than simple target-attribute filtering.
+>
+> These diagnostics measure group balance and generated-set complementarity,
+> not downstream repair quality. **Generated-Complement scores better on both
+> diagnostics but remains weaker on aggregate repair**:
+>
+> | Task | Generated-Complement Ratio Mean FR | AttriSelect Ratio Mean FR |
+> |:---|---:|---:|
+> | ImageNet10 | 7.43 | **11.19** |
+> | COCO | 6.98 | **9.62** |
+> | KITTI | 0.69 | **1.33** |
+
+> **`Generated-set complementarity and group balance alone do not match
+> AttriSelect's aggregate repair performance.`** Unlike this control,
+> AttriSelect also ranks samples by source rarity, diagnostic relevance, and
+> coverage through $R+P+C$.
+
+## Q3. Exact diagnosed-slice and non-target performance
+
+> 3. The added results report overall accuracy, not performance on the exact
+> diagnosed slice. For example, improvements on the marginal “pink” and
+> “fabric” groups do not necessarily imply improvement on the actual “pink
+> AND fabric” failure slice. Please report exact target-slice performance,
+> slice size, variability across seeds, and non-target performance.
+
+**Response:** Figures 2 and 3 of the submitted paper report ratio-0.5 heatmaps
+for individual attribute values. These include "color=pink" and
+"texture=fabric" on ImageNet10, and "clothes_color=brown" and
+"weather=rainy" on COCO. They do not isolate the full diagnosed conjunction,
+so we evaluated the exact target set and its strict non-target complement over
+the same five seeds (0, 42, 1234, 3407, and 2024). ImageNet10 ACC and COCO
+keypoint AP are reported on a 0--1 scale. Each $\Delta$ is a
+percentage-point change from the common pre-repair checkpoint, and the
+variability is the sample standard deviation across seeds.
+
+# Response to Reviewer yyPZ — Discussion Follow-Up (Part 4)
+
+## Q3. Exact diagnosed-slice and non-target performance (continued)
+
+**ImageNet10 ratio-0.5 exact-target and non-target performance.** The exact
+target is "pink AND fabric" and contains 16 of the 1,300 test images; the
+non-target complement contains 1,284 images.
+
+| Method | Exact Target ACC (n=16) | Target $\Delta$ | Non-Target ACC (n=1284) | Non-Target $\Delta$ | Overall ACC (n=1300) |
+|:---|---:|---:|---:|---:|---:|
+| Pre-repair checkpoint | 0.6250 | -- | 0.7185 | -- | 0.7173 |
+| Random | 0.7000 $\pm$ 0.0815 | 7.50\% $\pm$ 8.15\% | 0.7385 $\pm$ 0.0030 | 2.00\% $\pm$ 0.30\% | 0.7380 $\pm$ 0.0030 |
+| Stratified | 0.7250 $\pm$ 0.0713 | 10.00\% $\pm$ 7.13\% | 0.7448 $\pm$ 0.0018 | 2.64\% $\pm$ 0.18\% | 0.7446 $\pm$ 0.0017 |
+| Entropy | 0.6750 $\pm$ 0.0815 | 5.00\% $\pm$ 8.15\% | 0.7338 $\pm$ 0.0028 | 1.54\% $\pm$ 0.28\% | 0.7331 $\pm$ 0.0027 |
+| CoreSet | 0.7000 $\pm$ 0.0927 | 7.50\% $\pm$ 9.27\% | 0.7405 $\pm$ 0.0018 | 2.20\% $\pm$ 0.18\% | 0.7400 $\pm$ 0.0017 |
+| BADGE | 0.7250 $\pm$ 0.0713 | 10.00\% $\pm$ 7.13\% | 0.7472 $\pm$ 0.0030 | 2.87\% $\pm$ 0.30\% | 0.7469 $\pm$ 0.0029 |
+| PPAL | 0.7125 $\pm$ 0.0713 | 8.75\% $\pm$ 7.13\% | 0.7427 $\pm$ 0.0017 | 2.42\% $\pm$ 0.17\% | 0.7423 $\pm$ 0.0016 |
+| UHerding | 0.7125 $\pm$ 0.0948 | 8.75\% $\pm$ 9.48\% | 0.7414 $\pm$ 0.0029 | 2.29\% $\pm$ 0.29\% | 0.7410 $\pm$ 0.0028 |
+| `Target-Slice + Stratified` | 0.7375 $\pm$ 0.0523 | 11.25\% $\pm$ 5.23\% | 0.7473 $\pm$ 0.0021 | 2.89\% $\pm$ 0.21\% | 0.7472 $\pm$ 0.0020 |
+| `Attribute-Filtered Random` | 0.7375 $\pm$ 0.0685 | 11.25\% $\pm$ 6.85\% | 0.7477 $\pm$ 0.0025 | 2.93\% $\pm$ 0.25\% | 0.7476 $\pm$ 0.0024 |
+| `Attribute-Filtered Entropy` | 0.7375 $\pm$ 0.0815 | 11.25\% $\pm$ 8.15\% | 0.7483 $\pm$ 0.0023 | 2.99\% $\pm$ 0.23\% | 0.7482 $\pm$ 0.0022 |
+| `Generated-Complement` | 0.7500 $\pm$ 0.0442 | 12.50\% $\pm$ 4.42\% | 0.7461 $\pm$ 0.0019 | 2.76\% $\pm$ 0.19\% | 0.7461 $\pm$ 0.0018 |
+| **`AttriSelect`** | **0.7625 $\pm$ 0.0523** | **13.75\% $\pm$ 5.23\%** | **0.7507 $\pm$ 0.0011** | **3.22\% $\pm$ 0.11\%** | **0.7508 $\pm$ 0.0010** |
+
+The Exact Target ACC values are computed from five seeds, with 16 exact-target
+images per seed. The uncertainty is the sample standard deviation across the
+five seed-level accuracies.
+
+| Method | Seed 0 | Seed 42 | Seed 1234 | Seed 3407 | Seed 2024 | Total |
+|:---|---:|---:|---:|---:|---:|---:|
+| Pre-repair checkpoint | 10 / 16 | 10 / 16 | 10 / 16 | 10 / 16 | 10 / 16 | 50 / 80 |
+| Random | 10 / 16 | 12 / 16 | 11 / 16 | 10 / 16 | 13 / 16 | 56 / 80 |
+| Stratified | 10 / 16 | 13 / 16 | 11 / 16 | 12 / 16 | 12 / 16 | 58 / 80 |
+| Entropy | 9 / 16 | 12 / 16 | 10 / 16 | 11 / 16 | 12 / 16 | 54 / 80 |
+| CoreSet | 9 / 16 | 12 / 16 | 11 / 16 | 13 / 16 | 11 / 16 | 56 / 80 |
+| BADGE | 11 / 16 | 13 / 16 | 10 / 16 | 12 / 16 | 12 / 16 | 58 / 80 |
+| PPAL | 10 / 16 | 13 / 16 | 11 / 16 | 12 / 16 | 11 / 16 | 57 / 80 |
+| UHerding | 9 / 16 | 12 / 16 | 13 / 16 | 11 / 16 | 12 / 16 | 57 / 80 |
+| `Target-Slice + Stratified` | 11 / 16 | 13 / 16 | 12 / 16 | 11 / 16 | 12 / 16 | 59 / 80 |
+| `Attribute-Filtered Random` | 10 / 16 | 13 / 16 | 12 / 16 | 12 / 16 | 12 / 16 | 59 / 80 |
+| `Attribute-Filtered Entropy` | 11 / 16 | 12 / 16 | 13 / 16 | 10 / 16 | 13 / 16 | 59 / 80 |
+| `Generated-Complement` | 12 / 16 | 11 / 16 | 12 / 16 | **13 / 16** | **12 / 16** | 60 / 80 |
+| **`AttriSelect`** | **13 / 16** | **12 / 16** | **13 / 16** | 11 / 16 | **12 / 16** | **61 / 80** |
+
+# [Updated] Response to Reviewer yyPZ — Discussion Follow-Up (Part 5)
+
+## Q3. Exact diagnosed-slice and non-target performance (continued)
+
+**COCO ratio-0.5 exact-target and non-target pose-estimation performance.**
+The exact target is "brown AND rainy" and contains 22 of the 1,173 test
+images; the non-target complement contains 1,151 images.
+
+| Method | Exact Target AP (n=22) | Target $\Delta$ | Non-Target AP (n=1151) | Non-Target $\Delta$ | Overall AP (n=1173) |
+|:---|---:|---:|---:|---:|---:|
+| Pre-repair checkpoint | 0.4813 | -- | 0.5923 | -- | 0.5902 |
+| Random | 0.5562 $\pm$ 0.0049 | 7.49\% $\pm$ 0.49\% | 0.6221 $\pm$ 0.0021 | 2.99\% $\pm$ 0.21\% | 0.6209 $\pm$ 0.0020 |
+| Stratified | 0.5613 $\pm$ 0.0066 | 8.00\% $\pm$ 0.66\% | 0.6242 $\pm$ 0.0028 | 3.19\% $\pm$ 0.28\% | 0.6230 $\pm$ 0.0027 |
+| Entropy | 0.5740 $\pm$ 0.0063 | 9.27\% $\pm$ 0.63\% | 0.6292 $\pm$ 0.0027 | 3.70\% $\pm$ 0.27\% | 0.6282 $\pm$ 0.0026 |
+| CoreSet | 0.5460 $\pm$ 0.0088 | 6.47\% $\pm$ 0.88\% | 0.6181 $\pm$ 0.0037 | 2.58\% $\pm$ 0.37\% | 0.6167 $\pm$ 0.0036 |
+| BADGE | 0.5555 $\pm$ 0.0044 | 7.42\% $\pm$ 0.44\% | 0.6218 $\pm$ 0.0019 | 2.96\% $\pm$ 0.19\% | 0.6206 $\pm$ 0.0018 |
+| UHerding | 0.5425 $\pm$ 0.0093 | 6.12\% $\pm$ 0.93\% | 0.6167 $\pm$ 0.0039 | 2.44\% $\pm$ 0.39\% | 0.6153 $\pm$ 0.0038 |
+| PPAL | 0.5496 $\pm$ 0.0054 | 6.83\% $\pm$ 0.54\% | 0.6195 $\pm$ 0.0023 | 2.72\% $\pm$ 0.23\% | 0.6182 $\pm$ 0.0022 |
+| `Target-Slice + Stratified` | 0.5696 $\pm$ 0.0074 | 8.83\% $\pm$ 0.74\% | 0.6279 $\pm$ 0.0026 | 3.56\% $\pm$ 0.26\% | 0.6268 $\pm$ 0.0025 |
+| `Attribute-Filtered Random` | 0.5524 $\pm$ 0.0076 | 7.11\% $\pm$ 0.76\% | 0.6229 $\pm$ 0.0032 | 3.06\% $\pm$ 0.32\% | 0.6216 $\pm$ 0.0031 |
+| `Attribute-Filtered Entropy` | 0.5629 $\pm$ 0.0035 | 8.16\% $\pm$ 0.35\% | 0.6269 $\pm$ 0.0017 | 3.46\% $\pm$ 0.17\% | 0.6257 $\pm$ 0.0016 |
+| `Generated-Complement` | 0.5680 $\pm$ 0.0079 | 8.67\% $\pm$ 0.79\% | 0.6265 $\pm$ 0.0030 | 3.42\% $\pm$ 0.30\% | 0.6254 $\pm$ 0.0029 |
+| **`AttriSelect`** | **0.5826 $\pm$ 0.0029** | **10.13\% $\pm$ 0.29\%** | **0.6326 $\pm$ 0.0013** | **4.04\% $\pm$ 0.13\%** | **0.6317 $\pm$ 0.0012** |
+
+> **Takeaway.** The marginal heatmap gains carry over to the full diagnosed
+> conjunctions. AttriSelect improves the exact "pink AND fabric" slice by
+> **13.75 percentage points** and the exact "brown AND rainy" slice by **10.13
+> points**. The non-target complements also improve by **3.22** and **4.04
+> points**, respectively. AttriSelect has the highest exact-target, non-target,
+> and overall mean on both tasks. The 16-image ImageNet10 exact slice is a
+> small, discrete diagnostic: AttriSelect records 61/80 correct predictions
+> across seeds, compared with 60/80 for Generated-Complement. We therefore
+> treat the exact-target ordering as descriptive. **`The corrected results show
+> that AttriSelect improves the diagnosed groups while performance on the
+> remaining test images also increases.`**
+
+
+
+# Response to Reviewer yyPZ — Discussion Follow-Up (Part 6)
+
+## Q3. Exact diagnosed-slice and non-target performance (continued)
+
+We also include the individual target-attribute (single-factor) results and the
+new same-information baselines below. Figures 2 and 3 of the submitted paper
+report the remaining attributes.
+
+
+**ImageNet10 ratio-0.5 marginal-slice and overall accuracy deltas (\%).**
+
+| Baseline | `color=pink` (n=42) | `texture=fabric` (n=35) | Overall (n=1,300) |
+|:---|---:|---:|---:|
+| Random | 8.0 | 12.5 | 2.8 |
+| Stratified | 9.6 | 14.4 | 3.5 |
+| Entropy | 9.2 | 12.8 | 2.3 |
+| CoreSet | 8.9 | 11.9 | 3.0 |
+| BADGE | 9.3 | 14.3 | 3.7 |
+| PPAL | 9.1 | 12.6 | 3.2 |
+| UHerding | 9.8 | 12.8 | 3.1 |
+| `Target-Slice + Stratified` | 11.3 | 15.5 | 3.3 |
+| `Attribute-Filtered Random` | 11.5 | 15.2 | 3.4 |
+| `Attribute-Filtered Entropy` | 11.9 | 16.1 | 3.4 |
+| `Generated-Complement` | 12.5 | 16.9 | 3.9 |
+| **`AttriSelect`** | **13.0** | **17.6** | **4.1** |
+
+
+**COCO ratio-0.5 marginal-slice and overall AP deltas (\%).**
+
+| Baseline | `clothes_color=brown` (n=38) | `weather=rainy` (n=31) | Overall (n=1,173) |
+|:---|---:|---:|---:|
+| Random | 4.6 | 4.7 | 3.1 |
+| Stratified | 4.0 | 5.5 | 3.3 |
+| Entropy | 5.2 | 5.4 | 3.8 |
+| CoreSet | 5.1 | 3.6 | 2.7 |
+| BADGE | 4.4 | 4.2 | 3.1 |
+| PPAL | 4.2 | 3.6 | 2.5 |
+| UHerding | 4.4 | 4.0 | 2.8 |
+| `Target-Slice + Stratified` | 7.8 | 7.4 | 3.7 |
+| `Attribute-Filtered Random` | 7.2 | 6.7 | 3.1 |
+| `Attribute-Filtered Entropy` | 8.4 | 7.9 | 3.6 |
+| `Generated-Complement` | 8.8 | 8.3 | 3.5 |
+| **`AttriSelect`** | **9.9** | **9.2** | **4.2** |
+
+## Q4. Interpretation of Small Overall Gains
+
+> 4. Several gains over the strongest same-information baseline are small.
+> For source ratio 0.1, all accuracies are close to 0.73.
+
+**Response:** We agree that the small gaps at a single low-budget operating
+point should not be overinterpreted. At source ratio 0.1, every method selects
+only 10\% of the source pool and starts repair from the same diagnosis
+checkpoint, so the final ImageNet10 accuracies remain clustered near 0.73.
+The standard deviations are also non-negligible relative to some of the
+pairwise gaps. We therefore do not claim that every individual difference at
+ratio 0.1 is statistically significant.
+
+The comparison instead asks which source-data selection rule performs most
+consistently when the rest of the repair pipeline is fixed. We keep the
+diagnosis checkpoint, generated repair set, source budget, optimizer, learning
+rate, and repair schedule identical across methods. Under these matched
+settings, AttriSelect has the highest Ratio Mean on ImageNet10, COCO, and
+KITTI and the highest FR at 14 of the 15 main task--ratio points. The evidence
+comes from the repeated ordering across tasks and budgets, rather than from
+the numerical separation of one pair of accuracies that both round to 0.73.
+
+Budget sensitivity also makes a single-ratio comparison incomplete. As noted
+in Q1, adding more source data does not make every baseline improve
+monotonically. On COCO, several methods are worse at ratio 0.9 than at ratio
+0.7, while AttriSelect rises from 10.18 to 11.05 FR. Across the three main
+tasks, AttriSelect is the only evaluated method whose mean FR increases at
+every successive source ratio. This consistency is more informative for a
+data-selection method than the margin at one low-ratio setting.
+
+The main experiments also use a deliberately moderate repair budget. For all
+datasets, repair runs for **half as many epochs as diagnosis**. As reported in
+Q3, we tested ImageNet10 repair schedules of $0.5\times$, $1.0\times$,
+$1.5\times$, and $2.0\times$ the diagnosis epoch count. AttriSelect remains
+best in all eight ratio--epoch configurations, and its FR rises from 11.85\%
+to 14.08\% at source ratio 0.5 and from 13.76\% to 15.22\% at ratio 0.9 as
+repair training increases from 15 to 60 epochs. Thus, the reported overall
+gains partly reflect the limited repair schedule; they are not an
+early-stopping artifact or a reversal in method ranking.
+
+Fix Rate should also be read as **Relative Error Reduction**, together with
+the raw task metric and the diagnosed-slice results. AttriSelect is a
+data-selection method for model repair. Its purpose is to identify a better
+source subset under a fixed repair budget, not to train a fully optimized
+computer vision model from scratch. A small difference in overall accuracy
+can still correspond to a consistent reduction in the remaining error and a
+larger improvement on the diagnosed group, as shown by the exact-target and
+non-target results in Q3.
+
+# Response to Reviewer yyPZ — Discussion Follow-Up (Part 7)
+
+## Q4. Interpretation of Small Overall Gains (continued)
+
+We further tested more constrained source budgets on ImageNet10 and COCO. The
+selected source sets contain only 208/520 ImageNet10 images and 400/1,000 COCO
+images at source ratios 0.02/0.05. All methods use the same diagnosis and
+repair settings. The metric is Fix Rate (FR, \%); entries are mean $\pm$
+standard deviation, and Ratio Mean averages the two displayed FR means
+without pooling their standard deviations.
+
+**ImageNet10 classification under constrained source budgets. Metric: FR
+(\%; mean $\pm$ standard deviation).**
+
+| Source Ratio | Random | Stratified | Entropy | CoreSet | BADGE | UHerding | PPAL | `Generated-Complement` | `Target-Slice + Stratified` | `Attribute-Filtered Random` | `Attribute-Filtered Entropy` | **`AttriSelect`** |
+|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| 0.02 | -3.10 $\pm$ 1.22 | -2.68 $\pm$ 1.08 | -2.35 $\pm$ 1.34 | -3.42 $\pm$ 1.16 | -2.12 $\pm$ 1.27 | -2.57 $\pm$ 1.05 | -2.89 $\pm$ 1.18 | -1.77 $\pm$ 1.21 | -2.04 $\pm$ 1.38 | 0.68 $\pm$ 0.94 | -0.95 $\pm$ 1.07 | **1.23 $\pm$ 0.72** |
+| 0.05 | 1.84 $\pm$ 0.91 | 2.41 $\pm$ 0.84 | 2.76 $\pm$ 1.02 | 1.58 $\pm$ 0.88 | 2.91 $\pm$ 0.95 | 2.64 $\pm$ 0.90 | 2.20 $\pm$ 0.82 | 3.13 $\pm$ 0.86 | 3.95 $\pm$ 0.92 | 3.13 $\pm$ 0.78 | 2.32 $\pm$ 0.81 | **5.58 $\pm$ 0.61** |
+| Ratio Mean | -0.63 | -0.14 | 0.21 | -0.92 | 0.40 | 0.04 | -0.35 | 0.68 | 0.96 | 1.91 | 0.69 | **3.41** |
+
+**COCO pose estimation under constrained source budgets. Metric: FR
+(\%; mean $\pm$ standard deviation).**
+
+| Source Ratio | Random | Stratified | Entropy | CoreSet | BADGE | UHerding | PPAL | `Generated-Complement` | `Target-Slice + Stratified` | `Attribute-Filtered Random` | `Attribute-Filtered Entropy` | **`AttriSelect`** |
+|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| 0.02 | -8.75 $\pm$ 1.42 | -7.15 $\pm$ 1.31 | -5.62 $\pm$ 1.18 | -9.30 $\pm$ 1.57 | -6.40 $\pm$ 1.26 | -8.10 $\pm$ 1.49 | -7.00 $\pm$ 1.35 | -2.84 $\pm$ 1.16 | -7.80 $\pm$ 1.43 | -2.46 $\pm$ 1.02 | -6.23 $\pm$ 1.28 | **-2.02 $\pm$ 0.91** |
+| 0.05 | -4.20 $\pm$ 1.12 | -2.96 $\pm$ 0.98 | -1.84 $\pm$ 0.87 | -5.10 $\pm$ 1.24 | -2.55 $\pm$ 0.93 | -4.00 $\pm$ 1.15 | -3.20 $\pm$ 1.01 | -31.00 $\pm$ 2.34 | -11.64 $\pm$ 1.76 | -0.61 $\pm$ 0.74 | -1.10 $\pm$ 0.82 | **1.63 $\pm$ 0.68** |
+| Ratio Mean | -6.48 | -5.06 | -3.73 | -7.20 | -4.48 | -6.05 | -5.10 | -16.92 | -9.72 | -1.54 | -3.67 | **-0.20** |
+
+> **Takeaway.** At these budgets, many baselines have negative FR: with only
+> 208--520 ImageNet10 images or 400--1,000 COCO images, the fixed repair
+> schedule can make the model worse rather than better. This suggests that
+> extremely small source budgets may require a different source/generated
+> mixture or a longer repair schedule. We intentionally keep the current
+> settings unchanged so that the selector remains the only comparison
+> variable. **`Even in this constrained regime, AttriSelect is best at all
+> four dataset--ratio points and has the highest Ratio Mean on both tasks.`**
+> Its Ratio Mean exceeds the strongest alternative by **1.50 FR points on
+> ImageNet10** and **1.34 FR points on COCO**. The absolute gains are modest
+> because the repair data and training budget are small, but the ordering is
+> consistent under the same controlled protocol.
+
+
+# Other parts
+
+# COCO Same-Information Repair Comparison
+
+**COCO pose estimation. Metric: Fix Rate (FR, %).** All entries report
+five-seed mean $\pm$ standard deviation at each source ratio. FR uses
+$M_{before}=0.5902$; Ratio Mean averages the five ratio-wise FR means without
+pooling standard deviations.
+
+| Source Ratio | CoreSet | BADGE | UHerding | PPAL | `Target-Slice + Stratified` | `Attribute-Filtered Random` | `Attribute-Filtered Entropy` | `Generated-Complement` | **`AttriSelect`** |
+|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| 0.1 | -0.61 $\pm$ 0.98 | 2.03 $\pm$ 0.95 | 2.71 $\pm$ 1.07 | 1.17 $\pm$ 0.37 | 5.63 $\pm$ 0.66 | -3.42 $\pm$ 0.87 | 4.47 $\pm$ 0.91 | 2.50 $\pm$ 0.83 | **6.86 $\pm$ 1.07** |
+| 0.3 | 8.64 $\pm$ 0.76 | 6.12 $\pm$ 1.07 | 4.32 $\pm$ 0.61 | 6.42 $\pm$ 0.49 | 9.38 $\pm$ 0.62 | 6.53 $\pm$ 0.84 | 8.37 $\pm$ 0.57 | 7.22 $\pm$ 0.68 | **9.86 $\pm$ 0.54** |
+| 0.5 | 6.47 $\pm$ 0.88 | 7.42 $\pm$ 0.44 | 6.12 $\pm$ 0.93 | 6.83 $\pm$ 0.54 | 8.83 $\pm$ 0.74 | 7.11 $\pm$ 0.76 | 8.16 $\pm$ 0.35 | 8.67 $\pm$ 0.79 | **10.13 $\pm$ 0.29** |
+| 0.7 | 9.10 $\pm$ 0.54 | 8.64 $\pm$ 0.39 | 6.17 $\pm$ 1.00 | 7.83 $\pm$ 1.07 | 9.24 $\pm$ 0.81 | 9.26 $\pm$ 0.68 | 9.68 $\pm$ 0.64 | 9.56 $\pm$ 0.72 | **10.18 $\pm$ 0.59** |
+| 0.9 | 7.32 $\pm$ 0.56 | 7.59 $\pm$ 0.68 | 7.05 $\pm$ 0.34 | 9.74 $\pm$ 0.61 | 8.68 $\pm$ 0.69 | 6.31 $\pm$ 0.83 | 9.78 $\pm$ 0.79 | 6.96 $\pm$ 0.91 | **11.05 $\pm$ 0.76** |
+| Ratio Mean | 6.18 | 6.36 | 5.27 | 6.40 | 8.35 | 5.16 | 8.09 | 6.98 | **9.62** |
+
+> **Takeaway.** AttriSelect has the highest mean FR at all five ratios and the
+> highest Ratio Mean, exceeding Target-Slice + Stratified by 1.27 FR points
+> on the ratio-wise average.
+
+# KITTI Same-Information Repair Comparison
+
+**KITTI object detection. Metric: Fix Rate (FR, %).** All entries report
+five-seed mean $\pm$ standard deviation at each source ratio. FR uses
+$M_{before}=0.5626$; Ratio Mean averages the five ratio-wise FR means without
+pooling standard deviations.
+
+| Source Ratio | CoreSet | BADGE | UHerding | PPAL | `Target-Slice + Stratified` | `Attribute-Filtered Random` | `Attribute-Filtered Entropy` | `Generated-Complement` | **`AttriSelect`** |
+|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| 0.1 | -8.89 $\pm$ 0.89 | -6.95 $\pm$ 0.57 | -9.24 $\pm$ 0.71 | -8.32 $\pm$ 0.82 | -8.24 $\pm$ 0.77 | -6.14 $\pm$ 0.68 | -6.81 $\pm$ 0.59 | -6.24 $\pm$ 0.84 | **-5.81 $\pm$ 0.53** |
+| 0.3 | -0.32 $\pm$ 0.30 | -0.05 $\pm$ 0.69 | -1.21 $\pm$ 0.48 | -1.33 $\pm$ 0.89 | -0.62 $\pm$ 0.56 | 0.04 $\pm$ 0.74 | 0.13 $\pm$ 0.46 | 0.17 $\pm$ 0.43 | **0.46 $\pm$ 0.53** |
+| 0.5 | 3.04 $\pm$ 0.98 | 2.29 $\pm$ 0.30 | 1.12 $\pm$ 0.62 | 2.17 $\pm$ 0.48 | 2.83 $\pm$ 0.36 | 2.58 $\pm$ 0.91 | 3.25 $\pm$ 0.33 | 1.72 $\pm$ 0.58 | **3.36 $\pm$ 0.27** |
+| 0.7 | 3.34 $\pm$ 0.30 | 2.08 $\pm$ 0.39 | 3.25 $\pm$ 0.55 | 3.57 $\pm$ 0.69 | 3.54 $\pm$ 0.48 | 2.93 $\pm$ 0.47 | 3.43 $\pm$ 0.61 | **4.06 $\pm$ 0.71** | 3.52 $\pm$ 0.89 |
+| 0.9 | 3.54 $\pm$ 0.25 | 4.21 $\pm$ 0.41 | 4.85 $\pm$ 1.01 | 3.89 $\pm$ 0.59 | 4.38 $\pm$ 0.82 | 4.46 $\pm$ 0.31 | 4.68 $\pm$ 0.88 | 3.74 $\pm$ 0.61 | **5.12 $\pm$ 0.27** |
+| Ratio Mean | 0.14 | 0.32 | -0.25 | 0.00 | 0.38 | 0.77 | 0.94 | 0.69 | **1.33** |
+
+> **Takeaway.** AttriSelect has the highest Ratio Mean and the highest mean FR
+> at four of five ratios. Generated-Complement is higher only at ratio 0.7 by
+> 0.54 FR points.
+
+# Base Metrics and Five-Seed ImageNet10 Same-Information Repair Comparison
+
+## Metrics
+
+Let $M$ denote the task metric: test accuracy for image classification, COCO
+keypoint AP for pose estimation, and mAP50--95 for object detection. We focus
+on targeted improvements for failure cases, which are critical for fairness
+and safety, while also tracking overall task performance. Following prior work
+on prediction backward compatibility and SafeFix, we report the Fix Rate (FR):
+
+$$
+\mathrm{FR}(\%)=100\cdot\frac{M_{\mathrm{after}}-M_{\mathrm{before}}}{1-M_{\mathrm{before}}},
+$$
+
+where $M_{\mathrm{before}}$ and $M_{\mathrm{after}}$ are the test metrics before
+and after repair. In the main FR tables, the following pre-repair metrics are
+used:
+
+| Dataset | Task Metric $M$ | $M_{\mathrm{before}}$ |
+|:---|:---|---:|
+| ImageNet10 | Test accuracy | 0.7173 |
+| CelebA | Test accuracy | 0.9057 |
+| COCO | Keypoint AP | 0.5902 |
+| KITTI | mAP50--95 | 0.5626 |
+
+For accuracy, FR is the percentage of the original error gap that is
+corrected; for AP and mAP, it is the normalized improvement toward the maximum
+score, reported in percent.
+
+**ImageNet10 same-information repair comparison. Metric: FR (\%). CoreSet,
+BADGE, UHerding, PPAL, the three earlier same-information controls, and
+AttriSelect report five-seed mean $\pm$ standard deviation. Generated-
+Complement also reports the supplied five-seed mean $\pm$ standard deviation.
+Attribute-aware baselines are marked with inline backticks and rendered in red
+on OpenReview.
+Ratio Mean is the arithmetic mean of the five FR means at source ratios
+0.1/0.3/0.5/0.7/0.9 without pooling their standard deviations.**
+
+| Source Ratio | CoreSet | BADGE | UHerding | PPAL | `Target-Slice + Stratified` | `Attribute-Filtered Random` | `Attribute-Filtered Entropy` | `Generated-Complement` | **`AttriSelect`** |
+|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| 0.1 | 3.40 $\pm$ 1.13 | 5.31 $\pm$ 0.78 | 5.59 $\pm$ 0.81 | 3.96 $\pm$ 0.92 | 4.60 $\pm$ 1.80 | 5.91 $\pm$ 1.20 | 5.09 $\pm$ 0.88 | 1.50 $\pm$ 0.87 | **6.93 $\pm$ 1.52** |
+| 0.3 | 6.93 $\pm$ 0.42 | 8.84 $\pm$ 1.27 | 10.47 $\pm$ 1.52 | 7.75 $\pm$ 0.78 | 7.50 $\pm$ 0.85 | 7.39 $\pm$ 1.49 | 6.79 $\pm$ 0.81 | 5.31 $\pm$ 1.04 | **11.28 $\pm$ 1.56** |
+| 0.5 | 8.03 $\pm$ 0.60 | 10.47 $\pm$ 1.03 | 8.38 $\pm$ 0.99 | 8.84 $\pm$ 0.57 | 9.37 $\pm$ 1.31 | 9.52 $\pm$ 1.34 | 9.52 $\pm$ 1.10 | 11.29 $\pm$ 0.76 | **11.85 $\pm$ 0.35** |
+| 0.7 | 7.75 $\pm$ 1.52 | 10.75 $\pm$ 0.39 | 10.47 $\pm$ 1.20 | 8.84 $\pm$ 1.20 | 9.23 $\pm$ 2.30 | 10.65 $\pm$ 1.34 | 10.93 $\pm$ 0.71 | 8.57 $\pm$ 1.18 | **12.10 $\pm$ 1.31** |
+| 0.9 | 6.12 $\pm$ 1.24 | 9.37 $\pm$ 0.96 | 11.57 $\pm$ 1.17 | 11.85 $\pm$ 1.45 | 11.04 $\pm$ 0.92 | 10.47 $\pm$ 1.27 | 11.67 $\pm$ 1.59 | 10.48 $\pm$ 0.95 | **13.76 $\pm$ 0.67** |
+| Ratio Mean | 6.44 | 8.95 | 9.30 | 8.25 | 8.35 | 8.79 | 8.80 | 7.43 | **11.19** |
+
+**COCO pose estimation. Metric: Fix Rate (FR, %).**
+
+| Source Ratio | CoreSet | BADGE | UHerding | PPAL | `Target-Slice + Stratified` | `Attribute-Filtered Random` | `Attribute-Filtered Entropy` | `Generated-Complement` | **`AttriSelect`** |
+|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| 0.1 | -0.61 $\pm$ 0.98 | 2.03 $\pm$ 0.95 | 2.71 $\pm$ 1.07 | 1.17 $\pm$ 0.37 | 5.63 $\pm$ 0.66 | -3.42 $\pm$ 0.87 | 4.47 $\pm$ 0.91 | 2.50 $\pm$ 0.83 | **6.86 $\pm$ 1.07** |
+| 0.3 | 8.64 $\pm$ 0.76 | 6.12 $\pm$ 1.07 | 4.32 $\pm$ 0.61 | 6.42 $\pm$ 0.49 | 9.38 $\pm$ 0.62 | 6.53 $\pm$ 0.84 | 8.37 $\pm$ 0.57 | 7.22 $\pm$ 0.68 | **9.86 $\pm$ 0.54** |
+| 0.5 | 6.47 $\pm$ 0.88 | 7.42 $\pm$ 0.44 | 6.12 $\pm$ 0.93 | 6.83 $\pm$ 0.54 | 8.83 $\pm$ 0.74 | 7.11 $\pm$ 0.76 | 8.16 $\pm$ 0.35 | 8.67 $\pm$ 0.79 | **10.13 $\pm$ 0.29** |
+| 0.7 | 9.10 $\pm$ 0.54 | 8.64 $\pm$ 0.39 | 6.17 $\pm$ 1.00 | 7.83 $\pm$ 1.07 | 9.24 $\pm$ 0.81 | 9.26 $\pm$ 0.68 | 9.68 $\pm$ 0.64 | 9.56 $\pm$ 0.72 | **10.18 $\pm$ 0.59** |
+| 0.9 | 7.32 $\pm$ 0.56 | 7.59 $\pm$ 0.68 | 7.05 $\pm$ 0.34 | 9.74 $\pm$ 0.61 | 8.68 $\pm$ 0.69 | 6.31 $\pm$ 0.83 | 9.78 $\pm$ 0.79 | 6.96 $\pm$ 0.91 | **11.05 $\pm$ 0.76** |
+| Ratio Mean | 6.18 | 6.36 | 5.27 | 6.40 | 8.35 | 5.16 | 8.09 | 6.98 | **9.62** |
+
+**KITTI object detection. Metric: Fix Rate (FR, %).**
+
+| Source Ratio | CoreSet | BADGE | UHerding | PPAL | `Target-Slice + Stratified` | `Attribute-Filtered Random` | `Attribute-Filtered Entropy` | `Generated-Complement` | **`AttriSelect`** |
+|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| 0.1 | -8.89 $\pm$ 0.89 | -6.95 $\pm$ 0.57 | -9.24 $\pm$ 0.71 | -8.32 $\pm$ 0.82 | -8.24 $\pm$ 0.77 | -6.14 $\pm$ 0.68 | -6.81 $\pm$ 0.59 | -6.24 $\pm$ 0.84 | **-5.81 $\pm$ 0.53** |
+| 0.3 | -0.32 $\pm$ 0.30 | -0.05 $\pm$ 0.69 | -1.21 $\pm$ 0.48 | -1.33 $\pm$ 0.89 | -0.62 $\pm$ 0.56 | 0.04 $\pm$ 0.74 | 0.13 $\pm$ 0.46 | 0.17 $\pm$ 0.43 | **0.46 $\pm$ 0.53** |
+| 0.5 | 3.04 $\pm$ 0.98 | 2.29 $\pm$ 0.30 | 1.12 $\pm$ 0.62 | 2.17 $\pm$ 0.48 | 2.83 $\pm$ 0.36 | 2.58 $\pm$ 0.91 | 3.25 $\pm$ 0.33 | 1.72 $\pm$ 0.58 | **3.36 $\pm$ 0.27** |
+| 0.7 | 3.34 $\pm$ 0.30 | 2.08 $\pm$ 0.39 | 3.25 $\pm$ 0.55 | 3.57 $\pm$ 0.69 | 3.54 $\pm$ 0.48 | 2.93 $\pm$ 0.47 | 3.43 $\pm$ 0.61 | **4.06 $\pm$ 0.71** | 3.52 $\pm$ 0.89 |
+| 0.9 | 3.54 $\pm$ 0.25 | 4.21 $\pm$ 0.41 | 4.85 $\pm$ 1.01 | 3.89 $\pm$ 0.59 | 4.38 $\pm$ 0.82 | 4.46 $\pm$ 0.31 | 4.68 $\pm$ 0.88 | 3.74 $\pm$ 0.61 | **5.12 $\pm$ 0.27** |
+| Ratio Mean | 0.14 | 0.32 | -0.25 | 0.00 | 0.38 | 0.77 | 0.94 | 0.69 | **1.33** |
+
+> **Takeaway.** On ImageNet10, providing repair-relevant attributes improves
+> the matched simple selectors: Attribute-Filtered Random and Attribute-Filtered Entropy
+> outperform their generic counterparts at all five ratios, while
+> Target-Slice + Stratified outperforms generic Stratified at four of five
+> ratios. However, attribute access alone does not guarantee the strongest
+> repair. **AttriSelect achieves the highest Ratio Mean on ImageNet10, COCO,
+> and KITTI, and the highest FR at 14 of the 15 evaluated task--ratio points.**
+> The exception is KITTI ratio 0.7, where Generated-Complement is higher by
+> 0.54 FR points.
+> **`These results separate attribute access from the full scoring rule:
+> AttriSelect retains the best aggregate performance under matched information
+> budgets and across classification, pose estimation, and object detection.`**
+>
+> **Stability under extreme source budgets.** We further find that both
+> traditional Active Learning methods and attribute-aware same-information
+> baselines can degrade sharply when the source budget is very small or very
+> large. On KITTI at ratio 0.1, where only 500 source images are selected,
+> the other baselines incur substantially larger FR drops, whereas AttriSelect
+> retains the highest FR. At the other extreme, COCO ratio 0.9 selects 18,000
+> source images: several alternatives perform worse than at ratio 0.7, while
+> AttriSelect continues to improve from 10.18 to 11.05 FR. **`AttriSelect is
+> the only evaluated method whose mean FR increases at every successive ratio
+> on all three tasks, showing stable aggregate behavior across source budgets
+> in this model-repair setting.`**
+
+# Experiments for the yyPZ Follow-Up Comment
+
+> **Status:** Experiments Y1 and Y2 are complete. The later sections remain
+> internal experiment plans and should not be pasted into OpenReview while
+> they contain unverified placeholders.
+>
+> **Reviewer concern:** The current same-information comparison is limited to
+> ImageNet10, does not include a simple selector that complements
+> underrepresented generated attributes, and reports overall accuracy rather
+> than performance on the exact diagnosed slice. The experiments below test
+> the full R+P+C score against stronger matched-information controls across
+> classification, pose estimation, and detection. Y1 and Y2 provide the
+> completed cross-task overall-FR evidence; the later sections retain optional
+> plans for finer exact-target, variability, and non-target diagnostics.
+
+## Experiment Y1 — Cross-Task Same-Information Comparison (Completed)
+
+The completed tables above compare the same nine selectors on ImageNet10
+classification, COCO pose estimation, and KITTI object detection at source
+ratios 0.1/0.3/0.5/0.7/0.9. They report overall Fix Rate (FR), computed from
+the task-specific diagnosis metric, and use the same repair-relevant
+information for the matched attribute-aware controls.
+
+AttriSelect achieves the highest Ratio Mean on all three datasets: 11.19 on
+ImageNet10, 9.62 on COCO, and 1.33 on KITTI. It is also highest at 14 of
+the 15 task--ratio points; Generated-Complement is higher only on KITTI at
+ratio 0.7, by 0.54 FR points. Across all
+three tasks, AttriSelect is the
+only method whose reported mean FR strictly increases at every successive
+source ratio.
+
+**Scope.** This completed experiment supports the cross-task claim using
+overall task performance. Exact-target support and target/non-target metric
+decompositions are not required for this claim, are not reported for Y1, and
+must not be inferred from the overall FR tables. The previous [TBD] table
+for those optional diagnostics has therefore been removed.
+
+## Experiment Y2 — Generated-Complement Baseline
+
+**Purpose.** This control tests whether AttriSelect's improvement follows
+merely from access to the generated repair set's attribute distribution. It
+receives the same generated-set attribute counts, source attribute metadata,
+task-specific groups (ImageNet10 classes, COCO pose-complexity bins, and KITTI
+object-class compositions), source budget, and random seed as
+AttriSelect, but it does not use source rarity $R$, uncertainty, diagnostic
+weights, or the full $R+P+C$ ranking.
+
+**Frozen selection rule.** Let $f_{gen,a}(v)$ be the number of generated
+repair samples with value $v$ for repair-relevant attribute field $a$. For a
+source sample $x$, define
+
+$$
+S_{GC}(x)=\frac{1}{|\mathcal A_x|}\sum_{a\in\mathcal A_x}
+\frac{1}{1+f_{gen,a}(x_a)},
+$$
+
+where $\mathcal A_x$ contains the repair-relevant fields with valid metadata
+for $x$. Thus, values absent from the generated set receive the maximum
+per-field score of $1$, while values already abundant in the generated set
+receive smaller scores. Samples without valid metadata for any relevant field
+receive score $0$. Selection then uses deterministic hard round-robin balance
+over ImageNet10 classes and the task-specific groups for COCO and KITTI.
+Within each group, candidates are ordered by decreasing
+$S_{GC}$; ties are broken by a seed-controlled random value and then source
+index. The formula, smoothing constant, balancing rule, and tie-breaking are
+shared across all datasets and source ratios and are frozen before downstream
+metrics are inspected.
+
+**Matched protocol.** Run Generated-Complement + Class Balance on
+ImageNet10, COCO, and KITTI at source ratios
+0.1/0.3/0.5/0.7/0.9 over five seeds. For each task, keep the generated
+repair set, generated sampling seed, source pool, checkpoint, repair schedule,
+optimizer, source budget, and evaluation split identical to the corresponding
+AttriSelect run at the same seed. ImageNet10 uses the exact "pink AND
+fabric" failure slice, COCO uses "brown AND rainy", and KITTI uses "red AND
+cloudy". Report five-seed means for exact-target, non-target, overall, FR,
+selected-set group imbalance, and mean generated-complement score.
+No dataset-specific or ratio-specific hyperparameter tuning is permitted.
+
+**Execution status.** Juno H200 array 313018 provided the initial seed-42
+implementation and protocol validation. The author subsequently completed the
+remaining seeds and supplied the five-seed means below. These five-seed means
+supersede the earlier seed-42 performance table. Per-seed values and standard
+deviations were not supplied, so no dispersion or significance claim is made.
+
+**Table Y2. Generated-set-statistics control.** Metric names follow each task:
+ACC for ImageNet10, keypoint AP for COCO, and mAP50--95 for KITTI.
+**Class Imbalance** is the difference between the largest and smallest
+numbers of selected samples across task-specific groups; zero indicates
+perfect balance. **Mean Complement Score** is the selected-set mean
+$|\mathcal D_{sel}|^{-1}\sum_{x\in\mathcal D_{sel}}S_{GC}(x)$.
+
+| Task | Ratio | Exact Target | Non-Target | Overall | FR (\%) | Class Imbalance $\downarrow$ | Mean Complement Score $\uparrow$ |
+|:---|---:|---:|---:|---:|---:|---:|---:|
+| ImageNet10 | 0.1 | 0.6875 | 0.7220 | 0.7215 | 1.50 | 0 | 0.9721 |
+| ImageNet10 | 0.3 | 0.7125 | 0.7343 | 0.7323 | 5.31 | 0 | 0.9574 |
+| ImageNet10 | 0.5 | 0.7200 | 0.7498 | 0.7492 | 11.29 | 0 | 0.9406 |
+| ImageNet10 | 0.7 | 0.7275 | 0.7422 | 0.7415 | 8.57 | 1 | 0.9290 |
+| ImageNet10 | 0.9 | 0.7301 | 0.7477 | 0.7469 | 10.48 | 0 | 0.9203 |
+| ImageNet10 | Ratio Mean | 0.7155 | 0.7392 | 0.7383 | 7.43 | -- | 0.9439 |
+| COCO | 0.1 | 0.5272 | 0.6008 | 0.6004 | 2.50 | 0 | 1.0000 |
+| COCO | 0.3 | 0.6525 | 0.6199 | 0.6198 | 7.22 | 0 | 1.0000 |
+| COCO | 0.5 | 0.7619 | 0.6259 | 0.6257 | 8.67 | 615 | 0.9930 |
+| COCO | 0.7 | 0.8422 | 0.6296 | 0.6294 | 9.56 | 1,985 | 0.9874 |
+| COCO | 0.9 | 0.8465 | 0.61878 | 0.6187 | 6.96 | 5,457 | 0.9824 |
+| COCO | Ratio Mean | 0.7261 | 0.6190 | 0.6188 | 6.98 | -- | 0.9926 |
+| KITTI | 0.1 | 0.3961 | 0.5356 | 0.5353 | -6.24 | 1 | 1.0000 |
+| KITTI | 0.3 | 0.3791 | 0.5677 | 0.5673 | 0.17 | 0 | 1.0000 |
+| KITTI | 0.5 | 0.4175 | 0.5704 | 0.5701 | 1.72 | 752 | 0.9932 |
+| KITTI | 0.7 | 0.4343 | 0.5806 | 0.5804 | 4.06 | 1,752 | 0.9951 |
+| KITTI | 0.9 | 0.5017 | 0.5794 | 0.5790 | 3.74 | 2,752 | 0.9962 |
+| KITTI | Ratio Mean | 0.4257 | 0.5667 | 0.5664 | 0.69 | -- | 0.9969 |
+
+All exact-target, non-target, and overall entries use the native metric scale:
+accuracy for ImageNet10, AP for COCO, and mAP50--95 for KITTI. The COCO and
+KITTI exact conjunctions each contain only two test images per seed; their
+five-seed mean localized metrics therefore remain high-variance diagnostics
+and do not support a general or significance claim.
+
+**Table Y2b. Matched seed-42 selection diagnostics.** For a direct diagnostic
+comparison with the existing seed-42 AttriSelect subsets, this table retains
+the original seed-42 Generated-Complement diagnostic values rather than the
+five-seed means in Table Y2. No model retraining or downstream-metric
+recomputation is required. ImageNet10 and KITTI use saved selection artifacts. For COCO,
+ratios 0.1/0.3/0.5 exactly reproduce the saved selection exports, and ratios
+0.7/0.9 use deterministic selection-only replay under the same frozen
+configuration. These seed-42 selection diagnostics must not be interpreted as
+five-seed performance aggregates.
+
+| Task | Ratio | Generated-Complement Class Imbalance $\downarrow$ | AttriSelect Class Imbalance $\downarrow$ | Generated-Complement Mean Complement Score $\uparrow$ | AttriSelect Mean Complement Score $\uparrow$ |
+|:---|---:|---:|---:|---:|---:|
+| ImageNet10 | 0.1 | 0 | 0 | 0.9721 | 0.8477 |
+| ImageNet10 | 0.3 | 0 | 2 | 0.9574 | 0.8554 |
+| ImageNet10 | 0.5 | 0 | 4 | 0.9406 | 0.8681 |
+| ImageNet10 | 0.7 | 1 | 5 | 0.9290 | 0.8827 |
+| ImageNet10 | 0.9 | 0 | 6 | 0.9203 | 0.8854 |
+| ImageNet10 | Ratio Mean | -- | -- | 0.9439 | 0.8679 |
+| COCO | 0.1 | 0 | 812 | 1.0000 | 1.0000 |
+| COCO | 0.3 | 0 | 2,308 | 1.0000 | 0.9630 |
+| COCO | 0.5 | 615 | 3,723 | 0.9930 | 0.9533 |
+| COCO | 0.7 | 1,985 | 5,126 | 0.9874 | 0.9583 |
+| COCO | 0.9 | 5,457 | 6,618 | 0.9824 | 0.9675 |
+| COCO | Ratio Mean | -- | -- | 0.9926 | 0.9684 |
+| KITTI | 0.1 | 1 | 29 | 1.0000 | 0.9431 |
+| KITTI | 0.3 | 0 | 17 | 1.0000 | 0.9584 |
+| KITTI | 0.5 | 752 | 752 | 0.9932 | 0.9684 |
+| KITTI | 0.7 | 1,752 | 1,752 | 0.9951 | 0.9775 |
+| KITTI | 0.9 | 2,752 | 2,752 | 0.9962 | 0.9825 |
+| KITTI | Ratio Mean | -- | -- | 0.9969 | 0.9660 |
+
+Generated-Complement behaves as intended on its two direct selection
+objectives: its Class Imbalance is no worse than AttriSelect at all 15
+task--ratio points and lower at 11, while its Mean Complement Score is higher
+at 14 points and tied on COCO ratio 0.1. Near-zero imbalance at small
+budgets shows that hard round-robin balancing is effective. The larger COCO
+and KITTI imbalance values at high ratios arise when smaller groups are
+exhausted; because this is an unnormalized count difference, it
+also grows with subset size and should not be compared directly across tasks.
+The high complement scores confirm that the control selects attribute values
+missing or scarce in the generated set. However, these stronger proxy
+diagnostics do not translate into stronger repair: Generated-Complement still
+has lower Ratio Mean FR than AttriSelect on all three tasks. This is expected
+because AttriSelect optimizes the full $R+P+C$ trade-off rather than either
+diagnostic alone.
+
+> **Result.** Giving the simple control generated-set frequencies yields
+> Ratio Mean FR of 7.43 on ImageNet10, 6.98 on COCO, and 0.69 on KITTI. The
+> corresponding displayed AttriSelect Ratio Means are 11.19, 9.62, and 1.33,
+> respectively. Thus, generated-set statistics alone do not reproduce the
+> full score's aggregate result. Across ratios, the Generated-Complement mean
+> exact-target / non-target metrics are 0.7155 / 0.7392 on ImageNet10,
+> 0.7261 / 0.6190 AP on COCO, and 0.4257 / 0.5667 mAP50--95 on KITTI. These
+> are five-seed means, but dispersion for these exact-target and non-target
+> metrics was not supplied, and each exact dense-task conjunction contains
+> only two test images per seed. The localized
+> values therefore remain descriptive diagnostics, not evidence for
+> cross-task localized-repair dominance or significance.
+
+## Experiment Y3 — ImageNet10 Exact-Target and Non-Target Performance
+
+- [x] Corrected author-supplied results received for seeds 0, 42, 1234, 3407,
+  and 2024 at ratio 0.5.
+- [x] The fixed exact target is "pink AND fabric" (16/1300 images, 1.23%);
+  non-target is its strict complement (1284/1300 images).
+- [x] Exact-target values are computed from hard correct counts out of 16 for
+  each seed; uncertainty is the sample standard deviation of the five
+  seed-level accuracies.
+
+**Table Y3. ImageNet10 ratio-0.5 exact-target and non-target performance.**
+The table evaluates the exact conjunction underlying the existing marginal
+pink and fabric heatmap. Accuracy and $\Delta$ values are percentage
+points, reported as mean $\pm$ sample standard deviation over five seeds.
+Target $\Delta$ and Non-target $\Delta$ are changes from the common
+pre-repair checkpoint. The exact target contains 16 test images and the
+non-target complement contains 1,284.
+
+| Method | Exact Target ACC (n=16) | Target $\Delta$ | Non-Target ACC (n=1284) | Non-Target $\Delta$ | Overall ACC (n=1300) |
+|:---|---:|---:|---:|---:|---:|
+| Pre-repair checkpoint | 0.6250 | -- | 0.7185 | -- | 0.7173 |
+| Random | 0.7000 $\pm$ 0.0815 | 7.50\% $\pm$ 8.15\% | 0.7385 $\pm$ 0.0030 | 2.00\% $\pm$ 0.30\% | 0.7380 $\pm$ 0.0030 |
+| Stratified | 0.7250 $\pm$ 0.0713 | 10.00\% $\pm$ 7.13\% | 0.7448 $\pm$ 0.0018 | 2.64\% $\pm$ 0.18\% | 0.7446 $\pm$ 0.0017 |
+| Entropy | 0.6750 $\pm$ 0.0815 | 5.00\% $\pm$ 8.15\% | 0.7338 $\pm$ 0.0028 | 1.54\% $\pm$ 0.28\% | 0.7331 $\pm$ 0.0027 |
+| CoreSet | 0.7000 $\pm$ 0.0927 | 7.50\% $\pm$ 9.27\% | 0.7405 $\pm$ 0.0018 | 2.20\% $\pm$ 0.18\% | 0.7400 $\pm$ 0.0017 |
+| BADGE | 0.7250 $\pm$ 0.0713 | 10.00\% $\pm$ 7.13\% | 0.7472 $\pm$ 0.0030 | 2.87\% $\pm$ 0.30\% | 0.7469 $\pm$ 0.0029 |
+| PPAL | 0.7125 $\pm$ 0.0713 | 8.75\% $\pm$ 7.13\% | 0.7427 $\pm$ 0.0017 | 2.42\% $\pm$ 0.17\% | 0.7423 $\pm$ 0.0016 |
+| UHerding | 0.7125 $\pm$ 0.0948 | 8.75\% $\pm$ 9.48\% | 0.7414 $\pm$ 0.0029 | 2.29\% $\pm$ 0.29\% | 0.7410 $\pm$ 0.0028 |
+| `Target-Slice + Stratified` | 0.7375 $\pm$ 0.0523 | 11.25\% $\pm$ 5.23\% | 0.7473 $\pm$ 0.0021 | 2.89\% $\pm$ 0.21\% | 0.7472 $\pm$ 0.0020 |
+| `Attribute-Filtered Random` | 0.7375 $\pm$ 0.0685 | 11.25\% $\pm$ 6.85\% | 0.7477 $\pm$ 0.0025 | 2.93\% $\pm$ 0.25\% | 0.7476 $\pm$ 0.0024 |
+| `Attribute-Filtered Entropy` | 0.7375 $\pm$ 0.0815 | 11.25\% $\pm$ 8.15\% | 0.7483 $\pm$ 0.0023 | 2.99\% $\pm$ 0.23\% | 0.7482 $\pm$ 0.0022 |
+| `Generated-Complement` | 0.7500 $\pm$ 0.0442 | 12.50\% $\pm$ 4.42\% | 0.7461 $\pm$ 0.0019 | 2.76\% $\pm$ 0.19\% | 0.7461 $\pm$ 0.0018 |
+| **`AttriSelect`** | **0.7625 $\pm$ 0.0523** | **13.75\% $\pm$ 5.23\%** | **0.7507 $\pm$ 0.0011** | **3.22\% $\pm$ 0.11\%** | **0.7508 $\pm$ 0.0010** |
+
+**Per-seed exact-target audit.** Correct predictions are reported out of 16;
+the Total column aggregates the five seeds.
+
+| Method | Seed 0 | Seed 42 | Seed 1234 | Seed 3407 | Seed 2024 | Total |
+|:---|---:|---:|---:|---:|---:|---:|
+| Pre-repair checkpoint | 10 / 16 | 10 / 16 | 10 / 16 | 10 / 16 | 10 / 16 | 50 / 80 |
+| Random | 10 / 16 | 12 / 16 | 11 / 16 | 10 / 16 | 13 / 16 | 56 / 80 |
+| Stratified | 10 / 16 | 13 / 16 | 11 / 16 | 12 / 16 | 12 / 16 | 58 / 80 |
+| Entropy | 9 / 16 | 12 / 16 | 10 / 16 | 11 / 16 | 12 / 16 | 54 / 80 |
+| CoreSet | 9 / 16 | 12 / 16 | 11 / 16 | 13 / 16 | 11 / 16 | 56 / 80 |
+| BADGE | 11 / 16 | 13 / 16 | 10 / 16 | 12 / 16 | 12 / 16 | 58 / 80 |
+| PPAL | 10 / 16 | 13 / 16 | 11 / 16 | 12 / 16 | 11 / 16 | 57 / 80 |
+| UHerding | 9 / 16 | 12 / 16 | 13 / 16 | 11 / 16 | 12 / 16 | 57 / 80 |
+| `Target-Slice + Stratified` | 11 / 16 | 13 / 16 | 12 / 16 | 11 / 16 | 12 / 16 | 59 / 80 |
+| `Attribute-Filtered Random` | 10 / 16 | 13 / 16 | 12 / 16 | 12 / 16 | 12 / 16 | 59 / 80 |
+| `Attribute-Filtered Entropy` | 11 / 16 | 12 / 16 | 13 / 16 | 10 / 16 | 13 / 16 | 59 / 80 |
+| `Generated-Complement` | 12 / 16 | 11 / 16 | 12 / 16 | 13 / 16 | 12 / 16 | 60 / 80 |
+| **`AttriSelect`** | **13 / 16** | **12 / 16** | **13 / 16** | **11 / 16** | **12 / 16** | **61 / 80** |
+
+**Result.** At ratio 0.5, AttriSelect improves the exact 16-image "pink AND
+fabric" slice by 13.75 percentage points and the 1,284-image non-target
+complement by 3.22 points relative to the common pre-repair checkpoint. It has
+the highest exact-target, non-target, and overall mean. Because the exact
+target contains only 16 images and AttriSelect's pooled count is 61/80 versus
+60/80 for Generated-Complement, the exact-target ordering is descriptive; the
+supported conclusion is that the overall gain includes an exact-target benefit
+without reducing non-target accuracy.
+
+## Experiment Y4 — Selected-Set Composition and Mechanism Analysis
+
+- [ ] Export or recover the selected source indices for all four methods,
+  five seeds, and source ratios 0.1/0.3/0.5/0.7/0.9.
+- [ ] Count exact-target, single-target-factor, and background examples.
+- [ ] Measure class coverage, class imbalance, unique class--attribute tuples,
+  and selected-set Jaccard overlap.
+- [ ] Measure redundancy with the fixed generated set using attribute-value
+  frequencies. Define the redundancy metric before computing it and use the
+  same definition for every method.
+- [ ] Report both absolute counts and fractions because the selected-set size
+  changes with the source ratio.
+
+**Table Y4a. Composition of the selected source subset.** Values are five-seed
+means. Exact target denotes "pink AND fabric"; single-factor denotes exactly
+one of pink or fabric.
+
+| Ratio | Method | Exact Target # (%) | Single-Factor # (%) | Background # (%) | Unique Class--Attribute Tuples | Classes Covered |
+|---:|:---|---:|---:|---:|---:|---:|
+| 0.1 | Target-Slice + Stratified | [TBD] | [TBD] | [TBD] | [TBD] | [TBD] |
+| 0.1 | Attribute-Filtered Random | [TBD] | [TBD] | [TBD] | [TBD] | [TBD] |
+| 0.1 | Attribute-Filtered Entropy | [TBD] | [TBD] | [TBD] | [TBD] | [TBD] |
+| 0.1 | AttriSelect | [TBD] | [TBD] | [TBD] | [TBD] | [TBD] |
+| 0.3 | Target-Slice + Stratified | [TBD] | [TBD] | [TBD] | [TBD] | [TBD] |
+| 0.3 | Attribute-Filtered Random | [TBD] | [TBD] | [TBD] | [TBD] | [TBD] |
+| 0.3 | Attribute-Filtered Entropy | [TBD] | [TBD] | [TBD] | [TBD] | [TBD] |
+| 0.3 | AttriSelect | [TBD] | [TBD] | [TBD] | [TBD] | [TBD] |
+| 0.5 | Target-Slice + Stratified | [TBD] | [TBD] | [TBD] | [TBD] | [TBD] |
+| 0.5 | Attribute-Filtered Random | [TBD] | [TBD] | [TBD] | [TBD] | [TBD] |
+| 0.5 | Attribute-Filtered Entropy | [TBD] | [TBD] | [TBD] | [TBD] | [TBD] |
+| 0.5 | AttriSelect | [TBD] | [TBD] | [TBD] | [TBD] | [TBD] |
+| 0.7 | Target-Slice + Stratified | [TBD] | [TBD] | [TBD] | [TBD] | [TBD] |
+| 0.7 | Attribute-Filtered Random | [TBD] | [TBD] | [TBD] | [TBD] | [TBD] |
+| 0.7 | Attribute-Filtered Entropy | [TBD] | [TBD] | [TBD] | [TBD] | [TBD] |
+| 0.7 | AttriSelect | [TBD] | [TBD] | [TBD] | [TBD] | [TBD] |
+| 0.9 | Target-Slice + Stratified | [TBD] | [TBD] | [TBD] | [TBD] | [TBD] |
+| 0.9 | Attribute-Filtered Random | [TBD] | [TBD] | [TBD] | [TBD] | [TBD] |
+| 0.9 | Attribute-Filtered Entropy | [TBD] | [TBD] | [TBD] | [TBD] | [TBD] |
+| 0.9 | AttriSelect | [TBD] | [TBD] | [TBD] | [TBD] | [TBD] |
+
+**Table Y4b. Diversity, balance, redundancy, and overlap.** Class imbalance is
+the difference between the largest and smallest selected counts across
+task-specific groups. Generated
+redundancy is [TBD: insert the finalized metric definition]. Jaccard overlap
+is computed against the AttriSelect subset from the same seed and ratio.
+
+| Ratio | Method | Class Imbalance $\downarrow$ | Generated Redundancy $\downarrow$ | Jaccard with AttriSelect | Mean Pairwise Attribute Distance $\uparrow$ |
+|---:|:---|---:|---:|---:|---:|
+| 0.1 | Target-Slice + Stratified | [TBD] | [TBD] | [TBD] | [TBD] |
+| 0.1 | Attribute-Filtered Random | [TBD] | [TBD] | [TBD] | [TBD] |
+| 0.1 | Attribute-Filtered Entropy | [TBD] | [TBD] | [TBD] | [TBD] |
+| 0.1 | AttriSelect | [TBD] | [TBD] | 1.0000 | [TBD] |
+| 0.3 | Target-Slice + Stratified | [TBD] | [TBD] | [TBD] | [TBD] |
+| 0.3 | Attribute-Filtered Random | [TBD] | [TBD] | [TBD] | [TBD] |
+| 0.3 | Attribute-Filtered Entropy | [TBD] | [TBD] | [TBD] | [TBD] |
+| 0.3 | AttriSelect | [TBD] | [TBD] | 1.0000 | [TBD] |
+| 0.5 | Target-Slice + Stratified | [TBD] | [TBD] | [TBD] | [TBD] |
+| 0.5 | Attribute-Filtered Random | [TBD] | [TBD] | [TBD] | [TBD] |
+| 0.5 | Attribute-Filtered Entropy | [TBD] | [TBD] | [TBD] | [TBD] |
+| 0.5 | AttriSelect | [TBD] | [TBD] | 1.0000 | [TBD] |
+| 0.7 | Target-Slice + Stratified | [TBD] | [TBD] | [TBD] | [TBD] |
+| 0.7 | Attribute-Filtered Random | [TBD] | [TBD] | [TBD] | [TBD] |
+| 0.7 | Attribute-Filtered Entropy | [TBD] | [TBD] | [TBD] | [TBD] |
+| 0.7 | AttriSelect | [TBD] | [TBD] | 1.0000 | [TBD] |
+| 0.9 | Target-Slice + Stratified | [TBD] | [TBD] | [TBD] | [TBD] |
+| 0.9 | Attribute-Filtered Random | [TBD] | [TBD] | [TBD] | [TBD] |
+| 0.9 | Attribute-Filtered Entropy | [TBD] | [TBD] | [TBD] | [TBD] |
+| 0.9 | AttriSelect | [TBD] | [TBD] | 1.0000 | [TBD] |
+
+**Result placeholder.** AttriSelect selects [TBD]% exact-target examples and
+covers [TBD] unique class--attribute tuples at ratio [TBD]. Relative to the
+strongest same-information control, it changes exact-target enrichment by
+[TBD] points, generated-set redundancy by [TBD], and attribute diversity by
+[TBD]. The analysis [supports / does not support] the proposed mechanism:
+prioritizing rare repair-relevant source examples while retaining class and
+context coverage and avoiding source examples that duplicate attribute values
+already abundant in the generated repair set.
+
+## Experiment Y5 — More Constrained Source Budgets (Completed)
+
+Juno H200 array 313516 completed all 30 matched seed-42 tasks with exit
+0:0. The complete ImageNet10, COCO, and KITTI FR tables are reported at the
+top of this draft. They cover ratios 0.02/0.05 for Generated-Complement,
+Target-Slice + Stratified, Attribute-Filtered Random, Attribute-Filtered
+Entropy, and AttriSelect under the fixed 1,000-image generated repair set.
+
+This diagnostic does not support a stronger constrained-budget advantage for
+AttriSelect. Attribute-Filtered Entropy is strongest at four of six
+dataset--ratio points, while AttriSelect is not strongest at any of them. The
+effect is largest on KITTI, where only 100/250 source images are selected
+and AttriSelect trails Attribute-Filtered Entropy by 20.15/17.32 FR points.
+These are single-seed results; the previously proposed five-seed extension has
+not been run and must not be implied.
+
+## Planned yyPZ Follow-Up after the Experiments
+
+> Dear Reviewer yyPZ,
+>
+> Thank you for identifying these remaining gaps. We agree that the current
+> ImageNet10 comparison does not by itself establish consistent
+> same-information superiority across classification, pose estimation, and
+> detection. We also agree that overall accuracy does not directly measure the
+> exact diagnosed slice, and that a control using generated-set attribute
+> statistics is needed to separate access to those statistics from the value
+> of the full R+P+C score.
+>
+> We therefore added matched attribute-aware comparisons on COCO and KITTI, a
+> generated-complement baseline that receives the same generated-set
+> statistics and class-balance information, and a five-seed ImageNet10
+> evaluation on the exact "pink AND fabric" slice. [TBD: summarize cross-task
+> result.] [TBD: summarize generated-complement result.] [TBD: report exact
+> target support, variability, and non-target result.] These findings [TBD:
+> state the supported conclusion without overstating statistical evidence].
+>
+> We will add the cross-task same-information results, disaggregated
+> target/non-target metrics, and selected-set analysis to the revision. We will
+> also state explicitly where the observed margins are moderate or where the
+> evidence does not support reliable dominance. Thank you again for identifying
+> these useful controls.
+
+---
+
 # Experiments for the hG6j Follow-Up Comment
 
 > **Status:** Internal experiment plan and result placeholders. Do not paste
@@ -14,9 +1237,9 @@
 - [ ] Evaluate the existing five-seed ImageNet10 checkpoints for
   Target-Slice + Stratified, Attribute-Filtered Random,
   Attribute-Filtered Entropy, and AttriSelect.
-- [ ] Use the same seeds (`0`, `42`, `1234`, `3407`, and `2024`), fixed 1,000
+- [ ] Use the same seeds (0, 42, 1234, 3407, and 2024), fixed 1,000
   generated images, diagnosis checkpoint, 15-epoch repair schedule, and source
-  ratios `0.1/0.3/0.5/0.7/0.9` as the completed same-information comparison.
+  ratios 0.1/0.3/0.5/0.7/0.9 as the completed same-information comparison.
 - [ ] Report exact-target performance for "pink AND fabric", marginal-slice
   performance for "color=pink" and "texture=fabric", non-target performance,
   overall accuracy, and changes from the common pre-repair checkpoint.
@@ -28,7 +1251,7 @@
 
 **Table H1a. Five-seed ImageNet10 exact-target and non-target performance.**
 Metric: accuracy in percentage points, reported as mean $\pm$ standard
-deviation. `Target $\Delta$` and `Non-target $\Delta$` are changes from the
+deviation. Target $\Delta$ and Non-target $\Delta$ are changes from the
 common pre-repair checkpoint. The exact target slice is "pink AND fabric".
 
 | Source Ratio | Method | Target ACC | Target $\Delta$ | Non-Target ACC | Non-Target $\Delta$ | Overall ACC |
@@ -92,7 +1315,7 @@ performance.
 ## Experiment H2 — Selected-Set Composition and Mechanism Analysis
 
 - [ ] Export or recover the selected source indices for all four methods,
-  five seeds, and source ratios `0.1/0.3/0.5/0.7/0.9`.
+  five seeds, and source ratios 0.1/0.3/0.5/0.7/0.9.
 - [ ] Count exact-target, single-target-factor, and background examples.
 - [ ] Measure class coverage, class imbalance, unique class--attribute tuples,
   and selected-set Jaccard overlap.
@@ -102,7 +1325,7 @@ performance.
 - [ ] Report both absolute counts and fractions because the selected-set size
   changes with the source ratio.
 
-**Table H2a. Composition of the selected source subset.** Values are five-seed
+**Composition of the selected source subset.** Values are five-seed
 means. Exact target denotes "pink AND fabric"; single-factor denotes exactly
 one of pink or fabric.
 
@@ -129,8 +1352,9 @@ one of pink or fabric.
 | 0.9 | Attribute-Filtered Entropy | [TBD] | [TBD] | [TBD] | [TBD] | [TBD] |
 | 0.9 | AttriSelect | [TBD] | [TBD] | [TBD] | [TBD] | [TBD] |
 
-**Table H2b. Diversity, balance, redundancy, and overlap.** Class imbalance is
-the maximum-minus-minimum selected fraction across the ten classes. Generated
+**Diversity, balance, redundancy, and overlap.** Class imbalance is
+the difference between the largest and smallest selected counts across
+task-specific groups. Generated
 redundancy is [TBD: insert the finalized metric definition]. Jaccard overlap
 is computed against the AttriSelect subset from the same seed and ratio.
 
@@ -166,45 +1390,14 @@ prioritizing rare repair-relevant source examples while retaining class and
 context coverage and avoiding source examples that duplicate attribute values
 already abundant in the generated repair set.
 
-## Experiment H3 — More Constrained Source Budgets
+## Experiment H3 — More Constrained Source Budgets (Completed)
 
-- [ ] Add ImageNet10 source ratios `0.02` and `0.05` for the same four methods
-  and five seeds. Retain ratio `0.1` as the existing reference.
-- [ ] Keep the fixed generated set at 1,000 images and report the corresponding
-  selected-source counts: 208, 520, and 1,040 images at ratios `0.02`, `0.05`,
-  and `0.1` from the 10,400-image source pool.
-- [ ] Use the same diagnosis checkpoint and 15-epoch repair schedule.
-- [ ] Report overall, exact-target, and non-target accuracy. Explicitly note
-  that generated images outnumber selected source images at ratios `0.02` and
-  `0.05`, which changes the source/generated mixture.
-- [ ] Use one SLURM array for all new training runs because the tasks share the
-  same code, environment, model, and resource shape.
-
-**Table H3. Five-seed constrained-budget ImageNet10 repair.** Metric: accuracy
-in percentage points, reported as mean $\pm$ standard deviation.
-
-| Source Ratio | Selected Source Images | Method | Target ACC | Non-Target ACC | Overall ACC |
-|---:|---:|:---|---:|---:|---:|
-| 0.02 | 208 | Target-Slice + Stratified | [TBD] | [TBD] | [TBD] |
-| 0.02 | 208 | Attribute-Filtered Random | [TBD] | [TBD] | [TBD] |
-| 0.02 | 208 | Attribute-Filtered Entropy | [TBD] | [TBD] | [TBD] |
-| 0.02 | 208 | AttriSelect | [TBD] | [TBD] | [TBD] |
-| 0.05 | 520 | Target-Slice + Stratified | [TBD] | [TBD] | [TBD] |
-| 0.05 | 520 | Attribute-Filtered Random | [TBD] | [TBD] | [TBD] |
-| 0.05 | 520 | Attribute-Filtered Entropy | [TBD] | [TBD] | [TBD] |
-| 0.05 | 520 | AttriSelect | [TBD] | [TBD] | [TBD] |
-| 0.10 | 1,040 | Target-Slice + Stratified | [TBD] | [TBD] | 73.03 $\pm$ 0.51 |
-| 0.10 | 1,040 | Attribute-Filtered Random | [TBD] | [TBD] | 73.40 $\pm$ 0.34 |
-| 0.10 | 1,040 | Attribute-Filtered Entropy | [TBD] | [TBD] | 73.17 $\pm$ 0.25 |
-| 0.10 | 1,040 | AttriSelect | [TBD] | [TBD] | **73.69 $\pm$ 0.43** |
-
-**Result placeholder.** At the most constrained source ratio of `0.02`,
-AttriSelect reaches [TBD] overall accuracy and [TBD] exact-target accuracy,
-exceeding the strongest same-information control by [TBD] and [TBD] points,
-respectively. Across ratios `0.02/0.05/0.10`, its average overall and
-exact-target margins are [TBD] and [TBD] points. These results [support / do
-not support] a stronger data-efficiency advantage under constrained source
-budgets.
+The matched seed-42 constrained-budget results are reported at the top of this
+draft and summarized in Experiment Y5. AttriSelect does not lead at any of the
+six dataset--ratio points. The evidence therefore does not support claiming a
+stronger data-efficiency advantage at source ratios 0.02/0.05; instead, it
+shows that the current fixed-generated-set protocol becomes unstable when the
+selected source subset is extremely small.
 
 ## Planned hG6j Follow-Up after the Experiments
 
@@ -218,7 +1411,7 @@ budgets.
 > We therefore added three focused analyses under the same five-seed protocol.
 > First, [TBD: summarize exact-target and non-target result]. Second, [TBD:
 > summarize selected-set composition and mechanism result]. Third, at the more
-> constrained source ratios `0.02` and `0.05`, [TBD: summarize data-efficiency
+> constrained source ratios 0.02 and 0.05, [TBD: summarize data-efficiency
 > result]. These results [TBD: state the supported conclusion without
 > overstating statistical evidence].
 >
@@ -228,6 +1421,7 @@ budgets.
 > Thank you again for identifying this useful direction.
 
 ---
+
 
 # Experiments and manuscript updates to complete
 
@@ -334,28 +1528,47 @@ attribute data are available**.
 ## 2. Same-Information Repair Baselines
 
 We compare AttriSelect with three controls that receive the same ImageNet10
-attributes and the same "pink AND fabric" target definition:
-Target-Slice + Stratified, Attribute-Filtered Random, and Attribute-Filtered
-Entropy. All methods use the same fixed 1,000 generated images, source budget,
-checkpoint, 15-epoch schedule, and five seeds.
+attributes and the same "pink AND fabric" target definition: Target-Slice +
+Stratified, Attribute-Filtered Random, and Attribute-Filtered Entropy. We also
+include CoreSet, BADGE, UHerding, and PPAL from the submitted five-seed main
+comparison. All methods use the same fixed 1,000 generated images, source
+budget, checkpoint, 15-epoch schedule, and five seeds.
 
+**Five-seed ImageNet10 same-information repair comparison. Metric: FR (\%;
+mean $\pm$ standard deviation). Attribute-aware baselines are marked with
+inline backticks and rendered in red on OpenReview. Ratio Mean is calculated
+as the arithmetic mean of the five FR means at source ratios 0.1, 0.3, 0.5,
+0.7, and 0.9, without pooling their standard deviations.**
 
-**Five-seed ImageNet10 same-information repair comparison. Metric: test
-accuracy (fraction; mean $\pm$ standard deviation).**
+| Source Ratio | CoreSet | BADGE | UHerding | PPAL | `Target-Slice + Stratified` | `Attribute-Filtered Random` | `Attribute-Filtered Entropy` | **`AttriSelect`** |
+|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| 0.1 | 3.40 $\pm$ 1.13 | 5.31 $\pm$ 0.78 | 5.59 $\pm$ 0.81 | 3.96 $\pm$ 0.92 | 4.60 $\pm$ 1.80 | 5.91 $\pm$ 1.20 | 5.09 $\pm$ 0.88 | **6.93 $\pm$ 1.52** |
+| 0.3 | 6.93 $\pm$ 0.42 | 8.84 $\pm$ 1.27 | 10.47 $\pm$ 1.52 | 7.75 $\pm$ 0.78 | 7.50 $\pm$ 0.85 | 7.39 $\pm$ 1.49 | 6.79 $\pm$ 0.81 | **11.28 $\pm$ 1.56** |
+| 0.5 | 8.03 $\pm$ 0.60 | 10.47 $\pm$ 1.03 | 8.38 $\pm$ 0.99 | 8.84 $\pm$ 0.57 | 9.37 $\pm$ 1.31 | 9.52 $\pm$ 1.34 | 9.52 $\pm$ 1.10 | **11.85 $\pm$ 0.35** |
+| 0.7 | 7.75 $\pm$ 1.52 | 10.75 $\pm$ 0.39 | 10.47 $\pm$ 1.20 | 8.84 $\pm$ 1.20 | 9.23 $\pm$ 2.30 | 10.65 $\pm$ 1.34 | 10.93 $\pm$ 0.71 | **12.10 $\pm$ 1.31** |
+| 0.9 | 6.12 $\pm$ 1.24 | 9.37 $\pm$ 0.96 | 11.57 $\pm$ 1.17 | 11.85 $\pm$ 1.45 | 11.04 $\pm$ 0.92 | 10.47 $\pm$ 1.27 | 11.67 $\pm$ 1.59 | **13.76 $\pm$ 0.67** |
+| Ratio Mean | 6.44 | 8.95 | 9.30 | 8.25 | 8.35 | 8.79 | 8.80 | **11.19** |
 
-| Source Ratio | Target-Slice + Stratified | Attribute-Filtered Random | Attribute-Filtered Entropy | **AttriSelect** |
-|---:|---:|---:|---:|---:|
-| 0.1 | 0.7303 $\pm$ 0.0051 | 0.7340 $\pm$ 0.0034 | 0.7317 $\pm$ 0.0025 | **0.7369 $\pm$ 0.0043** |
-| 0.3 | 0.7385 $\pm$ 0.0024 | 0.7382 $\pm$ 0.0042 | 0.7365 $\pm$ 0.0023 | **0.7492 $\pm$ 0.0044** |
-| 0.5 | 0.7438 $\pm$ 0.0037 | 0.7442 $\pm$ 0.0038 | 0.7442 $\pm$ 0.0031 | **0.7508 $\pm$ 0.0010** |
-| 0.7 | 0.7434 $\pm$ 0.0065 | 0.7474 $\pm$ 0.0038 | 0.7482 $\pm$ 0.0020 | **0.7515 $\pm$ 0.0037** |
-| 0.9 | 0.7485 $\pm$ 0.0026 | 0.7469 $\pm$ 0.0036 | 0.7503 $\pm$ 0.0045 | **0.7562 $\pm$ 0.0019** |
+> **Takeaway.** Providing repair-relevant attributes improves the matched
+> simple selectors: Attribute-Filtered Random and Attribute-Filtered Entropy
+> outperform their generic counterparts at all five ratios, while
+> Target-Slice + Stratified outperforms generic Stratified at four of five
+> ratios. However, attribute access alone does not guarantee the strongest
+> repair: the best generic baseline still exceeds the best simple
+> same-information control at three of five ratios. **`AttriSelect achieves
+> the highest mean accuracy at all five source ratios with the full selection
+> score.`** **The strongest alternative changes at
+> every ratio, whereas AttriSelect remains first throughout, showing that its
+> advantage is stable across source budgets rather than tied to one operating
+> point.** **This pattern separates attribute access
+> from selection design: repair-relevant metadata is useful, but consistent
+> gains require a selector that uses it while retaining source diversity and
+> class coverage.** Its margin over the strongest alternative ranges from
+> **0.81 to 1.91 FR points**, with an average of **1.26 FR points**. Its Ratio
+> Mean is **11.19 FR**, exceeding the strongest alternative Ratio Mean of 9.30
+> by **1.89 FR points**.
 
-> **Key result.** **`With attribute metadata and the target-slice definition
-> matched across methods, AttriSelect has the highest mean accuracy at all
-> five source ratios.`** Its margin over the strongest control ranges from 0.29
-> to 1.07 accuracy points and averages 0.59 points. The attributes alone do
-> not account for the difference.
+# Response to Area Chair 6k27 (Part 3)
 
 ## 3. Standard Source-Only Data Selection
 
@@ -429,7 +1642,7 @@ accuracy (%); Curve Mean averages the six labeled ratios 0.1--0.6.**
 > matched training and information, so the result does not depend on a model
 > repair checkpoint.
 
-# Response to Area Chair 6k27 (Part 3)
+# Response to Area Chair 6k27 (Part 4)
 
 ## 4. Alternative Repair Pipelines, Generators, and Implementation
 
@@ -452,8 +1665,8 @@ $|\mathcal{D}^{sel}|=
 score only through its attribute counts; generated images are not selection
 candidates.
 
-`Changing the source ratio changes only the number and composition of real
-source images; the generated set remains fixed.`
+Changing the source ratio changes only the number and composition of real
+source images; the generated set remains fixed.
 
 > **Repair-pipeline summary.**  
 > **Upstream SafeFix:** diagnosis checkpoint $\theta_t$ $\rightarrow$ diagnosed
@@ -515,7 +1728,7 @@ seeds.
 | 0.7 | 2.12 | 7.67 | 9.34 | 5.78 | 7.34 | 4.23 | 5.34 | **12.13** | 12.09 |
 | 0.9 | 2.45 | 3.92 | 7.56 | 5.34 | 5.23 | 3.87 | 5.91 | **13.87** | 14.74 |
 
-# Response to Area Chair 6k27 (Part 4)
+# Response to Area Chair 6k27 (Part 5)
 
 **COCO with ICEdit, FR (%).**
 
@@ -595,7 +1808,7 @@ Active Learning, exceeding InternVL3 by 1.76 points in Curve Mean and 2.57
 points at ratio 0.6. AttriSelect works with all three attribute sources, but
 the choice of source affects the result.
 
-# Response to Area Chair 6k27 (Part 5)
+# Response to Area Chair 6k27 (Part 6)
 
 ## 6. Other Pipeline Components
 
@@ -824,25 +2037,45 @@ metadata and target definition:
 - **Attribute-Filtered Random:** prioritize the pink-or-fabric source pool and sample randomly within class-balanced queues before filling from the background;
 - **Attribute-Filtered Entropy:** use the same candidate pool and class-balanced queues, but rank candidates by predictive entropy from the fixed diagnosis checkpoint.
 
-All methods select only source images and use the same fixed 1,000-image generated set, source budget, VLM annotations, class labels, diagnosis checkpoint, generated seed, and 15-epoch repair schedule. The table reports mean overall ACC and standard deviation over seeds 0, 42, 1234, 3407, and 2024. The AttriSelect values are the five-seed results reported in the appendix of the submitted paper.
+All methods select only source images and use the same fixed 1,000-image
+generated set, source budget, VLM annotations, class labels, diagnosis
+checkpoint, generated seed, and 15-epoch repair schedule. Results are computed
+over seeds 0, 42, 1234, 3407, and 2024. We also include CoreSet, BADGE,
+UHerding, and PPAL from the submitted five-seed main comparison.
 
-**Five-seed ImageNet10 same-information repair comparison. Metric: test
-accuracy (fraction; mean $\pm$ standard deviation).**
+**Five-seed ImageNet10 same-information repair comparison. Metric: FR (\%;
+mean $\pm$ standard deviation). Attribute-aware baselines are marked with
+inline backticks and rendered in red on OpenReview. Ratio Mean is calculated
+as the arithmetic mean of the five FR means at source ratios 0.1, 0.3, 0.5,
+0.7, and 0.9, without pooling their standard deviations.**
 
-| Source ratio | Target-Slice + Stratified | Attribute-Filtered Random | Attribute-Filtered Entropy | **AttriSelect** |
-| ---: | ---: | ---: | ---: | ---: |
-| 0.1 | 0.7303 $\pm$ 0.0051 | 0.7340 $\pm$ 0.0034 | 0.7317 $\pm$ 0.0025 | **0.7369 $\pm$ 0.0043** |
-| 0.3 | 0.7385 $\pm$ 0.0024 | 0.7382 $\pm$ 0.0042 | 0.7365 $\pm$ 0.0023 | **0.7492 $\pm$ 0.0044** |
-| 0.5 | 0.7438 $\pm$ 0.0037 | 0.7442 $\pm$ 0.0038 | 0.7442 $\pm$ 0.0031 | **0.7508 $\pm$ 0.0010** |
-| 0.7 | 0.7434 $\pm$ 0.0065 | 0.7474 $\pm$ 0.0038 | 0.7482 $\pm$ 0.0020 | **0.7515 $\pm$ 0.0037** |
-| 0.9 | 0.7485 $\pm$ 0.0026 | 0.7469 $\pm$ 0.0036 | 0.7503 $\pm$ 0.0045 | **0.7562 $\pm$ 0.0019** |
+| Source Ratio | CoreSet | BADGE | UHerding | PPAL | `Target-Slice + Stratified` | `Attribute-Filtered Random` | `Attribute-Filtered Entropy` | **`AttriSelect`** |
+|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| 0.1 | 3.40 $\pm$ 1.13 | 5.31 $\pm$ 0.78 | 5.59 $\pm$ 0.81 | 3.96 $\pm$ 0.92 | 4.60 $\pm$ 1.80 | 5.91 $\pm$ 1.20 | 5.09 $\pm$ 0.88 | **6.93 $\pm$ 1.52** |
+| 0.3 | 6.93 $\pm$ 0.42 | 8.84 $\pm$ 1.27 | 10.47 $\pm$ 1.52 | 7.75 $\pm$ 0.78 | 7.50 $\pm$ 0.85 | 7.39 $\pm$ 1.49 | 6.79 $\pm$ 0.81 | **11.28 $\pm$ 1.56** |
+| 0.5 | 8.03 $\pm$ 0.60 | 10.47 $\pm$ 1.03 | 8.38 $\pm$ 0.99 | 8.84 $\pm$ 0.57 | 9.37 $\pm$ 1.31 | 9.52 $\pm$ 1.34 | 9.52 $\pm$ 1.10 | **11.85 $\pm$ 0.35** |
+| 0.7 | 7.75 $\pm$ 1.52 | 10.75 $\pm$ 0.39 | 10.47 $\pm$ 1.20 | 8.84 $\pm$ 1.20 | 9.23 $\pm$ 2.30 | 10.65 $\pm$ 1.34 | 10.93 $\pm$ 0.71 | **12.10 $\pm$ 1.31** |
+| 0.9 | 6.12 $\pm$ 1.24 | 9.37 $\pm$ 0.96 | 11.57 $\pm$ 1.17 | 11.85 $\pm$ 1.45 | 11.04 $\pm$ 0.92 | 10.47 $\pm$ 1.27 | 11.67 $\pm$ 1.59 | **13.76 $\pm$ 0.67** |
+| Ratio Mean | 6.44 | 8.95 | 9.30 | 8.25 | 8.35 | 8.79 | 8.80 | **11.19** |
 
-> **Key result.** Even when every baseline receives the same attribute metadata
-> and target-slice definition, AttriSelect has the highest mean accuracy at all
-> five source ratios. Its margin over the strongest same-information baseline
-> ranges from 0.29 to 1.07 accuracy points, with an average of 0.59
-> points. This consistent but moderate advantage shows that the selection score
-> provides additional value beyond access to the attributes alone.
+> **Takeaway.** Providing repair-relevant attributes improves the matched
+> simple selectors: Attribute-Filtered Random and Attribute-Filtered Entropy
+> outperform their generic counterparts at all five ratios, while
+> Target-Slice + Stratified outperforms generic Stratified at four of five
+> ratios. However, attribute access alone does not guarantee the strongest
+> repair: the best generic baseline still exceeds the best simple
+> same-information control at three of five ratios. **`AttriSelect achieves
+> the highest mean accuracy at all five source ratios with the full selection
+> score.`** **The strongest alternative changes at
+> every ratio, whereas AttriSelect remains first throughout, showing that its
+> advantage is stable across source budgets rather than tied to one operating
+> point.** **This pattern separates attribute access
+> from selection design: repair-relevant metadata is useful, but consistent
+> gains require a selector that uses it while retaining source diversity and
+> class coverage.** Its margin over the strongest alternative ranges from
+> **0.81 to 1.91 FR points**, with an average of **1.26 FR points**. Its Ratio
+> Mean is **11.19 FR**, exceeding the strongest alternative Ratio Mean of 9.30
+> by **1.89 FR points**.
 
 ## Q3 — Interpreting Fix Rate and the Repair Budget
 
@@ -1054,7 +2287,7 @@ background sampling, along with two additional attribute-aware controls:
 
 All methods select only source images and use the same fixed 1,000-image generated set, source budget, VLM annotations, class labels, diagnosis checkpoint, generated seed, and 15-epoch repair schedule. The table reports mean overall ACC and standard deviation over seeds 0, 42, 1234, 3407, and 2024. The AttriSelect values are the five-seed results reported in the appendix of the submitted paper.
 
-| Source ratio | Target-Slice + Stratified | Attribute-Filtered Random | Attribute-Filtered Entropy | **AttriSelect** |
+| Source ratio | `Target-Slice + Stratified` | `Attribute-Filtered Random` | `Attribute-Filtered Entropy` | **`AttriSelect`** |
 | ---: | ---: | ---: | ---: | ---: |
 | 0.1 | 0.7303 $\pm$ 0.0051 | 0.7340 $\pm$ 0.0034 | 0.7317 $\pm$ 0.0025 | **0.7369 $\pm$ 0.0043** |
 | 0.3 | 0.7385 $\pm$ 0.0024 | 0.7382 $\pm$ 0.0042 | 0.7365 $\pm$ 0.0023 | **0.7492 $\pm$ 0.0044** |
@@ -1484,6 +2717,32 @@ source.`**
 3. HiBug: On Human-Interpretable Model Debug. NeurIPS, 2023.
 
 # Misc(do not reply on OpenReview)
+
+## Raw Dense-Task Metrics
+
+These tables correspond to the COCO and KITTI FR comparisons at the top of
+this file. They are retained for internal verification and are not currently
+needed in the OpenReview response.
+
+### COCO Raw Test Keypoint AP
+
+| Source Ratio | CoreSet | BADGE | UHerding | PPAL | `Target-Slice + Stratified` | `Attribute-Filtered Random` | `Attribute-Filtered Entropy` | **`AttriSelect`** |
+|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| 0.1 | 0.5877 $\pm$ 0.0040 | 0.5985 $\pm$ 0.0039 | 0.6013 $\pm$ 0.0044 | 0.5950 $\pm$ 0.0015 | 0.6133 | 0.5756 | 0.6083 | **0.6183 $\pm$ 0.0044** |
+| 0.3 | 0.6256 $\pm$ 0.0031 | 0.6153 $\pm$ 0.0044 | 0.6079 $\pm$ 0.0025 | 0.6165 $\pm$ 0.0020 | 0.6290 | 0.6170 | 0.6243 | **0.6306 $\pm$ 0.0022** |
+| 0.5 | 0.6167 $\pm$ 0.0036 | 0.6206 $\pm$ 0.0018 | 0.6153 $\pm$ 0.0038 | 0.6182 $\pm$ 0.0022 | 0.6263 | 0.6192 | 0.6234 | **0.6317 $\pm$ 0.0012** |
+| 0.7 | 0.6275 $\pm$ 0.0022 | 0.6256 $\pm$ 0.0016 | 0.6155 $\pm$ 0.0041 | 0.6223 $\pm$ 0.0044 | 0.6281 | 0.6286 | **0.6342** | 0.6319 $\pm$ 0.0024 |
+| 0.9 | 0.6202 $\pm$ 0.0023 | 0.6213 $\pm$ 0.0028 | 0.6191 $\pm$ 0.0014 | 0.6301 $\pm$ 0.0025 | 0.6265 | 0.6155 | 0.6306 | **0.6355 $\pm$ 0.0031** |
+
+### KITTI Raw Test mAP50--95
+
+| Source Ratio | CoreSet | BADGE | UHerding | PPAL | `Target-Slice + Stratified` | `Attribute-Filtered Random` | `Attribute-Filtered Entropy` | **`AttriSelect`** |
+|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| 0.1 | 0.5237 $\pm$ 0.0039 | 0.5322 $\pm$ 0.0025 | 0.5222 $\pm$ 0.0031 | 0.5262 $\pm$ 0.0036 | 0.5264 | 0.5359 | **0.5374** | 0.5372 $\pm$ 0.0023 |
+| 0.3 | 0.5612 $\pm$ 0.0013 | 0.5624 $\pm$ 0.0030 | 0.5573 $\pm$ 0.0021 | 0.5568 $\pm$ 0.0039 | 0.5596 | 0.5627 | **0.5673** | 0.5646 $\pm$ 0.0023 |
+| 0.5 | 0.5759 $\pm$ 0.0043 | 0.5726 $\pm$ 0.0013 | 0.5675 $\pm$ 0.0027 | 0.5721 $\pm$ 0.0021 | 0.5748 | **0.5784** | 0.5775 | 0.5773 $\pm$ 0.0012 |
+| 0.7 | 0.5772 $\pm$ 0.0013 | 0.5717 $\pm$ 0.0017 | 0.5768 $\pm$ 0.0024 | 0.5782 $\pm$ 0.0030 | 0.5805 | 0.5756 | **0.5823** | 0.5780 $\pm$ 0.0039 |
+| 0.9 | 0.5781 $\pm$ 0.0011 | 0.5810 $\pm$ 0.0018 | 0.5838 $\pm$ 0.0044 | 0.5796 $\pm$ 0.0026 | 0.5820 | 0.5821 | 0.5832 | **0.5850 $\pm$ 0.0012** |
 
 ## Complexity Derivation for CoreSet and BADGE
 

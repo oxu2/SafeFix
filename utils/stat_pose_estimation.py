@@ -112,6 +112,15 @@ def parse_args() -> argparse.Namespace:
         help="Comma-separated attribute names to evaluate. Defaults to all available attributes.",
     )
     parser.add_argument(
+        "--exact-slice",
+        type=str,
+        default=None,
+        help=(
+            "Optional conjunction such as 'clothes_color=brown,weather=rainy'. "
+            "The output includes metrics for the exact conjunction and its complement."
+        ),
+    )
+    parser.add_argument(
         "--data-root",
         type=str,
         default="/data/oxx220000/coco",
@@ -218,6 +227,20 @@ def parse_attribute_names(raw: Optional[str]) -> Optional[List[str]]:
         return None
     values = [part.strip() for part in raw.split(",")]
     return [value for value in values if value]
+
+
+def parse_exact_slice(raw: Optional[str]) -> Dict[str, str]:
+    if not raw:
+        return {}
+    assignments: Dict[str, str] = {}
+    for part in raw.split(","):
+        if "=" not in part:
+            raise ValueError(f"Invalid --exact-slice assignment: {part!r}")
+        attr_name, value = (token.strip() for token in part.split("=", 1))
+        if not attr_name or not value:
+            raise ValueError(f"Invalid --exact-slice assignment: {part!r}")
+        assignments[attr_name] = value
+    return assignments
 
 
 def default_output_paths(predictions_json: Path, attribute_file: Path) -> Tuple[Path, Path]:
@@ -793,6 +816,7 @@ def write_unavailable_summary(
 
 
 def run_analysis(args: argparse.Namespace) -> Dict[str, object]:
+    exact_assignments = parse_exact_slice(args.exact_slice)
     requested_attributes = parse_attribute_names(args.attributes)
 
     args.attribute_file = resolve_attribute_path(args.attribute_file, args.attribute_split, "Eval attribute file")
@@ -1022,6 +1046,35 @@ def run_analysis(args: argparse.Namespace) -> Dict[str, object]:
 
             slice_rows.append(row)
 
+    exact_slice = None
+    if exact_assignments:
+        missing = [name for name in exact_assignments if name not in primary_eval_lookup]
+        if missing:
+            raise ValueError(
+                "Exact-slice attributes are unavailable in the eval attribute file: "
+                + ", ".join(missing)
+            )
+        exact_ids = [
+            image_id
+            for image_id in covered_eval_ids
+            if all(
+                primary_eval_lookup[attr_name].get(image_id) == value
+                for attr_name, value in exact_assignments.items()
+            )
+        ]
+        exact_id_set = set(exact_ids)
+        non_target_ids = [image_id for image_id in covered_eval_ids if image_id not in exact_id_set]
+        exact_slice = {
+            "assignments": exact_assignments,
+            "target": evaluate_subset(coco_gt, predictions, exact_ids),
+            "non_target": evaluate_subset(coco_gt, predictions, non_target_ids),
+        }
+        print(
+            "Exact slice "
+            + " AND ".join(f"{name}={value}" for name, value in exact_assignments.items())
+            + f": target_images={len(exact_ids)}, non_target_images={len(non_target_ids)}"
+        )
+
     sorted_rows = sort_rows(slice_rows, args.sort_by)
     print_summary(overall=overall, rows=sorted_rows, top_k=args.top_k)
 
@@ -1041,6 +1094,7 @@ def run_analysis(args: argparse.Namespace) -> Dict[str, object]:
         "rare_label_threshold": args.rare_label_threshold,
         "train_max_samples": args.train_max_samples,
         "overall": overall,
+        "exact_slice": exact_slice,
         "slices": sorted_rows,
     }
     if not covered_eval_ids:

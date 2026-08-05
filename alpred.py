@@ -668,6 +668,7 @@ parser.add_argument('--al_strategy', type=str, default='attribute',
                     choices=['coreset', 'badge', 'uherding', 'ppal', 'stratified', 'diversity', 'hybrid', 'hierarchical',
                              'attribute', 'entropy', 'target_slice_stratified',
                              'attribute_filtered_random', 'attribute_filtered_entropy',
+                             'generated_complement',
                              'uncertainty_stratified', 'gen_probe',
                              'random', 'none', '0', 'false', 'no'],
                     help='Active Learning strategy: coreset, badge, uherding, ppal, stratified, diversity, hybrid, hierarchical, '

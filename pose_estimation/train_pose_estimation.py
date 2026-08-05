@@ -61,6 +61,7 @@ from utils.attribute_aliases import (
     canonicalize_coco_pose_generated_attribute,
     coco_pose_generated_attribute_choices,
 )
+from utils.attribute_aware_baselines import select_attribute_aware_baseline
 from utils.stat_pose_estimation import run_analysis as run_pose_slice_analysis
 
 
@@ -96,7 +97,12 @@ POSE_GENERATED_ATTRIBUTE_ROOTS = {
 }
 POSE_GENERATED_IMAGE_SUFFIXES = {".png", ".jpg", ".jpeg"}
 POSE_AL_RANDOM_ALIASES = {"none", "0", "false", "no", "random", ""}
-POSE_AL_STRATEGIES = ["random", "stratified", "coreset", "badge", "uherding", "ppal", "attribute", "entropy"]
+POSE_AL_STRATEGIES = [
+    "random", "stratified", "coreset", "badge", "uherding", "ppal",
+    "attribute", "entropy", "target_slice_stratified",
+    "attribute_filtered_random", "attribute_filtered_entropy",
+    "generated_complement",
+]
 POSE_GENERATED_ATTRIBUTE_EXTRA_COUNTS = {
     "brown_rainy": {
         "clothes_color": {"brown": 1.0},
@@ -174,7 +180,9 @@ def parse_args():
         choices=[*POSE_AL_STRATEGIES, "none", "0", "false", "no"],
         help=(
             "Subset selection strategy for the original train split when --sub-ratio < 1. "
-            "Supported: random, stratified, coreset, badge, uherding, ppal, attribute, entropy."
+            "Supported: random, stratified, coreset, badge, uherding, ppal, "
+            "attribute, entropy, target_slice_stratified, attribute_filtered_random."
+            " attribute_filtered_entropy, generated_complement."
         ),
     )
     train_parser.add_argument(
@@ -697,15 +705,12 @@ def binary_entropy_tensor(values: torch.Tensor) -> torch.Tensor:
     return -(values * torch.log(values) + (1.0 - values) * torch.log(1.0 - values))
 
 
-def select_pose_entropy_indices(
+def compute_pose_entropy_scores(
     selection_dataset,
     *,
-    selected_count: int,
     seed: int,
     args,
-) -> List[int]:
-    if selected_count >= len(selection_dataset):
-        return list(range(len(selection_dataset)))
+) -> np.ndarray:
 
     selection_device = resolve_device(getattr(args, "device", "cuda"))
     model = create_keypointrcnn_model(
@@ -754,6 +759,26 @@ def select_pose_entropy_indices(
         )
 
     score_array = np.asarray(scores, dtype=np.float64)
+    del model
+    if selection_device.type == "cuda":
+        torch.cuda.empty_cache()
+    return score_array
+
+
+def select_pose_entropy_indices(
+    selection_dataset,
+    *,
+    selected_count: int,
+    seed: int,
+    args,
+) -> List[int]:
+    if selected_count >= len(selection_dataset):
+        return list(range(len(selection_dataset)))
+    score_array = compute_pose_entropy_scores(
+        selection_dataset,
+        seed=seed,
+        args=args,
+    )
     selected_local_indices = np.argsort(score_array)[::-1][:selected_count].tolist()
     selected_scores = score_array[selected_local_indices]
     print(
@@ -762,9 +787,6 @@ def select_pose_entropy_indices(
         f"score range {selected_scores.min():.6f}-{selected_scores.max():.6f}, "
         f"mean {selected_scores.mean():.6f}."
     )
-    del model
-    if selection_device.type == "cuda":
-        torch.cuda.empty_cache()
     return [int(idx) for idx in selected_local_indices]
 
 
@@ -835,7 +857,13 @@ def select_original_train_image_ids(
                 selected_count,
                 random_seed=seed,
             )
-    elif strategy_name == "attribute":
+    elif strategy_name in {
+        "attribute",
+        "target_slice_stratified",
+        "attribute_filtered_random",
+        "attribute_filtered_entropy",
+        "generated_complement",
+    }:
         attribute_path = resolve_pose_al_attribute_file(args)
         if attribute_path is None or not attribute_path.exists():
             print(f"Pose attribute selection could not find attribute file: {attribute_path}. Falling back to random.")
@@ -858,39 +886,71 @@ def select_original_train_image_ids(
                 selected_local_indices = sorted(rng.sample(range(len(candidate_ids)), selected_count))
                 effective_strategy = "random"
             else:
-                if getattr(args, "al_attribute_use_entropy", False):
+                if strategy_name != "attribute":
+                    extra_counts = resolve_pose_al_extra_counts(args)
+                    if not extra_counts:
+                        raise ValueError(
+                            f"{strategy_name} requires generated attribute counts."
+                        )
+                    entropy_scores = None
+                    if strategy_name == "attribute_filtered_entropy":
+                        entropy_scores = compute_pose_entropy_scores(
+                            selection_dataset,
+                            seed=seed,
+                            args=args,
+                        )
+                    selected_local_indices, baseline_diagnostics = (
+                        select_attribute_aware_baseline(
+                            strategy=strategy_name,
+                            attribute_metadata=attribute_metadata,
+                            metadata_indices=list(range(len(candidate_ids))),
+                            class_labels=(
+                                proxy_targets.tolist()
+                                if proxy_targets is not None
+                                else None
+                            ),
+                            generated_attribute_counts=extra_counts,
+                            n_select=selected_count,
+                            seed=seed,
+                            entropy_scores=entropy_scores,
+                        )
+                    )
+                    print("Pose same-information baseline diagnostics:")
+                    print(json.dumps(baseline_diagnostics, indent=2, sort_keys=True))
+                elif getattr(args, "al_attribute_use_entropy", False):
                     print(
                         "Pose attribute selection currently ignores --al-attribute-use-entropy and "
                         "uses metadata-only scoring."
                     )
-                log_path = getattr(args, "al_attribute_log_path", None)
-                value_weights = None
-                if log_path is not None and Path(log_path).exists():
-                    value_weights = parse_attribute_priority_log(str(log_path))
-                focus_attributes = resolve_pose_al_focus_attributes(args)
-                strategy = AttributeFocusedStrategy(
-                    attribute_metadata=attribute_metadata,
-                    focus_attributes=focus_attributes,
-                    rarity_power=getattr(args, "al_attribute_rarity_power", 0.03),
-                    uncertain_boost=getattr(args, "al_attribute_uncertainty_boost", 1.0),
-                    value_weights=value_weights,
-                    log_acc_scale=getattr(args, "al_attribute_log_acc_scale", 0.0),
-                    extra_counts=resolve_pose_al_extra_counts(args),
-                    frequency_penalty=getattr(args, "al_attribute_frequency_penalty", 0.5),
-                    class_balance_weight=parse_float_with_infinity(
-                        getattr(args, "al_attribute_class_balance", "0"),
-                        default=0.0,
-                    ),
-                    conditional_rarity=getattr(args, "al_conditional_rarity", False),
-                    use_rarity=getattr(args, "al_attribute_use_rarity", True),
-                    use_entropy=False,
-                )
-                selected_local_indices = strategy.select(
-                    selection_dataset,
-                    selected_count,
-                    random_seed=seed,
-                    debug_attribute=(focus_attributes[0] if focus_attributes else None),
-                )
+                if strategy_name == "attribute":
+                    log_path = getattr(args, "al_attribute_log_path", None)
+                    value_weights = None
+                    if log_path is not None and Path(log_path).exists():
+                        value_weights = parse_attribute_priority_log(str(log_path))
+                    focus_attributes = resolve_pose_al_focus_attributes(args)
+                    strategy = AttributeFocusedStrategy(
+                        attribute_metadata=attribute_metadata,
+                        focus_attributes=focus_attributes,
+                        rarity_power=getattr(args, "al_attribute_rarity_power", 0.03),
+                        uncertain_boost=getattr(args, "al_attribute_uncertainty_boost", 1.0),
+                        value_weights=value_weights,
+                        log_acc_scale=getattr(args, "al_attribute_log_acc_scale", 0.0),
+                        extra_counts=resolve_pose_al_extra_counts(args),
+                        frequency_penalty=getattr(args, "al_attribute_frequency_penalty", 0.5),
+                        class_balance_weight=parse_float_with_infinity(
+                            getattr(args, "al_attribute_class_balance", "0"),
+                            default=0.0,
+                        ),
+                        conditional_rarity=getattr(args, "al_conditional_rarity", False),
+                        use_rarity=getattr(args, "al_attribute_use_rarity", True),
+                        use_entropy=False,
+                    )
+                    selected_local_indices = strategy.select(
+                        selection_dataset,
+                        selected_count,
+                        random_seed=seed,
+                        debug_attribute=(focus_attributes[0] if focus_attributes else None),
+                    )
     elif strategy_name == "entropy":
         selected_local_indices = select_pose_entropy_indices(
             selection_dataset,

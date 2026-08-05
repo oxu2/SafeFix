@@ -27,6 +27,15 @@ Before continuing work in a new session, read these files in order:
 
 Do not assume chat history is available or complete. Use the Trellis workspace journal as the detailed source of truth for recent project context.
 
+## Background Agent Delegation
+
+- The user authorizes the primary agent to decide when to use background
+  agents without requesting separate permission each time.
+- Proactively use background agents for independent work that benefits from
+  parallel execution, such as research, code search, and validation.
+- Handle simple tasks directly and avoid delegation when it would add
+  unnecessary coordination overhead.
+
 ## Current Rebuttal Editing Scope: Reviewer KaLa and Area Chair 6k27
 
 - The user has explicitly authorized edits to both `Response to Reviewer KaLa`
@@ -38,8 +47,9 @@ Do not assume chat history is available or complete. Use the Trellis workspace j
   Split at a natural paragraph, table, equation, or blockquote boundary rather
   than forcing the boundary to align with `##` or `###` headings. No Part may
   exceed 5,000 characters, including its Part heading. Add another Part when
-  needed to keep tables, equations, or blockquotes intact. Revalidate all Part
-  counts after substantive edits.
+  needed to keep tables, equations, or blockquotes intact. Do not calculate or
+  report KaLa or Area Chair Part character counts unless the user explicitly
+  requests that validation.
 - Across all OpenReview responses, inline backticks may be used as ordinary
   quotation or code-style formatting. When a direct answer, takeaway, or core
   conclusion uses inline backticks for emphasis, combine them with `**bold**`

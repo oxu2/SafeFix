@@ -3,8 +3,10 @@ import unittest
 from utils.attribute_aware_baselines import (
     ATTRIBUTE_FILTERED_ENTROPY,
     ATTRIBUTE_FILTERED_RANDOM,
+    GENERATED_COMPLEMENT,
     TARGET_SLICE_STRATIFIED,
     build_attribute_match_pools,
+    compute_generated_complement_scores,
     select_attribute_aware_baseline,
 )
 
@@ -94,6 +96,41 @@ class AttributeAwareBaselineTest(unittest.TestCase):
         self.assertEqual(len(selected), 8)
         self.assertEqual(len(set(selected)), 8)
         self.assertEqual(diagnostics["selected_partial_count"], 6)
+
+    def test_generated_complement_prefers_values_absent_from_generated_set(self):
+        scores = compute_generated_complement_scores(
+            attribute_metadata=self.metadata,
+            metadata_indices=self.metadata_indices,
+            generated_attribute_counts=self.generated_counts,
+        )
+        self.assertAlmostEqual(scores[0], 1.0 / 1001.0)
+        self.assertAlmostEqual(scores[4], 1.0)
+
+        selected, diagnostics = select_attribute_aware_baseline(
+            strategy=GENERATED_COMPLEMENT,
+            attribute_metadata=self.metadata,
+            metadata_indices=self.metadata_indices,
+            class_labels=[0] * 8,
+            generated_attribute_counts=self.generated_counts,
+            n_select=3,
+            seed=42,
+        )
+        self.assertEqual(set(selected), {1, 4, 5})
+        self.assertGreater(diagnostics["selected_mean_complement_score"], 0.8)
+
+    def test_generated_complement_is_hard_class_balanced(self):
+        selected, diagnostics = select_attribute_aware_baseline(
+            strategy=GENERATED_COMPLEMENT,
+            attribute_metadata=self.metadata,
+            metadata_indices=self.metadata_indices,
+            class_labels=self.class_labels,
+            generated_attribute_counts=self.generated_counts,
+            n_select=6,
+            seed=42,
+        )
+        self.assertEqual(len(selected), 6)
+        self.assertEqual(diagnostics["selected_class_counts"], {"0": 3, "1": 3})
+        self.assertEqual(diagnostics["class_count_imbalance"], 0)
 
     def test_missing_target_attribute_fails_loudly(self):
         with self.assertRaisesRegex(ValueError, "missing target data arrays"):

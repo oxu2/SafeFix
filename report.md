@@ -1,3 +1,220 @@
+# ImageNet10 Five-Seed Selected-Sample Mechanism Analysis
+
+**Updated:** August 3, 2026
+
+This reviewer-facing analysis combines the matched ImageNet10 selected-subset
+diagnostics with the updated five-seed downstream FR results supplied by the
+author. It covers Target-Slice + Stratified, Attribute-Filtered Random,
+Attribute-Filtered Entropy, Generated-Complement, and AttriSelect. All methods
+use the same 10,400-image source pool, fixed 1,000-image generated set,
+diagnosis checkpoint, source ratios, and 15-epoch repair schedule.
+
+Generated Redundancy is the selected-set mean fraction of the two
+generated-supported target fields matched by each source image:
+"color=pink" and "texture=fabric". Mean Pairwise Attribute Distance is mean
+categorical Hamming distance over color, background, and texture across all
+unordered selected-source pairs. Class Imbalance is the difference between
+the largest and smallest selected counts across task-specific groups.
+
+At source ratios `0.02/0.05`, AttriSelect reaches five-seed FR `1.23/5.58`,
+compared with `0.68/3.95` for the strongest control, for margins of
+`0.55/1.63` points. It covers `184/397` unique
+class--color--background--texture tuples, compared with `142/267` for the
+strongest diversity control, and its mean pairwise attribute distance is
+`0.8823/0.8680`, compared with `0.7695/0.7828`. Class Imbalance is `1/0` for
+both AttriSelect and the best-balanced control.
+
+Across ratios `0.1/0.3/0.5/0.7/0.9`, AttriSelect has the highest five-seed FR
+among the matched controls: `6.93/11.28/11.85/12.10/13.76`. It also has the
+largest tuple coverage and mean pairwise attribute distance at every ratio.
+Generated-Complement has lower Generated Redundancy but lower FR, so
+generated-target complementarity alone does not explain the ordering. The
+supported interpretation is joint: AttriSelect retains repair-relevant
+samples while preserving broader class and attribute coverage.
+
+The five-seed FR values and selected-set diagnostics are now integrated into
+the hG6j follow-up under `Q4. Exact-Slice and Selected-Sample Evidence` in
+`draft.md`. The saved selection diagnostics and reproduction script remain at:
+
+- `logs/juno/imagenet_seed42_selection_mechanism.{json,md}`
+- `logs/juno/imagenet_attribute_aware/full/306871_*`
+- `logs/juno/generated_complement_seed42/313018_0--4`
+- `logs/juno/constrained_budget_seed42/313516_0--9`
+
+Reproduction script:
+`scripts/analyze_imagenet_seed42_selection_mechanism.py`.
+
+# Seed-42 More-Constrained Source-Budget Results
+
+**Updated:** August 2, 2026
+
+Juno H200 array `313516` completed all `30/30` tasks with exit `0:0`. The
+matched seed-42 comparison uses source ratios `0.02/0.05`, a fixed 1,000-image
+generated repair set, and five selectors: Generated-Complement, Target-Slice
++ Stratified, Attribute-Filtered Random, Attribute-Filtered Entropy, and
+AttriSelect. FR uses the manuscript-authoritative pre-repair metrics `0.7173`
+for ImageNet10, `0.5902` for COCO, and `0.5626` for KITTI.
+
+| Task | Ratio | Generated-Complement | Target-Slice + Stratified | Attribute-Filtered Random | Attribute-Filtered Entropy | AttriSelect |
+|:---|---:|---:|---:|---:|---:|---:|
+| ImageNet10 | 0.02 | -1.77 | -2.04 | 0.68 | **1.23** | -0.95 |
+| ImageNet10 | 0.05 | 3.13 | 3.95 | **5.58** | 2.32 | 3.13 |
+| COCO | 0.02 | -2.84 | **-2.02** | -2.46 | -6.23 | -7.80 |
+| COCO | 0.05 | -31.00 | -11.64 | -0.61 | **1.63** | -1.10 |
+| KITTI | 0.02 | -46.76 | -47.30 | -44.98 | **-35.88** | -56.03 |
+| KITTI | 0.05 | -20.67 | -18.70 | -20.93 | **-15.29** | -32.60 |
+
+Attribute-Filtered Entropy is strongest at four of the six dataset--ratio
+points; Target-Slice + Stratified and Attribute-Filtered Random are each
+strongest once. AttriSelect is not strongest at any point and trails the best
+matched control by `2.18/2.45` FR points on ImageNet10, `5.77/2.73` on COCO,
+and `20.15/17.32` on KITTI at ratios `0.02/0.05`. These results do not support
+an AttriSelect advantage under extreme source constraints. The fixed
+generated set equals or outnumbers the selected source subset in every run,
+so these budgets materially change the source/generated mixture relative to
+the main experiment.
+
+Compact artifacts are under
+`logs/juno/constrained_budget_seed42/313516_*/`: ImageNet10 `result.json`,
+COCO `output/test_metrics.json`, and KITTI `timing.json`.
+
+# Generated-Complement and AttriSelect Seed-42 Selection Diagnostics
+
+**Updated:** August 2, 2026
+
+This section retains the original seed-42 Generated-Complement diagnostics for
+a matched comparison with the existing seed-42 AttriSelect selected subsets;
+the five-seed Generated-Complement baseline is reported separately below.
+Class Imbalance is the
+maximum minus minimum selected class/proxy-label count. Mean Complement Score
+is the selected-set mean of
+$S_{GC}(x)=|\mathcal A_x|^{-1}\sum_{a\in\mathcal A_x}(1+f_{gen,a}(x_a))^{-1}$.
+No model was retrained and no downstream metric was recomputed.
+
+| Task | Ratio | Generated-Complement Class Imbalance | AttriSelect Class Imbalance | Generated-Complement Mean Complement Score | AttriSelect Mean Complement Score |
+|:---|---:|---:|---:|---:|---:|
+| ImageNet10 | 0.1 | 0 | 0 | 0.9721 | 0.8477 |
+| ImageNet10 | 0.3 | 0 | 2 | 0.9574 | 0.8554 |
+| ImageNet10 | 0.5 | 0 | 4 | 0.9406 | 0.8681 |
+| ImageNet10 | 0.7 | 1 | 5 | 0.9290 | 0.8827 |
+| ImageNet10 | 0.9 | 0 | 6 | 0.9203 | 0.8854 |
+| ImageNet10 | Ratio Mean | -- | -- | 0.9439 | 0.8679 |
+| COCO | 0.1 | 0 | 812 | 1.0000 | 1.0000 |
+| COCO | 0.3 | 0 | 2,308 | 1.0000 | 0.9630 |
+| COCO | 0.5 | 615 | 3,723 | 0.9930 | 0.9533 |
+| COCO | 0.7 | 1,985 | 5,126 | 0.9874 | 0.9583 |
+| COCO | 0.9 | 5,457 | 6,618 | 0.9824 | 0.9675 |
+| COCO | Ratio Mean | -- | -- | 0.9926 | 0.9684 |
+| KITTI | 0.1 | 1 | 29 | 1.0000 | 0.9431 |
+| KITTI | 0.3 | 0 | 17 | 1.0000 | 0.9584 |
+| KITTI | 0.5 | 752 | 752 | 0.9932 | 0.9684 |
+| KITTI | 0.7 | 1,752 | 1,752 | 0.9951 | 0.9775 |
+| KITTI | 0.9 | 2,752 | 2,752 | 0.9962 | 0.9825 |
+| KITTI | Ratio Mean | -- | -- | 0.9969 | 0.9660 |
+
+Generated-Complement has Class Imbalance no worse than AttriSelect at all 15
+task--ratio points and lower at 11. Its Mean Complement Score is higher at 14
+points and tied at COCO ratio `0.1`. The control therefore succeeds at its
+direct proxy objectives. Its lower Ratio Mean FR on all three tasks shows that
+hard balance and generated-distribution complementarity alone do not replace
+AttriSelect's full $R+P+C$ ranking. Large high-ratio imbalance values on COCO
+and KITTI occur after minority proxy-label groups are exhausted and should be
+read as raw count differences, not as a normalized cross-task fairness metric.
+
+ImageNet10 values use saved selection manifests from Juno job `306871`.
+KITTI values use saved prepared subsets from jobs `305836`, `306774`, and
+`306046`. COCO ratios `0.1/0.3/0.5` exactly match the saved selection exports;
+ratios `0.7/0.9` use deterministic selection-only replay with the same frozen
+configuration.
+
+# Generated-Complement Five-Seed Baseline
+
+**Updated:** August 2, 2026
+
+The author supplied the following completed five-seed means and ratio-level
+FR standard deviations. Per-seed values and dispersion for exact-target,
+non-target, and overall metrics were not supplied, so no significance claim
+is made. Exact-target, non-target, and overall entries use the native metric
+scale for each task.
+
+| Task | Ratio | Exact Target | Non-Target | Overall | FR Mean $\pm$ Std | Class Imbalance $\downarrow$ | Mean Complement Score $\uparrow$ |
+|:---|---:|---:|---:|---:|---:|---:|---:|
+| ImageNet10 | 0.1 | 0.6875 | 0.7220 | 0.7215 | 1.50 $\pm$ 0.87 | 0 | 0.9721 |
+| ImageNet10 | 0.3 | 0.7125 | 0.7343 | 0.7323 | 5.31 $\pm$ 1.04 | 0 | 0.9574 |
+| ImageNet10 | 0.5 | 0.7200 | 0.7498 | 0.7492 | 11.29 $\pm$ 0.76 | 0 | 0.9406 |
+| ImageNet10 | 0.7 | 0.7275 | 0.7422 | 0.7415 | 8.57 $\pm$ 1.18 | 1 | 0.9290 |
+| ImageNet10 | 0.9 | 0.7301 | 0.7477 | 0.7469 | 10.48 $\pm$ 0.95 | 0 | 0.9203 |
+| ImageNet10 | Ratio Mean | 0.7155 | 0.7392 | 0.7383 | 7.43 | -- | 0.9439 |
+| COCO | 0.1 | 0.5272 | 0.6008 | 0.6004 | 2.50 $\pm$ 0.83 | 0 | 1.0000 |
+| COCO | 0.3 | 0.6525 | 0.6199 | 0.6198 | 7.22 $\pm$ 0.68 | 0 | 1.0000 |
+| COCO | 0.5 | 0.7619 | 0.6259 | 0.6257 | 8.67 $\pm$ 0.79 | 615 | 0.9930 |
+| COCO | 0.7 | 0.8422 | 0.6296 | 0.6294 | 9.56 $\pm$ 0.72 | 1,985 | 0.9874 |
+| COCO | 0.9 | 0.8465 | 0.61878 | 0.6187 | 6.96 $\pm$ 0.91 | 5,457 | 0.9824 |
+| COCO | Ratio Mean | 0.7261 | 0.6190 | 0.6188 | 6.98 | -- | 0.9926 |
+| KITTI | 0.1 | 0.3961 | 0.5356 | 0.5353 | -6.24 $\pm$ 0.84 | 1 | 1.0000 |
+| KITTI | 0.3 | 0.3791 | 0.5677 | 0.5673 | 0.17 $\pm$ 0.43 | 0 | 1.0000 |
+| KITTI | 0.5 | 0.4175 | 0.5704 | 0.5701 | 1.72 $\pm$ 0.58 | 752 | 0.9932 |
+| KITTI | 0.7 | 0.4343 | 0.5806 | 0.5804 | 4.06 $\pm$ 0.71 | 1,752 | 0.9951 |
+| KITTI | 0.9 | 0.5017 | 0.5794 | 0.5790 | 3.74 $\pm$ 0.61 | 2,752 | 0.9962 |
+| KITTI | Ratio Mean | 0.4257 | 0.5667 | 0.5664 | 0.69 | -- | 0.9969 |
+
+The COCO and KITTI exact conjunctions each contain only two test images per
+seed. Their localized five-seed means remain high-variance diagnostics and do
+not support a general or statistical claim.
+
+# COCO and KITTI Seed-42 Same-Information Controls
+
+**Updated:** August 2, 2026
+
+Juno arrays `312965` and `312977` completed all `20/20` tasks successfully.
+The new rows use seed `42` at source ratios `0.1/0.3/0.5/0.7/0.9` with the
+same generated repair data, source attribute metadata, source budget,
+diagnosis checkpoint, and repair schedule used by the corresponding task.
+CoreSet, BADGE, UHerding, PPAL, and AttriSelect values below are the
+manuscript-authoritative five-seed means from `nips26_new/main.tex` and
+`nips26_new/appendix/main_metric_tables.tex`; therefore, comparisons involving
+the new seed-42 controls are descriptive and are not paired statistical
+comparisons.
+
+## COCO Pose Estimation
+
+FR uses the authoritative pre-repair keypoint AP `0.5902`.
+
+| Ratio | CoreSet FR | BADGE FR | UHerding FR | PPAL FR | Target-Slice FR | Filtered Random FR | Filtered Entropy FR | AttriSelect FR |
+|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| 0.1 | -0.61 | 2.03 | 2.71 | 1.17 | 5.63 | -3.56 | 4.40 | **6.86** |
+| 0.3 | 8.64 | 6.12 | 4.32 | 6.42 | 9.48 | 6.53 | 8.32 | **9.86** |
+| 0.5 | 6.47 | 7.42 | 6.12 | 6.83 | 8.81 | 7.09 | 8.09 | **10.13** |
+| 0.7 | 9.10 | 8.64 | 6.17 | 7.83 | 9.24 | 9.37 | **10.74** | 10.18 |
+| 0.9 | 7.32 | 7.59 | 7.05 | 9.74 | 8.86 | 6.18 | 9.85 | **11.05** |
+| Ratio Mean | 6.18 | 6.36 | 5.27 | 6.40 | 8.40 | 5.12 | 8.28 | **9.61** |
+
+AttriSelect has the highest reported value at four of five ratios and the
+highest Ratio Mean. Attribute-Filtered Entropy is higher at ratio `0.7`.
+
+## KITTI Object Detection
+
+FR uses the authoritative pre-repair mAP50--95 `0.5626`.
+
+| Ratio | CoreSet FR | BADGE FR | UHerding FR | PPAL FR | Target-Slice FR | Filtered Random FR | Filtered Entropy FR | AttriSelect FR |
+|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| 0.1 | -8.89 | -6.95 | -9.24 | -8.32 | -8.28 | -6.09 | **-5.76** | -5.81 |
+| 0.3 | -0.32 | -0.05 | -1.21 | -1.33 | -0.69 | 0.02 | **1.07** | 0.46 |
+| 0.5 | 3.04 | 2.29 | 1.12 | 2.17 | 2.80 | **3.62** | 3.41 | 3.36 |
+| 0.7 | 3.34 | 2.08 | 3.25 | 3.57 | 4.10 | 2.97 | **4.50** | 3.52 |
+| 0.9 | 3.54 | 4.21 | 4.85 | 3.89 | 4.43 | 4.45 | 4.71 | **5.12** |
+| Ratio Mean | 0.14 | 0.32 | -0.25 | 0.00 | 0.47 | 0.99 | **1.58** | 1.33 |
+
+The KITTI seed-42 controls do not support uniform AttriSelect dominance in
+this mixed-aggregation table. Attribute-Filtered Entropy is highest at ratios
+`0.1`, `0.3`, and `0.7` and has the highest Ratio Mean; Attribute-Filtered
+Random is highest at `0.5`, and AttriSelect is highest at `0.9`.
+
+Local compact artifacts are under
+`logs/juno/coco_kitti_same_information/312965_*/output/test_metrics.json` and
+`logs/juno/coco_kitti_same_information/312977_*`. Full logs and checkpoints
+remain under the corresponding path in the Juno rebuttal worktree.
+
 # CelebA Five-Seed HiBug Pipeline Compatibility
 
 **Updated:** July 30, 2026
@@ -740,6 +957,43 @@ Execution and artifacts:
   `logs/juno/imagenet_fr_epoch_multiplier/pilot/307870_<task>/`;
 - launcher: `scripts/juno_imagenet_fr_epoch_multiplier.sbatch`;
 - summarizer: `scripts/summarize_imagenet_fr_epoch_multiplier.py`.
+
+---
+
+## ImageNet10 Ratio-0.5 Five-Seed Exact-Target Evaluation
+
+**Updated:** August 3, 2026
+
+The corrected exact target is "pink AND fabric" and contains 16 of the 1,300
+test images; the non-target complement contains 1,284 images. Exact-target ACC
+is hard top-1 accuracy on the fixed 16-image slice. Values report the mean and
+sample standard deviation over seeds `0`, `42`, `1234`, `3407`, and `2024`.
+
+| Method | Exact Target ACC | Target $\Delta$ | Non-Target ACC | Non-Target $\Delta$ | Overall ACC |
+|:---|---:|---:|---:|---:|---:|
+| Pre-repair checkpoint | 0.6250 | -- | 0.7185 | -- | 0.7173 |
+| Random | 0.7000 $\pm$ 0.0815 | 7.50\% $\pm$ 8.15\% | 0.7385 $\pm$ 0.0030 | 2.00\% $\pm$ 0.30\% | 0.7380 $\pm$ 0.0030 |
+| Stratified | 0.7250 $\pm$ 0.0713 | 10.00\% $\pm$ 7.13\% | 0.7448 $\pm$ 0.0018 | 2.64\% $\pm$ 0.18\% | 0.7446 $\pm$ 0.0017 |
+| Entropy | 0.6750 $\pm$ 0.0815 | 5.00\% $\pm$ 8.15\% | 0.7338 $\pm$ 0.0028 | 1.54\% $\pm$ 0.28\% | 0.7331 $\pm$ 0.0027 |
+| CoreSet | 0.7000 $\pm$ 0.0927 | 7.50\% $\pm$ 9.27\% | 0.7405 $\pm$ 0.0018 | 2.20\% $\pm$ 0.18\% | 0.7400 $\pm$ 0.0017 |
+| BADGE | 0.7250 $\pm$ 0.0713 | 10.00\% $\pm$ 7.13\% | 0.7472 $\pm$ 0.0030 | 2.87\% $\pm$ 0.30\% | 0.7469 $\pm$ 0.0029 |
+| PPAL | 0.7125 $\pm$ 0.0713 | 8.75\% $\pm$ 7.13\% | 0.7427 $\pm$ 0.0017 | 2.42\% $\pm$ 0.17\% | 0.7423 $\pm$ 0.0016 |
+| UHerding | 0.7125 $\pm$ 0.0948 | 8.75\% $\pm$ 9.48\% | 0.7414 $\pm$ 0.0029 | 2.29\% $\pm$ 0.29\% | 0.7410 $\pm$ 0.0028 |
+| Target-Slice + Stratified | 0.7375 $\pm$ 0.0523 | 11.25\% $\pm$ 5.23\% | 0.7473 $\pm$ 0.0021 | 2.89\% $\pm$ 0.21\% | 0.7472 $\pm$ 0.0020 |
+| Attribute-Filtered Random | 0.7375 $\pm$ 0.0685 | 11.25\% $\pm$ 6.85\% | 0.7477 $\pm$ 0.0025 | 2.93\% $\pm$ 0.25\% | 0.7476 $\pm$ 0.0024 |
+| Attribute-Filtered Entropy | 0.7375 $\pm$ 0.0815 | 11.25\% $\pm$ 8.15\% | 0.7483 $\pm$ 0.0023 | 2.99\% $\pm$ 0.23\% | 0.7482 $\pm$ 0.0022 |
+| Generated-Complement | 0.7500 $\pm$ 0.0442 | 12.50\% $\pm$ 4.42\% | 0.7461 $\pm$ 0.0019 | 2.76\% $\pm$ 0.19\% | 0.7461 $\pm$ 0.0018 |
+| **AttriSelect** | **0.7625 $\pm$ 0.0523** | **13.75\% $\pm$ 5.23\%** | **0.7507 $\pm$ 0.0011** | **3.22\% $\pm$ 0.11\%** | **0.7508 $\pm$ 0.0010** |
+
+AttriSelect has the highest exact-target, non-target, and overall mean. Its
+exact-target count is `61/80` across the five seeds, compared with `60/80` for
+Generated-Complement. Because one prediction changes a seed-level exact-target
+ACC by 6.25 percentage points, the localized ordering is descriptive. The
+supported conclusion is that AttriSelect improves the diagnosed conjunction
+while non-target accuracy also increases.
+
+The author supplied the corrected aggregate table and per-seed exact-target
+counts. No checkpoint or prediction artifact path accompanied this update.
 
 ---
 

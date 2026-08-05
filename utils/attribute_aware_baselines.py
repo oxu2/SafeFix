@@ -15,11 +15,13 @@ from typing import Any, Dict, Iterable, List, Mapping, Optional, Sequence, Tuple
 TARGET_SLICE_STRATIFIED = "target_slice_stratified"
 ATTRIBUTE_FILTERED_RANDOM = "attribute_filtered_random"
 ATTRIBUTE_FILTERED_ENTROPY = "attribute_filtered_entropy"
+GENERATED_COMPLEMENT = "generated_complement"
 
 ATTRIBUTE_AWARE_BASELINES = (
     TARGET_SLICE_STRATIFIED,
     ATTRIBUTE_FILTERED_RANDOM,
     ATTRIBUTE_FILTERED_ENTROPY,
+    GENERATED_COMPLEMENT,
 )
 
 
@@ -33,6 +35,8 @@ def normalize_attribute_aware_strategy(strategy: str) -> str:
         "filtered_random": ATTRIBUTE_FILTERED_RANDOM,
         "attribute_filtered_entropy": ATTRIBUTE_FILTERED_ENTROPY,
         "filtered_entropy": ATTRIBUTE_FILTERED_ENTROPY,
+        "generated_complement": GENERATED_COMPLEMENT,
+        "generated_complement_class_balance": GENERATED_COMPLEMENT,
     }
     canonical = aliases.get(normalized, normalized)
     if canonical not in ATTRIBUTE_AWARE_BASELINES:
@@ -65,6 +69,46 @@ def target_values_from_generated_counts(
 
 def _normalized_value(value: Any) -> str:
     return str(value).strip().casefold()
+
+
+def compute_generated_complement_scores(
+    *,
+    attribute_metadata: Mapping[str, Mapping[str, Any]],
+    metadata_indices: Sequence[Optional[int]],
+    generated_attribute_counts: Mapping[str, Mapping[Any, float]],
+) -> List[float]:
+    """Score source samples by attributes underrepresented in generated data.
+
+    Each valid repair-relevant field contributes ``1 / (1 + f_gen(value))``.
+    Contributions are averaged across valid fields so missing metadata does not
+    change the scale merely by reducing the number of available fields.
+    """
+    arrays = _metadata_arrays(attribute_metadata, generated_attribute_counts)
+    normalized_counts = {
+        str(attribute): {
+            _normalized_value(value): max(float(count), 0.0)
+            for value, count in value_counts.items()
+        }
+        for attribute, value_counts in generated_attribute_counts.items()
+    }
+
+    scores: List[float] = []
+    for metadata_index in metadata_indices:
+        contributions: List[float] = []
+        for attribute, value_counts in normalized_counts.items():
+            data = arrays[attribute]
+            if (
+                metadata_index is None
+                or metadata_index < 0
+                or metadata_index >= len(data)
+            ):
+                continue
+            value = _normalized_value(data[metadata_index])
+            contributions.append(1.0 / (1.0 + value_counts.get(value, 0.0)))
+        scores.append(
+            sum(contributions) / len(contributions) if contributions else 0.0
+        )
+    return scores
 
 
 def _metadata_arrays(
@@ -292,6 +336,14 @@ def select_attribute_aware_baseline(
                 f"entropy_scores has length {len(entropy_scores)}, expected {total_candidates}."
             )
 
+    complement_scores = None
+    if canonical_strategy == GENERATED_COMPLEMENT:
+        complement_scores = compute_generated_complement_scores(
+            attribute_metadata=attribute_metadata,
+            metadata_indices=metadata_indices,
+            generated_attribute_counts=generated_attribute_counts,
+        )
+
     target_values = target_values_from_generated_counts(generated_attribute_counts)
     exact_pool, partial_pool, background_pool = build_attribute_match_pools(
         attribute_metadata=attribute_metadata,
@@ -306,6 +358,9 @@ def select_attribute_aware_baseline(
     elif canonical_strategy == ATTRIBUTE_FILTERED_RANDOM:
         priority_pool = partial_pool
         priority_scores = None
+    elif canonical_strategy == GENERATED_COMPLEMENT:
+        priority_pool = range(total_candidates)
+        priority_scores = complement_scores
     else:
         priority_pool = partial_pool
         priority_scores = entropy_scores
@@ -336,6 +391,12 @@ def select_attribute_aware_baseline(
     selected_exact = sum(index in exact_set for index in selected)
     selected_partial = sum(index in partial_set for index in selected)
     selected_counts = _selected_class_counts(selected, resolved_labels)
+    selected_complement_scores = (
+        [float(complement_scores[index]) for index in selected]
+        if complement_scores is not None
+        else []
+    )
+    class_count_values = list(selected_counts.values())
     diagnostics: Dict[str, Any] = {
         "strategy": canonical_strategy,
         "seed": int(seed),
@@ -365,5 +426,21 @@ def select_attribute_aware_baseline(
                 selected_counts.items(), key=lambda item: _json_label(item[0])
             )
         },
+        "class_count_imbalance": (
+            max(class_count_values) - min(class_count_values)
+            if class_count_values
+            else 0
+        ),
+        "selected_mean_complement_score": (
+            sum(selected_complement_scores) / len(selected_complement_scores)
+            if selected_complement_scores
+            else None
+        ),
+        "selected_min_complement_score": (
+            min(selected_complement_scores) if selected_complement_scores else None
+        ),
+        "selected_max_complement_score": (
+            max(selected_complement_scores) if selected_complement_scores else None
+        ),
     }
     return selected, diagnostics
