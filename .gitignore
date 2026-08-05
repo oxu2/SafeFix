@@ -92,5 +92,5 @@ figures/teaser_imagenet_selection
 !figures/*.png
 .trellis/workspace/oxu/journal-1.md
 LogicIF/
-nips26_new/
+# nips26_new/
 nips26/main.*

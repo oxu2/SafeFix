@@ -1,0 +1,387 @@
+\section{Additional Theory Analysis}
+\label{app:theory-analysis}
+
+\paragraph{Slice enrichment}
+We use \emph{slice enrichment} to describe whether a selected source subset contains more examples from the diagnosed target slice than would be expected from its class-conditional base rate.
+
+\begin{tcolorbox}[
+    colback=blue!2!white,
+    colframe=blue!20!white,
+    arc=3pt,
+    boxrule=1pt,
+    drop shadow,
+    breakable
+]
+\textbf{Proposition 1 (Attribute-agnostic AL requires target alignment).} \textit{Consider any AL selector that, within class $c$, chooses $B_c$ source examples using only non-attribute information $h_i$, such as uncertainty, logits, embeddings, losses, detector difficulty, coverage, or image distances, and does not use the attribute values $\{v_{i,a}:a\in\attrs\}$. Let $\dataset_{\mathrm{AL}}$ denote its selected source subset. If the target-slice indicator $\mathbf{1}[x_i\in T_c]$ is conditionally independent of $h_i$ given class $c$, with ties and internal randomness independent of the target indicator, then
+\begin{equation*}
+\mathbb{E}\big[|\dataset_{\mathrm{AL}}\cap T_c|\big]
+=
+B_c\frac{|T_c|}{N_c}.
+\end{equation*}
+Thus an attribute-agnostic AL method can enrich the target slice only when its non-attribute signal is additionally aligned with that slice.}
+\end{tcolorbox}
+
+\begin{tcolorbox}[
+    colback=green!2!white,
+    colframe=green!20!white,
+    arc=3pt,
+    boxrule=1pt,
+    drop shadow,
+    breakable
+]
+\begin{proof}[Proof of Proposition~\ref{prop:al-target-alignment}]
+Conditional independence makes the target indicators exchangeable with respect to any ranking, batch construction, or randomized choice computed from $h_i$ inside class $c$. The $B_c$ selected positions therefore contain, in expectation, the same target-slice fraction as the class pool itself, namely $|T_c|/N_c$. This argument does not depend on the particular AL heuristic. Uncertainty sampling, margin sampling, loss-based selection, diversity sampling, CoreSet, BADGE, PPAL-style uncertainty-then-diversity selection, and Uncertainty Herding-style uncertainty coverage all fall under the claim whenever their selection variables omit the current attribute metadata and are not otherwise aligned with the target slice.
+
+As a concrete coverage-based instance, let $z_i$ be the representation used by a diversity or coverage selector, such as cluster-based Diversity, CoreSet in feature space, or BADGE in gradient-embedding space. CoreSet-style $k$-center selection minimizes
+\begin{equation}
+\label{eq:k-center-objective}
+\max_i \min_{j\in S} d(z_i,z_j),
+\end{equation}
+so achieving objective value at most $\epsilon$ is equivalent to constructing an $\epsilon$-cover of the source representations. For a finite set $A$ in this representation space, define the empirical covering number
+\begin{equation}
+\label{eq:empirical-covering-number}
+\mathcal{N}^{\mathrm{emp}}_{\epsilon}(A)
+=
+\min\big\{|C|: C\subseteq A,\; A\subseteq \cup_{z\in C}B(z,\epsilon)\big\}.
+\end{equation}
+If the target slice in class $c$ has empirical covering number
+\begin{equation}
+\label{eq:target-covering-number}
+q_c=\mathcal{N}^{\mathrm{emp}}_{\epsilon}\big(\{z_i:x_i\in T_c\}\big),
+\end{equation}
+then an $\epsilon$-cover objective can cover the entire target region using only $q_c$ selected target representatives. Consequently, when the non-target region still contains uncovered $\epsilon$-scale cells, a coverage-based selector has an optimal solution with at most $q_c$ selected target examples, even if $|T_c|\gg q_c$.
+
+For this coverage-based instance, take $h_i=z_i$. By definition of the empirical covering number, there exists a subset $C_T\subseteq \{z_i:x_i\in T_c\}$ with $|C_T|=q_c$ such that every target-slice representation is within distance $\epsilon$ of some point in $C_T$. Selecting the corresponding $q_c$ target examples therefore makes the whole target slice $\epsilon$-covered. Any additional target example only refines coverage inside an already covered target region. If non-target $\epsilon$-scale cells remain uncovered, a coverage or diversity objective can spend the remaining representatives outside $T_c$ without increasing its maximum covering radius. Thus feature-space coverage does not force more than $q_c$ target selections.
+
+The same conclusion follows from the usual volumetric intuition. If a class region has effective dimension $d$, volume $V$, and the target subregion has volume $V_T$, then away from boundary effects an $\epsilon$-cover requires on the order of $V/(v_d\epsilon^d)$ cells for the full class region but only $V_T/(v_d\epsilon^d)$ cells for the target region, where $v_d$ is the volume of the unit $d$-ball. When the bug slice is semantically important but geometrically compact, $V_T\ll V$, so the number of representatives allocated by a geometry-only objective can be small. The objective allocates capacity to representation volume, not to semantic repair importance.
+\end{proof}
+\end{tcolorbox}
+
+\paragraph{Rarity and generated-data penalty}
+We now show why the attribute score assigns strict priority to a rare target slice under explicit data conditions. For any target example $x_i\in T_c$ and non-target example $x_j\notin T_c$ from the same class $c$, define the attributes on which they differ as
+\begin{equation}
+\label{eq:target-difference-attributes}
+\mathcal{D}_{ij}=\{a\in\attrs: v_{i,a}\neq v_{j,a}\}.
+\end{equation}
+Let
+\begin{equation}
+\label{eq:rarity-advantage}
+A_{ij}
+=
+\sum_{a\in\mathcal{D}_{ij}}
+\left[
+\left(\frac{1}{n_a(v_{i,a}\mid c)+\varepsilon}\right)^\alpha
+-
+\left(\frac{1}{n_a(v_{j,a}\mid c)+\varepsilon}\right)^\alpha
+\right]
+\end{equation}
+be the rarity advantage of the target example, and let
+\begin{equation}
+\label{eq:frequency-disadvantage}
+F_{ij}
+=
+\sum_{a\in\mathcal{D}_{ij}}
+\left[
+\frac{\hat{n}_a(v_{i,a})}{\sum_{v\in\vals_a}\hat{n}_a(v)}
+-
+\frac{\hat{n}_a(v_{j,a})}{\sum_{v\in\vals_a}\hat{n}_a(v)}
+\right]
+\end{equation}
+be the frequency-penalty disadvantage introduced by source and generated counts. If generated data has flooded the target value, then $F_{ij}$ can be positive; if not, the penalty does not hurt the target example relative to $x_j$.
+
+\begin{tcolorbox}[
+    colback=blue!2!white,
+    colframe=blue!20!white,
+    arc=3pt,
+    boxrule=1pt,
+    drop shadow,
+    breakable
+]
+\begin{proposition}[Rarity-dominates-penalty margin]
+\label{prop:rarity-margin}
+Assume $\alpha>0$ and $A_{ij}>0$ for every target/non-target pair $(x_i,x_j)$ within class $c$. Define
+\begin{equation}
+\label{eq:lambda-star}
+\lambda_c^\star
+=
+\min_{x_i\in T_c,\;x_j\notin T_c,\;F_{ij}>0}
+\frac{A_{ij}}{F_{ij}},
+\end{equation}
+with $\lambda_c^\star=\infty$ if no pair has $F_{ij}>0$. For any $0\leq\lambda<\lambda_c^\star$, every target example in $T_c$ has larger base score $\bar{s}_i$ than every non-target example from the same class. In particular, when each target attribute value is rarer than the competing non-target value, i.e., $n_a(v_{i,a}\mid c)<n_a(v_{j,a}\mid c)$ for all $a\in\mathcal{D}_{ij}$, the condition $A_{ij}>0$ holds automatically.
+\end{proposition}
+\end{tcolorbox}
+
+\begin{tcolorbox}[
+    colback=green!2!white,
+    colframe=green!20!white,
+    arc=3pt,
+    boxrule=1pt,
+    drop shadow,
+    breakable
+]
+\begin{proof}
+For a target/non-target pair $(x_i,x_j)$ in class $c$, attributes outside $\mathcal{D}_{ij}$ contribute the same score to both examples and cancel. The remaining base-score gap is
+\begin{equation}
+\label{eq:base-score-gap}
+\bar{s}_i-\bar{s}_j
+=
+A_{ij}-\lambda F_{ij}.
+\end{equation}
+If $F_{ij}\leq 0$, then $\bar{s}_i-\bar{s}_j\geq A_{ij}>0$ for any $\lambda\geq 0$, so the frequency penalty does not overturn the rarity advantage. If $F_{ij}>0$, then $\bar{s}_i-\bar{s}_j>0$ whenever $\lambda<A_{ij}/F_{ij}$. Taking the minimum over all target/non-target pairs with $F_{ij}>0$ gives the interval $0\leq\lambda<\lambda_c^\star$, under which every pair has a strictly positive score gap. Finally, if $n_a(v_{i,a}\mid c)<n_a(v_{j,a}\mid c)$ and $\alpha>0$, then each rarity term in $A_{ij}$ is positive, so their sum is positive.
+\end{proof}
+\end{tcolorbox}
+
+This proposition is the main data-dependent guarantee. It says that if the VLM annotations correctly identify a genuinely rare target slice, then there is a nonempty range of $\lambda$ values for which rarity dominates the synthetic-data frequency penalty. Even when generated examples make the target value more frequent in the repair candidate pool, the target examples remain ranked above non-target examples as long as $\lambda$ is below the explicit threshold $\lambda_c^\star$. Conversely, if target and non-target samples are indistinguishable under $\attrs$, then no attribute-only selector can separate them without additional information.
+
+\begin{tcolorbox}[
+    colback=blue!2!white,
+    colframe=blue!20!white,
+    arc=3pt,
+    boxrule=1pt,
+    drop shadow,
+    breakable
+]
+\begin{proposition}[Deterministic rare-slice enrichment]
+\label{prop:deterministic-enrichment}
+Assume the rarity-dominates-penalty condition in Proposition~\ref{prop:rarity-margin} holds for class $c$ and the $\lambda$ used by the selector. If the class-aware re-ranking step allocates $B_c$ source samples to class $c$, then \model includes at least
+\begin{equation}
+\label{eq:deterministic-enrichment-bound}
+\min\{B_c,|T_c|\}
+\end{equation}
+target-slice examples from that class. A random or stratified selector with the same class allocation selects
+\begin{equation}
+\label{eq:random-target-expectation}
+\mathbb{E}\big[|S_{\mathrm{rand}}\cap T_c|\big]
+=
+B_c\frac{|T_c|}{N_c}
+\end{equation}
+target examples in expectation.
+\end{proposition}
+\end{tcolorbox}
+
+\begin{tcolorbox}[
+    colback=green!2!white,
+    colframe=green!20!white,
+    arc=3pt,
+    boxrule=1pt,
+    drop shadow,
+    breakable
+]
+\begin{proof}
+At a fixed greedy step, the class-aware term adds the same bonus $\textcolor{colorC}{C_c^{(k)}}$ to every remaining candidate from class $c$. Therefore it can change how many samples are selected from each class, but it cannot reverse the within-class ordering induced by the base attribute score $\bar{s}_i$. By Proposition~\ref{prop:rarity-margin}, all target-slice examples in class $c$ appear before all non-target examples in the class queue. Selecting $B_c$ samples from that queue must therefore include all target examples when $|T_c|\leq B_c$, and $B_c$ target examples when $|T_c|>B_c$. This proves the deterministic bound. For random or stratified sampling under the same class allocation, each selected class-$c$ source example has probability $|T_c|/N_c$ of belonging to the target slice, giving the expectation by linearity.
+\end{proof}
+\end{tcolorbox}
+
+The enrichment gap is strict whenever $0<|T_c|<N_c$ and $B_c>0$, because
+\begin{equation}
+\label{eq:enrichment-gap}
+\min\{B_c,|T_c|\}\geq B_c\frac{|T_c|}{N_c}.
+\end{equation}
+Thus \model provides a semantic coverage guarantee for the repair surrogate, while random, stratified, uncertainty, Diversity, CoreSet, BADGE, PPAL, and Uncertainty Herding require additional alignment between their selection signal and the target slice.
+
+\begin{tcolorbox}[
+    colback=blue!2!white,
+    colframe=blue!20!white,
+    arc=3pt,
+    boxrule=1pt,
+    drop shadow,
+    breakable
+]
+\begin{proposition}[Uncertainty can miss an attribute slice]
+Consider uncertainty-based selection within each class, with uncertainty score $Q_i$ and class allocation $B_c$. If the $B_c$ largest uncertainty scores among non-target examples in class $c$ are all larger than every uncertainty score in $T_c$, then uncertainty selection chooses zero examples from $T_c$.
+\end{proposition}
+\end{tcolorbox}
+
+\begin{tcolorbox}[
+    colback=green!2!white,
+    colframe=green!20!white,
+    arc=3pt,
+    boxrule=1pt,
+    drop shadow,
+    breakable
+]
+\begin{proof}
+The claim is deterministic. If at least $B_c$ non-target examples have uncertainty larger than every target example, the top-$B_c$ uncertainty set contains only non-target examples. The same argument applies to any two-stage uncertainty-first method when the first-stage pool contains no target-slice examples: no second-stage diversity or coverage rule can recover target support that is absent from its candidate pool.
+\end{proof}
+\end{tcolorbox}
+
+Finally, suppose the repair utility of a selected source subset is
+\begin{equation}
+\label{eq:repair-utility}
+U(S)=u_0 |S| + (u_T-u_0)|S\cap T|,
+\qquad u_T>u_0,
+\end{equation}
+meaning target-slice samples have larger marginal value for the discovered repair problem. Then the rare-slice enrichment bound directly implies expected utility at least as large as random or stratified selection under the same class allocation, with a strict gap whenever the enrichment gap is strict. This is not a universal proof that the final trained model must dominate every baseline for every ratio; it is a conditional guarantee that the selector spends a fixed budget on more repair-relevant examples when the VLM metadata and count conditions correctly identify the failing slice.
+
+\paragraph{Soft class-balance behavior}
+The enrichment result above is within-class: the soft class-balance term changes how many examples are drawn from each class, but it does not reverse the attribute ordering inside a class. The following two results summarize the role of $C$.
+
+\begin{tcolorbox}[
+    colback=blue!2!white,
+    colframe=blue!20!white,
+    arc=3pt,
+    boxrule=1pt,
+    drop shadow,
+    breakable
+]
+\begin{proposition}[Hard-balance limit]
+\label{prop:hard-balance-limit}
+When $w=\infty$ and every active class has enough candidates, the round-robin limit selects class counts that differ by at most one. Within each class, candidates are still ordered by the attribute score $\bar{s}_i$.
+\end{proposition}
+\end{tcolorbox}
+
+\begin{tcolorbox}[
+    colback=green!2!white,
+    colframe=green!20!white,
+    arc=3pt,
+    boxrule=1pt,
+    drop shadow,
+    breakable
+]
+\begin{proof}
+The round-robin rule visits one active class at a time and removes the highest-scoring remaining candidate from that class. After each visit, the class is moved to the back of the queue. Thus no class can receive a second additional sample before every other non-empty class has received one. The selected counts across non-empty classes therefore differ by at most one, except when a class runs out of candidates. Since each class queue is sorted by $\bar{s}_i$, the within-class attribute order is preserved.
+\end{proof}
+\end{tcolorbox}
+
+\begin{tcolorbox}[
+    colback=blue!2!white,
+    colframe=blue!20!white,
+    arc=3pt,
+    boxrule=1pt,
+    drop shadow,
+    breakable
+]
+\begin{proposition}[Finite-weight balance pressure]
+\label{prop:finite-weight-balance}
+Assume $0<w<\infty$. At greedy step $k$, let $A_c^{(k)}$ be the highest remaining base score in class $c$, and assume all active class-head scores lie in an interval of width
+\begin{equation}
+\label{eq:class-head-width}
+\Delta = \max_c A_c^{(k)} - \min_c A_c^{(k)}.
+\end{equation}
+If class $d$ is selected at step $k$ while another class $c$ is also active, then
+\begin{equation}
+\label{eq:finite-balance-gap}
+n_d^{(k)} - n_c^{(k)} \leq \frac{t\Delta}{w}.
+\end{equation}
+Equivalently, if an active class $c$ trails class $d$ by more than $t\Delta/w$, then class $d$ cannot be selected before class $c$ at that step.
+\end{proposition}
+\end{tcolorbox}
+
+\begin{tcolorbox}[
+    colback=green!2!white,
+    colframe=green!20!white,
+    arc=3pt,
+    boxrule=1pt,
+    drop shadow,
+    breakable
+]
+\begin{proof}
+Since class $d$ is selected, its adjusted score is at least the adjusted score of class $c$:
+\begin{equation}
+\label{eq:finite-balance-proof-start}
+A_d^{(k)} + w\frac{t-n_d^{(k)}}{t}
+\geq
+A_c^{(k)} + w\frac{t-n_c^{(k)}}{t}.
+\end{equation}
+Rearranging gives
+\begin{equation}
+\label{eq:finite-balance-proof-rearranged}
+\frac{w}{t}\big(n_d^{(k)}-n_c^{(k)}\big)
+\leq A_d^{(k)}-A_c^{(k)}.
+\end{equation}
+Because both class-head scores lie in an interval of width $\Delta$, we have $A_d^{(k)}-A_c^{(k)}\leq\Delta$. Therefore $n_d^{(k)}-n_c^{(k)}\leq t\Delta/w$.
+\end{proof}
+\end{tcolorbox}
+
+This finite-weight result gives the exact sense in which $w$ controls soft balance. When $w=0$, the bound disappears and the selector reduces to pure attribute ranking. When $0<w<\infty$, a class with a large deficit receives enough bonus to overcome any bounded attribute-score advantage from an over-selected class. Increasing $w$ tightens the admissible count gap by the factor $1/w$. In the limiting case $w\rightarrow\infty$, the admissible gap goes to zero, matching the round-robin behavior in Proposition~\ref{prop:hard-balance-limit}. Thus finite $w$ does not guarantee exact class quotas, but it guarantees that class imbalance can persist only when the over-selected class has a sufficiently larger attribute score at the current step.
+
+\subsection{No-Generation Corner Case}
+\label{app:no-generation-corner-case}
+
+This section discusses the corner case in which no generated repair images are available, i.e., $\dataset_{\mathrm{gen}}=\emptyset$. This setting removes the main mechanism for adding missing semantic support, but \model still has a useful source-selection interpretation. Since $\tilde{n}_a^{\mathrm{gen}}(v)=0$, the effective count becomes
+\begin{equation}
+\hat{n}_a(v)=n_a^{\mathrm{src}}(v),
+\end{equation}
+and the base score reduces to
+\begin{equation}
+\bar{s}_i
+=
+\sum_{a \in \attrs}
+\left[
+\left(\frac{1}{n_a(v_{i,a}\mid y_i)+\varepsilon}\right)^\alpha
+-
+\lambda
+\frac{n_a^{\mathrm{src}}(v_{i,a})}{\sum_{v\in\vals_a} n_a^{\mathrm{src}}(v)}
+\right].
+\end{equation}
+Thus, when $\dataset_{\mathrm{gen}}=\emptyset$, the frequency penalty is no longer correcting a synthetic flood. It becomes a source-distribution head-value penalty: values that are already common in the source pool receive lower priority. The rarity term still prefers values that are rare within a class, and the soft class-balance term still controls label-level collapse.
+
+\begin{tcolorbox}[
+    colback=blue!2!white,
+    colframe=blue!20!white,
+    arc=3pt,
+    boxrule=1pt,
+    drop shadow,
+    breakable
+]
+\begin{proposition}[Source-only rare-slice enrichment]
+Let $\dataset_{\mathrm{gen}}=\emptyset$ and let $T\subseteq\dataset_{\mathrm{src}}$ be a target failure slice with nonzero source support. Suppose the rarity-dominates-penalty condition in Proposition~\ref{prop:rarity-margin} holds for $T$ under the source-only score above, with $\hat{n}_a(v)=n_a^{\mathrm{src}}(v)$. If the class-aware re-ranking step selects $B_c$ samples from class $c$, then \model returns at least
+\begin{equation}
+\sum_c \min\{B_c, |T_c|\}
+\end{equation}
+source examples from $T$. A random selector with the same per-class allocation selects
+\begin{equation}
+\mathbb{E}\big[|S_{\mathrm{rand}}\cap T|\big]
+=
+\sum_c B_c\frac{|T_c|}{N_c}
+\end{equation}
+target-slice examples in expectation.
+\end{proposition}
+\end{tcolorbox}
+
+\begin{tcolorbox}[
+    colback=green!2!white,
+    colframe=green!20!white,
+    arc=3pt,
+    boxrule=1pt,
+    drop shadow,
+    breakable
+]
+\begin{proof}
+The proof is identical to the rare-slice enrichment proof in Appendix~\ref{app:theory-analysis}, because that argument uses only the within-class ordering induced by $\bar{s}_i$. When $\dataset_{\mathrm{gen}}=\emptyset$, the score changes only through the replacement $\hat{n}_a(v)=n_a^{\mathrm{src}}(v)$. If the source-only score satisfies the rarity-dominates-penalty condition, then all target-slice samples appear before non-target samples in each class queue. Selecting $B_c$ examples from class $c$ therefore includes $\min\{B_c,|T_c|\}$ target examples. The random expectation follows by linearity under sampling from each class with allocation $B_c$.
+\end{proof}
+\end{tcolorbox}
+
+This proposition shows that generation is not required for the selector to improve target-slice coverage when the source pool already contains target examples. In this regime, the method becomes semantic active subset selection over the source pool. It can increase the number of existing rare failure cases in the retraining subset, but it cannot create support for a target slice that is absent from the source pool.
+
+\begin{tcolorbox}[
+    colback=blue!2!white,
+    colframe=blue!20!white,
+    arc=3pt,
+    boxrule=1pt,
+    drop shadow,
+    breakable
+]
+\begin{proposition}[Impossibility for absent source slices]
+Let $\dataset_{\mathrm{gen}}=\emptyset$ and suppose $T\cap\dataset_{\mathrm{src}}=\emptyset$. Then every source-only selector $S\subseteq\dataset_{\mathrm{src}}$ satisfies
+\begin{equation}
+|S\cap T|=0.
+\end{equation}
+Consequently, no active-selection rule over $\dataset_{\mathrm{src}}$ alone can provide target-slice training support.
+\end{proposition}
+\end{tcolorbox}
+
+\begin{tcolorbox}[
+    colback=green!2!white,
+    colframe=green!20!white,
+    arc=3pt,
+    boxrule=1pt,
+    drop shadow,
+    breakable
+]
+\begin{proof}
+Since $S\subseteq\dataset_{\mathrm{src}}$ and $T\cap\dataset_{\mathrm{src}}=\emptyset$, we have $S\cap T\subseteq\dataset_{\mathrm{src}}\cap T=\emptyset$. Hence $|S\cap T|=0$ for every possible selector.
+\end{proof}
+\end{tcolorbox}
+
+The no-generation case therefore separates two roles of \model. If $T$ already appears in the source pool, attribute selection can enrich those existing target examples under the same rarity-dominates-penalty condition as the main result. If $T$ is absent from the source pool, selection alone is insufficient; repair requires either new data collection or generated images that add target-slice support. This also clarifies the role of $\lambda$: with no generated images, a large frequency penalty may suppress globally common values even when they are rare within a specific class. In source-only repair, $\lambda$ should therefore be interpreted as a head-value suppression weight and may need to be smaller than in settings with heavy generated-data injection.

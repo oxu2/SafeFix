@@ -1,0 +1,319 @@
+\relax 
+\providecommand\hyper@newdestlabel[2]{}
+\providecommand\HyField@AuxAddToFields[1]{}
+\providecommand\HyField@AuxAddToCoFields[2]{}
+\citation{barbu2019objectnet,geirhos2020shortcut,chen2023hibug}
+\citation{buolamwini2018gender,eyuboglu2022domino}
+\citation{leclerc20213db}
+\citation{chen2023hibug}
+\citation{gao2023adaptive}
+\citation{singla2024data}
+\citation{chen2025hibug2}
+\citation{chen2023hibug}
+\citation{zhang2024distributionally,xu2025safefix}
+\citation{xu2025safefix}
+\citation{wang2024finetuned,li2024self}
+\def\@LN@column{1}
+\@writefile{toc}{\contentsline {section}{\numberline {1}Introduction}{1}{section.1}\protected@file@percent }
+\citation{mask-rcnn-2017}
+\citation{lin2014microsoft}
+\citation{detectron2modelzoo}
+\citation{settles2009active}
+\citation{sener2018active}
+\citation{ash2020deep}
+\citation{gao2023adaptive}
+\citation{singla2024data}
+\citation{chen2023hibug}
+\citation{chen2025hibug2}
+\citation{xu2025safefix}
+\citation{settles2009active}
+\citation{sener2018active}
+\citation{ash2020deep}
+\citation{wei2015submodularity,killamsetty2021glister,killamsetty2021grad,kothawade2021similar,karanam2022orient}
+\citation{yang2024ppal}
+\citation{bae2025uncertainty}
+\citation{kothawade2021talisman}
+\def\@LN@column{1}
+\@writefile{toc}{\contentsline {section}{\numberline {2}Related Work}{2}{section.2}\protected@file@percent }
+\citation{chen2023hibug,xu2025safefix}
+\citation{chen2023hibug,xu2025safefix}
+\citation{bai2025qwen3vl}
+\citation{he2016deep}
+\def\@LN@column{1}
+\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces \textcolor {darkteal}{\textbf  {AttriSelect}}\xspace  framework. Given a diagnosed failure slice and generated images, \textcolor {darkteal}{\textbf  {AttriSelect}}\xspace  scores source examples with class-conditional rarity, generated-data frequency penalty, and soft class balance, then returns an attribute-driven subset for retraining with the generated repair set.}}{3}{figure.caption.2}\protected@file@percent }
+\providecommand*\caption@xref[2]{\@setref\relax\@undefined{#1}}
+\newlabel{fig:attriselect-framework}{{1}{3}{\model framework. Given a diagnosed failure slice and generated images, \model scores source examples with class-conditional rarity, generated-data frequency penalty, and soft class balance, then returns an attribute-driven subset for retraining with the generated repair set}{figure.caption.2}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {3}Background}{3}{section.3}\protected@file@percent }
+\citation{zhang2023adding}
+\citation{settles2009active}
+\citation{sener2018active}
+\citation{ash2020deep}
+\citation{yang2024ppal}
+\citation{bae2025uncertainty}
+\def\@LN@column{1}
+\@writefile{toc}{\contentsline {section}{\numberline {4}Methodology}{4}{section.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.1}AttriSelect\xspace  Framework}{4}{subsection.4.1}\protected@file@percent }
+\newlabel{eq:rare-failure-slice}{{1}{4}{\modelplain Framework}{equation.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.2}Attribute-Driven Active Learning}{4}{subsection.4.2}\protected@file@percent }
+\def\@LN@column{1}
+\newlabel{eq:rarity-term}{{2}{5}{Attribute-Driven Active Learning}{equation.2}{}}
+\newlabel{eq:frequency-penalty}{{3}{5}{Attribute-Driven Active Learning}{equation.3}{}}
+\newlabel{eq:base-attribute-score}{{4}{5}{Attribute-Driven Active Learning}{equation.4}{}}
+\newlabel{eq:class-balance-score}{{5}{5}{Attribute-Driven Active Learning}{equation.5}{}}
+\citation{xu2025safefix}
+\citation{deng2009imagenet}
+\citation{liu2015deep}
+\citation{chen2025hibug2}
+\citation{lin2014microsoft}
+\citation{mask-rcnn-2017}
+\citation{he2016deep}
+\citation{geiger2012we}
+\def\@LN@column{1}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.3}Theoretical Analysis}{6}{subsection.4.3}\protected@file@percent }
+\newlabel{subsec:slice-enrichment}{{4.3}{6}{Theoretical Analysis}{subsection.4.3}{}}
+\newlabel{prop:al-target-alignment}{{1}{6}{Attribute-agnostic AL requires target alignment}{proposition.1}{}}
+\newlabel{eq:al-target-expectation}{{6}{6}{Attribute-agnostic AL requires target alignment}{equation.6}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {5}Experiments}{6}{section.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Datasets and Tasks}{6}{section*.3}\protected@file@percent }
+\citation{lai2023improvingpredictionbackwardcompatiblilitynlp,xu2025safefix}
+\citation{neyman1934two}
+\citation{settles2009active}
+\citation{sener2018active}
+\citation{ash2020deep}
+\citation{yang2024ppal}
+\citation{bae2025uncertainty}
+\def\@LN@column{1}
+\@writefile{toc}{\contentsline {paragraph}{Metrics}{7}{section*.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Baselines}{7}{section*.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.1}Main Results}{7}{subsection.5.1}\protected@file@percent }
+\def\@LN@column{1}
+\@writefile{lot}{\contentsline {table}{\numberline {1}{\ignorespaces Main repair results across tasks, averaged over five random seeds. Metric: FR (\%).}}{8}{table.caption.6}\protected@file@percent }
+\newlabel{tab:main-fr}{{1}{8}{Main repair results across tasks, averaged over five random seeds. Metric: FR (\%)}{table.caption.6}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {2}{\ignorespaces Source-subset selection time. Units are seconds (s), minutes (m), and hours (h). Speedup is measured against the fastest non-attribute active-learning baseline in the same row.}}{8}{table.caption.7}\protected@file@percent }
+\newlabel{tab:selection-efficiency}{{2}{8}{Source-subset selection time. Units are seconds (s), minutes (m), and hours (h). Speedup is measured against the fastest non-attribute active-learning baseline in the same row}{table.caption.7}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.2}Computational Efficiency}{8}{subsection.5.2}\protected@file@percent }
+\def\@LN@column{1}
+\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces ImageNet10 ratio-$0.5$ attribute-slice accuracy differences. \textcolor {darkteal}{\textbf  {AttriSelect}}\xspace  gives larger gains on the targeted attribute families, with the strongest gains on the exact repair values.}}{9}{figure.caption.8}\protected@file@percent }
+\newlabel{fig:imagenet-ratio05-attribute-delta}{{2}{9}{ImageNet10 ratio-$0.5$ attribute-slice accuracy differences. \model gives larger gains on the targeted attribute families, with the strongest gains on the exact repair values}{figure.caption.8}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.3}Attribute-Slice Accuracy Differences}{9}{subsection.5.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.4}Failure-Slice Repair Counts}{9}{subsection.5.4}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {3}{\ignorespaces COCO repaired slices out of 12.}}{9}{table.caption.9}\protected@file@percent }
+\newlabel{tab:coco-bug-repair-counts}{{3}{9}{COCO repaired slices out of 12}{table.caption.9}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.5}Ablation Study}{9}{subsection.5.5}\protected@file@percent }
+\bibdata{ref}
+\bibcite{ash2020deep}{{1}{2020}{{Ash et~al.}}{{Ash, Zhang, Krishnamurthy, Langford, and Agarwal}}}
+\bibcite{bae2025uncertainty}{{2}{2025}{{Bae et~al.}}{{Bae, Sutherland, and Oliveira}}}
+\bibcite{bai2025qwen3vl}{{3}{2025}{{Bai et~al.}}{{Bai, Cai, Chen, Chen, et~al.}}}
+\bibcite{barbu2019objectnet}{{4}{2019}{{Barbu et~al.}}{{Barbu, Mayo, Alverio, Luo, Wang, Gutfreund, Tenenbaum, and Katz}}}
+\bibcite{brooks2023instructpix2pix}{{5}{2023}{{Brooks et~al.}}{{Brooks, Holynski, and Efros}}}
+\bibcite{buolamwini2018gender}{{6}{2018}{{Buolamwini and Gebru}}{{}}}
+\bibcite{chen2023hibug}{{7}{2023}{{Chen et~al.}}{{Chen, Li, and Xu}}}
+\bibcite{chen2025hibug2}{{8}{2025}{{Chen et~al.}}{{Chen, Zhao, and Xu}}}
+\bibcite{deng2009imagenet}{{9}{2009}{{Deng et~al.}}{{Deng, Dong, Socher, Li, Li, and Fei-Fei}}}
+\bibcite{dunlap2023diversify}{{10}{2023}{{Dunlap et~al.}}{{Dunlap, Umino, Zhang, Yang, Gonzalez, and Darrell}}}
+\bibcite{eyuboglu2022domino}{{11}{2022}{{Eyuboglu et~al.}}{{Eyuboglu, Varma, Saab, Delbrouck, Lee-Messer, Dunnmon, Zou, and R{\'e}}}}
+\def\@LN@column{1}
+\@writefile{lot}{\contentsline {table}{\numberline {4}{\ignorespaces ImageNet10 classification attribute-score component ablation. Metric: test accuracy.}}{10}{table.caption.10}\protected@file@percent }
+\newlabel{tab:imagenet-rpc-ablation}{{4}{10}{ImageNet10 classification attribute-score component ablation. Metric: test accuracy}{table.caption.10}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {6}Conclusion}{10}{section.6}\protected@file@percent }
+\bibcite{detectron2modelzoo}{{12}{2024}{{Facebook AI Research}}{{}}}
+\bibcite{gao2023adaptive}{{13}{2023}{{Gao et~al.}}{{Gao, Ilharco, Lundberg, and Ribeiro}}}
+\bibcite{geiger2012we}{{14}{2012}{{Geiger et~al.}}{{Geiger, Lenz, and Urtasun}}}
+\bibcite{geirhos2020shortcut}{{15}{2020}{{Geirhos et~al.}}{{Geirhos, Jacobsen, Michaelis, Zemel, Brendel, Bethge, and Wichmann}}}
+\bibcite{mask-rcnn-2017}{{16}{2017}{{{He} et~al.}}{{{He}, {Gkioxari}, {Dollár}, and {Girshick}}}}
+\bibcite{he2016deep}{{17}{2016}{{He et~al.}}{{He, Zhang, Ren, and Sun}}}
+\bibcite{karanam2022orient}{{18}{2022}{{Karanam et~al.}}{{Karanam, Killamsetty, Kokel, and Iyer}}}
+\bibcite{killamsetty2021grad}{{19}{2021{}}{{Killamsetty et~al.}}{{Killamsetty, Durga, Ramakrishnan, De, and Iyer}}}
+\bibcite{killamsetty2021glister}{{20}{2021{}}{{Killamsetty et~al.}}{{Killamsetty, Sivasubramanian, Ramakrishnan, and Iyer}}}
+\bibcite{kingma2015adam}{{21}{2015}{{Kingma and Ba}}{{}}}
+\bibcite{kothawade2021similar}{{22}{2021{}}{{Kothawade et~al.}}{{Kothawade, Beck, Killamsetty, and Iyer}}}
+\bibcite{kothawade2021talisman}{{23}{2021{}}{{Kothawade et~al.}}{{Kothawade, Ghosh, Shekhar, Xiang, and Iyer}}}
+\bibcite{lai2023improvingpredictionbackwardcompatiblilitynlp}{{24}{2023}{{Lai et~al.}}{{Lai, Mansimov, Xie, and Zhang}}}
+\bibcite{leclerc20213db}{{25}{2021}{{Leclerc et~al.}}{{Leclerc, Salman, Ilyas, Vemprala, Engstrom, Vineet, Xiao, Zhang, Santurkar, Yang, et~al.}}}
+\bibcite{li2024self}{{26}{2024}{{Li et~al.}}{{}}}
+\bibcite{lin2014microsoft}{{27}{2014}{{Lin et~al.}}{{Lin, Maire, Belongie, Hays, Perona, Ramanan, Doll{\'a}r, and Zitnick}}}
+\bibcite{liu2015deep}{{28}{2015}{{Liu et~al.}}{{Liu, Luo, Wang, and Tang}}}
+\def\@LN@column{1}
+\bibcite{neyman1934two}{{29}{1934}{{Neyman}}{{}}}
+\bibcite{openai2025gpt5}{{30}{2025}{{OpenAI}}{{}}}
+\bibcite{rombach2022high}{{31}{2022}{{Rombach et~al.}}{{Rombach, Blattmann, Lorenz, Esser, and Ommer}}}
+\bibcite{sener2018active}{{32}{2018}{{Sener and Savarese}}{{}}}
+\bibcite{settles2009active}{{33}{2009}{{Settles}}{{}}}
+\bibcite{singla2024data}{{34}{2024}{{Singla et~al.}}{{Singla, Chegini, Moayeri, and Feizi}}}
+\bibcite{ddim}{{35}{2020}{{Song et~al.}}{{Song, Meng, and Ermon}}}
+\bibcite{trabucco2023effective}{{36}{2023}{{Trabucco et~al.}}{{Trabucco, Doherty, Gurinas, and Salakhutdinov}}}
+\bibcite{van2008visualizing}{{37}{2008}{{Van~der Maaten and Hinton}}{{}}}
+\bibcite{wang2024finetuned}{{38}{2024{}}{{Wang et~al.}}{{Wang, Mrini, Yang, Kumar, Tian, Yan, and Wang}}}
+\bibcite{wang2024domain}{{39}{2024{}}{{Wang et~al.}}{{Wang, Chung, Wu, and De~la Torre}}}
+\bibcite{wei2015submodularity}{{40}{2015}{{Wei et~al.}}{{Wei, Iyer, and Bilmes}}}
+\bibcite{xie2015holistically}{{41}{2015}{{Xie and Tu}}{{}}}
+\bibcite{xu2025safefix}{{42}{2025}{{Xu et~al.}}{{Xu, Zhang, Mao, and Guo}}}
+\bibcite{yang2024ppal}{{43}{2024}{{Yang, Chenhongyi and Huang, Lichao and Crowley, Elliot J.}}{{}}}
+\bibcite{zhang2024distributionally}{{44}{2024}{{Zhang et~al.}}{{Zhang, He, Kuang, Liu, Chen, Wu, Xiao, and Zhang}}}
+\bibcite{zhang2023adding}{{45}{2023}{{Zhang et~al.}}{{Zhang, Wu, Zhang, He, Zhang, Xu, Yang, Shih, Wang, Zhang, et~al.}}}
+\bibcite{zhang2025icedit}{{46}{2025}{{Zhang et~al.}}{{Zhang, Xie, Lu, Yang, and Yang}}}
+\bibstyle{plainnat}
+\def\@LN@column{1}
+\citation{xu2025safefix}
+\citation{he2016deep}
+\citation{deng2009imagenet}
+\citation{liu2015deep}
+\citation{chen2025hibug2}
+\citation{lin2014microsoft}
+\citation{mask-rcnn-2017}
+\citation{he2016deep}
+\citation{geiger2012we}
+\citation{kingma2015adam}
+\def\@LN@column{1}
+\ttl@writefile{ptc}{\ttl@starttoc{appendix@1}}
+\@writefile{toc}{\contentsline {section}{\numberline {A}Glossary}{13}{appendix.A}\protected@file@percent }
+\newlabel{app:glossary}{{A}{13}{Glossary}{appendix.A}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {B}Implementation Details}{13}{appendix.B}\protected@file@percent }
+\newlabel{app:implementation-details}{{B}{13}{Implementation Details}{appendix.B}{}}
+\@writefile{toc}{\contentsline {paragraph}{Random seeds.}{13}{section*.13}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Hardware and datasets.}{13}{section*.14}\protected@file@percent }
+\citation{zhang2023adding}
+\citation{rombach2022high}
+\citation{xie2015holistically}
+\citation{ddim}
+\citation{openai2025gpt5}
+\citation{bai2025qwen3vl}
+\def\@LN@column{1}
+\@writefile{lot}{\contentsline {table}{\numberline {5}{\ignorespaces Glossary of variables and symbols used in this paper.}}{14}{table.caption.12}\protected@file@percent }
+\newlabel{tab:glossary}{{5}{14}{Glossary of variables and symbols used in this paper}{table.caption.12}{}}
+\@writefile{toc}{\contentsline {paragraph}{Training and repair schedule.}{14}{section*.15}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Image generation.}{14}{section*.16}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Attribute proposal and assignment.}{14}{section*.17}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Generation and assignment cost.}{14}{section*.18}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {C}AttriSelect\xspace  Algorithm}{14}{appendix.C}\protected@file@percent }
+\newlabel{app:attriselect-algorithm}{{C}{14}{\modelplain Algorithm}{appendix.C}{}}
+\citation{xu2025safefix}
+\citation{chen2025hibug2}
+\citation{openai2025gpt5}
+\citation{bai2025qwen3vl}
+\def\@LN@column{1}
+\newlabel{alg:attriselect}{{\caption@xref {??}{ on input line 689}}{15}{\modelplain Algorithm}{figure.caption.19}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {D}Attribute Assignment Details}{15}{appendix.D}\protected@file@percent }
+\newlabel{app:attribute-assignment-details}{{D}{15}{Attribute Assignment Details}{appendix.D}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {E}Effect of the VLM and Human Audit}{15}{appendix.E}\protected@file@percent }
+\newlabel{app:vlm-human-audit}{{E}{15}{Effect of the VLM and Human Audit}{appendix.E}{}}
+\@writefile{toc}{\contentsline {paragraph}{VLM Role and Leakage Control}{15}{section*.21}\protected@file@percent }
+\def\@LN@column{1}
+\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces KITTI object-detection attribute corpus used for VLM assignment.}}{16}{figure.caption.20}\protected@file@percent }
+\newlabel{tab:kitti-attribute-corpus}{{3}{16}{KITTI object-detection attribute corpus used for VLM assignment}{figure.caption.20}{}}
+\@writefile{toc}{\contentsline {paragraph}{Human Audit Protocol}{16}{section*.22}\protected@file@percent }
+\citation{xu2025safefix}
+\citation{zhang2023adding}
+\citation{trabucco2023effective,dunlap2023diversify,wang2024domain}
+\citation{brooks2023instructpix2pix}
+\citation{zhang2025icedit}
+\def\@LN@column{1}
+\@writefile{lot}{\contentsline {table}{\numberline {6}{\ignorespaces Human audit of VLM-assigned attributes. Five AI graduate students label each audited image using the same closed-set options as the VLM. Exact field agreement measures agreement on the audited attribute values, while slice-indicator agreement measures agreement on the binary target conjunction used for repair.}}{17}{table.caption.23}\protected@file@percent }
+\newlabel{tab:vlm-human-audit}{{6}{17}{Human audit of VLM-assigned attributes. Five AI graduate students label each audited image using the same closed-set options as the VLM. Exact field agreement measures agreement on the audited attribute values, while slice-indicator agreement measures agreement on the binary target conjunction used for repair}{table.caption.23}{}}
+\@writefile{toc}{\contentsline {paragraph}{Sensitivity to attribute noise.}{17}{section*.24}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {7}{\ignorespaces Sensitivity to corrupted VLM attributes at source ratio $0.5$. Entries report the change from the clean-VLM \textcolor {darkteal}{\textbf  {AttriSelect}}\xspace  result for each task metric.}}{17}{table.caption.25}\protected@file@percent }
+\newlabel{tab:attribute-noise-sensitivity}{{7}{17}{Sensitivity to corrupted VLM attributes at source ratio $0.5$. Entries report the change from the clean-VLM \model result for each task metric}{table.caption.25}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {F}Effect of Image Generation}{17}{appendix.F}\protected@file@percent }
+\newlabel{app:image-generation-effect}{{F}{17}{Effect of Image Generation}{appendix.F}{}}
+\def\@LN@column{1}
+\@writefile{lot}{\contentsline {table}{\numberline {8}{\ignorespaces CelebA repair results with InstructPix2Pix generation. Metric: FR (\%).}}{18}{table.caption.26}\protected@file@percent }
+\newlabel{tab:celeba-instructpix2pix-fr}{{8}{18}{CelebA repair results with InstructPix2Pix generation. Metric: FR (\%)}{table.caption.26}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {9}{\ignorespaces COCO pose-estimation repair results with ICEdit generation. Metric: FR (\%).}}{18}{table.caption.27}\protected@file@percent }
+\newlabel{tab:coco-icedit-fr}{{9}{18}{COCO pose-estimation repair results with ICEdit generation. Metric: FR (\%)}{table.caption.27}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {G}Additional Theory Analysis}{18}{appendix.G}\protected@file@percent }
+\newlabel{app:theory-analysis}{{G}{18}{Additional Theory Analysis}{appendix.G}{}}
+\@writefile{toc}{\contentsline {paragraph}{Slice enrichment}{18}{section*.28}\protected@file@percent }
+\newlabel{eq:k-center-objective}{{8}{18}{Slice enrichment}{equation.8}{}}
+\newlabel{eq:empirical-covering-number}{{9}{18}{Slice enrichment}{equation.9}{}}
+\newlabel{eq:target-covering-number}{{10}{18}{Slice enrichment}{equation.10}{}}
+\def\@LN@column{1}
+\@writefile{toc}{\contentsline {paragraph}{Rarity and generated-data penalty}{19}{section*.29}\protected@file@percent }
+\newlabel{eq:target-difference-attributes}{{11}{19}{Rarity and generated-data penalty}{equation.11}{}}
+\newlabel{eq:rarity-advantage}{{12}{19}{Rarity and generated-data penalty}{equation.12}{}}
+\newlabel{eq:frequency-disadvantage}{{13}{19}{Rarity and generated-data penalty}{equation.13}{}}
+\newlabel{prop:rarity-margin}{{2}{19}{Rarity-dominates-penalty margin}{proposition.2}{}}
+\newlabel{eq:lambda-star}{{14}{19}{Rarity-dominates-penalty margin}{equation.14}{}}
+\newlabel{eq:base-score-gap}{{15}{19}{Rarity and generated-data penalty}{equation.15}{}}
+\def\@LN@column{1}
+\newlabel{prop:deterministic-enrichment}{{3}{20}{Deterministic rare-slice enrichment}{proposition.3}{}}
+\newlabel{eq:deterministic-enrichment-bound}{{16}{20}{Deterministic rare-slice enrichment}{equation.16}{}}
+\newlabel{eq:random-target-expectation}{{17}{20}{Deterministic rare-slice enrichment}{equation.17}{}}
+\newlabel{eq:enrichment-gap}{{18}{20}{Rarity and generated-data penalty}{equation.18}{}}
+\newlabel{eq:repair-utility}{{19}{20}{Rarity and generated-data penalty}{equation.19}{}}
+\def\@LN@column{1}
+\@writefile{toc}{\contentsline {paragraph}{Soft class-balance behavior}{21}{section*.30}\protected@file@percent }
+\newlabel{prop:hard-balance-limit}{{5}{21}{Hard-balance limit}{proposition.5}{}}
+\newlabel{prop:finite-weight-balance}{{6}{21}{Finite-weight balance pressure}{proposition.6}{}}
+\newlabel{eq:class-head-width}{{20}{21}{Finite-weight balance pressure}{equation.20}{}}
+\newlabel{eq:finite-balance-gap}{{21}{21}{Finite-weight balance pressure}{equation.21}{}}
+\newlabel{eq:finite-balance-proof-start}{{22}{21}{Soft class-balance behavior}{equation.22}{}}
+\newlabel{eq:finite-balance-proof-rearranged}{{23}{21}{Soft class-balance behavior}{equation.23}{}}
+\def\@LN@column{1}
+\@writefile{toc}{\contentsline {subsection}{\numberline {G.1}No-Generation Corner Case}{22}{subsection.G.1}\protected@file@percent }
+\newlabel{app:no-generation-corner-case}{{G.1}{22}{No-Generation Corner Case}{subsection.G.1}{}}
+\def\@LN@column{1}
+\@writefile{toc}{\contentsline {section}{\numberline {H}Main-Result Metric Tables}{23}{appendix.H}\protected@file@percent }
+\newlabel{app:main-metric-tables}{{H}{23}{Main-Result Metric Tables}{appendix.H}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {10}{\ignorespaces ImageNet10 classification repair results. Metric: test accuracy.}}{23}{table.caption.31}\protected@file@percent }
+\newlabel{tab:app-main-imagenet}{{10}{23}{ImageNet10 classification repair results. Metric: test accuracy}{table.caption.31}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {11}{\ignorespaces CelebA classification repair results. Metric: test accuracy.}}{23}{table.caption.32}\protected@file@percent }
+\newlabel{tab:app-main-celeba}{{11}{23}{CelebA classification repair results. Metric: test accuracy}{table.caption.32}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {12}{\ignorespaces COCO pose-estimation repair results. Metric: COCO keypoint AP.}}{23}{table.caption.33}\protected@file@percent }
+\newlabel{tab:app-main-coco}{{12}{23}{COCO pose-estimation repair results. Metric: COCO keypoint AP}{table.caption.33}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {I}Attribute-Slice Heatmaps}{23}{appendix.I}\protected@file@percent }
+\newlabel{app:attribute-slice-heatmaps}{{I}{23}{Attribute-Slice Heatmaps}{appendix.I}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {J}Hyperparameter Details}{23}{appendix.J}\protected@file@percent }
+\newlabel{app:hyperparameter-details}{{J}{23}{Hyperparameter Details}{appendix.J}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces COCO pose-estimation ratio-$0.5$ attribute-slice AP deltas. The figure expands the slice-level analysis to all annotated COCO pose-estimation attribute groups. The targeted repair values are clothes color brown and rainy weather.}}{24}{figure.caption.35}\protected@file@percent }
+\newlabel{fig:coco-ratio05-attribute-delta}{{4}{24}{COCO pose-estimation ratio-$0.5$ attribute-slice AP deltas. The figure expands the slice-level analysis to all annotated COCO pose-estimation attribute groups. The targeted repair values are clothes color brown and rainy weather}{figure.caption.35}{}}
+\citation{van2008visualizing}
+\def\@LN@column{1}
+\@writefile{lot}{\contentsline {table}{\numberline {13}{\ignorespaces KITTI object-detection repair results. Metric: test mAP50--95.}}{25}{table.caption.34}\protected@file@percent }
+\newlabel{tab:app-main-kitti}{{13}{25}{KITTI object-detection repair results. Metric: test mAP50--95}{table.caption.34}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {14}{\ignorespaces \textcolor {darkteal}{\textbf  {AttriSelect}}\xspace  hyperparameters used in the main experiments.}}{25}{table.caption.36}\protected@file@percent }
+\newlabel{tab:rpc-hyperparameters}{{14}{25}{\model hyperparameters used in the main experiments}{table.caption.36}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {15}{\ignorespaces KITTI \textcolor {darkteal}{\textbf  {AttriSelect}}\xspace  sensitivity. Metric: test mAP50--95.}}{25}{table.caption.37}\protected@file@percent }
+\newlabel{tab:kitti-rpc-sensitivity}{{15}{25}{KITTI \model sensitivity. Metric: test mAP50--95}{table.caption.37}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {K}COCO Pose-Estimation Attribute-Score Component Ablation}{25}{appendix.K}\protected@file@percent }
+\newlabel{app:coco-rpc-ablation}{{K}{25}{COCO Pose-Estimation Attribute-Score Component Ablation}{appendix.K}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {L}Selection t-SNE Visualizations}{25}{appendix.L}\protected@file@percent }
+\newlabel{app:selection-tsne}{{L}{25}{Selection t-SNE Visualizations}{appendix.L}{}}
+\def\@LN@column{1}
+\@writefile{lot}{\contentsline {table}{\numberline {16}{\ignorespaces COCO \textcolor {darkteal}{\textbf  {AttriSelect}}\xspace  sensitivity. Metric: COCO keypoint AP.}}{26}{table.caption.38}\protected@file@percent }
+\newlabel{tab:coco-rpc-sensitivity}{{16}{26}{COCO \model sensitivity. Metric: COCO keypoint AP}{table.caption.38}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {17}{\ignorespaces COCO pose-estimation attribute-score component ablation. Metric: COCO keypoint AP.}}{26}{table.caption.39}\protected@file@percent }
+\newlabel{tab:coco-rpc-ablation}{{17}{26}{COCO pose-estimation attribute-score component ablation. Metric: COCO keypoint AP}{table.caption.39}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces COCO pose-estimation ratio-$0.10$ selected subsets visualized on a shared source-image t-SNE embedding.}}{27}{figure.caption.40}\protected@file@percent }
+\newlabel{fig:tsne-r01-coco}{{5}{27}{COCO pose-estimation ratio-$0.10$ selected subsets visualized on a shared source-image t-SNE embedding}{figure.caption.40}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {6}{\ignorespaces KITTI object-detection ratio-$0.10$ selected subsets visualized on a shared source-image t-SNE embedding.}}{27}{figure.caption.41}\protected@file@percent }
+\newlabel{fig:tsne-r01-kitti}{{6}{27}{KITTI object-detection ratio-$0.10$ selected subsets visualized on a shared source-image t-SNE embedding}{figure.caption.41}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {7}{\ignorespaces KITTI object-detection ratio-$0.05$ selected subsets visualized on a shared source-image t-SNE embedding.}}{28}{figure.caption.42}\protected@file@percent }
+\newlabel{fig:tsne-r005-kitti}{{7}{28}{KITTI object-detection ratio-$0.05$ selected subsets visualized on a shared source-image t-SNE embedding}{figure.caption.42}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {8}{\ignorespaces KITTI object-detection ratio-$0.05$ overlay view for selected active-learning baselines and \textcolor {darkteal}{\textbf  {AttriSelect}}\xspace  .}}{28}{figure.caption.43}\protected@file@percent }
+\newlabel{fig:tsne-overlay-r005-kitti}{{8}{28}{KITTI object-detection ratio-$0.05$ overlay view for selected active-learning baselines and \model }{figure.caption.43}{}}
+\def\@LN@column{1}
+\@writefile{toc}{\contentsline {section}{\numberline {M}Selection Overlap as an Attribute-Information Diagnostic}{29}{appendix.M}\protected@file@percent }
+\newlabel{app:overlap-diagnostic}{{M}{29}{Selection Overlap as an Attribute-Information Diagnostic}{appendix.M}{}}
+\newlabel{prop:random-overlap-scale}{{9}{29}{Random-overlap scale for attribute-agnostic selectors}{proposition.9}{}}
+\def\@LN@column{1}
+\newlabel{prop:nonredundant-utility}{{10}{30}{Non-redundant repair utility}{proposition.10}{}}
+\def\@LN@column{1}
+\@writefile{lot}{\contentsline {table}{\numberline {18}{\ignorespaces Selection-overlap diagnostic. ``Ours--baseline'' is the mean Jaccard overlap between \textcolor {darkteal}{\textbf  {AttriSelect}}\xspace  and the non-attribute baselines. ``Baseline--baseline'' is the mean pairwise Jaccard overlap among non-attribute baselines. Each row averages over ImageNet, CelebA, COCO, and KITTI.}}{31}{table.caption.44}\protected@file@percent }
+\newlabel{tab:selection-overlap-summary}{{18}{31}{Selection-overlap diagnostic. ``Ours--baseline'' is the mean Jaccard overlap between \model and the non-attribute baselines. ``Baseline--baseline'' is the mean pairwise Jaccard overlap among non-attribute baselines. Each row averages over ImageNet, CelebA, COCO, and KITTI}{table.caption.44}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {N}Limitations and Practical Considerations}{31}{appendix.N}\protected@file@percent }
+\newlabel{app:limitations}{{N}{31}{Limitations and Practical Considerations}{appendix.N}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {9}{\ignorespaces Pairwise Jaccard overlap among ratio $0.10$ selected subsets.}}{32}{figure.caption.45}\protected@file@percent }
+\newlabel{fig:selection-overlap-r01}{{9}{32}{Pairwise Jaccard overlap among ratio $0.10$ selected subsets}{figure.caption.45}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {10}{\ignorespaces Pairwise Jaccard overlap among ratio $0.30$ selected subsets.}}{33}{figure.caption.46}\protected@file@percent }
+\newlabel{fig:selection-overlap-r03}{{10}{33}{Pairwise Jaccard overlap among ratio $0.30$ selected subsets}{figure.caption.46}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {11}{\ignorespaces Pairwise Jaccard overlap among ratio $0.50$ selected subsets.}}{34}{figure.caption.47}\protected@file@percent }
+\newlabel{fig:selection-overlap-r05}{{11}{34}{Pairwise Jaccard overlap among ratio $0.50$ selected subsets}{figure.caption.47}{}}
+\def\@LN@column{1}
+\def\@LN@column{1}
+\def\@LN@column{1}
+\def\@LN@column{1}
+\def\@LN@column{1}
+\def\@LN@column{1}
+\def\@LN@column{1}
+\ttl@finishall
+\gdef \@abspage@last{41}
