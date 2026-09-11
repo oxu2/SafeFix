@@ -1,6 +1,6 @@
 <!-- AGENTS-IGNORE: START - The block below contains user operational shortcuts. AI agents should ignore this section when reading report.md for research context. -->
 ```bash
-cd iclrattri
+cd 27iclr
 latexmk -pdf \
   -interaction=nonstopmode \
   -halt-on-error \

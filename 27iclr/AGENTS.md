@@ -19,8 +19,8 @@ Editing rules:
 - Preserve nearby text unless it directly blocks the requested change.
 - Do not compile unless the user asks; the user checks compilation in Overleaf.
 - When compilation is requested, run `latexmk -pdf -interaction=nonstopmode
-  -halt-on-error -file-line-error main.tex` from `iclrattri/`, then run
-  `scripts/organize_build_artifacts.sh`. Keep `main.pdf` in `iclrattri/` and
+  -halt-on-error -file-line-error main.tex` from `27iclr/`, then run
+  `scripts/organize_build_artifacts.sh`. Keep `main.pdf` in `27iclr/` and
   move only LaTeX intermediate files into `build_artifacts/`.
 - Do not run page-count checks or shorten the manuscript to meet the ICLR
   page limit unless the user explicitly asks. The user will handle later
@@ -127,7 +127,7 @@ To maintain a consistent, premium academic design throughout this paper (and fut
 ## Directory Layout Convention
 
 ```
-iclrattri/
+27iclr/
 ├── main.tex              # Main manuscript
 ├── math_commands.tex     # Math macro definitions
 ├── iclr2027_conference.sty # ICLR style file (do not modify)
