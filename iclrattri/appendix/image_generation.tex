@@ -9,8 +9,8 @@ The main experiments use a SafeFix-style upstream workflow. To test whether the 
 \centering
 \caption{CelebA repair results with the HiBug repair pipeline. Metric: five-seed mean RER (\%).}
 \label{tab:celeba-hibug-rer}
-\scriptsize
-\setlength{\tabcolsep}{1.5pt}
+\footnotesize
+\setlength{\tabcolsep}{3pt}
 \begin{tabular}{c c c c c c c c >{\columncolor{myblue!8}}c}
 \toprule
 \rowcolor{sectiongray} \textbf{Ratio} & \textbf{Random} & \textbf{Stratified} & \textbf{Entropy} & \textbf{CoreSet} & \textbf{BADGE} & \textbf{UHerding} & \textbf{PPAL} & \cellcolor{myblue!8}\textbf{Ours} \\
@@ -36,8 +36,8 @@ Table~\ref{tab:celeba-instructpix2pix-rer} reports CelebA results with InstructP
 \centering
 \caption{CelebA repair results with InstructPix2Pix generation. Metric: RER (\%).}
 \label{tab:celeba-instructpix2pix-rer}
-\footnotesize
-\setlength{\tabcolsep}{3pt}
+\scriptsize
+\setlength{\tabcolsep}{1.5pt}
 \begin{tabular}{c c c c c c c c >{\columncolor{myblue!8}}c | >{\columncolor{myblue!8}}c}
 \toprule
 \rowcolor{sectiongray} \textbf{Ratio} & \textbf{Random} & \textbf{Stratified} & \textbf{Entropy} & \textbf{CoreSet} & \textbf{BADGE} & \textbf{UHerding} & \textbf{PPAL} & \cellcolor{myblue!8}\shortstack{\textbf{Ours}\\\textbf{(InstructPix2Pix)}} & \cellcolor{myblue!8}\shortstack{\textbf{Ours}\\\textbf{(ControlNet)}} \\
