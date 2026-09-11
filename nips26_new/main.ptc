@@ -1,8 +1,8 @@
 \contentsline {section}{\numberline {1}Introduction}{1}{section.1}%
 \contentsline {section}{\numberline {2}Related Work}{2}{section.2}%
 \contentsline {section}{\numberline {3}Background}{3}{section.3}%
-\contentsline {section}{\numberline {4}Methodology}{4}{section.4}%
-\contentsline {subsection}{\numberline {4.1}AttriSelect\xspace Framework}{4}{subsection.4.1}%
+\contentsline {section}{\numberline {4}Methodology}{3}{section.4}%
+\contentsline {subsection}{\numberline {4.1}AttriSelect\xspace Framework}{3}{subsection.4.1}%
 \contentsline {subsection}{\numberline {4.2}Attribute-Driven Active Learning}{4}{subsection.4.2}%
 \contentsline {subsection}{\numberline {4.3}Theoretical Analysis}{6}{subsection.4.3}%
 \contentsline {section}{\numberline {5}Experiments}{6}{section.5}%
@@ -16,31 +16,48 @@
 \contentsline {subsection}{\numberline {5.5}Ablation Study}{9}{subsection.5.5}%
 \contentsline {section}{\numberline {6}Conclusion}{10}{section.6}%
 \ttl@starttoc {appendix@1}
-\contentsline {section}{\numberline {A}Glossary}{13}{appendix.A}%
-\contentsline {section}{\numberline {B}Implementation Details}{13}{appendix.B}%
-\contentsline {paragraph}{Random seeds.}{13}{section*.13}%
-\contentsline {paragraph}{Hardware and datasets.}{13}{section*.14}%
+\contentsline {section}{\numberline {A}Glossary}{14}{appendix.A}%
+\contentsline {section}{\numberline {B}Implementation Details}{14}{appendix.B}%
+\contentsline {paragraph}{Random seeds.}{14}{section*.13}%
+\contentsline {paragraph}{Hardware and datasets.}{14}{section*.14}%
 \contentsline {paragraph}{Training and repair schedule.}{14}{section*.15}%
 \contentsline {paragraph}{Image generation.}{14}{section*.16}%
-\contentsline {paragraph}{Attribute proposal and assignment.}{14}{section*.17}%
-\contentsline {paragraph}{Generation and assignment cost.}{14}{section*.18}%
-\contentsline {section}{\numberline {C}AttriSelect\xspace Algorithm}{14}{appendix.C}%
-\contentsline {section}{\numberline {D}Attribute Assignment Details}{15}{appendix.D}%
-\contentsline {section}{\numberline {E}Attribute-Slice Heatmaps}{15}{appendix.E}%
-\contentsline {section}{\numberline {F}Effect of the VLM and Human Audit}{15}{appendix.F}%
-\contentsline {paragraph}{VLM Role and Leakage Control}{15}{section*.22}%
-\contentsline {paragraph}{Human Audit Protocol}{16}{section*.23}%
-\contentsline {paragraph}{Sensitivity to attribute noise.}{18}{section*.25}%
-\contentsline {section}{\numberline {G}Effect of Image Generation}{18}{appendix.G}%
-\contentsline {section}{\numberline {H}Additional Theory Analysis}{19}{appendix.H}%
-\contentsline {paragraph}{Slice enrichment}{19}{section*.29}%
-\contentsline {paragraph}{Rarity and generated-data penalty}{20}{section*.30}%
-\contentsline {paragraph}{Soft class-balance behavior}{22}{section*.31}%
-\contentsline {subsection}{\numberline {H.1}No-Generation Corner Case}{23}{subsection.H.1}%
-\contentsline {section}{\numberline {I}Main-Result Metric Tables}{24}{appendix.I}%
-\contentsline {section}{\numberline {J}Hyperparameter Details}{24}{appendix.J}%
-\contentsline {section}{\numberline {K}COCO Pose-Estimation Attribute-Score Component Ablation}{25}{appendix.K}%
-\contentsline {section}{\numberline {L}Selection t-SNE Visualizations}{25}{appendix.L}%
-\contentsline {section}{\numberline {M}Selection Overlap as an Attribute-Information Diagnostic}{29}{appendix.M}%
-\contentsline {section}{\numberline {N}Limitations and Practical Considerations}{31}{appendix.N}%
+\contentsline {paragraph}{Attribute proposal and assignment.}{15}{section*.17}%
+\contentsline {paragraph}{Generation and assignment cost.}{15}{section*.18}%
+\contentsline {subsection}{\numberline {B.1}End-to-End Cost Accounting}{15}{subsection.B.1}%
+\contentsline {section}{\numberline {C}AttriSelect\xspace Algorithm}{16}{appendix.C}%
+\contentsline {section}{\numberline {D}Attribute Assignment Details}{17}{appendix.D}%
+\contentsline {section}{\numberline {E}Main-Result Metric Tables}{17}{appendix.E}%
+\contentsline {section}{\numberline {F}Additional Controlled Repair Comparisons}{18}{appendix.F}%
+\contentsline {subsection}{\numberline {F.1}Same-Information Baselines}{18}{subsection.F.1}%
+\contentsline {subsection}{\numberline {F.2}Generated-Complement Control}{18}{subsection.F.2}%
+\contentsline {subsection}{\numberline {F.3}Exact Diagnosed Conjunctions}{19}{subsection.F.3}%
+\contentsline {subsection}{\numberline {F.4}Selected-Subset Composition}{19}{subsection.F.4}%
+\contentsline {subsection}{\numberline {F.5}More Constrained Source Budgets}{19}{subsection.F.5}%
+\contentsline {section}{\numberline {G}Attribute-Slice Heatmaps}{19}{appendix.G}%
+\contentsline {section}{\numberline {H}Effect of the VLM and Human Audit}{20}{appendix.H}%
+\contentsline {paragraph}{VLM Role and Leakage Control}{20}{section*.35}%
+\contentsline {paragraph}{Human Audit Protocol}{20}{section*.36}%
+\contentsline {paragraph}{Sensitivity to attribute noise.}{22}{section*.38}%
+\contentsline {section}{\numberline {I}Effect of the Repair Pipeline and Image Generation}{22}{appendix.I}%
+\contentsline {subsection}{\numberline {I.1}Alternative Repair Pipeline}{22}{subsection.I.1}%
+\contentsline {subsection}{\numberline {I.2}Alternative Image Generators}{23}{subsection.I.2}%
+\contentsline {section}{\numberline {J}Additional Robustness and Sensitivity Studies}{23}{appendix.J}%
+\contentsline {subsection}{\numberline {J.1}Repair-Schedule Sensitivity}{23}{subsection.J.1}%
+\contentsline {subsection}{\numberline {J.2}Slice-Granularity Sensitivity}{23}{subsection.J.2}%
+\contentsline {subsection}{\numberline {J.3}Incomplete Attribute-Vocabulary Coverage}{24}{subsection.J.3}%
+\contentsline {section}{\numberline {K}Source-Only Data Selection}{24}{appendix.K}%
+\contentsline {subsection}{\numberline {K.1}One-Shot Subset Selection}{24}{subsection.K.1}%
+\contentsline {subsection}{\numberline {K.2}Iterative Active Learning}{24}{subsection.K.2}%
+\contentsline {subsection}{\numberline {K.3}Alternative Attribute Sources}{25}{subsection.K.3}%
+\contentsline {section}{\numberline {L}Additional Theory Analysis}{25}{appendix.L}%
+\contentsline {paragraph}{Slice enrichment}{25}{section*.51}%
+\contentsline {paragraph}{Rarity and generated-data penalty}{26}{section*.52}%
+\contentsline {paragraph}{Soft class-balance behavior}{29}{section*.53}%
+\contentsline {subsection}{\numberline {L.1}No-Generation Corner Case}{30}{subsection.L.1}%
+\contentsline {section}{\numberline {M}Hyperparameter Details}{31}{appendix.M}%
+\contentsline {section}{\numberline {N}COCO Pose-Estimation Attribute-Score Component Ablation}{32}{appendix.N}%
+\contentsline {section}{\numberline {O}Selection t-SNE Visualizations}{32}{appendix.O}%
+\contentsline {section}{\numberline {P}Selection Overlap as an Attribute-Information Diagnostic}{36}{appendix.P}%
+\contentsline {section}{\numberline {Q}Limitations and Practical Considerations}{38}{appendix.Q}%
 \contentsfinish 

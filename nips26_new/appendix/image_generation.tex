@@ -1,14 +1,41 @@
-\section{Effect of Image Generation}
+\section{Effect of the Repair Pipeline and Image Generation}
 \label{app:image-generation-effect}
 
-The upstream workflow following \safefix~\citep{xu2025safefix} uses \controlnet~\citep{zhang2023adding} as the conditional diffusion model. The quality of diffusion-based dataset augmentation can vary with the generator and editing procedure~\citep{trabucco2023effective,dunlap2023diversify,wang2024domain}. To test whether \model depends on this particular generator, we replace \controlnet while keeping the rest of the repair pipeline fixed: InstructPix2Pix~\citep{brooks2023instructpix2pix} for CelebA and ICEdit~\citep{zhang2025icedit} for COCO.
+\subsection{Alternative Repair Pipeline}
 
-Table~\ref{tab:celeba-instructpix2pix-fr} reports CelebA results with InstructPix2Pix generation. \model remains the strongest source selector at every active source ratio. Its absolute FR is lower than the corresponding \controlnet result in Table~\ref{tab:main-fr}, but the same decrease is visible across the other selectors, indicating that this shift comes from the generated repair images rather than from the source-selection rule.
+The main experiments use a SafeFix-style upstream workflow. To test whether the source-selection result depends on that pipeline, we replace its generated repair set with a fixed HiBug-generated set on CelebA. All selectors share the diagnosis checkpoint, 80,000-image source pool, generated-image budget, source ratios, retraining configuration, and five seeds. Only the source-selection rule changes.
 
 \begin{table}[h]
 \centering
-\caption{CelebA repair results with InstructPix2Pix generation. Metric: FR (\%).}
-\label{tab:celeba-instructpix2pix-fr}
+\caption{CelebA repair results with the HiBug repair pipeline. Metric: five-seed mean RER (\%).}
+\label{tab:celeba-hibug-rer}
+\footnotesize
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{c c c c c c c c >{\columncolor{myblue!8}}c}
+\toprule
+\rowcolor{sectiongray} \textbf{Ratio} & \textbf{Random} & \textbf{Stratified} & \textbf{Entropy} & \textbf{CoreSet} & \textbf{BADGE} & \textbf{UHerding} & \textbf{PPAL} & \cellcolor{myblue!8}\textbf{Ours} \\
+\midrule
+0.1 & 4.59 & 2.33 & 6.92 & -6.20 & 2.87 & -1.36 & 5.58 & \textbf{7.36} \\
+0.3 & 5.91 & 5.08 & 8.02 & 7.79 & 1.66 & 3.39 & 3.87 & \textbf{8.07} \\
+0.5 & 5.76 & 7.70 & 7.48 & 7.90 & 2.53 & 2.13 & 9.64 & \textbf{12.54} \\
+0.7 & 2.57 & 8.06 & 10.03 & 6.19 & 7.86 & 4.96 & 5.90 & \textbf{11.16} \\
+0.9 & 2.84 & 4.28 & 7.95 & 5.71 & 5.80 & 4.19 & 6.37 & \textbf{13.42} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\model has the highest RER at all five ratios. Its margins over the strongest baseline are $0.44/0.05/2.90/1.13/5.47$ RER points, or 2.00 points on average. This comparison is internal to the HiBug table: changing the upstream repair pipeline changes the generated set and can shift every selector's absolute RER.
+
+\subsection{Alternative Image Generators}
+
+The upstream workflow following \safefix~\citep{xu2025safefix} uses \controlnet~\citep{zhang2023adding} as the conditional diffusion model. The quality of diffusion-based dataset augmentation can vary with the generator and editing procedure~\citep{trabucco2023effective,dunlap2023diversify,wang2024domain}. To test whether \model depends on this particular generator, we replace \controlnet while keeping the rest of the repair pipeline fixed: InstructPix2Pix~\citep{brooks2023instructpix2pix} for CelebA and ICEdit~\citep{zhang2025icedit} for COCO.
+
+Table~\ref{tab:celeba-instructpix2pix-rer} reports CelebA results with InstructPix2Pix generation. \model remains the strongest source selector at every active source ratio. Its absolute RER is lower than the corresponding \controlnet result in Table~\ref{tab:main-rer}, but the same decrease is visible across the other selectors, indicating that this shift comes from the generated repair images rather than from the source-selection rule.
+
+\begin{table}[h]
+\centering
+\caption{CelebA repair results with InstructPix2Pix generation. Metric: RER (\%).}
+\label{tab:celeba-instructpix2pix-rer}
 \footnotesize
 \setlength{\tabcolsep}{3pt}
 \begin{tabular}{c c c c c c c c >{\columncolor{myblue!8}}c | >{\columncolor{myblue!8}}c}
@@ -24,12 +51,12 @@ Table~\ref{tab:celeba-instructpix2pix-fr} reports CelebA results with InstructPi
 \end{tabular}
 \end{table}
 
-Table~\ref{tab:coco-icedit-fr} reports the corresponding COCO result with ICEdit. ICEdit improves the absolute FR values for most source ratios, and \model remains the best selector under this generator as well. These comparisons should be read horizontally: for a fixed generator and generated repair set, \model is compared against the non-attribute active-learning selectors. Changes in generator quality can shift the absolute repair numbers, but they do not remove the benefit of attribute-driven source selection.
+Table~\ref{tab:coco-icedit-rer} reports the corresponding COCO result with ICEdit. ICEdit improves the absolute RER values for most source ratios, and \model remains the best selector under this generator as well. These comparisons should be read horizontally: for a fixed generator and generated repair set, \model is compared against the non-attribute active-learning selectors. Changes in generator quality can shift the absolute repair numbers, but they do not remove the benefit of attribute-driven source selection.
 
 \begin{table}[h]
 \centering
-\caption{COCO pose-estimation repair results with ICEdit generation. Metric: FR (\%).}
-\label{tab:coco-icedit-fr}
+\caption{COCO pose-estimation repair results with ICEdit generation. Metric: RER (\%).}
+\label{tab:coco-icedit-rer}
 \footnotesize
 \setlength{\tabcolsep}{3pt}
 \begin{tabular}{c c c c c c c c >{\columncolor{myblue!8}}c | >{\columncolor{myblue!8}}c}
@@ -44,4 +71,3 @@ Table~\ref{tab:coco-icedit-fr} reports the corresponding COCO result with ICEdit
 \bottomrule
 \end{tabular}
 \end{table}
-

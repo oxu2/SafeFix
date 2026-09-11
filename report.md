@@ -1,3 +1,12 @@
+<!-- AGENTS-IGNORE: START - The block below contains user operational shortcuts. AI agents should ignore this section when reading report.md for research context. -->
+```bash
+cd nips26_new
+latexmk -pdf -interaction=nonstopmode -halt-on-error main.tex
+```
+<!-- AGENTS-IGNORE: END -->
+
+
+
 # ImageNet10 Five-Seed Selected-Sample Mechanism Analysis
 
 **Updated:** August 3, 2026

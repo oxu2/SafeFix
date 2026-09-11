@@ -94,3 +94,8 @@ figures/teaser_imagenet_selection
 LogicIF/
 # nips26_new/
 nips26/main.*
+
+nips26_new/main.*
+!nips26_new/main.tex
+!nips26_new/main.pdf
+nips26_new/main.fls
