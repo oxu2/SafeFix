@@ -12,6 +12,10 @@ Current context:
 - Keep the compiled `main.pdf` in the paper root. Run
   `scripts/organize_build_artifacts.sh` after compilation to move only LaTeX
   intermediates into `build_artifacts/`.
+- A forced full `latexmk` build now completes successfully. The final log has
+  no undefined citations/references, duplicate labels, float-specifier
+  warnings, or overfull boxes. Six benign underfull notices remain from float
+  pagination and the long Detectron2 bibliography URL.
 - Do not check or enforce the 9-page limit unless the user explicitly asks;
   the user will reduce the manuscript later.
 - The introduction is being shaped around generation-based repair as a promising but still inefficient direction.

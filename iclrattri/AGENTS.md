@@ -18,6 +18,10 @@ Editing rules:
 - Keep edits narrowly scoped to the user's current request.
 - Preserve nearby text unless it directly blocks the requested change.
 - Do not compile unless the user asks; the user checks compilation in Overleaf.
+- When compilation is requested, run `latexmk -pdf -interaction=nonstopmode
+  -halt-on-error -file-line-error main.tex` from `iclrattri/`, then run
+  `scripts/organize_build_artifacts.sh`. Keep `main.pdf` in `iclrattri/` and
+  move only LaTeX intermediate files into `build_artifacts/`.
 - Do not run page-count checks or shorten the manuscript to meet the ICLR
   page limit unless the user explicitly asks. The user will handle later
   page-budget reduction.
