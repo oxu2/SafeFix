@@ -112,7 +112,7 @@
 \item {\bf Experiments compute resources}
     \item[] Question: For each experiment, does the paper provide sufficient information on the computer resources (type of compute workers, memory, time of execution) needed to reproduce the experiments?
     \item[] Answer: \answerYes{}.
-    \item[] Justification: Appendix~\ref{app:implementation-details} states that experiments use a four-GPU NVIDIA RTX A5000 cluster. Section~4 reports source-selection time for COCO and CelebA, and the appendix reports generation and attribute-assignment costs.
+    \item[] Justification: Appendix~\ref{app:implementation-details} states that each experimental run uses a single NVIDIA H200 GPU. Section~4 reports source-selection time for COCO and CelebA, and the appendix reports T2I generation and attribute-assignment costs under the same one-H200 setting.
     \item[] Guidelines:
     \begin{itemize}
         \item The answer \answerNA{} means that the paper does not include experiments.

@@ -1,4 +1,4 @@
-\begin{thebibliography}{46}
+\begin{thebibliography}{44}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
@@ -35,9 +35,8 @@ Andrei Barbu, David Mayo, Julian Alverio, William Luo, Christopher Wang, Dan
 \bibitem[Brooks et~al.(2023)Brooks, Holynski, and
   Efros]{brooks2023instructpix2pix}
 Tim Brooks, Aleksander Holynski, and Alexei~A. Efros.
-\newblock {InstructPix2Pix}: Learning to follow image editing instructions,
-  2023.
-\newblock URL \url{https://arxiv.org/abs/2211.09800}.
+\newblock {InstructPix2Pix}: Learning to follow image editing instructions.
+\newblock In \emph{CVPR}, pages 18392--18402, 2023.
 
 \bibitem[Buolamwini and Gebru(2018)]{buolamwini2018gender}
 Joy Buolamwini and Timnit Gebru.
@@ -76,7 +75,7 @@ Lisa Dunlap, Alyssa Umino, Han Zhang, Jiezhi Yang, Joseph~E Gonzalez, and
 Sabri Eyuboglu, Maya Varma, Khaled Saab, Jean-Benoit Delbrouck, Christopher
   Lee-Messer, Jared Dunnmon, James Zou, and Christopher R{\'e}.
 \newblock Domino: Discovering systematic errors with cross-modal embeddings.
-\newblock \emph{arXiv preprint arXiv:2203.14960}, 2022.
+\newblock In \emph{ICLR}, 2022.
 
 \bibitem[{Facebook AI Research}(2024)]{detectron2modelzoo}
 {Facebook AI Research}.
@@ -144,45 +143,35 @@ Diederik~P. Kingma and Jimmy Ba.
 \newblock Adam: {A} method for stochastic optimization.
 \newblock In Yoshua Bengio and Yann LeCun, editors, \emph{ICLR}, 2015.
 
-\bibitem[Kothawade et~al.(2021{\natexlab{a}})Kothawade, Beck, Killamsetty, and
+\bibitem[Kothawade et~al.(2021)Kothawade, Beck, Killamsetty, and
   Iyer]{kothawade2021similar}
 Suraj Kothawade, Nathan Beck, Krishnateja Killamsetty, and Rishabh Iyer.
 \newblock {SIMILAR}: Submodular information measures based active learning in
   realistic scenarios.
-\newblock \emph{NeurIPS}, 34:\penalty0 18685--18697, 2021{\natexlab{a}}.
+\newblock \emph{NeurIPS}, 34:\penalty0 18685--18697, 2021.
 
-\bibitem[Kothawade et~al.(2021{\natexlab{b}})Kothawade, Ghosh, Shekhar, Xiang,
-  and Iyer]{kothawade2021talisman}
+\bibitem[Kothawade et~al.(2022)Kothawade, Ghosh, Shekhar, Xiang, and
+  Iyer]{kothawade2022talisman}
 Suraj Kothawade, Saikat Ghosh, Sumit Shekhar, Yu~Xiang, and Rishabh Iyer.
-\newblock Talisman: Targeted active learning for object detection with rare
+\newblock {TALISMAN}: Targeted active learning for object detection with rare
   classes and slices using submodular mutual information.
-\newblock \emph{arXiv preprint arXiv:2112.00166}, pages 1--16,
-  2021{\natexlab{b}}.
+\newblock In \emph{ECCV}, pages 1--16, 2022.
+\newblock \doi{10.1007/978-3-031-19839-7_1}.
 
-\bibitem[Lai et~al.(2023)Lai, Mansimov, Xie, and
-  Zhang]{lai2023improvingpredictionbackwardcompatiblilitynlp}
-Yi-An Lai, Elman Mansimov, Yuqing Xie, and Yi~Zhang.
-\newblock Improving prediction backward-compatiblility in nlp model upgrade
-  with gated fusion, 2023.
-\newblock URL \url{https://arxiv.org/abs/2302.02080}.
-
-\bibitem[Leclerc et~al.(2021)Leclerc, Salman, Ilyas, Vemprala, Engstrom,
-  Vineet, Xiao, Zhang, Santurkar, Yang, et~al.]{leclerc20213db}
+\bibitem[Leclerc et~al.(2022)Leclerc, Salman, Ilyas, Vemprala, Engstrom,
+  Vineet, Xiao, Zhang, Santurkar, Yang, Kapoor, and Madry]{leclerc20213db}
 Guillaume Leclerc, Hadi Salman, Andrew Ilyas, Sai Vemprala, Logan Engstrom,
   Vibhav Vineet, Kai Xiao, Pengchuan Zhang, Shibani Santurkar, Greg Yang,
-  et~al.
-\newblock 3db: A framework for debugging computer vision models.
-\newblock \emph{arXiv preprint arXiv:2106.03805}, 2021.
+  Ashish Kapoor, and Aleksander Madry.
+\newblock {3DB}: A framework for debugging computer vision models.
+\newblock In \emph{NeurIPS}, volume~35, pages 8498--8511, 2022.
+\newblock \doi{10.52202/068431-0618}.
 
-\bibitem[Li et~al.(2024)]{li2024self}
-X~Li et~al.
-\newblock Your vision-language model itself is a strong filter.
-\newblock \emph{arXiv preprint arXiv:2402.12501}, 2024.
-
-\bibitem[Lin et~al.(2014)Lin, Maire, Belongie, Hays, Perona, Ramanan,
-  Doll{\'a}r, and Zitnick]{lin2014microsoft}
-Tsung-Yi Lin, Michael Maire, Serge Belongie, James Hays, Pietro Perona, Deva
-  Ramanan, Piotr Doll{\'a}r, and C~Lawrence Zitnick.
+\bibitem[Lin et~al.(2014)Lin, Maire, Belongie, Bourdev, Girshick, Hays, Perona,
+  Ramanan, Zitnick, and Doll{\'a}r]{lin2014microsoft}
+Tsung-Yi Lin, Michael Maire, Serge Belongie, Lubomir Bourdev, Ross Girshick,
+  James Hays, Pietro Perona, Deva Ramanan, C.~Lawrence Zitnick, and Piotr
+  Doll{\'a}r.
 \newblock Microsoft {COCO}: Common objects in context.
 \newblock In \emph{ECCV}, pages 740--755. Springer, 2014.
 
@@ -190,6 +179,11 @@ Tsung-Yi Lin, Michael Maire, Serge Belongie, James Hays, Pietro Perona, Deva
 Ziwei Liu, Ping Luo, Xiaogang Wang, and Xiaoou Tang.
 \newblock Deep learning face attributes in the wild.
 \newblock In \emph{ICCV}, pages 3730--3738, December 2015.
+
+\bibitem[Manning and Schutze(1999)]{manning1999foundations}
+Christopher~D. Manning and Hinrich Schutze.
+\newblock \emph{Foundations of Statistical Natural Language Processing}.
+\newblock MIT Press, Cambridge, MA, 1999.
 
 \bibitem[Neyman(1934)]{neyman1934two}
 Jerzy Neyman.
@@ -230,10 +224,11 @@ Sahil Singla, Atoosa~Malemir Chegini, Mazda Moayeri, and Soheil Feizi.
   retrieval.
 \newblock In \emph{WACV}, pages 4991--5000, 2024.
 
-\bibitem[Song et~al.(2020)Song, Meng, and Ermon]{ddim}
+\bibitem[Song et~al.(2021)Song, Meng, and Ermon]{ddim}
 Jiaming Song, Chenlin Meng, and Stefano Ermon.
 \newblock Denoising diffusion implicit models.
-\newblock In \emph{ICLR}, 2020.
+\newblock In \emph{ICLR}, 2021.
+\newblock URL \url{https://openreview.net/forum?id=St1giarCHLP}.
 
 \bibitem[Trabucco et~al.(2023)Trabucco, Doherty, Gurinas, and
   Salakhutdinov]{trabucco2023effective}
@@ -246,19 +241,10 @@ Laurens Van~der Maaten and Geoffrey Hinton.
 \newblock Visualizing data using {t-SNE}.
 \newblock \emph{JMLR}, 9\penalty0 (11), 2008.
 
-\bibitem[Wang et~al.(2024{\natexlab{a}})Wang, Mrini, Yang, Kumar, Tian, Yan,
-  and Wang]{wang2024finetuned}
-Weizhi Wang, Khalil Mrini, Linjie Yang, Sateesh Kumar, Yu~Tian, Xifeng Yan, and
-  Heng Wang.
-\newblock Finetuned multimodal language models are high-quality image-text data
-  filters.
-\newblock \emph{arXiv preprint arXiv:2403.02677}, 2024{\natexlab{a}}.
-
-\bibitem[Wang et~al.(2024{\natexlab{b}})Wang, Chung, Wu, and De~la
-  Torre]{wang2024domain}
+\bibitem[Wang et~al.(2024)Wang, Chung, Wu, and De~la Torre]{wang2024domain}
 Yinong~Oliver Wang, Younjoon Chung, Chen~Henry Wu, and Fernando De~la Torre.
 \newblock Domain gap embeddings for generative dataset augmentation.
-\newblock In \emph{CVPR}, 2024{\natexlab{b}}.
+\newblock In \emph{CVPR}, 2024.
 
 \bibitem[Wei et~al.(2015)Wei, Iyer, and Bilmes]{wei2015submodularity}
 Kai Wei, Rishabh Iyer, and Jeff Bilmes.
@@ -267,8 +253,9 @@ Kai Wei, Rishabh Iyer, and Jeff Bilmes.
 
 \bibitem[Xie and Tu(2015)]{xie2015holistically}
 Saining Xie and Zhuowen Tu.
-\newblock Holistically-nested edge detection, 2015.
-\newblock URL \url{https://arxiv.org/abs/1504.06375}.
+\newblock Holistically-nested edge detection.
+\newblock In \emph{ICCV}, pages 1395--1403, 2015.
+\newblock \doi{10.1109/ICCV.2015.164}.
 
 \bibitem[Xu et~al.(2025)Xu, Zhang, Mao, and Guo]{xu2025safefix}
 Ouyang Xu, Baoming Zhang, Ruiyu Mao, and Yunhui Guo.
@@ -289,12 +276,11 @@ Fengda Zhang, Qianpei He, Kun Kuang, Jiashuo Liu, Long Chen, Chao Wu, Jun Xiao,
   classification.
 \newblock In \emph{CVPR}, 2024.
 
-\bibitem[Zhang et~al.(2023)Zhang, Wu, Zhang, He, Zhang, Xu, Yang, Shih, Wang,
-  Zhang, et~al.]{zhang2023adding}
-Lvmin Zhang, Maneesh Wu, Chengyue Zhang, Yijun He, Siwei Zhang, Xiaolong Xu,
-  Jingwan Yang, Kevin Shih, Xintao Wang, Yingying Zhang, et~al.
+\bibitem[Zhang et~al.(2023)Zhang, Rao, and Agrawala]{zhang2023adding}
+Lvmin Zhang, Anyi Rao, and Maneesh Agrawala.
 \newblock Adding conditional control to text-to-image diffusion models.
-\newblock \emph{arXiv preprint arXiv:2302.05543}, 2023.
+\newblock In \emph{ICCV}, pages 3836--3847, 2023.
+\newblock \doi{10.1109/ICCV51070.2023.00355}.
 
 \bibitem[Zhang et~al.(2025)Zhang, Xie, Lu, Yang, and Yang]{zhang2025icedit}
 Zechuan Zhang, Ji~Xie, Yu~Lu, Zongxin Yang, and Yi~Yang.

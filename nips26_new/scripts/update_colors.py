@@ -11,7 +11,7 @@ if '\\definecolor{sectiongray}' not in content:
 content = content.replace('\\rowcolor{gray!15}', '\\rowcolor{sectiongray}')
 content = content.replace('columncolor{blue!5}', 'columncolor{pink!50}')
 
-# 3. Main Text Table 1 (tab:main-fr)
+# 3. Main Text Table 1 (tab:main-rer)
 t1_old = r"""\begin{tabular}{l c c c c c c c c c}
 \toprule
 \textbf{Dataset} & Ratio & Random & Stratified & Entropy & CoreSet & BADGE & UHerding & PPAL & \textbf{Ours} \\

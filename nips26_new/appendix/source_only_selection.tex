@@ -1,0 +1,84 @@
+\section{Source-Only Data Selection}
+\label{app:source-only-selection}
+
+We evaluate \model outside model repair on ImageNet10. These experiments use no generated images, diagnosed slices, or repair checkpoints. A fresh ResNet-18 is trained on each selected subset, and every result is a five-seed mean. In this setting, the generated-data frequency term is omitted and selection uses the available source attributes and soft class balancing, as formalized in Appendix~\ref{app:theory-analysis}.
+
+\subsection{One-Shot Subset Selection}
+
+We add two direct semantic baselines. \textbf{Attribute Rarity} ranks images by class-conditional rarity of their assigned attribute values and applies soft class balancing. \textbf{Semantic CoreSet} one-hot encodes the assigned values and runs class-balanced greedy $k$-center selection in that semantic representation.
+
+\begin{table}[h]
+\centering
+\caption{ImageNet10 source-only one-shot data selection. Metric: five-seed mean test accuracy (\%).}
+\label{tab:source-only-one-shot}
+\small
+\setlength{\tabcolsep}{3pt}
+\resizebox{\linewidth}{!}{%
+\begin{tabular}{c c c c c c c c >{\columncolor{myblue!8}}c}
+\toprule
+\rowcolor{sectiongray} \textbf{Ratio} & \textbf{Random} & \textbf{Stratified} & \textbf{Entropy} & \textbf{CoreSet} & \textbf{BADGE} & \textbf{Attribute rarity} & \textbf{Semantic CoreSet} & \cellcolor{myblue!8}\textbf{Ours} \\
+\midrule
+0.1 & 43.23 & 41.85 & 26.86 & 38.33 & 42.62 & 44.46 & 44.08 & \textbf{45.00} \\
+0.3 & 55.84 & 57.15 & 44.64 & 56.16 & 58.17 & 56.54 & 56.55 & \textbf{58.32} \\
+0.5 & 64.77 & 64.14 & 58.69 & 64.87 & 63.19 & 65.31 & 62.56 & \textbf{66.53} \\
+0.7 & 69.47 & 71.63 & 66.71 & 68.03 & 69.57 & 71.01 & 67.18 & \textbf{72.02} \\
+0.9 & 71.34 & 71.70 & 72.88 & 72.89 & 72.38 & 72.48 & 71.24 & \textbf{72.92} \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}
+
+\model has the highest accuracy at all five budgets. Its margins over the strongest alternative are $0.54/0.15/1.22/0.39/0.03$ accuracy points at ratios $0.1/0.3/0.5/0.7/0.9$.
+
+\subsection{Iterative Active Learning}
+
+All methods start from the same labeled set at ratio $0.1$ and add labeled data over five acquisition rounds. Object--Attribute Entropy Reduction adapts the object--attribute query criterion to the setting in which attributes are already known and only the class label is queried.
+
+\begin{table}[h]
+\centering
+\caption{ImageNet10 source-only iterative active learning. Metric: five-seed mean test accuracy (\%); Curve Mean averages ratios $0.1$--$0.6$.}
+\label{tab:source-only-active-learning}
+\small
+\setlength{\tabcolsep}{3pt}
+\resizebox{\linewidth}{!}{%
+\begin{tabular}{c c c c c c c >{\columncolor{myblue!8}}c}
+\toprule
+\rowcolor{sectiongray} \textbf{Ratio} & \textbf{Random} & \textbf{Entropy} & \textbf{CoreSet} & \textbf{BADGE} & \textbf{Attribute rarity} & \textbf{Object--attribute entropy} & \cellcolor{myblue!8}\textbf{Ours-AL} \\
+\midrule
+0.1 & 43.23 & 43.23 & 43.23 & 43.23 & 43.23 & 43.23 & 43.23 \\
+0.2 & 51.11 & \textbf{52.26} & 50.00 & 51.27 & 50.93 & 50.48 & 51.33 \\
+0.3 & 55.38 & 54.85 & 55.01 & 56.17 & 52.94 & 55.95 & \textbf{56.96} \\
+0.4 & 58.71 & 58.63 & 59.54 & 60.46 & 60.47 & 60.31 & \textbf{63.02} \\
+0.5 & 61.97 & 63.70 & 63.92 & 61.89 & 61.86 & 63.88 & \textbf{65.18} \\
+0.6 & 66.15 & 66.70 & 68.16 & 67.11 & 65.78 & 65.79 & \textbf{68.80} \\
+\midrule
+Curve Mean & 56.09 & 56.56 & 56.64 & 56.69 & 55.87 & 56.61 & \textbf{58.09} \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}
+
+\modelplain-AL is strongest from ratios $0.3$ through $0.6$ and improves Curve Mean by 1.40 points over BADGE. The source-only comparison shows that the selection rule is not tied to checkpoint fine-tuning or a generated repair set.
+
+\subsection{Alternative Attribute Sources}
+
+We repeat the source-only evaluation with Qwen3-VL, BLIP, and InternVL3 assignments under the same closed-set vocabulary, training protocol, and five seeds.
+
+\begin{table}[h]
+\centering
+\caption{Sensitivity to the attribute source. One-Shot Mean averages ratios $0.1/0.3/0.5/0.7/0.9$; AL Curve Mean averages ratios $0.1$--$0.6$.}
+\label{tab:attribute-source-ablation}
+\small
+\setlength{\tabcolsep}{6pt}
+\begin{tabular}{l c c c}
+\toprule
+\rowcolor{sectiongray} \textbf{Attribute source} & \textbf{One-Shot Mean} & \textbf{AL Curve Mean} & \textbf{Final ACC at 0.6} \\
+\midrule
+Qwen3-VL & 62.96 & \textbf{58.09} & \textbf{68.80} \\
+BLIP & 62.18 & 55.99 & 65.46 \\
+InternVL3 & \textbf{63.27} & 56.33 & 66.23 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+No attribute source is strongest in both settings. InternVL3 has the highest One-Shot Mean, 0.31 points above Qwen3-VL. Qwen3-VL is strongest in active learning, exceeding InternVL3 by 1.76 points in Curve Mean and 2.57 points at ratio $0.6$. The method works with all three sources, but annotation quality and representation affect the selected subset and downstream result.
