@@ -5,7 +5,7 @@
 
 The main ImageNet10 repair schedule uses 15 epochs, half of the 30-epoch diagnosis schedule. We vary repair training from 15 to 60 epochs at source ratios $0.5$ and $0.9$ while holding the diagnosis checkpoint, generated repair set, source budget, learning rate, and five seeds fixed. Table~\ref{tab:repair-schedule-sensitivity} reports the results.
 
-\begin{table}[h]
+\begin{table}[htbp]
 \centering
 \caption{ImageNet10 repair-schedule sensitivity. Metric: five-seed mean RER (\%).}
 \label{tab:repair-schedule-sensitivity}
@@ -30,7 +30,7 @@ The main ImageNet10 repair schedule uses 15 epochs, half of the 30-epoch diagnos
 
 Slice granularity changes both the fields used for source selection and the generated repair set. We compare the diagnosed two-field conjunction with single-field variants and a narrower three-field conjunction over five seeds in Tables~\ref{tab:coco-slice-granularity} and~\ref{tab:imagenet-slice-granularity}.
 
-\begin{table}[h]
+\begin{table}[htbp]
 \centering
 \caption{Slice-granularity sensitivity on COCO. Metric: keypoint AP. The diagnosed slice is brown clothes and rainy weather.}
 \label{tab:coco-slice-granularity}
@@ -49,7 +49,7 @@ Slice granularity changes both the fields used for source selection and the gene
 \end{tabular}
 \end{table}
 
-\begin{table}[h]
+\begin{table}[htbp]
 \centering
 \caption{Slice-granularity sensitivity on ImageNet10. Metric: test accuracy. The diagnosed slice is pink color and fabric texture.}
 \label{tab:imagenet-slice-granularity}
@@ -74,7 +74,7 @@ The diagnosed two-field slice is best in 8 of the 10 dataset--ratio settings. On
 
 Tables~\ref{tab:imagenet-missing-field} and~\ref{tab:coco-missing-field} report results after removing one target field while holding the generated repair pool, source budget, checkpoint, and training schedule fixed. Parenthesized values are the selected-set Jaccard overlap with the full two-field selector.
 
-\begin{table}[h]
+\begin{table}[htbp]
 \centering
 \caption{Missing-field sensitivity on ImageNet10. Metric: overall test accuracy (\%).}
 \label{tab:imagenet-missing-field}
@@ -93,7 +93,7 @@ Tables~\ref{tab:imagenet-missing-field} and~\ref{tab:coco-missing-field} report 
 \end{tabular}
 \end{table}
 
-\begin{table}[h]
+\begin{table}[htbp]
 \centering
 \caption{Missing-field sensitivity on COCO. Metric: keypoint AP.}
 \label{tab:coco-missing-field}

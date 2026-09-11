@@ -9,8 +9,9 @@ Current context:
   authoritative snapshot for previously reported results.
 - `main.tex` now uses the bundled `iclr2027_conference` style and bibliography
   style. Keep `\iclrfinalcopy` commented for anonymous submission.
-- No build artifacts were migrated. Local builds should place generated files
-  under `build_artifacts/`; no post-migration compilation has been run.
+- Keep the compiled `main.pdf` in the paper root. Run
+  `scripts/organize_build_artifacts.sh` after compilation to move only LaTeX
+  intermediates into `build_artifacts/`.
 - Do not check or enforce the 9-page limit unless the user explicitly asks;
   the user will reduce the manuscript later.
 - The introduction is being shaped around generation-based repair as a promising but still inefficient direction.

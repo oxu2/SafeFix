@@ -7,7 +7,7 @@ The main tables compare \model with generic source-selection methods. This secti
 
 We evaluate three direct attribute-aware controls. \textbf{Target-Slice + Stratified} selects exact target-conjunction examples first and fills the remaining budget with class-stratified background samples. \textbf{Attribute-Filtered Random} prioritizes examples matching at least one target field, samples from class-balanced queues, and then fills from the background. \textbf{Attribute-Filtered Entropy} uses the same candidate pool and queues but ranks candidates by diagnosis-checkpoint entropy. All methods use the same fixed 1,000-image generated set, source budget, checkpoint, repair schedule, and attribute metadata.
 
-\begin{table}[h]
+\begin{table}[htbp]
 \centering
 \caption{ImageNet10 same-information repair comparison. Metric: RER (\%; five-seed mean $\pm$ standard deviation).}
 \label{tab:imagenet-same-information-rer}
@@ -30,7 +30,7 @@ Mean & 6.44 & 8.95 & 9.30 & 8.25 & 8.35 & 8.79 & 8.80 & 7.43 & \textbf{11.19} \\
 }
 \end{table}
 
-\begin{table}[h]
+\begin{table}[htbp]
 \centering
 \caption{COCO same-information repair comparison. Metric: RER (\%; five-seed mean).}
 \label{tab:coco-same-information-rer}
@@ -53,7 +53,7 @@ Mean & 6.18 & 6.36 & 5.27 & 6.40 & 8.35 & 5.16 & 8.09 & 6.98 & \textbf{9.62} \\
 }
 \end{table}
 
-\begin{table}[h]
+\begin{table}[htbp]
 \centering
 \caption{KITTI same-information repair comparison. Metric: RER (\%; five-seed mean).}
 \label{tab:kitti-same-information-rer}
@@ -86,7 +86,7 @@ S_{\mathrm{GC}}(x)=\frac{1}{|\mathcal A_x|}\sum_{a\in\mathcal A_x}\frac{1}{1+f_{
 \end{equation}
 followed by deterministic round-robin balancing over task-specific groups. It does not use source rarity, diagnostic weights, uncertainty, or the full $R+P+C$ score.
 
-\begin{table}[h]
+\begin{table}[htbp]
 \centering
 \caption{Generated-Complement summary. Exact-target, non-target, and overall entries use each task's native metric. RER is the five-ratio mean. COCO and KITTI exact conjunctions contain only two test images per seed and are descriptive.}
 \label{tab:generated-complement-summary}
@@ -109,7 +109,7 @@ On matched selected subsets, Generated-Complement has class imbalance no worse t
 
 The attribute heatmaps in the main paper report marginal values. We separately evaluate the full diagnosed conjunction and its strict complement at source ratio $0.5$. Table~\ref{tab:exact-conjunction-repair} reports the strongest controls and \model; all values are mean $\pm$ sample standard deviation over five seeds.
 
-\begin{table}[h]
+\begin{table}[htbp]
 \centering
 \caption{Exact-conjunction and non-target performance at source ratio $0.5$. ImageNet10 uses accuracy on ``pink AND fabric'' ($n=16$) and its complement ($n=1{,}284$). COCO uses keypoint AP on ``brown AND rainy'' ($n=22$) and its complement ($n=1{,}151$).}
 \label{tab:exact-conjunction-repair}
@@ -137,7 +137,7 @@ Relative to the common pre-repair checkpoint, \model improves the ImageNet10 exa
 
 We analyze ImageNet10 selected subsets using unique $(\text{class},\text{color},\text{background},\text{texture})$ tuples and mean categorical Hamming distance over color, background, and texture. Table~\ref{tab:selected-subset-mechanism} compares \model with the best direct control at each ratio; the best control is selected independently for each metric from Target-Slice + Stratified, Attribute-Filtered Random, Attribute-Filtered Entropy, and Generated-Complement.
 
-\begin{table}[h]
+\begin{table}[htbp]
 \centering
 \caption{ImageNet10 selected-subset mechanism summary. RER values are five-seed means; subset diagnostics use matched selections. Higher is better except for class imbalance.}
 \label{tab:selected-subset-mechanism}
@@ -165,7 +165,7 @@ We analyze ImageNet10 selected subsets using unique $(\text{class},\text{color},
 
 We further reduce the source ratios to $0.02$ and $0.05$, corresponding to 208/520 selected ImageNet10 images and 400/1,000 selected COCO images. The diagnosis checkpoint, generated repair set, repair schedule, and five seeds remain fixed.
 
-\begin{table}[h]
+\begin{table}[htbp]
 \centering
 \caption{Repair under constrained source budgets. Metric: RER (\%; five-seed mean $\pm$ standard deviation).}
 \label{tab:constrained-source-budget}
