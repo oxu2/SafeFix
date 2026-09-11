@@ -7,7 +7,7 @@ We evaluate \model outside model repair on ImageNet10. These experiments use no 
 
 We add two direct semantic baselines. \textbf{Attribute Rarity} ranks images by class-conditional rarity of their assigned attribute values and applies soft class balancing. \textbf{Semantic CoreSet} one-hot encodes the assigned values and runs class-balanced greedy $k$-center selection in that semantic representation.
 
-\begin{table}[h]
+\begin{table}[htbp]
 \centering
 \caption{ImageNet10 source-only one-shot data selection. Metric: five-seed mean test accuracy (\%).}
 \label{tab:source-only-one-shot}
@@ -34,7 +34,7 @@ We add two direct semantic baselines. \textbf{Attribute Rarity} ranks images by 
 
 All methods start from the same labeled set at ratio $0.1$ and add labeled data over five acquisition rounds. Object--Attribute Entropy Reduction adapts the object--attribute query criterion to the setting in which attributes are already known and only the class label is queried.
 
-\begin{table}[h]
+\begin{table}[htbp]
 \centering
 \caption{ImageNet10 source-only iterative active learning. Metric: five-seed mean test accuracy (\%); Curve Mean averages ratios $0.1$--$0.6$.}
 \label{tab:source-only-active-learning}
@@ -64,7 +64,7 @@ Curve Mean & 56.09 & 56.56 & 56.64 & 56.69 & 55.87 & 56.61 & \textbf{58.09} \\
 
 We repeat the source-only evaluation with Qwen3-VL, BLIP, and InternVL3 assignments under the same closed-set vocabulary, training protocol, and five seeds.
 
-\begin{table}[h]
+\begin{table}[htbp]
 \centering
 \caption{Sensitivity to the attribute source. One-Shot Mean averages ratios $0.1/0.3/0.5/0.7/0.9$; AL Curve Mean averages ratios $0.1$--$0.6$.}
 \label{tab:attribute-source-ablation}

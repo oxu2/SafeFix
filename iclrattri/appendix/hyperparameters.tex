@@ -2,7 +2,7 @@
 \label{app:hyperparameter-details}
 Table~\ref{tab:rpc-hyperparameters} reports the \model hyperparameters used in the main experiments. The parameters are the rarity exponent $\alpha$, frequency-penalty weight $\lambda$, and soft class-balancing weight $w$, matching the notation in Eq.~\ref{eq:class-balance-score}.
 
-\begin{table}[h]
+\begin{table}[htbp]
 \centering
 \caption{\model hyperparameters used in the main experiments.}
 \label{tab:rpc-hyperparameters}
@@ -24,7 +24,7 @@ The larger frequency-penalty weight used for KITTI is consistent with the relati
 
 Table~\ref{tab:kitti-rpc-sensitivity} gives the KITTI sensitivity across source-selection ratios. Across several \model parameter settings, the test mAP50--95 changes only modestly, suggesting that the selector is not brittle to small changes in $\alpha$, $\lambda$, and $w$ once the generated-data frequency penalty is present.
 
-\begin{table}[h]
+\begin{table}[htbp]
 \centering
 \caption{KITTI \model sensitivity. Metric: test mAP50--95.}
 \label{tab:kitti-rpc-sensitivity}
@@ -45,7 +45,7 @@ Table~\ref{tab:kitti-rpc-sensitivity} gives the KITTI sensitivity across source-
 
 Table~\ref{tab:coco-rpc-sensitivity} shows the same pattern on COCO pose-estimation repair. The selected main setting remains strongest for most ratios, while nearby \model parameter settings stay within a narrow AP band.
 
-\begin{table}[h]
+\begin{table}[htbp]
 \centering
 \caption{COCO \model sensitivity. Metric: COCO keypoint AP.}
 \label{tab:coco-rpc-sensitivity}

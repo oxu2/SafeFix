@@ -24,7 +24,7 @@ On one NVIDIA H200 GPU, generating 1,000 T2I repair images with ControlNet takes
 
 Table~\ref{tab:selection-efficiency} isolates source-subset selection after attribute records are available. We additionally measure the one-time source-pool assignment cost and the complete first repair run. T2I generation and generated-image assignment are reported separately because every selector uses the same fixed generated set. Source-pool assignment is charged to \model because it is a method-specific prerequisite when suitable metadata do not already exist.
 
-\begin{table}[h]
+\begin{table}[htbp]
 \centering
 \caption{Measured source-pool attribute-assignment cost on one NVIDIA H200 GPU. The normalized time divides the total assignment time by the source-pool size in thousands and the number of assigned attributes.}
 \label{tab:source-assignment-cost}
@@ -43,7 +43,7 @@ COCO & 20,000 & 5 & 90.00 min & 0.90 \\
 
 The first-run totals in Tables~\ref{tab:kitti-end-to-end-cost} and~\ref{tab:coco-end-to-end-cost} include the applicable source-side preprocessing, subset selection, repair training, and evaluation. Every \model entry conservatively includes a fresh assignment of the full source pool. Thus, these tables are upper bounds for repeated repair cycles on the same task-level vocabulary.
 
-\begin{table}[h]
+\begin{table}[htbp]
 \centering
 \caption{KITTI first-repair wall-clock time. Every \model row includes 32.77 minutes for fresh assignment of all 5,000 source images.}
 \label{tab:kitti-end-to-end-cost}
@@ -64,7 +64,7 @@ The first-run totals in Tables~\ref{tab:kitti-end-to-end-cost} and~\ref{tab:coco
 }
 \end{table}
 
-\begin{table}[h]
+\begin{table}[htbp]
 \centering
 \caption{COCO first-repair wall-clock time. Every \model row includes 90 minutes for fresh assignment of all 20,000 source images.}
 \label{tab:coco-end-to-end-cost}
