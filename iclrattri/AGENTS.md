@@ -18,6 +18,9 @@ Editing rules:
 - Keep edits narrowly scoped to the user's current request.
 - Preserve nearby text unless it directly blocks the requested change.
 - Do not compile unless the user asks; the user checks compilation in Overleaf.
+- Do not run page-count checks or shorten the manuscript to meet the ICLR
+  page limit unless the user explicitly asks. The user will handle later
+  page-budget reduction.
 - Prefer wording suitable for an ICLR submission: problem-driven motivation, careful claims, and no phrasing such as "because our experiments focus on..." as the reason for studying a problem.
 - Avoid broad polishing passes unless explicitly requested.
 - Keep paper-facing text at the scientific-method/result level. Do not mention internal workspace artifacts or implementation provenance such as JSON/CSV files, logs, scripts, selected-id exports, file paths, generated working directories, or private data/image sources. When needed, describe these as annotations, selected subsets, diagnostics, figures, tables, or experimental protocol. Do not add auxiliary images, datasets, or diagnostics beyond the paper's authorized main results unless the user explicitly approves them for the manuscript.
