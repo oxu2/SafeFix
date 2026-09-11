@@ -1,0 +1,15 @@
+\section{Limitations and Practical Considerations}
+\label{app:limitations}
+
+\textbf{VLM dependency.}\\
+\model assumes that source images have VLM-assigned attribute records before selection and relies on accurate VLM annotation.
+
+\vspace{0.5em}
+\textbf{Attribute vocabulary coverage.}\\
+\model can only target failure modes described by the available attribute vocabulary. If an important failure factor is missing from $\attrs$ or merged into a coarse closed-set value, the selector cannot explicitly prioritize it.
+
+\vspace{0.5em}
+\textbf{Generated-data quality.}\\
+\model chooses source examples that complement generated repair images, but it does not correct failures in the generator itself. If generated images miss the target attributes, change labels, or introduce artifacts, the absolute repair gains can decrease even when source selection remains useful.
+
+\clearpage

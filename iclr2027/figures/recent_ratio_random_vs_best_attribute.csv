@@ -1,0 +1,26 @@
+experiment,metric,ratio,random,best_attribute,delta_attribute_minus_random,best_attribute_method
+ImageNet base AL,Test ACC,0.10,0.7269,0.7346,0.0077,attribute
+ImageNet base AL,Test ACC,0.30,0.7308,0.7385,0.0077,attribute
+ImageNet base AL,Test ACC,0.50,0.7400,0.7495,0.0095,attribute
+ImageNet base AL,Test ACC,0.70,0.7423,0.7446,0.0023,attribute
+ImageNet base AL,Test ACC,0.90,0.7482,0.7531,0.0049,attribute
+Brown-Rainy COCO pose,Test AP,0.05,0.5797,0.5871,0.0074,attribute
+Brown-Rainy COCO pose,Test AP,0.10,0.6048,0.6183,0.0135,attribute
+Brown-Rainy COCO pose,Test AP,0.30,0.6127,0.6306,0.0179,attribute
+Brown-Rainy COCO pose,Test AP,0.50,0.6219,0.6317,0.0098,attribute
+Brown-Rainy COCO pose,Test AP,0.70,0.6232,0.6319,0.0087,attribute
+Brown-Rainy COCO pose,Test AP,0.90,0.6180,0.6355,0.0175,attribute
+ImageNet instruct-pix2pix,Test ACC,0.10,0.7062,0.7146,0.0084,attribute
+ImageNet instruct-pix2pix,Test ACC,0.30,0.7285,0.7369,0.0084,attribute
+ImageNet instruct-pix2pix,Test ACC,0.50,0.7438,0.7462,0.0024,attribute
+ImageNet instruct-pix2pix,Test ACC,0.70,0.7477,0.7501,0.0024,attribute
+ImageNet instruct-pix2pix,Test ACC,0.90,0.7423,0.7523,0.0100,attribute
+CelebA instruct-pix2pix,Test ACC,0.10,0.9108,0.9120,0.0012,attribute
+CelebA instruct-pix2pix,Test ACC,0.30,0.9091,0.9101,0.0010,attribute
+CelebA instruct-pix2pix,Test ACC,0.50,0.9098,0.9110,0.0012,attribute
+CelebA instruct-pix2pix,Test ACC,0.70,0.9116,0.9116,0.0000,attribute
+CelebA instruct-pix2pix,Test ACC,0.90,0.9104,0.9111,0.0007,attribute
+CelebA HiBUG,Test ACC,0.10,0.9052,0.9008,-0.0044,attribute
+CelebA HiBUG,Test ACC,0.30,0.9076,0.9095,0.0019,attribute
+CelebA HiBUG,Test ACC,0.50,0.9096,0.9131,0.0035,attribute
+CelebA HiBUG,Test ACC,0.70,0.9057,0.9116,0.0059,attribute
