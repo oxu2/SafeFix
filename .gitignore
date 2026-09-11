@@ -34,8 +34,6 @@ imagenet*
 !nips26/figures/imagenet_attribute_slice_heatmaps/**
 !nips26/figures/show/
 !nips26/figures/show/**
-!27iclr/figures/
-!27iclr/figures/**
 !bxz/qwen_human_audit/
 !bxz/qwen_human_audit/**
 !data/celebA/*.txt
@@ -101,6 +99,6 @@ nips26_new/main.*
 !nips26_new/main.tex
 !nips26_new/main.pdf
 nips26_new/main.fls
-27iclr/main.*
-!27iclr/main.tex
-!27iclr/main.pdf
+
+# Independent nested manuscript repository.
+/27iclr/

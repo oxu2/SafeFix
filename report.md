@@ -5,8 +5,8 @@ latexmk -pdf \
   -interaction=nonstopmode \
   -halt-on-error \
   -file-line-error \
-  -outdir=build_artifacts \
   main.tex
+scripts/organize_build_artifacts.sh
 ```
 <!-- AGENTS-IGNORE: END -->
 
