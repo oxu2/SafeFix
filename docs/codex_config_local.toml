@@ -1,0 +1,51 @@
+# Personal instructions: ~/.codex/AGENTS.md (canonical).
+# Runtime settings below are independent of prose preferences.
+
+model_provider = "openai"
+# openai_base_url = "http://127.0.0.1:8317/v1"
+personality = "pragmatic"
+model = "gpt-6-astra"
+model_context_window = 1000000
+model_auto_compact_token_limit = 900000
+model_reasoning_effort = "low"
+service_tier = "default"
+approvals_reviewer = "user"
+
+[plugins."github@openai-curated"]
+enabled = true
+
+[projects."/people/cs/o/oxx220000/safefix"]
+trust_level = "trusted"
+
+[projects."/people/cs/o/oxx220000/fp"]
+trust_level = "trusted"
+
+[projects."/people/cs/o/oxx220000"]
+trust_level = "trusted"
+
+[projects."/people/cs/o/oxx220000/failatlas"]
+trust_level = "trusted"
+
+[projects."/people/cs/o/oxx220000/atlasrepair"]
+trust_level = "trusted"
+
+[projects."/people/cs/o/oxx220000/discovery"]
+trust_level = "trusted"
+
+[features]
+hooks = true
+remote_compaction_v2 = false
+memories = true
+
+[hooks.state]
+
+[hooks.state."/people/cs/o/oxx220000/atlasrepair/.codex/hooks.json:user_prompt_submit:0:0"]
+trusted_hash = "sha256:a44756ad37f7123a741f170853ab069cbd03240d9cfafdf2b80c45496c25a01d"
+
+[tui.model_availability_nux]
+"gpt-5.5" = 1
+"gpt-5.6-sol" = 1
+
+[memories]
+generate_memories = true
+use_memories = true
