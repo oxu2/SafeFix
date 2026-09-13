@@ -110,13 +110,13 @@ After any meaningful implementation, modification, or completed investigation th
   `h100` only as the secondary fallback or when the user explicitly requests
   it. Do not default to A30 or virtual-A30 partitions.
 - For future independent experiment shards with the same code, environment,
-  model, and resource shape, use one SLURM array. Through August 10, 2026, add
-  `--qos=juno-pri` and use `%8` concurrency whenever the array contains more
-  than eight tasks, for example `#SBATCH --array=0-N%8` or
-  `sbatch --qos=juno-pri --array=0-N%8 ...`. Do not default these workloads to
-  one-GPU sequential execution unless task dependencies or an explicit user
-  instruction require it. After the temporary QoS is removed, return to `%4`
-  concurrency unless newer guidance replaces this rule.
+  model, and resource shape, use one SLURM array. For this user's Juno GPU
+  workloads, default to `--qos=juno-pri` and `%8` concurrency, for example
+  `#SBATCH --array=0-N%8` or `sbatch --qos=juno-pri --array=0-N%8 ...`.
+  Recheck the live association and QOS limits before submission; use normal
+  QOS and `%4` only as a fallback or explicit conservative control. Do not
+  default these workloads to one-GPU sequential execution unless task
+  dependencies or an explicit user instruction require it.
 - Read `/people/cs/o/oxx220000/.codex/docs/juno_quickstart.md` as the only
   Juno workflow source. It contains both shared rules and the SafeFix project
   profile.
