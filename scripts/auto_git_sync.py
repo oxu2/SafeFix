@@ -23,8 +23,9 @@ def run(args, cwd, check=False):
     return subprocess.run(args, cwd=cwd, text=True, capture_output=True, check=check)
 
 
-def repo_root():
-    result = run(["git", "rev-parse", "--show-toplevel"], None)
+def repo_root(path=None):
+    cwd = Path(path).resolve() if path else None
+    result = run(["git", "rev-parse", "--show-toplevel"], cwd)
     if result.returncode:
         log.error("Not inside a Git repository: %s", result.stderr.strip())
         sys.exit(1)
@@ -106,6 +107,7 @@ def daemon(root, threshold, interval, debounce, branch, no_push):
 
 def main():
     parser = argparse.ArgumentParser()
+    parser.add_argument("--repo", "-r", default="", help="Path to repository")
     parser.add_argument("--threshold", "-t", type=int, default=2)
     parser.add_argument("--interval", "-i", type=int, default=30)
     parser.add_argument("--debounce", type=int, default=10)
@@ -113,7 +115,7 @@ def main():
     parser.add_argument("--daemon", "-d", action="store_true")
     parser.add_argument("--no-push", action="store_true")
     args = parser.parse_args()
-    root = repo_root()
+    root = repo_root(args.repo)
     branch = args.branch or run(["git", "branch", "--show-current"], root).stdout.strip() or "master"
     if args.daemon:
         daemon(root, args.threshold, args.interval, args.debounce, branch, args.no_push)
