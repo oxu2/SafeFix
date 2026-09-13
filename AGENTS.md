@@ -84,6 +84,10 @@ After any meaningful implementation, modification, or completed investigation th
 4. Do not leave meaningful code, workflow, experiment, or configuration changes undocumented if they matter for continuation by another agent.
 5. If no documentation file needs updating, be prepared to state why.
 6. Draw.io-only edits do not need to be recorded in the workspace journal. This includes changes to `.drawio`, `.drawio.xml`, and generated Draw.io exports such as `.png`, `.svg`, or `.pdf`, unless the user explicitly asks for journal documentation or the edit changes non-figure project context.
+7. **2/3 Recording Threshold for Lessons and Rules**: When considering adding a new rule or lesson to `tasks/lessons.md` or a skill's `gotchas.md`, apply the After-Action Review scan (New pattern? New trap? Missing rule? Outdated rule?). Record only if at least 2 of the following 3 criteria are satisfied:
+   - *Repeatable*: Likely to be encountered in future tasks by different agents or models.
+   - *High Cost*: Causes significant debugging or revision time (>20 minutes) if unknown.
+   - *Invisible in Code*: Cannot be inferred directly from existing code or standard framework manuals.
 
 ---
 
