@@ -606,7 +606,8 @@ def plot_spec(spec: DatasetSpec, plot_indices: list[int], coords: np.ndarray, ou
     fig.text(0.5, 0.025, "Gray: candidate pool. Colored: selected subset.", ha="center", fontsize=9)
     fig.tight_layout(rect=[0.01, 0.06, 0.99, 0.94])
     out_path.parent.mkdir(parents=True, exist_ok=True)
-    fig.savefig(out_path, dpi=220)
+    fig.savefig(out_path.with_suffix(".pdf"), format="pdf")
+    fig.savefig(out_path.with_suffix(".png"), dpi=220)
     plt.close(fig)
 
 
@@ -616,6 +617,7 @@ def build_one(spec: DatasetSpec, args: argparse.Namespace) -> None:
     prefix = args.out_dir / f"{spec.slug}_selection_tsne"
     write_csv(spec, plot_indices, coords, prefix.with_suffix(".csv"))
     plot_spec(spec, plot_indices, coords, prefix.with_suffix(".png"))
+    print(f"Wrote {prefix.with_suffix('.pdf')}")
     print(f"Wrote {prefix.with_suffix('.png')}")
     print(f"Wrote {prefix.with_suffix('.csv')}")
 
