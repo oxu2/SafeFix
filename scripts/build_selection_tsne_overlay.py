@@ -84,7 +84,8 @@ def plot_overlay(
     ax.legend(frameon=False, markerscale=2.0, loc="best")
     fig.tight_layout()
     out_path.parent.mkdir(parents=True, exist_ok=True)
-    fig.savefig(out_path, dpi=220)
+    fig.savefig(out_path.with_suffix(".pdf"), format="pdf")
+    fig.savefig(out_path.with_suffix(".png"), dpi=220)
     plt.close(fig)
 
 
