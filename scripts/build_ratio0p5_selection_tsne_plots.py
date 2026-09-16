@@ -355,6 +355,16 @@ def _has_valid_person_annotation(anns: list[dict]) -> bool:
 
 def load_coco(ratio: float) -> DatasetSpec:
     metrics = {
+        0.05: {
+            "Random": 0.5730,
+            "Stratified": 0.5781,
+            "Entropy": 0.5827,
+            "Coreset": 0.5693,
+            "BADGE": 0.5797,
+            "PPAL": 0.5771,
+            "UHerding": 0.5738,
+            "Ours": 0.5969,
+        },
         0.1: {
             "Random": 0.6048,
             "Stratified": 0.6110,

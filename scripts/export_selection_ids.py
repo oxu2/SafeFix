@@ -24,6 +24,8 @@ from torchvision.datasets import ImageFolder
 REPO_ROOT = Path(__file__).resolve().parents[1]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
+if str(REPO_ROOT / "pose_estimation") not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT / "pose_estimation"))
 
 from utils.active_learning import active_learning_selection
 from utils.data_utils import CelebADataset, default_img_transform
