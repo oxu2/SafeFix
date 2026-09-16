@@ -584,18 +584,26 @@ def plot_spec(spec: DatasetSpec, plot_indices: list[int], coords: np.ndarray, ou
                 alpha=0.86,
                 linewidths=0,
             )
-            title_n = str(len(selected_positions))
-        ax.set_title(f"{sel.name}  n={title_n}  {spec.metric_name}={sel.metric:.4f}", fontsize=10)
+            title_n = str(len(sel.indices))
+        if np.isnan(sel.metric):
+            ax.set_title(f"{sel.name}  n={title_n}", fontsize=10)
+        else:
+            ax.set_title(f"{sel.name}  n={title_n}  {spec.metric_name}={sel.metric:.4f}", fontsize=10)
         ax.set_xticks([])
         ax.set_yticks([])
         for spine in ax.spines.values():
             spine.set_visible(False)
     for ax in axes[len(spec.selections):]:
         ax.axis("off")
-    source_text = "; ".join(f"{sel.name}: {sel.source}" for sel in spec.selections)
     ratio_label = spec.slug.split("_ratio")[-1].replace("p", ".")
-    fig.suptitle(f"{spec.name} {spec.target} Ratio {ratio_label} Selection on Shared Proxy t-SNE", fontsize=14, y=0.98)
-    fig.text(0.5, 0.025, f"Gray: plotted original candidates. Colored: selected subset. Sources: {source_text}", ha="center", fontsize=8)
+    dataset_display = {
+        "COCO": "COCO Pose Estimation",
+        "KITTI": "KITTI Object Detection",
+        "ImageNet": "ImageNet10 Classification",
+        "CelebA": "CelebA Classification",
+    }.get(spec.name, spec.name)
+    fig.suptitle(f"{dataset_display} (Ratio {ratio_label}) Selection on Shared Proxy t-SNE", fontsize=14, y=0.98)
+    fig.text(0.5, 0.025, "Gray: candidate pool. Colored: selected subset.", ha="center", fontsize=9)
     fig.tight_layout(rect=[0.01, 0.06, 0.99, 0.94])
     out_path.parent.mkdir(parents=True, exist_ok=True)
     fig.savefig(out_path, dpi=220)
