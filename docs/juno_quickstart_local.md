@@ -54,9 +54,12 @@ SafeFix.
   `--qos=juno-pri` and `ArrayTaskThrottle=8` (for example,
   `--array=0-7%8`). Recheck the live association and QOS limits before each
   submission; fall back to the normal QOS and `%4` when `juno-pri` is not
-  available. Do not impose a lower default such as `%1` or `%2` unless the
-  user or shared-state safety requires it; let the QOS enforce its
-  account-wide concurrent-job limit.
+  available. Always specify `ArrayTaskThrottle=8` (for example,
+  `--array=0-7%8`) under `juno-pri`. Never artificially throttle below `%8`
+  (such as `%1`, `%2`, or `%4`), even if conversational discussion mentions
+  splitting tasks across 2 GPUs or running on 2 GPUs. Let the Slurm scheduler
+  and account QOS allocate GPUs dynamically as nodes become free; setting a lower
+  throttle starves available capacity.
   Array concurrency controls how many independent one-GPU jobs run at once; it
   does not make one training run use multiple GPUs.
 - The live `juno-pri` QOS currently reports `MaxJobsPU=8` and
@@ -82,24 +85,25 @@ SafeFix.
 
 ### Cross-account H200 execution
 
-- For this user's Juno H200 work, prefer submitting through `bxz200006` when
-  the live association, QoS, ACLs, storage, and local notification path have
-  been verified; fall back to `oxx220000` when any of those checks fail. This
-  is a scheduling preference, not a guarantee that `bxz200006` will start
-  sooner: compare live `squeue`, `sprio`, fair-share, reservations, and
-  resource availability before switching.
-- Independent arrays may run under both accounts at the same time when they
-  do not share writers and the live account limits permit it. Do not run two
-  accounts against the same shard, JSONL, checkpoint, manifest, or merge
-  directory concurrently. Preserve run identity, shard index/count, and all
-  linked artifacts when moving or resuming work across accounts.
-- Keep the `oxx220000` repository, source artifacts, configs, and any
-  intentionally shared model cache readable by `bxz200006` through explicit
-  ACLs. If the scratch filesystem rejects user ACLs, use an account-local HF
-  cache instead of broadening scratch permissions. Give `bxz200006` write
-  permission only on the output/run roots that the submitted job owns; do not
-  make the entire `/work/oxx220000` tree or secrets writable. Verify ACLs and
-  read/write access before each cross-account submission.
+- For this user's Juno H200 work, prefer submitting through `bxz200006` or `rxl190028` (`rxl`)
+  when the live association, QoS, ACLs, storage, and local notification path have
+  been verified; fall back to `oxx220000` when any of those checks fail. `oxx220000`,
+  `bxz200006`, and `rxl190028` are fully interoperable on Juno and can inspect each other's
+  tasks (`squeue -u <user>`, `sacct -u <user>`). `rxl190028` and `bxz200006` are functionally
+  equivalent for job submission and resource scheduling. This is a scheduling preference,
+  not a guarantee that `bxz200006` or `rxl190028` will start sooner: compare live `squeue`,
+  `sprio`, fair-share, reservations, and resource availability before switching.
+- Independent arrays may run across multiple accounts (`oxx220000`, `bxz200006`, `rxl190028`)
+  at the same time when they do not share writers and the live account limits permit it.
+  Do not run two accounts against the same shard, JSONL, checkpoint, manifest, or merge
+  directory concurrently. Preserve run identity, shard index/count, and all linked artifacts
+  when moving or resuming work across accounts.
+- Keep the `oxx220000` repository, source artifacts, configs, and any intentionally shared
+  model cache readable by `bxz200006` and `rxl190028` through explicit ACLs. If the scratch
+  filesystem rejects user ACLs, use an account-local HF cache instead of broadening scratch
+  permissions. Give `bxz200006` / `rxl190028` write permission only on the output/run roots
+  that the submitted job owns; do not make the entire `/work/oxx220000` tree or secrets
+  writable. Verify ACLs and read/write access before each cross-account submission.
 
 ### Comma-valued submission environment
 
@@ -180,10 +184,12 @@ current QOS reports `MaxJobsPU=8`, `MaxSubmitPU=150`, `Priority=200000`, and
 
 When scaling beyond 8 concurrent GPU tasks:
 
-1. **Dual-account priority scaling (recommended)**: Submit independent array
-   shards across `bxz200006` and `oxx220000` with `--qos=juno-pri --array=...%8`
-   on each account. This achieves up to 16 concurrent GPU tasks (8 + 8) while
-   retaining the high `Priority=200000` queue status.
+1. **Multi-account priority scaling (recommended)**: Submit independent array
+   shards across `bxz200006`, `rxl190028` (`rxl`), and `oxx220000` with
+   `--qos=juno-pri --array=...%8` on each account. This achieves up to 16 to 24
+   concurrent GPU tasks (8 per account) while retaining the high
+   `Priority=200000` queue status. Note that `oxx220000`, `bxz200006`, and
+   `rxl190028` can cross-read and monitor each other's jobs on Juno.
 2. **Opportunistic `normal` QoS backfill**: In `sacctmgr show qos`, the
    `normal` QOS has no hard `MaxJobsPU` limit set. When `h200` has surplus idle
    nodes and no higher-priority jobs competing, submitting arrays under the
@@ -451,9 +457,10 @@ ssh juno 'cd /work/NetID/<repo-name> && bash -n scripts/my_job.sbatch'
 
 ## Login And Interactive Tools
 
-- Connect with `ssh NetID@juno.utdallas.edu`; Ed25519 SSH keys are the
-  recommended authentication method. Keep `~/.ssh` at mode `700`, private keys
-  and `authorized_keys` at `600`, and public keys at `644`.
+- Connect with `ssh NetID@juno.utdallas.edu` (configured locally via SSH aliases
+  `ssh juno` for `oxx220000`, `ssh bxz` for `bxz200006`, and `ssh rxl` for `rxl190028`);
+  Ed25519 SSH keys are the recommended authentication method. Keep `~/.ssh` at mode `700`,
+  private keys and `authorized_keys` at `600`, and public keys at `644`.
 - If `ssh juno` or `ssh NetID@juno.utdallas.edu` cannot connect or times out,
   try the Juno login IP addresses `10.247.252.78` and `10.247.252.79`, for
   example `ssh NetID@10.247.252.78` or `ssh NetID@10.247.252.79`.
@@ -640,9 +647,9 @@ For independent GPU tasks, choose the throttle as follows:
 - `%4`: fallback under the normal QOS or a deliberate conservative control;
 - `%8`: default under the live `juno-pri` QOS when independent tasks and live
   resources permit it (maximum concurrent jobs per account under `juno-pri`);
-- `%12` to `%16`: opportunistic backfill under `normal` QOS when the cluster has
-  idle H200 nodes and no priority contention, or achieved across dual accounts
-  by running `%8` on `bxz200006` and `%8` on `oxx220000` concurrently under
+- `%12` to `%16`+: opportunistic backfill under `normal` QOS when the cluster has
+  idle H200 nodes and no priority contention, or achieved across multi-account submissions
+  by running `%8` on `bxz200006` / `rxl190028` and `%8` on `oxx220000` concurrently under
   `juno-pri`;
 - above `%16`: do not assume it will run. Confirm the active QoS limit and
   obtain an explicit HPC allocation before requesting more concurrency.
