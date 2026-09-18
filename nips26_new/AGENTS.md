@@ -279,6 +279,80 @@ At the division point in the table body:
 - Wrap with `\noalign{\vskip 1.5pt}` to avoid overlap with `\columncolor`
   backgrounds that can otherwise hide the dashed line.
 
+### 13. Tight Vertical Spacing and Compact Layout (Main Text Only)
+
+To reduce excessive whitespace between floats, text, headings, and equations so that the main text accommodates more content, apply the following standard spacing parameters and compact section/abstract definitions in the paper preamble. **Note**: This compaction applies strictly to the main text; the appendix does not need space-saving compression and automatically restores standard spacing when `\appendix` begins:
+
+```latex
+\usepackage{caption}
+
+\makeatletter
+% Save default LaTeX / venue geometry and spacing parameters before compacting
+\let\orig@section\section
+\let\orig@subsection\subsection
+\let\orig@subsubsection\subsubsection
+\newlength{\orig@textfloatsep}\setlength{\orig@textfloatsep}{\textfloatsep}
+\newlength{\orig@floatsep}\setlength{\orig@floatsep}{\floatsep}
+\newlength{\orig@intextsep}\setlength{\orig@intextsep}{\intextsep}
+\newlength{\orig@abovedisplayskip}\setlength{\orig@abovedisplayskip}{\abovedisplayskip}
+\newlength{\orig@belowdisplayskip}\setlength{\orig@belowdisplayskip}{\belowdisplayskip}
+\newlength{\orig@abovedisplayshortskip}\setlength{\orig@abovedisplayshortskip}{\abovedisplayshortskip}
+\newlength{\orig@belowdisplayshortskip}\setlength{\orig@belowdisplayshortskip}{\belowdisplayshortskip}
+\newlength{\orig@abovecaptionskip}\setlength{\orig@abovecaptionskip}{\abovecaptionskip}
+\newlength{\orig@belowcaptionskip}\setlength{\orig@belowcaptionskip}{\belowcaptionskip}
+
+% Compact vertical spacing for captions, floats, and displays (main text only)
+\captionsetup{skip=3.5pt}
+\setlength{\abovecaptionskip}{3.5pt plus 1pt minus 1pt}
+\setlength{\belowcaptionskip}{0pt}
+\setlength{\textfloatsep}{5pt plus 1.0pt minus 1.5pt}
+\setlength{\floatsep}{4pt plus 1.0pt minus 1.0pt}
+\setlength{\intextsep}{5pt plus 1.0pt minus 1.5pt}
+\setlength{\abovedisplayskip}{5pt plus 1.0pt minus 1.5pt}
+\setlength{\belowdisplayskip}{5pt plus 1.0pt minus 1.5pt}
+\setlength{\abovedisplayshortskip}{2pt plus 1.0pt minus 1.0pt}
+\setlength{\belowdisplayshortskip}{3pt plus 1.0pt minus 1.0pt}
+
+% Compact section headings and abstract (main text only)
+\def\section{\@startsection {section}{1}{\z@}{-1.4ex plus -0.3ex minus -.1ex}{0.8ex plus 0.2ex minus -.1ex}{\large\sc\raggedright}}
+\def\subsection{\@startsection{subsection}{2}{\z@}{-1.2ex plus -0.3ex minus -.1ex}{0.5ex plus .1ex}{\normalsize\sc\raggedright}}
+\def\subsubsection{\@startsection{subsubsection}{3}{\z@}{-1.0ex plus -0.2ex minus -.1ex}{0.3ex plus .1ex}{\normalsize\sc\raggedright}}
+\renewenvironment{abstract}{%
+  \vspace{-1.2ex}%
+  \centerline{\large\sc Abstract}%
+  \vspace{0.4ex}%
+  \begin{quote}%
+}{%
+  \par\end{quote}%
+  \vspace{-1.2ex}%
+}
+
+% Restore standard spacing when entering the appendix
+\g@addto@macro\appendix{%
+  \let\section\orig@section
+  \let\subsection\orig@subsection
+  \let\subsubsection\orig@subsubsection
+  \captionsetup{skip=10pt}%
+  \setlength{\abovecaptionskip}{\orig@abovecaptionskip}%
+  \setlength{\belowcaptionskip}{\orig@belowcaptionskip}%
+  \setlength{\textfloatsep}{\orig@textfloatsep}%
+  \setlength{\floatsep}{\orig@floatsep}%
+  \setlength{\intextsep}{\orig@intextsep}%
+  \setlength{\abovedisplayskip}{\orig@abovedisplayskip}%
+  \setlength{\belowdisplayskip}{\orig@belowdisplayskip}%
+  \setlength{\abovedisplayshortskip}{\orig@abovedisplayshortskip}%
+  \setlength{\belowdisplayshortskip}{\orig@belowdisplayshortskip}%
+}
+\makeatother
+```
+
+- **Main text only**: All compact overrides operate solely between `\begin{document}` and `\appendix`.
+- **Floats and captions**: Use `\captionsetup{skip=3.5pt}`, `\abovecaptionskip=3.5pt`, and `\belowcaptionskip=0pt` to eliminate bloated gaps around table and figure captions. Keep `\textfloatsep` (5pt) and `\floatsep` (4pt) tight to integrate floating environments smoothly with surrounding text.
+- **Math displays**: Tighten `\abovedisplayskip` and `\belowdisplayskip` to 5pt (and shortskips to 2pt/3pt) to avoid large vertical gaps around standalone equations.
+- **Headings**: Compress the above/below space for `\section`, `\subsection`, and `\subsubsection` via `\@startsection` while preserving the required fonts, small-caps, and alignments.
+- **Abstract**: Compress top/bottom vertical skips around the abstract block to allow the introduction to begin higher on page 1.
+- **Appendix restoration**: The appendix has no page limit and does not require spacing compression. Hooking the restoration into `\appendix` via `\g@addto@macro\appendix{...}` automatically recovers standard uncompressed spacing, headings, and float margins for all appendix sections, tables, and figures.
+
 ---
 
 ## Proof / Appendix Redirect Box
