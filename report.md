@@ -5,7 +5,7 @@ latexmk -pdf \
   -interaction=nonstopmode \
   -halt-on-error \
   -file-line-error \
-  main.tex
+  AttriSelect.tex
 scripts/organize_build_artifacts.sh
 ```
 <!-- AGENTS-IGNORE: END -->
