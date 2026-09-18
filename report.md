@@ -6,7 +6,7 @@ latexmk -pdf \
   -halt-on-error \
   -file-line-error \
   AttriSelect.tex
-scripts/organize_build_artifacts.sh
+bash scripts/organize_build_artifacts.sh
 ```
 <!-- AGENTS-IGNORE: END -->
 

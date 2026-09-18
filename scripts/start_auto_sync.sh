@@ -10,7 +10,7 @@ mkdir -p "$LOG_DIR"
 # List of target repositories: name|path|branch|threshold|interval
 TARGETS=(
     "safefix|$REPO_ROOT|master|2|30"
-    "27iclr|$REPO_ROOT/27iclr|main|2|30"
+    "27iclr|$REPO_ROOT/27iclr|main|1|30"
 )
 
 get_pid() {
