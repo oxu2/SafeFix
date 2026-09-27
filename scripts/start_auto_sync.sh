@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Manage automatic Git commit/pull-rebase/push daemons for SafeFix and 27iclr.
+# Manage automatic Git commit/pull-rebase/push daemons for the workspace repositories.
 set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -11,6 +11,7 @@ mkdir -p "$LOG_DIR"
 TARGETS=(
     "safefix|$REPO_ROOT|master|2|30"
     "27iclr|$REPO_ROOT/27iclr|main|1|30"
+    "camera_tmlr|$REPO_ROOT/Camera-TMLR-26-SafeFix|main|1|30"
 )
 
 get_pid() {
