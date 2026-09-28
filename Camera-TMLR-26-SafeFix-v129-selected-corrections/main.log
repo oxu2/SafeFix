@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.29 (TeX Live 2026) (preloaded format=pdflatex 2026.3.30)  28 SEP 2026 11:24
+This is pdfTeX, Version 3.141592653-2.6-1.40.29 (TeX Live 2026) (preloaded format=pdflatex 2026.3.30)  28 SEP 2026 11:25
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1197,17 +1197,13 @@ Underfull \vbox (badness 1077) has occurred while \output is active []
 LaTeX2e <2025-11-01>
 L3 programming layer <2026-01-19>
  ***********
-
-
-LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
-
 Package rerunfilecheck Info: File `main.out' has not changed.
 (rerunfilecheck)             Checksum: 5B9658DD267979F4480EC05899C960E2;8578.
  ) 
 Here is how much of TeX's memory you used:
  28995 strings out of 467525
  521668 string characters out of 5412664
- 971069 words of memory out of 5000000
+ 971070 words of memory out of 5000000
  56930 multiletter control sequences out of 15000+600000
  764259 words of font info for 270 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
