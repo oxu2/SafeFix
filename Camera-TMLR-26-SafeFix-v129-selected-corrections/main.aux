@@ -1,0 +1,289 @@
+\relax 
+\providecommand\hyper@newdestlabel[2]{}
+\providecommand\HyField@AuxAddToFields[1]{}
+\providecommand\HyField@AuxAddToCoFields[2]{}
+\citation{barbu2019objectnet,gao2023adaptive,leclerc20223db}
+\citation{buolamwini2018gender}
+\citation{gao2023adaptive,chen2023hibug,singla2024data}
+\citation{chen2023hibug}
+\citation{gao2023adaptive,singla2024data}
+\@writefile{toc}{\contentsline {section}{\numberline {1}Introduction}{1}{section.1}\protected@file@percent }
+\citation{gao2023adaptive}
+\citation{singla2024data}
+\citation{chen2023hibug}
+\citation{rombach2022high}
+\citation{jain2023latentfailures}
+\citation{bai2025qwen25vl,liu2023improvedllava}
+\citation{zhang2024distributionally,chen2023hibug}
+\citation{zhang2024distributionally,chen2023hibug}
+\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces SafeFix addresses model repair challenges by generating images that target specific failure attributes, such as snowy backgrounds. While prior work~\citep  {zhang2024distributionally, chen2023hibug} may produce data that are insufficiently represented in the source dataset, such methods often miss true failure attributes and cause distribution shifts. In contrast, SafeFix generates images under snowy conditions that maintain the same road geometry to enforce distribution alignment, keeping generated samples consistent with the original data distribution. This approach reduces bugs by improving training coverage of underrepresented semantic subpopulations where model failures stem from insufficient data. It ensures that the augmented dataset effectively repairs the model without introducing new errors.}}{2}{figure.caption.1}\protected@file@percent }
+\providecommand*\caption@xref[2]{\@setref\relax\@undefined{#1}}
+\newlabel{fig:teaser}{{1}{2}{SafeFix addresses model repair challenges by generating images that target specific failure attributes, such as snowy backgrounds. While prior work~\citep {zhang2024distributionally, chen2023hibug} may produce data that are insufficiently represented in the source dataset, such methods often miss true failure attributes and cause distribution shifts. In contrast, SafeFix generates images under snowy conditions that maintain the same road geometry to enforce distribution alignment, keeping generated samples consistent with the original data distribution. This approach reduces bugs by improving training coverage of underrepresented semantic subpopulations where model failures stem from insufficient data. It ensures that the augmented dataset effectively repairs the model without introducing new errors}{figure.caption.1}{}}
+\citation{chen2023hibug}
+\citation{chen2025hibug2}
+\citation{adebayo2020debugging,adebayo2022posthoc}
+\citation{vendrow2023dataset}
+\citation{kim2018tcav}
+\citation{leclerc20223db}
+\citation{rombach2022high}
+\citation{ho2022classifierfree}
+\citation{casper2022robust,augustin2022diffusion,boreiko2022sparse}
+\citation{fang2024data,huang2024data}
+\citation{trabucco2023effective,dunlap2023diversify}
+\citation{zhang2024distributionally}
+\citation{geirhos2019imagenet}
+\citation{jin2021background}
+\citation{mikolajczyk2023targeted,zhao2022adaptive,wang2024domain}
+\citation{alayrac2022flamingo}
+\citation{wang2024finetuned,chen2024self}
+\citation{eyuboglu2022rare}
+\citation{parashar2024neglected}
+\@writefile{toc}{\contentsline {section}{\numberline {2}Related Work}{3}{section.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {3}Background}{3}{section.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Attribute-based Model Debugging.}{3}{section*.3}\protected@file@percent }
+\citation{chen2023hibug}
+\citation{eyuboglu2022rare}
+\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces \textbf  {Overview of SafeFix\xspace  }. We propose a targeted model repair pipeline that identifies rare-case failures, generates attribute-specific synthetic images using a conditional diffusion model, filters them via a large vision--language model, and retrains the model to improve accuracy and fix rare-case bugs.}}{4}{figure.caption.2}\protected@file@percent }
+\newlabel{fig:overview}{{2}{4}{\textbf {Overview of \model }. We propose a targeted model repair pipeline that identifies rare-case failures, generates attribute-specific synthetic images using a conditional diffusion model, filters them via a large vision--language model, and retrains the model to improve accuracy and fix rare-case bugs}{figure.caption.2}{}}
+\@writefile{toc}{\contentsline {paragraph}{Underrepresented Semantic Subpopulations.}{4}{section*.4}\protected@file@percent }
+\newlabel{eq:rare}{{4}{4}{Underrepresented Semantic Subpopulations}{equation.4}{}}
+\newlabel{eq:low_acc_and_rare}{{5}{4}{Underrepresented Semantic Subpopulations}{equation.5}{}}
+\citation{zhang2023adding}
+\citation{openai2023gpt4}
+\citation{li2022blip}
+\citation{zhang2023adding}
+\@writefile{toc}{\contentsline {section}{\numberline {4}SafeFix\xspace  }{5}{section.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.1}Model Diagnosis for Identifying Rare-Case Bugs}{5}{subsection.4.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.2}Targeted Generation with Conditional Diffusion Models (CDMs)}{5}{subsection.4.2}\protected@file@percent }
+\citation{bai2025qwen25vl}
+\citation{liu2023improvedllava}
+\citation{lee2024genmix}
+\citation{liu2015faceattributes}
+\citation{chen2023hibug}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.3}Filtering via Large Vision--Language Models}{6}{subsection.4.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.4}Combining Generated Images with the Original Dataset and Retraining}{6}{subsection.4.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {5}Results}{6}{section.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.1}Experimental Setup}{6}{subsection.5.1}\protected@file@percent }
+\citation{deng2009imagenet}
+\citation{zhang2024distributionally}
+\citation{fang2024data}
+\citation{huang2024data}
+\citation{chen2023hibug}
+\citation{chen2023hibug}
+\citation{chen2025hibug2}
+\citation{manning1999foundations}
+\citation{he2016deep}
+\citation{dosovitskiy2020vit}
+\citation{radford2021learning}
+\citation{zhang2023adding}
+\citation{rombach2022high}
+\citation{xie2015holistically}
+\citation{song2021ddim}
+\citation{bai2025qwen25vl}
+\citation{liu2023improvedllava}
+\@writefile{lot}{\contentsline {table}{\numberline {1}{\ignorespaces RER (\%) on CelebA for varying numbers of added images, models, and methods. Ours (L) and Ours (Q) denote LLaVA-7B and Qwen-7B as the large vision--language model filters, respectively. The highest RER in each column is marked in bold.}}{8}{table.caption.5}\protected@file@percent }
+\newlabel{tab:rer_celeba}{{1}{8}{RER (\%) on CelebA for varying numbers of added images, models, and methods. Ours (L) and Ours (Q) denote LLaVA-7B and Qwen-7B as the large vision--language model filters, respectively. The highest RER in each column is marked in bold}{table.caption.5}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {2}{\ignorespaces RER (\%) on ImageNet10 under varying image counts, models, and methods.}}{8}{table.caption.6}\protected@file@percent }
+\newlabel{tab:rer_imagenet10}{{2}{8}{RER (\%) on ImageNet10 under varying image counts, models, and methods}{table.caption.6}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.2}Main Results}{8}{subsection.5.2}\protected@file@percent }
+\newlabel{sec:main_results}{{5.2}{8}{Main Results}{subsection.5.2}{}}
+\citation{chen2025hibug2}
+\citation{lin2014microsoft}
+\citation{he2017mask}
+\citation{geiger2012we}
+\citation{ultralytics_yolo}
+\@writefile{lot}{\contentsline {table}{\numberline {3}{\ignorespaces Test accuracy (\%) on ImageNet10 using ResNet-18.}}{9}{table.caption.7}\protected@file@percent }
+\newlabel{tab:imagenet_resnet_only}{{3}{9}{Test accuracy (\%) on ImageNet10 using ResNet-18}{table.caption.7}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.3}Extension to Pose Estimation and Object Detection}{9}{subsection.5.3}\protected@file@percent }
+\newlabel{sec:visual-task-results}{{5.3}{9}{Extension to Pose Estimation and Object Detection}{subsection.5.3}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces Comparison of generated images from different methods with edited attributes \texttt  {red hair}, \texttt  {brown skin}, and \texttt  {sad emotion}. HiBug\xspace  {} often produces invalid or imprecise samples due to the lack of conditional generation and semantic filtering. In contrast, SafeFix\xspace  {} generates attribute-faithful images that specifically target rare-case bugs. }}{10}{figure.caption.8}\protected@file@percent }
+\newlabel{fig:picture_compare}{{3}{10}{Comparison of generated images from different methods with edited attributes \texttt {red hair}, \texttt {brown skin}, and \texttt {sad emotion}. \hibug {} often produces invalid or imprecise samples due to the lack of conditional generation and semantic filtering. In contrast, \model {} generates attribute-faithful images that specifically target rare-case bugs}{figure.caption.8}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {4}{\ignorespaces Results on denser visual prediction tasks. Pose estimation reports COCO keypoint AP, and object detection reports mAP50-95.}}{10}{table.caption.9}\protected@file@percent }
+\newlabel{tab:visual_task_results}{{4}{10}{Results on denser visual prediction tasks. Pose estimation reports COCO keypoint AP, and object detection reports mAP50-95}{table.caption.9}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.4}SafeFix\xspace  Can Effectively Fix Rare-case Bugs}{10}{subsection.5.4}\protected@file@percent }
+\newlabel{fig:fix_bugs_a}{{4a}{11}{CelebA}{figure.caption.10}{}}
+\newlabel{sub@fig:fix_bugs_a}{{a}{11}{CelebA}{figure.caption.10}{}}
+\newlabel{fig:fix_bugs_b}{{4b}{11}{ImageNet10}{figure.caption.10}{}}
+\newlabel{sub@fig:fix_bugs_b}{{b}{11}{ImageNet10}{figure.caption.10}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces Accuracy comparison of ResNet-18 trained using different augmentation methods. The \textcolor {magenta}{dashed line} represents the average overall accuracy without additional synthetic training data.}}{11}{figure.caption.10}\protected@file@percent }
+\newlabel{fig:fix_bugs}{{4}{11}{Accuracy comparison of ResNet-18 trained using different augmentation methods. The \textcolor {magenta}{dashed line} represents the average overall accuracy without additional synthetic training data}{figure.caption.10}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.5}SafeFix\xspace  Directly Addresses Diagnosed Failure Modes, Not Merely Augments Data}{11}{subsection.5.5}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces Test accuracy (\%) improvements for red-hair vs.\ yellow-hair augmentation on CLIP.}}{11}{figure.caption.11}\protected@file@percent }
+\newlabel{fig:red_yellow_clip}{{5}{11}{Test accuracy (\%) improvements for red-hair vs.\ yellow-hair augmentation on CLIP}{figure.caption.11}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.6}Effect of Alternative Bug Slice Selections}{11}{subsection.5.6}\protected@file@percent }
+\citation{bai2025qwen25vl}
+\citation{liu2023improvedllava}
+\citation{chen2023hibug}
+\@writefile{lot}{\contentsline {table}{\numberline {5}{\ignorespaces RER (\%) for attribute-variant selections. Ours is the RH\_BS\_SE combination.}}{12}{table.caption.12}\protected@file@percent }
+\newlabel{tab:base_and_attribute_variants}{{5}{12}{RER (\%) for attribute-variant selections. Ours is the RH\_BS\_SE combination}{table.caption.12}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.7}Effect of the LVLM Filter and Human Audit}{12}{subsection.5.7}\protected@file@percent }
+\newlabel{sec:human_audit}{{5.7}{12}{Effect of the LVLM Filter and Human Audit}{subsection.5.7}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {6}{\ignorespaces \small  {Average error rates (\%) before and after LVLM filtering.}}}{12}{table.caption.13}\protected@file@percent }
+\newlabel{tab:lvlm_filter}{{6}{12}{\small {Average error rates (\%) before and after LVLM filtering.}}{table.caption.13}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.8}Ablation Study}{12}{subsection.5.8}\protected@file@percent }
+\newlabel{sec:ablation}{{5.8}{12}{Ablation Study}{subsection.5.8}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {7}{\ignorespaces Ablation on the impact of CDM and LVLM components at different scales, reported as RER (\%).}}{12}{table.caption.14}\protected@file@percent }
+\newlabel{tab:ablate_csd_lvlm}{{7}{12}{Ablation on the impact of CDM and LVLM components at different scales, reported as RER (\%)}{table.caption.14}{}}
+\bibdata{main}
+\bibcite{adebayo2020debugging}{{1}{2020}{{Adebayo et~al.}}{{Adebayo, Muelly, Liccardi, and Kim}}}
+\bibcite{adebayo2022posthoc}{{2}{2022}{{Adebayo et~al.}}{{Adebayo, Muelly, Abelson, and Kim}}}
+\bibcite{alayrac2022flamingo}{{3}{2022}{{Alayrac et~al.}}{{Alayrac, Donahue, Luc, Miech, Barr, Hasson, Lenc, Mensch, Millican, Reynolds, et~al.}}}
+\bibcite{augustin2022diffusion}{{4}{2022}{{Augustin et~al.}}{{Augustin, Boreiko, Croce, and Hein}}}
+\bibcite{bai2025qwen25vl}{{5}{2025}{{Bai et~al.}}{{Bai, Chen, Liu, Wang, Ge, Song, Dang, Wang, Wang, Tang, Zhong, Zhu, Yang, Li, Wan, Wang, Ding, Fu, Xu, Ye, Zhang, Xie, Cheng, Zhang, Yang, Xu, and Lin}}}
+\bibcite{barbu2019objectnet}{{6}{2019}{{Barbu et~al.}}{{Barbu, Mayo, Alverio, Luo, Wang, Gutfreund, Tenenbaum, and Katz}}}
+\bibcite{boreiko2022sparse}{{7}{2022}{{Boreiko et~al.}}{{Boreiko, Augustin, Croce, Berens, and Hein}}}
+\@writefile{toc}{\contentsline {section}{\numberline {6}Conclusion}{13}{section.6}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {7}Acknowledgement}{13}{section.7}\protected@file@percent }
+\bibcite{brooks2023instructpix2pix}{{8}{2023}{{Brooks et~al.}}{{Brooks, Holynski, and Efros}}}
+\bibcite{buolamwini2018gender}{{9}{2018}{{Buolamwini \& Gebru}}{{Buolamwini and Gebru}}}
+\bibcite{cao2019learning}{{10}{2019}{{Cao et~al.}}{{Cao, Wei, Gaidon, Arechiga, and Ma}}}
+\bibcite{casper2022robust}{{11}{2022}{{Casper et~al.}}{{Casper, Nadeau, Hadfield-Menell, and Kreiman}}}
+\bibcite{chen2023hibug}{{12}{2023}{{Chen et~al.}}{{Chen, Li, and Xu}}}
+\bibcite{chen2025hibug2}{{13}{2025}{{Chen et~al.}}{{Chen, Zhao, and Xu}}}
+\bibcite{chen2024self}{{14}{2024}{{Chen et~al.}}{{Chen, Wu, Chen, Liu, He, Xiong, Liu, Guo, and Huang}}}
+\bibcite{cui2019class}{{15}{2019}{{Cui et~al.}}{{Cui, Jia, Lin, Song, and Belongie}}}
+\bibcite{deng2009imagenet}{{16}{2009}{{Deng et~al.}}{{Deng, Dong, Socher, Li, Li, and Fei-Fei}}}
+\bibcite{dosovitskiy2020vit}{{17}{2020}{{Dosovitskiy et~al.}}{{Dosovitskiy, Beyer, Kolesnikov, Weissenborn, Zhai, Unterthiner, Dehghani, Minderer, Heigold, Gelly, et~al.}}}
+\bibcite{dunlap2023diversify}{{18}{2023}{{Dunlap et~al.}}{{Dunlap, Umino, Zhang, Yang, Gonzalez, and Darrell}}}
+\bibcite{eyuboglu2022rare}{{19}{2022}{{Eyuboglu et~al.}}{{Eyuboglu, Varma, Saab, Delbrouck, Lee-Messer, Dunnmon, Zou, and Ré}}}
+\bibcite{fang2024data}{{20}{2024}{{Fang et~al.}}{{Fang, Han, Zhang, Zhou, Hu, and Ye}}}
+\bibcite{gao2023adaptive}{{21}{2023}{{Gao et~al.}}{{Gao, Ilharco, Lundberg, and Ribeiro}}}
+\bibcite{geiger2012we}{{22}{2012}{{Geiger et~al.}}{{Geiger, Lenz, and Urtasun}}}
+\bibcite{geirhos2019imagenet}{{23}{2019}{{Geirhos et~al.}}{{Geirhos, Rubisch, Wichmann, Bethge, and Brendel}}}
+\bibcite{he2016deep}{{24}{2016}{{He et~al.}}{{He, Zhang, Ren, and Sun}}}
+\bibcite{he2017mask}{{25}{2017}{{He et~al.}}{{He, Gkioxari, Doll{\'a}r, and Girshick}}}
+\bibcite{heusel2017gans}{{26}{2017}{{Heusel et~al.}}{{Heusel, Ramsauer, Unterthiner, Nessler, and Hochreiter}}}
+\bibcite{ho2022classifierfree}{{27}{2022}{{Ho \& Salimans}}{{Ho and Salimans}}}
+\bibcite{huang2024data}{{28}{2024}{{Huang et~al.}}{{Huang, Geng, Wang, Xiong, and Li}}}
+\bibcite{jain2023latentfailures}{{29}{2023}{{Jain et~al.}}{{Jain, Lawrence, Moitra, and Madry}}}
+\bibcite{jin2021background}{{30}{2021}{{Jin \& Rinard}}{{Jin and Rinard}}}
+\bibcite{ultralytics_yolo}{{31}{2023}{{Jocher et~al.}}{{Jocher, Qiu, and Chaurasia}}}
+\bibcite{kim2018tcav}{{32}{2018}{{Kim et~al.}}{{Kim, Wattenberg, Gilmer, Cai, Wexler, Viegas, and Sayres}}}
+\bibcite{kingma2015adam}{{33}{2015}{{Kingma \& Ba}}{{Kingma and Ba}}}
+\bibcite{leclerc20223db}{{34}{2022}{{Leclerc et~al.}}{{Leclerc, Salman, Ilyas, Vemprala, Engstrom, Vineet, Xiao, Zhang, Santurkar, Yang, Kapoor, and Madry}}}
+\bibcite{lee2024genmix}{{35}{2024}{{Lee et~al.}}{{Lee, Lee, and Hong}}}
+\bibcite{li2022blip}{{36}{2022}{{Li et~al.}}{{Li, Li, Xiong, and Hoi}}}
+\bibcite{lin2014microsoft}{{37}{2014}{{Lin et~al.}}{{Lin, Maire, Belongie, Hays, Perona, Ramanan, Doll{\'a}r, and Zitnick}}}
+\bibcite{lin2017focal}{{38}{2017}{{Lin et~al.}}{{Lin, Goyal, Girshick, He, and Doll{\'a}r}}}
+\bibcite{liu2023improvedllava}{{39}{2023}{{Liu et~al.}}{{Liu, Li, Li, and Lee}}}
+\bibcite{liu2015faceattributes}{{40}{2015}{{Liu et~al.}}{{Liu, Luo, Wang, and Tang}}}
+\bibcite{manning1999foundations}{{41}{1999}{{Manning \& Schutze}}{{Manning and Schutze}}}
+\bibcite{mikolajczyk2023targeted}{{42}{2023}{{Mikołajczyk-Bareła et~al.}}{{Mikołajczyk-Bareła, Ferlin, and Grochowski}}}
+\bibcite{openai2023gpt4}{{43}{2023}{{OpenAI}}{{}}}
+\bibcite{parashar2024neglected}{{44}{2024}{{Parashar et~al.}}{{Parashar, Lin, Liu, Dong, Li, Ramanan, Caverlee, and Kong}}}
+\bibcite{radford2021learning}{{45}{2021}{{Radford et~al.}}{{Radford, Kim, Hallacy, Ramesh, Goh, Agarwal, Sastry, Askell, Mishkin, Clark, et~al.}}}
+\bibcite{rombach2022high}{{46}{2022}{{Rombach et~al.}}{{Rombach, Blattmann, Lorenz, Esser, and Ommer}}}
+\bibcite{singla2024data}{{47}{2024}{{Singla et~al.}}{{Singla, Chegini, Moayeri, and Feizi}}}
+\bibcite{song2021ddim}{{48}{2021}{{Song et~al.}}{{Song, Meng, and Ermon}}}
+\bibcite{trabucco2023effective}{{49}{2023}{{Trabucco et~al.}}{{Trabucco, Doherty, Gurinas, and Salakhutdinov}}}
+\bibcite{vendrow2023dataset}{{50}{2023}{{Vendrow et~al.}}{{Vendrow, Jain, Engstrom, and Madry}}}
+\bibcite{wang2024finetuned}{{51}{2024{a}}{{Wang et~al.}}{{Wang, Mrini, Yang, Kumar, Tian, Yan, and Wang}}}
+\bibcite{wang2024domain}{{52}{2024{b}}{{Wang et~al.}}{{Wang, Chung, Wu, and De~la Torre}}}
+\bibcite{xie2015holistically}{{53}{2015}{{Xie \& Tu}}{{Xie and Tu}}}
+\bibcite{zhang2024distributionally}{{54}{2024}{{Zhang et~al.}}{{Zhang, He, Kuang, Liu, Chen, Wu, Xiao, and Zhang}}}
+\bibcite{zhang2023adding}{{55}{2023}{{Zhang et~al.}}{{Zhang, Rao, and Agrawala}}}
+\bibcite{zhang2018unreasonable}{{56}{2018}{{Zhang et~al.}}{{Zhang, Isola, Efros, Shechtman, and Wang}}}
+\bibcite{zhao2022adaptive}{{57}{2022}{{Zhao et~al.}}{{Zhao, Mi, Wu, Jiang, Khan, and Chen}}}
+\bibstyle{tmlr}
+\citation{chen2023hibug}
+\@writefile{toc}{\contentsline {section}{\numberline {A}Algorithm}{17}{appendix.A}\protected@file@percent }
+\@writefile{loa}{\contentsline {algorithm}{\numberline {1}{\ignorespaces SafeFix: Targeted Model Repair via Controlled Image Generation}}{17}{algorithm.1}\protected@file@percent }
+\newlabel{alg:safefix}{{1}{17}{SafeFix: Targeted Model Repair via Controlled Image Generation}{algorithm.1}{}}
+\citation{zhang2023adding}
+\citation{xie2015holistically}
+\@writefile{toc}{\contentsline {section}{\numberline {B}Attribute Assignment Details}{18}{appendix.B}\protected@file@percent }
+\newlabel{sec:attribute_assignment}{{B}{18}{Attribute Assignment Details}{appendix.B}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {C}Conditional Diffusion Model Details}{18}{appendix.C}\protected@file@percent }
+\newlabel{appendix:cdm}{{C}{18}{Conditional Diffusion Model Details}{appendix.C}{}}
+\citation{bai2025qwen25vl}
+\citation{liu2023improvedllava}
+\@writefile{toc}{\contentsline {section}{\numberline {D}Large Vision--Language Model (LVLM) Details}{19}{appendix.D}\protected@file@percent }
+\newlabel{app:lvlm-details}{{D}{19}{Large Vision--Language Model (LVLM) Details}{appendix.D}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {D.1}LVLM Query Format}{19}{subsection.D.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {D.2}Additional Analysis for Filtering Attributes}{19}{subsection.D.2}\protected@file@percent }
+\newlabel{qwen_vs_llava}{{D.2}{19}{Additional Analysis for Filtering Attributes}{subsection.D.2}{}}
+\citation{he2016deep}
+\citation{dosovitskiy2020vit}
+\citation{radford2021learning}
+\citation{kingma2015adam}
+\citation{openai2023gpt4}
+\citation{li2022blip}
+\citation{chen2023hibug}
+\citation{zhang2023adding}
+\citation{rombach2022high}
+\citation{xie2015holistically}
+\citation{song2021ddim}
+\citation{bai2025qwen25vl}
+\citation{liu2023improvedllava}
+\@writefile{lot}{\contentsline {table}{\numberline {8}{\ignorespaces Cross-model LVLM validation of generated samples.}}{20}{table.caption.16}\protected@file@percent }
+\newlabel{tab:cross_model_lvlm_validation}{{8}{20}{Cross-model LVLM validation of generated samples}{table.caption.16}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {D.3}Cross-Model LVLM Validation}{20}{subsection.D.3}\protected@file@percent }
+\newlabel{sec:cross_model_lvlm_validation}{{D.3}{20}{Cross-Model LVLM Validation}{subsection.D.3}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {E}Additional Implementation Details}{20}{appendix.E}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Data augmentation baseline.}{21}{section*.17}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {F}Accuracy Results}{21}{appendix.F}\protected@file@percent }
+\newlabel{sec:appendix_acc}{{F}{21}{Accuracy Results}{appendix.F}{}}
+\citation{chen2023hibug}
+\@writefile{lot}{\contentsline {table}{\numberline {9}{\ignorespaces Test accuracy (\%) on CelebA for varying numbers of added images, models, and methods. Ours (L) and Ours (Q) denote using LLaVA-7B and Qwen-7B as the large vision--language model filter, respectively.}}{22}{table.caption.18}\protected@file@percent }
+\newlabel{tab:celeba_results}{{9}{22}{Test accuracy (\%) on CelebA for varying numbers of added images, models, and methods. Ours (L) and Ours (Q) denote using LLaVA-7B and Qwen-7B as the large vision--language model filter, respectively}{table.caption.18}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {10}{\ignorespaces Test accuracy (\%) on ImageNet10 for varying numbers of added images, models, and methods. Ours (L) and Ours (Q) denote using LLaVA-7B and Qwen-7B as the large vision--language model filter, respectively.}}{22}{table.caption.19}\protected@file@percent }
+\newlabel{tab:imagenet_results}{{10}{22}{Test accuracy (\%) on ImageNet10 for varying numbers of added images, models, and methods. Ours (L) and Ours (Q) denote using LLaVA-7B and Qwen-7B as the large vision--language model filter, respectively}{table.caption.19}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {G}Large-Scale Settings in Main Results}{22}{appendix.G}\protected@file@percent }
+\newlabel{sec:largescale}{{G}{22}{Large-Scale Settings in Main Results}{appendix.G}{}}
+\@writefile{toc}{\contentsline {paragraph}{Interpretation.}{22}{section*.20}\protected@file@percent }
+\citation{vendrow2023dataset}
+\citation{jain2023latentfailures}
+\citation{lin2017focal}
+\citation{cui2019class}
+\citation{cao2019learning}
+\citation{zhang2018unreasonable}
+\citation{radford2021learning}
+\citation{heusel2017gans}
+\@writefile{lot}{\contentsline {table}{\numberline {11}{\ignorespaces Comparison with targeted generation repair baselines.}}{23}{table.caption.21}\protected@file@percent }
+\newlabel{tab:targeted_repair_baselines}{{11}{23}{Comparison with targeted generation repair baselines}{table.caption.21}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {12}{\ignorespaces Comparison with long-tail learning baselines using only original training data.}}{23}{table.caption.22}\protected@file@percent }
+\newlabel{tab:ltl_baselines}{{12}{23}{Comparison with long-tail learning baselines using only original training data}{table.caption.22}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {H}Additional Experiments}{23}{appendix.H}\protected@file@percent }
+\newlabel{sec:additional-experiments}{{H}{23}{Additional Experiments}{appendix.H}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {H.1}Comparison with Targeted Generation Repair Baselines}{23}{subsection.H.1}\protected@file@percent }
+\newlabel{sec:targeted_generation_baselines}{{H.1}{23}{Comparison with Targeted Generation Repair Baselines}{subsection.H.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {H.2}Comparison with Long-Tail Learning Baselines}{23}{subsection.H.2}\protected@file@percent }
+\newlabel{sec:ltl_baselines}{{H.2}{23}{Comparison with Long-Tail Learning Baselines}{subsection.H.2}{}}
+\citation{zhang2023adding}
+\citation{brooks2023instructpix2pix}
+\citation{brooks2023instructpix2pix}
+\citation{brooks2023instructpix2pix}
+\@writefile{toc}{\contentsline {subsection}{\numberline {H.3}Generation Quality Analysis}{24}{subsection.H.3}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {13}{\ignorespaces Generation-quality metrics for HiBug\xspace  {} vs.\ SafeFix\xspace  {} on ImageNet10 (pink-color + fabric-texture). ``Real->Gen'' indicates the Frechet distance computed between the real and generated image feature distributions; lower FID means the generated set is closer to the real distribution. Arrows indicate preference: $\uparrow $ higher is better; $\downarrow $ lower is better.}}{24}{table.caption.23}\protected@file@percent }
+\newlabel{tab:gen_metrics}{{13}{24}{Generation-quality metrics for \hibug {} vs.\ \model {} on ImageNet10 (pink-color + fabric-texture). ``Real->Gen'' indicates the Frechet distance computed between the real and generated image feature distributions; lower FID means the generated set is closer to the real distribution. Arrows indicate preference: $\uparrow $ higher is better; $\downarrow $ lower is better}{table.caption.23}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {H.4}SafeFix with alternative conditional diffusion models}{24}{subsection.H.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {H.5}Qualitative Analysis of Attribute Editing and Failure Cases}{24}{subsection.H.5}\protected@file@percent }
+\newlabel{sec:qualitative-attribute-edit}{{H.5}{24}{Qualitative Analysis of Attribute Editing and Failure Cases}{subsection.H.5}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {14}{\ignorespaces RER (\%) using different conditional diffusion models in the targeted generation stage. InstructPix2Pix~\citep  {brooks2023instructpix2pix} serves as an alternative generator and shows strong repair performance.}}{25}{table.caption.24}\protected@file@percent }
+\newlabel{tab:instructpix2pix_vs_controlnet}{{14}{25}{RER (\%) using different conditional diffusion models in the targeted generation stage. InstructPix2Pix~\citep {brooks2023instructpix2pix} serves as an alternative generator and shows strong repair performance}{table.caption.24}{}}
+\newlabel{fig:celeba-original}{{6a}{25}{Original CelebA samples}{figure.caption.25}{}}
+\newlabel{sub@fig:celeba-original}{{a}{25}{Original CelebA samples}{figure.caption.25}{}}
+\newlabel{fig:celeba-ours}{{6b}{25}{Attribute-modified images from \model }{figure.caption.25}{}}
+\newlabel{sub@fig:celeba-ours}{{b}{25}{Attribute-modified images from \model }{figure.caption.25}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {6}{\ignorespaces Comparison between original CelebA images (left) and attribute-edited outputs (right) generated by SafeFix\xspace  .}}{25}{figure.caption.25}\protected@file@percent }
+\newlabel{fig:grid-celeba-comparison}{{6}{25}{Comparison between original CelebA images (left) and attribute-edited outputs (right) generated by \model }{figure.caption.25}{}}
+\newlabel{fig:imagenet-original}{{7a}{25}{Original ImageNet10 samples}{figure.caption.26}{}}
+\newlabel{sub@fig:imagenet-original}{{a}{25}{Original ImageNet10 samples}{figure.caption.26}{}}
+\newlabel{fig:imagenet-ours}{{7b}{25}{Attribute-modified images from \model }{figure.caption.26}{}}
+\newlabel{sub@fig:imagenet-ours}{{b}{25}{Attribute-modified images from \model }{figure.caption.26}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {7}{\ignorespaces Comparison between original ImageNet10 images (left) and attribute-edited outputs (right) by SafeFix\xspace  targeting pink color and fabric texture.}}{25}{figure.caption.26}\protected@file@percent }
+\newlabel{fig:grid-imagenet-comparison}{{7}{25}{Comparison between original ImageNet10 images (left) and attribute-edited outputs (right) by \model targeting pink color and fabric texture}{figure.caption.26}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {H.6}Evaluating Synthetic Data as a Standalone Training Set}{25}{subsection.H.6}\protected@file@percent }
+\newlabel{sec:synthetic_standalone}{{H.6}{25}{Evaluating Synthetic Data as a Standalone Training Set}{subsection.H.6}{}}
+\citation{chen2025hibug2}
+\@writefile{lot}{\contentsline {table}{\numberline {15}{\ignorespaces Test accuracy (\%) on $N$ synthetic images, trained from scratch. The $N$ images were split into an 8:1:1 train--val--test partition for this experiment.}}{26}{table.caption.27}\protected@file@percent }
+\newlabel{tab:valsplit_retrain}{{15}{26}{Test accuracy (\%) on $N$ synthetic images, trained from scratch. The $N$ images were split into an 8:1:1 train--val--test partition for this experiment}{table.caption.27}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {16}{\ignorespaces Effect of rare threshold $\rho $ on the number of identified bugs before and after repair.}}{26}{table.caption.28}\protected@file@percent }
+\newlabel{tab:rho_threshold}{{16}{26}{Effect of rare threshold $\rho $ on the number of identified bugs before and after repair}{table.caption.28}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {17}{\ignorespaces Effect of accuracy-difference threshold $\epsilon $ on the number of identified bugs before and after repair.}}{26}{table.caption.29}\protected@file@percent }
+\newlabel{tab:epsilon_threshold}{{17}{26}{Effect of accuracy-difference threshold $\epsilon $ on the number of identified bugs before and after repair}{table.caption.29}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {H.7}Threshold settings for identifying rare-case slices}{26}{subsection.H.7}\protected@file@percent }
+\newlabel{sec:threshold}{{H.7}{26}{Threshold settings for identifying rare-case slices}{subsection.H.7}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {I}Future Work}{26}{appendix.I}\protected@file@percent }
+\newlabel{sec:future_work}{{I}{26}{Future Work}{appendix.I}{}}
+\gdef \@abspage@last{27}
