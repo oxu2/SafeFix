@@ -25,6 +25,7 @@
 \definecolor{colorP}{HTML}{D62728}
 \definecolor{colorC}{HTML}{9573A6}
 \usepackage{titletoc}       % appendix TOC
+\usepackage{multicol}       % two-column appendix outline
 \usepackage{amsfonts}       % blackboard math symbols
 \usepackage{amsmath}        % text and math blocks
 \usepackage{nicefrac}       % compact symbols for 1/2, etc.
@@ -554,8 +555,12 @@ The reliability of VLM-assigned attributes was verified through an independent b
 
 \clearpage
 \appendix
-\maketitlesupplementary
-
+% Set the supplementary title and outline across the full page width.
+\twocolumn[
+\begin{center}
+    \Large\textbf{\thetitle}\\[0.5em]
+    Supplementary Material
+\end{center}
 \begin{tcolorbox}[
     colback=gray!2!white,
     colframe=gray!20!white,
@@ -570,9 +575,12 @@ The reliability of VLM-assigned attributes was verified through an independent b
     drop shadow
 ]
 \startcontents[appendix]
+\begin{multicols}{2}
 \printcontents[appendix]{l}{1}{\setcounter{tocdepth}{2}}
+\end{multicols}
 \end{tcolorbox}
-\clearpage
+\vspace{1em}
+]
 
 \input{appendix/glossary.tex}
 \FloatBarrier
