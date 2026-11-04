@@ -1,7 +1,7 @@
 \section{\modelplain Algorithm}
 \label{app:attriselect-algorithm}
 
-\begin{figure}[htbp]
+\begin{figure*}[t]
 \begin{tcolorbox}[
     colback=white,
     colframe=myblue!75!black,
@@ -38,6 +38,6 @@
 \State \Return $\dataset_{\mathrm{sel}}^{\mathrm{src}}$
 \end{algorithmic}
 \end{tcolorbox}
-\end{figure}
+\end{figure*}
 
 The displayed loop is conceptual. The implementation computes each base score once, sorts candidates within each active group, and updates the selection using the current head of each group queue; it does not recompute a score for every unselected candidate at every iteration. With $N$ source candidates, $G$ active groups, and $K=n_{\mathrm{select}}$ selected examples, the corresponding queue organization has $O(N|\selattrs|+N\log N+KG)$ work after metadata lookup and $O(N)$ storage. Consequently, the measured selection time is governed by one-time attribute counting/scoring, group-wise sorting, and group-head updates. The generated repair pool is fixed during selection and affects \model only through the effective attribute counts in the frequency-penalty term, so all compared selectors use the same generated-data budget.

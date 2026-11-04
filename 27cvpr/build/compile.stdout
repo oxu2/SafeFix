@@ -4,12 +4,12 @@ Latexmk: This is Latexmk, John Collins, 9 March 2026. Version 4.88.
 Latexmk: applying rule 'pdflatex'...
 Rule 'pdflatex':  Reasons for rerun
 Changed files or newly in use/created:
-  appendix/attribute_slice_heatmaps.tex
-  appendix/tsne.tex
+  appendix/algorithm.tex
+  appendix/attribute_details.tex
   main.tex
 Category 'changed_user':
-  appendix/attribute_slice_heatmaps.tex
-  appendix/tsne.tex
+  appendix/algorithm.tex
+  appendix/attribute_details.tex
   main.tex
 
 ------------
@@ -120,6 +120,8 @@ fg))
 (/people/cs/o/oxx220000/texlive/2026/texmf-dist/tex/latex/wrapfig/wrapfig.sty)
 (/people/cs/o/oxx220000/texlive/2026/texmf-dist/tex/latex/multirow/multirow.sty
 ) (/people/cs/o/oxx220000/texlive/2026/texmf-dist/tex/latex/float/float.sty)
+(/people/cs/o/oxx220000/texlive/2026/texmf-dist/tex/latex/placeins/placeins.sty
+)
 (/people/cs/o/oxx220000/texlive/2026/texmf-dist/tex/latex/pgf/frontendlayer/tik
 z.sty
 (/people/cs/o/oxx220000/texlive/2026/texmf-dist/tex/latex/pgf/basiclayer/pgf.st
@@ -391,24 +393,28 @@ show/heatmap_.pdf>] [7]
 [9]) [10] (build/main.ptc)
 Overfull \vbox (37.83759pt too high) has occurred while \output is active
 Overfull \vbox (37.83759pt too high) has occurred while \output is active
-[11] (./appendix/glossary.tex) (./appendix/implementation.tex [12] [13])
-(./appendix/algorithm.tex) (./appendix/attribute_details.tex)
-(./appendix/main_metric_tables.tex [14])
-(./appendix/additional_repair_controls.tex [15] [16])
-(./appendix/attribute_slice_heatmaps.tex) (./appendix/vlm_audit.tex [17]
-[18]) (./appendix/image_generation.tex [19])
-(./appendix/robustness_sensitivity.tex [20])
-(./appendix/source_only_selection.tex [21] [22] [23]) (./appendix/theory.tex
-[24] [25]) (./appendix/hyperparameters.tex) (./appendix/coco_ablation.tex
-[26]) (./appendix/tsne.tex [27] [28] [29] [30] [31] [32 <./figures/show/coco_ra
-tio0p5_show_heatmap.pdf>] [33 <./figures/ratio0p1_selection_tsne/coco_brown_rai
-ny_ratio0p1_selection_tsne.pdf> <./figures/ratio0p1_selection_tsne/kitti_red_cl
-oudy_ratio0p1_selection_tsne.pdf>] [34 <./figures/ratio0p05_selection_tsne/coco
-_brown_rainy_ratio0p05_selection_tsne.pdf>] [35 <./figures/ratio0p05_selection_
-tsne/coco_brown_rainy_ratio0p05_selection_tsne_overlay.pdf>])
-(./appendix/limitations.tex [36]) (build/main.aux)
+[11] (./appendix/glossary.tex) [12] (./appendix/implementation.tex [13])
+[14] [15] [16] (./appendix/algorithm.tex) [17]
+(./appendix/attribute_details.tex) [18] (./appendix/main_metric_tables.tex)
+[19] [20] (./appendix/additional_repair_controls.tex [21]) [22] [23] [24]
+[25] [26] [27] (./appendix/attribute_slice_heatmaps.tex) [28] [29 <./figures/sh
+ow/coco_ratio0p5_show_heatmap.pdf>] (./appendix/vlm_audit.tex) [30]
+(./appendix/image_generation.tex) [31] [32]
+(./appendix/robustness_sensitivity.tex) [33] [34] [35]
+(./appendix/source_only_selection.tex) [36] [37] (./appendix/theory.tex
+[38]) (./appendix/hyperparameters.tex) [39] [40] (./appendix/coco_ablation.tex)
+ [41] (./appendix/tsne.tex [42] [43 <./figures/ratio0p1_selection_tsne/coco_bro
+wn_rainy_ratio0p1_selection_tsne.pdf> <./figures/ratio0p1_selection_tsne/kitti_
+red_cloudy_ratio0p1_selection_tsne.pdf>] [44 <./figures/ratio0p05_selection_tsn
+e/coco_brown_rainy_ratio0p05_selection_tsne.pdf>] [45 <./figures/ratio0p05_sele
+ction_tsne/coco_brown_rainy_ratio0p05_selection_tsne_overlay.pdf>])
+(./appendix/limitations.tex [46]) (build/main.aux)
 
 LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
+
+
+Package rerunfilecheck Warning: File `main.brf' has changed.
+(rerunfilecheck)                Rerun to get bibliographical references right.
 
  )
 (see the transcript file for additional information)</people/cs/o/oxx220000/tex
@@ -442,12 +448,13 @@ nts/type1/urw/times/utmb8a.pfb></people/cs/o/oxx220000/texlive/2026/texmf-dist/
 fonts/type1/urw/times/utmbi8a.pfb></people/cs/o/oxx220000/texlive/2026/texmf-di
 st/fonts/type1/urw/times/utmr8a.pfb></people/cs/o/oxx220000/texlive/2026/texmf-
 dist/fonts/type1/urw/times/utmri8a.pfb>
-Output written on build/main.pdf (36 pages, 5126060 bytes).
+Output written on build/main.pdf (46 pages, 5128761 bytes).
 Transcript written on build/main.log.
 Latexmk: Getting log file 'build/main.log'
 Latexmk: Examining 'build/main.fls'
 Latexmk: Examining 'build/main.log'
 Latexmk: Found input bbl file 'build/main.bbl'
+Latexmk: References changed.
 Latexmk: References changed.
 Latexmk: Log file says output to 'build/main.pdf'
 Latexmk: Using bibtex to make bibliography file(s).
@@ -479,6 +486,7 @@ Latexmk: applying rule 'pdflatex'...
 Rule 'pdflatex':  Reasons for rerun
 Changed files or newly in use/created:
   build/main.aux
+  build/main.brf
   build/main.ptc
 
 ------------
@@ -589,6 +597,8 @@ fg))
 (/people/cs/o/oxx220000/texlive/2026/texmf-dist/tex/latex/wrapfig/wrapfig.sty)
 (/people/cs/o/oxx220000/texlive/2026/texmf-dist/tex/latex/multirow/multirow.sty
 ) (/people/cs/o/oxx220000/texlive/2026/texmf-dist/tex/latex/float/float.sty)
+(/people/cs/o/oxx220000/texlive/2026/texmf-dist/tex/latex/placeins/placeins.sty
+)
 (/people/cs/o/oxx220000/texlive/2026/texmf-dist/tex/latex/pgf/frontendlayer/tik
 z.sty
 (/people/cs/o/oxx220000/texlive/2026/texmf-dist/tex/latex/pgf/basiclayer/pgf.st
@@ -860,22 +870,22 @@ show/heatmap_.pdf>] [7]
 [9]) [10] (build/main.ptc)
 Overfull \vbox (37.83759pt too high) has occurred while \output is active
 Overfull \vbox (37.83759pt too high) has occurred while \output is active
-[11] (./appendix/glossary.tex) (./appendix/implementation.tex [12] [13])
-(./appendix/algorithm.tex) (./appendix/attribute_details.tex)
-(./appendix/main_metric_tables.tex [14])
-(./appendix/additional_repair_controls.tex [15] [16])
-(./appendix/attribute_slice_heatmaps.tex) (./appendix/vlm_audit.tex [17]
-[18]) (./appendix/image_generation.tex [19])
-(./appendix/robustness_sensitivity.tex [20])
-(./appendix/source_only_selection.tex [21] [22] [23]) (./appendix/theory.tex
-[24] [25]) (./appendix/hyperparameters.tex) (./appendix/coco_ablation.tex
-[26]) (./appendix/tsne.tex [27] [28] [29] [30] [31] [32 <./figures/show/coco_ra
-tio0p5_show_heatmap.pdf>] [33 <./figures/ratio0p1_selection_tsne/coco_brown_rai
-ny_ratio0p1_selection_tsne.pdf> <./figures/ratio0p1_selection_tsne/kitti_red_cl
-oudy_ratio0p1_selection_tsne.pdf>] [34 <./figures/ratio0p05_selection_tsne/coco
-_brown_rainy_ratio0p05_selection_tsne.pdf>] [35 <./figures/ratio0p05_selection_
-tsne/coco_brown_rainy_ratio0p05_selection_tsne_overlay.pdf>])
-(./appendix/limitations.tex [36]) (build/main.aux) )
+[11] (./appendix/glossary.tex) [12] (./appendix/implementation.tex [13])
+[14] [15] [16] (./appendix/algorithm.tex) [17]
+(./appendix/attribute_details.tex) [18] (./appendix/main_metric_tables.tex)
+[19] [20] (./appendix/additional_repair_controls.tex [21]) [22] [23] [24]
+[25] [26] [27] (./appendix/attribute_slice_heatmaps.tex) [28] [29 <./figures/sh
+ow/coco_ratio0p5_show_heatmap.pdf>] (./appendix/vlm_audit.tex) [30]
+(./appendix/image_generation.tex) [31] [32]
+(./appendix/robustness_sensitivity.tex) [33] [34] [35]
+(./appendix/source_only_selection.tex) [36] [37] (./appendix/theory.tex
+[38]) (./appendix/hyperparameters.tex) [39] [40] (./appendix/coco_ablation.tex)
+ [41] (./appendix/tsne.tex [42] [43 <./figures/ratio0p1_selection_tsne/coco_bro
+wn_rainy_ratio0p1_selection_tsne.pdf> <./figures/ratio0p1_selection_tsne/kitti_
+red_cloudy_ratio0p1_selection_tsne.pdf>] [44 <./figures/ratio0p05_selection_tsn
+e/coco_brown_rainy_ratio0p05_selection_tsne.pdf>] [45 <./figures/ratio0p05_sele
+ction_tsne/coco_brown_rainy_ratio0p05_selection_tsne_overlay.pdf>])
+(./appendix/limitations.tex [46]) (build/main.aux) )
 (see the transcript file for additional information)</people/cs/o/oxx220000/tex
 live/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></people/cs/o/ox
 x220000/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></peo
@@ -907,7 +917,7 @@ nts/type1/urw/times/utmb8a.pfb></people/cs/o/oxx220000/texlive/2026/texmf-dist/
 fonts/type1/urw/times/utmbi8a.pfb></people/cs/o/oxx220000/texlive/2026/texmf-di
 st/fonts/type1/urw/times/utmr8a.pfb></people/cs/o/oxx220000/texlive/2026/texmf-
 dist/fonts/type1/urw/times/utmri8a.pfb>
-Output written on build/main.pdf (36 pages, 5126035 bytes).
+Output written on build/main.pdf (46 pages, 5128642 bytes).
 Transcript written on build/main.log.
 Latexmk: Getting log file 'build/main.log'
 Latexmk: Examining 'build/main.fls'
