@@ -7,7 +7,7 @@ Attribute assignments for CelebA use the CelebA annotations in the SafeFix setti
 \noindent\textbf{COCO and KITTI.}
 For COCO pose estimation and KITTI object detection, we follow HiBug2~\citep{chen2025hibug2} and use task-specific closed-set attribute fields proposed before source selection. We take KITTI as a concrete example. GPT-5~\citep{openai2025gpt5} proposes 10 representative object-detection categories, listed in Figure~\ref{tab:kitti-attribute-corpus}. Each category has a predefined set of candidate values, a natural-language prompt template, and a corresponding query directed to Qwen3-VL~\citep{bai2025qwen3vl}. The repair fields used in the main KITTI experiments are color and weather; the remaining fields are retained for broader slice analysis and diagnostics.
 
-\begin{figure}[htbp]
+\begin{figure*}[t]
 \centering
 \caption{KITTI object-detection attribute corpus used for VLM assignment.}
 \label{tab:kitti-attribute-corpus}
@@ -61,5 +61,5 @@ For COCO pose estimation and KITTI object detection, we follow HiBug2~\citep{che
     \textcolor{gray}{\textbf{Prompt:}} \texttt{a driving scene in \#1 weather}
 \end{description}
 \end{tcolorbox}
-\end{figure}
+\end{figure*}
 

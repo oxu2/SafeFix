@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.29 (TeX Live 2026) (preloaded format=pdflatex 2026.3.30)  3 NOV 2026 22:36
+This is pdfTeX, Version 3.141592653-2.6-1.40.29 (TeX Live 2026) (preloaded format=pdflatex 2026.3.30)  3 NOV 2026 22:37
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -503,6 +503,9 @@ Package: float 2001/11/08 v1.3d Float enhancements (AL)
 \float@box=\box63
 \@float@everytoks=\toks41
 \@floatcapt=\box64
+)
+(/people/cs/o/oxx220000/texlive/2026/texmf-dist/tex/latex/placeins/placeins.sty
+Package: placeins 2005/04/18  v 2.2
 )
 (/people/cs/o/oxx220000/texlive/2026/texmf-dist/tex/latex/pgf/frontendlayer/tik
 z.sty
@@ -1102,24 +1105,24 @@ File: l3backend-pdftex.def 2025-10-09 L3 backend support: PDF output (pdfTeX)
 ) (build/main.aux)
 \openout1 = `main.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 111.
-LaTeX Font Info:    ... okay on input line 111.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 111.
-LaTeX Font Info:    ... okay on input line 111.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 111.
-LaTeX Font Info:    ... okay on input line 111.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 111.
-LaTeX Font Info:    ... okay on input line 111.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 111.
-LaTeX Font Info:    ... okay on input line 111.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 111.
-LaTeX Font Info:    ... okay on input line 111.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 111.
-LaTeX Font Info:    ... okay on input line 111.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 111.
-LaTeX Font Info:    ... okay on input line 111.
-LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 111.
-LaTeX Font Info:    ... okay on input line 111.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 112.
+LaTeX Font Info:    ... okay on input line 112.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 112.
+LaTeX Font Info:    ... okay on input line 112.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 112.
+LaTeX Font Info:    ... okay on input line 112.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 112.
+LaTeX Font Info:    ... okay on input line 112.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 112.
+LaTeX Font Info:    ... okay on input line 112.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 112.
+LaTeX Font Info:    ... okay on input line 112.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 112.
+LaTeX Font Info:    ... okay on input line 112.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 112.
+LaTeX Font Info:    ... okay on input line 112.
+LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 112.
+LaTeX Font Info:    ... okay on input line 112.
 
 (/people/cs/o/oxx220000/texlive/2026/texmf-dist/tex/context/base/mkii/supp-pdf.
 mkii
@@ -1162,20 +1165,20 @@ Package caption Info: listings package is loaded.
 Package caption Info: wrapfig package is loaded.
 Package caption Info: End \AtBeginDocument code.
  ABD: EveryShipout initializing macros
-Package backref Info: ** backref set up for natbib ** on input line 111.
-Package hyperref Info: Link coloring ON on input line 111.
+Package backref Info: ** backref set up for natbib ** on input line 112.
+Package hyperref Info: Link coloring ON on input line 112.
  (build/main.out)
 (build/main.out)
 \@outlinefile=\write4
 \openout4 = `main.out'.
 
-LaTeX Info: Redefining \microtypecontext on input line 111.
-Package microtype Info: Applying patch `item' on input line 111.
-Package microtype Info: Applying patch `toc' on input line 111.
-Package microtype Info: Applying patch `eqnum' on input line 111.
-Package microtype Info: Applying patch `footnote' on input line 111.
-Package microtype Info: Applying patch `verbatim' on input line 111.
-LaTeX Info: Redefining \microtypesetup on input line 111.
+LaTeX Info: Redefining \microtypecontext on input line 112.
+Package microtype Info: Applying patch `item' on input line 112.
+Package microtype Info: Applying patch `toc' on input line 112.
+Package microtype Info: Applying patch `eqnum' on input line 112.
+Package microtype Info: Applying patch `footnote' on input line 112.
+Package microtype Info: Applying patch `verbatim' on input line 112.
+LaTeX Info: Redefining \microtypesetup on input line 112.
 Package microtype Info: Generating PDF output.
 Package microtype Info: Character protrusion enabled (level 2).
 Package microtype Info: Using default protrusion set `alltext'.
@@ -1197,7 +1200,7 @@ Package newfloat Info: `float' package detected.
 File: mt-cmr.cfg 2013/05/19 v2.2 microtype config. file: Computer Modern Roman 
 (RS)
 )
-LaTeX Font Info:    Trying to load font information for U+msa on input line 114
+LaTeX Font Info:    Trying to load font information for U+msa on input line 115
 .
 (/people/cs/o/oxx220000/texlive/2026/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
@@ -1205,7 +1208,7 @@ File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 (/people/cs/o/oxx220000/texlive/2026/texmf-dist/tex/latex/microtype/mt-msa.cfg
 File: mt-msa.cfg 2006/02/04 v1.1 microtype config. file: AMS symbols (a) (RS)
 )
-LaTeX Font Info:    Trying to load font information for U+msb on input line 114
+LaTeX Font Info:    Trying to load font information for U+msb on input line 115
 .
 (/people/cs/o/oxx220000/texlive/2026/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
@@ -1214,7 +1217,7 @@ File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 File: mt-msb.cfg 2005/06/01 v1.0 microtype config. file: AMS symbols (b) (RS)
 )
 LaTeX Font Info:    Trying to load font information for T1+phv on input line 13
-0.
+1.
 (/people/cs/o/oxx220000/texlive/2026/texmf-dist/tex/latex/psnfss/t1phv.fd
 File: t1phv.fd 2020/03/25 scalable font definitions for T1/phv.
 )
@@ -1233,17 +1236,17 @@ c}
 File: figures/show/11attriselect_framework.pdf Graphic file (type pdf)
 <use figures/show/11attriselect_framework.pdf>
 Package pdftex.def Info: figures/show/11attriselect_framework.pdf  used on inpu
-t line 164.
+t line 165.
 (pdftex.def)             Requested size: 496.85625pt x 184.40184pt.
  [2] [3 <./figures/show/11attriselect_framework.pdf>] [4] [5]
 <figures/show/heatmap_.pdf, id=473, 587.3142pt x 439.7228pt>
 File: figures/show/heatmap_.pdf Graphic file (type pdf)
 <use figures/show/heatmap_.pdf>
-Package pdftex.def Info: figures/show/heatmap_.pdf  used on input line 391.
+Package pdftex.def Info: figures/show/heatmap_.pdf  used on input line 392.
 (pdftex.def)             Requested size: 237.13594pt x 161.39279pt.
  [6 <./figures/show/heatmap_.pdf>] [7]
 LaTeX Font Info:    Trying to load font information for TS1+ptm on input line 5
-32.
+33.
 
 (/people/cs/o/oxx220000/texlive/2026/texmf-dist/tex/latex/psnfss/ts1ptm.fd
 File: ts1ptm.fd 2001/06/04 font definitions for TS1/ptm.
@@ -1278,31 +1281,48 @@ Overfull \vbox (37.83759pt too high) has occurred while \output is active []
 [11
 
 
-] (./appendix/glossary.tex) (./appendix/implementation.tex [12
+] (./appendix/glossary.tex) [12
 
-] [13])
-(./appendix/algorithm.tex) (./appendix/attribute_details.tex
+] (./appendix/implementation.tex [13])
+[14] [15] [16] (./appendix/algorithm.tex) [17
+
+]
+(./appendix/attribute_details.tex
 LaTeX Font Info:    Font shape `T1/pcr/m/it' in size <9> not available
 (Font)              Font shape `T1/pcr/m/sl' tried instead on input line 28.
-)
-(./appendix/main_metric_tables.tex [14])
-(./appendix/additional_repair_controls.tex [15] [16])
-(./appendix/attribute_slice_heatmaps.tex
-<figures/show/coco_ratio0p5_show_heatmap.pdf, id=798, 551.94206pt x 792.10701pt
+) [18] (./appendix/main_metric_tables.tex)
+[19] [20] (./appendix/additional_repair_controls.tex [21
+
+]) [22] [23] [24]
+[25] [26] [27] (./appendix/attribute_slice_heatmaps.tex
+<figures/show/coco_ratio0p5_show_heatmap.pdf, id=877, 551.94206pt x 792.10701pt
 >
 File: figures/show/coco_ratio0p5_show_heatmap.pdf Graphic file (type pdf)
 <use figures/show/coco_ratio0p5_show_heatmap.pdf>
 Package pdftex.def Info: figures/show/coco_ratio0p5_show_heatmap.pdf  used on i
 nput line 12.
 (pdftex.def)             Requested size: 397.48651pt x 570.43747pt.
-) (./appendix/vlm_audit.tex [17]
-[18]) (./appendix/image_generation.tex [19])
-(./appendix/robustness_sensitivity.tex [20])
-(./appendix/source_only_selection.tex [21] [22] [23]) (./appendix/theory.tex
-[24] [25]) (./appendix/hyperparameters.tex) (./appendix/coco_ablation.tex
-[26]) (./appendix/tsne.tex [27]
+) [28
+
+] [29 <./figures/show/coco_ratio0p5_show_heatmap.pdf>] (./appendix/vlm_audit.te
+x) [30
+
+]
+(./appendix/image_generation.tex) [31] [32]
+(./appendix/robustness_sensitivity.tex) [33
+
+] [34] [35]
+(./appendix/source_only_selection.tex) [36
+
+] [37] (./appendix/theory.tex
+[38
+
+]) (./appendix/hyperparameters.tex) [39] [40] (./appendix/coco_ablation.tex) [4
+1
+
+] (./appendix/tsne.tex
 <figures/ratio0p1_selection_tsne/coco_brown_rainy_ratio0p1_selection_tsne.pdf, 
-id=949, 1047.915pt x 491.436pt>
+id=1028, 1047.915pt x 491.436pt>
 File: figures/ratio0p1_selection_tsne/coco_brown_rainy_ratio0p1_selection_tsne.
 pdf Graphic file (type pdf)
 <use figures/ratio0p1_selection_tsne/coco_brown_rainy_ratio0p1_selection_tsne.p
@@ -1311,7 +1331,7 @@ Package pdftex.def Info: figures/ratio0p1_selection_tsne/coco_brown_rainy_ratio
 0p1_selection_tsne.pdf  used on input line 28.
 (pdftex.def)             Requested size: 496.85625pt x 233.0071pt.
 <figures/ratio0p1_selection_tsne/kitti_red_cloudy_ratio0p1_selection_tsne.pdf, 
-id=950, 1047.915pt x 491.436pt>
+id=1029, 1047.915pt x 491.436pt>
 File: figures/ratio0p1_selection_tsne/kitti_red_cloudy_ratio0p1_selection_tsne.
 pdf Graphic file (type pdf)
 <use figures/ratio0p1_selection_tsne/kitti_red_cloudy_ratio0p1_selection_tsne.p
@@ -1320,7 +1340,7 @@ Package pdftex.def Info: figures/ratio0p1_selection_tsne/kitti_red_cloudy_ratio
 0p1_selection_tsne.pdf  used on input line 35.
 (pdftex.def)             Requested size: 496.85625pt x 233.0071pt.
 <figures/ratio0p05_selection_tsne/coco_brown_rainy_ratio0p05_selection_tsne.pdf
-, id=951, 1047.915pt x 491.436pt>
+, id=1030, 1047.915pt x 491.436pt>
 File: figures/ratio0p05_selection_tsne/coco_brown_rainy_ratio0p05_selection_tsn
 e.pdf Graphic file (type pdf)
 <use figures/ratio0p05_selection_tsne/coco_brown_rainy_ratio0p05_selection_tsne
@@ -1329,7 +1349,7 @@ Package pdftex.def Info: figures/ratio0p05_selection_tsne/coco_brown_rainy_rati
 o0p05_selection_tsne.pdf  used on input line 56.
 (pdftex.def)             Requested size: 496.85625pt x 233.0071pt.
 <figures/ratio0p05_selection_tsne/coco_brown_rainy_ratio0p05_selection_tsne_ove
-rlay.pdf, id=954, 592.61403pt x 476.98201pt>
+rlay.pdf, id=1033, 592.61403pt x 476.98201pt>
 File: figures/ratio0p05_selection_tsne/coco_brown_rainy_ratio0p05_selection_tsn
 e_overlay.pdf Graphic file (type pdf)
 <use figures/ratio0p05_selection_tsne/coco_brown_rainy_ratio0p05_selection_tsne
@@ -1337,17 +1357,12 @@ _overlay.pdf>
 Package pdftex.def Info: figures/ratio0p05_selection_tsne/coco_brown_rainy_rati
 o0p05_selection_tsne_overlay.pdf  used on input line 63.
 (pdftex.def)             Requested size: 427.29666pt x 343.92897pt.
- [28] [29] [30] [31
-
-
-] [32 <./figures/show/coco_ratio0p5_show_heatmap.pdf>] [33 <./figures/ratio0p1_
-selection_tsne/coco_brown_rainy_ratio0p1_selection_tsne.pdf> <./figures/ratio0p
-1_selection_tsne/kitti_red_cloudy_ratio0p1_selection_tsne.pdf>] [34 <./figures/
-ratio0p05_selection_tsne/coco_brown_rainy_ratio0p05_selection_tsne.pdf>] [35 <.
-/figures/ratio0p05_selection_tsne/coco_brown_rainy_ratio0p05_selection_tsne_ove
-rlay.pdf>])
-(./appendix/limitations.tex [36
-
+ [42] [43 <./figures/ratio0p1_selection_tsne/coco_brown_rainy_ratio0p1_selectio
+n_tsne.pdf> <./figures/ratio0p1_selection_tsne/kitti_red_cloudy_ratio0p1_select
+ion_tsne.pdf>] [44 <./figures/ratio0p05_selection_tsne/coco_brown_rainy_ratio0p
+05_selection_tsne.pdf>] [45 <./figures/ratio0p05_selection_tsne/coco_brown_rain
+y_ratio0p05_selection_tsne_overlay.pdf>])
+(./appendix/limitations.tex [46
 
 
 ])
@@ -1362,16 +1377,16 @@ L3 programming layer <2026-01-19>
 Package rerunfilecheck Info: File `main.out' has not changed.
 (rerunfilecheck)             Checksum: 4C59E96CC3D357EF9DD1D8FD1E393B95;8401.
 Package rerunfilecheck Info: File `main.brf' has not changed.
-(rerunfilecheck)             Checksum: 08F3E1560891914CBCE0AB4C8E44AA22;3349.
+(rerunfilecheck)             Checksum: 38F60B6B7EFDDAB2BB2E7BEFA2316D49;3349.
  ) 
 Here is how much of TeX's memory you used:
- 37405 strings out of 467525
- 735713 string characters out of 5412664
- 1347970 words of memory out of 5000000
- 64960 multiletter control sequences out of 15000+600000
- 723901 words of font info for 432 fonts, out of 8000000 for 9000
+ 37429 strings out of 467525
+ 736355 string characters out of 5412664
+ 1312114 words of memory out of 5000000
+ 64980 multiletter control sequences out of 15000+600000
+ 721689 words of font info for 425 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 90i,15n,98p,1714b,980s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 90i,15n,98p,1714b,966s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </people/cs/o/oxx220000/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/c
 m/cmex10.pfb></people/cs/o/oxx220000/texlive/2026/texmf-dist/fonts/type1/public
 /amsfonts/cm/cmmi10.pfb></people/cs/o/oxx220000/texlive/2026/texmf-dist/fonts/t
@@ -1402,10 +1417,10 @@ xlive/2026/texmf-dist/fonts/type1/urw/helvetic/uhvr8a.pfb></people/cs/o/oxx2200
 0000/texlive/2026/texmf-dist/fonts/type1/urw/times/utmbi8a.pfb></people/cs/o/ox
 x220000/texlive/2026/texmf-dist/fonts/type1/urw/times/utmr8a.pfb></people/cs/o/
 oxx220000/texlive/2026/texmf-dist/fonts/type1/urw/times/utmri8a.pfb>
-Output written on build/main.pdf (36 pages, 5126035 bytes).
+Output written on build/main.pdf (46 pages, 5128642 bytes).
 PDF statistics:
- 1446 PDF objects out of 1728 (max. 8388607)
- 978 compressed objects within 10 object streams
- 227 named destinations out of 1000 (max. 500000)
- 85550 words of extra memory for PDF output out of 89155 (max. 10000000)
+ 1493 PDF objects out of 1728 (max. 8388607)
+ 1014 compressed objects within 11 object streams
+ 237 named destinations out of 1000 (max. 500000)
+ 83502 words of extra memory for PDF output out of 89155 (max. 10000000)
 
