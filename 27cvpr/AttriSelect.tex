@@ -410,7 +410,8 @@ the slice uses one, two, or three target fields.
 
 \subsection{Failure-Slice Repair Counts}
 
-\begin{table}[t]
+\begin{table*}[t]
+\begin{minipage}[t]{0.22\textwidth}
 \centering
 \caption{COCO repaired slices out of 12.}
 \label{tab:coco-bug-repair-counts}
@@ -428,7 +429,27 @@ the slice uses one, two, or three target fields.
 0.9 & 10 & \textbf{11} \\
 \bottomrule
 \end{tabular}
-\end{table}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.76\textwidth}
+\centering
+\caption{ImageNet10 classification attribute-score component ablation. Metric: test accuracy.}
+\label{tab:imagenet-rpc-ablation}
+\small
+\setlength{\tabcolsep}{2.5pt}
+\renewcommand{\arraystretch}{0.95}
+\begin{tabular}{c c c c c c c c >{\columncolor{myblue!8}}c}
+\toprule
+\firstrowstrut Ratio & none & $\textcolor{colorR}{R}$ & $\textcolor{colorP}{P}$ & $\textcolor{colorC}{C}$ & $\textcolor{colorP}{P}+\textcolor{colorC}{C}$ & $\textcolor{colorR}{R}+\textcolor{colorC}{C}$ & $\textcolor{colorR}{R}+\textcolor{colorP}{P}$ & \cellcolor{myblue!8}$\textcolor{colorR}{\boldsymbol{R}}+\textcolor{colorP}{\boldsymbol{P}}+\textcolor{colorC}{\boldsymbol{C}}$ \\
+\midrule
+0.1 & 0.7269 & 0.7300 & 0.7262 & 0.7277 & 0.7358 & 0.7308 & 0.7315 & \textbf{0.7369} \\
+0.3 & 0.7308 & 0.7415 & 0.7392 & 0.7392 & 0.7308 & 0.7369 & 0.7315 & \textbf{0.7492} \\
+0.5 & 0.7400 & 0.7415 & 0.7408 & 0.7346 & 0.7369 & 0.7415 & 0.7446 & \textbf{0.7508} \\
+0.7 & 0.7423 & 0.7469 & 0.7431 & 0.7415 & 0.7431 & 0.7469 & 0.7477 & \textbf{0.7515} \\
+0.9 & 0.7462 & 0.7500 & 0.7526 & 0.7477 & 0.7508 & 0.7415 & 0.7423 & \textbf{0.7562} \\
+\bottomrule
+\end{tabular}
+\end{minipage}
+\end{table*}
 
 We also evaluate repair at the level of discovered failure slices. In the
 upstream bug-discovery stage for COCO, 12 failure slices are identified. With
@@ -442,25 +463,7 @@ $0.7$, and $0.9$.
 
 We ablate the three score components on ImageNet10 classification repair to test whether the gains come from a single term or from their combination. Table~\ref{tab:imagenet-rpc-ablation} reports test accuracy for all component subsets. The full $\textcolor{colorR}{R}+\textcolor{colorP}{P}+\textcolor{colorC}{C}$ setting combines rarity $\textcolor{colorR}{R}$, generated-data frequency penalty $\textcolor{colorP}{P}$, and soft class balance $\textcolor{colorC}{C}$; it gives the best result at every ratio. The leave-one-component-out drops are nearly identical: removing $\textcolor{colorR}{R}$ drops test accuracy by $0.00945$ on average, removing $\textcolor{colorP}{P}$ by $0.00938$, and removing $\textcolor{colorC}{C}$ by $0.00938$. These results support complementarity rather than a single dominant component on ImageNet10. Single-component variants are also weaker on average ($\textcolor{colorR}{R}$: $0.74200$, $\textcolor{colorP}{P}$: $0.74037$, $\textcolor{colorC}{C}$: $0.73815$) than the full setting ($0.74892$). A COCO pose-estimation component ablation with a broadly similar trend is reported in Appendix~\ref{app:coco-rpc-ablation}.
 
-\begin{table*}[t]
-\centering
-\caption{ImageNet10 classification attribute-score component ablation. Metric: test accuracy.}
-\label{tab:imagenet-rpc-ablation}
-\small
-\setlength{\tabcolsep}{4pt}
-\renewcommand{\arraystretch}{0.95}
-\begin{tabular}{c c c c c c c c >{\columncolor{myblue!8}}c}
-\toprule
-\firstrowstrut Ratio & none & $\textcolor{colorR}{R}$ & $\textcolor{colorP}{P}$ & $\textcolor{colorC}{C}$ & $\textcolor{colorP}{P}+\textcolor{colorC}{C}$ & $\textcolor{colorR}{R}+\textcolor{colorC}{C}$ & $\textcolor{colorR}{R}+\textcolor{colorP}{P}$ & \cellcolor{myblue!8}$\textcolor{colorR}{\boldsymbol{R}}+\textcolor{colorP}{\boldsymbol{P}}+\textcolor{colorC}{\boldsymbol{C}}$ \\
-\midrule
-0.1 & 0.7269 & 0.7300 & 0.7262 & 0.7277 & 0.7358 & 0.7308 & 0.7315 & \textbf{0.7369} \\
-0.3 & 0.7308 & 0.7415 & 0.7392 & 0.7392 & 0.7308 & 0.7369 & 0.7315 & \textbf{0.7492} \\
-0.5 & 0.7400 & 0.7415 & 0.7408 & 0.7346 & 0.7369 & 0.7415 & 0.7446 & \textbf{0.7508} \\
-0.7 & 0.7423 & 0.7469 & 0.7431 & 0.7415 & 0.7431 & 0.7469 & 0.7477 & \textbf{0.7515} \\
-0.9 & 0.7462 & 0.7500 & 0.7526 & 0.7477 & 0.7508 & 0.7415 & 0.7423 & \textbf{0.7562} \\
-\bottomrule
-\end{tabular}
-\end{table*}
+
 % We conduct experiments on ImageNet-10 (multi-class) and CelebA (binary, targeting the `redhair\_brownskin' subgroup correlation). We employ a standard ResNet-18 architecture, initiating with pretrained weights and utilizing the AdamW optimizer. 
 
 % \subsection{\model vs. Long-Tail Learning Baselines}
