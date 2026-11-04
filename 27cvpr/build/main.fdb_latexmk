@@ -1,13 +1,13 @@
 # Fdb version 4
-["bibtex build/main"] 1793767050.22658 "build/main.aux" "build/main.bbl" "build/main" 1793767051.74889 0
+["bibtex build/main"] 1793767050.22658 "build/main.aux" "build/main.bbl" "build/main" 1793767093.44548 0
   "./ieeenat_fullname.bst" 1793766827.52869 26900 a296cb1ebee73f7bfa143751dc4e1dfd ""
   "./ref.bib" 1793766827.53669 453375 22f1f0459399dd5ec8b752f08ac9170b ""
-  "build/main.aux" 1793767051.49641 73317 31a1ca3f9de640f322fb85cdbb0d2f0f "pdflatex"
+  "build/main.aux" 1793767093.1931 73317 31a1ca3f9de640f322fb85cdbb0d2f0f "pdflatex"
   (generated)
   "build/main.bbl"
   "build/main.blg"
   (rewritten before read)
-["pdflatex"] 1793767050.29699 "main.tex" "build/main.pdf" "main" 1793767051.74942 0
+["pdflatex"] 1793767091.97817 "main.tex" "build/main.pdf" "main" 1793767093.44574 0
   "/people/cs/o/oxx220000/texlive/2026/texmf-dist/fonts/enc/dvips/base/8r.enc" 1165713224 4850 80dc9bab7f31fb78a000ccfed0e27cab ""
   "/people/cs/o/oxx220000/texlive/2026/texmf-dist/fonts/map/fontname/texfonts.map" 1577235249 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "/people/cs/o/oxx220000/texlive/2026/texmf-dist/fonts/tfm/adobe/courier/pcrb8r.tfm" 1136768653 1292 3059476c50a24578715759f22652f3d0 ""
@@ -315,11 +315,11 @@
   "appendix/theory.tex" 1793766878.18153 6530 b4e7a4a63b9873e8198159f38cd28e0e ""
   "appendix/tsne.tex" 1793766993.63545 6772 012b7796c52bb931ddacd5237521c960 ""
   "appendix/vlm_audit.tex" 1793766827.66069 7057 05418b7d32f4aa764e81ca79eb2e5b58 ""
-  "build/main.aux" 1793767051.49641 73317 31a1ca3f9de640f322fb85cdbb0d2f0f "pdflatex"
+  "build/main.aux" 1793767093.1931 73317 31a1ca3f9de640f322fb85cdbb0d2f0f "pdflatex"
   "build/main.bbl" 1793767050.28039 9263 4b2cd2b8bcaf61c5ea473f71534f9696 "bibtex build/main"
-  "build/main.brf" 1793767051.50041 3349 38f60b6b7efddab2bb2e7befa2316d49 "pdflatex"
-  "build/main.out" 1793767051.50041 8401 4c59e96cc3d357ef9dd1d8fd1e393b95 "pdflatex"
-  "build/main.ptc" 1793767051.50041 5794 a82555478e2c773d0f4d09b5b45afc37 "pdflatex"
+  "build/main.brf" 1793767093.1971 3349 38f60b6b7efddab2bb2e7befa2316d49 "pdflatex"
+  "build/main.out" 1793767093.1971 8401 4c59e96cc3d357ef9dd1d8fd1e393b95 "pdflatex"
+  "build/main.ptc" 1793767093.1971 5794 a82555478e2c773d0f4d09b5b45afc37 "pdflatex"
   "cvpr.sty" 1793766827.52869 17887 5b5ac66ec175624b96c33aea06f8d60c ""
   "figures/ratio0p05_selection_tsne/coco_brown_rainy_ratio0p05_selection_tsne.pdf" 1789535875.23198 1595960 2397e89800cb50fa841b9f8d72eafd48 ""
   "figures/ratio0p05_selection_tsne/coco_brown_rainy_ratio0p05_selection_tsne_overlay.pdf" 1789535879.73207 263466 4fff8123390073f0e394857eed90ffaa ""
@@ -328,7 +328,7 @@
   "figures/show/11attriselect_framework.pdf" 1783979721.94722 214756 833e0680afe575f79b9e6911ab753366 ""
   "figures/show/coco_ratio0p5_show_heatmap.pdf" 1783979722.03923 93545 0c76f6a811f6872a041bb404eb357ca5 ""
   "figures/show/heatmap_.pdf" 1783979722.07523 97005 58d0e9ad91f8450bea27d809b2b0b965 ""
-  "main.tex" 1793767048.69236 55896 a4987db7218b4a26cf632c09139d0030 ""
+  "main.tex" 1793767091.88508 55910 09bcac0d10793b2be3be2895d91f8d05 ""
   "math_commands.tex" 1793766827.53669 12284 a71653715108dc62b66e3a0bde0307d8 ""
   (generated)
   "build/main.aux"

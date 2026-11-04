@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.29 (TeX Live 2026) (preloaded format=pdflatex 2026.3.30)  3 NOV 2026 22:37
+This is pdfTeX, Version 3.141592653-2.6-1.40.29 (TeX Live 2026) (preloaded format=pdflatex 2026.3.30)  3 NOV 2026 22:38
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -1105,24 +1105,24 @@ File: l3backend-pdftex.def 2025-10-09 L3 backend support: PDF output (pdfTeX)
 ) (build/main.aux)
 \openout1 = `main.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 112.
-LaTeX Font Info:    ... okay on input line 112.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 112.
-LaTeX Font Info:    ... okay on input line 112.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 112.
-LaTeX Font Info:    ... okay on input line 112.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 112.
-LaTeX Font Info:    ... okay on input line 112.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 112.
-LaTeX Font Info:    ... okay on input line 112.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 112.
-LaTeX Font Info:    ... okay on input line 112.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 112.
-LaTeX Font Info:    ... okay on input line 112.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 112.
-LaTeX Font Info:    ... okay on input line 112.
-LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 112.
-LaTeX Font Info:    ... okay on input line 112.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 113.
+LaTeX Font Info:    ... okay on input line 113.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 113.
+LaTeX Font Info:    ... okay on input line 113.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 113.
+LaTeX Font Info:    ... okay on input line 113.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 113.
+LaTeX Font Info:    ... okay on input line 113.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 113.
+LaTeX Font Info:    ... okay on input line 113.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 113.
+LaTeX Font Info:    ... okay on input line 113.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 113.
+LaTeX Font Info:    ... okay on input line 113.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 113.
+LaTeX Font Info:    ... okay on input line 113.
+LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 113.
+LaTeX Font Info:    ... okay on input line 113.
 
 (/people/cs/o/oxx220000/texlive/2026/texmf-dist/tex/context/base/mkii/supp-pdf.
 mkii
@@ -1165,20 +1165,20 @@ Package caption Info: listings package is loaded.
 Package caption Info: wrapfig package is loaded.
 Package caption Info: End \AtBeginDocument code.
  ABD: EveryShipout initializing macros
-Package backref Info: ** backref set up for natbib ** on input line 112.
-Package hyperref Info: Link coloring ON on input line 112.
+Package backref Info: ** backref set up for natbib ** on input line 113.
+Package hyperref Info: Link coloring ON on input line 113.
  (build/main.out)
 (build/main.out)
 \@outlinefile=\write4
 \openout4 = `main.out'.
 
-LaTeX Info: Redefining \microtypecontext on input line 112.
-Package microtype Info: Applying patch `item' on input line 112.
-Package microtype Info: Applying patch `toc' on input line 112.
-Package microtype Info: Applying patch `eqnum' on input line 112.
-Package microtype Info: Applying patch `footnote' on input line 112.
-Package microtype Info: Applying patch `verbatim' on input line 112.
-LaTeX Info: Redefining \microtypesetup on input line 112.
+LaTeX Info: Redefining \microtypecontext on input line 113.
+Package microtype Info: Applying patch `item' on input line 113.
+Package microtype Info: Applying patch `toc' on input line 113.
+Package microtype Info: Applying patch `eqnum' on input line 113.
+Package microtype Info: Applying patch `footnote' on input line 113.
+Package microtype Info: Applying patch `verbatim' on input line 113.
+LaTeX Info: Redefining \microtypesetup on input line 113.
 Package microtype Info: Generating PDF output.
 Package microtype Info: Character protrusion enabled (level 2).
 Package microtype Info: Using default protrusion set `alltext'.
@@ -1200,7 +1200,7 @@ Package newfloat Info: `float' package detected.
 File: mt-cmr.cfg 2013/05/19 v2.2 microtype config. file: Computer Modern Roman 
 (RS)
 )
-LaTeX Font Info:    Trying to load font information for U+msa on input line 115
+LaTeX Font Info:    Trying to load font information for U+msa on input line 116
 .
 (/people/cs/o/oxx220000/texlive/2026/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
@@ -1208,7 +1208,7 @@ File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 (/people/cs/o/oxx220000/texlive/2026/texmf-dist/tex/latex/microtype/mt-msa.cfg
 File: mt-msa.cfg 2006/02/04 v1.1 microtype config. file: AMS symbols (a) (RS)
 )
-LaTeX Font Info:    Trying to load font information for U+msb on input line 115
+LaTeX Font Info:    Trying to load font information for U+msb on input line 116
 .
 (/people/cs/o/oxx220000/texlive/2026/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
@@ -1217,7 +1217,7 @@ File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 File: mt-msb.cfg 2005/06/01 v1.0 microtype config. file: AMS symbols (b) (RS)
 )
 LaTeX Font Info:    Trying to load font information for T1+phv on input line 13
-1.
+2.
 (/people/cs/o/oxx220000/texlive/2026/texmf-dist/tex/latex/psnfss/t1phv.fd
 File: t1phv.fd 2020/03/25 scalable font definitions for T1/phv.
 )
@@ -1236,17 +1236,17 @@ c}
 File: figures/show/11attriselect_framework.pdf Graphic file (type pdf)
 <use figures/show/11attriselect_framework.pdf>
 Package pdftex.def Info: figures/show/11attriselect_framework.pdf  used on inpu
-t line 165.
+t line 166.
 (pdftex.def)             Requested size: 496.85625pt x 184.40184pt.
  [2] [3 <./figures/show/11attriselect_framework.pdf>] [4] [5]
 <figures/show/heatmap_.pdf, id=473, 587.3142pt x 439.7228pt>
 File: figures/show/heatmap_.pdf Graphic file (type pdf)
 <use figures/show/heatmap_.pdf>
-Package pdftex.def Info: figures/show/heatmap_.pdf  used on input line 392.
+Package pdftex.def Info: figures/show/heatmap_.pdf  used on input line 393.
 (pdftex.def)             Requested size: 237.13594pt x 161.39279pt.
  [6 <./figures/show/heatmap_.pdf>] [7]
 LaTeX Font Info:    Trying to load font information for TS1+ptm on input line 5
-33.
+34.
 
 (/people/cs/o/oxx220000/texlive/2026/texmf-dist/tex/latex/psnfss/ts1ptm.fd
 File: ts1ptm.fd 2001/06/04 font definitions for TS1/ptm.
@@ -1382,7 +1382,7 @@ Package rerunfilecheck Info: File `main.brf' has not changed.
 Here is how much of TeX's memory you used:
  37429 strings out of 467525
  736355 string characters out of 5412664
- 1312114 words of memory out of 5000000
+ 1311127 words of memory out of 5000000
  64980 multiletter control sequences out of 15000+600000
  721689 words of font info for 425 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
@@ -1417,7 +1417,7 @@ xlive/2026/texmf-dist/fonts/type1/urw/helvetic/uhvr8a.pfb></people/cs/o/oxx2200
 0000/texlive/2026/texmf-dist/fonts/type1/urw/times/utmbi8a.pfb></people/cs/o/ox
 x220000/texlive/2026/texmf-dist/fonts/type1/urw/times/utmr8a.pfb></people/cs/o/
 oxx220000/texlive/2026/texmf-dist/fonts/type1/urw/times/utmri8a.pfb>
-Output written on build/main.pdf (46 pages, 5128642 bytes).
+Output written on build/main.pdf (46 pages, 5128773 bytes).
 PDF statistics:
  1493 PDF objects out of 1728 (max. 8388607)
  1014 compressed objects within 11 object streams
