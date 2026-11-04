@@ -67,13 +67,13 @@ For a uniform random draw of $B_c$ examples from the same $N_c$-element group, e
 \end{tcolorbox}
 
 For $0<|T_c|<N_c$ and $0<B_c<N_c$, the conditional enrichment gap is strict:
-\begin{equation*}
-\min\{B_c,|T_c|\}-B_c\frac{|T_c|}{N_c}
-=\begin{cases}
+\begin{align*}
+&\min\{B_c,|T_c|\}-B_c\frac{|T_c|}{N_c}\\
+&\quad=\begin{cases}
 B_c(1-|T_c|/N_c),& B_c\leq|T_c|,\\
 |T_c|(1-B_c/N_c),& B_c>|T_c|
 \end{cases}>0.
-\end{equation*}
+\end{align*}
 This is a selection-count result for a fixed $B_c$. It does not establish that the algorithm assigns positive budget to group $c$, nor does it imply a gain in the trained model's task metric. The random comparison requires the same group allocation and uniform sampling within the group.
 
 A rare conjunction may fail the pairwise condition. For example, if binary combinations $(A,B)=(1,1),(1,0),(0,1),(0,0)$ occur $1,49,49,1$ times, the target conjunction $(1,1)$ has $1\%$ support, but each defining marginal value occurs 50 times. Its marginal rarity score therefore does not strictly separate it from all non-target examples. The sufficient condition $A_{ij}>0$ must be checked for the actual selector fields and score parameters before applying the bound to a particular run.
