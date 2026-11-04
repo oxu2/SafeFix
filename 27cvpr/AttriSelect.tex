@@ -529,16 +529,16 @@ We ablate the three score components on ImageNet10 classification repair to test
 
 We studied targeted vision model repair as a repair-time source-selection problem. In this setting, a failure slice has been diagnosed and targeted repair images have been generated; the remaining question is which source examples should accompany those generated images during retraining. \model addresses this question with an attribute-driven score that combines class-conditional marginal rarity, generated-data frequency control, and soft class balancing. The analysis identifies conditions under which this score enriches a target slice relative to attribute-agnostic selectors; rarity of a conjunction alone does not imply this condition. Across classification, pose estimation, and detection, structured attribute metadata adds a repair-specific signal beyond uncertainty, coverage, and gradient embeddings. \model serves as one component in a localized repair pipeline rather than a replacement for upstream bug discovery or image generation.
 
-\subsection*{AI use statement}
+% \subsection*{AI use statement}
 
-In this work, generative AI models, vision--language models (VLMs), and large language models (LLMs) were utilized in the upstream data and repair pipeline, for theoretical proof assistance, and for manuscript preparation:
-\begin{itemize}[leftmargin=*,noitemsep,topsep=2pt]
-    \item \textbf{Synthetic repair image generation:} Conditional diffusion models (\controlnet, InstructPix2Pix, and ICEdit) were employed to generate targeted synthetic repair images for diagnosed failure slices, as described in Section 3 and detailed in Appendix~\ref{app:image-generation-effect}.
-    \item \textbf{Attribute annotation and image QA filtering:} LLMs (GPT-5) and VLMs (such as Qwen3-VL, BLIP, and InternVL3) were used in the upstream pipeline to propose candidate attribute taxonomies (Appendix~\ref{app:attribute-assignment-details}) and assign discrete attribute metadata to dataset images via visual question answering (VQA). In addition, VLMs served as semantic filters using image question answering to verify that generated synthetic images accurately exhibit the targeted failure attributes and preserve ground-truth task labels before retraining.
-    \item \textbf{Theoretical proof assistance:} Large language models assisted with intermediate algebra, the presentation of derivations, and boundary-condition checks for some of the propositions in Appendix~\ref{app:theory-analysis}. The authors remain responsible for verifying the final mathematical statements and proofs.
-    \item \textbf{Writing assistance:} LLMs were used solely for phrasing refinement, grammatical polishing, and formatting suggestions.
-\end{itemize}
-The reliability of VLM-assigned attributes was verified through an independent blinded human audit with five graduate students (Appendix~\ref{app:vlm-human-audit}). The authors have reviewed all AI-assisted outputs and take full responsibility for the final text, code, claims, and artifacts in this paper.
+% In this work, generative AI models, vision--language models (VLMs), and large language models (LLMs) were utilized in the upstream data and repair pipeline, for theoretical proof assistance, and for manuscript preparation:
+% \begin{itemize}[leftmargin=*,noitemsep,topsep=2pt]
+%     \item \textbf{Synthetic repair image generation:} Conditional diffusion models (\controlnet, InstructPix2Pix, and ICEdit) were employed to generate targeted synthetic repair images for diagnosed failure slices, as described in Section 3 and detailed in Appendix~\ref{app:image-generation-effect}.
+%     \item \textbf{Attribute annotation and image QA filtering:} LLMs (GPT-5) and VLMs (such as Qwen3-VL, BLIP, and InternVL3) were used in the upstream pipeline to propose candidate attribute taxonomies (Appendix~\ref{app:attribute-assignment-details}) and assign discrete attribute metadata to dataset images via visual question answering (VQA). In addition, VLMs served as semantic filters using image question answering to verify that generated synthetic images accurately exhibit the targeted failure attributes and preserve ground-truth task labels before retraining.
+%     \item \textbf{Theoretical proof assistance:} Large language models assisted with intermediate algebra, the presentation of derivations, and boundary-condition checks for some of the propositions in Appendix~\ref{app:theory-analysis}. The authors remain responsible for verifying the final mathematical statements and proofs.
+%     \item \textbf{Writing assistance:} LLMs were used solely for phrasing refinement, grammatical polishing, and formatting suggestions.
+% \end{itemize}
+% The reliability of VLM-assigned attributes was verified through an independent blinded human audit with five graduate students (Appendix~\ref{app:vlm-human-audit}). The authors have reviewed all AI-assisted outputs and take full responsibility for the final text, code, claims, and artifacts in this paper.
 
 % \subsection*{Ethics statement}
 
