@@ -6,7 +6,7 @@
 \usepackage[utf8]{inputenc} % allow utf-8 input
 \usepackage[T1]{fontenc}    % use 8-bit T1 fonts
 \definecolor{myblue}{HTML}{268BD2}
-\usepackage[colorlinks=true,linkcolor=myblue,citecolor=myblue,urlcolor=myblue]{hyperref}
+\usepackage[pagebackref,breaklinks,colorlinks=true,linkcolor=myblue,citecolor=myblue,urlcolor=myblue]{hyperref}
 
 % Make natbib citation links continuous across author and year
 \makeatletter
@@ -162,12 +162,12 @@ We focus on slices that are both rare in the training set $\dataset_{\mathrm{tra
 
 \subsection{\modelplain Framework}
 
-\begin{figure}[t]
+\begin{figure*}[t]
 \centering
 \includegraphics[width=\linewidth]{figures/show/11attriselect_framework.pdf}
 \caption{\model framework. Given a diagnosed failure slice and generated images, \model scores source examples with group-conditional rarity, generated-data frequency penalty, and soft group balance, then returns an attribute-driven subset for retraining with the generated repair set.}
 \label{fig:attriselect-framework}
-\end{figure}
+\end{figure*}
 
 \model is designed as the selection step inside an existing targeted repair pipeline. Figure~\ref{fig:attriselect-framework} summarizes this workflow. The upstream workflow can follow the model-repair systems described above. We distinguish the full task-level vocabulary $\attrs$ from the selector fields $\selattrs$ passed to the attribute-selection procedure. The target fields $\targetattrs$ define the diagnosed conjunction and generated repair pool; $\selattrs$ may include additional contextual fields retained for source selection. Qwen3-VL~\citep{bai2025qwen3vl} assigns an attribute value $v_{i,a}$ to each training or validation image. Appendix~\ref{app:attribute-assignment-details} gives the task-specific vocabularies and assignment protocol. Appendix~\ref{app:vlm-human-audit} reports a human audit and attribute-noise sensitivity, while Appendix~\ref{app:additional-robustness} evaluates incomplete target-field coverage. Using the SafeFix-style ImageNet10 classification setting as a running example, a ResNet-18 classifier is then trained to a checkpoint $\theta_t$, after which the repair pipeline analyzes the validation behavior of $f_{\theta_t}$. An attribute slice $T_{\mathrm{bug}}$ is marked as a rare failure case if it is underrepresented in training and underperforms on validation:
 \begin{equation}
