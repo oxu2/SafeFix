@@ -1,0 +1,10 @@
+/build/
+*.aux
+*.bbl
+*.blg
+*.brf
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.ptc
