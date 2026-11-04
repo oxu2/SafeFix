@@ -4,8 +4,12 @@ Latexmk: This is Latexmk, John Collins, 9 March 2026. Version 4.88.
 Latexmk: applying rule 'pdflatex'...
 Rule 'pdflatex':  Reasons for rerun
 Changed files or newly in use/created:
+  appendix/attribute_slice_heatmaps.tex
+  appendix/tsne.tex
   main.tex
 Category 'changed_user':
+  appendix/attribute_slice_heatmaps.tex
+  appendix/tsne.tex
   main.tex
 
 ------------
@@ -382,9 +386,9 @@ sys.cfg)) ABD: EveryShipout initializing macros (build/main.out)
 c}] [2] [3 <./figures/show/11attriselect_framework.pdf>] [4] [5] [6 <./figures/
 show/heatmap_.pdf>] [7]
 (/people/cs/o/oxx220000/texlive/2026/texmf-dist/tex/latex/psnfss/ts1ptm.fd)
-(build/main.bbl (build/main.brf)
+(build/main.bbl (build/main.brf) [8]
 (/people/cs/o/oxx220000/texlive/2026/texmf-dist/tex/latex/psnfss/t1pcr.fd)
-[8] [9]) [10] (build/main.ptc)
+[9]) [10] (build/main.ptc)
 Overfull \vbox (37.83759pt too high) has occurred while \output is active
 Overfull \vbox (37.83759pt too high) has occurred while \output is active
 [11] (./appendix/glossary.tex) (./appendix/implementation.tex [12] [13])
@@ -396,13 +400,17 @@ Overfull \vbox (37.83759pt too high) has occurred while \output is active
 (./appendix/robustness_sensitivity.tex [20])
 (./appendix/source_only_selection.tex [21] [22] [23]) (./appendix/theory.tex
 [24] [25]) (./appendix/hyperparameters.tex) (./appendix/coco_ablation.tex
-[26]) (./appendix/tsne.tex [27] [28] [29] [30] [31 <./figures/show/coco_ratio0p
-5_show_heatmap.pdf> <./figures/ratio0p1_selection_tsne/coco_brown_rainy_ratio0p
-1_selection_tsne.pdf>] [32 <./figures/ratio0p1_selection_tsne/kitti_red_cloudy_
-ratio0p1_selection_tsne.pdf> <./figures/ratio0p05_selection_tsne/coco_brown_rai
-ny_ratio0p05_selection_tsne.pdf> <./figures/ratio0p05_selection_tsne/coco_brown
-_rainy_ratio0p05_selection_tsne_overlay.pdf>]) (./appendix/limitations.tex
-[33]) (build/main.aux) )
+[26]) (./appendix/tsne.tex [27] [28] [29] [30] [31] [32 <./figures/show/coco_ra
+tio0p5_show_heatmap.pdf>] [33 <./figures/ratio0p1_selection_tsne/coco_brown_rai
+ny_ratio0p1_selection_tsne.pdf> <./figures/ratio0p1_selection_tsne/kitti_red_cl
+oudy_ratio0p1_selection_tsne.pdf>] [34 <./figures/ratio0p05_selection_tsne/coco
+_brown_rainy_ratio0p05_selection_tsne.pdf>] [35 <./figures/ratio0p05_selection_
+tsne/coco_brown_rainy_ratio0p05_selection_tsne_overlay.pdf>])
+(./appendix/limitations.tex [36]) (build/main.aux)
+
+LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
+
+ )
 (see the transcript file for additional information)</people/cs/o/oxx220000/tex
 live/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></people/cs/o/ox
 x220000/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></peo
@@ -410,39 +418,37 @@ ple/cs/o/oxx220000/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi5
 .pfb></people/cs/o/oxx220000/texlive/2026/texmf-dist/fonts/type1/public/amsfont
 s/cm/cmmi6.pfb></people/cs/o/oxx220000/texlive/2026/texmf-dist/fonts/type1/publ
 ic/amsfonts/cm/cmmi7.pfb></people/cs/o/oxx220000/texlive/2026/texmf-dist/fonts/
-type1/public/amsfonts/cm/cmmi8.pfb></people/cs/o/oxx220000/texlive/2026/texmf-d
-ist/fonts/type1/public/amsfonts/cm/cmmi9.pfb></people/cs/o/oxx220000/texlive/20
-26/texmf-dist/fonts/type1/public/amsfonts/cmextra/cmmib8.pfb></people/cs/o/oxx2
-20000/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cmextra/cmmib9.pfb></
-people/cs/o/oxx220000/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cm
-r10.pfb></people/cs/o/oxx220000/texlive/2026/texmf-dist/fonts/type1/public/amsf
-onts/cm/cmr5.pfb></people/cs/o/oxx220000/texlive/2026/texmf-dist/fonts/type1/pu
-blic/amsfonts/cm/cmr6.pfb></people/cs/o/oxx220000/texlive/2026/texmf-dist/fonts
-/type1/public/amsfonts/cm/cmr7.pfb></people/cs/o/oxx220000/texlive/2026/texmf-d
-ist/fonts/type1/public/amsfonts/cm/cmr8.pfb></people/cs/o/oxx220000/texlive/202
-6/texmf-dist/fonts/type1/public/amsfonts/cm/cmr9.pfb></people/cs/o/oxx220000/te
-xlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></people/cs/o/o
-xx220000/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy6.pfb></peo
-ple/cs/o/oxx220000/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy7
-.pfb></people/cs/o/oxx220000/texlive/2026/texmf-dist/fonts/type1/public/amsfont
-s/cm/cmsy8.pfb></people/cs/o/oxx220000/texlive/2026/texmf-dist/fonts/type1/publ
-ic/amsfonts/cm/cmsy9.pfb></people/cs/o/oxx220000/texlive/2026/texmf-dist/fonts/
-type1/public/amsfonts/symbols/msbm10.pfb></people/cs/o/oxx220000/texlive/2026/t
-exmf-dist/fonts/type1/urw/courier/ucrb8a.pfb></people/cs/o/oxx220000/texlive/20
-26/texmf-dist/fonts/type1/urw/courier/ucrr8a.pfb></people/cs/o/oxx220000/texliv
-e/2026/texmf-dist/fonts/type1/urw/courier/ucrro8a.pfb></people/cs/o/oxx220000/t
-exlive/2026/texmf-dist/fonts/type1/urw/helvetic/uhvb8a.pfb></people/cs/o/oxx220
-000/texlive/2026/texmf-dist/fonts/type1/urw/helvetic/uhvr8a.pfb></people/cs/o/o
-xx220000/texlive/2026/texmf-dist/fonts/type1/urw/times/utmb8a.pfb></people/cs/o
-/oxx220000/texlive/2026/texmf-dist/fonts/type1/urw/times/utmbi8a.pfb></people/c
-s/o/oxx220000/texlive/2026/texmf-dist/fonts/type1/urw/times/utmr8a.pfb></people
-/cs/o/oxx220000/texlive/2026/texmf-dist/fonts/type1/urw/times/utmri8a.pfb>
-Output written on build/main.pdf (33 pages, 5148994 bytes).
+type1/public/amsfonts/cm/cmmi9.pfb></people/cs/o/oxx220000/texlive/2026/texmf-d
+ist/fonts/type1/public/amsfonts/cmextra/cmmib9.pfb></people/cs/o/oxx220000/texl
+ive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></people/cs/o/oxx2
+20000/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmr5.pfb></people/
+cs/o/oxx220000/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmr6.pfb>
+</people/cs/o/oxx220000/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/
+cmr7.pfb></people/cs/o/oxx220000/texlive/2026/texmf-dist/fonts/type1/public/ams
+fonts/cm/cmr9.pfb></people/cs/o/oxx220000/texlive/2026/texmf-dist/fonts/type1/p
+ublic/amsfonts/cm/cmsy10.pfb></people/cs/o/oxx220000/texlive/2026/texmf-dist/fo
+nts/type1/public/amsfonts/cm/cmsy6.pfb></people/cs/o/oxx220000/texlive/2026/tex
+mf-dist/fonts/type1/public/amsfonts/cm/cmsy7.pfb></people/cs/o/oxx220000/texliv
+e/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></people/cs/o/oxx220
+000/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy9.pfb></people/c
+s/o/oxx220000/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm1
+0.pfb></people/cs/o/oxx220000/texlive/2026/texmf-dist/fonts/type1/urw/courier/u
+crb8a.pfb></people/cs/o/oxx220000/texlive/2026/texmf-dist/fonts/type1/urw/couri
+er/ucrr8a.pfb></people/cs/o/oxx220000/texlive/2026/texmf-dist/fonts/type1/urw/c
+ourier/ucrro8a.pfb></people/cs/o/oxx220000/texlive/2026/texmf-dist/fonts/type1/
+urw/helvetic/uhvb8a.pfb></people/cs/o/oxx220000/texlive/2026/texmf-dist/fonts/t
+ype1/urw/helvetic/uhvr8a.pfb></people/cs/o/oxx220000/texlive/2026/texmf-dist/fo
+nts/type1/urw/times/utmb8a.pfb></people/cs/o/oxx220000/texlive/2026/texmf-dist/
+fonts/type1/urw/times/utmbi8a.pfb></people/cs/o/oxx220000/texlive/2026/texmf-di
+st/fonts/type1/urw/times/utmr8a.pfb></people/cs/o/oxx220000/texlive/2026/texmf-
+dist/fonts/type1/urw/times/utmri8a.pfb>
+Output written on build/main.pdf (36 pages, 5126060 bytes).
 Transcript written on build/main.log.
 Latexmk: Getting log file 'build/main.log'
 Latexmk: Examining 'build/main.fls'
 Latexmk: Examining 'build/main.log'
 Latexmk: Found input bbl file 'build/main.bbl'
+Latexmk: References changed.
 Latexmk: Log file says output to 'build/main.pdf'
 Latexmk: Using bibtex to make bibliography file(s).
   ===Source file 'build/main.bbl' for 'pdflatex'
@@ -473,6 +479,7 @@ Latexmk: applying rule 'pdflatex'...
 Rule 'pdflatex':  Reasons for rerun
 Changed files or newly in use/created:
   build/main.aux
+  build/main.ptc
 
 ------------
 Run number 2 of rule 'pdflatex'
@@ -848,9 +855,9 @@ sys.cfg)) ABD: EveryShipout initializing macros (build/main.out)
 c}] [2] [3 <./figures/show/11attriselect_framework.pdf>] [4] [5] [6 <./figures/
 show/heatmap_.pdf>] [7]
 (/people/cs/o/oxx220000/texlive/2026/texmf-dist/tex/latex/psnfss/ts1ptm.fd)
-(build/main.bbl (build/main.brf)
+(build/main.bbl (build/main.brf) [8]
 (/people/cs/o/oxx220000/texlive/2026/texmf-dist/tex/latex/psnfss/t1pcr.fd)
-[8] [9]) [10] (build/main.ptc)
+[9]) [10] (build/main.ptc)
 Overfull \vbox (37.83759pt too high) has occurred while \output is active
 Overfull \vbox (37.83759pt too high) has occurred while \output is active
 [11] (./appendix/glossary.tex) (./appendix/implementation.tex [12] [13])
@@ -862,13 +869,13 @@ Overfull \vbox (37.83759pt too high) has occurred while \output is active
 (./appendix/robustness_sensitivity.tex [20])
 (./appendix/source_only_selection.tex [21] [22] [23]) (./appendix/theory.tex
 [24] [25]) (./appendix/hyperparameters.tex) (./appendix/coco_ablation.tex
-[26]) (./appendix/tsne.tex [27] [28] [29] [30] [31 <./figures/show/coco_ratio0p
-5_show_heatmap.pdf> <./figures/ratio0p1_selection_tsne/coco_brown_rainy_ratio0p
-1_selection_tsne.pdf>] [32 <./figures/ratio0p1_selection_tsne/kitti_red_cloudy_
-ratio0p1_selection_tsne.pdf> <./figures/ratio0p05_selection_tsne/coco_brown_rai
-ny_ratio0p05_selection_tsne.pdf> <./figures/ratio0p05_selection_tsne/coco_brown
-_rainy_ratio0p05_selection_tsne_overlay.pdf>]) (./appendix/limitations.tex
-[33]) (build/main.aux) )
+[26]) (./appendix/tsne.tex [27] [28] [29] [30] [31] [32 <./figures/show/coco_ra
+tio0p5_show_heatmap.pdf>] [33 <./figures/ratio0p1_selection_tsne/coco_brown_rai
+ny_ratio0p1_selection_tsne.pdf> <./figures/ratio0p1_selection_tsne/kitti_red_cl
+oudy_ratio0p1_selection_tsne.pdf>] [34 <./figures/ratio0p05_selection_tsne/coco
+_brown_rainy_ratio0p05_selection_tsne.pdf>] [35 <./figures/ratio0p05_selection_
+tsne/coco_brown_rainy_ratio0p05_selection_tsne_overlay.pdf>])
+(./appendix/limitations.tex [36]) (build/main.aux) )
 (see the transcript file for additional information)</people/cs/o/oxx220000/tex
 live/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></people/cs/o/ox
 x220000/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></peo
@@ -876,34 +883,31 @@ ple/cs/o/oxx220000/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi5
 .pfb></people/cs/o/oxx220000/texlive/2026/texmf-dist/fonts/type1/public/amsfont
 s/cm/cmmi6.pfb></people/cs/o/oxx220000/texlive/2026/texmf-dist/fonts/type1/publ
 ic/amsfonts/cm/cmmi7.pfb></people/cs/o/oxx220000/texlive/2026/texmf-dist/fonts/
-type1/public/amsfonts/cm/cmmi8.pfb></people/cs/o/oxx220000/texlive/2026/texmf-d
-ist/fonts/type1/public/amsfonts/cm/cmmi9.pfb></people/cs/o/oxx220000/texlive/20
-26/texmf-dist/fonts/type1/public/amsfonts/cmextra/cmmib8.pfb></people/cs/o/oxx2
-20000/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cmextra/cmmib9.pfb></
-people/cs/o/oxx220000/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cm
-r10.pfb></people/cs/o/oxx220000/texlive/2026/texmf-dist/fonts/type1/public/amsf
-onts/cm/cmr5.pfb></people/cs/o/oxx220000/texlive/2026/texmf-dist/fonts/type1/pu
-blic/amsfonts/cm/cmr6.pfb></people/cs/o/oxx220000/texlive/2026/texmf-dist/fonts
-/type1/public/amsfonts/cm/cmr7.pfb></people/cs/o/oxx220000/texlive/2026/texmf-d
-ist/fonts/type1/public/amsfonts/cm/cmr8.pfb></people/cs/o/oxx220000/texlive/202
-6/texmf-dist/fonts/type1/public/amsfonts/cm/cmr9.pfb></people/cs/o/oxx220000/te
-xlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></people/cs/o/o
-xx220000/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy6.pfb></peo
-ple/cs/o/oxx220000/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy7
-.pfb></people/cs/o/oxx220000/texlive/2026/texmf-dist/fonts/type1/public/amsfont
-s/cm/cmsy8.pfb></people/cs/o/oxx220000/texlive/2026/texmf-dist/fonts/type1/publ
-ic/amsfonts/cm/cmsy9.pfb></people/cs/o/oxx220000/texlive/2026/texmf-dist/fonts/
-type1/public/amsfonts/symbols/msbm10.pfb></people/cs/o/oxx220000/texlive/2026/t
-exmf-dist/fonts/type1/urw/courier/ucrb8a.pfb></people/cs/o/oxx220000/texlive/20
-26/texmf-dist/fonts/type1/urw/courier/ucrr8a.pfb></people/cs/o/oxx220000/texliv
-e/2026/texmf-dist/fonts/type1/urw/courier/ucrro8a.pfb></people/cs/o/oxx220000/t
-exlive/2026/texmf-dist/fonts/type1/urw/helvetic/uhvb8a.pfb></people/cs/o/oxx220
-000/texlive/2026/texmf-dist/fonts/type1/urw/helvetic/uhvr8a.pfb></people/cs/o/o
-xx220000/texlive/2026/texmf-dist/fonts/type1/urw/times/utmb8a.pfb></people/cs/o
-/oxx220000/texlive/2026/texmf-dist/fonts/type1/urw/times/utmbi8a.pfb></people/c
-s/o/oxx220000/texlive/2026/texmf-dist/fonts/type1/urw/times/utmr8a.pfb></people
-/cs/o/oxx220000/texlive/2026/texmf-dist/fonts/type1/urw/times/utmri8a.pfb>
-Output written on build/main.pdf (33 pages, 5148845 bytes).
+type1/public/amsfonts/cm/cmmi9.pfb></people/cs/o/oxx220000/texlive/2026/texmf-d
+ist/fonts/type1/public/amsfonts/cmextra/cmmib9.pfb></people/cs/o/oxx220000/texl
+ive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></people/cs/o/oxx2
+20000/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmr5.pfb></people/
+cs/o/oxx220000/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmr6.pfb>
+</people/cs/o/oxx220000/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/
+cmr7.pfb></people/cs/o/oxx220000/texlive/2026/texmf-dist/fonts/type1/public/ams
+fonts/cm/cmr9.pfb></people/cs/o/oxx220000/texlive/2026/texmf-dist/fonts/type1/p
+ublic/amsfonts/cm/cmsy10.pfb></people/cs/o/oxx220000/texlive/2026/texmf-dist/fo
+nts/type1/public/amsfonts/cm/cmsy6.pfb></people/cs/o/oxx220000/texlive/2026/tex
+mf-dist/fonts/type1/public/amsfonts/cm/cmsy7.pfb></people/cs/o/oxx220000/texliv
+e/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></people/cs/o/oxx220
+000/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy9.pfb></people/c
+s/o/oxx220000/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm1
+0.pfb></people/cs/o/oxx220000/texlive/2026/texmf-dist/fonts/type1/urw/courier/u
+crb8a.pfb></people/cs/o/oxx220000/texlive/2026/texmf-dist/fonts/type1/urw/couri
+er/ucrr8a.pfb></people/cs/o/oxx220000/texlive/2026/texmf-dist/fonts/type1/urw/c
+ourier/ucrro8a.pfb></people/cs/o/oxx220000/texlive/2026/texmf-dist/fonts/type1/
+urw/helvetic/uhvb8a.pfb></people/cs/o/oxx220000/texlive/2026/texmf-dist/fonts/t
+ype1/urw/helvetic/uhvr8a.pfb></people/cs/o/oxx220000/texlive/2026/texmf-dist/fo
+nts/type1/urw/times/utmb8a.pfb></people/cs/o/oxx220000/texlive/2026/texmf-dist/
+fonts/type1/urw/times/utmbi8a.pfb></people/cs/o/oxx220000/texlive/2026/texmf-di
+st/fonts/type1/urw/times/utmr8a.pfb></people/cs/o/oxx220000/texlive/2026/texmf-
+dist/fonts/type1/urw/times/utmri8a.pfb>
+Output written on build/main.pdf (36 pages, 5126035 bytes).
 Transcript written on build/main.log.
 Latexmk: Getting log file 'build/main.log'
 Latexmk: Examining 'build/main.fls'

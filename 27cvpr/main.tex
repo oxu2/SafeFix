@@ -290,8 +290,8 @@ KITTI behaves differently at the smallest source budget. At ratio $0.1$, all met
 \centering
 \caption{Main repair results across tasks, averaged over five random seeds. Metric: RER (\%).}
 \label{tab:main-rer}
-\footnotesize
-\setlength{\tabcolsep}{1.5pt}
+\small
+\setlength{\tabcolsep}{3pt}
 \renewcommand{\arraystretch}{0.98}
 \begin{tabular}{l c c c c c c c c >{\columncolor{myblue!8}}c}
 \toprule
@@ -353,8 +353,8 @@ we keep them in the table as zero-cost references.
 \centering
 \caption{Source-subset selection time. Units are seconds (s), minutes (m), and hours (h). Speedup is measured against the fastest non-attribute active-learning baseline in the same row.}
 \label{tab:selection-efficiency}
-\footnotesize
-\setlength{\tabcolsep}{1.2pt}
+\small
+\setlength{\tabcolsep}{3pt}
 \renewcommand{\arraystretch}{1.0}
 \begin{tabular}{l c c c c c c c c >{\columncolor{myblue!8}}c}
 \toprule
@@ -388,7 +388,7 @@ slice-level improvement after repair. Figure~\ref{fig:imagenet-ratio05-attribute
 
 \begin{figure}[t]
 \centering
-\includegraphics[width=0.82\linewidth,trim={0 12pt 0 28pt},clip]{figures/show/heatmap_.pdf}
+\includegraphics[width=\linewidth,trim={0 12pt 0 28pt},clip]{figures/show/heatmap_.pdf}
 \caption{ImageNet10 ratio-$0.5$ attribute-slice accuracy differences. \model gives larger gains on the targeted attribute families, with the strongest gains on the exact repair values.}
 \label{fig:imagenet-ratio05-attribute-delta}
 \end{figure}
@@ -411,7 +411,7 @@ the slice uses one, two, or three target fields.
 \centering
 \caption{COCO repaired slices out of 12.}
 \label{tab:coco-bug-repair-counts}
-\scriptsize
+\small
 \setlength{\tabcolsep}{3pt}
 \renewcommand{\arraystretch}{0.9}
 \begin{tabular}{c c >{\columncolor{myblue!8}}c}
@@ -443,7 +443,7 @@ We ablate the three score components on ImageNet10 classification repair to test
 \centering
 \caption{ImageNet10 classification attribute-score component ablation. Metric: test accuracy.}
 \label{tab:imagenet-rpc-ablation}
-\footnotesize
+\small
 \setlength{\tabcolsep}{4pt}
 \renewcommand{\arraystretch}{0.95}
 \begin{tabular}{c c c c c c c c >{\columncolor{myblue!8}}c}
