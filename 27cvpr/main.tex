@@ -128,16 +128,13 @@ Selecting a compact source subset reduces the cost of iterative repair and casts
 
 We study this remaining step as a repair-time source-selection problem. The input is not an unlabeled pool, but a diagnosed failure slice, a generated repair set, and an annotated source pool. This changes the selection objective: the subset should preserve useful source coverage, include real examples with rare repair-relevant attributes, and avoid spending budget on attribute values already supplied by the generated images. We propose \model for this setting. Rather than representing source images only through feature embeddings or gradient statistics, \model treats each image as a structured attribute record and scores it using class-conditional rarity, generated-data frequency control, and soft class balancing. In this role, \model is a focused selection component for existing repair pipelines: it does not replace failure-slice discovery or repair-image generation, but decides which original training examples should accompany the generated data during retraining.
 
-\vspace{-0.5ex}
 Our contributions are:
-\vspace{-1.5ex}
 \begin{enumerate}[nosep,leftmargin=*,itemsep=1pt,topsep=0pt]
 \item We formulate targeted vision repair as a repair-time source-selection problem: given a diagnosed failure slice, generated repair data, and an annotated source pool, the goal is to select a compact source subset for retraining.
 \item We propose \model, an attribute-driven source selector that combines class-conditional rarity, generated-data frequency control, and soft class balancing to prioritize repair-relevant source examples while avoiding redundancy and class collapse.
 % \item We provide a theoretical analysis of repair-slice enrichment, showing when attribute-aware selection preferentially allocates source budget to rare target slices, in contrast to attribute-agnostic selectors whose uncertainty or coverage signals are weakly aligned with the diagnosed failure slice.
 \item We evaluate \model on classification, pose estimation, and object detection under matched repair budgets. It performs best in almost all settings, surpasses full-source repair on multiple tasks with half the source data, and, given attribute records, selects subsets at least $39\times$ faster than the fastest non-attribute baseline.
 \end{enumerate}
-\vspace{-2ex}
 
 \section{Related Work}
 
@@ -553,12 +550,9 @@ The conditional enrichment proof and finite-weight balance derivation appear in 
 \bibliography{ref}
 \bibliographystyle{ieeenat_fullname}
 
-\newpage
+\clearpage
 \appendix
-\begin{center}
-    \LARGE \textbf{Appendix}
-    \vspace{1em}
-\end{center}
+\maketitlesupplementary
 
 \begin{tcolorbox}[
     colback=gray!2!white,

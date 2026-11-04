@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.29 (TeX Live 2026) (preloaded format=pdflatex 2026.3.30)  3 NOV 2026 22:34
+This is pdfTeX, Version 3.141592653-2.6-1.40.29 (TeX Live 2026) (preloaded format=pdflatex 2026.3.30)  3 NOV 2026 22:35
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -1233,17 +1233,17 @@ c}
 File: figures/show/11attriselect_framework.pdf Graphic file (type pdf)
 <use figures/show/11attriselect_framework.pdf>
 Package pdftex.def Info: figures/show/11attriselect_framework.pdf  used on inpu
-t line 167.
+t line 164.
 (pdftex.def)             Requested size: 496.85625pt x 184.40184pt.
  [2] [3 <./figures/show/11attriselect_framework.pdf>] [4] [5]
 <figures/show/heatmap_.pdf, id=473, 587.3142pt x 439.7228pt>
 File: figures/show/heatmap_.pdf Graphic file (type pdf)
 <use figures/show/heatmap_.pdf>
-Package pdftex.def Info: figures/show/heatmap_.pdf  used on input line 394.
+Package pdftex.def Info: figures/show/heatmap_.pdf  used on input line 391.
 (pdftex.def)             Requested size: 194.4532pt x 132.34196pt.
  [6 <./figures/show/heatmap_.pdf>] [7]
 LaTeX Font Info:    Trying to load font information for TS1+ptm on input line 5
-35.
+32.
 
 (/people/cs/o/oxx220000/texlive/2026/texmf-dist/tex/latex/psnfss/ts1ptm.fd
 File: ts1ptm.fd 2001/06/04 font definitions for TS1/ptm.
@@ -1263,18 +1263,28 @@ Package microtype Info: Loading generic protrusion settings for font family
 (microtype)             For optimal results, create family-specific settings.
 (microtype)             See the microtype manual for details.
 
-[8] [9])
+[8] [9]) [10
+
+]
 \c@ttl@toc@appendix=\count414
- (build/main.ptc) [10] [11
+ (build/main.ptc)
+Overfull \vbox (37.83759pt too high) has occurred while \output is active []
 
-] (./appendix/glossary.tex)
-(./appendix/implementation.tex [12
 
-] [13]) (./appendix/algorithm.tex)
-(./appendix/attribute_details.tex
+Overfull \vbox (37.83759pt too high) has occurred while \output is active []
+
+
+[11
+
+
+] (./appendix/glossary.tex) (./appendix/implementation.tex [12
+
+] [13])
+(./appendix/algorithm.tex) (./appendix/attribute_details.tex
 LaTeX Font Info:    Font shape `T1/pcr/m/it' in size <9> not available
 (Font)              Font shape `T1/pcr/m/sl' tried instead on input line 28.
-) (./appendix/main_metric_tables.tex [14])
+)
+(./appendix/main_metric_tables.tex [14])
 (./appendix/additional_repair_controls.tex [15] [16])
 (./appendix/attribute_slice_heatmaps.tex
 <figures/show/coco_ratio0p5_show_heatmap.pdf, id=801, 551.94206pt x 792.10701pt
@@ -1352,11 +1362,11 @@ Package rerunfilecheck Info: File `main.brf' has not changed.
 (rerunfilecheck)             Checksum: 08F3E1560891914CBCE0AB4C8E44AA22;3349.
  ) 
 Here is how much of TeX's memory you used:
- 37427 strings out of 467525
- 735955 string characters out of 5412664
+ 37414 strings out of 467525
+ 735794 string characters out of 5412664
  1347970 words of memory out of 5000000
- 64965 multiletter control sequences out of 15000+600000
- 728040 words of font info for 446 fonts, out of 8000000 for 9000
+ 64960 multiletter control sequences out of 15000+600000
+ 724421 words of font info for 440 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  90i,15n,98p,1714b,980s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </people/cs/o/oxx220000/texlive/2026/texmf-dist/fonts/type1/public/amsfonts/c
@@ -1393,10 +1403,10 @@ imes/utmb8a.pfb></people/cs/o/oxx220000/texlive/2026/texmf-dist/fonts/type1/urw
 /times/utmbi8a.pfb></people/cs/o/oxx220000/texlive/2026/texmf-dist/fonts/type1/
 urw/times/utmr8a.pfb></people/cs/o/oxx220000/texlive/2026/texmf-dist/fonts/type
 1/urw/times/utmri8a.pfb>
-Output written on build/main.pdf (33 pages, 5148781 bytes).
+Output written on build/main.pdf (33 pages, 5148845 bytes).
 PDF statistics:
  1449 PDF objects out of 1728 (max. 8388607)
  978 compressed objects within 10 object streams
  224 named destinations out of 1000 (max. 500000)
- 89646 words of extra memory for PDF output out of 106986 (max. 10000000)
+ 85550 words of extra memory for PDF output out of 89155 (max. 10000000)
 
