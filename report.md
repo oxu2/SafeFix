@@ -1,6 +1,11 @@
 <!-- AGENTS-IGNORE: START - The block below contains user operational shortcuts. AI agents should ignore this section when reading report.md for research context. -->
 ```bash
-latexmk -pdf -interaction=nonstopmode -halt-on-error -file-line-error AttriSelect.tex
+cd /people/cs/o/oxx220000/safefix/27cvpr
+latexmk -pdf \
+  -interaction=nonstopmode \
+  -halt-on-error \
+  -file-line-error \
+  AttriSelect.tex
 bash scripts/organize_build_artifacts.sh
 ```
 
