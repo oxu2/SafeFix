@@ -1,0 +1,64 @@
+\contentsline {section}{\numberline {1}\hskip -1em.~Introduction}{1}{section.1}%
+\contentsline {section}{\numberline {2}\hskip -1em.~Related Work}{2}{section.2}%
+\contentsline {section}{\numberline {3}\hskip -1em.~Background}{2}{section.3}%
+\contentsline {section}{\numberline {4}\hskip -1em.~Methodology}{2}{section.4}%
+\contentsline {subsection}{\numberline {4.1}\hskip -1em.~AttriSelect\xspace Framework}{2}{subsection.4.1}%
+\contentsline {subsection}{\numberline {4.2}\hskip -1em.~Attribute-Driven Active Learning}{3}{subsection.4.2}%
+\contentsline {subsection}{\numberline {4.3}\hskip -1em.~Theoretical Analysis}{4}{subsection.4.3}%
+\contentsline {section}{\numberline {5}\hskip -1em.~Experiments}{5}{section.5}%
+\contentsline {paragraph}{Datasets and Tasks}{5}{section*.2}%
+\contentsline {paragraph}{Metrics}{5}{section*.3}%
+\contentsline {paragraph}{Baselines}{5}{section*.4}%
+\contentsline {subsection}{\numberline {5.1}\hskip -1em.~Main Results}{5}{subsection.5.1}%
+\contentsline {subsection}{\numberline {5.2}\hskip -1em.~Computational Efficiency}{6}{subsection.5.2}%
+\contentsline {subsection}{\numberline {5.3}\hskip -1em.~Attribute-Slice Accuracy Differences}{6}{subsection.5.3}%
+\contentsline {subsection}{\numberline {5.4}\hskip -1em.~Failure-Slice Repair Counts}{6}{subsection.5.4}%
+\contentsline {subsection}{\numberline {5.5}\hskip -1em.~Ablation Study}{6}{subsection.5.5}%
+\contentsline {section}{\numberline {6}\hskip -1em.~Conclusion}{7}{section.6}%
+\ttl@starttoc {appendix@1}
+\contentsline {section}{\numberline {A}\hskip -1em.~Glossary}{11}{appendix.A}%
+\contentsline {section}{\numberline {B}\hskip -1em.~Implementation Details}{11}{appendix.B}%
+\contentsline {paragraph}{Random seeds.}{11}{section*.15}%
+\contentsline {paragraph}{Hardware and datasets.}{11}{section*.16}%
+\contentsline {paragraph}{Training and repair schedule.}{11}{section*.17}%
+\contentsline {paragraph}{Image generation.}{11}{section*.18}%
+\contentsline {paragraph}{Attribute proposal and assignment.}{11}{section*.19}%
+\contentsline {paragraph}{Selection groups for dense prediction.}{11}{section*.20}%
+\contentsline {paragraph}{Generated-count scaling.}{11}{section*.21}%
+\contentsline {paragraph}{Generation and assignment cost.}{11}{section*.22}%
+\contentsline {subsection}{\numberline {B.1}\hskip -1em.~End-to-End Cost Accounting}{12}{subsection.B.1}%
+\contentsline {section}{\numberline {C}\hskip -1em.~AttriSelect\xspace Algorithm}{13}{appendix.C}%
+\contentsline {section}{\numberline {D}\hskip -1em.~Attribute Assignment Details}{13}{appendix.D}%
+\contentsline {section}{\numberline {E}\hskip -1em.~Main-Result Metric Tables}{13}{appendix.E}%
+\contentsline {section}{\numberline {F}\hskip -1em.~Additional Controlled Repair Comparisons}{14}{appendix.F}%
+\contentsline {subsection}{\numberline {F.1}\hskip -1em.~Same-Information Baselines}{14}{subsection.F.1}%
+\contentsline {subsection}{\numberline {F.2}\hskip -1em.~Generated-Complement Control}{14}{subsection.F.2}%
+\contentsline {subsection}{\numberline {F.3}\hskip -1em.~Exact Diagnosed Conjunctions}{15}{subsection.F.3}%
+\contentsline {subsection}{\numberline {F.4}\hskip -1em.~Selected-Subset Composition}{15}{subsection.F.4}%
+\contentsline {subsection}{\numberline {F.5}\hskip -1em.~More Constrained Source Budgets}{16}{subsection.F.5}%
+\contentsline {section}{\numberline {G}\hskip -1em.~Attribute-Slice Heatmaps}{16}{appendix.G}%
+\contentsline {section}{\numberline {H}\hskip -1em.~Effect of the VLM and Human Audit}{16}{appendix.H}%
+\contentsline {paragraph}{VLM Role and Leakage Control}{16}{section*.47}%
+\contentsline {paragraph}{Human Audit Protocol}{17}{section*.48}%
+\contentsline {paragraph}{Sensitivity to attribute noise.}{17}{section*.50}%
+\contentsline {section}{\numberline {I}\hskip -1em.~Effect of the Repair Pipeline and Image Generation}{18}{appendix.I}%
+\contentsline {subsection}{\numberline {I.1}\hskip -1em.~Alternative Repair Pipeline}{18}{subsection.I.1}%
+\contentsline {subsection}{\numberline {I.2}\hskip -1em.~Alternative Image Generators}{18}{subsection.I.2}%
+\contentsline {section}{\numberline {J}\hskip -1em.~Additional Robustness and Sensitivity Studies}{19}{appendix.J}%
+\contentsline {subsection}{\numberline {J.1}\hskip -1em.~Repair-Schedule Sensitivity}{19}{subsection.J.1}%
+\contentsline {subsection}{\numberline {J.2}\hskip -1em.~Slice-Granularity Sensitivity}{20}{subsection.J.2}%
+\contentsline {subsection}{\numberline {J.3}\hskip -1em.~Incomplete Attribute-Vocabulary Coverage}{20}{subsection.J.3}%
+\contentsline {section}{\numberline {K}\hskip -1em.~Source-Only Data Selection}{21}{appendix.K}%
+\contentsline {subsection}{\numberline {K.1}\hskip -1em.~One-Shot Subset Selection}{22}{subsection.K.1}%
+\contentsline {subsection}{\numberline {K.2}\hskip -1em.~Iterative Active Learning}{22}{subsection.K.2}%
+\contentsline {subsection}{\numberline {K.3}\hskip -1em.~Alternative Attribute Sources}{23}{subsection.K.3}%
+\contentsline {section}{\numberline {L}\hskip -1em.~Additional Theory Analysis}{23}{appendix.L}%
+\contentsline {paragraph}{Proof of conditional target-slice enrichment}{23}{section*.63}%
+\contentsline {paragraph}{Geometric coverage}{24}{section*.64}%
+\contentsline {paragraph}{Finite-weight group balance}{24}{section*.65}%
+\contentsline {subsection}{\numberline {L.1}\hskip -1em.~No-Generation Corner Case}{24}{subsection.L.1}%
+\contentsline {section}{\numberline {M}\hskip -1em.~Hyperparameter Details}{25}{appendix.M}%
+\contentsline {section}{\numberline {N}\hskip -1em.~COCO Pose-Estimation Attribute-Score Component Ablation}{25}{appendix.N}%
+\contentsline {section}{\numberline {O}\hskip -1em.~Selection t-SNE Visualizations}{26}{appendix.O}%
+\contentsline {section}{\numberline {P}\hskip -1em.~Limitations and Practical Considerations}{32}{appendix.P}%
+\contentsfinish 

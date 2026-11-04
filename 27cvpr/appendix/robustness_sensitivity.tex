@@ -1,0 +1,129 @@
+\section{Additional Robustness and Sensitivity Studies}
+\label{app:additional-robustness}
+
+\subsection{Repair-Schedule Sensitivity}
+
+The main ImageNet10 repair schedule uses 15 epochs, half of the 30-epoch diagnosis schedule. We vary repair training from 15 to 60 epochs at source ratios $0.5$ and $0.9$ while holding the diagnosis checkpoint, generated repair set, source budget, learning rate, and five seeds fixed. Table~\ref{tab:repair-schedule-sensitivity} reports the results.
+
+\begin{table*}[t]
+\centering
+\caption{ImageNet10 repair-schedule sensitivity. Metric: five-seed mean RER (\%). We evaluate source ratios $0.5$ and $0.9$ across repair training schedules from 15 to 60 epochs ($0.5\times$--$2.0\times$ the 30-epoch diagnosis schedule), holding the diagnosis checkpoint, generated repair set, source budget, learning rate, and five seeds fixed.}
+\label{tab:repair-schedule-sensitivity}
+\small
+\setlength{\tabcolsep}{6pt}
+\begin{tabular}{c l c c c c}
+\toprule
+\rowcolor{sectiongray} \textbf{Ratio} & \textbf{Method} & \textbf{15 epochs ($0.5\times$)} & \textbf{30 epochs ($1.0\times$)} & \textbf{45 epochs ($1.5\times$)} & \textbf{60 epochs ($2.0\times$)} \\
+\midrule
+\multirow{8}{*}{0.5} 
+& Random & 7.19 & 8.91 & 9.91 & 10.15 \\
+& Stratified & 9.54 & 9.31 & 10.37 & 10.94 \\
+& Entropy & 5.45 & 10.45 & 10.96 & 11.55 \\
+& CoreSet & 7.90 & 9.86 & 10.09 & 11.44 \\
+& BADGE & 10.35 & 10.62 & 11.72 & 11.99 \\
+& UHerding & 8.23 & 8.81 & 9.18 & 10.05 \\
+& PPAL & 8.72 & 9.16 & 10.22 & 10.44 \\
+& \textbf{Ours} & \textbf{11.72} & \textbf{12.27} & \textbf{13.39} & \textbf{13.95} \\
+\midrule
+\multirow{8}{*}{0.9} 
+& Random & 10.08 & 10.90 & 12.03 & 11.41 \\
+& Stratified & 10.35 & 11.93 & 12.79 & 13.10 \\
+& Entropy & 10.08 & 12.21 & 13.32 & 13.64 \\
+& CoreSet & 5.99 & 11.96 & 12.19 & 13.27 \\
+& BADGE & 9.26 & 9.93 & 10.97 & 11.36 \\
+& UHerding & 11.44 & 11.99 & 12.25 & 12.48 \\
+& PPAL & 11.72 & 12.07 & 12.69 & 12.89 \\
+& \textbf{Ours} & \textbf{13.62} & \textbf{14.13} & \textbf{14.87} & \textbf{15.10} \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+Extending repair training from 15 to 60 epochs raises \model ACC from $0.7508$ to $0.7571$ at ratio $0.5$ and from $0.7562$ to $0.7603$ at ratio $0.9$. Relative to the pre-repair ACC of $0.7177$, the 60-epoch results correspond to gains of $3.94$ and $4.26$ percentage points, respectively. Over the same schedules, \model RER increases from $11.72\%$ to $13.95\%$ and from $13.62\%$ to $15.10\%$. Most baselines also improve overall, although individual trajectories are not strictly monotonic. \model is best in all eight ratio--epoch configurations, leading the strongest baseline by $1.37$--$1.96$ RER points at ratio $0.5$ and $1.46$--$1.92$ points at ratio $0.9$. The persistent ordering supports a selected-set quality effect rather than an early-stopping artifact.
+
+\subsection{Slice-Granularity Sensitivity}
+
+Slice granularity changes both the fields used for source selection and the generated repair set. We compare the diagnosed two-field conjunction with single-field variants and a narrower three-field conjunction over five seeds in Tables~\ref{tab:coco-slice-granularity} and~\ref{tab:imagenet-slice-granularity}.
+
+\begin{table*}[t]
+\centering
+\caption{Slice-granularity sensitivity on COCO. Metric: keypoint AP. The diagnosed slice is brown clothes and rainy weather.}
+\label{tab:coco-slice-granularity}
+\small
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{c c c c >{\columncolor{myblue!8}}c}
+\toprule
+\rowcolor{sectiongray} \textbf{Ratio} & \textbf{Brown only} & \textbf{Rain only} & \textbf{Brown+rain+night} & \cellcolor{myblue!8}\textbf{Brown+rain} \\
+\midrule
+0.1 & 0.6161 & 0.6174 & 0.6097 & \textbf{0.6183} \\
+0.3 & 0.6238 & 0.6224 & 0.6179 & \textbf{0.6306} \\
+0.5 & 0.6284 & 0.6217 & 0.6246 & \textbf{0.6317} \\
+0.7 & 0.6327 & \textbf{0.6333} & 0.6291 & 0.6319 \\
+0.9 & 0.6348 & 0.6132 & 0.6336 & \textbf{0.6355} \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+\begin{table*}[t]
+\centering
+\caption{Slice-granularity sensitivity on ImageNet10. Metric: test accuracy. The diagnosed slice is pink color and fabric texture.}
+\label{tab:imagenet-slice-granularity}
+\small
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{c c c c >{\columncolor{myblue!8}}c}
+\toprule
+\rowcolor{sectiongray} \textbf{Ratio} & \textbf{Pink only} & \textbf{Fabric only} & \textbf{Pink+fabric+rainy background} & \cellcolor{myblue!8}\textbf{Pink+fabric} \\
+\midrule
+0.1 & 0.7223 & 0.7346 & \textbf{0.7398} & 0.7369 \\
+0.3 & 0.7369 & 0.7431 & 0.7414 & \textbf{0.7492} \\
+0.5 & 0.7377 & 0.7438 & 0.7429 & \textbf{0.7508} \\
+0.7 & 0.7485 & 0.7423 & 0.7462 & \textbf{0.7515} \\
+0.9 & 0.7500 & 0.7354 & 0.7491 & \textbf{0.7562} \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+The diagnosed two-field slice is best in 8 of the 10 dataset--ratio settings. On average, it exceeds COCO Brown-only, Rain-only, and the three-field slice by 0.24, 0.80, and 0.66 AP points. On ImageNet10, it exceeds Pink-only, Fabric-only, and the three-field slice by 0.98, 0.91, and 0.50 accuracy points. These results indicate a support--specificity trade-off: a single-field slice can mix different failure causes, while a narrow conjunction can remove useful support.
+
+\subsection{Incomplete Attribute-Vocabulary Coverage}
+
+Tables~\ref{tab:imagenet-missing-field} and~\ref{tab:coco-missing-field} report results after removing one target field while holding the generated repair pool, source budget, checkpoint, and training schedule fixed. Parenthesized values are the selected-set Jaccard overlap with the full two-field selector.
+
+\begin{table*}[t]
+\centering
+\caption{Missing-field sensitivity on ImageNet10. Metric: overall test accuracy (\%).}
+\label{tab:imagenet-missing-field}
+\small
+\setlength{\tabcolsep}{5pt}
+\begin{tabular}{c >{\columncolor{myblue!8}}c c c}
+\toprule
+\rowcolor{sectiongray} \textbf{Ratio} & \cellcolor{myblue!8}\textbf{Full} & \textbf{Missing color} & \textbf{Missing texture} \\
+\midrule
+0.1 & 73.69 & 72.69 (0.5604) & \textbf{73.85} (0.3904) \\
+0.3 & \textbf{74.92} & 73.77 (0.6166) & 73.54 (0.5842) \\
+0.5 & \textbf{75.08} & 74.23 (0.6443) & 74.23 (0.7330) \\
+0.7 & \textbf{75.15} & 74.00 (0.6999) & 74.23 (0.8826) \\
+0.9 & \textbf{75.62} & 75.08 (0.8765) & 74.54 (0.9668) \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+\begin{table*}[t]
+\centering
+\caption{Missing-field sensitivity on COCO. Metric: keypoint AP.}
+\label{tab:coco-missing-field}
+\small
+\setlength{\tabcolsep}{5pt}
+\begin{tabular}{c >{\columncolor{myblue!8}}c c c}
+\toprule
+\rowcolor{sectiongray} \textbf{Ratio} & \cellcolor{myblue!8}\textbf{Full} & \textbf{Missing color} & \textbf{Missing weather} \\
+\midrule
+0.1 & \textbf{0.6183} & 0.6055 (0.4782) & 0.6105 (0.2034) \\
+0.3 & \textbf{0.6306} & 0.6221 (0.5611) & 0.6214 (0.4613) \\
+0.5 & \textbf{0.6317} & 0.6178 (0.7063) & 0.6271 (0.6084) \\
+0.7 & 0.6319 & \textbf{0.6332} (0.7836) & 0.6323 (0.8110) \\
+0.9 & \textbf{0.6355} & 0.6237 (0.8969) & 0.6244 (0.8708) \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+Missing-field variants are lower than Full in 17 of the 20 dataset--field--ratio comparisons. The selected subset changes most at low budgets: at ratio $0.1$, Jaccard overlap falls as low as 0.3904 on ImageNet10 and 0.2034 on COCO. Mean ImageNet10 accuracy changes are $-0.94/-0.81$ points when color/texture is removed; mean COCO AP changes are $-0.0091/-0.0065$ when color/weather is removed. The effect is not monotonic at every ratio, but incomplete coverage usually weakens task performance.
