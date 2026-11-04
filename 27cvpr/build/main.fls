@@ -503,13 +503,11 @@ INPUT /people/cs/o/oxx220000/texlive/2026/texmf-dist/fonts/tfm/adobe/courier/pcr
 INPUT /people/cs/o/oxx220000/texlive/2026/texmf-dist/fonts/vf/adobe/times/ptmr8c.vf
 INPUT /people/cs/o/oxx220000/texlive/2026/texmf-dist/fonts/vf/adobe/courier/pcrr8t.vf
 INPUT /people/cs/o/oxx220000/texlive/2026/texmf-dist/fonts/tfm/adobe/courier/pcrr8r.tfm
-INPUT /people/cs/o/oxx220000/texlive/2026/texmf-dist/fonts/tfm/adobe/times/ptmr8t.tfm
-INPUT /people/cs/o/oxx220000/texlive/2026/texmf-dist/fonts/tfm/adobe/times/ptmb8t.tfm
 INPUT build/main.ptc
 INPUT build/main.ptc
 INPUT build/main.ptc
-INPUT /people/cs/o/oxx220000/texlive/2026/texmf-dist/fonts/vf/adobe/times/ptmb8t.vf
-INPUT /people/cs/o/oxx220000/texlive/2026/texmf-dist/fonts/tfm/adobe/times/ptmb8r.tfm
+INPUT /people/cs/o/oxx220000/texlive/2026/texmf-dist/fonts/vf/adobe/times/ptmr8t.vf
+INPUT /people/cs/o/oxx220000/texlive/2026/texmf-dist/fonts/tfm/adobe/times/ptmr8r.tfm
 INPUT ./appendix/glossary.tex
 INPUT ./appendix/glossary.tex
 INPUT appendix/glossary.tex
