@@ -1,3 +1,6 @@
+# LaTeX intermediates belong in build_artifacts; keep the paper and figures.
+/build_artifacts/*
+!/build_artifacts/.gitkeep
 /build/
 *.aux
 *.bbl
@@ -8,3 +11,4 @@
 *.log
 *.out
 *.ptc
+*.synctex.gz

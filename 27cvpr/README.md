@@ -9,11 +9,11 @@ and `ieeenat_fullname.bst` are copied from `templete cvpr2027/`.
 Compile from this directory with a TeX installation containing `latexmk`:
 
 ```sh
-latexmk -pdf -interaction=nonstopmode -halt-on-error -file-line-error -outdir=build main.tex
-cp build/main.pdf main.pdf
+latexmk -pdf -interaction=nonstopmode -halt-on-error -file-line-error AttriSelect.tex
+bash scripts/organize_build_artifacts.sh
 ```
 
-`main.pdf` combines the main paper, references, and supplementary material.
+`AttriSelect.pdf` combines the main paper, references, and supplementary material.
 The supplementary material starts on its own page; separate it from the main
 paper when preparing submission files. This migration preserves the complete
 source content without shortening it for any page limit. Some inherited figure
