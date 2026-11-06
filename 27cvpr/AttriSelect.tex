@@ -277,17 +277,17 @@ where $M_{\mathrm{before}}$ and $M_{\mathrm{after}}$ are the test metrics before
 \paragraph{Baselines}
 We compare \model with seven source-selection baselines. \textbf{\textsc{Random}} samples images uniformly at random. \textbf{\textsc{Stratified}} preserves class proportions during sampling~\citep{neyman1934two}. \textbf{\textsc{Entropy}} selects examples with the largest predictive entropy or task-specific confidence-entropy proxy. \textbf{\textsc{CoreSet}} uses greedy coverage in embedding space. \textbf{\textsc{BADGE}} selects gradient-embedding batches that combine uncertainty and diversity~\citep{settles2009active,sener2018active,ash2020deep}. \textbf{\textsc{PPAL}} is a plug-and-play active-learning baseline for object detection. \textbf{\textsc{UHerding}} denotes Uncertainty Herding, which combines uncertainty with coverage across label budgets~\citep{yang2024ppal,bae2025uncertainty}.
 
-The seven generic baselines do not receive the repair attributes used by \model. Appendix~\ref{app:additional-repair-controls} therefore adds matched-information baselines that use the same target fields through direct filtering, stratification, entropy ranking, or generated-set complementarity.
+We also compare with controls using the same target fields: Target+Stratified prioritizes the target conjunction; Filtered Random and Filtered Entropy select from attribute-matching candidates; and Generated-Complement favors values less frequent in the generated set. All share the source and generated-data budgets, checkpoint, and repair schedule with \model.
 
 \subsection{Main Results}
 
 Table~\ref{tab:main-rer} compares \model with generic source-selection baselines using RER. All main-result entries are averaged over five random seeds. The original task metrics and variance over five seeds are reported in Appendix~\ref{app:main-metric-tables}.
 
-\noindent\textbf{Analysis.} \model gives the best RER in almost all active source-selection settings, excluding the ratio-$1.0$ full-data references where all selectors are identical. The gap is largest at small budgets, where the selected source subset is highly constrained, and it generally remains at larger budgets. KITTI is the only near-exception: PPAL is slightly higher at ratio $0.7$ by $0.05$ RER points, while \model remains best at the other four KITTI ratios. Appendix~\ref{app:image-generation-effect} reports the same selector ordering under an alternative repair pipeline and alternative generators, and Appendix~\ref{app:additional-robustness} shows that the ImageNet10 ordering persists across longer repair schedules.
+\noindent\textbf{Analysis.} \model gives the best RER in almost all active source-selection settings; PPAL is higher by $0.05$ RER points on KITTI at ratio $0.7$. Appendix~\ref{app:image-generation-effect} reports results under an alternative repair pipeline and generators, and Appendix~\ref{app:additional-robustness} evaluates longer repair schedules.
 
 Subset selection can also outperform the full-data setting, especially on ImageNet10, CelebA, and COCO. Appendix~\ref{app:additional-repair-controls} reports that \model remains strongest at the more constrained source ratios $0.02$ and $0.05$ and quantifies the class--attribute coverage and diversity of the selected subsets. The t-SNE visualizations in Appendix~\ref{app:selection-tsne} compare its selected regions with those of generic AL baselines across varied visual contexts.
 
-KITTI behaves differently at the smallest source budget. At ratio $0.1$, all methods have negative RER. A likely reason is that KITTI has only $5{,}000$ training images, so the selected source subset contains just $500$ real images, unlike ImageNet10, COCO, and CelebA where the same ratio still leaves thousands to tens of thousands of source examples. This is a low-data failure mode: for small detection datasets, an overly small repair subset may not retain enough background, viewpoint, and object-scale variation to improve over the original detector. Under the same generated repair set and source budget, \model remains the least damaging option and has the highest RER in this row.
+At KITTI ratio $0.1$, all methods have negative RER; the subset contains only $500$ real images and may not retain enough visual variation. \model has the highest RER in this setting.
 
 \begin{table*}[t]
 \centering
@@ -338,6 +338,29 @@ KITTI behaves differently at the smallest source budget. At ratio $0.1$, all met
 \bottomrule
 \end{tabular}
 \end{table*}
+
+\subsection{Same-Information Baselines}
+
+Table~\ref{tab:main-same-information} compares controls given the same target fields. \model has the highest mean RER on all three tasks and leads at 14 of 15 task--ratio points; Generated-Complement is higher on KITTI at ratio $0.7$. Per-ratio results and control details are in Appendix~\ref{app:additional-repair-controls}.
+
+\begin{table}[t]
+\centering
+\caption{Same-information controls. RER (\%) is averaged over five seeds and source ratios $0.1$--$0.9$.}
+\label{tab:main-same-information}
+\small
+\setlength{\tabcolsep}{2pt}
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{l c c c c >{\columncolor{myblue!8}}c}
+\toprule
+\rowcolor{sectiongray} Dataset & \shortstack{Target+\\Strat.} & \shortstack{Filtered\\Rand.} & \shortstack{Filtered\\Ent.} & \shortstack{Gen.-\\Comp.} & \cellcolor{myblue!8}\textbf{Ours} \\
+\midrule
+ImageNet10 & 8.22 & 8.66 & 8.67 & 7.30 & \textbf{11.06} \\
+COCO & 8.35 & 5.16 & 8.09 & 6.98 & \textbf{9.62} \\
+KITTI & 0.38 & 0.77 & 0.94 & 0.69 & \textbf{1.33} \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}
 
 \subsection{Computational Efficiency}
 
