@@ -277,7 +277,7 @@ where $M_{\mathrm{before}}$ and $M_{\mathrm{after}}$ are the test metrics before
 \paragraph{Baselines}
 We compare \model with seven source-selection baselines. \textbf{\textsc{Random}} samples images uniformly at random. \textbf{\textsc{Stratified}} preserves class proportions during sampling~\citep{neyman1934two}. \textbf{\textsc{Entropy}} selects examples with the largest predictive entropy or task-specific confidence-entropy proxy. \textbf{\textsc{CoreSet}} uses greedy coverage in embedding space. \textbf{\textsc{BADGE}} selects gradient-embedding batches that combine uncertainty and diversity~\citep{settles2009active,sener2018active,ash2020deep}. \textbf{\textsc{PPAL}} is a plug-and-play active-learning baseline for object detection. \textbf{\textsc{UHerding}} denotes Uncertainty Herding, which combines uncertainty with coverage across label budgets~\citep{yang2024ppal,bae2025uncertainty}.
 
-We also compare with controls using the same target fields: Target+Stratified prioritizes the target conjunction; Filtered Random and Filtered Entropy select from attribute-matching candidates; and Generated-Complement favors values less frequent in the generated set. All share the source and generated-data budgets, checkpoint, and repair schedule with \model.
+The seven generic baselines do not use repair attributes. We also compare with controls using the same target fields: Target+Stratified prioritizes the target conjunction; Filtered Random and Filtered Entropy select from attribute-matching candidates; and Generated-Complement favors values less frequent in the generated set. All share the source and generated-data budgets, checkpoint, and repair schedule with \model.
 
 \subsection{Main Results}
 
@@ -345,7 +345,7 @@ Table~\ref{tab:main-same-information} compares controls given the same target fi
 
 \begin{table}[t]
 \centering
-\caption{Same-information controls. RER (\%) is averaged over five seeds and source ratios $0.1$--$0.9$.}
+\caption{Same-information controls. RER (\%) is averaged over five seeds and five source ratios ($0.1, 0.3, 0.5, 0.7, 0.9$).}
 \label{tab:main-same-information}
 \small
 \setlength{\tabcolsep}{2pt}
