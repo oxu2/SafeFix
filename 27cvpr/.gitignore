@@ -1,14 +1,23 @@
-# LaTeX intermediates belong in build_artifacts; keep the paper and figures.
+# Root LaTeX build products; keep manuscript source.
+/main.*
+/AttriSelect.*
+!/AttriSelect.tex
+/*.pdf
+/backup/*.pdf
+
+# Preferred location for local LaTeX build products.
 /build_artifacts/*
 !/build_artifacts/.gitkeep
-/build/
+
+# Scratch LaTeX products.
 *.aux
 *.bbl
 *.blg
-*.brf
 *.fdb_latexmk
 *.fls
 *.log
 *.out
 *.ptc
+*.pdf
 *.synctex.gz
+AGENTS.md
