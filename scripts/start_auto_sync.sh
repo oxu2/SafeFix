@@ -21,7 +21,7 @@ get_pid() {
         local pid
         pid=$(sed -n '1p' "$pid_file" 2>/dev/null || true)
         local command_line
-        command_line=$(tr '\0' ' ' < "/proc/${pid:-missing}/cmdline" 2>/dev/null || true)
+        command_line=$(tr '\0' ' ' 2>/dev/null < "/proc/${pid:-missing}/cmdline" || true)
         if [[ "$pid" =~ ^[0-9]+$ ]] && kill -0 "$pid" 2>/dev/null &&
             [[ "$command_line" == *"$SCRIPT_DIR/auto_git_sync.py --repo $repo "* ]]; then
             echo "$pid"
