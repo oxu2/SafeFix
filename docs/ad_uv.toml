@@ -1,0 +1,2 @@
+[extra-build-dependencies]
+chumpy = ["pip", "numpy==1.26.4"]

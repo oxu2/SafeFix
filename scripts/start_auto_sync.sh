@@ -16,10 +16,14 @@ TARGETS=(
 
 get_pid() {
     local pid_file="$1"
+    local repo="$2"
     if [ -f "$pid_file" ]; then
         local pid
         pid=$(sed -n '1p' "$pid_file" 2>/dev/null || true)
-        if [ -n "$pid" ] && kill -0 "$pid" 2>/dev/null; then
+        local command_line
+        command_line=$(tr '\0' ' ' < "/proc/${pid:-missing}/cmdline" 2>/dev/null || true)
+        if [[ "$pid" =~ ^[0-9]+$ ]] && kill -0 "$pid" 2>/dev/null &&
+            [[ "$command_line" == *"$SCRIPT_DIR/auto_git_sync.py --repo $repo "* ]]; then
             echo "$pid"
             return 0
         fi
@@ -51,7 +55,7 @@ start_target() {
         return 0
     fi
 
-    if pid=$(get_pid "$pid_file"); then
+    if pid=$(get_pid "$pid_file" "$repo"); then
         echo "[AutoSync:$name] Daemon is already running (PID: $pid, repo: $repo)."
         return 0
     fi
@@ -82,7 +86,7 @@ stop_target() {
     local repo="$2"
     local pid_file="$repo/.git/auto_sync.pid"
 
-    if pid=$(get_pid "$pid_file"); then
+    if pid=$(get_pid "$pid_file" "$repo"); then
         kill -TERM "$pid" 2>/dev/null || true
         for _ in {1..10}; do
             kill -0 "$pid" 2>/dev/null || break
@@ -103,7 +107,7 @@ status_target() {
     local log_file
     log_file=$(get_log_file "$name")
 
-    if pid=$(get_pid "$pid_file"); then
+    if pid=$(get_pid "$pid_file" "$repo"); then
         echo "[AutoSync:$name] RUNNING (PID: $pid, repo: $repo)."
     else
         echo "[AutoSync:$name] STOPPED (repo: $repo)."

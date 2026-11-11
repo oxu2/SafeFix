@@ -1,0 +1,386 @@
+[
+  {
+    "package": "adapter-transformers",
+    "action": "deferred",
+    "original": "-e /people/cs/o/oxx220000/CLiMB/src/adapter-transformers",
+    "reason": "Missing custom editable source; conflicts with standard transformers"
+  },
+  {
+    "package": "adatest",
+    "action": "deferred",
+    "original": "adatest==0.3.3",
+    "reason": "See comments in ad_requirements_local.txt; incompatible historical constraints"
+  },
+  {
+    "package": "apex",
+    "action": "deferred",
+    "original": "apex @ file:///people/cs/o/oxx220000/apex",
+    "reason": "Missing local source; optional CUDA extension"
+  },
+  {
+    "package": "bleach",
+    "action": "adapted",
+    "original": "bleach @ file:///home/conda/feedstock_root/build_artifacts/bld/rattler-build_bleach_1737382993/work",
+    "installed_requirement": "bleach==6.2.0"
+  },
+  {
+    "package": "brotli",
+    "action": "adapted",
+    "original": "Brotli @ file:///home/conda/feedstock_root/build_artifacts/brotli-split_1648883617327/work",
+    "installed_requirement": "brotli==1.0.9"
+  },
+  {
+    "package": "checklist",
+    "action": "deferred",
+    "original": "checklist==0.0.11",
+    "reason": "Legacy NLP environment; optional"
+  },
+  {
+    "package": "clip",
+    "action": "omitted",
+    "original": "clip @ git+https://github.com/openai/CLIP.git@a9b1bf5920416aaeaec965c25dd9e8f98c864f16",
+    "reason": "clip-anytorch provides same clip module"
+  },
+  {
+    "package": "clip-retrieval",
+    "action": "deferred",
+    "original": "clip-retrieval==2.34.2",
+    "reason": "See comments in ad_requirements_local.txt; incompatible historical constraints"
+  },
+  {
+    "package": "cmake",
+    "action": "adapted",
+    "original": "cmake==3.26.3",
+    "installed_requirement": "cmake==3.31.6"
+  },
+  {
+    "package": "colorama",
+    "action": "adapted",
+    "original": "colorama @ file:///home/conda/feedstock_root/build_artifacts/colorama_1733218098505/work",
+    "installed_requirement": "colorama==0.4.6"
+  },
+  {
+    "package": "dataclasses",
+    "action": "omitted",
+    "original": "dataclasses==0.6",
+    "reason": "Part of Python 3.9 standard library"
+  },
+  {
+    "package": "decord",
+    "action": "deferred",
+    "original": "decord==0.6.0",
+    "reason": "See adapted requirements comments"
+  },
+  {
+    "package": "idna",
+    "action": "adapted",
+    "original": "idna @ file:///home/conda/feedstock_root/build_artifacts/idna_1733211830134/work",
+    "installed_requirement": "idna==3.10"
+  },
+  {
+    "package": "img2dataset",
+    "action": "deferred",
+    "original": "img2dataset==1.35.0",
+    "reason": "See comments in ad_requirements_local.txt; incompatible historical constraints"
+  },
+  {
+    "package": "kaggle",
+    "action": "adapted",
+    "original": "kaggle @ file:///home/conda/feedstock_root/build_artifacts/kaggle_1736732284024/work",
+    "installed_requirement": "kaggle==1.6.17"
+  },
+  {
+    "package": "keras-nightly",
+    "action": "deferred",
+    "original": "keras-nightly==2.5.0.dev2021032900",
+    "reason": "Historical TensorFlow 2.5 stack is separate from PyTorch environment"
+  },
+  {
+    "package": "mmcv",
+    "action": "adapted",
+    "original": "mmcv==2.1.0",
+    "installed_requirement": "mmcv @ https://download.openmmlab.com/mmcv/dist/cu121/torch2.1.0/mmcv-2.1.0-cp39-cp39-manylinux1_x86_64.whl"
+  },
+  {
+    "package": "nvidia-cublas-cu11",
+    "action": "omitted",
+    "original": "nvidia-cublas-cu11==11.10.3.66",
+    "reason": "CUDA runtime resolved by PyTorch"
+  },
+  {
+    "package": "nvidia-cublas-cu12",
+    "action": "omitted",
+    "original": "nvidia-cublas-cu12==12.4.5.8",
+    "reason": "CUDA runtime resolved by PyTorch"
+  },
+  {
+    "package": "nvidia-cuda-cupti-cu11",
+    "action": "omitted",
+    "original": "nvidia-cuda-cupti-cu11==11.7.101",
+    "reason": "CUDA runtime resolved by PyTorch"
+  },
+  {
+    "package": "nvidia-cuda-cupti-cu12",
+    "action": "omitted",
+    "original": "nvidia-cuda-cupti-cu12==12.4.127",
+    "reason": "CUDA runtime resolved by PyTorch"
+  },
+  {
+    "package": "nvidia-cuda-nvrtc-cu11",
+    "action": "omitted",
+    "original": "nvidia-cuda-nvrtc-cu11==11.7.99",
+    "reason": "CUDA runtime resolved by PyTorch"
+  },
+  {
+    "package": "nvidia-cuda-nvrtc-cu12",
+    "action": "omitted",
+    "original": "nvidia-cuda-nvrtc-cu12==12.4.127",
+    "reason": "CUDA runtime resolved by PyTorch"
+  },
+  {
+    "package": "nvidia-cuda-runtime-cu11",
+    "action": "omitted",
+    "original": "nvidia-cuda-runtime-cu11==11.7.99",
+    "reason": "CUDA runtime resolved by PyTorch"
+  },
+  {
+    "package": "nvidia-cuda-runtime-cu12",
+    "action": "omitted",
+    "original": "nvidia-cuda-runtime-cu12==12.4.127",
+    "reason": "CUDA runtime resolved by PyTorch"
+  },
+  {
+    "package": "nvidia-cudnn-cu11",
+    "action": "omitted",
+    "original": "nvidia-cudnn-cu11==8.5.0.96",
+    "reason": "CUDA runtime resolved by PyTorch"
+  },
+  {
+    "package": "nvidia-cudnn-cu12",
+    "action": "omitted",
+    "original": "nvidia-cudnn-cu12==9.1.0.70",
+    "reason": "CUDA runtime resolved by PyTorch"
+  },
+  {
+    "package": "nvidia-cufft-cu11",
+    "action": "omitted",
+    "original": "nvidia-cufft-cu11==10.9.0.58",
+    "reason": "CUDA runtime resolved by PyTorch"
+  },
+  {
+    "package": "nvidia-cufft-cu12",
+    "action": "omitted",
+    "original": "nvidia-cufft-cu12==11.2.1.3",
+    "reason": "CUDA runtime resolved by PyTorch"
+  },
+  {
+    "package": "nvidia-curand-cu11",
+    "action": "omitted",
+    "original": "nvidia-curand-cu11==10.2.10.91",
+    "reason": "CUDA runtime resolved by PyTorch"
+  },
+  {
+    "package": "nvidia-curand-cu12",
+    "action": "omitted",
+    "original": "nvidia-curand-cu12==10.3.5.147",
+    "reason": "CUDA runtime resolved by PyTorch"
+  },
+  {
+    "package": "nvidia-cusolver-cu11",
+    "action": "omitted",
+    "original": "nvidia-cusolver-cu11==11.4.0.1",
+    "reason": "CUDA runtime resolved by PyTorch"
+  },
+  {
+    "package": "nvidia-cusolver-cu12",
+    "action": "omitted",
+    "original": "nvidia-cusolver-cu12==11.6.1.9",
+    "reason": "CUDA runtime resolved by PyTorch"
+  },
+  {
+    "package": "nvidia-cusparse-cu11",
+    "action": "omitted",
+    "original": "nvidia-cusparse-cu11==11.7.4.91",
+    "reason": "CUDA runtime resolved by PyTorch"
+  },
+  {
+    "package": "nvidia-cusparse-cu12",
+    "action": "omitted",
+    "original": "nvidia-cusparse-cu12==12.3.1.170",
+    "reason": "CUDA runtime resolved by PyTorch"
+  },
+  {
+    "package": "nvidia-nccl-cu11",
+    "action": "omitted",
+    "original": "nvidia-nccl-cu11==2.14.3",
+    "reason": "CUDA runtime resolved by PyTorch"
+  },
+  {
+    "package": "nvidia-nccl-cu12",
+    "action": "omitted",
+    "original": "nvidia-nccl-cu12==2.21.5",
+    "reason": "CUDA runtime resolved by PyTorch"
+  },
+  {
+    "package": "nvidia-nvjitlink-cu12",
+    "action": "omitted",
+    "original": "nvidia-nvjitlink-cu12==12.4.127",
+    "reason": "CUDA runtime resolved by PyTorch"
+  },
+  {
+    "package": "nvidia-nvtx-cu11",
+    "action": "omitted",
+    "original": "nvidia-nvtx-cu11==11.7.91",
+    "reason": "CUDA runtime resolved by PyTorch"
+  },
+  {
+    "package": "nvidia-nvtx-cu12",
+    "action": "omitted",
+    "original": "nvidia-nvtx-cu12==12.4.127",
+    "reason": "CUDA runtime resolved by PyTorch"
+  },
+  {
+    "package": "opencv-python-headless",
+    "action": "adapted",
+    "original": "opencv-python-headless==4.7.0.72",
+    "installed_requirement": "opencv-python-headless==4.10.0.84"
+  },
+  {
+    "package": "openmim",
+    "action": "deferred",
+    "original": "openmim==0.3.9",
+    "reason": "Legacy installer pins packaging tools; install mmcv wheel directly"
+  },
+  {
+    "package": "openxlab",
+    "action": "deferred",
+    "original": "openxlab==0.1.3",
+    "reason": "Optional model downloader with old shared dependency constraints"
+  },
+  {
+    "package": "pyarrow",
+    "action": "adapted",
+    "original": "pyarrow==7.0.0",
+    "installed_requirement": "pyarrow==14.0.2"
+  },
+  {
+    "package": "pysocks",
+    "action": "adapted",
+    "original": "PySocks @ file:///home/conda/feedstock_root/build_artifacts/pysocks_1733217236728/work",
+    "installed_requirement": "pysocks==1.7.1"
+  },
+  {
+    "package": "python-dateutil",
+    "action": "adapted",
+    "original": "python-dateutil @ file:///home/conda/feedstock_root/build_artifacts/python-dateutil_1733215673016/work",
+    "installed_requirement": "python-dateutil==2.9.0.post0"
+  },
+  {
+    "package": "python-slugify",
+    "action": "adapted",
+    "original": "python-slugify @ file:///home/conda/feedstock_root/build_artifacts/python-slugify_1733756245724/work",
+    "installed_requirement": "python-slugify==8.0.4"
+  },
+  {
+    "package": "pytorch-lightning",
+    "action": "adapted",
+    "original": "pytorch-lightning==1.1.4",
+    "installed_requirement": "pytorch-lightning==1.9.5"
+  },
+  {
+    "package": "requests",
+    "action": "adapted",
+    "original": "requests==2.28.2",
+    "installed_requirement": "requests==2.32.3"
+  },
+  {
+    "package": "salesforce-lavis",
+    "action": "deferred",
+    "original": "salesforce-lavis==1.0.2",
+    "reason": "Pins transformers 4.26.1, incompatible with sentence-transformers 2.7.0"
+  },
+  {
+    "package": "tensorboardx",
+    "action": "adapted",
+    "original": "tensorboardX==2.6.1",
+    "installed_requirement": "tensorboardX==2.6"
+  },
+  {
+    "package": "tensorflow-estimator",
+    "action": "deferred",
+    "original": "tensorflow-estimator==2.5.0",
+    "reason": "Historical TensorFlow 2.5 stack"
+  },
+  {
+    "package": "tensorflow-metadata",
+    "action": "adapted",
+    "original": "tensorflow-metadata==1.14.0",
+    "installed_requirement": "tensorflow-metadata==1.15.0"
+  },
+  {
+    "package": "termcolor",
+    "action": "adapted",
+    "original": "termcolor==3.1.0",
+    "installed_requirement": "termcolor==1.1.0"
+  },
+  {
+    "package": "text-unidecode",
+    "action": "adapted",
+    "original": "text-unidecode @ file:///home/conda/feedstock_root/build_artifacts/text-unidecode_1733749896243/work",
+    "installed_requirement": "text-unidecode==1.3"
+  },
+  {
+    "package": "timm",
+    "action": "adapted",
+    "original": "timm==0.4.12",
+    "installed_requirement": "timm==0.9.16"
+  },
+  {
+    "package": "tokenizers",
+    "action": "adapted",
+    "original": "tokenizers==0.13.3",
+    "installed_requirement": "tokenizers==0.15.2"
+  },
+  {
+    "package": "torch",
+    "action": "adapted",
+    "original": "torch==1.13.1",
+    "installed_requirement": "torch==2.1.0"
+  },
+  {
+    "package": "torchaudio",
+    "action": "adapted",
+    "original": "torchaudio==2.0.2",
+    "installed_requirement": "torchaudio==2.1.0"
+  },
+  {
+    "package": "torchdata",
+    "action": "adapted",
+    "original": "torchdata==0.6.1",
+    "installed_requirement": "torchdata==0.7.0"
+  },
+  {
+    "package": "torchvision",
+    "action": "adapted",
+    "original": "torchvision==0.14.1",
+    "installed_requirement": "torchvision==0.16.0"
+  },
+  {
+    "package": "transformers",
+    "action": "adapted",
+    "original": "transformers==4.26.1",
+    "installed_requirement": "transformers==4.37.2"
+  },
+  {
+    "package": "triton",
+    "action": "omitted",
+    "original": "triton==2.1.0",
+    "reason": "Resolved by selected PyTorch wheel"
+  },
+  {
+    "package": "webencodings",
+    "action": "adapted",
+    "original": "webencodings @ file:///home/conda/feedstock_root/build_artifacts/webencodings_1733236011802/work",
+    "installed_requirement": "webencodings==0.5.1"
+  }
+]
