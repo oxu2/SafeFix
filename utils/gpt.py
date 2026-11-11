@@ -4,8 +4,10 @@ import os
 import re
 
 class ChatBot():
-    def __init__(self, api_key):
-        openai.api_key = "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"          
+    def __init__(self, api_key=None):
+        openai.api_key = api_key or os.environ.get("OPENAI_API_KEY")
+        if not openai.api_key:
+            raise ValueError("Provide api_key or set OPENAI_API_KEY before using ChatBot.")
         self.attributes = []
 
     def init_chat(self): 
