@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Poll a Git worktree and commit/push once enough files have changed."""
+"""Commit changed files and retry publishing pending commits on later polls."""
 
 import argparse
 import datetime as dt
@@ -58,21 +58,32 @@ def sync(root, branch, files, no_push=False):
         count, stamp, "\n".join("- " + line for line in files[:20])
     )
     try:
-        run(["git", "add", "-A"], root, check=True)
-        run(["git", "commit", "-m", message], root, check=True)
+        if files:
+            run(["git", "add", "-A"], root, check=True)
+            run(["git", "commit", "-m", message], root, check=True)
         if no_push:
             return True
-        pull = run(["git", "pull", "--rebase", "origin", branch], root)
-        if pull.returncode:
-            log.warning("git pull --rebase failed: %s", (pull.stderr or pull.stdout).strip())
-            if conflicted(root):
-                run(["git", "rebase", "--abort"], root)
+        remote = run(["git", "ls-remote", "--exit-code", "--heads", "origin",
+                      "refs/heads/" + branch], root)
+        if remote.returncode not in (0, 2):
+            log.error("git ls-remote failed: %s", (remote.stderr or remote.stdout).strip())
+            return False
+        if remote.returncode == 0:
+            local = run(["git", "rev-parse", "refs/heads/" + branch], root, check=True)
+            if local.stdout.strip() == remote.stdout.split()[0]:
+                return True
+            pull = run(["git", "pull", "--rebase", "origin", branch], root)
+            if pull.returncode:
+                log.warning("git pull --rebase failed: %s", (pull.stderr or pull.stdout).strip())
+                if conflicted(root):
+                    run(["git", "rebase", "--abort"], root)
                 return False
+        # Exit 2 means the requested remote branch is absent, not a network error.
         push = run(["git", "push", "origin", branch], root)
         if push.returncode:
             log.error("git push failed: %s", (push.stderr or push.stdout).strip())
             return False
-        log.info("Committed and pushed %d files to origin/%s.", count, branch)
+        log.info("Published local commits to origin/%s (%d newly changed files).", branch, count)
         return True
     except subprocess.CalledProcessError as error:
         log.error("Git command failed: %s", error)
@@ -98,6 +109,9 @@ def daemon(root, threshold, interval, debounce, branch, no_push):
             files = changed(root)
             if len(files) >= threshold:
                 sync(root, branch, files, no_push)
+        elif not files and not no_push:
+            # A failed push leaves a clean worktree; retry it independently.
+            sync(root, branch, [], no_push)
         for _ in range(interval):
             if not running:
                 break
@@ -124,6 +138,8 @@ def main():
         log.info("Changed files: %d (threshold: %d)", len(files), args.threshold)
         if len(files) >= args.threshold:
             sync(root, branch, files, args.no_push)
+        elif not files and not args.no_push:
+            sync(root, branch, [], args.no_push)
 
 
 if __name__ == "__main__":
