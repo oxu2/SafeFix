@@ -11,6 +11,7 @@ mkdir -p "$LOG_DIR"
 TARGETS=(
     "safefix|$REPO_ROOT|master|1|30"
     "27iclr|$REPO_ROOT/27iclr|main|1|30"
+    "27cvpr|$REPO_ROOT/27cvpr|main|1|30"
     "camera_tmlr|$REPO_ROOT/Camera-TMLR-26-SafeFix|main|1|30"
 )
 

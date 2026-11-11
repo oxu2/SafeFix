@@ -103,3 +103,6 @@ nips26_new/main.fls
 # Independent nested manuscript repository.
 /27iclr/
 Camera-TMLR-26-SafeFix
+
+# Standalone manuscript repository: https://github.com/oxu2/27cvpr
+/27cvpr/
