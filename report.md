@@ -1,5 +1,10 @@
 <!-- AGENTS-IGNORE: START - The block below contains user operational shortcuts. AI agents should ignore this section when reading report.md for research context. -->
 ```bash
+
+cd /home/rxl190028/safefix/27cvpr
+python scripts/build_submission_pdfs.py
+
+
 cd ~/safefix/27cvpr
 latexmk -pdf \
   -interaction=nonstopmode \
